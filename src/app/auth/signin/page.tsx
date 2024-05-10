@@ -1,20 +1,59 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
+import { useRouter } from "next/navigation";
 import { Metadata } from "next";
-import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import { useForm, SubmitHandler } from "react-hook-form";
+import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
+import api from "@/utils/api";
+import { APP_ROUTES } from "@/constants/app-routes";
+import { setStorageItem } from "@/utils/localStorage";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
 
-export const metadata: Metadata = {
-  title: "Next.js SignIn Page | TailAdmin - Next.js Dashboard Template",
-  description: "This is Next.js Signin Page TailAdmin Dashboard Template",
+// export const metadata: Metadata = {
+//   title: "CVLD Simulator - Login",
+//   description: "Faça login para começar a utilizar o CVLD Simulator",
+// };
+
+type SignInInputs = {
+  username: string;
+  password: string;
 };
 
 const SignIn: React.FC = () => {
-  return (
-    <DefaultLayout>
-      <Breadcrumb pageName="Sign In" />
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<SignInInputs>()
 
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const onSubmit: SubmitHandler<SignInInputs> = async (data) => {
+    setLoading(true);
+
+    try {
+      const res = await api.post("/api/token/", data);
+      if (res.status === 200) {
+        localStorage.setItem(`ATIVOS_${ACCESS_TOKEN}`, res.data.access);
+        localStorage.setItem(`ATIVOS_${REFRESH_TOKEN}`, res.data.refresh);
+        router.push(APP_ROUTES.private.dashboard.name);
+      } else {
+        router.push(APP_ROUTES.public.login.name);
+      }
+    } catch (error) {
+      alert("Usuário ou senha inválidos");
+
+    } finally {
+    setLoading(false);
+    }
+  };
+
+  return (
+    <UnloggedLayout>
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex flex-wrap items-center">
           <div className="hidden w-full xl:block xl:w-1/2">
@@ -37,8 +76,7 @@ const SignIn: React.FC = () => {
               </Link>
 
               <p className="2xl:px-20">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                suspendisse.
+                  Atualização inteligente dos valores de precatórios com base na legislação vigente
               </p>
 
               <span className="mt-15 inline-block">
@@ -168,22 +206,57 @@ const SignIn: React.FC = () => {
 
           <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
             <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
-              <span className="mb-1.5 block font-medium">Start for free</span>
+            <div className="block w-full xl:hidden xl:w-1/2">
+                <div className="px-26 pt-5 text-center">
+                  <Link className="mb-5.5 inline-block" href="/">
+                    <Image
+                      className="hidden dark:block"
+                      src={"/images/logo/logo.svg"}
+                      alt="Logo"
+                      width={176}
+                      height={32}
+                    />
+                    <Image
+                      className="dark:hidden"
+                      src={"/images/logo/logo-dark.svg"}
+                      alt="Logo"
+                      width={176}
+                      height={150}
+                    />
+                  </Link>
+                </div>
+              </div>
+              <span className="xl:mb-1.5 mb-10 mt-[-15px] block font-medium xl:text-2xl xl:text-left text-center text-lg">
+                CVLD Simulator
+              </span>
               <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-                Sign In to TailAdmin
+                Faça login para começar
               </h2>
 
-              <form>
+              <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
-                    Email
+                    Usuário
                   </label>
                   <div className="relative">
                     <input
-                      type="email"
-                      placeholder="Enter your email"
+                      type="text"
+                      placeholder="Digite o usuário"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      {
+                        ...register("username", {
+                          required: "Campo obrigatório",
+                        })
+                      }
+                      aria-invalid={errors.username ? "true" : "false"}
                     />
+                    {
+                      errors.username && (
+                        <span role="alert" className="absolute right-4 top-4 text-red-500 text-sm">
+                          {errors.username.message}
+                        </span>
+                      )
+                    }
 
                     <span className="absolute right-4 top-4">
                       <svg
@@ -207,14 +280,35 @@ const SignIn: React.FC = () => {
 
                 <div className="mb-6">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
-                    Re-type Password
+                    Senha
                   </label>
                   <div className="relative">
                     <input
                       type="password"
-                      placeholder="6+ Characters, 1 Capital letter"
-                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-white outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      placeholder="Digite a sua senha"
+                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      {
+                        ...register("password", {
+                          required: "Campo obrigatório",
+                          minLength: {
+                            value: 6,
+                            message: "Mínimo de 6 caracteres",
+                          },
+                          pattern: {
+                            value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
+                            message: "Senha inválida",
+                          },
+                        })
+                      }
+                      aria-invalid={errors.password ? "true" : "false"}
                     />
+                    {
+                      errors.password && (
+                        <span role="alert" className="absolute right-4 top-4 text-red-500 text-sm">
+                          {errors.password.message}
+                        </span>
+                      )
+                    }
 
                     <span className="absolute right-4 top-4">
                       <svg
@@ -243,12 +337,12 @@ const SignIn: React.FC = () => {
                 <div className="mb-5">
                   <input
                     type="submit"
-                    value="Sign In"
+                    value="Acessar"
                     className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
                   />
                 </div>
 
-                <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
+                <button disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50 disabled:cursor-not-allowed disabled:bg-opacity-50">
                   <span>
                     <svg
                       width="20"
@@ -282,14 +376,14 @@ const SignIn: React.FC = () => {
                       </defs>
                     </svg>
                   </span>
-                  Sign in with Google
+                  Login com o Google
                 </button>
 
                 <div className="mt-6 text-center">
                   <p>
-                    Don’t have any account?{" "}
+                    Ainda não possui uma conta?{" "}
                     <Link href="/auth/signup" className="text-primary">
-                      Sign Up
+                      Cadastre-se
                     </Link>
                   </p>
                 </div>
@@ -298,7 +392,7 @@ const SignIn: React.FC = () => {
           </div>
         </div>
       </div>
-    </DefaultLayout>
+    </UnloggedLayout>
   );
 };
 

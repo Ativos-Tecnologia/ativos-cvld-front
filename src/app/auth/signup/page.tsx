@@ -4,18 +4,17 @@ import Image from "next/image";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 
 import { Metadata } from "next";
-import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
 
 export const metadata: Metadata = {
-  title: "Next.js SignUp Page | TailAdmin - Next.js Dashboard Template",
-  description: "This is Next.js SignUp Page TailAdmin Dashboard Template",
+  title: "CVLD Simulator - Cadastro",
+  description: "Página de cadastro do CVLD Simulator",
   // other metadata
 };
 
 const SignUp: React.FC = () => {
   return (
-    <DefaultLayout>
-      <Breadcrumb pageName="Sign Up" />
+    <UnloggedLayout>
 
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex flex-wrap items-center">
@@ -34,12 +33,11 @@ const SignUp: React.FC = () => {
                   src={"/images/logo/logo-dark.svg"}
                   alt="Logo"
                   width={176}
-                  height={32}
+                  height={150}
                 />
               </Link>
               <p className="2xl:px-20">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                suspendisse.
+                Atualização inteligente dos valores de precatórios com base na legislação vigente
               </p>
 
               <span className="mt-15 inline-block">
@@ -169,20 +167,40 @@ const SignUp: React.FC = () => {
 
           <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
             <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
-              <span className="mb-1.5 block font-medium">Start for free</span>
+              <div className="block w-full xl:hidden xl:w-1/2">
+                <div className="px-26 pt-5 text-center">
+                  <Link className="mb-5.5 inline-block" href="/">
+                    <Image
+                      className="hidden dark:block"
+                      src={"/images/logo/logo.svg"}
+                      alt="Logo"
+                      width={176}
+                      height={32}
+                    />
+                    <Image
+                      className="dark:hidden"
+                      src={"/images/logo/logo-dark.svg"}
+                      alt="Logo"
+                      width={176}
+                      height={150}
+                    />
+                  </Link>
+                </div>
+              </div>
+              <span className="xl:mb-1.5 mb-10 mt-[-15px] block font-medium xl:text-2xl xl:text-left text-center text-lg">CVLD Simulator</span>
               <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-                Sign Up to TailAdmin
+                Cadastre-se para começar
               </h2>
 
               <form>
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
-                    Name
+                    Nome
                   </label>
                   <div className="relative">
                     <input
                       type="text"
-                      placeholder="Enter your full name"
+                      placeholder="Digite seu nome"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     />
 
@@ -217,7 +235,7 @@ const SignUp: React.FC = () => {
                   <div className="relative">
                     <input
                       type="email"
-                      placeholder="Enter your email"
+                      placeholder="Digite seu email"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     />
 
@@ -243,12 +261,12 @@ const SignUp: React.FC = () => {
 
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
-                    Password
+                    Senha
                   </label>
                   <div className="relative">
                     <input
                       type="password"
-                      placeholder="Enter your password"
+                      placeholder="Digite a senha"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     />
 
@@ -278,12 +296,12 @@ const SignUp: React.FC = () => {
 
                 <div className="mb-6">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
-                    Re-type Password
+                    Confirmar senha
                   </label>
                   <div className="relative">
                     <input
                       type="password"
-                      placeholder="Re-enter your password"
+                      placeholder="Digite a senha novamente"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     />
 
@@ -314,12 +332,13 @@ const SignUp: React.FC = () => {
                 <div className="mb-5">
                   <input
                     type="submit"
-                    value="Create account"
+                    value="Criar uma conta"
                     className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
                   />
                 </div>
 
-                <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
+                <button disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50 disabled:opacity-50 cursor-not-allowed">
+
                   <span>
                     <svg
                       width="20"
@@ -353,14 +372,14 @@ const SignUp: React.FC = () => {
                       </defs>
                     </svg>
                   </span>
-                  Sign up with Google
+                  Entrar com o Google
                 </button>
 
                 <div className="mt-6 text-center">
                   <p>
-                    Already have an account?{" "}
+                    Já tem uma conta?{" "}
                     <Link href="/auth/signin" className="text-primary">
-                      Sign in
+                      Conecte-se
                     </Link>
                   </p>
                 </div>
@@ -369,7 +388,7 @@ const SignUp: React.FC = () => {
           </div>
         </div>
       </div>
-    </DefaultLayout>
+    </UnloggedLayout>
   );
 };
 
