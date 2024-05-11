@@ -19,9 +19,28 @@ export default function PrivateRoute({ children }: PropsPrivateRouteProps) {
 
     const [isUserAuthenticated, setIsUserAuthenticated] = useState<boolean | null>(null);
 
+    const auth = async () => {
+        const token = localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`)
+
+        if (!token) {
+            setIsUserAuthenticated(false);
+            return;
+        }
+
+        const decoded = jwtDecode(token);
+        const tokenExpiration = decoded.exp!;
+        const now = Date.now() / 1000;
+
+        if (tokenExpiration < now) {
+            await refreshToken();
+        } else {
+            setIsUserAuthenticated(true);
+        }
+    };
+
     useEffect(() => {
         auth();
-    }, []);
+    }, [auth]);
 
     const refreshToken = async () => {
         const refreshToken = localStorage.getItem(`ATIVOS_${REFRESH_TOKEN}`);
@@ -43,24 +62,7 @@ export default function PrivateRoute({ children }: PropsPrivateRouteProps) {
         }
     };
 
-    const auth = async () => {
-        const token = localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`)
 
-        if (!token) {
-            setIsUserAuthenticated(false);
-            return;
-        }
-
-        const decoded = jwtDecode(token);
-        const tokenExpiration = decoded.exp!;
-        const now = Date.now() / 1000;
-
-        if (tokenExpiration < now) {
-            await refreshToken();
-        } else {
-            setIsUserAuthenticated(true);
-        }
-    };
 
     if (isUserAuthenticated === null) {
         return <Loader />;
