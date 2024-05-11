@@ -58,7 +58,8 @@ const SignIn: React.FC = () => {
         <div className="flex flex-wrap items-center">
           <div className="hidden w-full xl:block xl:w-1/2">
             <div className="px-26 py-17.5 text-center">
-              <Link className="mb-5.5 inline-block" href="/">
+              <Link className="mb-12 flex flex-col justify-center
+               items-center" href="/">
                 <Image
                   className="hidden dark:block"
                   src={"/images/logo/logo.svg"}
@@ -73,13 +74,16 @@ const SignIn: React.FC = () => {
                   width={176}
                   height={32}
                 />
+                <p className="2sm:px-20 text-black" aria-selected="false">
+                    Comprometa-se com o extraordinário
+                  </p>
               </Link>
 
               <p className="2xl:px-20">
                   Atualização inteligente dos valores de precatórios com base na legislação vigente
               </p>
 
-              <span className="mt-15 inline-block">
+              <span className="mt-4 inline-block">
                 <svg
                   width="350"
                   height="350"
@@ -208,7 +212,7 @@ const SignIn: React.FC = () => {
             <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
             <div className="block w-full xl:hidden xl:w-1/2">
                 <div className="px-26 pt-5 text-center">
-                  <Link className="mb-5.5 inline-block" href="/">
+                  <Link className="mb-5.5 flex flex-col justify-center items-center" href="/">
                     <Image
                       className="hidden dark:block"
                       src={"/images/logo/logo.svg"}
@@ -223,6 +227,9 @@ const SignIn: React.FC = () => {
                       width={176}
                       height={150}
                     />
+                  <p className="2sm:px-20" aria-selected="false">
+                    Comprometa-se com o extraordinário
+                  </p>
                   </Link>
                 </div>
               </div>
@@ -382,7 +389,7 @@ const SignIn: React.FC = () => {
                 <div className="mt-6 text-center">
                   <p>
                     Ainda não possui uma conta?{" "}
-                    <Link href="/auth/signup" className="text-primary">
+                    <Link aria-disabled href="/auth/signup" className="text-primary">
                       Cadastre-se
                     </Link>
                   </p>
