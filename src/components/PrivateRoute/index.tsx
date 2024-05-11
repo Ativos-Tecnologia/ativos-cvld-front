@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { APP_ROUTES } from "@/constants/app-routes";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
@@ -19,7 +19,9 @@ export default function PrivateRoute({ children }: PropsPrivateRouteProps) {
 
     const [isUserAuthenticated, setIsUserAuthenticated] = useState<boolean | null>(null);
 
-    const auth = async () => {
+    // 22:11  Warning: The 'auth' function makes the dependencies of useEffect Hook (at line 43) change on every render. Move it inside the useEffect callback. Alternatively, wrap the definition of 'auth' in its own useCallback() Hook.  react-hooks/exhaustive-deps
+
+    const auth = useCallback(async () => {
         const token = localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`)
 
         if (!token) {
@@ -36,7 +38,7 @@ export default function PrivateRoute({ children }: PropsPrivateRouteProps) {
         } else {
             setIsUserAuthenticated(true);
         }
-    };
+    }, []);
 
     useEffect(() => {
         auth();
