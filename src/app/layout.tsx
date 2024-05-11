@@ -23,11 +23,10 @@ export default function RootLayout({
 
   // const pathname = usePathname();
 
-  // if (typeof window !== "undefined") {
-  //   useEffect(() => {
-  //     setTimeout(() => setLoading(false), 1000);
-  //   }, []);
-  // }
+    useEffect(() => {
+      setTimeout(() => setLoading(false), 1000);
+    }, []);
+
 
 
 
