@@ -3,13 +3,12 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Metadata } from "next";
 import { useForm, SubmitHandler } from "react-hook-form";
 import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
 import api from "@/utils/api";
 import { APP_ROUTES } from "@/constants/app-routes";
-import { setStorageItem } from "@/utils/localStorage";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
+import UseMySwal from "@/hooks/useMySwal";
 
 // export const metadata: Metadata = {
 //   title: "CVLD Simulator - Login",
@@ -31,21 +30,66 @@ const SignIn: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const MySwal = UseMySwal();
 
   const onSubmit: SubmitHandler<SignInInputs> = async (data) => {
     setLoading(true);
+
+    const checkIsUserFirstLogin = async (): Promise<boolean> => {
+      try {
+        const response = await api.get("/api/check-first-login/");
+
+        if (response.data[0].is_first_login === true) {
+          return true;
+        }
+
+        return false;
+
+      } catch (error) {
+        console.error(error);
+        return false;
+      }
+    }
+
 
     try {
       const res = await api.post("/api/token/", data);
       if (res.status === 200) {
         localStorage.setItem(`ATIVOS_${ACCESS_TOKEN}`, res.data.access);
         localStorage.setItem(`ATIVOS_${REFRESH_TOKEN}`, res.data.refresh);
-        router.push(APP_ROUTES.private.dashboard.name);
+
+
+        if (await checkIsUserFirstLogin()) {
+          router.push(APP_ROUTES.private.profile.name);
+          MySwal.fire({
+            position: "bottom-end",
+            icon: "info",
+            title: "Seja bem-vindo ao CVLD Simulator",
+            text: "Para uma melhor experiência em nossa plataforma, por favor, complete seu cadastro",
+            showConfirmButton: true,
+          });
+        } else {
+          router.push(APP_ROUTES.private.dashboard.name);
+          MySwal.fire({
+            position: "bottom-end",
+            icon: "success",
+            title: "Bem-vindo de volta!",
+            showConfirmButton: false,
+            timer: 2000,
+            toast: true,
+            timerProgressBar: true,
+          });
+        }
+
       } else {
         router.push(APP_ROUTES.public.login.name);
       }
     } catch (error) {
-      alert("Usuário ou senha inválidos");
+      MySwal.fire({
+        icon: "error",
+        title: "Erro ao efetuar login",
+        text: "Verifique suas credenciais e tente novamente",
+      });
 
     } finally {
     setLoading(false);
@@ -302,8 +346,8 @@ const SignIn: React.FC = () => {
                             message: "Mínimo de 6 caracteres",
                           },
                           pattern: {
-                            value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
-                            message: "Senha inválida",
+                            value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/,
+                            message: "Mínimo de 6 caracteres, 1 letra, 1 número e 1 caractere especial",
                           },
                         })
                       }

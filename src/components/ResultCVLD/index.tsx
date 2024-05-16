@@ -99,6 +99,8 @@ export interface CVLDResultProps {
     link_cvld: string;
     nome_credor: string;
     cpf_cnpj_credor: string;
+    valor_atualizado_juros: number;
+    valor_atualizado_principal: number;
 }
 export interface ApiResponse {
     result: CVLDResultProps[];
@@ -145,10 +147,6 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
   }
 
 
-
-
-
-
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-4">
       <div className="mb-4 justify-between gap-4 sm:flex">
@@ -165,15 +163,15 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
           {
             item.recalc_flag === "after_12_2021" ? (
               <li className="text-sm text-gray-500 dark:text-gray-400">
-            Regra de Recálculo: Após 12/2021
+            <span className="font-bold">Regra de Recálculo:</span> Após 12/2021
           </li>
             ) : item.recalc_flag === "before_12_2021" ? (
               <li className="text-sm text-gray-500 dark:text-gray-400">
-            Regra de Recálculo: Antes 12/2021
+            <span className="font-bold">Regra de Recálculo:</span> Antes 12/2021
           </li>
             ) : (
               <li className="text-sm text-gray-500 dark:text-gray-400">
-            Regra de Recálculo: Tributário
+            <span className="font-bold">Regra de Recálculo:</span> Tributário
           </li>
             )
           }
@@ -182,129 +180,134 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
               null
             ) : (
               <li className="text-sm text-gray-500 dark:text-gray-400">
-            NPU: {item.npu}
+            <span className="font-bold">NPU:</span> {item.npu}
           </li>
             )
           }
           {
             item.nome_credor &&  (
               <li className="text-sm text-gray-500 dark:text-gray-400">
-            Nome do credor: {item.nome_credor}
+            <span className="font-bold">Nome do credor:</span> {item.nome_credor}
           </li>
             )
           }
           {
             item.cpf_cnpj_credor && (
               <li className="text-sm text-gray-500 dark:text-gray-400">
-            CPF/CNPJ do credor: {item.cpf_cnpj_credor}
+            <span className="font-bold">CPF/CNPJ do credor:</span> {item.cpf_cnpj_credor}
           </li>
             )
           }
           <li className="text-sm text-gray-500 dark:text-gray-400">
-            Valor Principal: {numberFormat(item.valor_principal)}
+          <span className="font-bold">Valor Principal:</span> {numberFormat(item.valor_principal)}
           </li>
           <li className="text-sm text-gray-500 dark:text-gray-400">
-            Valor Juros: {numberFormat(item.valor_juros)}
+          <span className="font-bold">Valor Juros:</span> {numberFormat(item.valor_juros)}
           </li>
           <li className="text-sm text-gray-500 dark:text-gray-400">
-            Valor Inscrito: {numberFormat(item.valor_inscrito)}
+          <span className="font-bold">Valor Inscrito:</span> {numberFormat(item.valor_inscrito)}
           </li>
           {
-            item.valor_pss ? (
+            item.valor_pss !== 0 && item.valor_pss && (
               <li className="text-sm text-gray-500 dark:text-gray-400">
-            Valor PSS: {numberFormat(item.valor_pss)}
-          </li>
-            ) : item.valor_pss === 0 ? (
-              <li className="text-sm text-gray-500 dark:text-gray-400">
-            Valor PSS: 0
-          </li>
-            ) : (
-              <li className="text-sm text-gray-500 dark:text-gray-400">
-            Valor PSS: Não Se Aplica
+            <span className="font-bold">Valor PSS:</span> {numberFormat(item.valor_pss)}
           </li>
             )
-
           }
           <li className="text-sm text-gray-500 dark:text-gray-400">
-            Data Base: {dateFormater(item.data_base)}
+          <span className="font-bold">Data Base:</span> {dateFormater(item.data_base)}
           </li>
           <li className="text-sm text-gray-500 dark:text-gray-400">
-            Data Requisição: {dateFormater(item.data_requisicao)}
-          </li>
-          <li className="text-sm text-gray-500 dark:text-gray-400">
-            Fator Correção Selic: {factorFormater(item.fator_correcao_selic)}
+          <span className="font-bold">Data Requisição:</span> {dateFormater(item.data_requisicao)}
           </li>
           {
             item.fator_correcao_ipca_e && (
               <li className="text-sm text-gray-500 dark:text-gray-400">
-            Fator Correção IPCA-E: {factorFormater(item.fator_correcao_ipca_e)}
+            <span className="font-bold">Fator Correção IPCA-E:</span> {factorFormater(item.fator_correcao_ipca_e)}
           </li>
             )
           }
           {
+            item.valor_atualizado_principal && (
+              <li className="text-sm text-gray-500 dark:text-gray-400">
+            <span className="font-bold">Principal Atualizado até 12/2021</span>: {numberFormat(item.valor_atualizado_principal)}
+          </li>
+            )
+          }
+          {
+            item.valor_atualizado_juros && (
+              <li className="text-sm text-gray-500 dark:text-gray-400">
+            <span className="font-bold">Juros Atualizado até 12/2021:</span> {numberFormat(item.valor_atualizado_juros)}
+          </li>
+            )
+          }
+          <li className="text-sm text-gray-500 dark:text-gray-400">
+          <span className="font-bold">Fator Correção SELIC:</span> {factorFormater(item.fator_correcao_selic)}
+          </li>
+          {
             item.principal_atualizado_requisicao && (
               <li className="text-sm text-gray-500 dark:text-gray-400">
-            Principal Atualizado Requisição: {numberFormat(item.principal_atualizado_requisicao)}
+            <span className="font-bold">Principal Atualizado Requisição:</span> {numberFormat(item.principal_atualizado_requisicao)}
           </li>
             )
           }
           {
             item.juros_atualizados_requisicao && (
               <li className="text-sm text-gray-500 dark:text-gray-400">
-            Juros Atualizados Requisição: {numberFormat(item.juros_atualizados_requisicao)}
+            <span className="font-bold">Juros Atualizados Requisição:</span> {numberFormat(item.juros_atualizados_requisicao)}
           </li>
             )
           }
           {
             item.fator_periodo_graca_ipca_e && (
               <li className="text-sm text-gray-500 dark:text-gray-400">
-            Fator Período Graça IPCA-E: {factorFormater(item.fator_periodo_graca_ipca_e)}
+            <span className="font-bold">Fator Período Graça IPCA-E:</span> {factorFormater(item.fator_periodo_graca_ipca_e)}
           </li>
             )
           }
           {
             item.valor_principal_ipca_e && (
               <li className="text-sm text-gray-500 dark:text-gray-400">
-            Valor Principal IPCA-E: {numberFormat(item.valor_principal_ipca_e)}
+            <span className="font-bold">Valor Principal IPCA-E:</span> {numberFormat(item.valor_principal_ipca_e)}
           </li>
             )
           }
           {
             item.valor_juros_ipca_e && (
               <li className="text-sm text-gray-500 dark:text-gray-400">
-            Valor Juros IPCA-E: {numberFormat(item.valor_juros_ipca_e)}
+            <span className="font-bold">Valor Juros IPCA-E:</span> {numberFormat(item.valor_juros_ipca_e)}
+          </li>
+            )
+          }
+          {
+            item.pss_atualizado !== 0 && (
+              <li className="text-sm text-gray-500 dark:text-gray-400">
+            <span className="font-bold">PSS Atualizado:</span> {numberFormat(item.pss_atualizado)}
           </li>
             )
           }
           <li className="text-sm text-gray-500 dark:text-gray-400">
-            Valor Bruto Atualizado Final: {numberFormat(item.valor_bruto_atualizado_final)}
+          <span className="font-bold">Valor Bruto Atualizado Final:</span> {numberFormat(item.valor_bruto_atualizado_final)}
           </li>
-          {
-            item.pss_atualizado && (
-              <li className="text-sm text-gray-500 dark:text-gray-400">
-            PSS Atualizado: {numberFormat(item.pss_atualizado)}
-          </li>
-            )
-          }
-          {
+          {/* {
             item.numero_de_meses && (
               <li className="text-sm text-gray-500 dark:text-gray-400">
-            Número de Meses: {item.numero_de_meses}
+            <span className="font-bold">Número de Meses:</span> {item.numero_de_meses}
           </li>
             )
-          }
-          <li className="text-sm text-gray-500 dark:text-gray-400">
-            Imposto de Renda: {numberFormat(item.imposto_de_renda)}
+          } */}
+          {/* <li className="text-sm text-gray-500 dark:text-gray-400">
+          <span className="font-bold">Imposto de Renda:</span> {numberFormat(item.imposto_de_renda)}
           </li>
           <li className="text-sm text-gray-500 dark:text-gray-400">
-            Incidência IR: {item.incidencia_rra_ir ? "Sim" : "Não"}
+          <span className="font-bold">Incidência IR:</span> {item.incidencia_rra_ir ? "Sim" : "Não"}
           </li>
           <li className="text-sm text-gray-500 dark:text-gray-400">
-            RRA: {item.rra ? numberFormat(item.rra) : item.link_memoria_de_calculo_rra ? "Isento" : "Não Incidente"}
+          <span className="font-bold">RRA:</span> {item.rra ? numberFormat(item.rra) : item.link_memoria_de_calculo_rra ? "Isento" : "Não Incidente"}
           </li>
           <li className="text-sm text-gray-500 dark:text-gray-400">
-            Valor Líquido Disponível: {numberFormat(item.valor_liquido_disponivel)}
-          </li>
+          <span className="font-bold">Valor Líquido Disponível:</span> {numberFormat(item.valor_liquido_disponivel)}
+          </li> */}
           <hr className="border border-stroke dark:border-strokedark my-4" />
           {
             item.link_memoria_de_calculo_rra && (
@@ -350,7 +353,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
             />
             <span
               className="text-gray-500 dark:text-gray-400 text-center">
-                Faça uma requisição para visualizar os resultados
+                Faça uma requisição para visualizar as informações aqui
               </span>
             </div>
           )

@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import useLogout from "@/hooks/useLogout";
+import { UserInfoAPIContext } from "@/context/UserInfoContext";
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { data, loading, error } = useContext(UserInfoAPIContext);
 
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
@@ -46,22 +48,35 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Thomas Anree
+            {
+              loading ? <div className="h-3 w-20 bg-gray-300 animate-pulse"></div> : `${data[0].first_name} ${data[0].last_name}`
+            }
           </span>
-          <span className="block text-xs">UX Designer</span>
+          <span className="block text-xs">
+            {
+              loading ? <div>
+                <div className="h-3 w-20 bg-gray-300 animate-pulse"></div>
+                <div className="h-3 w-20 bg-gray-300 animate-pulse"></div>
+              </div>
+                : data[0].title
+            }
+          </span>
         </span>
 
         <span className="h-12 w-12 rounded-full">
-          <Image
-            width={112}
-            height={112}
-            src={"/images/user/user-01.png"}
-            style={{
-              width: "auto",
-              height: "auto",
-            }}
-            alt="User"
-          />
+          {
+            loading ? (
+              <div className="h-12 w-12 rounded-full bg-gray-300 animate-pulse"></div>
+            ) : (
+              <Image
+                className="rounded-full"
+                src={data[0].profile_picture}
+                alt="Profile Picture"
+                width={48}
+                height={48}
+              />
+            )
+          }
         </span>
 
         <svg
@@ -113,7 +128,7 @@ const DropdownUser = () => {
                   fill=""
                 />
               </svg>
-              My Profile
+              Perfil
             </Link>
           </li>
           <li>

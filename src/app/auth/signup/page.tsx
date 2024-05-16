@@ -1,18 +1,66 @@
+"use client";
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
+import { useRouter } from "next/navigation";
+import { useForm, SubmitHandler } from "react-hook-form";
+import api from "@/utils/api";
+import { APP_ROUTES } from "@/constants/app-routes";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
+import UseMySwal from "@/hooks/useMySwal";
+
+
 
 import { Metadata } from "next";
 import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
 
-export const metadata: Metadata = {
-  title: "CVLD Simulator - Cadastro",
-  description: "Página de cadastro do CVLD Simulator",
-  // other metadata
+type SignUpInputs = {
+  username: string;
+  email: string;
+  password: string;
 };
 
+
 const SignUp: React.FC = () => {
+  const router = useRouter();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpInputs>();
+
+  const MySwal = UseMySwal();
+
+  const onSubmit: SubmitHandler<SignUpInputs> = async (data) => {
+    try {
+      const response = await api.post("api/user/register/", data);
+      if (response.status === 201) {
+        localStorage.setItem(`ATIVOS_${ACCESS_TOKEN}`, response.data.accessToken);
+        localStorage.setItem(`ATIVOS_${REFRESH_TOKEN}`, response.data.refreshToken);
+        MySwal.fire({
+          title: "Sucesso!",
+          text: "Cadastro realizado com sucesso! Você será redirecionado para a página de login em instantes.",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 3000,
+        });
+        setTimeout(() => {
+          router.push(APP_ROUTES.public.login.name);
+        }, 3000);
+
+    }
+
+    } catch (error) {
+      MySwal.fire({
+        title: "Ok, Houston...Temos um problema!",
+        text: "Email ou usuário já cadastrado. Por favor, tente novamente com outras credenciais.",
+        icon: "error",
+        showConfirmButton: true,
+
+      });
+      console.error(error);
+    }
+  };
   return (
     <UnloggedLayout>
 
@@ -192,16 +240,22 @@ const SignUp: React.FC = () => {
                 Cadastre-se para começar
               </h2>
 
-              <form>
+              <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
-                    Nome
+                    Nome de usuário
                   </label>
                   <div className="relative">
                     <input
                       type="text"
-                      placeholder="Digite seu nome"
+                      placeholder="Digite seu nome de usuário"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      id="username"
+                      {
+                        ...register("username", {
+                          required: "Campo obrigatório",
+                        })
+                      }
                     />
 
                     <span className="absolute right-4 top-4">
@@ -237,6 +291,12 @@ const SignUp: React.FC = () => {
                       type="email"
                       placeholder="Digite seu email"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      id="email"
+                      {
+                        ...register("email", {
+                          required: "Campo obrigatório",
+                        })
+                      }
                     />
 
                     <span className="absolute right-4 top-4">
@@ -268,6 +328,12 @@ const SignUp: React.FC = () => {
                       type="password"
                       placeholder="Digite a senha"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      id="password"
+                      {
+                        ...register("password", {
+                          required: "Campo obrigatório",
+                        })
+                      }
                     />
 
                     <span className="absolute right-4 top-4">

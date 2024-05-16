@@ -2,6 +2,7 @@
 import React, { useState, ReactNode } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
+import { UserInfoProvider } from "@/context/UserInfoContext";
 
 export default function DefaultLayout({
   children,

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ChartThree from "../Charts/ChartThree";
 import ChartTwo from "../Charts/ChartTwo";
 import ChatCard from "../Chat/ChatCard";
@@ -8,9 +8,14 @@ import CardDataStats from "../CardDataStats";
 import MapOne from "../Maps/MapOne";
 import CVLDForm from "../FormCvld";
 import CVLDResult, { ApiResponse, CVLDResultProps } from "../ResultCVLD";
+import api from "@/utils/api";
+import { useRouter } from "next/navigation";
+import { APP_ROUTES } from "@/constants/app-routes";
 
 const ECommerce: React.FC = () => {
   const [data, setData] = useState<ApiResponse>({ result: [], setData: () => {} });
+
+
   return (
     <>
       {/* <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">

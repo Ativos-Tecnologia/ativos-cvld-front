@@ -18,8 +18,31 @@ export default function PrivateRoute({ children }: PropsPrivateRouteProps) {
     const router = useRouter();
 
     const [isUserAuthenticated, setIsUserAuthenticated] = useState<boolean | null>(null);
+    const [isUserFirstLogin, setIsUserFirstLogin] = useState<boolean | null>(null);
 
-    // 22:11  Warning: The 'auth' function makes the dependencies of useEffect Hook (at line 43) change on every render. Move it inside the useEffect callback. Alternatively, wrap the definition of 'auth' in its own useCallback() Hook.  react-hooks/exhaustive-deps
+    const checkIsUserFirstLogin = async (): Promise<boolean> => {
+        try {
+          const response = await api.get("/api/check-first-login/");
+
+          if (response.data[0].is_first_login === true) {
+            return true;
+          }
+
+          return false;
+
+        } catch (error) {
+          console.error(error);
+          return false;
+        }
+      }
+
+    useEffect(() => {
+        checkIsUserFirstLogin().then((res) => {
+            setIsUserFirstLogin(res);
+        });
+    }, []);
+
+
 
     const auth = useCallback(async () => {
         const token = localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`)
@@ -79,6 +102,7 @@ export default function PrivateRoute({ children }: PropsPrivateRouteProps) {
     return (
         <>
             {!isUserAuthenticated && router.push(APP_ROUTES.public.login.name)}
+            {isUserAuthenticated && isUserFirstLogin && router.push(APP_ROUTES.private.profile.name)}
             {isUserAuthenticated && children}
         </>
     )

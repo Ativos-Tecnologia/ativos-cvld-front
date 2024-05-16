@@ -8,6 +8,7 @@ import Loader from "@/components/common/Loader";
 import { usePathname } from "next/navigation";
 import { checkIsPublicRoute } from "@/functions/check-is-public-route";
 import PrivateRoute from "@/components/PrivateRoute";
+import { UserInfoProvider } from "@/context/UserInfoContext";
 
 export default function RootLayout({
   children,
@@ -37,9 +38,11 @@ export default function RootLayout({
 
           {
             !isPublicRoute ? (
+              <UserInfoProvider>
               <PrivateRoute>
                 {children}
               </PrivateRoute>
+              </UserInfoProvider>
             ) : (
               <>
                 {loading ? (
