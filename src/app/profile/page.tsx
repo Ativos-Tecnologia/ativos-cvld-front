@@ -153,7 +153,7 @@ const Profile = () => {
                   src={imageUrl}
                   width={160}
                   height={160}
-                  className="rounded-full max-w-[152px] max-h-[152px] object-cover"
+                  className="rounded-full sm:w-44 sm:h-44 max-w-38 max-h-39 object-cover object-center"
                   alt="profile"
                 />
                 <label
