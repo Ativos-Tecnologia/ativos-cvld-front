@@ -69,7 +69,7 @@ const DropdownUser = () => {
               <div className="h-12 w-12 rounded-full bg-gray-300 animate-pulse"></div>
             ) : (
               <Image
-                className="rounded-full"
+                className="rounded-full max-w-[48px] max-h-[48px] object-cover"
                 src={data[0].profile_picture}
                 alt="Profile Picture"
                 width={48}
