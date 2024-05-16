@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: ['127.0.0.1', 'ativos-cvld-prod-32c6589080c0.herokuapp.com'],
+        domains: ['127.0.0.1', 'ativos-cvld-prod-32c6589080c0.herokuapp.com', 'ativoscvld.vercel.app'],
         remotePatterns: [
             {
                 protocol: 'https',
@@ -12,6 +12,12 @@ const nextConfig = {
             {
                 protocol: 'http',
                 hostname: '127.0.0.1:3000',
+                port: '',
+                pathname: '/**'
+            },
+            {
+                protocol: 'https',
+                hostname: 'ativoscvld.vercel.app',
                 port: '',
                 pathname: '/**'
             }
