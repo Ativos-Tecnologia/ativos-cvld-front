@@ -98,11 +98,9 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
 
 
   const onSubmit = async (data: any) => {
-    data.valor_principal = backendNumberFormat(data.valor_principal);
-    console.log(data.valor_principal);
-
-    data.valor_juros = backendNumberFormat(data.valor_juros);
-    data.valor_pss = backendNumberFormat(data.valor_pss);
+    data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
+    data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
+    data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
     // data.valor_representante = backendNumberFormat(data.valor_representante);
     // data.valor_cessionario = backendNumberFormat(data.valor_cessionario);
 
@@ -208,21 +206,8 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                   }}
                 />
               )}
-
-
             />
-            {/* <input type="text"
-              id="valor_principal"
-              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-              {
-              ...register("valor_principal", {
-                setValueAs: (value) => {
-                  return parseFloat(value);
-                }
-              })
-              }
-              placeholder="15585.47"
-            /> */}
+
           </div>
           <div className="flex flex-col gap-2">
             <label htmlFor="valor_juros" className="text-sm font-medium text-meta-5">
@@ -249,24 +234,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                 />
               )}
             />
-            {/* <input
-              type="text"
-              id="valor_juros"
-              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-              min={0}
-              defaultValue={0}
-              {
-              ...register("valor_juros", {
-                setValueAs: (value) => {
-                  return parseFloat(value);
-                },
-              })
-              }
-              placeholder="10658.90"
-            /> */}
           </div>
-
-
 
           <div className="flex flex-col gap-2 min-h-17.5">
             <div className="flex flex-col justify-between">
@@ -332,8 +300,6 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
               }
             </div>
           </div>
-
-
           <div className="flex gap-2">
             <input type="checkbox"
               id="incidencia_rra_ir"
@@ -404,7 +370,6 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
               </div>
             ) : null
           }
-
           {
             watch("incidencia_pss") && watch("natureza") !== "TRIBUTÁRIA" ? (
               <div className="flex flex-col gap-2">
@@ -431,19 +396,6 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                     />
                   )}
                 />
-                {/* <input
-                  type="text"
-                  id="valor_pss"
-                  className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                  placeholder="0"
-                  {
-                  ...register("valor_pss", {
-                    setValueAs: (value) => {
-                      return parseFloat(value);
-                    },
-                  })
-                  }
-                /> */}
               </div>
             ) : null
           }
@@ -464,7 +416,118 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
               {
                 watch("gerar_cvld") ? (
                   <>
-                    <span className="text-lg font-semibold text-primary mt-8">Dados do Principal</span><div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4">
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4">
+                  <span className="text-lg font-semibold text-primary mt-8">Dados do Colaborador</span>
+                  &nbsp;
+                      <div className="flex flex-col gap-2">
+                        <label htmlFor="nome_funcionario" className="text-sm font-medium text-meta-5">
+                        Nome
+                        </label>
+                        <input
+                          type="text"
+                          id="nome_funcionario"
+                          className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                          {...register("nome_funcionario", {})} />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <label htmlFor="matricula" className="text-sm font-medium text-meta-5">
+                        Matrícula
+                        </label>
+                        <input
+                          type="text"
+                          id="matricula"
+                          className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                          {...register("matricula", {})} />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <label htmlFor="cargo" className="text-sm font-medium text-meta-5">
+                        Cargo
+                        </label>
+                        <input
+                          type="text"
+                          id="cargo"
+                          className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                          {...register("cargo", {})} />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <label htmlFor="und_administrativa" className="text-sm font-medium text-meta-5">
+                        Unidade Administrativa
+                        </label>
+                        <input
+                          type="text"
+                          id="und_administrativa"
+                          className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                          {...register("und_administrativa", {})} />
+                      </div>
+                      <div className="flex flex-col gap-2 sm:col-span-2 mt-4">
+                        <div className="flex gap-2 ">
+                          <input
+                            type="checkbox"
+                            id="possui_subscritor"
+                            className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                            {...register("possui_subscritor")}
+                          />
+                          <label htmlFor="possui_subscritor" className="text-sm font-medium text-meta-5">
+                            Suscritor, se houver
+                          </label>
+                        </div>
+                      </div>
+                      {
+                        watch("possui_subscritor") === true ? (
+                          <>
+                          <span className="text-lg font-semibold text-primary">Dados do Funcionário Subscritor</span>
+                          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
+
+                            <div className="flex flex-col">
+                              <label htmlFor="nome_funcionario_subscritor" className="text-sm font-medium text-meta-5">
+                                Nome
+                              </label>
+                              <input
+                                type="text"
+                                id="nome_funcionario_subscritor"
+                                className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                {...register("nome_funcionario_subscritor", {})} />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                        <label htmlFor="matricula_funcionario_subscritor" className="text-sm font-medium text-meta-5">
+                        Matrícula
+                        </label>
+                        <input
+                          type="text"
+                          id="matricula_funcionario_subscritor"
+                          className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                          {...register("matricula_funcionario_subscritor", {})} />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <label htmlFor="cargo_funcionario_subscritor" className="text-sm font-medium text-meta-5">
+                        Cargo
+                        </label>
+                        <input
+                          type="text"
+                          id="cargo_funcionario_subscritor"
+                          className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                          {...register("cargo_funcionario_subscritor", {})} />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <label htmlFor="und_administrativa_funcionario_subscritor" className="text-sm font-medium text-meta-5">
+                        Unidade Administrativa
+                        </label>
+                        <input
+                          type="text"
+                          id="und_administrativa_funcionario_subscritor"
+                          className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                          {...register("und_administrativa_funcionario_subscritor", {})} />
+                      </div>
+                          </>
+                        ) : null
+                      }
+                      <hr className="border border-stroke dark:border-strokedark my-8 sm:col-span-2" />
+
+
+
+                    <span className="text-lg font-semibold text-primary">Dados do Principal</span>
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
+
                       <div className="flex flex-col gap-2">
                         <label htmlFor="credor" className="text-sm font-medium text-meta-5">
                           Nome/Razão Social do Credor Principal
@@ -479,22 +542,6 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                         <label htmlFor="cpf_cnpj" className="text-sm font-medium text-meta-5">
                           CPF/CNPJ
                         </label>
-                        {/* <Controller
-                          name="cpf_cnpj"
-                          control={control}
-                          defaultValue=""
-                          render={({ field }) => (
-                            <Cleave
-                              {...field}
-                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                              options={getOptions(inputValue)}
-                              onChange={(e) => {
-                                field.onChange(e);
-                                setInputValue(e.target.rawValue);
-                              }}
-                            />
-                          )}
-                        /> */}
                         <input
                           type="text"
                           id="cpf_cnpj"
@@ -541,34 +588,9 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                                 className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                                 {...register("cpf_cnpj_advogado", {})} />
                             </div>
-                            {/* <div className="flex flex-col gap-2">
-                              <label htmlFor="valor_representante" className="text-sm font-medium text-meta-5">
-                                Honorários Contratuais
-                              </label>
-                              <Controller name="valor_representante"
-                                control={control}
-                                defaultValue={0}
-                                render={({ field }) => (
-                                  <Cleave
-                                    {...field}
-                                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                    options={{
-                                      numeral: true,
-                                      numeralThousandsGroupStyle: "thousand",
-                                      numeralDecimalScale: 2,
-                                      numeralDecimalMark: ",",
-                                      delimiter: ".",
-                                      prefix: "R$ ",
-                                      rawValueTrimPrefix: true,
-                                    }}
-                                  />
-                                )}
-                              />
-                            </div> */}
                           </>
                         ) : null
                       }
-
                       <div className="flex flex-col gap-2 sm:col-span-2">
                         <div className="flex gap-2 ">
                           <input
@@ -607,37 +629,10 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                               className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                               {...register("cpf_cnpj_cessionario", {})} />
                           </div>
-                          {/* <div className="flex flex-col">
-                            <label htmlFor="valor_cessionario" className="text-sm font-medium text-meta-5">
-                              Cessão de Crédito
-                            </label>
-                            <Controller
-                              name="valor_cessionario"
-                              control={control}
-                              defaultValue={0}
-                              render={({ field }) => (
-                                <Cleave
-                                  {...field}
-                                  className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                  options={{
-                                    numeral: true,
-                                    numeralThousandsGroupStyle: "thousand",
-                                    numeralDecimalScale: 2,
-                                    numeralDecimalMark: ",",
-                                    delimiter: ".",
-                                    prefix: "R$ ",
-                                    rawValueTrimPrefix: true,
-                                  }}
-                                />
-                              )}
-                            />
-                          </div>
-                          &nbsp; */}
-
                         </>
                       ) : null}
-
-<span className="text-lg font-semibold text-primary">Dados do Credor Solicitante</span>
+                      <hr className="border border-stroke dark:border-strokedark my-8 sm:col-span-2" />
+                      <span className="text-lg font-semibold text-primary">Dados do Credor Solicitante</span>
                           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
                       <div className="flex flex-col gap-2">
                         <label htmlFor="credor_solicitante" className="text-sm font-medium text-meta-5">
@@ -659,6 +654,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                           className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                           {...register("cpf_cnpj_credor_solicitante", {})} />
                       </div>
+                      <hr className="border border-stroke dark:border-strokedark my-8 sm:col-span-2" />
 
                       <span className="text-lg font-semibold text-primary">Dados do Processo</span>
                           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
@@ -667,11 +663,6 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                         <label htmlFor="processo_origem" className="text-sm font-medium text-meta-5">
                           Processo de Origem
                         </label>
-                        {/* <input
-                          type="text"
-                          id="processo_origem"
-                          className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                          {...register("processo_origem", {})} /> */}
                           <Controller
                             name="processo_origem"
                             control={control}
@@ -693,11 +684,6 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                         <label htmlFor="npu" className="text-sm font-medium text-meta-5">
                           Processo de Execução
                         </label>
-                        {/* <input
-                          type="text"
-                          id="npu"
-                          className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                          {...register("npu", {})} /> */}
                           <Controller
                             name="npu"
                             control={control}
@@ -753,23 +739,16 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                           <option value="TRF5">TRF5</option>
                         </select>
                       </div>
-                      {/* <div className="hidden flex-col gap-2">
-                        <label htmlFor="tribunal" className="text-sm font-medium text-meta-5">
-                          Tribunal
+                      <div className="flex flex-col gap-2">
+                        <label htmlFor="n_precatorio" className="text-sm font-medium text-meta-5">
+                          Número do Precatório
                         </label>
-                        <select
-                          id="tribunal"
+                        <input
+                          type="text"
+                          id="n_precatorio"
                           className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                          {...register("tribunal", {})}
-                          defaultValue="TRF1">
-                          <option value="TRF1">TRF1</option>
-                          <option value="TRF2">TRF2</option>
-                          <option value="TRF3">TRF3</option>
-                          <option value="TRF4">TRF4</option>
-                          <option value="TRF5">TRF5</option>
-                        </select>
-                      </div> */}
-                      &nbsp;
+                          {...register("n_precatorio", {})} />
+                      </div>
 
                     </div>
 

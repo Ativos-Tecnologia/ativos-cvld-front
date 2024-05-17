@@ -16,18 +16,27 @@ import { UserInfoAPIContext } from "@/context/UserInfoContext";
 
 const Profile = () => {
 
-  const { data, loading, error, updateProfile } = useContext(UserInfoAPIContext);
-  const teste = data;
+  const { data, loading, error, updateProfile, firstLogin, setFirstLogin } = useContext(UserInfoAPIContext);
+  const auxData = data;
   const [editMode, setEditMode] = useState(false);
   const [editProfilePicture, setEditProfilePicture] = useState(false);
 
-  // const [profile, setProfile] = useState<any>({});
   const [imageUrl, setImageUrl] = useState("/images/user/user-06.png");
+
+useEffect(() => {
+  if (firstLogin) {
+    setEditMode(true);
+    UseMySwal().fire({
+      title: "Bem-vindo ao CVLD Simulator",
+      text: "Por favor, preencha o formulário de perfil para utilizar a plataforma",
+      icon: "info",
+      confirmButtonText: "OK",
+    });
+  }});
 
   useEffect(() => {
     setImageUrl(data[0]?.profile_picture);
   }, [data]);
-
 
   const {
     register,
@@ -63,9 +72,19 @@ const Profile = () => {
 
     try {
 
-      const response = await updateProfile(`${teste[0].id}`, formData);
+      const response = await updateProfile(`${auxData[0].id}`, formData);
 
       if (response.status === 200) {
+        setFirstLogin(false);
+        const firstUserResponse = await api.patch(`api/user/update-first-login/${auxData[0].id}/`);
+        if(firstUserResponse.status !== 200) {
+          UseMySwal().fire({
+            title: "Um erro inesperado ocorreu",
+            icon: "error",
+            timer: 3000,
+            timerProgressBar: true,
+          });
+        }
         UseMySwal().fire({
           title: "Perfil atualizado",
           icon: "success",

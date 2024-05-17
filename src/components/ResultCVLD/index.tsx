@@ -93,7 +93,6 @@ export interface CVLDResultProps {
     imposto_de_renda: number;
     incidencia_rra_ir: boolean;
     rra: number;
-    valor_liquido_disponivel: number;
     link_memoria_de_calculo_rra: string | null;
     link_memoria_de_calculo_simples: string;
     link_cvld: string;
@@ -101,6 +100,7 @@ export interface CVLDResultProps {
     cpf_cnpj_credor: string;
     valor_atualizado_juros: number;
     valor_atualizado_principal: number;
+    valor_liquido_disponivel: number;
 }
 export interface ApiResponse {
     result: CVLDResultProps[];
@@ -289,25 +289,25 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
           <li className="text-sm text-gray-500 dark:text-gray-400">
           <span className="font-bold">Valor Bruto Atualizado Final:</span> {numberFormat(item.valor_bruto_atualizado_final)}
           </li>
-          {/* {
-            item.numero_de_meses && (
+          {
+            item.numero_de_meses !== 0 && (
               <li className="text-sm text-gray-500 dark:text-gray-400">
             <span className="font-bold">Número de Meses:</span> {item.numero_de_meses}
           </li>
             )
-          } */}
-          {/* <li className="text-sm text-gray-500 dark:text-gray-400">
-          <span className="font-bold">Imposto de Renda:</span> {numberFormat(item.imposto_de_renda)}
-          </li>
+          }
           <li className="text-sm text-gray-500 dark:text-gray-400">
           <span className="font-bold">Incidência IR:</span> {item.incidencia_rra_ir ? "Sim" : "Não"}
+          </li>
+          <li className="text-sm text-gray-500 dark:text-gray-400">
+          <span className="font-bold">Imposto de Renda:</span> {numberFormat(item.imposto_de_renda)}
           </li>
           <li className="text-sm text-gray-500 dark:text-gray-400">
           <span className="font-bold">RRA:</span> {item.rra ? numberFormat(item.rra) : item.link_memoria_de_calculo_rra ? "Isento" : "Não Incidente"}
           </li>
           <li className="text-sm text-gray-500 dark:text-gray-400">
           <span className="font-bold">Valor Líquido Disponível:</span> {numberFormat(item.valor_liquido_disponivel)}
-          </li> */}
+          </li>
           <hr className="border border-stroke dark:border-strokedark my-4" />
           {
             item.link_memoria_de_calculo_rra && (

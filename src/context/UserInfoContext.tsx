@@ -19,6 +19,8 @@ export interface UserInfoContextType {
     loading: boolean;
     error: string | null;
     updateProfile: (id: string, data: any) => Promise<any>;
+    firstLogin: boolean | null;
+    setFirstLogin: (value: boolean | null) => void;
 }
 
 
@@ -30,7 +32,6 @@ export interface UpdateUserProfile extends FormData {
     profile_picture: string;
     title: string;
 }
-
 
 export const UserInfoAPIContext = createContext<UserInfoContextType>({
     data: {
@@ -46,10 +47,14 @@ export const UserInfoAPIContext = createContext<UserInfoContextType>({
     loading: true,
     error: null,
     updateProfile: async () => ({}),
+    firstLogin: null,
+    setFirstLogin: () => {}
 })
 
 
 export const UserInfoProvider = ({ children }: { children: React.ReactNode }) => {
+
+    const [firstLogin, setFirstLogin] = useState<boolean | null>(null);
 
     const [data, setData] = useState<UserInfo>({
         0: {
@@ -114,7 +119,7 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
 
 
     return (
-        <UserInfoAPIContext.Provider value={{ data, loading, error, updateProfile }}>
+        <UserInfoAPIContext.Provider value={{ data, loading, error, updateProfile, firstLogin, setFirstLogin }}>
             {children}
         </UserInfoAPIContext.Provider>
     );
