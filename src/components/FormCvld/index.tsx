@@ -89,10 +89,6 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
   }
 
   function backendNumberFormat(value: string) {
-    // if (value === "" || undefined || null || "0") {
-    //   return "R$ 0.00";
-    // }
-
     if (!value?.replace) {
       return "0.00";
     }
@@ -824,7 +820,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
               }
               </div>
             {
-              isUserAdmin() ? (
+              isUserAdmin() && watch("gerar_cvld") ? (
                 <><hr className="border border-stroke dark:border-strokedark my-8 col-span-2" /><div className="flex flex-col gap-2">
                   <span className="text-lg font-semibold text-primary mb-4">Opções de Administrador 🛡️</span>
                   <div className="flex flex-col gap-2 sm:col-span-2">
