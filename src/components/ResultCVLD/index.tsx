@@ -196,9 +196,13 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
           <span className="font-bold">Valor Principal:</span> {numberFormat(item.valor_principal)}
           </li>
           {
-            item.valor_juros !== 0 || String(item.valor_juros) !== "0" && (
+            item.valor_juros ? (
               <li className="text-sm text-gray-500 dark:text-gray-400">
             <span className="font-bold">Valor Juros:</span> {numberFormat(item.valor_juros)}
+          </li>
+            ) : (
+              <li className="text-sm text-gray-500 dark:text-gray-400">
+            <span className="font-bold">Valor Juros:</span> Não Informado
           </li>
             )
             }
@@ -233,7 +237,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
             )
           }
           {
-            item.valor_atualizado_juros && item.valor_atualizado_juros !== 0 && (
+            item.valor_atualizado_juros !== 0 && String(item.valor_atualizado_juros) !== "0.0" && (
               <li className="text-sm text-gray-500 dark:text-gray-400">
             <span className="font-bold">Juros Atualizado até 12/2021:</span> {numberFormat(item.valor_atualizado_juros)}
           </li>
@@ -250,7 +254,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
             )
           }
           {
-            item.juros_atualizados_requisicao && String(item.juros_atualizados_requisicao) !== "0" && (
+            String(item.juros_atualizados_requisicao) !== "0.0" || String(item.juros_atualizados_requisicao) !== "0.0" && (
               <li className="text-sm text-gray-500 dark:text-gray-400">
             <span className="font-bold">Juros Atualizados Requisição:</span> {numberFormat(item.juros_atualizados_requisicao)}
           </li>
@@ -271,7 +275,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
             )
           }
           {
-            item.valor_juros_ipca_e && String(item.valor_juros_ipca_e) !== "0" && (
+            item.valor_juros_ipca_e || String(item.valor_juros_ipca_e) !== "0.0" && (
               <li className="text-sm text-gray-500 dark:text-gray-400">
             <span className="font-bold">Valor Juros IPCA-E:</span> {numberFormat(item.valor_juros_ipca_e)}
           </li>
