@@ -1,8 +1,7 @@
 import { ApexOptions } from "apexcharts";
 import Image from "next/image";
-import { Result } from "postcss";
-import React, { use, useEffect, useState } from "react";
-import ReactApexChart from "react-apexcharts";
+import React, { useEffect, useState } from "react";
+import { DEV_API_URL, PROD_API_URL } from "@/constants/constants";
 
 const options: ApexOptions = {
   colors: ["#3C50E0", "#80CAEE"],
@@ -107,7 +106,6 @@ export interface ApiResponse {
     setData: React.Dispatch<React.SetStateAction<ApiResponse>>;
 }
 
-
 const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
 
   const [filledData, setFilledData] = useState<boolean>(false);
@@ -119,8 +117,6 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
       setAuxData(result);
     }
   }, [result, filledData]);
-
-
 
   const numberFormat = (value: number) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -142,10 +138,9 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
   }
 
   const linkAdapter = (link: string) => {
-    const linkUrl = "https://ativos-cvld-prod-32c6589080c0.herokuapp.com/" + link;
+    const linkUrl = `${PROD_API_URL}${link}`;
     return linkUrl;
   }
-
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-4">
@@ -159,7 +154,6 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
           <div className="flex flex-col items-center mt-2">
           {auxData && auxData.result && auxData.result.map((item: CVLDResultProps) => (
             <ul key={item.npu} className="flex flex-col gap-2">
-
           {
             item.recalc_flag === "after_12_2021" ? (
               <li className="text-sm text-gray-500 dark:text-gray-400">
@@ -201,9 +195,13 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
           <li className="text-sm text-gray-500 dark:text-gray-400">
           <span className="font-bold">Valor Principal:</span> {numberFormat(item.valor_principal)}
           </li>
-          <li className="text-sm text-gray-500 dark:text-gray-400">
-          <span className="font-bold">Valor Juros:</span> {numberFormat(item.valor_juros)}
+          {
+            item.valor_juros !== 0 || String(item.valor_juros) !== "0" && (
+              <li className="text-sm text-gray-500 dark:text-gray-400">
+            <span className="font-bold">Valor Juros:</span> {numberFormat(item.valor_juros)}
           </li>
+            )
+            }
           <li className="text-sm text-gray-500 dark:text-gray-400">
           <span className="font-bold">Valor Inscrito:</span> {numberFormat(item.valor_inscrito)}
           </li>
@@ -235,7 +233,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
             )
           }
           {
-            item.valor_atualizado_juros && (
+            item.valor_atualizado_juros && item.valor_atualizado_juros !== 0 && (
               <li className="text-sm text-gray-500 dark:text-gray-400">
             <span className="font-bold">Juros Atualizado até 12/2021:</span> {numberFormat(item.valor_atualizado_juros)}
           </li>
@@ -252,7 +250,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
             )
           }
           {
-            item.juros_atualizados_requisicao && (
+            item.juros_atualizados_requisicao && String(item.juros_atualizados_requisicao) !== "0" && (
               <li className="text-sm text-gray-500 dark:text-gray-400">
             <span className="font-bold">Juros Atualizados Requisição:</span> {numberFormat(item.juros_atualizados_requisicao)}
           </li>
@@ -273,7 +271,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
             )
           }
           {
-            item.valor_juros_ipca_e && (
+            item.valor_juros_ipca_e && String(item.valor_juros_ipca_e) !== "0" && (
               <li className="text-sm text-gray-500 dark:text-gray-400">
             <span className="font-bold">Valor Juros IPCA-E:</span> {numberFormat(item.valor_juros_ipca_e)}
           </li>
@@ -327,9 +325,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
           </li>
             )
           }
-
           </ul>
-
 ))}
 </div>
 {/* <button className="w-full text-center px-4 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:bg-primary-dark" onClick={
@@ -357,17 +353,8 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
               </span>
             </div>
           )
-
           }
-
-
-
-
-
-
-
         </div>
-
     </div>
   );
 };

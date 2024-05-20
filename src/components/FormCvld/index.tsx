@@ -89,11 +89,15 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
   }
 
   function backendNumberFormat(value: string) {
-    if (value === "" || undefined || null) {
+    // if (value === "" || undefined || null || "0") {
+    //   return "R$ 0.00";
+    // }
+
+    if (!value?.replace) {
       return "0.00";
     }
 
-    return value?.replace("R$ ", "").replaceAll(".", "").replaceAll(",", ".");
+    return value.replace("R$ ", "").replaceAll(".", "").replaceAll(",", ".") || "0.00";
   }
 
 

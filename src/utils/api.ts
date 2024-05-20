@@ -1,9 +1,8 @@
 import axios from 'axios';
-import { ACCESS_TOKEN } from '@/constants/constants';
+import { ACCESS_TOKEN, PROD_API_URL } from '@/constants/constants';
 
 const api = axios.create({
-  // baseURL: "http://127.0.0.1:8000/",
-  baseURL: "https://ativos-cvld-prod-32c6589080c0.herokuapp.com/",
+  baseURL: PROD_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
