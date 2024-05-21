@@ -22,7 +22,10 @@ const GerenciadorDePrecatorios: React.FC = () => {
     api.get("api/dashboard/user/get-all/").then((response) => {
       setUsersCount(response.data.length);
     });
-    api.get("api/extratos/").then((response) => {
+  }, []);
+
+  useEffect(() => {
+    api.get("api/dashboard/recalculation/get-all/").then((response) => {
       setRecalculationsCount(response.data.length);
     });
   }, []);
