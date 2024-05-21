@@ -300,7 +300,54 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
               }
             </div>
           </div>
-          <div className="flex gap-2">
+
+          <div className="flex flex-col gap-2 items-center">
+            <div className="flex gap-2">
+              <input
+                type="checkbox"
+                id="data_limite_de_atualizacao_check"
+                className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                {
+                ...register("data_limite_de_atualizacao_check")
+                }
+              />
+              <label htmlFor="data_limite_de_atualizacao_check" className="text-sm font-medium text-meta-5 mb-1">
+                A data limite para atualização é diferente do exercício do mês atual?
+              </label>
+            </div>
+
+
+          </div>
+          {
+              watch("data_limite_de_atualizacao_check") ? (
+                <div className="flex flex-col justify-between">
+                  <label htmlFor="data_limite_de_atualizacao" className="text-sm font-medium text-meta-5">
+                    Data Limite para Atualização
+                  </label>
+                  <input
+                    type="date"
+                    id="data_limite_de_atualizacao"
+                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                    {
+                    ...register("data_limite_de_atualizacao", {
+                    })
+                    }
+                  />
+                  {
+                    watch("data_limite_de_atualizacao") < watch("data_base") || watch("data_limite_de_atualizacao") < watch("data_requisicao") ? (
+                      <span role="alert" className="absolute right-4 top-4 text-red-500 text-sm">
+                        A data limite para atualização deve ser maior que a data base e a data de requisição
+                      </span>
+                    ) : null
+                  }
+                </div>
+
+              ) : null
+
+            }
+
+
+          <div className="flex gap-2 items-center">
             <input type="checkbox"
               id="incidencia_rra_ir"
               className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
@@ -317,7 +364,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
             watch("natureza") === "TRIBUTÁRIA" || watch("incidencia_rra_ir") === false ? (
               null
             ) : (
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-center">
                 <input type="checkbox"
                   id="ir_incidente_rra"
                   className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"

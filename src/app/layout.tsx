@@ -9,6 +9,7 @@ import { usePathname } from "next/navigation";
 import { checkIsPublicRoute } from "@/functions/check-is-public-route";
 import PrivateRoute from "@/components/PrivateRoute";
 import { UserInfoProvider } from "@/context/UserInfoContext";
+import DefaultLayout from "@/components/Layouts/DefaultLayout";
 
 export default function RootLayout({
   children,
@@ -24,9 +25,9 @@ export default function RootLayout({
 
   // const pathname = usePathname();
 
-    useEffect(() => {
-      setTimeout(() => setLoading(false), 1000);
-    }, []);
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 1000);
+  }, []);
 
 
 
@@ -39,9 +40,12 @@ export default function RootLayout({
           {
             !isPublicRoute ? (
               <UserInfoProvider>
-              <PrivateRoute>
-                {children}
-              </PrivateRoute>
+                <PrivateRoute>
+                  <DefaultLayout>
+
+                    {children}
+                  </DefaultLayout>
+                </PrivateRoute>
               </UserInfoProvider>
             ) : (
               <>
