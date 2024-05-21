@@ -5,7 +5,10 @@ export const APP_ROUTES = {
         },
         profile: {
             name: "/profile"
-        }
+        },
+        gerenciador: {
+            name: "/gerenciador"
+        },
     },
     public : {
         login: {
