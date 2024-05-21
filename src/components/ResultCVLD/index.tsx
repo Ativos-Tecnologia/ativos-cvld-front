@@ -2,7 +2,6 @@ import { ApexOptions } from "apexcharts";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { DEV_API_URL, PROD_API_URL } from "@/constants/constants";
-import Loader from "../common/Loader";
 
 const options: ApexOptions = {
   colors: ["#3C50E0", "#80CAEE"],
@@ -106,13 +105,12 @@ export interface CVLDResultProps {
 export interface ApiResponse {
     result: CVLDResultProps[];
     setData: React.Dispatch<React.SetStateAction<ApiResponse>>;
-    loading: boolean;
 }
 
-const CVLDResult: React.FC<ApiResponse> = (result, {setData, loading}) => {
+const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
 
   const [filledData, setFilledData] = useState<boolean>(false);
-  const [auxData, setAuxData] = useState<ApiResponse>({ result: [], setData: () => {}, loading: false });
+  const [auxData, setAuxData] = useState<ApiResponse>({ result: [], setData: () => {} });
 
   useEffect(() => {
     if (result.result.length > 0) {
@@ -154,11 +152,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData, loading}) => {
           <h4 className="text-xl pb-4 font-semibold text-black dark:text-white">
             Resultado dos Valores Atualizados
           </h4>
-          {
-            loading === true ? (
-              <Loader />
-            ) : (
-              <div className="flex flex-col items-center mt-2">
+          <div className="flex flex-col items-center mt-2">
           {auxData && auxData.result && auxData.result.map((item: CVLDResultProps) => (
             <ul key={item.npu} className="flex flex-col gap-2">
           {
@@ -247,7 +241,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData, loading}) => {
             )
           }
           {
-            item.valor_atualizado_juros !== 0 && String(item.valor_atualizado_juros) !== "0.0" && (
+            item.valor_atualizado_juros !== 0 && String(item.valor_atualizado_juros) !== "0.0" && item.recalc_flag === "before_12_2021" && (
               <li className="text-sm text-gray-500 dark:text-gray-400">
             <span className="font-bold">Juros Atualizado até 12/2021:</span> {numberFormat(item.valor_atualizado_juros)}
           </li>
@@ -342,8 +336,6 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData, loading}) => {
           </ul>
 ))}
 </div>
-            )
-          }
 {/* <button className="w-full text-center px-4 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:bg-primary-dark" onClick={
   () => {
     setData({ result: [] });

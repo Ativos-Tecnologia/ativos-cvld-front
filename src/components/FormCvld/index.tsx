@@ -15,6 +15,7 @@ import api from "@/utils/api";
 import ReactApexChart from "react-apexcharts";
 import Cleave from "cleave.js/react";
 import UseMySwal from "@/hooks/useMySwal";
+import Loader from "../common/Loader";
 
 interface ChartTwoState {
   series: {
@@ -25,7 +26,6 @@ interface ChartTwoState {
 
 type CVLDFormProps = {
   dataCallback: (data: any) => void;
-  loadingCallback: (loading: boolean) => void;
 };
 
 interface CPFCNPJprops {
@@ -37,7 +37,7 @@ interface CPFCNPJprops {
 
 
 
-const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback, loadingCallback }) => {
+const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
   const {
     register,
     control,
@@ -49,6 +49,9 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback, loadingCallback }) =>
   } = useForm();
 
   const [inputValue, setInputValue] = useState<string>("");
+
+  const [loading, setLoading] = useState<boolean>(false);
+
 
   const [state, setState] = useState<ChartTwoState>({
     series: [
@@ -106,24 +109,16 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback, loadingCallback }) =>
       data.data_limite_de_atualizacao = undefined;
     }
 
-    if (!data.incide_pss) {
-      data.valor_pss = undefined;
-    }
-
     if (!data.ir_incidente_rra) {
       data.numero_de_meses = undefined;
     }
 
-    // if (!data.numero_de_meses) {
-    //   data.numero_de_meses = undefined;
-    // }
-
-    // if (!data.valor_pss) {
-    //   data.valor_pss = undefined;
-    // }
+    if (!data.incidencia_pss) {
+      data.valor_pss = undefined;
+    }
     // data.valor_representante = backendNumberFormat(data.valor_representante);
     // data.valor_cessionario = backendNumberFormat(data.valor_cessionario);
-    loadingCallback(true);
+    setLoading(true);
     const response = await api.post("/api/extrato/create/", data)
     if (response.status === 200) {
       dataCallback(response.data);
@@ -170,7 +165,6 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback, loadingCallback }) =>
 
 
     } else if (response.status === 401) {
-      window.location.reload();
       UseMySwal().fire({
         icon: "error",
         title: "Sessão expirada",
@@ -183,15 +177,19 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback, loadingCallback }) =>
         text: "Ocorreu um erro ao tentar processar a requisição",
       });
     }
+    setLoading(false);
   };
-  loadingCallback(false);
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
       <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
         <span className="text-lg font-semibold text-primary">Calculadora de Atualização de Precatórios</span>
       </div>
-      <form className="mt-5 space-y-5" onSubmit={handleSubmit(onSubmit)}>
+      {
+        loading ? (
+          <Loader />
+        ) : (
+          <form className="mt-5 space-y-5" onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <div className="flex flex-col gap-2 w-full sm:col-span-2">
             <label htmlFor="natureza" className="text-sm font-medium text-meta-5">
@@ -945,6 +943,8 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback, loadingCallback }) =>
           </button>
         </div>
       </form>
+        )
+      }
       <hr className="border border-stroke dark:border-strokedark mb-8" />
 
       <div id="chartOne" className="-ml-5">
