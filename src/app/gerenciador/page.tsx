@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import { APP_ROUTES } from "@/constants/app-routes";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 
-const GerenciadorDePrecatorios: React.FC = () => {
+const Gerenciador: React.FC = () => {
   const [data, setData] = useState<ApiResponse>({ result: [], setData: () => {} });
   const [usersCount, setUsersCount] = useState(0);
   const [recalculationsCount, setRecalculationsCount] = useState(0);
@@ -138,4 +138,4 @@ const GerenciadorDePrecatorios: React.FC = () => {
   );
 };
 
-export default GerenciadorDePrecatorios;
+export default Gerenciador;
