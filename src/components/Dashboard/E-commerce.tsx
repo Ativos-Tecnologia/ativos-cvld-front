@@ -13,7 +13,8 @@ import { useRouter } from "next/navigation";
 import { APP_ROUTES } from "@/constants/app-routes";
 
 const ECommerce: React.FC = () => {
-  const [data, setData] = useState<ApiResponse>({ result: [], setData: () => {} });
+  const [data, setData] = useState<ApiResponse>({ result: [], setData: () => {}, loading: false });
+  const [loading, setLoading] = useState<boolean>(false);
 
 
   return (
@@ -106,8 +107,9 @@ const ECommerce: React.FC = () => {
       </div> */}
 
       <div className="mt-0 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-        <CVLDForm dataCallback={setData} />
-        <CVLDResult result={data.result} setData={setData} />
+        <CVLDForm dataCallback={setData} loadingCallback={setLoading} />
+        <CVLDResult result={data.result} setData={setData} loading={loading} />
+        {/* <ChartTwo /> */}
         {/* <ChartThree /> */}
         {/* <MapOne /> */}
         {/* <div className="col-span-12 xl:col-span-8">

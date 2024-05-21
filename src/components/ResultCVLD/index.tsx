@@ -2,6 +2,7 @@ import { ApexOptions } from "apexcharts";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { DEV_API_URL, PROD_API_URL } from "@/constants/constants";
+import Loader from "../common/Loader";
 
 const options: ApexOptions = {
   colors: ["#3C50E0", "#80CAEE"],
@@ -100,16 +101,18 @@ export interface CVLDResultProps {
     valor_atualizado_juros: number;
     valor_atualizado_principal: number;
     valor_liquido_disponivel: number;
+    data_limite_de_atualizacao: string;
 }
 export interface ApiResponse {
     result: CVLDResultProps[];
     setData: React.Dispatch<React.SetStateAction<ApiResponse>>;
+    loading: boolean;
 }
 
-const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
+const CVLDResult: React.FC<ApiResponse> = (result, {setData, loading}) => {
 
   const [filledData, setFilledData] = useState<boolean>(false);
-  const [auxData, setAuxData] = useState<ApiResponse>({ result: [], setData: () => {} });
+  const [auxData, setAuxData] = useState<ApiResponse>({ result: [], setData: () => {}, loading: false });
 
   useEffect(() => {
     if (result.result.length > 0) {
@@ -151,7 +154,11 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
           <h4 className="text-xl pb-4 font-semibold text-black dark:text-white">
             Resultado dos Valores Atualizados
           </h4>
-          <div className="flex flex-col items-center mt-2">
+          {
+            loading === true ? (
+              <Loader />
+            ) : (
+              <div className="flex flex-col items-center mt-2">
           {auxData && auxData.result && auxData.result.map((item: CVLDResultProps) => (
             <ul key={item.npu} className="flex flex-col gap-2">
           {
@@ -221,6 +228,9 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
           </li>
           <li className="text-sm text-gray-500 dark:text-gray-400">
           <span className="font-bold">Data Requisição:</span> {dateFormater(item.data_requisicao)}
+          </li>
+          <li className="text-sm text-gray-500 dark:text-gray-400">
+          <span className="font-bold">Data Limite de Atualização:</span> {item.data_limite_de_atualizacao}
           </li>
           {
             item.fator_correcao_ipca_e && (
@@ -332,6 +342,8 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
           </ul>
 ))}
 </div>
+            )
+          }
 {/* <button className="w-full text-center px-4 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:bg-primary-dark" onClick={
   () => {
     setData({ result: [] });

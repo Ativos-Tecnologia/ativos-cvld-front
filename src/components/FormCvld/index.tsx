@@ -14,6 +14,7 @@ import { JWTToken } from "@/types/jwtToken";
 import api from "@/utils/api";
 import ReactApexChart from "react-apexcharts";
 import Cleave from "cleave.js/react";
+import UseMySwal from "@/hooks/useMySwal";
 
 interface ChartTwoState {
   series: {
@@ -24,6 +25,7 @@ interface ChartTwoState {
 
 type CVLDFormProps = {
   dataCallback: (data: any) => void;
+  loadingCallback: (loading: boolean) => void;
 };
 
 interface CPFCNPJprops {
@@ -35,7 +37,7 @@ interface CPFCNPJprops {
 
 
 
-const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
+const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback, loadingCallback }) => {
   const {
     register,
     control,
@@ -47,7 +49,6 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
   } = useForm();
 
   const [inputValue, setInputValue] = useState<string>("");
-
 
   const [state, setState] = useState<ChartTwoState>({
     series: [
@@ -101,9 +102,28 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
     data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
     data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
     data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
+    if (!data.data_limite_de_atualizacao_check) {
+      data.data_limite_de_atualizacao = undefined;
+    }
+
+    if (!data.incide_pss) {
+      data.valor_pss = undefined;
+    }
+
+    if (!data.ir_incidente_rra) {
+      data.numero_de_meses = undefined;
+    }
+
+    // if (!data.numero_de_meses) {
+    //   data.numero_de_meses = undefined;
+    // }
+
+    // if (!data.valor_pss) {
+    //   data.valor_pss = undefined;
+    // }
     // data.valor_representante = backendNumberFormat(data.valor_representante);
     // data.valor_cessionario = backendNumberFormat(data.valor_cessionario);
-
+    loadingCallback(true);
     const response = await api.post("/api/extrato/create/", data)
     if (response.status === 200) {
       dataCallback(response.data);
@@ -151,10 +171,20 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
 
     } else if (response.status === 401) {
       window.location.reload();
+      UseMySwal().fire({
+        icon: "error",
+        title: "Sessão expirada",
+        text: "Sua sessão expirou, por favor faça login novamente",
+      });
     } else {
-      alert("Erro ao processar a requisição. Tente novamente mais tarde.");
+      UseMySwal().fire({
+        icon: "error",
+        title: "Erro",
+        text: "Ocorreu um erro ao tentar processar a requisição",
+      });
     }
   };
+  loadingCallback(false);
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
