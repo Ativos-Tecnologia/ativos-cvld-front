@@ -105,6 +105,7 @@ useEffect(() => {
 
 
   return (
+    <DefaultLayout>
       <div className="mx-auto max-w-242.5">
         <Breadcrumb pageName="Perfil" />
 
@@ -457,6 +458,7 @@ useEffect(() => {
           </div>
         </div>
       </div>
+      </DefaultLayout>
   );
 };
 

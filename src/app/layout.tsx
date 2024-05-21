@@ -41,10 +41,8 @@ export default function RootLayout({
             !isPublicRoute ? (
               <UserInfoProvider>
                 <PrivateRoute>
-                  <DefaultLayout>
 
                     {children}
-                  </DefaultLayout>
                 </PrivateRoute>
               </UserInfoProvider>
             ) : (

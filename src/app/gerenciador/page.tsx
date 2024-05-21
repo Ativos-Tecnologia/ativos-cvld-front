@@ -11,6 +11,7 @@ import CVLDResult, { ApiResponse } from "@/components/ResultCVLD";
 import api from "@/utils/api";
 import { useRouter } from "next/navigation";
 import { APP_ROUTES } from "@/constants/app-routes";
+import DefaultLayout from "@/components/Layouts/DefaultLayout";
 
 const GerenciadorDePrecatorios: React.FC = () => {
   const [data, setData] = useState<ApiResponse>({ result: [], setData: () => {} });
@@ -29,6 +30,8 @@ const GerenciadorDePrecatorios: React.FC = () => {
 
   return (
     <>
+                      <DefaultLayout>
+
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
         <CardDataStats title="Recalculos Feitos" total={recalculationsCount as unknown as string} rate="2.59%" levelUp>
           <svg
@@ -126,6 +129,8 @@ const GerenciadorDePrecatorios: React.FC = () => {
         </div>
         <ChatCard /> */}
       </div>
+      </DefaultLayout>
+
     </>
   );
 };
