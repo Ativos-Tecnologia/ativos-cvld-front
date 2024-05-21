@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@react-br-forms/cpf-cnpj-mask": "^1.0.6",
     "apexcharts": "^3.45.2",
     "axios": "^1.6.8",
     "cleave.js": "^1.6.0",
