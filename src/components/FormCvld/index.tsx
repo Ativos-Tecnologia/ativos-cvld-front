@@ -105,6 +105,8 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
     data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
     data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
     data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
+
+
     if (!data.data_limite_de_atualizacao_check) {
       data.data_limite_de_atualizacao = undefined;
     }
@@ -179,6 +181,9 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
     }
     setLoading(false);
   };
+
+  console.log(watch("data_limite_de_atualizacao") < watch("data_requisicao"));
+
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
@@ -329,50 +334,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 items-center">
-            <div className="flex gap-2">
-              <input
-                type="checkbox"
-                id="data_limite_de_atualizacao_check"
-                className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                {
-                ...register("data_limite_de_atualizacao_check")
-                }
-              />
-              <label htmlFor="data_limite_de_atualizacao_check" className="text-sm font-medium text-meta-5 mb-1">
-                A data limite para atualização é diferente do exercício do mês atual?
-              </label>
-            </div>
 
-
-          </div>
-          {
-              watch("data_limite_de_atualizacao_check") ? (
-                <div className="flex flex-col justify-between">
-                  <label htmlFor="data_limite_de_atualizacao" className="text-sm font-medium text-meta-5">
-                    Data Limite para Atualização
-                  </label>
-                  <input
-                    type="date"
-                    id="data_limite_de_atualizacao"
-                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                    {
-                    ...register("data_limite_de_atualizacao", {
-                    })
-                    }
-                  />
-                  {
-                    watch("data_limite_de_atualizacao") < watch("data_base") || watch("data_limite_de_atualizacao") < watch("data_requisicao") ? (
-                      <span role="alert" className="absolute right-4 top-4 text-red-500 text-sm">
-                        A data limite para atualização deve ser maior que a data base e a data de requisição
-                      </span>
-                    ) : null
-                  }
-                </div>
-
-              ) : null
-
-            }
 
 
           <div className="flex gap-2 items-center">
@@ -472,8 +434,59 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                   )}
                 />
               </div>
-            ) : null
+            ) : (
+              <div className="flex items-center">
+                &nbsp;
+              </div>
+            )
           }
+          <div className="flex flex-col gap-2 items-start">
+            <div className="flex gap-2">
+              <input
+                type="checkbox"
+                id="data_limite_de_atualizacao_check"
+                className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                {
+                ...register("data_limite_de_atualizacao_check")
+                }
+              />
+              <label htmlFor="data_limite_de_atualizacao_check" className="text-sm font-medium text-meta-5 mb-1">
+               Atualizar para data passada?
+              </label>
+            </div>
+
+
+          </div>
+          {
+              watch("data_limite_de_atualizacao_check") ? (
+                <div className="flex flex-col justify-between">
+                  <label htmlFor="data_limite_de_atualizacao" className="text-sm font-medium text-meta-5">
+                  Atualizado até:
+                  </label>
+                  <input
+                    type="date"
+                    id="data_limite_de_atualizacao"
+                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                    {
+                    ...register("data_limite_de_atualizacao", {
+                    })
+                    }min={watch("data_requisicao")}
+                    max={new Date().toISOString().split("T")[0]}
+
+
+                  />
+                  {
+                    watch("data_limite_de_atualizacao") < watch("data_requisicao") ? (
+                      <span role="alert" className="absolute right-4 top-4 text-red-500 text-sm">
+                        Data de atualização deve ser maior que a data de requisição
+                      </span>
+                    ) : null
+                  }
+                </div>
+
+              ) : null
+
+            }
 
           <div className="flex flex-col gap-2 sm:col-span-2">
             <div className="flex gap-2 ">

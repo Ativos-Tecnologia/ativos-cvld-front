@@ -224,7 +224,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
           <span className="font-bold">Data Requisição:</span> {dateFormater(item.data_requisicao)}
           </li>
           <li className="text-sm text-gray-500 dark:text-gray-400">
-          <span className="font-bold">Data Limite de Atualização:</span> {item.data_limite_de_atualizacao}
+          <span className="font-bold">Atualizado até:</span> {item.data_limite_de_atualizacao}
           </li>
           {
             item.fator_correcao_ipca_e && (
@@ -241,7 +241,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
             )
           }
           {
-            item.valor_atualizado_juros !== 0 && String(item.valor_atualizado_juros) !== "0.0" && item.recalc_flag === "before_12_2021" && (
+            item.recalc_flag === "before_12_2021" && (
               <li className="text-sm text-gray-500 dark:text-gray-400">
             <span className="font-bold">Juros Atualizado até 12/2021:</span> {numberFormat(item.valor_atualizado_juros)}
           </li>
@@ -272,21 +272,21 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
             )
           }
           {
-            item.valor_principal_ipca_e && (
+            item.recalc_flag === "before_12_2021" && item.valor_principal_ipca_e &&  (
               <li className="text-sm text-gray-500 dark:text-gray-400">
             <span className="font-bold">Valor Principal IPCA-E:</span> {numberFormat(item.valor_principal_ipca_e)}
           </li>
             )
           }
           {
-            item.valor_juros_ipca_e || String(item.valor_juros_ipca_e) !== "0.0" && (
+            item.recalc_flag === "before_12_2021" && (
               <li className="text-sm text-gray-500 dark:text-gray-400">
             <span className="font-bold">Valor Juros IPCA-E:</span> {numberFormat(item.valor_juros_ipca_e)}
           </li>
             )
           }
           {
-            item.pss_atualizado !== 0 && (
+            item.recalc_flag === "before_12_2021" && item.pss_atualizado !== 0 && (
               <li className="text-sm text-gray-500 dark:text-gray-400">
             <span className="font-bold">PSS Atualizado:</span> {numberFormat(item.pss_atualizado)}
           </li>
@@ -296,7 +296,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
           <span className="font-bold">Valor Bruto Atualizado Final:</span> {numberFormat(item.valor_bruto_atualizado_final)}
           </li>
           {
-            item.numero_de_meses !== 0 && (
+            item.recalc_flag !== "tributario" && item.numero_de_meses !== 0 &&  (
               <li className="text-sm text-gray-500 dark:text-gray-400">
             <span className="font-bold">Número de Meses:</span> {item.numero_de_meses}
           </li>
@@ -306,7 +306,6 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
           <span className="font-bold">Incidência IR:</span> {item.incidencia_rra_ir ? "Sim" : "Não"}
           </li>
           <li className="text-sm text-gray-500 dark:text-gray-400">
-          <span className="font-bold">Imposto de Renda:</span> {numberFormat(item.imposto_de_renda)}
           </li>
           <li className="text-sm text-gray-500 dark:text-gray-400">
           <span className="font-bold">RRA:</span> {item.rra ? numberFormat(item.rra) : item.link_memoria_de_calculo_rra ? "Isento" : "Não Incidente"}
