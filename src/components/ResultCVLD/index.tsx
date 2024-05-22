@@ -139,7 +139,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
   }
 
   const linkAdapter = (link: string) => {
-    const linkUrl = `${PROD_API_URL}${link}`;
+    const linkUrl = `${DEV_API_URL}${link}`;
     return linkUrl;
   }
 

@@ -118,7 +118,16 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
     if (!data.incidencia_pss) {
       data.valor_pss = undefined;
     }
-    // data.valor_representante = backendNumberFormat(data.valor_representante);
+
+    if (!data.upload_notion) {
+      data.upload_notion = false;
+    }
+
+    if (!data.npu) {
+      data.npu = "0000000-00.0000.0.00.0000";
+    }
+
+         // data.valor_representante = backendNumberFormat(data.valor_representante);
     // data.valor_cessionario = backendNumberFormat(data.valor_cessionario);
     setLoading(true);
     const response = await api.post("/api/extrato/create/", data)
@@ -166,7 +175,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
 
 
 
-    } else if (response.status === 401) {
+    } else if (response.status === 400) {
       UseMySwal().fire({
         icon: "error",
         title: "Sessão expirada",
@@ -182,7 +191,8 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
     setLoading(false);
   };
 
-  console.log(watch("data_limite_de_atualizacao") < watch("data_requisicao"));
+
+
 
 
   return (
@@ -915,6 +925,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                     <div className="flex gap-2">
                       <input type="checkbox"
                         id="upload_notion"
+                        defaultChecked={false}
                         className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                         {...register("upload_notion")} />
                       <label htmlFor="upload_notion" className="text-sm font-medium text-meta-5">
