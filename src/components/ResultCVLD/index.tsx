@@ -306,6 +306,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
           <span className="font-bold">Incidência IR:</span> {item.incidencia_rra_ir ? "Sim" : "Não"}
           </li>
           <li className="text-sm text-gray-500 dark:text-gray-400">
+          <span className="font-bold">Imposto de Renda:</span> {numberFormat(item.imposto_de_renda)}
           </li>
           <li className="text-sm text-gray-500 dark:text-gray-400">
           <span className="font-bold">RRA:</span> {item.rra ? numberFormat(item.rra) : item.link_memoria_de_calculo_rra ? "Isento" : "Não Incidente"}
