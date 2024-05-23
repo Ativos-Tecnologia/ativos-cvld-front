@@ -139,7 +139,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
   }
 
   const linkAdapter = (link: string) => {
-    const linkUrl = `${DEV_API_URL}${link}`;
+    const linkUrl = `${PROD_API_URL}${link}`;
     return linkUrl;
   }
 
@@ -224,7 +224,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, {setData}) => {
           <span className="font-bold">Data Requisição:</span> {dateFormater(item.data_requisicao)}
           </li>
           <li className="text-sm text-gray-500 dark:text-gray-400">
-          <span className="font-bold">Atualizado até:</span> {item.data_limite_de_atualizacao}
+          <span className="font-bold">Atualizado até:</span> {dateFormater(item.data_limite_de_atualizacao)}
           </li>
           {
             item.fator_correcao_ipca_e && (
