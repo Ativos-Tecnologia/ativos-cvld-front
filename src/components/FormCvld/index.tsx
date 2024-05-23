@@ -16,6 +16,7 @@ import ReactApexChart from "react-apexcharts";
 import Cleave from "cleave.js/react";
 import UseMySwal from "@/hooks/useMySwal";
 import Loader from "../common/Loader";
+import { CVLDResultProps } from "../ResultCVLD";
 
 interface ChartTwoState {
   series: {
@@ -106,10 +107,22 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
     data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
     data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
 
+    // let formattedData = data.data_base.split("-")
+    // formattedData[2] = "01";
+    // data.data_base = formattedData.join("-");
+
+    // let formattedDataRequisicao = data.data_requisicao.split("-")
+    // formattedDataRequisicao[2] = "01";
+    // data.data_requisicao = formattedDataRequisicao.join("-");
 
     if (!data.data_limite_de_atualizacao_check) {
       data.data_limite_de_atualizacao = undefined;
     }
+    // else {
+    //   let formattedDataLimite = data.data_limite_de_atualizacao.split("-")
+    //   formattedDataLimite[2] = "01";
+    //   data.data_limite_de_atualizacao = formattedDataLimite.join("-");
+    // }
 
     if (!data.ir_incidente_rra) {
       data.numero_de_meses = undefined;
@@ -943,7 +956,8 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                           })}
                           defaultValue={"notion_prec_prospect_db_id"}>
                           <option value="notion_prec_prospect_db_id">Comercial</option>
-                          <option value="notion_prec_prospect_partners_db_id">Parceiro</option>
+                          <option value="notion_prec_prospect_partners_db_id">Parceiro - Distribuição</option>
+                          <option value="notion_prec_prospect_partners_brito_e_pimentel_db_id">Parceiro - Brito E Pimentel</option>
                           <option value="notion_prec_prospect_dev_db_id">Dev</option>
                         </select>
                       </div>
