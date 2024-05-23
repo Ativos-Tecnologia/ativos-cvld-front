@@ -958,6 +958,8 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                           <option value="notion_prec_prospect_db_id">Comercial</option>
                           <option value="notion_prec_prospect_partners_db_id">Parceiro - Distribuição</option>
                           <option value="notion_prec_prospect_partners_brito_e_pimentel_db_id">Parceiro - Brito E Pimentel</option>
+                          <option value="notion_prec_prospect_partners_marcela_vasconcelos_db_id">Parceiro - Marcela Vasconcelos</option>
+                          <option value="notion_prec_prospect_partners_antecippe_db_id">Parceiro - Antecippe</option>
                           <option value="notion_prec_prospect_dev_db_id">Dev</option>
                         </select>
                       </div>
