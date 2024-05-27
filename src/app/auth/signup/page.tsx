@@ -397,11 +397,6 @@ const SignUp: React.FC = () => {
                 </div>
 
                 <div className="mb-5">
-                  {/* <input
-                    type="submit"
-                    value="Criar uma conta"
-                    className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
-                  /> */}
                   <SubmitButton value={'Criar uma conta'}/>
                 </div>
 
