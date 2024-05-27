@@ -9,7 +9,7 @@ import api from "@/utils/api";
 import { APP_ROUTES } from "@/constants/app-routes";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
 import UseMySwal from "@/hooks/useMySwal";
-import { SubmitButton } from "@/components/Button";
+import { Button } from "@/components/Button";
 
 // export const metadata: Metadata = {
 //   title: "CVLD Simulator - Login",
@@ -93,7 +93,7 @@ const SignIn: React.FC = () => {
       });
 
     } finally {
-    setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -120,12 +120,12 @@ const SignIn: React.FC = () => {
                   height={32}
                 />
                 <p className="2sm:px-20 text-black" aria-selected="false">
-                    Comprometa-se com o extraordinário
-                  </p>
+                  Comprometa-se com o extraordinário
+                </p>
               </Link>
 
               <p className="2xl:px-20">
-                  Atualização inteligente dos valores de precatórios com base na legislação vigente
+                Atualização inteligente dos valores de precatórios com base na legislação vigente
               </p>
 
               <span className="mt-4 inline-block">
@@ -255,7 +255,7 @@ const SignIn: React.FC = () => {
 
           <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
             <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
-            <div className="block w-full xl:hidden xl:w-1/2">
+              <div className="block w-full xl:hidden xl:w-1/2">
                 <div className="px-26 pt-5 text-center">
                   <Link className="mb-5.5 flex flex-col justify-center items-center" href="/">
                     <Image
@@ -272,9 +272,9 @@ const SignIn: React.FC = () => {
                       width={176}
                       height={150}
                     />
-                  <p className="2sm:px-20" aria-selected="false">
-                    Comprometa-se com o extraordinário
-                  </p>
+                    <p className="2sm:px-20" aria-selected="false">
+                      Comprometa-se com o extraordinário
+                    </p>
                   </Link>
                 </div>
               </div>
@@ -296,9 +296,9 @@ const SignIn: React.FC = () => {
                       placeholder="Digite o usuário"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       {
-                        ...register("username", {
-                          required: "Campo obrigatório",
-                        })
+                      ...register("username", {
+                        required: "Campo obrigatório",
+                      })
                       }
                       aria-invalid={errors.username ? "true" : "false"}
                     />
@@ -340,17 +340,17 @@ const SignIn: React.FC = () => {
                       placeholder="Digite a sua senha"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       {
-                        ...register("password", {
-                          required: "Campo obrigatório",
-                          minLength: {
-                            value: 6,
-                            message: "Mínimo de 6 caracteres",
-                          },
-                          pattern: {
-                            value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/,
-                            message: "Mínimo de 6 caracteres, 1 letra, 1 número e 1 caractere especial",
-                          },
-                        })
+                      ...register("password", {
+                        required: "Campo obrigatório",
+                        minLength: {
+                          value: 6,
+                          message: "Mínimo de 6 caracteres",
+                        },
+                        pattern: {
+                          value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/,
+                          message: "Mínimo de 6 caracteres, 1 letra, 1 número e 1 caractere especial",
+                        },
+                      })
                       }
                       aria-invalid={errors.password ? "true" : "false"}
                     />
@@ -387,7 +387,12 @@ const SignIn: React.FC = () => {
                 </div>
 
                 <div className="mb-5">
+
+                  <Button type='submit' className='w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90'>
+                    Acessar
+                  </Button>
                   <SubmitButton value={'Acessar'}/>
+
                 </div>
 
                 <button disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50 disabled:cursor-not-allowed disabled:bg-opacity-50">
