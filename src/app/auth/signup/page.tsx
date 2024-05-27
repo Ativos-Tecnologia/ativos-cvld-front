@@ -13,7 +13,7 @@ import UseMySwal from "@/hooks/useMySwal";
 
 import { Metadata } from "next";
 import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
-import { Button } from "@/components/Button";
+import { SubmitButton } from "@/components/Button";
 
 type SignUpInputs = {
   username: string;
@@ -397,7 +397,7 @@ const SignUp: React.FC = () => {
                 </div>
 
                 <div className="mb-5">
-                  <Button value={'Criar uma conta'}/>
+                  <SubmitButton value={'Criar uma conta'}/>
                 </div>
 
                 <button disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50 disabled:opacity-50 cursor-not-allowed">
