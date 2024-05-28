@@ -25,12 +25,17 @@ export default function DefaultLayout({
           {/* <!-- ===== Header End ===== --> */}
 
           {/* <!-- ===== Main Content Start ===== --> */}
-          <main>
+          <main className="w-full">
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
               {children}
             </div>
           </main>
           {/* <!-- ===== Main Content End ===== --> */}
+          {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
+            <div className="sticky w-full bottom-0 z-0 bg-orange-400 py-3 px-5 text-white text-center">
+              <span>Você está usando uma versão em desenvolvimento!</span>
+            </div>
+          )}
         </div>
         {/* <!-- ===== Content Area End ===== --> */}
       </div>
