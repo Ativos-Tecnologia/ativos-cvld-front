@@ -21,7 +21,7 @@ const Profile = () => {
   const [editMode, setEditMode] = useState(false);
   const [editProfilePicture, setEditProfilePicture] = useState(false);
 
-  const [imageUrl, setImageUrl] = useState("/images/user/user-06.png");
+  const [imageUrl, setImageUrl] = useState("/images/logo/512x512.png");
 
 useEffect(() => {
   if (firstLogin) {
@@ -35,7 +35,7 @@ useEffect(() => {
   }});
 
   useEffect(() => {
-    setImageUrl(data[0]?.profile_picture);
+    setImageUrl(data[0]?.profile_picture || "/images/logo/512x512.png");
   }, [data]);
 
   const {

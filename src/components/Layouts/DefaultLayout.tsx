@@ -31,9 +31,9 @@ export default function DefaultLayout({
             </div>
           </main>
           {/* <!-- ===== Main Content End ===== --> */}
-          {!window.location.href.includes('dev-ativoscvld.vercel.app/') && (
+          {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
             <div className="sticky w-full bottom-0 z-0 bg-orange-400 py-3 px-5 text-white text-center">
-              <span>Você está usando uma versão em desenvolvimento</span>
+              <span>Você está usando uma versão em desenvolvimento!</span>
             </div>
           )}
         </div>
