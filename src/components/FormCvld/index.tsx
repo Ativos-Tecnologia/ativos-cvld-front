@@ -214,7 +214,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
       <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
         <span className="text-lg font-semibold text-primary">Calculadora de Atualização de Precatórios</span>
         <div className="flex flex-col items-center">
-          <Button className="px-6 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:opacity-95">
+          <Button disabled className="px-6 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:opacity-95 disabled:cursor-not-allowed disabled:bg-opacity-50">
             Carregar ofício
             </Button>
           <p className="apexcharts-legend-text">TRF1 ao TRF4 (beta)</p>
