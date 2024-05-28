@@ -12,7 +12,6 @@ import {
 } from 'react-hook-form';
 import UseMySwal from "@/hooks/useMySwal";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
-import { Button } from "@/components/Button";
 
 
 const Profile = () => {
@@ -24,17 +23,16 @@ const Profile = () => {
 
   const [imageUrl, setImageUrl] = useState("/images/user/user-06.png");
 
-  useEffect(() => {
-    if (firstLogin) {
-      setEditMode(true);
-      UseMySwal().fire({
-        title: "Bem-vindo ao CVLD Simulator",
-        text: "Por favor, preencha o formulário de perfil para utilizar a plataforma",
-        icon: "info",
-        confirmButtonText: "OK",
-      });
-    }
-  });
+useEffect(() => {
+  if (firstLogin) {
+    setEditMode(true);
+    UseMySwal().fire({
+      title: "Bem-vindo ao CVLD Simulator",
+      text: "Por favor, preencha o formulário de perfil para utilizar a plataforma",
+      icon: "info",
+      confirmButtonText: "OK",
+    });
+  }});
 
   useEffect(() => {
     setImageUrl(data[0]?.profile_picture);
@@ -79,7 +77,7 @@ const Profile = () => {
       if (response.status === 200) {
         setFirstLogin(false);
         const firstUserResponse = await api.patch(`api/user/update-first-login/${auxData[0].id}/`);
-        if (firstUserResponse.status !== 200) {
+        if(firstUserResponse.status !== 200) {
           UseMySwal().fire({
             title: "Um erro inesperado ocorreu",
             icon: "error",
@@ -159,16 +157,11 @@ const Profile = () => {
                     />
                   </svg>
                 </span>
-                {/* <button onClick={
+                <button onClick={
                   () => setEditMode(!editMode)
                 }>{
                     editMode ? "Cancelar" : "Editar Perfil"
-                }</button> */}
-                <Button onClick={
-                  () => setEditMode(!editMode)
-                } >
-                  {editMode ? "Cancelar" : "Editar Perfil"}
-                </Button>
+                }</button>
               </label>
             </div>
           </div>
@@ -209,25 +202,25 @@ const Profile = () => {
                     />
                   </svg>
                   <form onSubmit={handleSubmit(onSubmit)}>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      id="profile"
-                      className="sr-only"
-                      {
-                      ...register("profile_picture")
-                      }
-                      onChange={(e) => {
-                        handleImageChange(e);
-                      }}
-                    />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    id="profile"
+                    className="sr-only"
                     {
-                      editProfilePicture && (
-                        <button type="submit">
-                          <span>✔️</span>
-                        </button>
-                      )
+                      ...register("profile_picture")
                     }
+                    onChange={(e) => {
+                      handleImageChange(e);
+                    }}
+                  />
+                  {
+                    editProfilePicture && (
+                      <button type="submit">
+                    <span>✔️</span>
+                  </button>
+                    )
+                  }
                   </form>
                 </label>
               </div>
@@ -246,7 +239,7 @@ const Profile = () => {
                         placeholder="First Name"
                         className="border border-stroke p-2 rounded-md dark:border-strokedark"
                         {
-                        ...register("first_name")
+                          ...register("first_name")
                         }
                         defaultValue={data[0]?.first_name}
                       />
@@ -255,7 +248,7 @@ const Profile = () => {
                         placeholder="Last Name"
                         className="border border-stroke p-2 rounded-md dark:border-strokedark"
                         {
-                        ...register("last_name")
+                          ...register("last_name")
                         }
                         defaultValue={data[0]?.last_name}
                       />
@@ -264,7 +257,7 @@ const Profile = () => {
                         placeholder="Title"
                         className="border border-stroke p-2 rounded-md dark:border-strokedark"
                         {
-                        ...register("title")
+                          ...register("title")
                         }
                         defaultValue={data[0]?.title}
                       />
@@ -465,7 +458,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
-    </DefaultLayout>
+      </DefaultLayout>
   );
 };
 
