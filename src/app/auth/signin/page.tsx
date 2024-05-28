@@ -101,6 +101,7 @@ const SignIn: React.FC = () => {
     <UnloggedLayout>
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex flex-wrap items-center">
+          {/* Bloco Desktop */}
           <div className="hidden w-full xl:block xl:w-1/2">
             <div className="px-26 py-17.5 text-center">
               <Link className="mb-12 flex flex-col justify-center
@@ -119,7 +120,7 @@ const SignIn: React.FC = () => {
                   width={176}
                   height={32}
                 />
-                <p className="2sm:px-20 text-black" aria-selected="false">
+                <p className="2sm:px-20 mt-8 dark:text-white" aria-selected="false">
                   Comprometa-se com o extraordinário
                 </p>
               </Link>
@@ -252,12 +253,15 @@ const SignIn: React.FC = () => {
               </span>
             </div>
           </div>
+          {/* Fim do bloco desktop */}
+
+          {/* Bloco Mobile */}
 
           <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
             <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
               <div className="block w-full xl:hidden xl:w-1/2">
-                <div className="px-26 pt-5 text-center">
-                  <Link className="mb-5.5 flex flex-col justify-center items-center" href="/">
+                <div className="sm:px-26 pt-5 text-center">
+                  <Link className="sm:mb-5.5 flex flex-col justify-center items-center" href="/">
                     <Image
                       className="hidden dark:block"
                       src={"/images/logo/logo.svg"}
@@ -272,18 +276,21 @@ const SignIn: React.FC = () => {
                       width={176}
                       height={150}
                     />
-                    <p className="2sm:px-20" aria-selected="false">
+                    <p className="2sm:px-20 my-4" aria-selected="false">
                       Comprometa-se com o extraordinário
                     </p>
                   </Link>
                 </div>
               </div>
-              <span className="xl:mb-1.5 mb-10 mt-[-15px] block font-medium xl:text-2xl xl:text-left text-center text-lg">
+              <span className="xl:mb-1.5 mb-10 block font-medium xl:text-2xl xl:text-left text-center text-lg">
                 CVLD Simulator
               </span>
               <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
                 Faça login para começar
               </h2>
+
+              {/* Fim do Bloco Mobile */}
+
 
               <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-4">
