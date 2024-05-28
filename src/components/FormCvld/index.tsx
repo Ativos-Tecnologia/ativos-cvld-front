@@ -217,7 +217,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
           <Button disabled className="px-6 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:opacity-95 disabled:cursor-not-allowed disabled:bg-opacity-50">
             Carregar ofício
             </Button>
-          <p className="apexcharts-legend-text">TRF1 ao TRF4 (beta)</p>
+          <span className="apexcharts-legend-text" style={{"color": "rgb(55, 61, 63)", "fontSize": "12px", "fontWeight": "400", "fontFamily": "Satoshi"}}>TRF1 ao TRF4 (beta)</span>
         </div>
       </div>
       {
