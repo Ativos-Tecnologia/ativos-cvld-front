@@ -17,6 +17,7 @@ import Cleave from "cleave.js/react";
 import UseMySwal from "@/hooks/useMySwal";
 import Loader from "../common/Loader";
 import { CVLDResultProps } from "../ResultCVLD";
+import { Button } from "../Button";
 
 interface ChartTwoState {
   series: {
@@ -973,14 +974,14 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
 
         </div>
         <div className="flex justify-center my-8">
-          <button
+          <Button
             type="submit"
             className="px-12 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:bg-primary-dark my-8"
           >
             Calcular {
               watch("gerar_cvld") ? "e Emitir CVLD" : ""
             }
-          </button>
+          </Button>
         </div>
       </form>
         )
