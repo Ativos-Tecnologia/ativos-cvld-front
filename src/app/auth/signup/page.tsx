@@ -20,6 +20,7 @@ type SignUpInputs = {
   username: string;
   email: string;
   password: string;
+  confirm_password: string;
 };
 
 
@@ -34,33 +35,44 @@ const SignUp: React.FC = () => {
   const MySwal = UseMySwal();
 
   const onSubmit: SubmitHandler<SignUpInputs> = async (data) => {
-    try {
-      const response = await api.post("api/user/register/", data);
-      if (response.status === 201) {
-        localStorage.setItem(`ATIVOS_${ACCESS_TOKEN}`, response.data.accessToken);
-        localStorage.setItem(`ATIVOS_${REFRESH_TOKEN}`, response.data.refreshToken);
+    if (data.password === data.confirm_password) {
+      try {
+        const response = await api.post("api/user/register/", data).then((res) => {
+          if (res.status === 201) {
+            localStorage.setItem(`ATIVOS_${ACCESS_TOKEN}`, res.data.accessToken);
+            localStorage.setItem(`ATIVOS_${REFRESH_TOKEN}`, res.data.refreshToken);
+            MySwal.fire({
+              title: "Sucesso!",
+              text: "Cadastro realizado com sucesso! Você será redirecionado para a página de login em instantes.",
+              icon: "success",
+              showConfirmButton: false,
+              timer: 3000,
+            });
+            setTimeout(() => {
+              router.push(APP_ROUTES.public.login.name);
+            }, 3000);
+          }
+        })
+
+
+      } catch (error) {
         MySwal.fire({
-          title: "Sucesso!",
-          text: "Cadastro realizado com sucesso! Você será redirecionado para a página de login em instantes.",
-          icon: "success",
-          showConfirmButton: false,
-          timer: 3000,
+          title: "Ok, Houston...Temos um problema!",
+          text: "Email ou usuário já cadastrado. Por favor, tente novamente com outras credenciais.",
+          icon: "error",
+          showConfirmButton: true,
+
         });
-        setTimeout(() => {
-          router.push(APP_ROUTES.public.login.name);
-        }, 3000);
-
+        console.error(error);
       }
-
-    } catch (error) {
+    } else {
       MySwal.fire({
         title: "Ok, Houston...Temos um problema!",
-        text: "Email ou usuário já cadastrado. Por favor, tente novamente com outras credenciais.",
+        text: "Suas senhas não coincidem. Por favor, tente novamente.",
         icon: "error",
         showConfirmButton: true,
 
       });
-      console.error(error);
     }
   };
   return (
@@ -243,7 +255,7 @@ const SignUp: React.FC = () => {
               </h2>
 
               <form onSubmit={handleSubmit(onSubmit)}>
-                <div className="mb-4">
+                <div className="mb-11">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Nome de usuário
                   </label>
@@ -286,7 +298,7 @@ const SignUp: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mb-4">
+                <div className="mb-11">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Email
                   </label>
@@ -325,7 +337,7 @@ const SignUp: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mb-4">
+                <div className="mb-13">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Senha
                   </label>
@@ -338,6 +350,14 @@ const SignUp: React.FC = () => {
                       {
                       ...register("password", {
                         required: "Campo obrigatório",
+                        minLength: {
+                          value: 6,
+                          message: "Mínimo de 6 caracteres",
+                        },
+                        pattern: {
+                          value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/,
+                          message: "Mínimo de 6 caracteres, 1 letra, 1 número e 1 caractere especial",
+                        }
                       })
                       }
                     />
@@ -368,7 +388,7 @@ const SignUp: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mb-6">
+                <div className="mb-12">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Confirmar senha
                   </label>
@@ -377,6 +397,11 @@ const SignUp: React.FC = () => {
                       type="password"
                       placeholder="Digite a senha novamente"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      {
+                      ...register("confirm_password", {
+                        required: "Confirme a sua senha",
+                      })
+                      }
                     />
 
                     <span className="absolute right-4 top-4">

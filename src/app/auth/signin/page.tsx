@@ -294,7 +294,7 @@ const SignIn: React.FC = () => {
 
 
               <form onSubmit={handleSubmit(onSubmit)}>
-                <div className="mb-4">
+                <div className="mb-11">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Usuário
                   </label>
@@ -302,7 +302,7 @@ const SignIn: React.FC = () => {
                     <input
                       type="text"
                       placeholder="Digite o usuário"
-                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      className={`w-full rounded-lg border border-stroke ${errors.username ? 'border-red' : ''}  bg-transparent py-4 pl-6 pr-10 text-black outline-none ${!errors.username ? 'focus:border-primary' : ''} focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                       {
                       ...register("username", {
                         required: "Campo obrigatório",
@@ -339,7 +339,7 @@ const SignIn: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mb-6">
+                <div className="mb-11">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Senha
                   </label>
