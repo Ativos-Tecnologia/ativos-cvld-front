@@ -1,12 +1,7 @@
-import { ApexOptions } from "apexcharts";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import {
   Controller,
   useForm,
-  SubmitHandler,
-  useWatch,
-  FieldValues,
-  FieldValue,
 } from "react-hook-form";
 import { jwtDecode } from "jwt-decode";
 import { ACCESS_TOKEN } from "@/constants/constants";
@@ -16,8 +11,8 @@ import ReactApexChart from "react-apexcharts";
 import Cleave from "cleave.js/react";
 import UseMySwal from "@/hooks/useMySwal";
 import Loader from "../common/Loader";
-import { CVLDResultProps } from "../ResultCVLD";
 import { Button } from "../Button";
+import { Tooltip } from "flowbite-react";
 
 interface ChartTwoState {
   series: {
@@ -214,9 +209,11 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
       <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
         <span className="text-lg font-semibold text-primary">Calculadora de Atualização de Precatórios</span>
         <div className="flex flex-col items-center">
+          <Tooltip content="Em breve" style="light" arrow={false} placement="top">
           <Button disabled className="px-6 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:opacity-95 disabled:cursor-not-allowed disabled:bg-opacity-50">
             Carregar ofício
             </Button>
+            </Tooltip>
           <span className="apexcharts-legend-text" style={{"color": "rgb(55, 61, 63)", "fontSize": "12px", "fontWeight": "400", "fontFamily": "Satoshi"}}>TRF1 ao TRF4 (beta)</span>
         </div>
       </div>

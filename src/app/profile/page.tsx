@@ -172,7 +172,7 @@ useEffect(() => {
                   src={imageUrl}
                   width={160}
                   height={160}
-                  className="rounded-full sm:w-44 sm:h-44 max-w-38 max-h-39 object-cover object-center"
+                  className="rounded-full sm:max-w-42 sm:max-h-42 max-h-38 max-h-44 object-cover object-center aspect-square"
                   alt="profile"
                 />
                 <label
