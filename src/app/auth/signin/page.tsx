@@ -1,9 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, FieldError } from "react-hook-form";
 import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
 import api from "@/utils/api";
 import { APP_ROUTES } from "@/constants/app-routes";
@@ -11,6 +11,8 @@ import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
 import UseMySwal from "@/hooks/useMySwal";
 import { Button } from "@/components/Button";
 import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
+import { Alert } from "flowbite-react";
+import { HiEye } from "react-icons/hi";
 
 // export const metadata: Metadata = {
 //   title: "CVLD Simulator - Login",
@@ -125,7 +127,6 @@ const SignIn: React.FC = () => {
                   Comprometa-se com o extraordinário
                 </p>
               </Link>
-
               <p className="2xl:px-20">
                 Atualização inteligente dos valores de precatórios com base na legislação vigente
               </p>
@@ -403,7 +404,7 @@ const SignIn: React.FC = () => {
                   </Button>
                 </div>
 
-                <button disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50 disabled:cursor-not-allowed disabled:bg-opacity-50">
+                <button data-tooltip-target="tooltip-default" disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50 disabled:cursor-not-allowed disabled:bg-opacity-50">
                   <span>
                     <svg
                       width="20"
