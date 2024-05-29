@@ -302,7 +302,7 @@ const SignIn: React.FC = () => {
                     <input
                       type="text"
                       placeholder="Digite o usuário"
-                      className={`w-full rounded-lg border border-stroke ${errors.username ? 'border-red' : ''}  bg-transparent py-4 pl-6 pr-10 text-black outline-none ${!errors.username ? 'focus:border-primary' : ''} focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                      className={`w-full rounded-lg border border-stroke ${errors.username && 'border-rose-400'}  bg-transparent py-4 pl-6 pr-10 text-black outline-none ${!errors.username && 'focus:border-primary'} focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                       {
                       ...register("username", {
                         required: "Campo obrigatório",
@@ -347,7 +347,7 @@ const SignIn: React.FC = () => {
                     <input
                       type="password"
                       placeholder="Digite a sua senha"
-                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      className={`w-full rounded-lg border border-stroke ${errors.password && 'border-rose-400'}  bg-transparent py-4 pl-6 pr-10 text-black outline-none ${!errors.password && 'focus:border-primary'} focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                       {
                       ...register("password", {
                         required: "Campo obrigatório",
