@@ -10,6 +10,7 @@ import { APP_ROUTES } from "@/constants/app-routes";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
 import UseMySwal from "@/hooks/useMySwal";
 import { Button } from "@/components/Button";
+import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
 import { Alert } from "flowbite-react";
 import { HiEye } from "react-icons/hi";
 
@@ -18,7 +19,7 @@ import { HiEye } from "react-icons/hi";
 //   description: "Faça login para começar a utilizar o CVLD Simulator",
 // };
 
-type SignInInputs = {
+export type SignInInputs = {
   username: string;
   password: string;
 };
@@ -294,7 +295,7 @@ const SignIn: React.FC = () => {
 
 
               <form onSubmit={handleSubmit(onSubmit)}>
-                <div className="mb-4">
+                <div className="mb-11">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Usuário
                   </label>
@@ -302,7 +303,7 @@ const SignIn: React.FC = () => {
                     <input
                       type="text"
                       placeholder="Digite o usuário"
-                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      className={`${errors.username && '!border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                       {
                       ...register("username", {
                         required: "Campo obrigatório",
@@ -310,13 +311,14 @@ const SignIn: React.FC = () => {
                       }
                       aria-invalid={errors.username ? "true" : "false"}
                     />
-                    {
+                    <ErrorMessage errors={errors} field='username' />
+                    {/* {
                       errors.username && (
-                        <span role="alert" className="absolute right-4 top-4 text-red-500 text-sm">
+                        <span role="alert" className="absolute right-4 top-4 text-red pr-8 text-sm">
                           {errors.username.message}
                         </span>
                       )
-                    }
+                    } */}
 
                     <span className="absolute right-4 top-4">
                       <svg
@@ -338,7 +340,7 @@ const SignIn: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mb-6">
+                <div className="mb-11">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Senha
                   </label>
@@ -346,7 +348,7 @@ const SignIn: React.FC = () => {
                     <input
                       type="password"
                       placeholder="Digite a sua senha"
-                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      className={`${errors.password && '!border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                       {
                       ...register("password", {
                         required: "Campo obrigatório",
@@ -362,13 +364,14 @@ const SignIn: React.FC = () => {
                       }
                       aria-invalid={errors.password ? "true" : "false"}
                     />
-                    {
+                    <ErrorMessage errors={errors} field='password' />
+                    {/* {
                       errors.password && (
                         <span role="alert" className="absolute right-4 top-4 text-red-500 text-sm">
                           {errors.password.message}
                         </span>
                       )
-                    }
+                    } */}
 
                     <span className="absolute right-4 top-4">
                       <svg

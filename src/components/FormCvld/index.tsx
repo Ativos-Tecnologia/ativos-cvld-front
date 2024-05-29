@@ -12,6 +12,7 @@ import Cleave from "cleave.js/react";
 import UseMySwal from "@/hooks/useMySwal";
 import Loader from "../common/Loader";
 import { Button } from "../Button";
+import { ErrorMessage } from "../ErrorMessage/ErrorMessage";
 import { Tooltip } from "flowbite-react";
 
 interface ChartTwoState {
@@ -297,14 +298,14 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
               </div>
 
               <div className="flex flex-col gap-2 min-h-17.5">
-                <div className="flex flex-col justify-between">
+                <div className="relative flex flex-col justify-between mb-6">
                   <label htmlFor="data_base" className="text-sm font-medium text-meta-5 mb-1">
                     Data Base
                   </label>
                   <input
                     type="date"
                     id="data_base"
-                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                    className={`${errors.data_base && '!border-rose-400 !ring-0'} w-full rounded-sm border bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark`}
                     {
                     ...register("data_base", {
                       required: "Campo obrigatório",
@@ -312,13 +313,14 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                     }
                     aria-invalid={errors.data_base ? "true" : "false"}
                   />
-                  {
+                  <ErrorMessage errors={errors} field="data_base"/>
+                  {/* {
                     errors.data_base && (
                       <span role="alert" className="absolute right-4 top-4 text-red-500 text-sm">
                         {errors.data_base.message?.toString()}
                       </span>
                     )
-                  }
+                  } */}
                 </div>
                 {
                   watch("data_base") < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? (
@@ -341,23 +343,23 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
               </div>
 
               <div className="flex flex-col gap-2">
-                <div className="flex flex-col justify-between">
+                <div className="relative flex flex-col justify-between mb-6">
                   <label htmlFor="data_requisicao" className="text-sm font-medium text-meta-5 mb-1">
                     Data de Requisição
                   </label>
                   <input
                     type="date"
                     id="data_requisicao"
-                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                    className={`${errors.data_requisicao && '!border-rose-400 !ring-0'} w-full rounded-sm border bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark`}
                     {
                     ...register("data_requisicao", {
                       required: "Campo obrigatório",
                     })
                     }
                   />
-                  {
-                    null
-                  }
+                  
+                  <ErrorMessage errors={errors} field="data_requisicao"/>
+
                 </div>
               </div>
 
