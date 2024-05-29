@@ -70,10 +70,11 @@ const DropdownUser = () => {
             ) : (
               <Image
                 className="rounded-full max-w-[48px] max-h-[48px] object-cover"
-                src={data[0].profile_picture}
+                src={data[0].profile_picture !== "" ? data[0].profile_picture : "/images/logo/512x512.png"}
                 alt="Profile Picture"
                 width={48}
                 height={48}
+
               />
             )
           }
