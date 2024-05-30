@@ -3,12 +3,12 @@ import React, { useState, ReactNode } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 
-export default function UnloggedLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-//   const [sidebarOpen, setSidebarOpen] = useState(false);
+export default function UnloggedLayout({ children, }: { children: React.ReactNode }) {
+  if (localStorage.getItem('ATIVOS_access') === undefined) {
+    localStorage.removeItem('ATIVOS_access');
+    localStorage.removeItem('ATIVOS_refresh');
+  }
+  //   const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
     <>
       {/* <!-- ===== Page Wrapper Start ===== --> */}
