@@ -13,8 +13,11 @@ import { Button } from "@/components/Button";
 import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
 import { Alert } from "flowbite-react";
 import { HiEye } from "react-icons/hi";
+
 import { BiLockAlt, BiUser } from "react-icons/bi";
 import { FcGoogle } from "react-icons/fc";
+
+import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
 
 // export const metadata: Metadata = {
 //   title: "CVLD Simulator - Login",

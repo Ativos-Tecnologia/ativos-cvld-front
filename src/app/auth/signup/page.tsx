@@ -55,8 +55,6 @@ const SignUp: React.FC = () => {
             }, 3000);
           }
         })
-
-
       } catch (error) {
         MySwal.fire({
           title: "Ok, Houston...Temos um problema!",
