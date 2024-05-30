@@ -12,8 +12,6 @@ interface SubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement
     setStateFunction: React.Dispatch<React.SetStateAction<any>>,
 }
 
-
-
 export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
     setStateFunction,
     children,
@@ -38,9 +36,6 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
       }, [oficio]);
 
       const swal = UseMySwal();
-
-
-
 
     return (
         <div className="flex w-full items-center justify-center">
