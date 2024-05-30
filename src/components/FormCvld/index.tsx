@@ -66,13 +66,25 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
   useEffect(() => {
     if (oficioForm) {
 
-      console.log(numberFormat(oficioForm.result[0].valor_principal).replace("R$", ""));
-
-
       setValue("valor_principal", numberFormat(oficioForm.result[0].valor_principal).replace("R$", ""));
       setValue("valor_juros", numberFormat(oficioForm.result[0].valor_juros).replace("R$", ""));
       setValue("data_base", oficioForm.result[0].data_base.split("/").reverse().join("-"));
+
+      if (oficioForm.result[0].data_base < "2021-12-01") {
+        setValue("incidencia_juros_moratorios", true);
+      }
+
       setValue("data_requisicao", oficioForm.result[0].data_requisicao.split("/").reverse().join("-"));
+      setValue("ir_incidente_rra", oficioForm.result[0].incidencia_rra_ir);
+
+      if (oficioForm.result[0].incidencia_juros_moratorios) {
+        setValue("incidencia_juros_moratorios", true);
+      } else {
+        setValue("incidencia_juros_moratorios", false);
+      }
+      setValue("numero_de_meses", oficioForm.result[0].numero_de_meses);
+      setValue("incidencia_pss", oficioForm.result[0].valor_pss > 0 ? true : false);
+      setValue("valor_pss", numberFormat(oficioForm.result[0].valor_pss).replace("R$", ""));
     }
 
   }, [oficioForm]);
@@ -331,15 +343,22 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                     aria-invalid={errors.data_base ? "true" : "false"}
                   />
                   <ErrorMessage errors={errors} field="data_base"/>
-                  {/* {
-                    errors.data_base && (
-                      <span role="alert" className="absolute right-4 top-4 text-red-500 text-sm">
-                        {errors.data_base.message?.toString()}
-                      </span>
-                    )
-                  } */}
                 </div>
-                {
+                <div className={`flex items-center gap-2 ${watch("data_base") < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "": "hidden"}`}>
+                      <input
+                        type="checkbox"
+                        id="incidencia_juros_moratorios"
+                        className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                        defaultChecked
+                        {
+                        ...register("incidencia_juros_moratorios")
+                        }
+                      />
+                      <label htmlFor="incidencia_juros_moratorios" className="text-sm font-medium text-meta-5">
+                        Juros de Mora fixados em sentença
+                      </label>
+                    </div>
+                {/* {
                   watch("data_base") < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? (
                     <div className="flex items-center gap-2">
                       <input
@@ -356,7 +375,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                       </label>
                     </div>
                   ) : null
-                }
+                } */}
               </div>
 
               <div className="flex flex-col gap-2">
@@ -374,7 +393,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                     })
                     }
                   />
-                  
+
                   <ErrorMessage errors={errors} field="data_requisicao"/>
 
                 </div>
