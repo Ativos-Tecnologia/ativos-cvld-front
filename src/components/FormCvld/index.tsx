@@ -1,12 +1,7 @@
-import { ApexOptions } from "apexcharts";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Controller,
   useForm,
-  SubmitHandler,
-  useWatch,
-  FieldValues,
-  FieldValue,
 } from "react-hook-form";
 import { jwtDecode } from "jwt-decode";
 import { ACCESS_TOKEN } from "@/constants/constants";
@@ -16,8 +11,10 @@ import ReactApexChart from "react-apexcharts";
 import Cleave from "cleave.js/react";
 import UseMySwal from "@/hooks/useMySwal";
 import Loader from "../common/Loader";
-import { CVLDResultProps } from "../ResultCVLD";
 import { Button } from "../Button";
+import { Tooltip } from "flowbite-react";
+import { UpdatePrecatorioButton } from "../Button/UpdatePrecatorioButton";
+import numberFormat from "@/functions/formaters/numberFormat";
 
 interface ChartTwoState {
   series: {
@@ -36,21 +33,17 @@ interface CPFCNPJprops {
   numericOnly: boolean;
 }
 
-
-
-
 const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
   const {
     register,
     control,
     handleSubmit,
     watch,
-    getFieldState,
-    getValues,
+    setValue,
     formState: { errors },
   } = useForm();
 
-  const [inputValue, setInputValue] = useState<string>("");
+  const [oficioForm, setOficioForm] = useState<any>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -67,6 +60,19 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
       },
     ],
   });
+
+
+  useEffect(() => {
+    if (oficioForm) {
+      console.log(oficioForm.result[0]);
+
+      setValue("valor_principal", numberFormat(oficioForm.result[0].valor_principal));
+      setValue("valor_juros", numberFormat(oficioForm.result[0].valor_juros));
+      setValue("data_base", oficioForm.result[0].data_base.split("/").reverse().join("-"));
+      setValue("data_requisicao", oficioForm.result[0].data_requisicao.split("/").reverse().join("-"));
+    }
+
+  }, [oficioForm]);
 
 
   const getOptions = (value: any) => {
@@ -212,11 +218,17 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
       <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
-        <span className="text-lg font-semibold text-primary">Calculadora de Atualização de Precatórios</span>
-        <div className="flex flex-col items-center">
+        {/* <span className="text-lg font-semibold text-primary">Calculadora de Atualização de Precatórios</span> */}
+        <h2 className="text-3xl font-extrabold dark:text-white">
+          Calculadora de Atualização de Precatórios
+        </h2>
+        <div className="flex flex-col items-center w-full sm:w-60">
+          {/* <Tooltip content="Em breve" style="light" arrow={false} placement="top">
           <Button disabled className="px-6 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:opacity-95 disabled:cursor-not-allowed disabled:bg-opacity-50">
             Carregar ofício
             </Button>
+            </Tooltip> */}
+            <UpdatePrecatorioButton setStateFunction={setOficioForm}/>
           <span className="apexcharts-legend-text" style={{"color": "rgb(55, 61, 63)", "fontSize": "12px", "fontWeight": "400", "fontFamily": "Satoshi"}}>TRF1 ao TRF4 (beta)</span>
         </div>
       </div>

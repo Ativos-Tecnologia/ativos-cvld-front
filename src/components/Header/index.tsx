@@ -67,7 +67,7 @@ const Header = (props: {
           </Link>
         </div>
 
-        <div className="hidden sm:block">
+        <div className="hidden sm:block" style={{ visibility: "hidden" }}>
           <div>
             <div className="relative">
               <button className="absolute left-0 top-1/2 -translate-y-1/2">
