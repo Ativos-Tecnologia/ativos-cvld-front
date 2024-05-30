@@ -64,10 +64,12 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
 
   useEffect(() => {
     if (oficioForm) {
-      console.log(oficioForm.result[0]);
 
-      setValue("valor_principal", numberFormat(oficioForm.result[0].valor_principal));
-      setValue("valor_juros", numberFormat(oficioForm.result[0].valor_juros));
+      console.log(numberFormat(oficioForm.result[0].valor_principal).replace("R$", ""));
+
+
+      setValue("valor_principal", numberFormat(oficioForm.result[0].valor_principal).replace("R$", ""));
+      setValue("valor_juros", numberFormat(oficioForm.result[0].valor_juros).replace("R$", ""));
       setValue("data_base", oficioForm.result[0].data_base.split("/").reverse().join("-"));
       setValue("data_requisicao", oficioForm.result[0].data_requisicao.split("/").reverse().join("-"));
     }
