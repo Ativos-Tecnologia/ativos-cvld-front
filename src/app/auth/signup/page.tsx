@@ -14,6 +14,7 @@ import UseMySwal from "@/hooks/useMySwal";
 import { Metadata } from "next";
 import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
 import { Button } from "@/components/Button";
+import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
 
 type SignUpInputs = {
   username: string;
@@ -49,7 +50,7 @@ const SignUp: React.FC = () => {
           router.push(APP_ROUTES.public.login.name);
         }, 3000);
 
-    }
+      }
 
     } catch (error) {
       MySwal.fire({
@@ -253,11 +254,13 @@ const SignUp: React.FC = () => {
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       id="username"
                       {
-                        ...register("username", {
-                          required: "Campo obrigatório",
-                        })
+                      ...register("username", {
+                        required: "Campo obrigatório",
+                      })
                       }
                     />
+
+                    <ErrorMessage errors={errors} field='username' />
 
                     <span className="absolute right-4 top-4">
                       <svg
@@ -294,11 +297,13 @@ const SignUp: React.FC = () => {
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       id="email"
                       {
-                        ...register("email", {
-                          required: "Campo obrigatório",
-                        })
+                      ...register("email", {
+                        required: "Campo obrigatório",
+                      })
                       }
                     />
+
+                    <ErrorMessage errors={errors} field='email' />
 
                     <span className="absolute right-4 top-4">
                       <svg
@@ -331,11 +336,13 @@ const SignUp: React.FC = () => {
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       id="password"
                       {
-                        ...register("password", {
-                          required: "Campo obrigatório",
-                        })
+                      ...register("password", {
+                        required: "Campo obrigatório",
+                      })
                       }
                     />
+
+                    <ErrorMessage errors={errors} field='password' />
 
                     <span className="absolute right-4 top-4">
                       <svg

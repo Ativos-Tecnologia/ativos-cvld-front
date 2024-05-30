@@ -12,13 +12,15 @@ import UseMySwal from "@/hooks/useMySwal";
 import { Button } from "@/components/Button";
 import { Alert } from "flowbite-react";
 import { HiEye } from "react-icons/hi";
+import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
+
 
 // export const metadata: Metadata = {
 //   title: "CVLD Simulator - Login",
 //   description: "Faça login para começar a utilizar o CVLD Simulator",
 // };
 
-type SignInInputs = {
+export type SignInInputs = {
   username: string;
   password: string;
 };
@@ -310,13 +312,14 @@ const SignIn: React.FC = () => {
                       }
                       aria-invalid={errors.username ? "true" : "false"}
                     />
-                    {
+                    <ErrorMessage errors={errors} field='username' />
+                    {/* {
                       errors.username && (
-                        <span role="alert" className="absolute right-4 top-4 text-red-500 text-sm">
+                        <span role="alert" className="absolute right-4 top-4 text-red pr-8 text-sm">
                           {errors.username.message}
                         </span>
                       )
-                    }
+                    } */}
 
                     <span className="absolute right-4 top-4">
                       <svg
@@ -362,13 +365,14 @@ const SignIn: React.FC = () => {
                       }
                       aria-invalid={errors.password ? "true" : "false"}
                     />
-                    {
+                    <ErrorMessage errors={errors} field='password' />
+                    {/* {
                       errors.password && (
                         <span role="alert" className="absolute right-4 top-4 text-red-500 text-sm">
                           {errors.password.message}
                         </span>
                       )
-                    }
+                    } */}
 
                     <span className="absolute right-4 top-4">
                       <svg
