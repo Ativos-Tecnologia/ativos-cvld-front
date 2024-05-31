@@ -113,7 +113,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
   const isUserAdmin = () => {
     const token = localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`);
     const decoded: JWTToken = jwtDecode(token!);
-    return decoded.role === "admin" && decoded.is_staff;
+    return decoded.is_staff;
   }
 
   function backendNumberFormat(value: string) {
