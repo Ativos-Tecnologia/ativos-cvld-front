@@ -335,7 +335,7 @@ const SignUp: React.FC = () => {
                     <span className="absolute right-4 top-4">
                       <BiLockAlt style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />
                     </span>
-                  </div>
+                  </div>j
                 </div>
 
                 <div className="mb-12">
