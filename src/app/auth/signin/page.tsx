@@ -9,13 +9,15 @@ import api from "@/utils/api";
 import { APP_ROUTES } from "@/constants/app-routes";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
 import UseMySwal from "@/hooks/useMySwal";
-import { Button } from "@/components/Button";
+// import { Button } from "@/components/Button";
 import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
-import { Alert } from "flowbite-react";
-import { HiEye } from "react-icons/hi";
+import { Button } from "flowbite-react";
+
+import { HiOutlineArrowRight } from "react-icons/hi"
 
 import { BiLockAlt, BiUser } from "react-icons/bi";
 import { FcGoogle } from "react-icons/fc";
+import { AiOutlineLoading } from "react-icons/ai";
 
 
 // export const metadata: Metadata = {
@@ -371,8 +373,13 @@ const SignIn: React.FC = () => {
 
                 <div className="mb-5">
 
-                  <Button type='submit' className='w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90'>
+                  <Button gradientDuoTone="purpleToBlue" type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-4 text-white hover:bg-opacity-90 dark:border-primary dark:bg-primary dark:hover:bg-opacity-90'>
+                    <span className="text-[16px] font-medium" aria-disabled={loading}>
                     Acessar
+                      </span>
+                      {
+                        !loading ? (<HiOutlineArrowRight className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
+                      }
                   </Button>
                 </div>
 

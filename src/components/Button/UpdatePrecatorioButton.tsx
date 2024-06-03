@@ -2,43 +2,43 @@ import React, { useEffect } from 'react'
 import { FileInput, Label } from "flowbite-react";
 import api from '@/utils/api';
 import {
-    Controller,
-    useForm,
-  } from "react-hook-form";
+  Controller,
+  useForm,
+} from "react-hook-form";
 import UseMySwal from '@/hooks/useMySwal';
 
 interface SubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    children?: React.ReactNode,
-    setStateFunction: React.Dispatch<React.SetStateAction<any>>,
+  children?: React.ReactNode,
+  setStateFunction: React.Dispatch<React.SetStateAction<any>>,
 }
 
 export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
-    setStateFunction,
-    children,
-    ...props
+  setStateFunction,
+  children,
+  ...props
 }) => {
-    const {
-        register,
-        control,
-        handleSubmit,
-        watch,
-        getFieldState,
-        setValue,
-        formState: { errors },
-      } = useForm();
+  const {
+    register,
+    control,
+    handleSubmit,
+    watch,
+    getFieldState,
+    setValue,
+    formState: { errors },
+  } = useForm();
 
-      const [oficio, setOficio] = React.useState<any>(null);
+  const [oficio, setOficio] = React.useState<any>(null);
 
-      useEffect(() => {
-        if (oficio) {
-            setStateFunction(oficio);
-        }
-      }, [oficio]);
+  useEffect(() => {
+    if (oficio) {
+      setStateFunction(oficio);
+    }
+  }, [oficio]);
 
-      const swal = UseMySwal();
+  const swal = UseMySwal();
 
-    return (
-        <div className="flex w-full items-center justify-center">
+  return (
+    <div className="flex w-full items-center justify-center">
       <Label
         htmlFor="dropzone-file"
         className="flex h-24 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
@@ -65,44 +65,55 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
           <p className="text-xs text-gray-500 dark:text-gray-400">PDF</p>
         </div>
         <FileInput id="dropzone-file" className="hidden" {...register("pdf_file")} accept='.pdf' onChange={async (e) => {
+          if (e.target.files) {
+            if (e.target.files[0].size > 10000000) {
+              swal.fire({
+                title: "Erro ao carregar ofício",
+                text: "O arquivo não pode ser maior que 10MB",
+                icon: "error",
+                toast: true,
+                timer: 3000,
+                timerProgressBar: true,
+                position: "bottom-right",
+                confirmButtonText: "Ok",
+              });
+              const formData = new FormData();
+              formData.append("pdf_file", e.target.files[0]);
 
-            if (e.target.files) {
-                console.log(e.target.files[0]);
-                const formData = new FormData();
-                formData.append("pdf_file", e.target.files[0]);
-
-                try {
-                  const response = await api.post("api/oficio/upload/extraction/", formData, {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
+              try {
+                const response = await api.post("api/oficio/upload/extraction/", formData, {
+                  headers: {
+                    "Content-Type": "multipart/form-data",
+                  },
                 })
                 if (response.status === 200) {
                   swal.fire({
-                      title: "Ofício carregado com sucesso",
-                      icon: "success",
-                      toast: true,
-                      timer: 3000,
-                      timerProgressBar: true,
-                      position: "bottom-right",
-                      confirmButtonText: "Ok",
+                    title: "Ofício carregado com sucesso",
+                    icon: "success",
+                    toast: true,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    position: "bottom-right",
+                    confirmButtonText: "Ok",
                   });
                   setOficio(response.data);
-              }
-                } catch (error:any) {
-                    swal.fire({
-                        title: "Erro ao carregar ofício",
-                        text: error.response.data.detail,
-                        icon: "error",
-                        toast: true,
-                        timer: 3000,
-                        timerProgressBar: true,
-                    });
                 }
+              } catch (error: any) {
+                swal.fire({
+                  title: "Erro ao carregar ofício",
+                  text: error.message,
+                  icon: "error",
+                  toast: true,
+                  timer: 3000,
+                  timerProgressBar: true,
+                  position: "bottom-right",
+                  confirmButtonText: "Ok",
+                });
+              }
             }
-
+          }
         }} />
       </Label>
     </div>
-    )
+  )
 }

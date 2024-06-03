@@ -122,6 +122,7 @@ useEffect(() => {
                 width: "auto",
                 height: "auto",
               }}
+              placeholder={"blur"}
 
             />
             <div className="absolute bottom-1 right-1 z-10 xsm:bottom-4 xsm:right-4">
@@ -275,7 +276,7 @@ useEffect(() => {
                     aria-label="social-icon"
                   >
                     <BiLogoFacebook style={{width: '22px', height: '22px', color: 'inherit'}}/>
-                    
+
                   </Link>
                   <Link
                     href="#"
@@ -283,14 +284,14 @@ useEffect(() => {
                     aria-label="social-icon"
                   >
                     <BiLogoTwitter style={{width: '22px', height: '22px', color: 'inherit'}} />
-                
+
                   </Link>
                   <Link
                     href="#"
                     className="hover:text-primary"
                     aria-label="social-icon"
                   >
-                    
+
                     <BiLogoLinkedin style={{width: '22px', height: '22px', color: 'inherit'}} />
 
                   </Link>
