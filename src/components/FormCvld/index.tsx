@@ -211,7 +211,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
 
 
 
-    } else if (response.status === 400) {
+    } else if (response.status === 401) {
       UseMySwal().fire({
         icon: "error",
         title: "Sessão expirada",
@@ -230,7 +230,6 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
       <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
-        {/* <span className="text-lg font-semibold text-primary">Calculadora de Atualização de Precatórios</span> */}
         <h2 className="text-3xl font-extrabold dark:text-white">
           Calculadora de Atualização de Precatórios
         </h2>
@@ -355,24 +354,6 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                         Juros de Mora fixados em sentença
                       </label>
                     </div>
-                {/* {
-                  watch("data_base") < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? (
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="incidencia_juros_moratorios"
-                        className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                        defaultChecked
-                        {
-                        ...register("incidencia_juros_moratorios")
-                        }
-                      />
-                      <label htmlFor="incidencia_juros_moratorios" className="text-sm font-medium text-meta-5">
-                        Juros de Mora fixados em sentença
-                      </label>
-                    </div>
-                  ) : null
-                } */}
               </div>
 
               <div className="flex flex-col gap-2">
@@ -390,9 +371,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                     })
                     }
                   />
-
                   <ErrorMessage errors={errors} field="data_requisicao"/>
-
                 </div>
               </div>
 
