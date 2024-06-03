@@ -329,13 +329,11 @@ const SignUp: React.FC = () => {
                       })
                       }
                     />
-
                     <ErrorMessage errors={errors} field='password' />
-
                     <span className="absolute right-4 top-4">
                       <BiLockAlt style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />
                     </span>
-                  </div>j
+                  </div>
                 </div>
 
                 <div className="mb-12">
