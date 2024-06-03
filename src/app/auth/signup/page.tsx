@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -8,15 +8,17 @@ import api from "@/utils/api";
 import { APP_ROUTES } from "@/constants/app-routes";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
 import UseMySwal from "@/hooks/useMySwal";
-import { BiEnvelope, BiUser, BiLockAlt } from "react-icons/bi";
+import { BiEnvelope, BiUser, BiLockAlt, BiCheck, BiX } from "react-icons/bi";
 import { FcGoogle } from "react-icons/fc";
+import { Button, Popover } from "flowbite-react";
 
 
 
 import { Metadata } from "next";
 import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
-import { Button } from "@/components/Button";
 import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
+import { HiOutlineArrowRight } from "react-icons/hi";
+import { AiOutlineLoading } from "react-icons/ai";
 
 type SignUpInputs = {
   username: string;
@@ -27,16 +29,88 @@ type SignUpInputs = {
 
 
 const SignUp: React.FC = () => {
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [passwordsMatch, setPasswordsMatch] = useState<boolean>(true);
+  const [passwordStr, setPasswordStr] = useState<string>('');
+  const [strengthColor, setStrengthColor] = useState<string>('slate-400');
+  const [barWidth, setBarWidth] = useState<string>('w-0');
   const router = useRouter();
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<SignUpInputs>();
+  const passwordInput = watch('password');
+  const confirmPasswordInput = watch('confirm_password');
+
+  useEffect(() => {
+    const calculatePasswordStrength = (password: string): void => {
+      let strength: number = 0;
+
+      if (password) {
+
+        // mudando força da senha de acordo com requisitos mínimos:
+        if (password.length >= 6) strength += 1;
+        if (/[A-Z]/.test(password)) strength += 1;
+        if (/[a-z]/.test(password)) strength += 1;
+        if (/[0-9]/.test(password)) strength += 1;
+        if (/[@$!%*#?&]/.test(password)) strength += 1;
+
+        // verificando força da senha para passar feedback visual:
+        switch (strength) {
+          case 0:
+            break;
+          case 1:
+            setPasswordStr('muito fraca');
+            setBarWidth('w-1/5');
+            setStrengthColor('#ff0000');
+            break;
+          case 2:
+            setPasswordStr('fraca');
+            setBarWidth('w-2/5');
+            setStrengthColor('#ffa00a');
+            break;
+          case 3:
+            setPasswordStr('boa');
+            setBarWidth('w-3/5');
+            setStrengthColor('#fdec12');
+            break;
+          case 4:
+            setPasswordStr('forte');
+            setBarWidth('w-4/5');
+            setStrengthColor('#51ff2e');
+            break;
+          case 5:
+            setPasswordStr('muito forte');
+            setBarWidth('w-full');
+            setStrengthColor('#21e600');
+            break;
+          default:
+            break;
+        }
+
+      } else {
+        strength = 0;
+        setPasswordStr('');
+        setBarWidth('w-0');
+        setStrengthColor('slate-400');
+      }
+    }
+    calculatePasswordStrength(passwordInput);
+  }, [passwordInput]);
+
+  useEffect(() => {
+    const comparePasswords = (): void => {
+      passwordInput === confirmPasswordInput ? setPasswordsMatch(true) : setPasswordsMatch(false);
+    }
+    comparePasswords();
+  }, [confirmPasswordInput, passwordInput])
 
   const MySwal = UseMySwal();
-
   const onSubmit: SubmitHandler<SignUpInputs> = async (data) => {
+    setLoading(true);
     if (data.password === data.confirm_password) {
       try {
         const response = await api.post("api/user/register/", data).then((res) => {
@@ -74,6 +148,7 @@ const SignUp: React.FC = () => {
 
       });
     }
+    setLoading(false);
   };
   return (
     <UnloggedLayout>
@@ -322,6 +397,10 @@ const SignUp: React.FC = () => {
                           value: 6,
                           message: "Mínimo de 6 caracteres",
                         },
+                        maxLength: {
+                          value: 30,
+                          message: "Máximo de 30 caracteres"
+                        },
                         pattern: {
                           value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/,
                           message: "Mínimo de 6 caracteres, 1 letra, 1 número e 1 caractere especial",
@@ -331,6 +410,18 @@ const SignUp: React.FC = () => {
                     />
 
                     <ErrorMessage errors={errors} field='password' />
+
+                    {/* password strength message */}
+                    {passwordInput && (
+                      <div className="absolute w-full left-0 top-17 text-sm text-slate-400 flex flex-col gap-1">
+                        <div className="w-full h-2 border-none rounded">
+                          <div style={{ backgroundColor: `${strengthColor}` }} className={`${barWidth} h-full rounded transition-all duration-300`}></div>
+                        </div>
+                        <div>
+                          Força da senha: <span style={{ color: `${strengthColor}` }}>{passwordStr}</span>
+                        </div>
+                      </div>
+                    )}
 
                     <span className="absolute right-4 top-4">
                       <BiLockAlt style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />
@@ -354,6 +445,12 @@ const SignUp: React.FC = () => {
                       }
                     />
 
+                    {!passwordsMatch && (
+                      <div style={{ color: 'red' }} className="absolute w-full left-0 top-17 text-sm flex flex-col gap-1">
+                        As senhas não conferem.
+                      </div>
+                    )}
+
                     <ErrorMessage errors={errors} field='confirm_password' />
 
                     <span className="absolute right-4 top-4">
@@ -363,8 +460,16 @@ const SignUp: React.FC = () => {
                 </div>
 
                 <div className="mb-5">
-                  <Button type="submit" className='w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90'>
+                  {/* <Button type="submit" className='w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90'>
                     Criar conta
+                  </Button> */}
+                  <Button gradientDuoTone="purpleToBlue" type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-4 text-white hover:bg-opacity-90 dark:border-primary dark:bg-primary dark:hover:bg-opacity-90'>
+                    <span className="text-[16px] font-medium" aria-disabled={loading}>
+                      {loading ? "Cadastrando usuário..." : "Criar conta"}
+                    </span>
+                    {
+                      !loading ? (<HiOutlineArrowRight className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
+                    }
                   </Button>
                 </div>
 

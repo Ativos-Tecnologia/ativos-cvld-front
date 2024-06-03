@@ -372,10 +372,9 @@ const SignIn: React.FC = () => {
                 </div>
 
                 <div className="mb-5">
-
                   <Button gradientDuoTone="purpleToBlue" type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-4 text-white hover:bg-opacity-90 dark:border-primary dark:bg-primary dark:hover:bg-opacity-90'>
                     <span className="text-[16px] font-medium" aria-disabled={loading}>
-                    Acessar
+                    {loading ? "Fazendo login..." : "Acessar"}
                       </span>
                       {
                         !loading ? (<HiOutlineArrowRight className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)

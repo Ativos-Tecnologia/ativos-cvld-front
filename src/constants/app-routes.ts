@@ -14,5 +14,8 @@ export const APP_ROUTES = {
         register: {
             name: "/auth/signup"
         },
+        pricing: {
+            name: '/pricing'
+        }
     }
 };
