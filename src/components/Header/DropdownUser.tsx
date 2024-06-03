@@ -71,11 +71,14 @@ const DropdownUser = () => {
             ) : (
               <Image
                 className="rounded-full max-w-[48px] max-h-[48px] object-cover"
-                src={data[0].profile_picture !== "" ? data[0].profile_picture : "/images/logo/512x512.png"}
+                src={data[0].profile_picture}
                 alt="Profile Picture"
                 width={48}
                 height={48}
-
+                placeholder={"blur"}
+                blurDataURL={data[0].profile_picture !== "" ? data[0].profile_picture : "/images/logo/512x512.png"}
+                quality={100}
+                loading="eager"
               />
             )
           }
