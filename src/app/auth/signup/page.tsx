@@ -408,7 +408,6 @@ const SignUp: React.FC = () => {
                       })
                       }
                     />
-
                     <ErrorMessage errors={errors} field='password' />
 
                     {/* password strength message */}

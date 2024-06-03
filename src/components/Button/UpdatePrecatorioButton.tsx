@@ -65,18 +65,10 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
           <p className="text-xs text-gray-500 dark:text-gray-400">PDF</p>
         </div>
         <FileInput id="dropzone-file" className="hidden" {...register("pdf_file")} accept='.pdf' onChange={async (e) => {
+          console.log("e.target.files", e.target.files);
+
           if (e.target.files) {
-            if (e.target.files[0].size > 10000000) {
-              swal.fire({
-                title: "Erro ao carregar ofício",
-                text: "O arquivo não pode ser maior que 10MB",
-                icon: "error",
-                toast: true,
-                timer: 3000,
-                timerProgressBar: true,
-                position: "bottom-right",
-                confirmButtonText: "Ok",
-              });
+
               const formData = new FormData();
               formData.append("pdf_file", e.target.files[0]);
 
@@ -111,7 +103,7 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
                 });
               }
             }
-          }
+
         }} />
       </Label>
     </div>
