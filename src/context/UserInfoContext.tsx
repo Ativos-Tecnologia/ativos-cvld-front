@@ -14,6 +14,11 @@ export interface UserInfo {
     };
 }
 
+export interface IUserBalance {
+    id: number,
+    available_credits: number
+}
+
 export interface UserInfoContextType {
     data: UserInfo;
     loading: boolean;
@@ -21,6 +26,8 @@ export interface UserInfoContextType {
     updateProfile: (id: string, data: any) => Promise<any>;
     firstLogin: boolean | null;
     setFirstLogin: (value: boolean | null) => void;
+    subscriptionData: ISubscriptionInfo,
+    credits: IUserBalance
 }
 
 
@@ -31,6 +38,22 @@ export interface UpdateUserProfile extends FormData {
     phone: string;
     profile_picture: string;
     title: string;
+}
+
+export type SubscriptionStatus = "PENDING" | "ACTIVE" | "CANCELLED" | "EXPIRED"
+
+export type SubscriptionPlan = "FREE" | "BASIC" | "PREMIUM" | "ENTERPRISE"
+
+export interface ISubscriptionInfo {
+    0 : {
+        id: string;
+    user: number;
+    status: SubscriptionStatus;
+    plan: SubscriptionPlan;
+    start_date: string;
+    end_date: string;
+    }
+
 }
 
 export const UserInfoAPIContext = createContext<UserInfoContextType>({
@@ -48,13 +71,42 @@ export const UserInfoAPIContext = createContext<UserInfoContextType>({
     error: null,
     updateProfile: async () => ({}),
     firstLogin: null,
-    setFirstLogin: () => {}
+    setFirstLogin: () => {},
+    subscriptionData: {
+        0: {
+            id: "",
+            user: 0,
+            status: "PENDING",
+            plan: "FREE",
+            start_date: "",
+            end_date: "",
+        }
+    },
+    credits: {
+        id: 0,
+        available_credits: 0
+    }
 })
 
 
 export const UserInfoProvider = ({ children }: { children: React.ReactNode }) => {
 
     const [firstLogin, setFirstLogin] = useState<boolean | null>(null);
+    const [subscriptionData, setSubscriptionData] = useState<ISubscriptionInfo>({
+        0: {
+            id: "",
+            user: 0,
+            status: "PENDING",
+            plan: "FREE",
+            start_date: "",
+            end_date: "",
+        }
+    });
+
+    const [credits, setCredits] = useState<IUserBalance>({
+        id: 0,
+        available_credits: 0
+    });
 
     const [data, setData] = useState<UserInfo>({
         0: {
@@ -70,24 +122,66 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const response = await api.get("/api/profile/", {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
+    // const checkUserSubscription = async () => {
+    //     try {
+    //         const response = await api.get("/api/subscription/", {
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //             },
+    //         });
 
-                setData(response.data);
-                setLoading(false);
-            } catch (error: any) {
-                setError(error.message);
-                setLoading(false);
-                console.error(error);
+    //         return response.data;
+    //     } catch (error: any) {
+    //         console.error(error);
+    //         return error
+    //     }
+    // }
+
+    // const fetchProfile = async () => {
+    //     try {
+    //         const response = await api.get("/api/profile/", {
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //             },
+    //         });
+
+    //         setData(response.data);
+    //         // setLoading(false);
+    //     } catch (error: any) {
+    //         setError(error.message);
+    //         setLoading(false);
+    //         console.error(error);
+    //     }
+    // }
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            const [profileResult, subscriptionResult, creditsResult] = await Promise.all([api.get("/api/profile/"), api.get("/api/user/get-subscription-info/"), api.get('/api/user/get-balance/')]);
+
+            if (profileResult.status === 200) {
+                setData(profileResult.data);
+            } else {
+                setError("Error fetching profile data");
             }
-        }
-        fetchProfile();
+
+            if (subscriptionResult.status === 200) {
+                setSubscriptionData(subscriptionResult.data);
+            } else {
+                setError("Error fetching subscription data");
+            }
+
+            if (creditsResult.status === 200) {
+                setCredits(creditsResult.data);
+            } else {
+                setError("Error fetching credits data");
+            }
+
+            setLoading(false);
+        };
+
+        fetchData();
     }, []);
 
     const updateProfile = async (id: string, data: UpdateUserProfile) => {
@@ -116,10 +210,8 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
         }
     }
 
-
-
     return (
-        <UserInfoAPIContext.Provider value={{ data, loading, error, updateProfile, firstLogin, setFirstLogin }}>
+        <UserInfoAPIContext.Provider value={{ data, loading, error, updateProfile, firstLogin, setFirstLogin, subscriptionData, credits }}>
             {children}
         </UserInfoAPIContext.Provider>
     );

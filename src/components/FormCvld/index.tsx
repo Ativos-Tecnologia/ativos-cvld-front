@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Controller,
   useForm,
@@ -14,6 +14,8 @@ import Loader from "../common/Loader";
 import { Button } from "../Button";
 import { ErrorMessage } from "../ErrorMessage/ErrorMessage";
 import { Tooltip } from "flowbite-react";
+import { UpdatePrecatorioButton } from "../Button/UpdatePrecatorioButton";
+import numberFormat from "@/functions/formaters/numberFormat";
 
 interface ChartTwoState {
   series: {
@@ -32,21 +34,17 @@ interface CPFCNPJprops {
   numericOnly: boolean;
 }
 
-
-
-
 const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
   const {
     register,
     control,
     handleSubmit,
     watch,
-    getFieldState,
-    getValues,
+    setValue,
     formState: { errors },
   } = useForm();
 
-  const [inputValue, setInputValue] = useState<string>("");
+  const [oficioForm, setOficioForm] = useState<any>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -63,6 +61,34 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
       },
     ],
   });
+
+
+  useEffect(() => {
+    if (oficioForm) {
+
+      setValue("natureza", oficioForm.result[0].natureza);
+      setValue("valor_principal", numberFormat(oficioForm.result[0].valor_principal).replace("R$", ""));
+      setValue("valor_juros", numberFormat(oficioForm.result[0].valor_juros).replace("R$", ""));
+      setValue("data_base", oficioForm.result[0].data_base.split("/").reverse().join("-"));
+
+      if (oficioForm.result[0].data_base < "2021-12-01") {
+        setValue("incidencia_juros_moratorios", true);
+      }
+
+      setValue("data_requisicao", oficioForm.result[0].data_requisicao.split("/").reverse().join("-"));
+      setValue("ir_incidente_rra", oficioForm.result[0].incidencia_rra_ir);
+
+      if (oficioForm.result[0].incidencia_juros_moratorios) {
+        setValue("incidencia_juros_moratorios", true);
+      } else {
+        setValue("incidencia_juros_moratorios", false);
+      }
+      setValue("numero_de_meses", oficioForm.result[0].numero_de_meses);
+      setValue("incidencia_pss", oficioForm.result[0].valor_pss > 0 ? true : false);
+      setValue("valor_pss", numberFormat(oficioForm.result[0].valor_pss).replace("R$", ""));
+    }
+
+  }, [oficioForm]);
 
 
   const getOptions = (value: any) => {
@@ -87,7 +113,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
   const isUserAdmin = () => {
     const token = localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`);
     const decoded: JWTToken = jwtDecode(token!);
-    return decoded.role === "admin" && decoded.is_staff;
+    return decoded.is_staff;
   }
 
   function backendNumberFormat(value: string) {
@@ -185,7 +211,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
 
 
 
-    } else if (response.status === 400) {
+    } else if (response.status === 401) {
       UseMySwal().fire({
         icon: "error",
         title: "Sessão expirada",
@@ -201,20 +227,19 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
     setLoading(false);
   };
 
-
-
-
-
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
       <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
-        <span className="text-lg font-semibold text-primary">Calculadora de Atualização de Precatórios</span>
-        <div className="flex flex-col items-center">
-          <Tooltip content="Em breve" style="light" arrow={false} placement="top">
+        <h2 className="text-3xl font-extrabold dark:text-white">
+          Calculadora de Atualização de Precatórios
+        </h2>
+        <div className="flex flex-col items-center w-full sm:w-60">
+          {/* <Tooltip content="Em breve" style="light" arrow={false} placement="top">
           <Button disabled className="px-6 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:opacity-95 disabled:cursor-not-allowed disabled:bg-opacity-50">
             Carregar ofício
             </Button>
-            </Tooltip>
+            </Tooltip> */}
+            <UpdatePrecatorioButton setStateFunction={setOficioForm}/>
           <span className="apexcharts-legend-text" style={{"color": "rgb(55, 61, 63)", "fontSize": "12px", "fontWeight": "400", "fontFamily": "Satoshi"}}>TRF1 ao TRF4 (beta)</span>
         </div>
       </div>
@@ -314,17 +339,8 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                     aria-invalid={errors.data_base ? "true" : "false"}
                   />
                   <ErrorMessage errors={errors} field="data_base"/>
-                  {/* {
-                    errors.data_base && (
-                      <span role="alert" className="absolute right-4 top-4 text-red-500 text-sm">
-                        {errors.data_base.message?.toString()}
-                      </span>
-                    )
-                  } */}
                 </div>
-                {
-                  watch("data_base") < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? (
-                    <div className="flex items-center gap-2">
+                <div className={`flex items-center gap-2 ${watch("data_base") < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "": "hidden"}`}>
                       <input
                         type="checkbox"
                         id="incidencia_juros_moratorios"
@@ -338,8 +354,6 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                         Juros de Mora fixados em sentença
                       </label>
                     </div>
-                  ) : null
-                }
               </div>
 
               <div className="flex flex-col gap-2">
@@ -357,9 +371,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
                     })
                     }
                   />
-                  
                   <ErrorMessage errors={errors} field="data_requisicao"/>
-
                 </div>
               </div>
 
