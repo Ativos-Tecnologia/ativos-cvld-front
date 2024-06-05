@@ -3,11 +3,13 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import InputMask from 'react-input-mask';
 import api from "@/utils/api";
 import { APP_ROUTES } from "@/constants/app-routes";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
 import UseMySwal from "@/hooks/useMySwal";
+import { BiIdCard } from "react-icons/bi";
 
 
 
@@ -19,6 +21,8 @@ import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
 type SignUpInputs = {
   username: string;
   email: string;
+  select: string;
+  cpf_cnpj: string;
   password: string;
   confirm_password: string;
 };
@@ -29,15 +33,26 @@ const SignUp: React.FC = () => {
   const {
     register,
     handleSubmit,
+    watch,
+    control,
     formState: { errors },
   } = useForm<SignUpInputs>();
 
   const MySwal = UseMySwal();
+  const selectOption = watch('select');
 
   const onSubmit: SubmitHandler<SignUpInputs> = async (data) => {
     if (data.password === data.confirm_password) {
+
+      const formData = {
+        username: data.username,
+        email: data.email,
+        password: data.password,
+        cpf_cnpj: data.cpf_cnpj
+      }
+
       try {
-        const response = await api.post("api/user/register/", data).then((res) => {
+        const response = await api.post("api/user/register/", formData).then((res) => {
           if (res.status === 201) {
             localStorage.setItem(`ATIVOS_${ACCESS_TOKEN}`, res.data.accessToken);
             localStorage.setItem(`ATIVOS_${REFRESH_TOKEN}`, res.data.refreshToken);
@@ -254,15 +269,15 @@ const SignUp: React.FC = () => {
                 Cadastre-se para começar
               </h2>
 
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <div className="mb-11">
+              <form className="grid grid-cols-1 gap-5 sm:grid-cols-2" onSubmit={handleSubmit(onSubmit)}>
+                <div className="mb-5">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Nome de usuário
                   </label>
                   <div className="relative">
                     <input
                       type="text"
-                      placeholder="Digite seu nome de usuário"
+                      placeholder="Usuário"
                       className={`${errors.username && '!border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                       id="username"
                       {
@@ -298,7 +313,7 @@ const SignUp: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mb-11">
+                <div className="mb-5">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Email
                   </label>
@@ -337,7 +352,89 @@ const SignUp: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mb-13">
+                {/* cpf/cnpj field */}
+                <div className="mb-5 sm:col-span-2">
+                  <label className="mb-1 block font-medium text-black dark:text-white">
+                    Selecione uma opção abaixo:
+                  </label>
+
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <select
+                      id='select'
+                      className={`w-full sm:w-1/4 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                      {
+                      ...register("select", {
+                        required: "Campo obrigatório"
+                      })
+                      }
+                      defaultValue={"CPF"}
+                    >
+                      <option value="CPF">CPF</option>
+                      <option value="CNPJ">CNPJ</option>
+                    </select>
+
+                    <div className="relative flex-1">
+                      {selectOption === 'CNPJ' ? (
+                        <React.Fragment>
+                          <Controller
+                            name="cpf_cnpj"
+                            control={control}
+                            defaultValue=""
+                            rules={{
+                              required: "Campo obrigatório",
+                              pattern: {
+                                value: /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/,
+                                message: "CNPJ inválido"
+                              }
+                            }}
+                            render={({ field }) => (
+                              <InputMask
+                                {...field}
+                                mask="99.999.999/9999-99"
+                                placeholder="Digite seu CNPJ"
+                                className={`${errors.cpf_cnpj && '!border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                              />
+                            )}
+                          />
+
+                          <ErrorMessage errors={errors} field='cpf_cnpj' />
+                        </React.Fragment>
+                      ) : (
+                        <React.Fragment>
+                          <Controller
+                            name="cpf_cnpj"
+                            control={control}
+                            defaultValue=""
+                            rules={{
+                              required: "Campo obrigatório",
+                              pattern: {
+                                value: /^\d{3}\.\d{3}\.\d{3}-\d{2}$/,
+                                message: "CPF inválido"
+                              }
+                            }}
+                            render={({ field }) => (
+                              <InputMask
+                                {...field}
+                                mask="999.999.999-99"
+                                placeholder="Digite seu CPF"
+                                className={`${errors.cpf_cnpj && '!border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                              />
+                            )}
+                          />
+
+                          <ErrorMessage errors={errors} field='cpf_cnpj' />
+                        </React.Fragment>
+                      )}
+
+
+                      <span className="absolute right-4 top-4">
+                        <BiIdCard style={{width: '22px', height: '22px', fill: 'rgb(186, 193, 203)'}}/>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-7">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Senha
                   </label>
@@ -388,14 +485,14 @@ const SignUp: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mb-12">
+                <div className="mb-5">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Confirmar senha
                   </label>
                   <div className="relative">
                     <input
                       type="password"
-                      placeholder="Digite a senha novamente"
+                      placeholder="Confirme sua senha"
                       className={`${errors.confirm_password && '!border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                       {
                       ...register("confirm_password", {
@@ -430,13 +527,13 @@ const SignUp: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mb-5">
+                <div className="mb-5 sm:col-span-2">
                   <Button type="submit" className='w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90'>
                     Criar conta
                   </Button>
                 </div>
 
-                <button disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50 disabled:opacity-50 cursor-not-allowed">
+                <button disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 sm:col-span-2 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50 disabled:opacity-50 cursor-not-allowed">
 
                   <span>
                     <svg
@@ -474,7 +571,7 @@ const SignUp: React.FC = () => {
                   Entrar com o Google
                 </button>
 
-                <div className="mt-6 text-center">
+                <div className="mt-6 text-center sm:col-span-2">
                   <p>
                     Já tem uma conta?{" "}
                     <Link href="/auth/signin" className="text-primary">
