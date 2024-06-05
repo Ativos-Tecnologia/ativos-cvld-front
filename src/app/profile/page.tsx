@@ -131,12 +131,6 @@ const Profile = () => {
                 htmlFor="cover"
                 className="flex cursor-pointer items-center justify-center gap-2 rounded bg-primary px-2 py-1 text-sm font-medium text-white hover:bg-opacity-90"
               >
-                <input
-                  type="file"
-                  name="cover"
-                  id="cover"
-                  className="sr-only"
-                />
                 {editMode ? (
                   <React.Fragment>
                     <span>
