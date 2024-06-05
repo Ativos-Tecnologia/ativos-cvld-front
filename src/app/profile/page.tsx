@@ -124,7 +124,6 @@ const Profile = () => {
                 width: "auto",
                 height: "100%",
               }}
-            // placeholder={"blur"}
 
             />
             <div className="absolute -bottom-3.5 right-2 z-10">
