@@ -4,7 +4,7 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Image from "next/image";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import Link from "next/link";
-import { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import api from "@/utils/api";
 import {
   useForm,
@@ -12,7 +12,8 @@ import {
 } from 'react-hook-form';
 import UseMySwal from "@/hooks/useMySwal";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
-import { BiCamera, BiLogoFacebook, BiLogoLinkedin, BiLogoTwitter } from "react-icons/bi";
+import { BiCamera, BiLogoFacebook, BiLogoLinkedin, BiLogoTwitter, BiEditAlt } from "react-icons/bi";
+import { BsXLg } from "react-icons/bs";
 
 
 const Profile = () => {
@@ -24,16 +25,17 @@ const Profile = () => {
 
   const [imageUrl, setImageUrl] = useState("/images/logo/512x512.png");
 
-useEffect(() => {
-  if (firstLogin) {
-    setEditMode(true);
-    UseMySwal().fire({
-      title: "Bem-vindo ao CVLD Simulator",
-      text: "Por favor, preencha o formulário de perfil para utilizar a plataforma",
-      icon: "info",
-      confirmButtonText: "OK",
-    });
-  }});
+  useEffect(() => {
+    if (firstLogin) {
+      setEditMode(true);
+      UseMySwal().fire({
+        title: "Bem-vindo ao CVLD Simulator",
+        text: "Por favor, preencha o formulário de perfil para utilizar a plataforma",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+    }
+  });
 
   useEffect(() => {
     setImageUrl(data[0]?.profile_picture || "/images/logo/512x512.png");
@@ -78,7 +80,7 @@ useEffect(() => {
       if (response.status === 200) {
         setFirstLogin(false);
         const firstUserResponse = await api.patch(`api/user/update-first-login/${auxData[0].id}/`);
-        if(firstUserResponse.status !== 200) {
+        if (firstUserResponse.status !== 200) {
           UseMySwal().fire({
             title: "Um erro inesperado ocorreu",
             icon: "error",
@@ -120,15 +122,14 @@ useEffect(() => {
               height={260}
               style={{
                 width: "auto",
-                height: "auto",
+                height: "100%",
               }}
-              // placeholder={"blur"}
 
             />
-            <div className="absolute bottom-1 right-1 z-10 xsm:bottom-4 xsm:right-4">
+            <div className="absolute -bottom-3.5 right-2 z-10">
               <label
                 htmlFor="cover"
-                className="flex cursor-pointer items-center justify-center gap-2 rounded bg-primary px-2 py-1 text-sm font-medium text-white hover:bg-opacity-80 xsm:px-4"
+                className="flex cursor-pointer items-center justify-center gap-2 rounded bg-primary px-2 py-1 text-sm font-medium text-white hover:bg-opacity-90"
               >
                 <input
                   type="file"
@@ -136,14 +137,26 @@ useEffect(() => {
                   id="cover"
                   className="sr-only"
                 />
-                <span>
-                  <BiCamera />
-                </span>
-                <button onClick={
-                  () => setEditMode(!editMode)
-                }>{
-                    editMode ? "Cancelar" : "Editar Perfil"
-                }</button>
+                {editMode ? (
+                  <React.Fragment>
+                    <span>
+                      <BsXLg />
+                    </span>
+                    <button onClick={
+                      () => setEditMode(!editMode)
+                    }>Desfazer</button>
+                  </React.Fragment>
+                ) : (
+                  <React.Fragment>
+                    <span>
+                      <BiEditAlt />
+                    </span>
+                    <button onClick={
+                      () => setEditMode(!editMode)
+                    }>Editar Perfil</button>
+                  </React.Fragment>
+                )}
+
               </label>
             </div>
           </div>
@@ -157,35 +170,41 @@ useEffect(() => {
                   className="rounded-full sm:max-w-42 sm:max-h-42 max-h-38 max-h-44 object-cover object-center aspect-square"
                   alt="profile"
                 />
-                <label
-                  htmlFor="profile"
-                  className="absolute bottom-0 right-0 flex h-8.5 w-11.5 cursor-pointer items-center justify-center rounded-full bg-primary text-white hover:bg-opacity-90 sm:bottom-2 sm:right-2"
-                >
 
-                  <BiCamera />
+                {/* only visible when editing profile */}
+                {editMode && (
+                  <label
+                    htmlFor="profile"
+                    className="absolute bottom-0 right-0 flex h-8.5 w-11.5 cursor-pointer items-center justify-center rounded-full bg-primary text-white hover:bg-opacity-90 sm:bottom-2 sm:right-2"
+                  >
 
-                  <form onSubmit={handleSubmit(onSubmit)}>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    id="profile"
-                    className="sr-only"
-                    {
-                      ...register("profile_picture")
-                    }
-                    onChange={(e) => {
-                      handleImageChange(e);
-                    }}
-                  />
-                  {
-                    editProfilePicture && (
-                      <button type="submit">
-                    <span>✔️</span>
-                  </button>
-                    )
-                  }
-                  </form>
-                </label>
+                    <BiCamera />
+
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        id="profile"
+                        className="sr-only"
+                        {
+                        ...register("profile_picture")
+                        }
+                        onChange={(e) => {
+                          handleImageChange(e);
+                        }}
+                      />
+                      {
+                        editProfilePicture && (
+                          <button type="submit">
+                            <span>✔️</span>
+                          </button>
+                        )
+                      }
+                    </form>
+                  </label>
+                )}
+                {/* end only visible when editing profile */}
+
               </div>
             </div>
             <div className="mt-4">
@@ -202,7 +221,7 @@ useEffect(() => {
                         placeholder="First Name"
                         className="border border-stroke p-2 rounded-md dark:border-strokedark"
                         {
-                          ...register("first_name")
+                        ...register("first_name")
                         }
                         defaultValue={data[0]?.first_name}
                       />
@@ -211,7 +230,7 @@ useEffect(() => {
                         placeholder="Last Name"
                         className="border border-stroke p-2 rounded-md dark:border-strokedark"
                         {
-                          ...register("last_name")
+                        ...register("last_name")
                         }
                         defaultValue={data[0]?.last_name}
                       />
@@ -220,7 +239,7 @@ useEffect(() => {
                         placeholder="Title"
                         className="border border-stroke p-2 rounded-md dark:border-strokedark"
                         {
-                          ...register("title")
+                        ...register("title")
                         }
                         defaultValue={data[0]?.title}
                       />
@@ -275,7 +294,7 @@ useEffect(() => {
                     className="hover:text-primary"
                     aria-label="social-icon"
                   >
-                    <BiLogoFacebook style={{width: '22px', height: '22px', color: 'inherit'}}/>
+                    <BiLogoFacebook style={{ width: '22px', height: '22px', color: 'inherit' }} />
 
                   </Link>
                   <Link
@@ -283,7 +302,7 @@ useEffect(() => {
                     className="hover:text-primary"
                     aria-label="social-icon"
                   >
-                    <BiLogoTwitter style={{width: '22px', height: '22px', color: 'inherit'}} />
+                    <BiLogoTwitter style={{ width: '22px', height: '22px', color: 'inherit' }} />
 
                   </Link>
                   <Link
@@ -292,7 +311,7 @@ useEffect(() => {
                     aria-label="social-icon"
                   >
 
-                    <BiLogoLinkedin style={{width: '22px', height: '22px', color: 'inherit'}} />
+                    <BiLogoLinkedin style={{ width: '22px', height: '22px', color: 'inherit' }} />
 
                   </Link>
                   <Link
@@ -358,7 +377,7 @@ useEffect(() => {
           </div>
         </div>
       </div>
-      </DefaultLayout>
+    </DefaultLayout>
   );
 };
 
