@@ -145,7 +145,7 @@ const Profile = () => {
                     </span>
                     <button onClick={
                       () => setEditMode(!editMode)
-                    }>Cancelar Edição</button>
+                    }>Desfazer</button>
                   </React.Fragment>
                 ) : (
                   <React.Fragment>
