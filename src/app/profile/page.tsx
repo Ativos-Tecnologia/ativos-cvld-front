@@ -122,7 +122,7 @@ useEffect(() => {
                 width: "auto",
                 height: "auto",
               }}
-              placeholder={"blur"}
+              // placeholder={"blur"}
 
             />
             <div className="absolute bottom-1 right-1 z-10 xsm:bottom-4 xsm:right-4">
