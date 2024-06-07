@@ -357,13 +357,6 @@ const SignIn: React.FC = () => {
                       aria-invalid={errors.password ? "true" : "false"}
                     />
                     <ErrorMessage errors={errors} field='password' />
-                    {/* {
-                      errors.password && (
-                        <span role="alert" className="absolute right-4 top-4 text-red-500 text-sm">
-                          {errors.password.message}
-                        </span>
-                      )
-                    } */}
 
                     <span className="absolute right-4 top-4">
                       <BiLockAlt style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />

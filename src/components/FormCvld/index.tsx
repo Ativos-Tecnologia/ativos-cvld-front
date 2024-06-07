@@ -90,26 +90,6 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
 
   }, [oficioForm]);
 
-
-  const getOptions = (value: any) => {
-
-    if (value.length <= 11) {
-      return {
-        blocks: [3, 3, 3, 2],
-        delimiters: ['.', '.', '-'],
-        numericOnly: true
-      };
-    } else {
-      return {
-        blocks: [2, 3, 3, 4, 2],
-        delimiters: ['.', '.', '/', '-'],
-        numericOnly: true
-      };
-    }
-  };
-
-
-
   const isUserAdmin = () => {
     const token = localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`);
     const decoded: JWTToken = jwtDecode(token!);
@@ -126,6 +106,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
 
 
   const onSubmit = async (data: any) => {
+
     data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
     data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
     data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
