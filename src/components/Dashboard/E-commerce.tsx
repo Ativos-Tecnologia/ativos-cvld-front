@@ -11,10 +11,10 @@ import CVLDResult, { ApiResponse, CVLDResultProps } from "../ResultCVLD";
 import api from "@/utils/api";
 import { useRouter } from "next/navigation";
 import { APP_ROUTES } from "@/constants/app-routes";
+import { ExtratosTable } from "../ExtratosTable/ExtratosTable";
 
 const ECommerce: React.FC = () => {
   const [data, setData] = useState<ApiResponse>({ result: [], setData: () => {} });
-
 
   return (
     <>
@@ -110,9 +110,11 @@ const ECommerce: React.FC = () => {
         <CVLDResult result={data.result} setData={setData} />
         {/* <ChartThree /> */}
         {/* <MapOne /> */}
-        {/* <div className="col-span-12 xl:col-span-8">
-          <TableOne />
+         {/* <div className="col-span-12 xl:col-span-8"> */}
+         <div className="col-span-12">
+          <ExtratosTable />
         </div>
+        {/*
         <ChatCard /> */}
       </div>
     </>
