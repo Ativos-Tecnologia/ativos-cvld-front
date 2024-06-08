@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import UseMySwal from "@/hooks/useMySwal";
 import dateFormater from "@/functions/formaters/dateFormater";
 import { BsFillTrashFill } from "react-icons/bs";
+import { AwesomeDrawer } from "../Drawer/Drawer";
 
 const customTheme: CustomFlowbiteTheme = {
   table: {
@@ -34,12 +35,12 @@ const customTheme: CustomFlowbiteTheme = {
   }
 }
 
-
 export function ExtratosTable() {
 
   const mySwal = UseMySwal();
 
   const [data, setData] = useState<any[]>([]);
+  const [openDrawer, setOpenDrawer] = useState<boolean>(false);
 
   const fetchData = async () => {
     const response = await api.get("api/extratos/");
@@ -133,9 +134,13 @@ export function ExtratosTable() {
                   </Button>
                 </TableCell>
                 <TableCell className="text-center">
-                  <a href="#" className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
+                  <Button onClick={
+                    () => {
+                      setOpenDrawer(true);
+                    }
+                  } className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
                     Detalhes
-                  </a>
+                  </Button>
                 </TableCell>
               </TableRow>
 
@@ -144,7 +149,9 @@ export function ExtratosTable() {
             ))}
           </TableBody>
         </Table>
+
       </Flowbite>
+      <AwesomeDrawer isOpen={openDrawer} setIsOpen={setOpenDrawer} />
     </div>
   );
 }
