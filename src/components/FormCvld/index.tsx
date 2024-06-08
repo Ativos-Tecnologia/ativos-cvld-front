@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   Controller,
   useForm,
@@ -16,6 +16,8 @@ import { ErrorMessage } from "../ErrorMessage/ErrorMessage";
 import { Tooltip } from "flowbite-react";
 import { UpdatePrecatorioButton } from "../Button/UpdatePrecatorioButton";
 import numberFormat from "@/functions/formaters/numberFormat";
+import { UserInfoAPIContext, UserInfoContextType } from "@/context/UserInfoContext";
+
 
 interface ChartTwoState {
   series: {
@@ -44,20 +46,24 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
     formState: { errors },
   } = useForm();
 
+  const { setCredits, credits } = useContext<UserInfoContextType>(UserInfoAPIContext);
+
   const [oficioForm, setOficioForm] = useState<any>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
+
+  const mySwal = UseMySwal();
 
 
   const [state, setState] = useState<ChartTwoState>({
     series: [
       {
         name: "Valor Principal",
-        data: [203396.06, 1280.35],
+        data: [0, 0],
       },
       {
         name: "Valor Juros",
-        data: [100, 800],
+        data: [0, 0],
       },
     ],
   });
@@ -147,8 +153,15 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
     // data.valor_representante = backendNumberFormat(data.valor_representante);
     // data.valor_cessionario = backendNumberFormat(data.valor_cessionario);
     setLoading(true);
-    const response = await api.post("/api/extrato/create/", data)
-    if (response.status === 200) {
+
+    try {
+      const response = await api.post("/api/extrato/create/", data)
+      if (response.status === 201) {
+        setCredits({
+          ...credits,
+          available_credits: credits.available_credits - response.data.result[0].price,
+        });
+
       dataCallback(response.data);
 
       const formatedPrincipal = parseFloat(data.valor_principal).toFixed(2);
@@ -192,21 +205,37 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
 
 
 
-    } else if (response.status === 401) {
-      UseMySwal().fire({
-        icon: "error",
-        title: "Sessão expirada",
-        text: "Sua sessão expirou, por favor faça login novamente",
-      });
-    } else {
-      UseMySwal().fire({
-        icon: "error",
-        title: "Erro",
-        text: "Ocorreu um erro ao tentar processar a requisição",
-      });
     }
     setLoading(false);
-  };
+  }
+
+    catch (error: any) {
+      if (error.response.status === 401 && error.response.data.code === "token_not_valid") {
+        mySwal.fire({
+          icon: "error",
+          title: "Erro",
+          text: "Sua sessão expirou. Faça login novamente.",
+        });
+        localStorage.clear();
+        window.location.href = "auth/signin";
+      } else if (error.response.status === 403) {
+        mySwal.fire({
+          icon: "warning",
+          title: "Erro",
+          text: "Alguns campos estão incorretos. Verifique e tente novamente.",
+        });
+      } else {
+        mySwal.fire({
+          icon: "error",
+          title: "Erro",
+          text: error.response.data.detail,
+        });
+
+      }
+      setLoading(false);
+    }
+  }
+
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
