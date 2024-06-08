@@ -2,7 +2,7 @@ import axios from 'axios';
 import { ACCESS_TOKEN, DEV_API_URL, PROD_API_URL } from '@/constants/constants';
 
 const api = axios.create({
-  baseURL: PROD_API_URL,
+  baseURL: DEV_API_URL,
   headers: {
     "Content-Type": "application/json",
   },

@@ -26,8 +26,9 @@ export interface UserInfoContextType {
     updateProfile: (id: string, data: any) => Promise<any>;
     firstLogin: boolean | null;
     setFirstLogin: (value: boolean | null) => void;
-    subscriptionData: ISubscriptionInfo,
-    credits: IUserBalance
+    subscriptionData: ISubscriptionInfo;
+    credits: IUserBalance;
+    setCredits: (value: IUserBalance) => void;
 }
 
 
@@ -85,7 +86,8 @@ export const UserInfoAPIContext = createContext<UserInfoContextType>({
     credits: {
         id: 0,
         available_credits: 0
-    }
+    },
+    setCredits: () => {}
 })
 
 
@@ -121,39 +123,6 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
 
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-
-    // const checkUserSubscription = async () => {
-    //     try {
-    //         const response = await api.get("/api/subscription/", {
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //             },
-    //         });
-
-    //         return response.data;
-    //     } catch (error: any) {
-    //         console.error(error);
-    //         return error
-    //     }
-    // }
-
-    // const fetchProfile = async () => {
-    //     try {
-    //         const response = await api.get("/api/profile/", {
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //             },
-    //         });
-
-    //         setData(response.data);
-    //         // setLoading(false);
-    //     } catch (error: any) {
-    //         setError(error.message);
-    //         setLoading(false);
-    //         console.error(error);
-    //     }
-    // }
-
 
     useEffect(() => {
         const fetchData = async () => {
@@ -211,7 +180,7 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
     }
 
     return (
-        <UserInfoAPIContext.Provider value={{ data, loading, error, updateProfile, firstLogin, setFirstLogin, subscriptionData, credits }}>
+        <UserInfoAPIContext.Provider value={{ data, loading, error, updateProfile, firstLogin, setFirstLogin, subscriptionData, credits, setCredits }}>
             {children}
         </UserInfoAPIContext.Provider>
     );
