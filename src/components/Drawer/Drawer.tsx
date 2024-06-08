@@ -60,7 +60,7 @@ export const AwesomeDrawer: React.FC<AwesomeDrawerProps> = ({ isOpen, setIsOpen 
   return (
     <>
     <Flowbite theme={{ theme: customTheme }}>
-      <Drawer open={isOpen} onClose={() => setIsOpen(!isOpen)} position="right" backdrop={true}>
+      <Drawer open={isOpen} onClose={() => setIsOpen(!isOpen)} position="right" backdrop={true} className="drop-shadow-lg">
         <Drawer.Header title="Drawer" />
         <Drawer.Items>
           <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
