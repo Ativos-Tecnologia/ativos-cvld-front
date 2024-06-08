@@ -125,7 +125,6 @@ const Profile = () => {
                 width: "auto",
                 height: "100%",
               }}
-            // placeholder={"blur"}
 
             />
             <div className="absolute -bottom-3.5 right-2 z-10">
@@ -142,7 +141,7 @@ const Profile = () => {
 
                     <button onClick={
                       () => setEditMode(!editMode)
-                    }>Cancelar Edição</button>
+                    }>Desfazer</button>
                   </React.Fragment>
                 ) : (
                   <React.Fragment>
