@@ -5,14 +5,19 @@ import DropdownNotification from "./DropdownNotification";
 import DropdownUser from "./DropdownUser";
 import Image from "next/image";
 import { Balance } from "./Balance";
+import { useContext } from "react";
+import { UserInfoAPIContext, UserInfoContextType } from "@/context/UserInfoContext";
 
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
 }) => {
 
+  const { subscriptionData } = useContext<UserInfoContextType>(UserInfoAPIContext);
+
   return (
-    <header className="sticky top-0 z-1 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
+    
+    <header className="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
       <div className="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
         <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
           {/* <!-- Hamburger Toggle BTN --> */}
@@ -112,7 +117,8 @@ const Header = (props: {
             {/* <!-- Dark Mode Toggler --> */}
 
             {/* Free Tier Notification */}
-            <Balance />
+            {subscriptionData[0].plan !== 'GOD_MODE' && <Balance />}
+            
             {/* <!-- Free Tier Notification --> */}
 
             {/* <!-- Notification Menu Area --> */}
