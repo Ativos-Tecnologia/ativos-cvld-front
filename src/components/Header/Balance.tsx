@@ -46,7 +46,10 @@ export const Balance = () => {
                     <span
                         className={`absolute -top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-meta-1`}
                     >
-                        <span className="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-meta-1 opacity-75"></span>
+                        {credits.available_credits <= 10 && (
+                            <span className="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-meta-1 opacity-75"></span>
+                        )}
+
                     </span>
                     <p>Créditos: {credits.available_credits}</p>
                 </a>
@@ -67,7 +70,7 @@ export const Balance = () => {
                         </div>
                         <div className="px-3 py-2 flex flex-col justify-center dark:bg-form-strokedark dark:text-white">
                             <p>
-                            Você está usando uma <strong>versão gratuita</strong>, {diffDays > 0 ? `e seus créditos irão expirar em ${diffDays} dias.` : 'seus créditos expiraram.'} Adquira créditos para continuar usando a nossa plataforma.
+                                Você está usando uma <strong>versão gratuita</strong>, {diffDays > 0 ? `e seus créditos irão expirar em ${diffDays} dias.` : 'seus créditos expiraram.'} Adquira créditos para continuar usando a nossa plataforma.
                             </p>
                             <Link href='#' className="group text-primary opacity-80 hover:opacity-100 text-base mt-2 font-semibold dark:text-white">
                                 Nossos planos
