@@ -114,9 +114,6 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
   const [filledData, setFilledData] = useState<boolean>(false);
   const [auxData, setAuxData] = useState<ApiResponse>({ result: [], setData: () => { } });
   const CVLDResultRef = React.useRef<HTMLDivElement>(null);
-  console.log(CVLDResultRef);
-
-
 
   // procedimento de scroll quando o cálculo for realizado:
   useEffect(() => {

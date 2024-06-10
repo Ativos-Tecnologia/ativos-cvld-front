@@ -13,7 +13,7 @@ const Header = (props: {
   setSidebarOpen: (arg0: boolean) => void;
 }) => {
 
-  const { subscriptionData } = useContext<UserInfoContextType>(UserInfoAPIContext);
+  const { subscriptionData, loading } = useContext<UserInfoContextType>(UserInfoAPIContext);
 
   return (
     
@@ -117,7 +117,7 @@ const Header = (props: {
             {/* <!-- Dark Mode Toggler --> */}
 
             {/* Free Tier Notification */}
-            {subscriptionData[0].plan !== 'GOD_MODE' && <Balance />}
+            {subscriptionData[0].plan !== 'GOD_MODE' && subscriptionData[0].plan && <Balance />}
             
             {/* <!-- Free Tier Notification --> */}
 
