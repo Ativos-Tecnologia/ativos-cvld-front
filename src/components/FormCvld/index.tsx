@@ -15,8 +15,9 @@ import { ErrorMessage } from "../ErrorMessage/ErrorMessage";
 import { UpdatePrecatorioButton } from "../Button/UpdatePrecatorioButton";
 import numberFormat from "@/functions/formaters/numberFormat";
 import { UserInfoAPIContext, UserInfoContextType } from "@/context/UserInfoContext";
-import { BiLineChart } from "react-icons/bi";
+import { BiChevronRight, BiLineChart } from "react-icons/bi";
 import { AiOutlineLoading } from "react-icons/ai";
+import Link from "next/link";
 
 
 interface ChartTwoState {
@@ -150,8 +151,6 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
       data.npu = "0000000-00.0000.0.00.0000";
     }
 
-    // data.valor_representante = backendNumberFormat(data.valor_representante);
-    // data.valor_cessionario = backendNumberFormat(data.valor_cessionario);
     setLoading(true);
 
     try {
@@ -218,6 +217,30 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
         });
         localStorage.clear();
         window.location.href = "auth/signin";
+      } else if (error.response.status === 400 && (error.response.data.subject == "NO_CASH" || error.response.data.subject == "INSUFFICIENT_CASH")) {
+        mySwal.fire({
+          icon: "warning",
+          title: "Saldo insuficiente",
+          showConfirmButton: false,
+          showCloseButton: true,
+          html: (
+            <div className="flex flex-col border border-stroke rounded-md dark:border-strokedark dark:bg-boxdark">
+              <div className="flex items-center justify-center my-2">
+                    <p className="text-md font-semibold dark:text-white">Escolha uma das opções de recarga e continue utilizando a plataforma</p>
+                    </div>
+            <div className="flex flex-col mt-2 border border-stroke p-4 rounded-md dark:border-strokedark dark:bg-boxdark">
+              <Link href='#' className="flex flex-row items-center justify-center group text-primary text-md font-semibold dark:text-white">
+                  Adquirir Créditos
+
+                  <BiChevronRight style={{
+                      width: "22px",
+                      height: "22px",
+                  }} className="inline-block ml-1 transition-all duration-300 group-hover:translate-x-1" />
+              </Link>
+            </div>
+          </div>
+          )
+        });
       } else if (error.response.status === 403) {
         mySwal.fire({
           icon: "warning",
@@ -244,11 +267,6 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
           Calculadora de Atualização de Precatórios
         </h2>
         <div className="flex flex-col items-center w-full sm:w-60">
-          {/* <Tooltip content="Em breve" style="light" arrow={false} placement="top">
-          <Button disabled className="px-6 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:opacity-95 disabled:cursor-not-allowed disabled:bg-opacity-50">
-            Carregar ofício
-            </Button>
-            </Tooltip> */}
           <UpdatePrecatorioButton setStateFunction={setOficioForm} />
           <span className="apexcharts-legend-text" style={{ "color": "rgb(55, 61, 63)", "fontSize": "12px", "fontWeight": "400", "fontFamily": "Satoshi" }}>TRF1 ao TRF4 (beta)</span>
         </div>
