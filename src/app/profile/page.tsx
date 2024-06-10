@@ -12,8 +12,9 @@ import {
 } from 'react-hook-form';
 import UseMySwal from "@/hooks/useMySwal";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
-import { BiCamera, BiLogoFacebook, BiLogoLinkedin, BiLogoTwitter, BiEditAlt } from "react-icons/bi";
+import { BiCamera, BiLogoFacebook, BiLogoLinkedin, BiLogoTwitter, BiEditAlt, BiSave } from "react-icons/bi";
 import { BsXLg } from "react-icons/bs";
+import { Button } from "flowbite-react";
 
 
 const Profile = () => {
@@ -124,41 +125,40 @@ const Profile = () => {
                 width: "auto",
                 height: "100%",
               }}
-            // placeholder={"blur"}
 
             />
             <div className="absolute -bottom-3.5 right-2 z-10">
-              <label
-                htmlFor="cover"
-                className="flex cursor-pointer items-center justify-center gap-2 rounded bg-primary px-2 py-1 text-sm font-medium text-white hover:bg-opacity-90"
-              >
-                <input
-                  type="file"
-                  name="cover"
-                  id="cover"
-                  className="sr-only"
-                />
+              <Button as={'label'} gradientDuoTone={'purpleToBlue'} className="flex cursor-pointer items-center justify-center gap-2 rounded p-0 text-sm font-medium text-white hover:bg-opacity-90">
                 {editMode ? (
                   <React.Fragment>
-                    <span>
-                      <BsXLg />
-                    </span>
+
+                    <BsXLg style={{
+                      width: "16px",
+                      height: "16px",
+                      marginRight: "6px",
+                      alignSelf: "center",
+                    }} />
+
                     <button onClick={
                       () => setEditMode(!editMode)
-                    }>Cancelar Edição</button>
+                    }>Desfazer</button>
                   </React.Fragment>
                 ) : (
                   <React.Fragment>
-                    <span>
-                      <BiEditAlt />
-                    </span>
+
+                    <BiEditAlt style={{
+                      width: "16px",
+                      height: "16px",
+                      marginRight: "6px",
+                      alignSelf: "center",
+                    }} />
+
                     <button onClick={
                       () => setEditMode(!editMode)
                     }>Editar Perfil</button>
                   </React.Fragment>
                 )}
-
-              </label>
+              </Button>
             </div>
           </div>
           <div className="px-4 pb-6 text-center lg:pb-8 xl:pb-11.5">
@@ -174,13 +174,11 @@ const Profile = () => {
 
                 {/* only visible when editing profile */}
                 {editMode && (
-                  <label
-                    htmlFor="profile"
-                    className="absolute bottom-0 right-0 flex h-8.5 w-11.5 cursor-pointer items-center justify-center rounded-full bg-primary text-white hover:bg-opacity-90 sm:bottom-2 sm:right-2"
-                  >
-
-                    <BiCamera />
-
+                  <Button as={'label'} gradientDuoTone={'purpleToBlue'} className="absolute bottom-0 right-0 flex h-8.5 w-11.5 cursor-pointer items-center justify-center rounded-full text-white hover:bg-opacity-90 sm:bottom-2 sm:right-2">
+                    <BiCamera style={{
+                      width: "16px",
+                      height: "16px",
+                    }} />
                     <form onSubmit={handleSubmit(onSubmit)}>
                       <input
                         type="file"
@@ -202,7 +200,7 @@ const Profile = () => {
                         )
                       }
                     </form>
-                  </label>
+                  </Button>
                 )}
                 {/* end only visible when editing profile */}
 
@@ -244,7 +242,15 @@ const Profile = () => {
                         }
                         defaultValue={data[0]?.title}
                       />
-                      <button type="submit" className="bg-primary text-white p-2 rounded-md hover:bg-opacity-80">Salvar</button>
+                      <Button type="submit" gradientDuoTone={'purpleToBlue'} className="text-white rounded-md hover:bg-opacity-80">
+                        <BiSave style={{
+                          width: "16px",
+                          height: "16px",
+                          marginRight: "6px",
+                          alignSelf: "center"
+                        }} />
+                        <span>Salvar alterações</span>
+                      </Button>
                     </div>
                   </form>
                 )

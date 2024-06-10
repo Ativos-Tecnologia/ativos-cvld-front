@@ -75,8 +75,6 @@ const DropdownUser = () => {
           }
         </span>
 
-        <BiChevronDown />
-
       </Link>
 
       {/* <!-- Dropdown Start --> */}
