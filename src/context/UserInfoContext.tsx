@@ -43,7 +43,7 @@ export interface UpdateUserProfile extends FormData {
 
 export type SubscriptionStatus = "PENDING" | "ACTIVE" | "CANCELLED" | "EXPIRED"
 
-export type SubscriptionPlan = "FREE" | "BASIC" | "PREMIUM" | "ENTERPRISE"
+export type SubscriptionPlan = "FREE" | "BASIC" | "PREMIUM" | "ENTERPRISE" | "GOD_MODE"
 
 export interface ISubscriptionInfo {
     0 : {
