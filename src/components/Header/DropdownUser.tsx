@@ -1,10 +1,11 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import useLogout from "@/hooks/useLogout";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
 import { BiChevronDown, BiLogOut, BiUser } from "react-icons/bi";
 import { Avatar } from "flowbite-react";
+import { AiFillCrown } from "react-icons/ai";
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -65,18 +66,23 @@ const DropdownUser = () => {
           </span>
         </span>
 
-        <span className="h-12 w-12 rounded-full">
+        <span className="relative h-12 w-12 rounded-full">
           {
             loading ? (
               <div className="h-12 w-12 rounded-full bg-gray-300 animate-pulse"></div>
             ) : (
-              <Avatar img={data[0].profile_picture}  size="md" alt="Profile Picture" rounded placeholderInitials={data[0].first_name.charAt(0) + data[0].last_name.charAt(0)} />
+              <React.Fragment>
+                <Avatar img={data[0].profile_picture} size="md" alt="Profile Picture" rounded placeholderInitials={data[0].first_name.charAt(0) + data[0].last_name.charAt(0)} />
+                <span className="absolute bottom-2 left-0 w-4 h-4 rounded-full" style={{
+                  // backdropFilter: 'blur(1px)',
+                  filter: 'drop-shadow(0px 0px 3px rgba(0, 0, 0, 1))'
+                }}>
+                  <AiFillCrown style={{ width: "16px", height: "16px", fill: "#f5e000" }} />
+                </span>
+              </React.Fragment>
             )
           }
         </span>
-
-        <BiChevronDown />
-
       </Link>
 
       {/* <!-- Dropdown Start --> */}
@@ -84,9 +90,8 @@ const DropdownUser = () => {
         ref={dropdown}
         onFocus={() => setDropdownOpen(true)}
         onBlur={() => setDropdownOpen(false)}
-        className={`absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark ${
-          dropdownOpen === true ? "block" : "hidden"
-        }`}
+        className={`absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark ${dropdownOpen === true ? "block" : "hidden"
+          }`}
       >
         <ul className="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
           <li>
