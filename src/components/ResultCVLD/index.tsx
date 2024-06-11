@@ -373,7 +373,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                 Ainda sem resultados
               </h4>
               <Image
-                src="/images/noresults.svg"
+                src="/images/business_man.svg"
                 alt="Empty"
                 width={550}
                 height={650}

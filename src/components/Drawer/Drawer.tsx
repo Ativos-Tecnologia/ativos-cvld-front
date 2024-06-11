@@ -2,7 +2,7 @@ import dateFormater from "@/functions/formaters/dateFormater";
 import factorFormater from "@/functions/formaters/factorFormater";
 import linkAdapter from "@/functions/formaters/linkFormater";
 import numberFormat from "@/functions/formaters/numberFormat";
-import { Button, Drawer, Table, TableBody, TableCell, TableHead, TableRow } from "flowbite-react";
+import { Button, Drawer, Table} from "flowbite-react";
 import { useState } from "react";
 import { BiDownload } from "react-icons/bi";
 import { MdAddChart } from "react-icons/md";
@@ -24,203 +24,195 @@ export function AwesomeDrawer({ data }: any) {
         <Drawer.Items>
           <div className="overflow-x-auto">
             <Table className="min-w-full table-auto border-collapse">
-              <TableHead className="bg-gray-200">
-                <TableRow>
-                  <th className="sr-only px-4 py-2 text-white">Chave</th>
-                  <th className="sr-only px-4 py-2 text-white">Valor</th>
-                </TableRow>
-              </TableHead>
-              <Table>
                 {
                   data.recalc_flag === "after_12_2021" ? (
-                    <TableRow className="bg-gradient-to-r from-purple-300 to-blue-400">
-                      <TableCell className="border border-stroke px-4 py-2 text-left  text-white">Regra de Cálculo</TableCell>
-                      <TableCell className="border border-stroke px-4 py-2 text-white">Após 12/2021</TableCell>
-                    </TableRow>
+                    <tr className="bg-gradient-to-r from-purple-300 to-blue-400">
+                      <td className="border border-stroke px-4 py-2 text-left  text-white">Regra de Cálculo</td>
+                      <td className="border border-stroke px-4 py-2 text-white">Após 12/2021</td>
+                    </tr>
                   ) : data.recalc_flag === "before_12_2021" ? (
-                    <TableRow className="bg-gradient-to-r from-purple-300 to-blue-400">
-                      <TableCell className="border border-stroke px-4 py-2 text-left text-white">Regra de Cálculo</TableCell>
-                      <TableCell className="border border-stroke px-4 py-2 text-white">Antes 12/2021</TableCell>
-                    </TableRow>
+                    <tr className="bg-gradient-to-r from-purple-300 to-blue-400">
+                      <td className="border border-stroke px-4 py-2 text-left text-white">Regra de Cálculo</td>
+                      <td className="border border-stroke px-4 py-2 text-white">Antes 12/2021</td>
+                    </tr>
                   ) : (
-                    <TableRow className="bg-gradient-to-r from-purple-300 to-blue-400">
-                      <TableCell className="border border-stroke px-4 py-2 text-left text-white">Regra de Cálculo</TableCell>
-                      <TableCell className="border border-stroke px-4 py-2 text-white">Tributário</TableCell>
-                    </TableRow>
+                    <tr className="bg-gradient-to-r from-purple-300 to-blue-400">
+                      <td className="border border-stroke px-4 py-2 text-left text-white">Regra de Cálculo</td>
+                      <td className="border border-stroke px-4 py-2 text-white">Tributário</td>
+                    </tr>
                   )
                 }
                 {
                   data.npu === "00000000000000000000" || !data.link_cvld ? (
                     null
                   ) : (
-                    <TableRow>
-                      <TableCell className="border border-stroke px-4 py-2 text-left">NPU</TableCell>
-                      <TableCell className="border border-stroke px-4 py-2 text-white">{data.npu}</TableCell>
-                    </TableRow>
+                    <tr>
+                      <td className="border border-stroke px-4 py-2 text-left">NPU</td>
+                      <td className="border border-stroke px-4 py-2 text-white">{data.npu}</td>
+                    </tr>
                   )
                 }
                 {
                   data.nome_credor && (
-                    <TableRow>
-                      <TableCell className="border border-stroke px-4 py-2 text-left">Nome do credor</TableCell>
-                      <TableCell className="border border-stroke px-4 py-2 text-white">{data.nome_credor}</TableCell>
-                    </TableRow>
+                    <tr>
+                      <td className="border border-stroke px-4 py-2 text-left">Nome do credor</td>
+                      <td className="border border-stroke px-4 py-2 text-white">{data.nome_credor}</td>
+                    </tr>
                   )
                 }
                 {
                   data.cpf_cnpj_credor && (
-                    <TableRow>
-                      <TableCell className="border border-stroke px-4 py-2 text-left">CPF/CNPJ do credor</TableCell>
-                      <TableCell className="border border-stroke px-4 py-2 text-white">{data.cpf_cnpj_credor}</TableCell>
-                    </TableRow>
+                    <tr>
+                      <td className="border border-stroke px-4 py-2 text-left">CPF/CNPJ do credor</td>
+                      <td className="border border-stroke px-4 py-2 text-white">{data.cpf_cnpj_credor}</td>
+                    </tr>
                   )
                 }
-                <TableRow className="bg-gradient-to-r from-purple-300 to-blue-400">
-                  <TableCell className="border border-stroke px-4 py-2 text-left text-white">Valor Principal</TableCell>
-                  <TableCell className="border border-stroke px-4 py-2 text-white">{numberFormat(data.valor_principal)}</TableCell>
-                </TableRow>
+                <tr className="bg-gradient-to-r from-purple-300 to-blue-400">
+                  <td className="border border-stroke px-4 py-2 text-left text-white">Valor Principal</td>
+                  <td className="border border-stroke px-4 py-2 text-white">{numberFormat(data.valor_principal)}</td>
+                </tr>
                 {
                   data.valor_juros ? (
-                    <TableRow className="bg-gradient-to-r from-purple-300 to-blue-400">
-                      <TableCell className="border border-stroke px-4 py-2 text-left text-white">Valor Juros</TableCell>
-                      <TableCell className="border border-stroke px-4 py-2 text-white">{numberFormat(data.valor_juros)}</TableCell>
-                    </TableRow>
+                    <tr className="bg-gradient-to-r from-purple-300 to-blue-400">
+                      <td className="border border-stroke px-4 py-2 text-left text-white">Valor Juros</td>
+                      <td className="border border-stroke px-4 py-2 text-white">{numberFormat(data.valor_juros)}</td>
+                    </tr>
                   ) : (
-                    <TableRow className="bg-gradient-to-r from-purple-300 to-blue-400">
-                      <TableCell className="border border-stroke px-4 py-2 text-left text-white">Valor Juros</TableCell>
-                      <TableCell className="border border-stroke px-4 py-2 text-white">Não Informado</TableCell>
-                    </TableRow>
+                    <tr className="bg-gradient-to-r from-purple-300 to-blue-400">
+                      <td className="border border-stroke px-4 py-2 text-left text-white">Valor Juros</td>
+                      <td className="border border-stroke px-4 py-2 text-white">Não Informado</td>
+                    </tr>
                   )
                 }
-                <TableRow className="bg-gradient-to-r from-purple-300 to-blue-400">
-                  <TableCell className="border border-stroke px-4 py-2 text-left text-white">Valor Inscrito</TableCell>
-                  <TableCell className="border border-stroke px-4 py-2 text-white">{numberFormat(data.valor_inscrito)}</TableCell>
-                </TableRow>
+                <tr className="bg-gradient-to-r from-purple-300 to-blue-400">
+                  <td className="border border-stroke px-4 py-2 text-left text-white">Valor Inscrito</td>
+                  <td className="border border-stroke px-4 py-2 text-white">{numberFormat(data.valor_inscrito)}</td>
+                </tr>
                 {
                   data.valor_pss !== 0 && data.valor_pss && (
-                    <TableRow className="bg-gradient-to-r from-purple-300 to-blue-400">
-                      <TableCell className="border border-stroke px-4 py-2 text-left text-white">Valor PSS</TableCell>
-                      <TableCell className="border border-stroke px-4 py-2 text-white">{numberFormat(data.valor_pss)}</TableCell>
-                    </TableRow>
+                    <tr className="bg-gradient-to-r from-purple-300 to-blue-400">
+                      <td className="border border-stroke px-4 py-2 text-left text-white">Valor PSS</td>
+                      <td className="border border-stroke px-4 py-2 text-white">{numberFormat(data.valor_pss)}</td>
+                    </tr>
                   )
                 }
-                <TableRow className="bg-gradient-to-r from-purple-300 to-blue-400">
-                  <TableCell className="border border-stroke px-4 py-2 text-left text-white">Data Base</TableCell>
-                  <TableCell className="border border-stroke px-4 py-2 text-white">{dateFormater(data.data_base)}</TableCell>
-                </TableRow>
-                <TableRow className="bg-gradient-to-r from-purple-300 to-blue-400">
-                  <TableCell className="border border-stroke px-4 py-2 text-left text-white">Data Requisição</TableCell>
-                  <TableCell className="border border-stroke px-4 py-2 text-white">{dateFormater(data?.data_requisicao)}</TableCell>
-                </TableRow>
-                <TableRow className="bg-gradient-to-r from-purple-300 to-blue-400">
-                  <TableCell className="border border-stroke px-4 py-2 text-left text-white">Atualizado até</TableCell>
-                  <TableCell className="border border-stroke px-4 py-2 text-white">{dateFormater(data.data_limite_de_atualizacao)}</TableCell>
-                </TableRow>
+                <tr className="bg-gradient-to-r from-purple-300 to-blue-400">
+                  <td className="border border-stroke px-4 py-2 text-left text-white">Data Base</td>
+                  <td className="border border-stroke px-4 py-2 text-white">{dateFormater(data.data_base)}</td>
+                </tr>
+                <tr className="bg-gradient-to-r from-purple-300 to-blue-400">
+                  <td className="border border-stroke px-4 py-2 text-left text-white">Data Requisição</td>
+                  <td className="border border-stroke px-4 py-2 text-white">{dateFormater(data?.data_requisicao)}</td>
+                </tr>
+                <tr className="bg-gradient-to-r from-purple-300 to-blue-400">
+                  <td className="border border-stroke px-4 py-2 text-left text-white">Atualizado até</td>
+                  <td className="border border-stroke px-4 py-2 text-white">{dateFormater(data.data_limite_de_atualizacao)}</td>
+                </tr>
                 {
                   data.fator_correcao_ipca_e && (
-                    <TableRow className="bg-gradient-to-r from-purple-400 to-blue-500">
-                      <TableCell className="border border-stroke px-4 py-2 text-left text-white">Fator IPCA-E até 12/2021</TableCell>
-                      <TableCell className="border border-stroke px-4 py-2 text-white">{factorFormater(data.fator_correcao_ipca_e)}</TableCell>
-                    </TableRow>
+                    <tr className="bg-gradient-to-r from-purple-400 to-blue-500">
+                      <td className="border border-stroke px-4 py-2 text-left text-white">Fator IPCA-E até 12/2021</td>
+                      <td className="border border-stroke px-4 py-2 text-white">{factorFormater(data.fator_correcao_ipca_e)}</td>
+                    </tr>
                   )
                 }
                 {
                   data.recalc_flag === "before_12_2021" && (
                     <>
-                      <TableRow className="bg-gradient-to-r from-purple-400 to-blue-500">
-                        <TableCell className="border border-stroke px-4 py-2 text-left text-white">Principal Atualizado até 12/2021</TableCell>
-                        <TableCell className="border border-stroke px-4 py-2 text-white">{numberFormat(data.valor_atualizado_principal)}</TableCell>
-                      </TableRow>
-                      <TableRow className="bg-gradient-to-r from-purple-400 to-blue-500">
-                        <TableCell className="border border-stroke px-4 py-2 text-left text-white">Juros Atualizado até 12/2021</TableCell>
-                        <TableCell className="border border-stroke px-4 py-2 text-white">{numberFormat(data.valor_atualizado_juros)}</TableCell>
-                      </TableRow>
+                      <tr className="bg-gradient-to-r from-purple-400 to-blue-500">
+                        <td className="border border-stroke px-4 py-2 text-left text-white">Principal Atualizado até 12/2021</td>
+                        <td className="border border-stroke px-4 py-2 text-white">{numberFormat(data.valor_atualizado_principal)}</td>
+                      </tr>
+                      <tr className="bg-gradient-to-r from-purple-400 to-blue-500">
+                        <td className="border border-stroke px-4 py-2 text-left text-white">Juros Atualizado até 12/2021</td>
+                        <td className="border border-stroke px-4 py-2 text-white">{numberFormat(data.valor_atualizado_juros)}</td>
+                      </tr>
                     </>
                   )
                 }
                 {
                   data.recalc_flag && (
-                    <TableRow className="bg-gradient-to-r from-purple-500 to-blue-600">
-                      <TableCell className="border border-stroke px-4 py-2 text-left text-white">Fator SELIC</TableCell>
-                      <TableCell className="border border-stroke px-4 py-2 text-white">{factorFormater(data.fator_correcao_selic)}</TableCell>
-                    </TableRow>
+                    <tr className="bg-gradient-to-r from-purple-500 to-blue-600">
+                      <td className="border border-stroke px-4 py-2 text-left text-white">Fator SELIC</td>
+                      <td className="border border-stroke px-4 py-2 text-white">{factorFormater(data.fator_correcao_selic)}</td>
+                    </tr>
                   )
                 }
                 {
                   data.principal_atualizado_requisicao && (
-                    <TableRow className="bg-gradient-to-r from-purple-500 to-blue-600">
-                      <TableCell className="border border-stroke px-4 py-2 text-left text-white">Principal Atualizado até a Requisição</TableCell>
-                      <TableCell className="border border-stroke px-4 py-2 text-white">{numberFormat(data.principal_atualizado_requisicao)}</TableCell>
-                    </TableRow>
+                    <tr className="bg-gradient-to-r from-purple-500 to-blue-600">
+                      <td className="border border-stroke px-4 py-2 text-left text-white">Principal Atualizado até a Requisição</td>
+                      <td className="border border-stroke px-4 py-2 text-white">{numberFormat(data.principal_atualizado_requisicao)}</td>
+                    </tr>
                   )
                 }
                 {
                   String(data.juros_atualizados_requisicao) && (
-                    <TableRow className="bg-gradient-to-r from-purple-500 to-blue-600">
-                      <TableCell className="border border-stroke px-4 py-2 text-left text-white">Juros Atualizados até a Requisição</TableCell>
-                      <TableCell className="border border-stroke px-4 py-2 text-white">{numberFormat(data.juros_atualizados_requisicao)}</TableCell>
-                    </TableRow>
+                    <tr className="bg-gradient-to-r from-purple-500 to-blue-600">
+                      <td className="border border-stroke px-4 py-2 text-left text-white">Juros Atualizados até a Requisição</td>
+                      <td className="border border-stroke px-4 py-2 text-white">{numberFormat(data.juros_atualizados_requisicao)}</td>
+                    </tr>
                   )
                 }
                 {
                   data.fator_periodo_graca_ipca_e && (
-                    <TableRow className="bg-gradient-to-r from-purple-600 to-blue-700">
-                      <TableCell className="border border-stroke px-4 py-2 text-left text-white">Fator Período de Graça IPCA-E</TableCell>
-                      <TableCell className="border border-stroke px-4 py-2 text-white">{factorFormater(data.fator_periodo_graca_ipca_e)}</TableCell>
-                    </TableRow>
+                    <tr className="bg-gradient-to-r from-purple-600 to-blue-700">
+                      <td className="border border-stroke px-4 py-2 text-left text-white">Fator Período de Graça IPCA-E</td>
+                      <td className="border border-stroke px-4 py-2 text-white">{factorFormater(data.fator_periodo_graca_ipca_e)}</td>
+                    </tr>
                   )
                 }
                 {
                   data.recalc_flag === "before_12_2021" && (
-                    <TableRow className="bg-gradient-to-r from-purple-600 to-blue-700">
-                      <TableCell className="border border-stroke px-4 py-2 text-white text-left">Valor Principal Atualizado Final</TableCell>
-                      <TableCell className="border border-stroke px-4 py-2 text-white">{numberFormat(data.valor_principal_ipca_e)}</TableCell>
-                    </TableRow>
+                    <tr className="bg-gradient-to-r from-purple-600 to-blue-700">
+                      <td className="border border-stroke px-4 py-2 text-white text-left">Valor Principal Atualizado Final</td>
+                      <td className="border border-stroke px-4 py-2 text-white">{numberFormat(data.valor_principal_ipca_e)}</td>
+                    </tr>
                   )
                 }
                 {
                   data.recalc_flag === "before_12_2021" && (
-                    <TableRow className="bg-gradient-to-r from-purple-600 to-blue-700">
-                      <TableCell className="border border-stroke px-4 py-2 text-white text-left">Valor Juros Atualizado Final</TableCell>
-                      <TableCell className="border border-stroke px-4 py-2 text-white">{numberFormat(data.valor_juros_ipca_e)}</TableCell>
-                    </TableRow>
+                    <tr className="bg-gradient-to-r from-purple-600 to-blue-700">
+                      <td className="border border-stroke px-4 py-2 text-white text-left">Valor Juros Atualizado Final</td>
+                      <td className="border border-stroke px-4 py-2 text-white">{numberFormat(data.valor_juros_ipca_e)}</td>
+                    </tr>
                   )
                 }
                   {
                     data.valor_bruto_atualizado_final && (
-                      <TableRow className="bg-gradient-to-r from-purple-600 to-blue-700">
-                        <TableCell className="border border-stroke px-4 py-2 text-white text-left">Valor Bruto Atualizado Final</TableCell>
-                        <TableCell className="border border-stroke px-4 py-2 text-white">{numberFormat(data.valor_bruto_atualizado_final)}</TableCell>
-                      </TableRow>
+                      <tr className="bg-gradient-to-r from-purple-600 to-blue-700">
+                        <td className="border border-stroke px-4 py-2 text-white text-left">Valor Bruto Atualizado Final</td>
+                        <td className="border border-stroke px-4 py-2 text-white">{numberFormat(data.valor_bruto_atualizado_final)}</td>
+                      </tr>
                     )
                   }
-                <TableRow className="bg-gradient-to-r from-rose-300 to-red">
-                  <TableCell className="border border-stroke px-4 py-2 text-white text-left">Imposto de Renda (3%)</TableCell>
-                  <TableCell className="border border-stroke px-4 py-2 text-white">{numberFormat(data.imposto_de_renda)}</TableCell>
-                </TableRow>
+                <tr className="bg-gradient-to-r from-rose-300 to-red">
+                  <td className="border border-stroke px-4 py-2 text-white text-left">Imposto de Renda (3%)</td>
+                  <td className="border border-stroke px-4 py-2 text-white">{numberFormat(data.imposto_de_renda)}</td>
+                </tr>
                 {
                   data.link_memoria_de_calculo_rra && (
-                    <TableRow className="bg-gradient-to-r from-rose-300 to-red">
-                      <TableCell className="border border-stroke px-4 py-2 text-white text-left">IR/RRA</TableCell>
-                      <TableCell className="border border-stroke px-4 py-2 text-white">{numberFormat(data.rra) ? numberFormat(data.rra) : "Não Informado"}</TableCell>
-                    </TableRow>
+                    <tr className="bg-gradient-to-r from-rose-300 to-red">
+                      <td className="border border-stroke px-4 py-2 text-white text-left">IR/RRA</td>
+                      <td className="border border-stroke px-4 py-2 text-white">{numberFormat(data.rra) ? numberFormat(data.rra) : "Não Informado"}</td>
+                    </tr>
                   )
                 }
 
                   {
                     data.recalc_flag === "before_12_2021" && data.pss_atualizado !== 0 && (
-                      <TableRow className="bg-gradient-to-r from-rose-300 to-red">
-                        <TableCell className="border border-stroke px-4 py-2 text-white text-left">PSS Atualizado</TableCell>
-                        <TableCell className="border border-stroke px-4 py-2 text-white">{numberFormat(data.pss_atualizado)}</TableCell>
-                      </TableRow>
+                      <tr className="bg-gradient-to-r from-rose-300 to-red">
+                        <td className="border border-stroke px-4 py-2 text-white text-left">PSS Atualizado</td>
+                        <td className="border border-stroke px-4 py-2 text-white">{numberFormat(data.pss_atualizado)}</td>
+                      </tr>
                     )
                   }
-                <TableRow className="bg-gradient-to-r from-green-300 to-green-400 text-white">
-                  <TableCell className="border border-stroke px-4 py-2 text-left">Valor Líquido Disponível</TableCell>
-                  <TableCell className="border border-stroke px-4 py-2 text-white">{numberFormat(data.valor_liquido_disponivel)}</TableCell>
-                </TableRow>
+                <tr className="bg-gradient-to-r from-green-300 to-green-400 text-white">
+                  <td className="border border-stroke px-4 py-2 text-left">Valor Líquido Disponível</td>
+                  <td className="border border-stroke px-4 py-2 text-white">{numberFormat(data.valor_liquido_disponivel)}</td>
+                </tr>
               </Table>
-            </Table>
             <ul>
               <hr className="border border-stroke dark:border-strokedark my-4" />
               <li className="text-sm flex text-gray-500 dark:text-gray-400 w-full py-1">
