@@ -14,7 +14,8 @@ import { APP_ROUTES } from "@/constants/app-routes";
 import { ExtratosTable } from "../ExtratosTable/ExtratosTable";
 
 const ECommerce: React.FC = () => {
-  const [data, setData] = useState<ApiResponse>({ result: [], setData: () => {} });
+  const [data, setData] = useState<ApiResponse>({ result: [], setData: () => { } });
+  const [calcStep, setCalcStep] = useState<string | null>(null);
 
   return (
     <>
@@ -105,13 +106,37 @@ const ECommerce: React.FC = () => {
         </CardDataStats>
       </div> */}
 
-      <div className="mt-0 grid grid-cols-12 gap-4 md:gap-6 2xl:gap-7.5">
-        <CVLDForm dataCallback={setData} />
-        <CVLDResult result={data.result} setData={setData} />
+      <div className="w-full mt-0 grid grid-cols-12 gap-4 md:gap-6 2xl:gap-7.5">
+        <CVLDForm dataCallback={setData} setCalcStep={setCalcStep} />
+        {calcStep === 'calculating' ? (
+            <div className="p-[30px] w-fit animate-pulse bg-white shadow-default dark:bg-boxdark">
+              <div className="w-[259px] h-[72px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+              <div className="w-[259px] h-[20px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+              <div className="w-[259px] h-[20px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+              <div className="w-[259px] h-[20px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+              <div className="w-[259px] h-[20px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+              <div className="w-[259px] h-[20px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+              <div className="w-[259px] h-[20px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+              <div className="w-[259px] h-[20px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+              <div className="w-[259px] h-[20px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+              <div className="w-[259px] h-[20px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+              <div className="w-[259px] h-[20px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+              <div className="w-[259px] h-[20px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+              <div className="w-[259px] h-[20px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+              <div className="w-[259px] h-[20px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+              <div className="w-[259px] h-[20px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+              <div className="w-[259px] h-[20px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+              <div className="w-[259px] h-[20px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+              <div className="w-[259px] h-[20px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+              <div className="w-[259px] h-[20px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+              <div className="w-[259px] h-[20px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+              <div className="w-[259px] h-[20px] mb-2 bg-slate-200 rounded-md dark:bg-slate-300"></div>
+            </div>
+        ) : <CVLDResult result={data.result} setData={setData} />}
         {/* <ChartThree /> */}
         {/* <MapOne /> */}
-         {/* <div className="col-span-12 xl:col-span-8"> */}
-         <div className="col-span-12">
+        {/* <div className="col-span-12 xl:col-span-8"> */}
+        <div className="col-span-12">
           <ExtratosTable />
         </div>
         {/*
