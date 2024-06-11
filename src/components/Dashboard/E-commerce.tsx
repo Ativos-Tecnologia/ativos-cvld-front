@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import CVLDForm from "../FormCvld";
-import CVLDResult, { ApiResponse, CVLDResultProps } from "../ResultCVLD";
+import CVLDResult, { ApiResponse } from "../ResultCVLD";
 import { ExtratosTable } from "../ExtratosTable/ExtratosTable";
 import ResultCVLDSkeleton from "../Skeletons/ResultCVLDSkeleton";
 
