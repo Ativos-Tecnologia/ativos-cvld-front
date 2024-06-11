@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import SidebarLinkGroup from "./SidebarLinkGroup";
-import { PRUSCIAN_BLUE } from "@/constants/constants";
 import { BiCalculator, BiChevronDown, BiGridAlt, BiUser } from "react-icons/bi";
 
 interface SidebarProps {
@@ -62,11 +61,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   return (
     <aside
       ref={sidebar}
-      className={`absolute left-0 top-0 z-9 flex h-screen w-72.5 flex-col overflow-y-hidden bg-[#12263A] dark:bg-boxdark lg:static lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+      className={`absolute left-0 top-0 z-9999 duration-300 ease-linear flex h-screen w-72.5 flex-col overflow-y-hidden bg-black dark:bg-boxdark lg:static lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
     >
       {/* <!-- SIDEBAR HEADER --> */}
-      <div className="flex items-center justify-center gap-2 px-6 py-5.5 lg:py-6.5">
+      <div className="flex justify-center gap-5 px-6 py-5.5 lg:py-6.5">
         <Link href="/">
           <Image
             width={176}
@@ -134,7 +133,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       >
                         <BiGridAlt style={{ width: '22px', height: '22px', fill: '#DEE4EE' }} />
                         Dashboard
-                        <BiChevronDown className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current w-5 h-5 duration-300 ${open && "rotate-180"}`} />
+                        <BiChevronDown className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current w-5 h-5 ${open && "rotate-180"}`} />
                       </Link>
 
                       <div

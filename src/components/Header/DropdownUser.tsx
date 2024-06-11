@@ -53,15 +53,20 @@ const DropdownUser = () => {
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
             {
-              loading ? <div className="h-3 w-20 bg-gray-300 animate-pulse"></div> : `${data[0].first_name} ${data[0].last_name}`
+              loading ? (
+                <div className="animate-pulse">
+                  <div className="w-[75px] h-[20px] bg-slate-200 rounded-full dark:bg-slate-300"></div>
+                </div>
+              ) : `${data[0].first_name} ${data[0].last_name}`
             }
           </span>
           <span className="block text-xs">
             {
-              loading ? <div>
-                <div className="h-3 w-20 bg-gray-300 animate-pulse"></div>
-                <div className="h-3 w-20 bg-gray-300 animate-pulse"></div>
-              </div>
+              loading ? (
+                <div className="animate-pulse">
+                  <div className="w-[75px] h-[16px] bg-slate-200 rounded-full dark:bg-slate-300"></div>
+                </div>
+              )
                 : data[0].title
             }
           </span>
@@ -70,7 +75,9 @@ const DropdownUser = () => {
         <span className="relative h-12 w-12 rounded-full">
           {
             loading ? (
-              <div className="h-12 w-12 rounded-full bg-gray-300 animate-pulse"></div>
+              <div className="animate-pulse">
+                <div className="w-12 h-12 bg-slate-200 rounded-full dark:bg-slate-300"></div>
+              </div>
             ) : (
               <React.Fragment>
                 <Avatar img={data[0].profile_picture} size="md" alt="Profile Picture" rounded placeholderInitials={data[0].first_name.charAt(0) + data[0].last_name.charAt(0)} />

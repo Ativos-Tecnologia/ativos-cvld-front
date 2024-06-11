@@ -29,6 +29,7 @@ interface ChartTwoState {
 
 type CVLDFormProps = {
   dataCallback: (data: any) => void;
+  setCalcStep: (stage: string) => void;
 };
 
 interface CPFCNPJprops {
@@ -37,7 +38,7 @@ interface CPFCNPJprops {
   numericOnly: boolean;
 }
 
-const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
+const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
   const {
     register,
     control,
@@ -155,6 +156,8 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
     setLoading(true);
 
     try {
+      setCalcStep("calculating");
+      
       const response = await api.post("/api/extrato/create/", data)
       if (response.status === 201) {
         setCredits({
@@ -163,6 +166,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback }) => {
         });
 
       dataCallback(response.data);
+      setCalcStep('done');
 
       const formatedPrincipal = parseFloat(data.valor_principal).toFixed(2);
       const formatedUpdatedPrincipal = parseFloat(response.data.result[0].principal_atualizado_requisicao).toFixed(2);

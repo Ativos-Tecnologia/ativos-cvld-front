@@ -1,10 +1,11 @@
 import { ApexOptions } from "apexcharts";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { DEV_API_URL, PROD_API_URL } from "@/constants/constants";
+import { PROD_API_URL } from "@/constants/constants";
 import { Button } from "flowbite-react";
 import { BiDownload } from "react-icons/bi";
 import { CVLDResultProps } from "@/interfaces/IResultCVLD";
+import { BsEraser } from "react-icons/bs";
 
 const options: ApexOptions = {
   colors: ["#3C50E0", "#80CAEE"],
@@ -85,6 +86,15 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
   const [auxData, setAuxData] = useState<ApiResponse>({ result: [], setData: () => { } });
   const CVLDResultRef = React.useRef<HTMLDivElement>(null);
 
+  // lógica para limpar a tela de cálculos
+  const clearData = () => {
+    setFilledData(false);
+    setAuxData({ result: [], setData: () => { } });
+    console.log(filledData, auxData);
+  }
+  // fim da lógica para limpar a tela de cálculos
+
+  // procedimento de scroll quando o cálculo for realizado:
   useEffect(() => {
     if (result.result.length > 0 && window.innerWidth <= 1270) {
       CVLDResultRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -96,7 +106,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
       setFilledData(true);
       setAuxData(result);
     }
-  }, [result, filledData]);
+  }, [result]);
 
   const numberFormat = (value: number) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -306,7 +316,6 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                               height: "22px",
                             }} className="ml-2" />
                           </Button>
-                          {/* <a href={linkAdapter(item.link_memoria_de_calculo_rra)} className="w-full text-center px-4 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:bg-primary-dark">Link Memória de Cálculo RRA</a> */}
                         </li>
                       )
                     }
@@ -318,9 +327,8 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                         <BiDownload style={{
                           width: "22px",
                           height: "22px",
-                        }} className="ml-2" />
+                        }} className="ml-2 self-center" />
                       </Button>
-                      {/* <a href={linkAdapter(item.link_memoria_de_calculo_simples)} className="w-full text-center px-4 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:bg-primary-dark">Link Memória de Cálculo Simples</a> */}
                     </li>
                     {
                       item.link_cvld && (
@@ -334,10 +342,20 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                               height: "22px",
                             }} className="ml-2" />
                           </Button>
-                          {/* <a href={linkAdapter(item.link_cvld)} className="w-full text-center px-4 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:bg-primary-dark">Link CVLD</a> */}
                         </li>
                       )
                     }
+                    <li className="text-sm flex text-gray-500 dark:text-gray-400 w-full py-1">
+                      <Button onClick={clearData} className="w-full text-center px-4 text-sm font-semibold text-white rounded-md hover:opacity-90 bg-gradient-to-r from-rose-400 to-meta-1">
+                        <span className="text-[16px] font-medium">
+                          Limpar Cálculo
+                        </span>
+                        <BsEraser style={{
+                          width: "22px",
+                          height: "22px",
+                        }} className="ml-2" />
+                      </Button>
+                    </li>
                   </ul>
                 ))}
               </div>
@@ -350,19 +368,19 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
 }>Limpar Resultado</button> */}
             </div>
           ) : (
-            <div className="flex flex-col justify-between items-center gap-22">
+            <div className="flex flex-col justify-between items-center">
               <h4 className="text-xl font-semibold text-black dark:text-white">
                 Ainda sem resultados
               </h4>
               <Image
-                src="/images/business_man.svg"
+                src="/images/noresults.svg"
                 alt="Empty"
                 width={550}
                 height={650}
               />
               <span
                 className="text-gray-500 dark:text-gray-400 text-center">
-                Faça uma requisição para visualizar as informações aqui
+                Opa! Parece que ainda não há resultados disponíveis.
               </span>
             </div>
           )
