@@ -134,24 +134,14 @@ export function ExtratosTable() {
                   </Button>
                 </TableCell>
                 <TableCell className="text-center">
-                  <Button onClick={
-                    () => {
-                      setOpenDrawer(true);
-                    }
-                  } className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
-                    Detalhes
-                  </Button>
+                  <AwesomeDrawer data={item} />
                 </TableCell>
               </TableRow>
-
-
-
             ))}
           </TableBody>
         </Table>
 
       </Flowbite>
-      <AwesomeDrawer isOpen={openDrawer} setIsOpen={setOpenDrawer} />
     </div>
   );
 }

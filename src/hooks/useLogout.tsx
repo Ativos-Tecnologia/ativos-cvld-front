@@ -14,7 +14,6 @@ const useLogout = () => {
 
   const logout = async () => {
     try {
-      // await fetch('/api/logout', { method: 'POST' });
       const response = await api.post('/api/token/logout/', {
         refresh: localStorage.getItem(`ATIVOS_${REFRESH_TOKEN}`),
       });
@@ -46,7 +45,7 @@ const useLogout = () => {
           timerProgressBar: true,
           position: 'bottom-end',
         });
-        
+
       }
 
     } catch (error) {
