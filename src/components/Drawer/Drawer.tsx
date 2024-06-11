@@ -33,18 +33,18 @@ export function AwesomeDrawer({ data }: any) {
               <Table>
                 {
                   data.recalc_flag === "after_12_2021" ? (
-                    <TableRow className="bg-gradient-to-r from-purple-400 to-blue-600 text-white">
-                      <TableCell className="border border-stroke px-4 py-2 text-left">Regra de Cálculo</TableCell>
+                    <TableRow className="bg-gradient-to-r from-purple-300 to-blue-400">
+                      <TableCell className="border border-stroke px-4 py-2 text-left  text-white">Regra de Cálculo</TableCell>
                       <TableCell className="border border-stroke px-4 py-2 text-white">Após 12/2021</TableCell>
                     </TableRow>
                   ) : data.recalc_flag === "before_12_2021" ? (
-                    <TableRow className="bg-gradient-to-r from-purple-400 to-blue-600 text-white">
-                      <TableCell className="border border-stroke px-4 py-2 text-left">Regra de Cálculo</TableCell>
+                    <TableRow className="bg-gradient-to-r from-purple-300 to-blue-400">
+                      <TableCell className="border border-stroke px-4 py-2 text-left text-white">Regra de Cálculo</TableCell>
                       <TableCell className="border border-stroke px-4 py-2 text-white">Antes 12/2021</TableCell>
                     </TableRow>
                   ) : (
-                    <TableRow className="bg-gradient-to-r from-purple-400 to-blue-600">
-                      <TableCell className="border border-stroke px-4 py-2 text-left">Regra de Cálculo</TableCell>
+                    <TableRow className="bg-gradient-to-r from-purple-300 to-blue-400">
+                      <TableCell className="border border-stroke px-4 py-2 text-left text-white">Regra de Cálculo</TableCell>
                       <TableCell className="border border-stroke px-4 py-2 text-white">Tributário</TableCell>
                     </TableRow>
                   )
