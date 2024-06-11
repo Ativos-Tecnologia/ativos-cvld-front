@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { PROD_API_URL } from "@/constants/constants";
 import { Button } from "flowbite-react";
 import { BiDownload } from "react-icons/bi";
+import { CVLDResultProps } from "@/interfaces/IResultCVLD";
 import { BsEraser } from "react-icons/bs";
 
 const options: ApexOptions = {
@@ -73,38 +74,7 @@ interface ChartTwoState {
   }[];
 }
 
-export interface CVLDResultProps {
-  recalc_flag: string;
-  npu: string;
-  valor_principal: number;
-  valor_juros: number;
-  valor_inscrito: number;
-  valor_pss: number;
-  data_base: string;
-  data_requisicao: string;
-  fator_correcao_selic: number;
-  fator_correcao_ipca_e: number;
-  principal_atualizado_requisicao: number;
-  juros_atualizados_requisicao: number;
-  fator_periodo_graca_ipca_e: number;
-  valor_principal_ipca_e: number;
-  valor_juros_ipca_e: number;
-  valor_bruto_atualizado_final: number;
-  pss_atualizado: number;
-  numero_de_meses: number;
-  imposto_de_renda: number;
-  incidencia_rra_ir: boolean;
-  rra: number;
-  link_memoria_de_calculo_rra: string | null;
-  link_memoria_de_calculo_simples: string;
-  link_cvld: string;
-  nome_credor: string;
-  cpf_cnpj_credor: string;
-  valor_atualizado_juros: number;
-  valor_atualizado_principal: number;
-  valor_liquido_disponivel: number;
-  data_limite_de_atualizacao: string;
-}
+
 export interface ApiResponse {
   result: CVLDResultProps[];
   setData: React.Dispatch<React.SetStateAction<ApiResponse>>;
@@ -115,7 +85,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
   const [filledData, setFilledData] = useState<boolean>(false);
   const [auxData, setAuxData] = useState<ApiResponse>({ result: [], setData: () => { } });
   const CVLDResultRef = React.useRef<HTMLDivElement>(null);
-  
+
   // lógica para limpar a tela de cálculos
   const clearData = () => {
     setFilledData(false);
@@ -130,7 +100,6 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
       CVLDResultRef.current?.scrollIntoView({ behavior: "smooth" })
     }
   }, [result])
-  // fim do procedimento de scroll
 
   useEffect(() => {
     if (result.result.length > 0) {
@@ -178,15 +147,15 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                     {
                       item.recalc_flag === "after_12_2021" ? (
                         <li className="text-sm text-gray-500 dark:text-gray-400">
-                          <span className="font-bold">Regra de Recálculo:</span> Após 12/2021
+                          <span className="font-bold">Regra de Cálculo:</span> Após 12/2021
                         </li>
                       ) : item.recalc_flag === "before_12_2021" ? (
                         <li className="text-sm text-gray-500 dark:text-gray-400">
-                          <span className="font-bold">Regra de Recálculo:</span> Antes 12/2021
+                          <span className="font-bold">Regra de Cálculo:</span> Antes 12/2021
                         </li>
                       ) : (
                         <li className="text-sm text-gray-500 dark:text-gray-400">
-                          <span className="font-bold">Regra de Recálculo:</span> Tributário
+                          <span className="font-bold">Regra de Cálculo:</span> Tributário
                         </li>
                       )
                     }

@@ -1,0 +1,32 @@
+export interface CVLDResultProps {
+    recalc_flag: string;
+    npu: string;
+    valor_principal: number;
+    valor_juros: number;
+    valor_inscrito: number;
+    valor_pss: number;
+    data_base: string;
+    data_requisicao: string;
+    fator_correcao_selic: number;
+    fator_correcao_ipca_e: number;
+    principal_atualizado_requisicao: number;
+    juros_atualizados_requisicao: number;
+    fator_periodo_graca_ipca_e: number;
+    valor_principal_ipca_e: number;
+    valor_juros_ipca_e: number;
+    valor_bruto_atualizado_final: number;
+    pss_atualizado: number;
+    numero_de_meses: number;
+    imposto_de_renda: number;
+    incidencia_rra_ir: boolean;
+    rra: number;
+    link_memoria_de_calculo_rra: string | null;
+    link_memoria_de_calculo_simples: string;
+    link_cvld: string;
+    nome_credor: string;
+    cpf_cnpj_credor: string;
+    valor_atualizado_juros: number;
+    valor_atualizado_principal: number;
+    valor_liquido_disponivel: number;
+    data_limite_de_atualizacao: string;
+  }

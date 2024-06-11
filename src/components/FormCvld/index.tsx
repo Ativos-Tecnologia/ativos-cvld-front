@@ -128,7 +128,8 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
     // data.data_requisicao = formattedDataRequisicao.join("-");
 
     if (!data.data_limite_de_atualizacao_check) {
-      data.data_limite_de_atualizacao = undefined;
+      // definir como a data de hoje
+      data.data_limite_de_atualizacao = new Date().toISOString().split("T")[0];
     }
     // else {
     //   let formattedDataLimite = data.data_limite_de_atualizacao.split("-")
