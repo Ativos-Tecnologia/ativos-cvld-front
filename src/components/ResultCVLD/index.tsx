@@ -1,9 +1,10 @@
 import { ApexOptions } from "apexcharts";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { DEV_API_URL, PROD_API_URL } from "@/constants/constants";
+import { PROD_API_URL } from "@/constants/constants";
 import { Button } from "flowbite-react";
 import { BiDownload } from "react-icons/bi";
+import { BsEraser } from "react-icons/bs";
 
 const options: ApexOptions = {
   colors: ["#3C50E0", "#80CAEE"],
@@ -114,6 +115,14 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
   const [filledData, setFilledData] = useState<boolean>(false);
   const [auxData, setAuxData] = useState<ApiResponse>({ result: [], setData: () => { } });
   const CVLDResultRef = React.useRef<HTMLDivElement>(null);
+  
+  // lógica para limpar a tela de cálculos
+  const clearData = () => {
+    setFilledData(false);
+    setAuxData({ result: [], setData: () => { } });
+    console.log(filledData, auxData);
+  }
+  // fim da lógica para limpar a tela de cálculos
 
   // procedimento de scroll quando o cálculo for realizado:
   useEffect(() => {
@@ -128,7 +137,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
       setFilledData(true);
       setAuxData(result);
     }
-  }, [result, filledData]);
+  }, [result]);
 
   const numberFormat = (value: number) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -338,7 +347,6 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                               height: "22px",
                             }} className="ml-2" />
                           </Button>
-                          {/* <a href={linkAdapter(item.link_memoria_de_calculo_rra)} className="w-full text-center px-4 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:bg-primary-dark">Link Memória de Cálculo RRA</a> */}
                         </li>
                       )
                     }
@@ -350,9 +358,8 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                         <BiDownload style={{
                           width: "22px",
                           height: "22px",
-                        }} className="ml-2" />
+                        }} className="ml-2 self-center" />
                       </Button>
-                      {/* <a href={linkAdapter(item.link_memoria_de_calculo_simples)} className="w-full text-center px-4 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:bg-primary-dark">Link Memória de Cálculo Simples</a> */}
                     </li>
                     {
                       item.link_cvld && (
@@ -366,10 +373,20 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                               height: "22px",
                             }} className="ml-2" />
                           </Button>
-                          {/* <a href={linkAdapter(item.link_cvld)} className="w-full text-center px-4 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:bg-primary-dark">Link CVLD</a> */}
                         </li>
                       )
                     }
+                    <li className="text-sm flex text-gray-500 dark:text-gray-400 w-full py-1">
+                      <Button onClick={clearData} className="w-full text-center px-4 text-sm font-semibold text-white rounded-md hover:opacity-90 bg-gradient-to-r from-rose-400 to-meta-1">
+                        <span className="text-[16px] font-medium">
+                          Limpar Cálculo
+                        </span>
+                        <BsEraser style={{
+                          width: "22px",
+                          height: "22px",
+                        }} className="ml-2" />
+                      </Button>
+                    </li>
                   </ul>
                 ))}
               </div>
