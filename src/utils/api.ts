@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ACCESS_TOKEN, PROD_API_URL, REFRESH_TOKEN } from '@/constants/constants';
+import { ACCESS_TOKEN, DEV_API_URL, PROD_API_URL, REFRESH_TOKEN } from '@/constants/constants';
 
 const activeUrl = PROD_API_URL;
 
@@ -38,6 +38,8 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${data.access}`;
         return api(originalRequest);
       } catch (refreshError) {
+        localStorage.removeItem(`ATIVOS_${ACCESS_TOKEN}`);
+        localStorage.removeItem(`ATIVOS_${REFRESH_TOKEN}`);
         return Promise.reject(refreshError);
       }
     }

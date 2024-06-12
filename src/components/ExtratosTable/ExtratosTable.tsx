@@ -82,7 +82,7 @@ export function ExtratosTable() {
     <div className="overflow-x-auto">
       <Flowbite theme={{ theme: customTheme }}>
         <Table hoverable className="">
-          <TableHead className="bg-[#f9fafb] dark:bg-[#1a202c]">
+          <TableHead className="bg-[#f9fafb] dark:bg-[#1a202c] bg-whi">
             <TableHeadCell className="text-center w-[120px]">Oficio</TableHeadCell>
             <TableHeadCell className="text-center">Credor</TableHeadCell>
             <TableHeadCell className="text-center">Principal</TableHeadCell>

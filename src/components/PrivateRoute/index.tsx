@@ -17,6 +17,10 @@ export default function PrivateRoute({ children }: PropsPrivateRouteProps) {
 
     const [isUserAuthenticated, setIsUserAuthenticated] = useState<boolean | null>(null);
 
+    if (!localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}` || !localStorage.getItem(`ATIVOS_${REFRESH_TOKEN}`))) {
+        window.location.href = APP_ROUTES.public.login.name;
+    }
+
     const checkIsUserFirstLogin = async (): Promise<boolean> => {
         try {
             const response = await api.get("/api/check-first-login/");
