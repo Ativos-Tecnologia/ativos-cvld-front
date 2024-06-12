@@ -19,7 +19,7 @@ export function AwesomeDrawer({ data, setData, open, setOpen }: { data: any, set
       data["valor_principal"] && (
         <Drawer open={open} onClose={handleClose} style={{
           boxShadow: "2px 0 2px 0 rgba(0, 0, 0, 0.1)"
-        }} className="min-w-48 sm:w-115">
+        }} className="min-w-48 sm:w-115" backdrop={true}>
           <Drawer.Header title="Detalhes" onClose={handleClose} titleIcon={MdAddChart} className="mb-1 text-center" />
           <Drawer.Items>
             <div className="overflow-x-auto">
@@ -44,7 +44,7 @@ export function AwesomeDrawer({ data, setData, open, setOpen }: { data: any, set
                         <td className="border border-stroke px-4 py-2 text-boxdark">Antes 12/2021</td>
                       </tr>
                     ) : (
-                      <tr className="bg-blue-500">
+                      <tr className="bg-gray">
                         <td className="border border-stroke px-4 py-2 text-left text-boxdark">Regra de Cálculo</td>
                         <td className="border border-stroke px-4 py-2 text-boxdark">Tributário</td>
                       </tr>
