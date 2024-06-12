@@ -16,6 +16,9 @@ export const APP_ROUTES = {
         },
         pricing: {
             name: '/pricing'
+        },
+        change_password: {
+            name: '/change-password'
         }
     }
 };
