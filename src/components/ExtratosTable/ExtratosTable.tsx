@@ -40,6 +40,8 @@ export function ExtratosTable() {
   const mySwal = UseMySwal();
 
   const [data, setData] = useState<any[]>([]);
+  const [item, setItem] = useState<any>({});
+  const [lastId, setLastId] = useState<string | null>(null);
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
 
   const fetchData = async () => {
@@ -59,7 +61,16 @@ export function ExtratosTable() {
         text: "Não foi possível excluir o registro."
       });
     }
+  }
 
+  const fetchDataById = async (id: string) => {
+    if (lastId === id) {
+      setOpenDrawer(!openDrawer);
+      return;
+    }
+    const response = await api.get(`api/extrato/${id}/`);
+    setItem(response.data);
+    setLastId(id);
   }
 
   useEffect(() => {
@@ -71,13 +82,13 @@ export function ExtratosTable() {
     <div className="overflow-x-auto">
       <Flowbite theme={{ theme: customTheme }}>
         <Table hoverable className="">
-          <TableHead className="bg-[#f9fafb] dark:bg-[#1a202c]">
+          <TableHead className="bg-[#f9fafb] dark:bg-[#1a202c] bg-whi">
             <TableHeadCell className="text-center w-[120px]">Oficio</TableHeadCell>
             <TableHeadCell className="text-center">Credor</TableHeadCell>
             <TableHeadCell className="text-center">Principal</TableHeadCell>
             <TableHeadCell className="text-center">Juros</TableHeadCell>
             <TableHeadCell className="text-center">Data Base</TableHeadCell>
-            <TableHeadCell className="text-center  w-[40px]">
+            <TableHeadCell className="text-center w-[40px]">
               <span className="sr-only text-center">Detalhes</span>
             </TableHeadCell>
             <TableHeadCell>
@@ -134,24 +145,19 @@ export function ExtratosTable() {
                   </Button>
                 </TableCell>
                 <TableCell className="text-center">
-                  <Button onClick={
-                    () => {
-                      setOpenDrawer(true);
-                    }
-                  } className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
+                  <Button onClick={() => {
+                    fetchDataById(item.id);
+                    setOpenDrawer(true);
+                  }} className="bg-transparent border-none hover:bg-blue-500 text-blue-500 hover:text-white dark:hover:text-white dark:text-blue-500 dark:hover:bg-blue-500 border border-blue-500 hover:border-transparent">
                     Detalhes
                   </Button>
                 </TableCell>
               </TableRow>
-
-
-
             ))}
           </TableBody>
         </Table>
-
       </Flowbite>
-      <AwesomeDrawer isOpen={openDrawer} setIsOpen={setOpenDrawer} />
+      <AwesomeDrawer data={item} setData={setItem} open={openDrawer} setOpen={setOpenDrawer} />
     </div>
   );
 }

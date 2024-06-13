@@ -114,7 +114,7 @@ const Profile = () => {
         <Breadcrumb pageName="Perfil" />
 
         <div className="overflow-hidden rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-          <div className="relative z-20 h-35 md:h-65">
+          <div className="relative z-[8] h-35 md:h-65">
             <Image
               src={"/images/cover/cover-01.png"}
               alt="profile cover"
@@ -127,7 +127,7 @@ const Profile = () => {
               }}
 
             />
-            <div className="absolute -bottom-3.5 right-2 z-10">
+            <div className="absolute -bottom-3.5 right-2 z-[7]">
               <Button as={'label'} gradientDuoTone={'purpleToBlue'} className="flex cursor-pointer items-center justify-center gap-2 rounded p-0 text-sm font-medium text-white hover:bg-opacity-90">
                 {editMode ? (
                   <React.Fragment>
@@ -162,7 +162,7 @@ const Profile = () => {
             </div>
           </div>
           <div className="px-4 pb-6 text-center lg:pb-8 xl:pb-11.5">
-            <div className="relative z-30 mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
+            <div className="relative z-[8] mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
               <div className="relative drop-shadow-2">
                 <Image
                   src={imageUrl}

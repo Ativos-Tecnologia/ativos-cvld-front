@@ -1,20 +1,13 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import ChartThree from "../Charts/ChartThree";
-import ChartTwo from "../Charts/ChartTwo";
-import ChatCard from "../Chat/ChatCard";
-import TableOne from "../Tables/TableOne";
-import CardDataStats from "../CardDataStats";
-import MapOne from "../Maps/MapOne";
+import React, { useState } from "react";
 import CVLDForm from "../FormCvld";
-import CVLDResult, { ApiResponse, CVLDResultProps } from "../ResultCVLD";
-import api from "@/utils/api";
-import { useRouter } from "next/navigation";
-import { APP_ROUTES } from "@/constants/app-routes";
+import CVLDResult, { ApiResponse } from "../ResultCVLD";
 import { ExtratosTable } from "../ExtratosTable/ExtratosTable";
+import ResultCVLDSkeleton from "../Skeletons/ResultCVLDSkeleton";
 
 const ECommerce: React.FC = () => {
-  const [data, setData] = useState<ApiResponse>({ result: [], setData: () => {} });
+  const [data, setData] = useState<ApiResponse>({ result: [], setData: () => { } });
+  const [calcStep, setCalcStep] = useState<string | null>(null);
 
   return (
     <>
@@ -105,13 +98,15 @@ const ECommerce: React.FC = () => {
         </CardDataStats>
       </div> */}
 
-      <div className="mt-0 grid grid-cols-12 gap-4 md:gap-6 2xl:gap-7.5">
-        <CVLDForm dataCallback={setData} />
-        <CVLDResult result={data.result} setData={setData} />
+      <div className="w-full mt-0 grid grid-cols-12 gap-4 md:gap-6 2xl:gap-7.5">
+        <CVLDForm dataCallback={setData} setCalcStep={setCalcStep} />
+        {calcStep === 'calculating' ? (
+            <ResultCVLDSkeleton />
+        ) : <CVLDResult result={data.result} setData={setData} />}
         {/* <ChartThree /> */}
         {/* <MapOne /> */}
-         {/* <div className="col-span-12 xl:col-span-8"> */}
-         <div className="col-span-12">
+        {/* <div className="col-span-12 xl:col-span-8"> */}
+        <div className="col-span-12">
           <ExtratosTable />
         </div>
         {/*

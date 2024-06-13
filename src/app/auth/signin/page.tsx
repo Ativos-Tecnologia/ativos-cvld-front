@@ -1,15 +1,14 @@
 "use client";
-import React, { FC, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useForm, SubmitHandler, FieldError } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
 import api from "@/utils/api";
 import { APP_ROUTES } from "@/constants/app-routes";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
 import UseMySwal from "@/hooks/useMySwal";
-// import { Button } from "@/components/Button";
 import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
 import { Button } from "flowbite-react";
 
@@ -18,6 +17,7 @@ import { HiOutlineArrowRight } from "react-icons/hi"
 import { BiLockAlt, BiUser } from "react-icons/bi";
 import { FcGoogle } from "react-icons/fc";
 import { AiOutlineLoading } from "react-icons/ai";
+import ForgotPassword from "@/components/Modals/ForgotPassword";
 
 
 // export const metadata: Metadata = {
@@ -39,6 +39,7 @@ const SignIn: React.FC = () => {
   } = useForm<SignInInputs>()
 
   const [loading, setLoading] = useState(false);
+  const [openModal, setOpenModal] = useState<boolean>(false);
   const router = useRouter();
   const MySwal = UseMySwal();
 
@@ -272,14 +273,14 @@ const SignIn: React.FC = () => {
                   <Link className="sm:mb-5.5 flex flex-col justify-center items-center" href="/">
                     <Image
                       className="hidden dark:block"
-                      src={"/images/logo/logo.svg"}
+                      src={"/images/logo/logo-dark.svg"}
                       alt="Logo"
                       width={176}
                       height={32}
                     />
                     <Image
                       className="dark:hidden"
-                      src={"/images/logo/logo-dark.svg"}
+                      src={"/images/logo/logo.svg"}
                       alt="Logo"
                       width={176}
                       height={150}
@@ -344,14 +345,6 @@ const SignIn: React.FC = () => {
                       {
                       ...register("password", {
                         required: "Campo obrigatório",
-                        minLength: {
-                          value: 6,
-                          message: "Mínimo de 6 caracteres",
-                        },
-                        pattern: {
-                          value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/,
-                          message: "Mínimo de 6 caracteres, 1 letra, 1 número e 1 caractere especial",
-                        },
                       })
                       }
                       aria-invalid={errors.password ? "true" : "false"}
@@ -364,20 +357,24 @@ const SignIn: React.FC = () => {
                   </div>
                 </div>
 
+                <p onClick={() => setOpenModal(true)} className="text-primary text-sm font-medium mb-6 cursor-pointer">
+                  Esqueci a senha
+                </p>
+
                 <div className="mb-5">
                   <Button gradientDuoTone="purpleToBlue" type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-4 text-white hover:bg-opacity-90 dark:border-primary dark:bg-primary dark:hover:bg-opacity-90'>
                     <span className="text-[16px] font-medium" aria-disabled={loading}>
-                    {loading ? "Fazendo login..." : "Acessar"}
-                      </span>
-                      {
-                        !loading ? (<HiOutlineArrowRight className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
-                      }
+                      {loading ? "Fazendo login..." : "Acessar"}
+                    </span>
+                    {
+                      !loading ? (<HiOutlineArrowRight className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
+                    }
                   </Button>
                 </div>
 
                 <button data-tooltip-target="tooltip-default" disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50 disabled:cursor-not-allowed disabled:opacity-50">
                   <span>
-                    <FcGoogle style={{width: '22px', height: '22p'}} />
+                    <FcGoogle style={{ width: '22px', height: '22p' }} />
                   </span>
                   Login com o Google
                 </button>
@@ -385,12 +382,13 @@ const SignIn: React.FC = () => {
                 <div className="mt-6 text-center">
                   <p>
                     Ainda não possui uma conta?{" "}
-                    <Link aria-disabled href="/auth/signup" className="text-primary">
+                    <Link aria-disabled href="/auth/signup" className="text-primary font-medium">
                       Cadastre-se
                     </Link>
                   </p>
                 </div>
               </form>
+              <ForgotPassword state={openModal} setState={setOpenModal} />
             </div>
           </div>
         </div>

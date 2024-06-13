@@ -16,7 +16,12 @@ export default function PrivateRoute({ children }: PropsPrivateRouteProps) {
     const { setFirstLogin, firstLogin } = useContext(UserInfoAPIContext);
 
     const [isUserAuthenticated, setIsUserAuthenticated] = useState<boolean | null>(null);
-    // const [isUserFirstLogin, setIsUserFirstLogin] = useState<boolean | null>(null);
+
+    useEffect(() => {
+        if (!localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`) || !localStorage.getItem(`ATIVOS_${REFRESH_TOKEN}`)) {
+            window.location.href = APP_ROUTES.public.login.name;
+        }
+    }, []);
 
     const checkIsUserFirstLogin = async (): Promise<boolean> => {
         try {
@@ -80,6 +85,7 @@ export default function PrivateRoute({ children }: PropsPrivateRouteProps) {
         } catch (error) {
             console.log(error);
             setIsUserAuthenticated(false);
+            window.location.href = APP_ROUTES.public.login.name; // Em caso de erro, redireciona para a tela de login. Ainda em beta e pendente de validação.
         }
     };
 
@@ -90,8 +96,8 @@ export default function PrivateRoute({ children }: PropsPrivateRouteProps) {
     return (
         <>
             {!isUserAuthenticated && router.push(APP_ROUTES.public.login.name)}
-            {isUserAuthenticated && firstLogin && router.push(APP_ROUTES.private.profile.name)}
             {isUserAuthenticated && children}
+            {isUserAuthenticated && firstLogin && router.push(APP_ROUTES.private.profile.name)}
         </>
     )
 
