@@ -9,7 +9,7 @@ import api from "@/utils/api";
 import { APP_ROUTES } from "@/constants/app-routes";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
 import UseMySwal from "@/hooks/useMySwal";
-import { BiEnvelope, BiUser, BiLockAlt, BiCheck, BiX, BiIdCard } from "react-icons/bi";
+import { BiEnvelope, BiUser, BiLockAlt, BiIdCard, BiInfoCircle, BiX, BiCheck } from "react-icons/bi";
 import { FcGoogle } from "react-icons/fc";
 import { Button, Popover } from "flowbite-react";
 
@@ -30,6 +30,15 @@ type SignUpInputs = {
   confirm_password: string;
 };
 
+type PasswordRequirements = {
+  length: boolean;
+  uppercase: boolean;
+  lowercase: boolean;
+  number: boolean;
+  specialCharacter: boolean;
+  filled: string | boolean;
+}
+
 
 const SignUp: React.FC = () => {
 
@@ -38,6 +47,15 @@ const SignUp: React.FC = () => {
   const [passwordStr, setPasswordStr] = useState<string>('');
   const [strengthColor, setStrengthColor] = useState<string>('slate-400');
   const [barWidth, setBarWidth] = useState<string>('w-0');
+  const [passwordRequirements, setPasswordRequirements] = useState<PasswordRequirements>({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    specialCharacter: false,
+    filled: 'no'
+  });
+
   const router = useRouter();
   const {
     register,
@@ -102,7 +120,47 @@ const SignUp: React.FC = () => {
         setStrengthColor('slate-400');
       }
     }
+
+    const checkPasswordRequirements = (password: string): void => {
+      let reqNum: number = 0;
+
+      if (password) {
+
+        // mudando força da senha de acordo com requisitos mínimos:
+        if (password.length >= 6) {reqNum += 1; passwordRequirements.length = true;};
+        if (/[A-Z]/.test(password)) {reqNum += 1; passwordRequirements.uppercase = true;};
+        if (/[a-z]/.test(password)) {reqNum += 1; passwordRequirements.lowercase = true;};
+        if (/[0-9]/.test(password)) {reqNum += 1; passwordRequirements.number = true;};
+        if (/[@$!%*#?&]/.test(password)) {reqNum += 1; passwordRequirements.specialCharacter = true;};
+
+        // verificando força da senha para passar feedback visual:
+        switch (reqNum) {
+          case 1:
+            passwordRequirements.filled = false;
+            break;
+          case 2:
+            passwordRequirements.filled = false;
+            break;
+          case 3:
+            passwordRequirements.filled = false;
+            break;
+          case 4:
+            passwordRequirements.filled = false;
+            break;
+          case 5:
+            passwordRequirements.filled = true;
+        }
+
+      } else {
+        reqNum = 0;
+        passwordRequirements.filled = 'no';
+      }
+
+    }
+
+    checkPasswordRequirements(passwordInput);
     calculatePasswordStrength(passwordInput);
+
   }, [passwordInput]);
 
   useEffect(() => {
@@ -323,14 +381,14 @@ const SignUp: React.FC = () => {
                   <Link className="mb-5.5 inline-block" href="/">
                     <Image
                       className="hidden dark:block"
-                      src={"/images/logo/logo.svg"}
+                      src={"/images/logo/logo-dark.svg"}
                       alt="Logo"
                       width={176}
                       height={32}
                     />
                     <Image
                       className="dark:hidden"
-                      src={"/images/logo/logo-dark.svg"}
+                      src={"/images/logo/logo.svg"}
                       alt="Logo"
                       width={176}
                       height={150}
@@ -352,7 +410,7 @@ const SignUp: React.FC = () => {
                     <input
                       type="text"
                       placeholder="Usuário"
-                      className={`${errors.username && '!border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                      className={`${errors.username && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                       id="username"
                       {
                       ...register("username", {
@@ -377,7 +435,7 @@ const SignUp: React.FC = () => {
                     <input
                       type="email"
                       placeholder="Digite seu email"
-                      className={`${errors.email && '!border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                      className={`${errors.email && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                       id="email"
                       {
                       ...register("email", {
@@ -434,7 +492,7 @@ const SignUp: React.FC = () => {
                                 {...field}
                                 mask="99.999.999/9999-99"
                                 placeholder="Digite seu CNPJ"
-                                className={`${errors.cpf_cnpj && '!border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                                className={`${errors.cpf_cnpj && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                               />
                             )}
                           />
@@ -459,7 +517,7 @@ const SignUp: React.FC = () => {
                                 {...field}
                                 mask="999.999.999-99"
                                 placeholder="Digite seu CPF"
-                                className={`${errors.cpf_cnpj && '!border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                                className={`${errors.cpf_cnpj && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                               />
                             )}
                           />
@@ -470,21 +528,76 @@ const SignUp: React.FC = () => {
 
 
                       <span className="absolute right-4 top-4">
-                        <BiIdCard style={{width: '22px', height: '22px', fill: 'rgb(186, 193, 203)'}}/>
+                        <BiIdCard style={{ width: '22px', height: '22px', fill: 'rgb(186, 193, 203)' }} />
                       </span>
                     </div>
                   </div>
                 </div>
 
                 <div className="mb-7">
-                  <label className="mb-2.5 block font-medium text-black dark:text-white">
-                    Senha
+                  <label className="mb-2.5 flex items-center gap-3 font-medium">
+                    <span className="text-black dark:text-white">Senha</span>
+                    {/* popover for password hint */}
+                    <Popover
+                      aria-labelledby="default-popover"
+                      trigger="hover"
+                      placement="right"
+                      content={
+                        <div className="w-64 text-sm">
+                          <div className="border-b border-stroke bg-gray-100 px-3 py-2 dark:border-strokedark dark:bg-boxdark-2">
+                            <h3 id="default-popover" className="font-semibold text-gray-900 dark:text-white">A senha deve conter:</h3>
+                          </div>
+                          <div className="px-3 py-2 flex flex-col dark:text-white dark:bg-boxdark">
+                            <div className="flex items-center gap-2">
+                              {passwordRequirements.length ?
+                                <BiCheck className="w-6 h-6 fill-meta-3" /> :
+                                <BiX className="w-6 h-6 fill-meta-1" />}
+                              <span className="text-slate-500">No mínimo 6 caracteres</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {passwordRequirements.lowercase ?
+                                <BiCheck className="w-6 h-6 fill-meta-3" /> :
+                                <BiX className="w-6 h-6 fill-meta-1" />}
+                              <span className="text-slate-500">Uma letra minúscula</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {passwordRequirements.uppercase ?
+                                <BiCheck className="w-6 h-6 fill-meta-3" /> :
+                                <BiX className="w-6 h-6 fill-meta-1" />}
+                              <span className="text-slate-500">Uma letra maiúscula</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {passwordRequirements.number ?
+                                <BiCheck className="w-6 h-6 fill-meta-3" /> :
+                                <BiX className="w-6 h-6 fill-meta-1" />}
+                              <span className="text-slate-500">Um número</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {passwordRequirements.specialCharacter ?
+                                <BiCheck className="w-6 h-6 fill-meta-3" /> :
+                                <BiX className="w-6 h-6 fill-meta-1" />}
+                              <span className="text-slate-500">Um caractere especial <br /> (ex: @, $, !, %, *, #, ?, &)</span>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                    >
+                      <button type="button" className="relative">
+                        {!passwordRequirements.filled && <span className="absolute z-0 inline-flex h-full w-full top-0 left-0 animate-ping rounded-full bg-meta-1 opacity-75"></span>}
+
+                        <BiInfoCircle className="text-black dark:text-white h-3.5 w-3.5 cursor-pointer" />
+                      </button>
+                    </Popover>
+                    {/* end popover for password hint */}
                   </label>
+
                   <div className="relative">
                     <input
+                      minLength={6}
+                      maxLength={30}
                       type="password"
                       placeholder="Digite a senha"
-                      className={`${errors.password && '!border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                      className={`${errors.password && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                       id="password"
                       {
                       ...register("password", {
@@ -504,7 +617,7 @@ const SignUp: React.FC = () => {
                       })
                       }
                     />
-                    <ErrorMessage errors={errors} field='password' />
+                    {passwordInput?.length <= 0 && <ErrorMessage errors={errors} field='password' />}
 
                     {/* password strength message */}
                     {passwordInput && (
@@ -530,9 +643,11 @@ const SignUp: React.FC = () => {
                   </label>
                   <div className="relative">
                     <input
+                      minLength={6}
+                      maxLength={30}
                       type="password"
                       placeholder="Confirme sua senha"
-                      className={`${errors.confirm_password && '!border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                      className={`${errors.confirm_password && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                       {
                       ...register("confirm_password", {
                         required: "Confirme a sua senha",
@@ -541,12 +656,12 @@ const SignUp: React.FC = () => {
                     />
 
                     {!passwordsMatch && (
-                      <div style={{ color: 'red' }} className="absolute w-full left-0 top-17 text-sm flex flex-col gap-1">
+                      <div className="absolute text-red dark:text-meta-1 w-full left-0 top-17 text-sm flex flex-col gap-1">
                         As senhas não conferem.
                       </div>
                     )}
 
-                    <ErrorMessage errors={errors} field='confirm_password' />
+                    {passwordsMatch && <ErrorMessage errors={errors} field='confirm_password' />}
 
                     <span className="absolute right-4 top-4">
                       <BiLockAlt style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />
