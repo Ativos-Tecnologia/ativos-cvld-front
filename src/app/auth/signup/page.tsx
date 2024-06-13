@@ -127,11 +127,41 @@ const SignUp: React.FC = () => {
       if (password) {
 
         // mudando força da senha de acordo com requisitos mínimos:
-        if (password.length >= 6) {reqNum += 1; passwordRequirements.length = true;};
-        if (/[A-Z]/.test(password)) {reqNum += 1; passwordRequirements.uppercase = true;};
-        if (/[a-z]/.test(password)) {reqNum += 1; passwordRequirements.lowercase = true;};
-        if (/[0-9]/.test(password)) {reqNum += 1; passwordRequirements.number = true;};
-        if (/[@$!%*#?&]/.test(password)) {reqNum += 1; passwordRequirements.specialCharacter = true;};
+        if (password.length >= 6) {
+          reqNum += 1; 
+          passwordRequirements.length = true;
+        } else {
+          passwordRequirements.length = false;
+        }
+
+        if (/[A-Z]/.test(password)) {
+          reqNum += 1;
+          passwordRequirements.uppercase = true
+        } else {
+          passwordRequirements.uppercase = false;
+        }
+
+        if (/[a-z]/.test(password)) {
+          reqNum += 1; 
+          passwordRequirements.lowercase = true
+        } else {
+          passwordRequirements.lowercase = false;
+        }
+
+        if (/[0-9]/.test(password)) {
+          reqNum += 1;
+          passwordRequirements.number = true
+        } else {
+          passwordRequirements.number = false;
+        }
+
+        if (/[@$!%*#?&]/.test(password)) {
+          reqNum += 1;
+          passwordRequirements.specialCharacter = true
+        } else {
+          passwordRequirements.specialCharacter = false;
+        }
+
 
         // verificando força da senha para passar feedback visual:
         switch (reqNum) {
@@ -153,7 +183,14 @@ const SignUp: React.FC = () => {
 
       } else {
         reqNum = 0;
-        passwordRequirements.filled = 'no';
+        setPasswordRequirements({
+          length: false,
+          uppercase: false,
+          lowercase: false,
+          number: false,
+          specialCharacter: false,
+          filled: 'no'
+        })
       }
 
     }
