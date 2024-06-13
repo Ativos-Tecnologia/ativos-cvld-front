@@ -39,6 +39,7 @@ const SignIn: React.FC = () => {
   } = useForm<SignInInputs>()
 
   const [loading, setLoading] = useState(false);
+  const [openModal, setOpenModal] = useState<boolean>(false);
   const router = useRouter();
   const MySwal = UseMySwal();
 
@@ -356,22 +357,24 @@ const SignIn: React.FC = () => {
                   </div>
                 </div>
 
-                <ForgotPassword />
+                <p onClick={() => setOpenModal(true)} className="text-primary text-sm font-medium mb-6 cursor-pointer">
+                  Esqueci a senha
+                </p>
 
                 <div className="mb-5">
                   <Button gradientDuoTone="purpleToBlue" type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-4 text-white hover:bg-opacity-90 dark:border-primary dark:bg-primary dark:hover:bg-opacity-90'>
                     <span className="text-[16px] font-medium" aria-disabled={loading}>
-                    {loading ? "Fazendo login..." : "Acessar"}
-                      </span>
-                      {
-                        !loading ? (<HiOutlineArrowRight className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
-                      }
+                      {loading ? "Fazendo login..." : "Acessar"}
+                    </span>
+                    {
+                      !loading ? (<HiOutlineArrowRight className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
+                    }
                   </Button>
                 </div>
 
                 <button data-tooltip-target="tooltip-default" disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50 disabled:cursor-not-allowed disabled:opacity-50">
                   <span>
-                    <FcGoogle style={{width: '22px', height: '22p'}} />
+                    <FcGoogle style={{ width: '22px', height: '22p' }} />
                   </span>
                   Login com o Google
                 </button>
@@ -385,6 +388,7 @@ const SignIn: React.FC = () => {
                   </p>
                 </div>
               </form>
+              <ForgotPassword state={openModal} setState={setOpenModal} />
             </div>
           </div>
         </div>
