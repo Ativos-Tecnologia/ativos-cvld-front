@@ -1,9 +1,8 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import useLogout from "@/hooks/useLogout";
 import { UserInfoAPIContext, UserInfoContextType } from "@/context/UserInfoContext";
-import { BiChevronDown, BiLogOut, BiUser } from "react-icons/bi";
+import { BiLogOut, BiUser } from "react-icons/bi";
 import { Avatar } from "flowbite-react";
 import { AiFillCrown } from "react-icons/ai";
 
@@ -50,12 +49,12 @@ const DropdownUser = () => {
         className="flex items-center gap-4"
         href="#"
       >
-        <span className="hidden text-right lg:block">
+        <span className="hidden text-right lg:flex lg:flex-col lg:gap-px">
           <span className="block text-sm font-medium text-black dark:text-white">
             {
               loading ? (
                 <div className="animate-pulse">
-                  <div className="w-[75px] h-[20px] bg-slate-200 rounded-full dark:bg-slate-300"></div>
+                  <div className="w-[75px] h-[15px] bg-slate-200 rounded-full dark:bg-slate-300"></div>
                 </div>
               ) : `${data[0].first_name} ${data[0].last_name}`
             }
@@ -64,7 +63,7 @@ const DropdownUser = () => {
             {
               loading ? (
                 <div className="animate-pulse">
-                  <div className="w-[75px] h-[16px] bg-slate-200 rounded-full dark:bg-slate-300"></div>
+                  <div className="w-[100px] h-[12px] bg-slate-200 rounded-full dark:bg-slate-300"></div>
                 </div>
               )
                 : data[0].title

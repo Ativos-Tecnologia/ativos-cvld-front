@@ -127,8 +127,8 @@ const Profile = () => {
               }}
 
             />
-            <div className="absolute -bottom-3.5 right-2 z-[7]">
-              <Button as={'label'} gradientDuoTone={'purpleToBlue'} className="flex cursor-pointer items-center justify-center gap-2 rounded p-0 text-sm font-medium text-white hover:bg-opacity-90">
+            <div className="absolute top-5 right-2 z-[7]">
+              <Button as={'label'} gradientDuoTone={'purpleToBlue'} className="flex cursor-pointer items-center justify-center gap-2 rounded p-0 text-sm font-medium text-white hover:bg-opacity-90 shadow-4">
                 {editMode ? (
                   <React.Fragment>
 
@@ -162,18 +162,24 @@ const Profile = () => {
             </div>
           </div>
           <div className="px-4 pb-6 text-center lg:pb-8 xl:pb-11.5">
-            <div className="relative z-[8] mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
-              <div className="relative drop-shadow-2">
-                <Image
-                  src={imageUrl}
-                  width={160}
-                  height={160}
-                  className="rounded-full sm:max-w-42 sm:max-h-42 max-h-38 max-h-44 object-cover object-center aspect-square"
-                  alt="profile"
-                />
 
-                {/* only visible when editing profile */}
-                {editMode && (
+            {loading ? (
+              <div className="relative z-[8] mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
+                <div className="animate-pulse">
+                  <div className="w-[152px] h-[152px] bg-slate-200 rounded-full dark:bg-slate-300"></div>
+                </div>
+              </div>
+            ) : (
+              <div className="relative z-[8] mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
+                <div className="relative drop-shadow-2">
+                  <Image
+                    src={imageUrl}
+                    width={160}
+                    height={160}
+                    className="rounded-full sm:max-w-42 sm:max-h-42 max-h-38 max-h-44 object-cover object-center aspect-square"
+                    alt="profile"
+                  />
+
                   <Button as={'label'} gradientDuoTone={'purpleToBlue'} className="absolute bottom-0 right-0 flex h-8.5 w-11.5 cursor-pointer items-center justify-center rounded-full text-white hover:bg-opacity-90 sm:bottom-2 sm:right-2">
                     <BiCamera style={{
                       width: "16px",
@@ -201,17 +207,23 @@ const Profile = () => {
                       }
                     </form>
                   </Button>
-                )}
-                {/* end only visible when editing profile */}
-
+                </div>
               </div>
-            </div>
+            )}
             <div className="mt-4">
               {
                 !editMode ? (
                   <><h3 className="mb-1.5 text-2xl font-semibold text-black dark:text-white">
-                    {loading ? "Loading..." : `${data[0]?.first_name} ${data[0]?.last_name}`}
-                  </h3><p className="font-medium">{loading ? "Loading..." : data[0]?.title}</p></>
+                    {loading ? (
+                      <div className="animate-pulse">
+                        <div className="w-[170px] h-[24px] mx-auto bg-slate-200 rounded-full dark:bg-slate-300"></div>
+                      </div>
+                    ) : `${data[0]?.first_name} ${data[0]?.last_name}`}
+                  </h3><p className="font-medium">{loading ? (
+                    <div className="animate-pulse">
+                      <div className="w-[280px] h-[18px] mx-auto bg-slate-200 rounded-full dark:bg-slate-300"></div>
+                    </div>
+                  ) : data[0]?.title}</p></>
                 ) : (
                   <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="flex flex-col gap-2">
@@ -384,7 +396,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
-    </DefaultLayout>
+    </DefaultLayout >
   );
 };
 
