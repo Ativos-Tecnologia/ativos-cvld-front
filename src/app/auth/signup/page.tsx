@@ -20,8 +20,9 @@ import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
 import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
 import { HiOutlineArrowRight } from "react-icons/hi";
 import { AiOutlineLoading } from "react-icons/ai";
+import usePassword from "@/hooks/usePassword";
 
-type SignUpInputs = {
+export type SignUpInputs = {
   username: string;
   email: string;
   select: string;
@@ -30,31 +31,7 @@ type SignUpInputs = {
   confirm_password: string;
 };
 
-type PasswordRequirements = {
-  length: boolean;
-  uppercase: boolean;
-  lowercase: boolean;
-  number: boolean;
-  specialCharacter: boolean;
-  filled: string | boolean;
-}
-
-
 const SignUp: React.FC = () => {
-
-  const [loading, setLoading] = useState<boolean>(false);
-  const [passwordsMatch, setPasswordsMatch] = useState<boolean>(true);
-  const [passwordStr, setPasswordStr] = useState<string>('');
-  const [strengthColor, setStrengthColor] = useState<string>('slate-400');
-  const [barWidth, setBarWidth] = useState<string>('w-0');
-  const [passwordRequirements, setPasswordRequirements] = useState<PasswordRequirements>({
-    length: false,
-    uppercase: false,
-    lowercase: false,
-    number: false,
-    specialCharacter: false,
-    filled: 'no'
-  });
 
   const router = useRouter();
   const {
@@ -67,145 +44,7 @@ const SignUp: React.FC = () => {
   const passwordInput = watch('password');
   const confirmPasswordInput = watch('confirm_password');
 
-  useEffect(() => {
-    const calculatePasswordStrength = (password: string): void => {
-      let strength: number = 0;
-
-      if (password) {
-
-        // mudando força da senha de acordo com requisitos mínimos:
-        if (password.length >= 6) strength += 1;
-        if (/[A-Z]/.test(password)) strength += 1;
-        if (/[a-z]/.test(password)) strength += 1;
-        if (/[0-9]/.test(password) || /[@$!%*#?&]/.test(password)) strength += 1;
-        if (password.length >= 12) strength += 1;
-
-        // verificando força da senha para passar feedback visual:
-        switch (strength) {
-          case 0:
-            break;
-          case 1:
-            setPasswordStr('muito fraca');
-            setBarWidth('w-1/5');
-            setStrengthColor('#ff0000');
-            break;
-          case 2:
-            setPasswordStr('fraca');
-            setBarWidth('w-2/5');
-            setStrengthColor('#ffa00a');
-            break;
-          case 3:
-            setPasswordStr('boa');
-            setBarWidth('w-3/5');
-            setStrengthColor('#fdec12');
-            break;
-          case 4:
-            setPasswordStr('forte');
-            setBarWidth('w-4/5');
-            setStrengthColor('#51ff2e');
-            break;
-          case 5:
-            setPasswordStr('muito forte');
-            setBarWidth('w-full');
-            setStrengthColor('#21e600');
-            break;
-          default:
-            break;
-        }
-
-      } else {
-        strength = 0;
-        setPasswordStr('');
-        setBarWidth('w-0');
-        setStrengthColor('slate-400');
-      }
-    }
-
-    const checkPasswordRequirements = (password: string): void => {
-      let reqNum: number = 0;
-
-      if (password) {
-
-        // mudando força da senha de acordo com requisitos mínimos:
-        if (password.length >= 6) {
-          reqNum += 1; 
-          passwordRequirements.length = true;
-        } else {
-          passwordRequirements.length = false;
-        }
-
-        if (/[A-Z]/.test(password)) {
-          reqNum += 1;
-          passwordRequirements.uppercase = true
-        } else {
-          passwordRequirements.uppercase = false;
-        }
-
-        if (/[a-z]/.test(password)) {
-          reqNum += 1; 
-          passwordRequirements.lowercase = true
-        } else {
-          passwordRequirements.lowercase = false;
-        }
-
-        if (/[0-9]/.test(password)) {
-          reqNum += 1;
-          passwordRequirements.number = true
-        } else {
-          passwordRequirements.number = false;
-        }
-
-        if (/[@$!%*#?&]/.test(password)) {
-          reqNum += 1;
-          passwordRequirements.specialCharacter = true
-        } else {
-          passwordRequirements.specialCharacter = false;
-        }
-
-
-        // verificando força da senha para passar feedback visual:
-        switch (reqNum) {
-          case 1:
-            passwordRequirements.filled = false;
-            break;
-          case 2:
-            passwordRequirements.filled = false;
-            break;
-          case 3:
-            passwordRequirements.filled = false;
-            break;
-          case 4:
-            passwordRequirements.filled = false;
-            break;
-          case 5:
-            passwordRequirements.filled = true;
-        }
-
-      } else {
-        reqNum = 0;
-        setPasswordRequirements({
-          length: false,
-          uppercase: false,
-          lowercase: false,
-          number: false,
-          specialCharacter: false,
-          filled: 'no'
-        })
-      }
-
-    }
-
-    checkPasswordRequirements(passwordInput);
-    calculatePasswordStrength(passwordInput);
-
-  }, [passwordInput]);
-
-  useEffect(() => {
-    const comparePasswords = (): void => {
-      passwordInput === confirmPasswordInput ? setPasswordsMatch(true) : setPasswordsMatch(false);
-    }
-    comparePasswords();
-  }, [confirmPasswordInput, passwordInput])
+  const {loading, setLoading, passwordsMatch, passwordStr, strengthColor, barWidth, passwordRequirements} = usePassword(passwordInput, confirmPasswordInput);
 
   const MySwal = UseMySwal();
   const selectOption = watch('select');
@@ -622,7 +461,7 @@ const SignUp: React.FC = () => {
                       <button type="button" className="relative">
                         {!passwordRequirements.filled && <span className="absolute z-0 inline-flex h-full w-full top-0 left-0 animate-ping rounded-full bg-meta-1 opacity-75"></span>}
 
-                        <BiInfoCircle className="text-black dark:text-white h-3.5 w-3.5 cursor-pointer" />
+                        <BiInfoCircle className={`${!passwordRequirements.filled && 'text-meta-1'} text-black dark:text-white h-3.5 w-3.5 cursor-pointer`} />
                       </button>
                     </Popover>
                     {/* end popover for password hint */}
@@ -660,7 +499,10 @@ const SignUp: React.FC = () => {
                     {passwordInput && (
                       <div className="absolute w-full left-0 top-17 text-sm text-slate-400 flex flex-col gap-1">
                         <div className="w-full h-2 border-none rounded">
-                          <div style={{ backgroundColor: `${strengthColor}` }} className={`${barWidth} h-full rounded transition-all duration-300`}></div>
+                          <div style={{ 
+                            backgroundColor: `${strengthColor}`,
+                            width: `${barWidth}`
+                            }} className={`h-full rounded transition-all duration-300`}></div>
                         </div>
                         <div>
                           Força da senha: <span style={{ color: `${strengthColor}` }}>{passwordStr}</span>

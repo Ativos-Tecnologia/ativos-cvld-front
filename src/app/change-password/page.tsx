@@ -1,14 +1,16 @@
 "use client";
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
 import { BsCheck2 } from "react-icons/bs";
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button } from 'flowbite-react';
+import { Button, Tooltip } from 'flowbite-react';
 import { AiOutlineLoading } from 'react-icons/ai';
 import LabelPassword from '@/components/InputLabels/LabelPassword';
 import { ChangePasswordProps } from '@/types/form';
 import LabelConfirmPassword from '@/components/InputLabels/LabelConfirmPassword';
+import usePassword from '@/hooks/usePassword';
+import { BiArrowBack } from 'react-icons/bi';
+import Link from 'next/link';
 
 const ChangePassword = () => {
 
@@ -20,79 +22,17 @@ const ChangePassword = () => {
         clearErrors
     } = useForm<ChangePasswordProps>();
 
-    const [loading, setLoading] = useState<boolean>(false);
-    const [passwordsMatch, setPasswordsMatch] = useState<boolean>(true);
-    const [passwordStr, setPasswordStr] = useState<string>('');
-    const [strengthColor, setStrengthColor] = useState<string>('slate-400');
-    const [barWidth, setBarWidth] = useState<string>('w-0');
-
     // form
     const passwordInput = watch('password');
     const confirmPasswordInput = watch('confirm_password');
-    console.log(passwordInput, confirmPasswordInput)
 
-    useEffect(() => {
-        const calculatePasswordStrength = (password: string): void => {
-            let strength: number = 0;
-
-            if (password) {
-
-                // mudando força da senha de acordo com requisitos mínimos:
-                if (password.length >= 6) strength += 1;
-                if (/[A-Z]/.test(password)) strength += 1;
-                if (/[a-z]/.test(password)) strength += 1;
-                if (/[0-9]/.test(password)) strength += 1;
-                if (/[@$!%*#?&]/.test(password)) strength += 1;
-
-                // verificando força da senha para passar feedback visual:
-                switch (strength) {
-                    case 0:
-                        break;
-                    case 1:
-                        setPasswordStr('muito fraca');
-                        setBarWidth('w-1/5');
-                        setStrengthColor('#ff0000');
-                        break;
-                    case 2:
-                        setPasswordStr('fraca');
-                        setBarWidth('w-2/5');
-                        setStrengthColor('#ffa00a');
-                        break;
-                    case 3:
-                        setPasswordStr('boa');
-                        setBarWidth('w-3/5');
-                        setStrengthColor('#fdec12');
-                        break;
-                    case 4:
-                        setPasswordStr('forte');
-                        setBarWidth('w-4/5');
-                        setStrengthColor('#51ff2e');
-                        break;
-                    case 5:
-                        setPasswordStr('muito forte');
-                        setBarWidth('w-full');
-                        setStrengthColor('#21e600');
-                        break;
-                    default:
-                        break;
-                }
-
-            } else {
-                strength = 0;
-                setPasswordStr('');
-                setBarWidth('w-0');
-                setStrengthColor('slate-400');
-            }
-        }
-        calculatePasswordStrength(passwordInput);
-    }, [passwordInput]);
-
-    useEffect(() => {
-        const comparePasswords = (): void => {
-            passwordInput === confirmPasswordInput ? setPasswordsMatch(true) : setPasswordsMatch(false);
-        }
-        comparePasswords();
-    }, [confirmPasswordInput, passwordInput]);
+    const { loading,
+        setLoading,
+        passwordsMatch,
+        passwordStr,
+        strengthColor,
+        barWidth,
+        passwordRequirements } = usePassword(passwordInput, confirmPasswordInput);
 
     const onSubmit: SubmitHandler<ChangePasswordProps> = async (data) => {
         setLoading(true);
@@ -100,9 +40,14 @@ const ChangePassword = () => {
 
     return (
         <div className='bg-slate-200 mx-auto flex justify-center items-center min-h-screen max-w-screen-2xl p-4 md:p-6 2xl:p-10'>
-            <div className='min-w-96 w-[500px] min-h-[550px] py-5 px-6 flex flex-col items-center bg-white border border-stroke shadow-1'>
-                <Link className="mb-12 flex flex-col justify-center
-               items-center" href="/">
+            <div className='relative min-w-96 w-[500px] min-h-[550px] py-5 px-6 flex flex-col items-center bg-white border border-stroke shadow-1'>
+                <div className='absolute top-8 left-5 group'>
+                    <Link href='/auth/signin' title='Voltar para o login'>
+                        <BiArrowBack className='h-6 w-6 dark:text-white cursor-pointer' />
+                    </Link>
+                </div>
+                <span className="mb-12 flex flex-col justify-center
+               items-center">
                     <Image
                         className="hidden dark:block"
                         src={"/images/logo/logo-dark.svg"}
@@ -120,9 +65,9 @@ const ChangePassword = () => {
                     <h2 className="2xsm:px-20 mt-4 text-2xl text-graydark font-bold dark:text-white" aria-selected="false">
                         Redefinição de senha
                     </h2>
-                </Link>
+                </span>
                 <form className='w-10/12' onSubmit={handleSubmit(onSubmit)}>
-                    <LabelPassword 
+                    <LabelPassword
                         title='Nova senha'
                         errors={errors}
                         register={register}
@@ -132,9 +77,10 @@ const ChangePassword = () => {
                         passwordStr={passwordStr}
                         strengthColor={strengthColor}
                         barWidth={barWidth}
+                        passwordRequirements={passwordRequirements}
                     />
 
-                    <LabelConfirmPassword 
+                    <LabelConfirmPassword
                         title='Repita a nova senha'
                         errors={errors}
                         register={register}
