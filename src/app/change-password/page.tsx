@@ -11,6 +11,9 @@ import LabelConfirmPassword from '@/components/InputLabels/LabelConfirmPassword'
 import usePassword from '@/hooks/usePassword';
 import { BiArrowBack } from 'react-icons/bi';
 import Link from 'next/link';
+import UseMySwal from '@/hooks/useMySwal';
+import { redirect } from 'next/dist/server/api-utils';
+import { useRouter } from 'next/navigation';
 
 const ChangePassword = () => {
 
@@ -26,6 +29,9 @@ const ChangePassword = () => {
     const passwordInput = watch('password');
     const confirmPasswordInput = watch('confirm_password');
 
+    const router = useRouter();
+    const MySwal = UseMySwal();
+
     const { loading,
         setLoading,
         passwordsMatch,
@@ -38,13 +44,26 @@ const ChangePassword = () => {
         setLoading(true);
     }
 
+    const redirectToLogin = () => {
+        router.push('/auth/signin');
+        MySwal.fire({
+            position: "bottom-end",
+            icon: 'warning',
+            title: "Alteração cancelada!",
+            showConfirmButton: false,
+            timer: 2000,
+            toast: true,
+            timerProgressBar: true,
+        });
+    }
+
     return (
         <div className='bg-slate-200 mx-auto flex justify-center items-center min-h-screen max-w-screen-2xl p-4 md:p-6 2xl:p-10'>
             <div className='relative min-w-96 w-[500px] min-h-[550px] py-5 px-6 flex flex-col items-center bg-white border border-stroke shadow-1'>
-                <div className='absolute top-8 left-5 group'>
-                    <Link href='/auth/signin' title='Voltar para o login'>
+                <div className='absolute top-8 left-5 transition-all duration-200 hover:text-primary'>
+                    <span onClick={redirectToLogin} title='Voltar para o login'>
                         <BiArrowBack className='h-6 w-6 dark:text-white cursor-pointer' />
-                    </Link>
+                    </span>
                 </div>
                 <span className="mb-12 flex flex-col justify-center
                items-center">
