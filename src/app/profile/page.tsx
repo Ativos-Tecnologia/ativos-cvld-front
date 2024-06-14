@@ -19,12 +19,12 @@ import { Button } from "flowbite-react";
 
 const Profile = () => {
 
-  const { data, loading, error, updateProfile, firstLogin, setFirstLogin } = useContext(UserInfoAPIContext);
+  const { data, loading, error, updateProfile, firstLogin, setFirstLogin, updateProfilePicture } = useContext(UserInfoAPIContext);
   const auxData = data;
   const [editMode, setEditMode] = useState(false);
   const [editProfilePicture, setEditProfilePicture] = useState(false);
 
-  const [imageUrl, setImageUrl] = useState("/images/logo/512x512.png");
+  const [imageUrl, setImageUrl] = useState("");
 
   useEffect(() => {
     if (firstLogin) {
@@ -39,7 +39,7 @@ const Profile = () => {
   });
 
   useEffect(() => {
-    setImageUrl(data[0]?.profile_picture || "/images/logo/512x512.png");
+    setImageUrl(data[0]?.profile_picture);
   }, [data]);
 
   const {
@@ -54,8 +54,9 @@ const Profile = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = async () => {
-        setImageUrl(reader.result!.toString());
-        setEditProfilePicture(true);
+        const formData = new FormData();
+        formData.append("profile_picture", file);
+        await updateProfilePicture(`${auxData[0].id}`, formData);
       };
       reader.readAsDataURL(file);
     }
@@ -64,15 +65,12 @@ const Profile = () => {
   const onSubmit: SubmitHandler<Record<string, any>> = async (data) => {
     const formData = new FormData();
 
-    if (editProfilePicture) {
-      formData.append("profile_picture", data.profile_picture[0]);
-      setEditProfilePicture(false);
-    } else {
+
       formData.append("first_name", data.first_name);
       formData.append("last_name", data.last_name);
       formData.append("title", data.title);
       setEditMode(false);
-    }
+
 
     try {
 
