@@ -77,8 +77,8 @@ const SignUp: React.FC = () => {
         if (password.length >= 6) strength += 1;
         if (/[A-Z]/.test(password)) strength += 1;
         if (/[a-z]/.test(password)) strength += 1;
-        if (/[0-9]/.test(password)) strength += 1;
-        if (/[@$!%*#?&]/.test(password)) strength += 1;
+        if (/[0-9]/.test(password) || /[@$!%*#?&]/.test(password)) strength += 1;
+        if (password.length >= 12) strength += 1;
 
         // verificando força da senha para passar feedback visual:
         switch (strength) {
@@ -728,7 +728,7 @@ const SignUp: React.FC = () => {
                 <div className="mt-6 text-center sm:col-span-2">
                   <p>
                     Já tem uma conta?{" "}
-                    <Link href="/auth/signin" className="text-primary">
+                    <Link href="/auth/signin" className="text-primary dark:text-blue-400">
                       Conecte-se
                     </Link>
                   </p>
