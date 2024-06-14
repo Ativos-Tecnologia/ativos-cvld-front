@@ -368,12 +368,12 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
 }>Limpar Resultado</button> */}
             </div>
           ) : (
-            <div className="flex flex-col justify-between items-center">
+            <div className="flex flex-col justify-between gap-5 items-center">
               <h4 className="text-xl font-semibold text-black dark:text-white">
                 Ainda sem resultados
               </h4>
               <Image
-                src="/images/business_man.svg"
+                src="/images/no-results.svg"
                 alt="Empty"
                 width={550}
                 height={650}
