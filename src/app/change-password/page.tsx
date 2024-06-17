@@ -10,9 +10,7 @@ import { ChangePasswordProps } from '@/types/form';
 import LabelConfirmPassword from '@/components/InputLabels/LabelConfirmPassword';
 import usePassword from '@/hooks/usePassword';
 import { BiArrowBack } from 'react-icons/bi';
-import Link from 'next/link';
 import UseMySwal from '@/hooks/useMySwal';
-import { redirect } from 'next/dist/server/api-utils';
 import { useRouter } from 'next/navigation';
 
 const ChangePassword = () => {
@@ -47,7 +45,7 @@ const ChangePassword = () => {
     const redirectToLogin = () => {
         router.push('/auth/signin');
         MySwal.fire({
-            position: "bottom-end",
+            position: "center",
             icon: 'warning',
             title: "Alteração cancelada!",
             showConfirmButton: false,

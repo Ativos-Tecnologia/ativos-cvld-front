@@ -44,8 +44,8 @@ const SignIn: React.FC = () => {
   const {
     loading,
     setLoading,
-    passwordHide,
-    setPasswordHide
+    hide,
+    setHide
   } = usePassword(passwordInput)
 
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -348,7 +348,7 @@ const SignIn: React.FC = () => {
                   </label>
                   <div className="relative">
                     <input
-                      type={passwordHide ? "password" : "text"}
+                      type={hide.password ? "password" : "text"}
                       placeholder="Digite a sua senha"
                       className={`${errors.password && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                       {
@@ -361,9 +361,12 @@ const SignIn: React.FC = () => {
                     <ErrorMessage errors={errors} field='password' />
 
                     <span className='absolute top-4 right-10 cursor-pointer'
-                      onClick={() => setPasswordHide(!passwordHide)}
+                      onClick={() => setHide({
+                        ...hide,
+                        password: !hide.password
+                      })}
                     >
-                      {!passwordHide ? <BsEye style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} /> : <BsEyeSlash style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />}
+                      {!hide.password ? <BsEye style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} /> : <BsEyeSlash style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />}
                     </span>
 
                     <span className="absolute right-4 top-4">
