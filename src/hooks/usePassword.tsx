@@ -12,7 +12,10 @@ export type PasswordRequirements = {
 const usePassword = (passwordInput: string, confirmPasswordInput?: string) => {
 
     const [loading, setLoading] = useState<boolean>(false);
-    const [passwordHide, setPasswordHide] = useState<boolean>(true);
+    const [hide, setHide] = useState({
+        password: true,
+        confirmPassword: true
+    });
     const [passwordsMatch, setPasswordsMatch] = useState<boolean>(true);
     const [passwordStr, setPasswordStr] = useState<string>('');
     const [strengthColor, setStrengthColor] = useState<string>('slate-400');
@@ -169,8 +172,8 @@ const usePassword = (passwordInput: string, confirmPasswordInput?: string) => {
     return {
         loading,
         setLoading,
-        passwordHide,
-        setPasswordHide,
+        hide,
+        setHide,
         passwordsMatch,
         passwordStr,
         strengthColor,

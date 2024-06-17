@@ -21,6 +21,8 @@ import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
 import { HiOutlineArrowRight } from "react-icons/hi";
 import { AiOutlineLoading } from "react-icons/ai";
 import usePassword from "@/hooks/usePassword";
+import { BsEye, BsEyeSlash } from "react-icons/bs";
+import Terms from "@/components/Modals/Terms_&_Conditions";
 
 export type SignUpInputs = {
   username: string;
@@ -43,8 +45,10 @@ const SignUp: React.FC = () => {
   } = useForm<SignUpInputs>();
   const passwordInput = watch('password');
   const confirmPasswordInput = watch('confirm_password');
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [termsAccepted, setTermsAccepted] = useState<boolean>(false);
 
-  const {loading, setLoading, passwordsMatch, passwordStr, strengthColor, barWidth, passwordRequirements} = usePassword(passwordInput, confirmPasswordInput);
+  const { loading, setLoading, passwordsMatch, passwordStr, strengthColor, barWidth, passwordRequirements, hide, setHide } = usePassword(passwordInput, confirmPasswordInput);
 
   const MySwal = UseMySwal();
   const selectOption = watch('select');
@@ -471,7 +475,7 @@ const SignUp: React.FC = () => {
                     <input
                       minLength={6}
                       maxLength={30}
-                      type="password"
+                      type={hide.password ? 'password' : 'text'}
                       placeholder="Digite a senha"
                       className={`${errors.password && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                       id="password"
@@ -499,16 +503,25 @@ const SignUp: React.FC = () => {
                     {passwordInput && (
                       <div className="absolute w-full left-0 top-17 text-sm text-slate-400 flex flex-col gap-1">
                         <div className="w-full h-2 border-none rounded">
-                          <div style={{ 
+                          <div style={{
                             backgroundColor: `${strengthColor}`,
                             width: `${barWidth}`
-                            }} className={`h-full rounded transition-all duration-300`}></div>
+                          }} className={`h-full rounded transition-all duration-300`}></div>
                         </div>
                         <div>
                           Força da senha: <span style={{ color: `${strengthColor}` }}>{passwordStr}</span>
                         </div>
                       </div>
                     )}
+
+                    <span className='absolute top-4 right-10 cursor-pointer'
+                      onClick={() => setHide({
+                        ...hide,
+                        password: !hide.password
+                      })}
+                    >
+                      {hide.password ? <BsEye style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} /> : <BsEyeSlash style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />}
+                    </span>
 
                     <span className="absolute right-4 top-4">
                       <BiLockAlt style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />
@@ -524,7 +537,7 @@ const SignUp: React.FC = () => {
                     <input
                       minLength={6}
                       maxLength={30}
-                      type="password"
+                      type={hide.confirmPassword ? 'password' : 'text'}
                       placeholder="Confirme sua senha"
                       className={`${errors.confirm_password && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                       {
@@ -542,14 +555,31 @@ const SignUp: React.FC = () => {
 
                     {passwordsMatch && <ErrorMessage errors={errors} field='confirm_password' />}
 
+                    <span className='absolute top-4 right-10 cursor-pointer'
+                      onClick={() => setHide({
+                        ...hide,
+                        confirmPassword: !hide.confirmPassword
+                      })}
+                    >
+                      {hide.confirmPassword ? <BsEye style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} /> : <BsEyeSlash style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />}
+                    </span>
+
                     <span className="absolute right-4 top-4">
                       <BiLockAlt style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />
                     </span>
                   </div>
                 </div>
 
+                <div className="mb-5 text-sm sm:col-span-2 flex gap-2 items-center">
+                  <input type="checkbox" name="terms" id="terms" style={{ width: '14px', height: '14px'}} onChange={() => setTermsAccepted(!termsAccepted)} />
+                  <p>
+                    Ao clicar em <b>criar conta</b>, você aceita os nossos <span onClick={() => setOpenModal(true)} className="text-primary hover:underline cursor-pointer dark:text-blue-400">
+                      termos e condições</span>
+                  </p>
+                </div>
+
                 <div className="mb-5 sm:col-span-2">
-                  <Button gradientDuoTone="purpleToBlue" type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-4 text-white hover:bg-opacity-90 dark:border-primary dark:bg-primary dark:hover:bg-opacity-90'>
+                  <Button gradientDuoTone="purpleToBlue" disabled={!termsAccepted} type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-4 text-white hover:bg-opacity-90 dark:border-primary dark:bg-primary dark:hover:bg-opacity-90'>
                     <span className="text-[16px] font-medium" aria-disabled={loading}>
                       {loading ? "Cadastrando usuário..." : "Criar conta"}
                     </span>
@@ -577,6 +607,7 @@ const SignUp: React.FC = () => {
                 </div>
               </form>
             </div>
+            <Terms state={openModal} setState={setOpenModal} />
           </div>
         </div>
       </div>
