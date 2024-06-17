@@ -157,7 +157,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
 
     try {
       setCalcStep("calculating");
-      
+
       const response = await api.post("/api/extrato/create/", data)
       if (response.status === 201) {
         setCredits({

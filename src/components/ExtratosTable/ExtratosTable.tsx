@@ -2,7 +2,7 @@
 import numberFormat from "@/functions/formaters/numberFormat";
 import api from "@/utils/api";
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, CustomFlowbiteTheme, Flowbite, Badge, Button } from "flowbite-react";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import UseMySwal from "@/hooks/useMySwal";
 import dateFormater from "@/functions/formaters/dateFormater";
 import { BsFillTrashFill } from "react-icons/bs";
@@ -35,7 +35,12 @@ const customTheme: CustomFlowbiteTheme = {
   }
 }
 
-export function ExtratosTable() {
+type ExtratosTableProps = {
+  newItem: string | null;
+}
+
+
+export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
   const mySwal = UseMySwal();
 
@@ -76,6 +81,10 @@ export function ExtratosTable() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+      fetchData();
+  }, [newItem]);
 
 
   return (
