@@ -13,7 +13,7 @@ const LabelConfirmPassword = ({ title, errors, register, field, passwordsMatch }
     }
 
     return (
-        <div className="mb-11 mt-6">
+        <div className="mb-11">
             <label className="mb-2.5 block font-medium text-graydark dark:text-white">
                 {title}
             </label>

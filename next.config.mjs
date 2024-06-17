@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: ['127.0.0.1', 'ativos-cvld-prod-32c6589080c0.herokuapp.com', 'ativoscvld.vercel.app'],
+        domains: ['127.0.0.1', 'ativos-cvld-prod-32c6589080c0.herokuapp.com', 'ativoscvld.vercel.app', "storage.googleapis.com"],
         remotePatterns: [
             {
                 protocol: 'https',

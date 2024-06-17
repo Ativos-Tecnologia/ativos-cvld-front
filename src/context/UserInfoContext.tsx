@@ -29,6 +29,7 @@ export interface UserInfoContextType {
     subscriptionData: ISubscriptionInfo;
     credits: IUserBalance;
     setCredits: (value: IUserBalance) => void;
+    updateProfilePicture: (id: string, data: FormData) => Promise<any>;
 }
 
 
@@ -87,7 +88,8 @@ export const UserInfoAPIContext = createContext<UserInfoContextType>({
         id: 0,
         available_credits: 0
     },
-    setCredits: () => {}
+    setCredits: () => {},
+    updateProfilePicture: async () => ({}),
 })
 
 
@@ -153,6 +155,37 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
         fetchData();
     }, []);
 
+    const updateProfilePicture = async (id: string, data: FormData) => {
+        setLoading(true);
+        try {
+            const response = await api.patch(`/api/profile/picture/${id}/`, data, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            if (response.status === 201) {
+                const profileResult = await api.get("/api/profile/");
+                if (profileResult.status === 200) {
+                    setData(profileResult.data);
+                } else {
+                    setError("Error fetching profile data");
+                }
+
+                setLoading(false);
+            }
+
+                return response
+        }
+        catch (error: any) {
+            setError(error.message);
+            console.error(error);
+            return error
+        } finally {
+            setLoading(false);
+        }
+    }
+
     const updateProfile = async (id: string, data: UpdateUserProfile) => {
         setLoading(true);
         try {
@@ -180,7 +213,7 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
     }
 
     return (
-        <UserInfoAPIContext.Provider value={{ data, loading, error, updateProfile, firstLogin, setFirstLogin, subscriptionData, credits, setCredits }}>
+        <UserInfoAPIContext.Provider value={{ data, loading, error, updateProfile, firstLogin, setFirstLogin, subscriptionData, credits, setCredits, updateProfilePicture }}>
             {children}
         </UserInfoAPIContext.Provider>
     );

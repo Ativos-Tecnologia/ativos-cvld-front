@@ -1,3 +1,4 @@
+import { PasswordRequirements } from "@/hooks/usePassword";
 import { FieldErrors, UseFormClearErrors, UseFormRegister } from "react-hook-form";
 
 export type ChangePasswordProps = {
@@ -17,4 +18,5 @@ export type LabelProps = {
     strengthColor?: string;
     barWidth?: string;
     passwordStr?: string;
+    passwordRequirements?: PasswordRequirements;
 }
