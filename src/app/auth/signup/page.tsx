@@ -520,7 +520,7 @@ const SignUp: React.FC = () => {
                         password: !hide.password
                       })}
                     >
-                      {hide.password ? <BsEye style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} /> : <BsEyeSlash style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />}
+                      {hide.password ? <BsEyeSlash style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} /> : <BsEye style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />}
                     </span>
 
                     <span className="absolute right-4 top-4">
@@ -561,7 +561,7 @@ const SignUp: React.FC = () => {
                         confirmPassword: !hide.confirmPassword
                       })}
                     >
-                      {hide.confirmPassword ? <BsEye style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} /> : <BsEyeSlash style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />}
+                      {hide.confirmPassword ? <BsEyeSlash style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} /> : <BsEye style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />}
                     </span>
 
                     <span className="absolute right-4 top-4">
@@ -573,13 +573,13 @@ const SignUp: React.FC = () => {
                 <div className="mb-5 text-sm sm:col-span-2 flex gap-2 items-center">
                   <input type="checkbox" name="terms" id="terms" style={{ width: '14px', height: '14px'}} onChange={() => setTermsAccepted(!termsAccepted)} />
                   <p>
-                    Ao clicar em <b>criar conta</b>, você aceita os nossos <span onClick={() => setOpenModal(true)} className="text-primary hover:underline cursor-pointer dark:text-blue-400">
+                    Aceitar nossos <span onClick={() => setOpenModal(true)} className="text-primary hover:underline cursor-pointer dark:text-blue-400">
                       termos e condições</span>
                   </p>
                 </div>
 
                 <div className="mb-5 sm:col-span-2">
-                  <Button gradientDuoTone="purpleToBlue" disabled={!termsAccepted} type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-4 text-white hover:bg-opacity-90 dark:border-primary dark:bg-primary dark:hover:bg-opacity-90'>
+                  <Button gradientDuoTone="purpleToBlue" disabled={!termsAccepted} type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-4 text-white hover:bg-opacity-90 dark:border-primary dark:bg-primary dark:hover:bg-opacity-90 disabled:cursor-not-allowed'>
                     <span className="text-[16px] font-medium" aria-disabled={loading}>
                       {loading ? "Cadastrando usuário..." : "Criar conta"}
                     </span>
