@@ -6,6 +6,7 @@ import { Button } from "flowbite-react";
 import { BiDownload } from "react-icons/bi";
 import { CVLDResultProps } from "@/interfaces/IResultCVLD";
 import { BsEraser } from "react-icons/bs";
+import linkAdapter from "@/functions/formaters/linkFormater";
 
 const options: ApexOptions = {
   colors: ["#3C50E0", "#80CAEE"],
@@ -125,11 +126,6 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
       maximumSignificantDigits: 5,
       style: "decimal",
     }).format(value);
-  }
-
-  const linkAdapter = (link: string) => {
-    const linkUrl = `${PROD_API_URL}${link}`;
-    return linkUrl;
   }
 
   return (
