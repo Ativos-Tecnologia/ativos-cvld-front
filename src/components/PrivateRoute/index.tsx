@@ -23,27 +23,27 @@ export default function PrivateRoute({ children }: PropsPrivateRouteProps) {
         }
     }, []);
 
-    const checkIsUserFirstLogin = async (): Promise<boolean> => {
-        try {
-            const response = await api.get("/api/check-first-login/");
-            if (response.data[0].is_first_login === true) {
-                setFirstLogin(true);
-                return true;
-            }
+    // const checkIsUserFirstLogin = async (): Promise<boolean> => {
+    //     try {
+    //         const response = await api.get("/api/check-first-login/");
+    //         if (response.data[0].is_first_login === true) {
+    //             setFirstLogin(true);
+    //             return true;
+    //         }
 
-            setFirstLogin(false);
-            return false;
-        } catch (error) {
-            console.error(error);
-            return false;
-        }
-    }
+    //         setFirstLogin(false);
+    //         return false;
+    //     } catch (error) {
+    //         console.error(error);
+    //         return false;
+    //     }
+    // }
 
-    useEffect(() => {
-        checkIsUserFirstLogin().then((res) => {
-            setFirstLogin(res);
-        });
-    }, [firstLogin]);
+    // useEffect(() => {
+    //     checkIsUserFirstLogin().then((res) => {
+    //         setFirstLogin(res);
+    //     });
+    // }, [firstLogin]);
 
     const auth = useCallback(async () => {
         const token = localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`)
