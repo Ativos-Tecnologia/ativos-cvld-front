@@ -194,6 +194,7 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
                     "Content-Type": "multipart/form-data",
                 },
             });
+
             if (response.status === 200) {
                 setData([response.data]);
                 setLoading(false);
