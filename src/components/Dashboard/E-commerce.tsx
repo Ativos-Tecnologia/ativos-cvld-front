@@ -107,7 +107,7 @@ const ECommerce: React.FC = () => {
         {/* <MapOne /> */}
         {/* <div className="col-span-12 xl:col-span-8"> */}
         <div className="col-span-12">
-          <ExtratosTable newItem={calcStep} />
+          <ExtratosTable newItem={data.result} />
         </div>
         {/*
         <ChatCard /> */}
