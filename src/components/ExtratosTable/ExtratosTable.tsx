@@ -46,6 +46,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
   const [data, setData] = useState<any[]>([]);
   const [item, setItem] = useState<any>({});
+  const [loading, setLoading] =  useState<boolean>(false);
   const [lastId, setLastId] = useState<string | null>(null);
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
 
@@ -69,13 +70,16 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   }
 
   const fetchDataById = async (id: string) => {
+    setLoading(true);
     if (lastId === id) {
       setOpenDrawer(!openDrawer);
+      setLoading(false);
       return;
     }
     const response = await api.get(`api/extrato/${id}/`);
     setItem(response.data);
     setLastId(id);
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -151,8 +155,8 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                 </TableCell>
                 <TableCell className="text-center">
                   <button onClick={() => {
-                    fetchDataById(item.id);
                     setOpenDrawer(true);
+                    fetchDataById(item.id);
                   }} className="bg-transparent border-none transition-all duration-300 text-primary font-medium hover:text-blue-500 dark:hover:text-white dark:text-blue-500 border border-blue-500 hover:border-transparent">
                     Detalhes
                   </button>
@@ -162,7 +166,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
           </TableBody>
         </Table>
       </Flowbite>
-      <AwesomeDrawer data={item} setData={setItem} open={openDrawer} setOpen={setOpenDrawer} />
+      <AwesomeDrawer data={item} loading={loading} setData={setItem} open={openDrawer} setOpen={setOpenDrawer} />
     </div>
   );
 }
