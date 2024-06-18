@@ -12,9 +12,6 @@ export function AwesomeDrawer({ data, setData, open, setOpen }: { data: any, set
 
   return (
     <>
-      {/* <div className="flex items-center justify-center">
-        <Button gradientDuoTone="purpleToBlue" onClick={() => setOpen(true)}>Detalhes</Button>
-      </div> */}
      {
       data["valor_principal"] && (
         <Drawer open={open} onClose={handleClose} style={{
@@ -240,7 +237,6 @@ export function AwesomeDrawer({ data, setData, open, setOpen }: { data: any, set
                       </tr>
                     )
                   }
-
                     {
                       data.recalc_flag === "before_12_2021" && data.pss_atualizado !== 0 && (
                         <tr className="bg-gradient-to-r from-rose-200 to-rose-300">

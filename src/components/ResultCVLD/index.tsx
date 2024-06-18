@@ -6,6 +6,7 @@ import { Button } from "flowbite-react";
 import { BiDownload } from "react-icons/bi";
 import { CVLDResultProps } from "@/interfaces/IResultCVLD";
 import { BsEraser } from "react-icons/bs";
+import linkAdapter from "@/functions/formaters/linkFormater";
 
 const options: ApexOptions = {
   colors: ["#3C50E0", "#80CAEE"],
@@ -125,11 +126,6 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
       maximumSignificantDigits: 5,
       style: "decimal",
     }).format(value);
-  }
-
-  const linkAdapter = (link: string) => {
-    const linkUrl = `${PROD_API_URL}${link}`;
-    return linkUrl;
   }
 
   return (
@@ -368,15 +364,16 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
 }>Limpar Resultado</button> */}
             </div>
           ) : (
-            <div className="flex flex-col justify-between items-center">
+            <div className="flex flex-col justify-between w-fit mx-auto gap-5 items-center">
               <h4 className="text-xl font-semibold text-black dark:text-white">
                 Ainda sem resultados
               </h4>
               <Image
-                src="/images/business_man.svg"
+                src="/images/no-results.svg"
                 alt="Empty"
-                width={550}
-                height={650}
+                width={350}
+                height={450}
+
               />
               <span
                 className="text-gray-500 dark:text-gray-400 text-center">

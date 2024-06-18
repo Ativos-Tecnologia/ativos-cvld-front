@@ -18,6 +18,8 @@ import { BiLockAlt, BiUser } from "react-icons/bi";
 import { FcGoogle } from "react-icons/fc";
 import { AiOutlineLoading } from "react-icons/ai";
 import ForgotPassword from "@/components/Modals/ForgotPassword";
+import { BsEye, BsEyeSlash } from "react-icons/bs";
+import usePassword from "@/hooks/usePassword";
 
 
 // export const metadata: Metadata = {
@@ -37,8 +39,15 @@ const SignIn: React.FC = () => {
     watch,
     formState: { errors },
   } = useForm<SignInInputs>()
+  const passwordInput = watch("password");
 
-  const [loading, setLoading] = useState(false);
+  const {
+    loading,
+    setLoading,
+    hide,
+    setHide
+  } = usePassword(passwordInput)
+
   const [openModal, setOpenModal] = useState<boolean>(false);
   const router = useRouter();
   const MySwal = UseMySwal();
@@ -310,7 +319,7 @@ const SignIn: React.FC = () => {
                     <input
                       type="text"
                       placeholder="Digite o usuário"
-                      className={`${errors.username && '!border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                      className={`${errors.username && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                       {
                       ...register("username", {
                         required: "Campo obrigatório",
@@ -339,9 +348,9 @@ const SignIn: React.FC = () => {
                   </label>
                   <div className="relative">
                     <input
-                      type="password"
+                      type={hide.password ? "password" : "text"}
                       placeholder="Digite a sua senha"
-                      className={`${errors.password && '!border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                      className={`${errors.password && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                       {
                       ...register("password", {
                         required: "Campo obrigatório",
@@ -351,13 +360,22 @@ const SignIn: React.FC = () => {
                     />
                     <ErrorMessage errors={errors} field='password' />
 
+                    <span className='absolute top-4 right-10 cursor-pointer'
+                      onClick={() => setHide({
+                        ...hide,
+                        password: !hide.password
+                      })}
+                    >
+                      {!hide.password ? <BsEye style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} /> : <BsEyeSlash style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />}
+                    </span>
+
                     <span className="absolute right-4 top-4">
                       <BiLockAlt style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />
                     </span>
                   </div>
                 </div>
 
-                <p onClick={() => setOpenModal(true)} className="text-primary text-sm font-medium mb-6 cursor-pointer">
+                <p onClick={() => setOpenModal(true)} className="text-primary max-w-fit text-sm font-medium mb-6 cursor-pointer dark:text-blue-400">
                   Esqueci a senha
                 </p>
 
@@ -382,7 +400,7 @@ const SignIn: React.FC = () => {
                 <div className="mt-6 text-center">
                   <p>
                     Ainda não possui uma conta?{" "}
-                    <Link aria-disabled href="/auth/signup" className="text-primary font-medium">
+                    <Link aria-disabled href="/auth/signup" className="text-primary font-medium dark:text-blue-400">
                       Cadastre-se
                     </Link>
                   </p>

@@ -19,19 +19,19 @@ const customTheme: CustomFlowbiteTheme = {
     body: {
       base: "group/body",
       cell: {
-        base: "px-6 py-4 group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg"
+        base: "px-6 py-4 group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg dark:bg-boxdark dark:text-white"
       }
     },
     head: {
       base: "group/head text-xs uppercase text-gray-700 dark:text-gray-400",
       cell: {
-        base: "bg-gray-50 px-6 py-3 group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg dark:bg-gray-700"
+        base: "bg-stone-300 text-black px-6 py-3 group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg dark:bg-boxdark dark:text-white dark:border-b dark:border-gray"
       }
     },
     row: {
       base: "group/row",
       hovered: "hover:bg-gray-50 dark:hover:bg-gray-600",
-      striped: "odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
+      striped: "odd:bg-white even:bg-green-300 odd:dark:bg-gray-800 even:dark:bg-gray-700"
     }
   }
 }
@@ -41,7 +41,11 @@ type LocalValueProps = {
   active: boolean;
 }
 
-export function ExtratosTable() {
+type ExtratosTableProps = {
+  newItem: string | null;
+}
+
+export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
   const mySwal = UseMySwal();
 
@@ -110,7 +114,11 @@ export function ExtratosTable() {
         setShowModalMessage(!element.active)
       }
     });
-  }, [localValue])
+  }, [localValue]);
+
+  useEffect(() => {
+    fetchData();
+  }, [newItem])
 
   const setDontShowAgainDeleteExtractAlert = (key: string): void => {
 
@@ -144,7 +152,7 @@ export function ExtratosTable() {
     <div className="overflow-x-auto">
       <Flowbite theme={{ theme: customTheme }}>
         <Table hoverable className="">
-          <TableHead className="bg-[#f9fafb] dark:bg-[#1a202c] bg-whi">
+          <TableHead>
             <TableHeadCell className="text-center w-[120px]">Oficio</TableHeadCell>
             <TableHeadCell className="text-center">Credor</TableHeadCell>
             <TableHeadCell className="text-center">Principal</TableHeadCell>
@@ -177,57 +185,14 @@ export function ExtratosTable() {
                   })} className="bg-transparent border-none flex transition-all duration-300 hover:bg-red-500 text-red-500 hover:text-white dark:hover:text-white dark:text-red-500 dark:hover:bg-red-500">
                     <BsFillTrashFill className="text-meta-1 hover:text-meta-7 dark:text-white dark:hover:text-stone-300 h-4 w-4 self-center" />
                   </button>
-                  {/* <Button onClick={async () => {
-                    const result = await mySwal.fire({
-                      icon: "warning",
-                      showCancelButton: true,
-                      html: `
-                      <h3 class="text-2xl mb-3 font-medium leading-none">Tem certeza que deseja excluir este registro? Esta ação não poderá ser desfeita.</h3>
-                      <div class="p-2">
-                        <label for="dont_show_again_delete_extract_confirm" class="flex gap-2 items-center">
-                          <input type="checkbox" id="dont_show_again_delete_extract_confirm" />
-                          <span>Não mostrar novamente essa mensagem</span>
-                        </label>
-                      </div>
-                      `,
-                      confirmButtonColor: "#3085d6",
-                      cancelButtonColor: "#d33",
-                      confirmButtonText: "Sim!",
-                      cancelButtonText: "Cancelar",
-                    });
-
-                    if (result.isConfirmed) {
-                      const response = await fetchDelete(item.id);
-                      if (response && response.status === 204) {
-                        mySwal.fire({
-                          title: "Deletado!",
-                          text: "Registro excluído com sucesso.",
-                          icon: "success",
-                          timer: 2000,
-                          timerProgressBar: true,
-                        }
-                        );
-
-                      } else {
-                        mySwal.fire(
-                          "Erro!",
-                          "Ocorreu um erro ao excluir o cliente.",
-                          "error"
-                        );
-                      }
-                    }
-                  }}
-                   className="bg-transparent border-none hover:bg-red-500 text-red-500 hover:text-white dark:hover:text-white dark:text-red-500 dark:hover:bg-red-500">
-                    <BsFillTrashFill className="text-orange-500" />
-                  </Button> */}
                 </TableCell>
                 <TableCell className="text-center">
-                  <Button onClick={() => {
+                  <button onClick={() => {
                     fetchDataById(item.id);
                     setOpenDrawer(true);
-                  }} className="bg-transparent border-none hover:bg-blue-500 text-blue-500 hover:text-white dark:hover:text-white dark:text-blue-500 dark:hover:bg-blue-500 border border-blue-500 hover:border-transparent">
+                  }} className="bg-transparent border-none transition-all duration-300 text-primary font-medium hover:text-blue-500 dark:hover:text-white dark:text-blue-500 border border-blue-500 hover:border-transparent">
                     Detalhes
-                  </Button>
+                  </button>
                 </TableCell>
               </TableRow>
             ))}
