@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export type PasswordRequirements = {
     length: boolean;
@@ -36,11 +36,11 @@ const usePassword = (passwordInput: string, confirmPasswordInput?: string) => {
           if (password) {
     
             // mudando força da senha de acordo com requisitos mínimos:
-            if (password.length >= 6) strength += 1;
+            if (password.length >= 12) strength += 1;
             if (/[A-Z]/.test(password)) strength += 1;
             if (/[a-z]/.test(password)) strength += 1;
-            if (/[0-9]/.test(password) || /[@$!%*#?&]/.test(password)) strength += 1;
-            if (password.length >= 12) strength += 1;
+            if (/[0-9]/.test(password)) strength += 1;
+            if (/[@$!%*#?&]/.test(password)) strength += 1;
     
             // verificando força da senha para passar feedback visual:
             switch (strength) {
@@ -88,7 +88,7 @@ const usePassword = (passwordInput: string, confirmPasswordInput?: string) => {
     
           if (password) {
     
-            // mudando força da senha de acordo com requisitos mínimos:
+            // verifying password requirements:
             if (password.length >= 6) {
               reqNum += 1;
               passwordRequirements.length = true;
