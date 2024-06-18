@@ -2,12 +2,14 @@
 import numberFormat from "@/functions/formaters/numberFormat";
 import api from "@/utils/api";
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, CustomFlowbiteTheme, Flowbite, Badge } from "flowbite-react";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import UseMySwal from "@/hooks/useMySwal";
 import dateFormater from "@/functions/formaters/dateFormater";
 import { BsFillTrashFill } from "react-icons/bs";
 import { AwesomeDrawer } from "../Drawer/Drawer";
 import DeleteExtractAlert from "../Modals/DeleteExtract";
+import { ApiResponse } from "../ResultCVLD";
+import { CVLDResultProps } from "@/interfaces/IResultCVLD";
 
 const customTheme: CustomFlowbiteTheme = {
   table: {
@@ -42,7 +44,7 @@ type LocalValueProps = {
 }
 
 type ExtratosTableProps = {
-  newItem: string | null;
+  newItem: CVLDResultProps[];
 }
 
 export function ExtratosTable({ newItem }: ExtratosTableProps) {
@@ -70,7 +72,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   const fetchDelete = async (id: string) => {
     try {
       const response = await api.delete(`api/extrato/delete/${id}/`);
-      fetchData();
+
       if (showModalMessage) {
         setResponseStatus('ok');
       } else {
@@ -83,6 +85,8 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
           showConfirmButton: false
         })
       }
+
+      setData(data.filter((item) => item.id !== id));
       return response;
     } catch (error) {
       if (showModalMessage) {
@@ -131,6 +135,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     fetchStateFromLocalStorage();
   }, []);
 
+
   useEffect(() => {
     if (localValue.length <= 0) return;
 
@@ -141,9 +146,13 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     });
   }, [localValue]);
 
-  useEffect(() => {
-    fetchData();
-  }, [newItem])
+  // useEffect(() => {
+    //   fetchData();
+    // }, [newItem])
+
+    useEffect(() => {
+        setData([...newItem, ...data])
+    }, [newItem])
 
   const setDontShowAgainDeleteExtractAlert = (key: string): void => {
 
