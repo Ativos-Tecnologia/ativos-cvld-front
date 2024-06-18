@@ -82,10 +82,6 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     fetchData();
   }, []);
 
-  useEffect(() => {
-      fetchData();
-  }, [newItem]);
-
 
   return (
     <div className="overflow-x-auto">
