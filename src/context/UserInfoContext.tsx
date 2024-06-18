@@ -164,7 +164,7 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
                 },
             });
 
-            if (response.status === 201) {
+            if (response.status === 200) {
                 const profileResult = await api.get("/api/profile/");
                 if (profileResult.status === 200) {
                     setData(profileResult.data);

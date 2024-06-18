@@ -71,7 +71,7 @@ const DropdownUser = () => {
           </span>
         </span>
 
-        <span className="relative h-12 w-12 rounded-full border border-stroke dark:border-strokedark">
+        <span className="relative h-12 w-12 flex items-center justify-center rounded-full border border-stroke dark:border-strokedark">
           {
             loading ? (
               <div className="animate-pulse">
