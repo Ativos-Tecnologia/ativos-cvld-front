@@ -1,28 +1,30 @@
 "use client";
 import React, { useRef } from 'react'
-import { set } from 'react-hook-form';
 import { BiX } from 'react-icons/bi';
 import { FcCheckmark, FcHighPriority } from 'react-icons/fc';
 
 const DeleteExtractAlert = ({ response, setResponse, state, setState, setDontShowState, deleteExtract }: {
   state: {
-    open: boolean;
-    extractId: string;
+    open: boolean; // defines if modal is open;
+    extractId: string; // id of extract to be deleted;
   };
-  response: string;
-  setResponse: React.Dispatch<React.SetStateAction<string>>;
-  setState: React.Dispatch<React.SetStateAction<{
+  response: string; // response from fetchDelete to show success or error;
+  setResponse: React.Dispatch<React.SetStateAction<string>>; // set response to reset modal state if closed;
+
+  setState: React.Dispatch<React.SetStateAction<{ // update state (open or close) of modal;
     open: boolean;
-    extractId: string;
+    extractId: string; // this id will never be changed in this component, dont care about it. He is here just to fullfil type rules;
   }>>;
-  setDontShowState: (key: string) => void;
-  deleteExtract: any;
+  setDontShowState: (key: string) => void; // set the state of the dont show again configs;
+  deleteExtract: any; // function that will delete the extract;
 }) => {
 
   const modalRefInner = useRef<HTMLDivElement | null>(null);
   const modalRef = useRef<HTMLDivElement | null>(null);
-  const [blockModalOption, setBlockModalOption] = React.useState<boolean>(false);
+  const [blockModalOption, setBlockModalOption] = React.useState<boolean>(false); // state of dont show again checkbox. If true, dont show again modal;
 
+
+  // function that closes the modal if clicked outside of it;  
   modalRef.current?.addEventListener('click', (e: MouseEvent) => {
     if (modalRefInner.current) {
       if (window.innerWidth > 425) {
@@ -48,6 +50,7 @@ const DeleteExtractAlert = ({ response, setResponse, state, setState, setDontSho
       fixed top-0 left-0 flex items-center justify-center w-screen h-screen z-999999 bg-black/50 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 transition-all duration-300 ease-in-out`}>
       <div ref={modalRefInner} className='relative w-11/12 border shadow-2 border-stroke xsm:w-100 h-fit rounded-lg bg-white p-10 dark:bg-boxdark dark:border-strokedark'>
         {/* returns based on response */}
+        {/* response neutral */}
         {response === '' && (
           <React.Fragment>
             <FcHighPriority className='mx-auto w-12 h-12 mb-4' />
@@ -78,6 +81,9 @@ const DeleteExtractAlert = ({ response, setResponse, state, setState, setDontSho
             </div>
           </React.Fragment>
         )}
+        {/* end of response neutral */}
+
+        {/* response ok */}
         {response === 'ok' && (
           <React.Fragment>
             <FcCheckmark className='mx-auto w-12 h-12 mb-4' />
@@ -102,6 +108,9 @@ const DeleteExtractAlert = ({ response, setResponse, state, setState, setDontSho
             </div>
           </React.Fragment>
         )}
+        {/* end of response ok */}
+
+        {/* response error */}
         {response === 'error' && (
           <React.Fragment>
             <BiX className='mx-auto w-17 h-17 mb-4 fill-meta-1' />
@@ -126,6 +135,7 @@ const DeleteExtractAlert = ({ response, setResponse, state, setState, setDontSho
             </div>
           </React.Fragment>
         )}
+        {/* end of response error */}
       </div>
     </div>
   )

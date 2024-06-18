@@ -60,7 +60,6 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     open: false,
     extractId: ''
   });
-  console.log(showModalMessage)
 
   const fetchData = async () => {
     const response = await api.get("api/extratos/");
@@ -71,10 +70,32 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     try {
       const response = await api.delete(`api/extrato/delete/${id}/`);
       fetchData();
-      setResponseStatus('ok');
+      if (showModalMessage) {
+        setResponseStatus('ok');
+      } else {
+        mySwal.fire({
+          toast: true,
+          text: "Extrato excluído com sucesso!",
+          icon: "success",
+          position: "bottom-right",
+          timer: 2000,
+          showConfirmButton: false
+        })
+      }
       return response;
     } catch (error) {
-      setResponseStatus('error');
+      if (showModalMessage) {
+        setResponseStatus('error');
+      } else {
+        mySwal.fire({
+          toast: true,
+          text: "Houve um erro ao excluir o extrato",
+          icon: "error",
+          position: "bottom-right",
+          timer: 2000,
+          showConfirmButton: false
+        })
+      }
     }
   }
 
@@ -179,12 +200,18 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                 <TableCell className="text-center">{numberFormat(item.valor_juros)}</TableCell>
                 <TableCell className="text-center">{dateFormater(item.data_base)}</TableCell>
                 <TableCell className="text-center">
-                  <button onClick={() => setModalOptions({
-                    open: true,
-                    extractId: item.id
-                  })} className="bg-transparent border-none flex transition-all duration-300 hover:bg-red-500 text-red-500 hover:text-white dark:hover:text-white dark:text-red-500 dark:hover:bg-red-500">
-                    <BsFillTrashFill className="text-meta-1 hover:text-meta-7 dark:text-white dark:hover:text-stone-300 h-4 w-4 self-center" />
-                  </button>
+                  {showModalMessage ? (
+                    <button onClick={() => setModalOptions({
+                      open: true,
+                      extractId: item.id
+                    })} className="bg-transparent border-none flex transition-all duration-300 hover:bg-red-500 text-red-500 hover:text-white dark:hover:text-white dark:text-red-500 dark:hover:bg-red-500">
+                      <BsFillTrashFill className="text-meta-1 hover:text-meta-7 dark:text-white dark:hover:text-stone-300 h-4 w-4 self-center" />
+                    </button>
+                  ) : (
+                    <button onClick={() => fetchDelete(item.id)} className="bg-transparent border-none flex transition-all duration-300 hover:bg-red-500 text-red-500 hover:text-white dark:hover:text-white dark:text-red-500 dark:hover:bg-red-500">
+                      <BsFillTrashFill className="text-meta-1 hover:text-meta-7 dark:text-white dark:hover:text-stone-300 h-4 w-4 self-center" />
+                    </button>
+                  )}
                 </TableCell>
                 <TableCell className="text-center">
                   <button onClick={() => {
