@@ -91,11 +91,8 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
   const clearData = () => {
     setFilledData(false);
     setAuxData({ result: [], setData: () => { } });
-    console.log(filledData, auxData);
   }
-  // fim da lógica para limpar a tela de cálculos
 
-  // procedimento de scroll quando o cálculo for realizado:
   useEffect(() => {
     if (result.result.length > 0 && window.innerWidth <= 1270) {
       CVLDResultRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -139,7 +136,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
               </h4>
               <div className="flex flex-col items-center mt-2">
                 {auxData && auxData.result && auxData.result.map((item: CVLDResultProps) => (
-                  <ul key={item.npu} className="flex flex-col gap-2">
+                  <ul key={item.npu + item.valor_inscrito} className="w-full flex flex-col gap-2">
                     {
                       item.recalc_flag === "after_12_2021" ? (
                         <li className="text-sm text-gray-500 dark:text-gray-400">
