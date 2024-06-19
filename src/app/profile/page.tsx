@@ -179,7 +179,7 @@ const Profile = () => {
             {loading ? (
               <div className="relative z-[8] mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
                 <div className="animate-pulse">
-                  <div className="w-[152px] h-[152px] bg-slate-200 rounded-full dark:bg-slate-300"></div>
+                  <div className="rounded-full sm:max-w-42 sm:max-h-42 max-h-38 max-h-44 object-cover object-center aspect-square bg-slate-200 dark:bg-slate-300"></div>
                 </div>
               </div>
             ) : (
