@@ -12,17 +12,52 @@ import {
 } from 'react-hook-form';
 import UseMySwal from "@/hooks/useMySwal";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
-import { BiCamera, BiLogoFacebook, BiLogoLinkedin, BiLogoTwitter, BiEditAlt, BiSave } from "react-icons/bi";
+import { BiCamera, BiLogoFacebook, BiLogoLinkedin, BiLogoTwitter, BiEditAlt, BiSave, BiChevronDown, BiTrashAlt, BiPencil } from "react-icons/bi";
 import { BsXLg } from "react-icons/bs";
-import { Button } from "flowbite-react";
+import { Button, CustomFlowbiteTheme, Dropdown, Flowbite } from "flowbite-react";
 
+const customTheme: CustomFlowbiteTheme = {
+  dropdown: {
+    "arrowIcon": "ml-2 h-4 w-4",
+    "content": "py-1 focus:outline-none",
+    "floating": {
+      "animation": "transition-opacity",
+      "arrow": {
+        "base": "absolute z-10 h-2 w-2 rotate-45",
+        "style": {
+          "dark": "bg-gray-900 dark:bg-gray-700",
+          "light": "bg-white",
+          "auto": "bg-white dark:bg-gray-700"
+        },
+        "placement": "-4px"
+      },
+      "base": "z-10 w-30 divide-y divide-black/50 dark:divide-stroke rounded shadow focus:outline-none",
+      "content": "py-1 text-sm text-gray-700 dark:text-gray-200",
+      "divider": "my-1 h-px bg-gray dark:bg-strokedark",
+      "header": "block px-4 py-2 text-sm text-gray-700 dark:text-gray-200",
+      "hidden": "invisible opacity-0",
+      "item": {
+        "container": "",
+        "base": "flex w-full cursor-pointer items-center justify-start px-2 py-1 text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:bg-gray-600 dark:focus:text-white",
+        "icon": "mr-2 h-4 w-4"
+      },
+      "style": {
+        // "dark": "bg-black text-white dark:bg-black",
+        // "light": "border border-gray-200 bg-white text-gray-900",
+        "auto": "border border-stroke bg-white text-black/80 dark:border-strokedark dark:bg-black dark:text-white"
+      },
+      "target": "w-fit"
+    },
+    "inlineWrapper": "flex items-center"
+  }
+};
 
 const Profile = () => {
 
   const { data, loading, error, updateProfile, firstLogin, setFirstLogin, updateProfilePicture } = useContext(UserInfoAPIContext);
   const auxData = data;
-  const [editMode, setEditMode] = useState(false);
-  const [editProfilePicture, setEditProfilePicture] = useState(false);
+  const [editMode, setEditMode] = useState<boolean>(false);
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
   const [imageUrl, setImageUrl] = useState("");
 
@@ -62,14 +97,20 @@ const Profile = () => {
     }
   };
 
+  const removeProfileImage = async () => {
+    const formData = new FormData();
+    formData.append("profile_picture", "")
+    await updateProfilePicture(`${data[0].id}`, formData)
+  }
+
   const onSubmit: SubmitHandler<Record<string, any>> = async (data) => {
     const formData = new FormData();
 
 
-      formData.append("first_name", data.first_name);
-      formData.append("last_name", data.last_name);
-      formData.append("title", data.title);
-      setEditMode(false);
+    formData.append("first_name", data.first_name);
+    formData.append("last_name", data.last_name);
+    formData.append("title", data.title);
+    setEditMode(false);
 
 
     try {
@@ -170,41 +211,96 @@ const Profile = () => {
             ) : (
               <div className="relative z-[8] mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
                 <div className="relative drop-shadow-2">
-                  <Image
-                    src={imageUrl}
-                    width={160}
-                    height={160}
-                    className="rounded-full sm:max-w-42 sm:max-h-42 max-h-38 max-h-44 object-cover object-center aspect-square"
-                    alt="profile"
-                  />
+                  {imageUrl !== "empty" ? (
+                    <Image
+                      src={imageUrl}
+                      width={160}
+                      height={160}
+                      className="rounded-full sm:max-w-42 sm:max-h-42 max-h-38 max-h-44 object-cover object-center aspect-square"
+                      alt="profile"
+                    />
+                  ) : (
+                    <div className="rounded-full bg-white sm:max-w-42 sm:max-h-42 max-h-38 max-h-44">
+                      <span>{data[0]?.first_name[0]}</span>
+                      <span>{data[0]?.last_name[0]}</span>
+                    </div>
+                  )}
 
-                  <Button as={'label'} gradientDuoTone={'purpleToBlue'} className="absolute bottom-0 right-0 flex h-8.5 w-11.5 cursor-pointer items-center justify-center rounded-full text-white hover:bg-opacity-90 sm:bottom-2 sm:right-2">
-                    <BiCamera style={{
-                      width: "16px",
-                      height: "16px",
-                    }} />
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        id="profile"
-                        className="sr-only"
-                        {
-                        ...register("profile_picture")
-                        }
-                        onChange={(e) => {
-                          handleImageChange(e);
-                        }}
-                      />
-                      {
-                        editProfilePicture && (
-                          <button type="submit">
-                            <span>✔️</span>
-                          </button>
-                        )
-                      }
-                    </form>
-                  </Button>
+                  <Flowbite theme={{ theme: customTheme }}>
+                    <Dropdown label="Dropdown" placement="right" >
+                      <Dropdown.Item icon={BiPencil} className=" relative hover:bg-black/10">
+                        <form onSubmit={handleSubmit(onSubmit)}>
+                          <label htmlFor="profile" className="cursor-pointer flex items-center">
+                            <span>Alterar</span>
+                          </label>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            id="profile"
+                            className="absolute top-0 left-0 bg-black w-full h-full z-1 opacity-0"
+                            placeholder="Alterar"
+                            {
+                            ...register("profile_picture")
+                            }
+                            onChange={(e) => {
+                              handleImageChange(e);
+                            }}
+                          />
+                        </form>
+                      </Dropdown.Item>
+                      <Dropdown.Divider/>
+                      <Dropdown.Item onClick={removeProfileImage} icon={BiTrashAlt} className="hover:bg-black/10 dark:">
+                        <span>Remover</span>
+                      </Dropdown.Item>
+                    </Dropdown>
+                  </Flowbite>
+
+                  {/* <Popover
+                    aria-labelledby="default-popover"
+                    content={
+                      <div className="w-33 bg-white shadow-default border-stroke dark:bg-boxdark text-sm text-gray-500 dark:text-gray-400">
+                        <button className="flex items-center p-2 w-full">
+                          <form onSubmit={handleSubmit(onSubmit)}>
+                            <label htmlFor="profile" className="cursor-pointer flex items-center">
+                              <BiPencil className="mr-2 w-4 h-4" />
+                              Mudar foto
+                            </label>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              id="profile"
+                              className="sr-only"
+                              {
+                              ...register("profile_picture")
+                              }
+                              onChange={(e) => {
+                                handleImageChange(e);
+                              }}
+                            />
+                          </form>
+                        </button>
+                        <hr />
+                        <button onClick={removeProfileImage} className="flex items-center p-2 w-full">
+                          <BiTrashAlt className="mr-2 w-4 h-4" />
+                          <span>Remover foto</span>
+                        </button>
+                      </div>
+                    }
+                  >
+
+                    <Button as={'label'} gradientDuoTone={'purpleToBlue'} className="absolute bottom-0 right-5 flex h-8.5 w-14 cursor-pointer items-center justify-center rounded-full text-white hover:bg-opacity-90 sm:bottom-2 sm:right-2" onClick={() => {
+                      setMenuOpen(!menuOpen);
+                    }}>
+                      <BiCamera style={{
+                        width: "18px",
+                        height: "18px",
+                      }} />
+                      <BiChevronDown style={{
+                        width: "16px",
+                        height: "16px",
+                      }} className="self-end" />
+                    </Button>
+                  </Popover> */}
                 </div>
               </div>
             )}

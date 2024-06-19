@@ -47,33 +47,34 @@ export type SubscriptionStatus = "PENDING" | "ACTIVE" | "CANCELLED" | "EXPIRED"
 export type SubscriptionPlan = "FREE" | "BASIC" | "PREMIUM" | "ENTERPRISE" | "GOD_MODE"
 
 export interface ISubscriptionInfo {
-    0 : {
+    0: {
         id: string;
-    user: number;
-    status: SubscriptionStatus;
-    plan: SubscriptionPlan;
-    start_date: string;
-    end_date: string;
+        user: number;
+        status: SubscriptionStatus;
+        plan: SubscriptionPlan;
+        start_date: string;
+        end_date: string;
     }
 
 }
 
 export const UserInfoAPIContext = createContext<UserInfoContextType>({
     data: {
-        0: {first_name: "",
-        last_name: "",
-        user: "",
-        phone: "",
-        profile_picture: "",
-        title: "",
-    },
+        0: {
+            first_name: "",
+            last_name: "",
+            user: "",
+            phone: "",
+            profile_picture: "",
+            title: "",
+        },
     },
 
     loading: true,
     error: null,
     updateProfile: async () => ({}),
     firstLogin: null,
-    setFirstLogin: () => {},
+    setFirstLogin: () => { },
     subscriptionData: {
         0: {
             id: "",
@@ -88,7 +89,7 @@ export const UserInfoAPIContext = createContext<UserInfoContextType>({
         id: 0,
         available_credits: 0
     },
-    setCredits: () => {},
+    setCredits: () => { },
     updateProfilePicture: async () => ({}),
 })
 
@@ -114,13 +115,13 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
 
     const [data, setData] = useState<UserInfo>({
         0: {
-        first_name: "",
-        last_name: "",
-        user: "",
-        phone: "",
-        profile_picture: "",
-        title: "",
-    },
+            first_name: "",
+            last_name: "",
+            user: "",
+            phone: "",
+            profile_picture: "",
+            title: "",
+        },
     });
 
     const [loading, setLoading] = useState<boolean>(true);
@@ -175,7 +176,7 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
                 setLoading(false);
             }
 
-                return response
+            return response
         }
         catch (error: any) {
             setError(error.message);
