@@ -5,7 +5,6 @@ import { jwtDecode } from "jwt-decode";
 import api from "@/utils/api";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
 import Loader from "@/components/common/Loader";
-import { UserInfoAPIContext } from "@/context/UserInfoContext";
 
 type PropsPrivateRouteProps = {
     children: ReactNode;
@@ -62,7 +61,7 @@ export default function PrivateRoute({ children }: PropsPrivateRouteProps) {
         } catch (error) {
             console.log(error);
             setIsUserAuthenticated(false);
-            window.location.href = APP_ROUTES.public.login.name; // Em caso de erro, redireciona para a tela de login. Ainda em beta e pendente de validação.
+            window.location.href = APP_ROUTES.public.login.name;
         }
     };
 
