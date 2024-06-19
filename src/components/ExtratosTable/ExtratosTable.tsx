@@ -146,10 +146,6 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     });
   }, [localValue]);
 
-  // useEffect(() => {
-    //   fetchData();
-    // }, [newItem])
-
     useEffect(() => {
         setData([...newItem, ...data])
     }, [newItem])
