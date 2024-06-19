@@ -6,6 +6,9 @@ export const APP_ROUTES = {
         profile: {
             name: "/profile"
         },
+        settings: {
+            name: "/settings"
+        }
     },
     public : {
         login: {
