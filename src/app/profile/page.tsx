@@ -200,34 +200,6 @@ const Profile = () => {
                     </div>
                   )}
 
-                  {/* <Flowbite theme={{ theme: customTheme }}>
-                    <Dropdown label="Dropdown" placement="right" >
-                      <Dropdown.Item icon={BiPencil} className=" relative hover:bg-black/10">
-                        <form onSubmit={handleSubmit(onSubmit)}>
-                          <label htmlFor="profile" className="cursor-pointer flex items-center">
-                            <span>Alterar</span>
-                          </label>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            id="profile"
-                            className="sr-only"
-                            {
-                            ...register("profile_picture")
-                            }
-                            onChange={(e) => {
-                              handleImageChange(e);
-                            }}
-                          />
-                        </form>
-                      </Dropdown.Item>
-                      <Dropdown.Divider/>
-                      <Dropdown.Item onClick={removeProfileImage} icon={BiTrashAlt} className="hover:bg-black/10 dark:">
-                        <span>Remover</span>
-                      </Dropdown.Item>
-                    </Dropdown>
-                  </Flowbite> */}
-
                   <Flowbite theme={{ theme: customTheme }}>
                     <Popover
                       aria-labelledby="default-popover"
@@ -263,7 +235,7 @@ const Profile = () => {
                       }
                     >
 
-                      <button className="absolute bottom-0 right-5 flex w-8 h-8 cursor-pointer items-center justify-center rounded-full bg-blue-700 text-white hover:bg-blue-600 transition duration-200 sm:bottom-2 sm:right-2">
+                      <button className="absolute bottom-0 right-0 flex w-8 h-8 cursor-pointer items-center justify-center rounded-full bg-blue-700 text-white hover:bg-blue-600 transition duration-200">
                         <BiDotsVerticalRounded style={{
                           width: "18px",
                           height: "18px",
