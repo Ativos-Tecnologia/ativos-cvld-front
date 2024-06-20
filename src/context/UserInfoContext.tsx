@@ -4,7 +4,7 @@ import api from "@/utils/api";
 
 export interface UserInfo {
     0: {
-        id?: number | string | null;
+        id?: number | string | null | undefined;
         first_name: string;
         last_name: string;
         user: string;
@@ -30,6 +30,7 @@ export interface UserInfoContextType {
     credits: IUserBalance;
     setCredits: (value: IUserBalance) => void;
     updateProfilePicture: (id: string, data: FormData) => Promise<any>;
+    removeProfilePicture: (id: string) => Promise<any>;
 }
 
 
@@ -47,33 +48,34 @@ export type SubscriptionStatus = "PENDING" | "ACTIVE" | "CANCELLED" | "EXPIRED"
 export type SubscriptionPlan = "FREE" | "BASIC" | "PREMIUM" | "ENTERPRISE" | "GOD_MODE"
 
 export interface ISubscriptionInfo {
-    0 : {
+    0: {
         id: string;
-    user: number;
-    status: SubscriptionStatus;
-    plan: SubscriptionPlan;
-    start_date: string;
-    end_date: string;
+        user: number;
+        status: SubscriptionStatus;
+        plan: SubscriptionPlan;
+        start_date: string;
+        end_date: string;
     }
 
 }
 
 export const UserInfoAPIContext = createContext<UserInfoContextType>({
     data: {
-        0: {first_name: "",
-        last_name: "",
-        user: "",
-        phone: "",
-        profile_picture: "",
-        title: "",
-    },
+        0: {
+            first_name: "",
+            last_name: "",
+            user: "",
+            phone: "",
+            profile_picture: "",
+            title: "",
+        },
     },
 
     loading: true,
     error: null,
     updateProfile: async () => ({}),
     firstLogin: null,
-    setFirstLogin: () => {},
+    setFirstLogin: () => { },
     subscriptionData: {
         0: {
             id: "",
@@ -88,8 +90,9 @@ export const UserInfoAPIContext = createContext<UserInfoContextType>({
         id: 0,
         available_credits: 0
     },
-    setCredits: () => {},
+    setCredits: () => { },
     updateProfilePicture: async () => ({}),
+    removeProfilePicture: async () => ({})
 })
 
 
@@ -114,13 +117,13 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
 
     const [data, setData] = useState<UserInfo>({
         0: {
-        first_name: "",
-        last_name: "",
-        user: "",
-        phone: "",
-        profile_picture: "",
-        title: "",
-    },
+            first_name: "",
+            last_name: "",
+            user: "",
+            phone: "",
+            profile_picture: "",
+            title: "",
+        },
     });
 
     const [loading, setLoading] = useState<boolean>(true);
@@ -175,9 +178,36 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
                 setLoading(false);
             }
 
-                return response
+            return response
         }
         catch (error: any) {
+            setError(error.message);
+            console.error(error);
+            return error
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const removeProfilePicture = async (id: string) => {
+        setLoading(true);
+        try {
+            const response = await api.patch(`/api/profile/picture/delete/${id}/`);
+
+            if (response.status === 200) {
+                const profileResult = await api.get("/api/profile/");
+                if (profileResult.status === 200) {
+                    setData(profileResult.data);
+                } else {
+                    setError("Error fetching profile data");
+                }
+
+                setLoading(false);
+            }
+
+            return response
+
+        } catch (error: any) {
             setError(error.message);
             console.error(error);
             return error
@@ -214,7 +244,7 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
     }
 
     return (
-        <UserInfoAPIContext.Provider value={{ data, loading, error, updateProfile, firstLogin, setFirstLogin, subscriptionData, credits, setCredits, updateProfilePicture }}>
+        <UserInfoAPIContext.Provider value={{ data, loading, error, updateProfile, firstLogin, setFirstLogin, subscriptionData, credits, setCredits, updateProfilePicture, removeProfilePicture }}>
             {children}
         </UserInfoAPIContext.Provider>
     );
