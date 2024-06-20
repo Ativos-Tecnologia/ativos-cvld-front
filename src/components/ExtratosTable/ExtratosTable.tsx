@@ -209,7 +209,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                     {item.tipo_do_oficio.toUpperCase()}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-center font-semibold text-[12px]">{item?.credor.toLocaleUpperCase() || ""}</TableCell>
+                <TableCell className="text-center font-semibold text-[12px]">{item?.credor.toUpperCase() || ""}</TableCell>
                 <TableCell className="text-center font-semibold text-[12px]">{numberFormat(item.valor_liquido_disponivel)}</TableCell>
                 <TableCell className="text-center items-center">
                   <Badge color="teal" size="sm" className="max-w-max text-center text-[12px]">
