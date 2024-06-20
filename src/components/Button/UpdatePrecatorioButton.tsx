@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react'
-import { FileInput, Label } from "flowbite-react";
+import { CustomFlowbiteTheme, FileInput, Flowbite, Label } from "flowbite-react";
 import api from '@/utils/api';
 import {
   Controller,
   useForm,
 } from "react-hook-form";
 import UseMySwal from '@/hooks/useMySwal';
+import { BiCloudUpload } from 'react-icons/bi';
 
 interface SubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children?: React.ReactNode,
@@ -29,6 +30,40 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
 
   const [oficio, setOficio] = React.useState<any>(null);
 
+  const loadOficio = async (data: FormData) => {
+
+    try {
+      const response = await api.post("api/oficio/upload/extraction/", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      if (response.status === 200) {
+        swal.fire({
+          title: "Ofício carregado com sucesso",
+          icon: "success",
+          toast: true,
+          timer: 3000,
+          timerProgressBar: true,
+          position: "bottom-right",
+          confirmButtonText: "Ok",
+        });
+        setOficio(response.data);
+      }
+    } catch (error: any) {
+      swal.fire({
+        title: "Erro ao carregar ofício",
+        text: error.message,
+        icon: "error",
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        position: "bottom-right",
+        confirmButtonText: "Ok",
+      });
+    }
+  }
+
   useEffect(() => {
     if (oficio) {
       setStateFunction(oficio);
@@ -38,8 +73,31 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
   const swal = UseMySwal();
 
   return (
-    <div className="flex w-full items-center justify-center">
-      <Label
+    <div className="relative flex w-full items-center justify-center cursor-pointer">
+      <label htmlFor="dropzone-file" className='relative flex h-24 flex-col items-center justify-center w-full bg-slate-50 dark:bg-black/50 border-2 border-dashed rounded-lg hover:border-strokedark hover:text-strokedark dark:hover:border-white dark:hover:text-white transition-all duration-150 ease-in-out'>
+        <BiCloudUpload className='w-8 h-8' />
+        <div className='text-center text-sm'>
+          <p><b>Clique</b>, ou arraste um ofício</p>
+          <p>PDF</p>
+        </div>
+        <input type='file' id="dropzone-file" className='absolute opacity-0 w-full h-full inset-0 cursor-pointer' {...register("pdf_file")} accept='.pdf' onChange={(e) => {
+          if (e.target.files) {
+            const formData = new FormData();
+            formData.append("pdf_file", e.target.files[0]);
+            loadOficio(formData);
+          }
+        }}
+          onDrop={e => {
+            e.preventDefault();
+            if (e.dataTransfer.files) {
+              const formData = new FormData();
+              formData.append("pdf_file", e.dataTransfer.files[0]);
+              loadOficio(formData);
+            }
+          }}
+        />
+      </label>
+      {/* <Label
         htmlFor="dropzone-file"
         className="flex h-24 w-full cursor-pointer flex-col items-center text-slate-500/90 justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
       >
@@ -64,48 +122,21 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">PDF</p>
         </div>
-        <FileInput id="dropzone-file" className="hidden" {...register("pdf_file")} accept='.pdf' onChange={async (e) => {
-          console.log("e.target.files", e.target.files);
-
+        <FileInput id="dropzone-file" className='absolute w-full h-full inset-0' {...register("pdf_file")} accept='.pdf' onChange={(e) => {
           if (e.target.files) {
-
-              const formData = new FormData();
-              formData.append("pdf_file", e.target.files[0]);
-
-              try {
-                const response = await api.post("api/oficio/upload/extraction/", formData, {
-                  headers: {
-                    "Content-Type": "multipart/form-data",
-                  },
-                })
-                if (response.status === 200) {
-                  swal.fire({
-                    title: "Ofício carregado com sucesso",
-                    icon: "success",
-                    toast: true,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    position: "bottom-right",
-                    confirmButtonText: "Ok",
-                  });
-                  setOficio(response.data);
-                }
-              } catch (error: any) {
-                swal.fire({
-                  title: "Erro ao carregar ofício",
-                  text: error.message,
-                  icon: "error",
-                  toast: true,
-                  timer: 3000,
-                  timerProgressBar: true,
-                  position: "bottom-right",
-                  confirmButtonText: "Ok",
-                });
-              }
-            }
-
-        }} />
-      </Label>
+            loadOficio(e);
+          }
+        }}
+          onDragEnter={e => {
+            e.preventDefault()
+            console.log('drag enter')
+          }}
+          onDrop={e => {
+            e.preventDefault();
+            console.log(e.dataTransfer.files);
+          }}
+        />
+      </Label> */}
     </div>
   )
 }
