@@ -140,7 +140,7 @@ const Profile = () => {
               }}
 
             />
-            <div className="absolute top-5 right-2 z-[7]">
+            {/* <div className="absolute top-5 right-2 z-[7]">
               <Button as={'label'} gradientDuoTone={'purpleToBlue'} className="flex cursor-pointer items-center justify-center gap-2 rounded p-0 text-sm font-medium text-white hover:bg-opacity-90 shadow-4">
                 {editMode ? (
                   <React.Fragment>
@@ -172,7 +172,7 @@ const Profile = () => {
                   </React.Fragment>
                 )}
               </Button>
-            </div>
+            </div> */}
           </div>
           <div className="px-4 pb-6 text-center lg:pb-8 xl:pb-11.5">
 
