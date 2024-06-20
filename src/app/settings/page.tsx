@@ -1,11 +1,10 @@
 "use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import Image from "next/image";
-import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import { useContext } from "react";
+import { use, useCallback, useContext, useEffect, useState } from "react";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
 import { Avatar } from "flowbite-react";
+import { LocalShowOptionsProps } from "@/components/ExtratosTable/ExtratosTable";
 
 // export const metadata: Metadata = {
 //   title: "Next.js Settings | TailAdmin - Next.js Dashboard Template",
@@ -13,8 +12,52 @@ import { Avatar } from "flowbite-react";
 //     "This is Next.js Settings page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
 // };
 
+const defaultOptions: LocalShowOptionsProps[] = [
+  {
+    key: "show_delete_extract_alert",
+    active: false,
+  }
+  /* ... */
+]
+
 const Settings = () => {
+
   const { data } = useContext(UserInfoAPIContext);
+  const [localShowOptions, setLocalShowOptions] = useState<LocalShowOptionsProps[]>([]);
+
+  const fetchStateFromLocalStorage = () => {
+    const configs = localStorage.getItem("dont_show_again_configs");
+    if (configs !== null) {
+      const parsedValue = JSON.parse(configs);
+      setLocalShowOptions(parsedValue);
+    }
+  }
+
+  const setDefaultOptions = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    localStorage.setItem("dont_show_again_configs", JSON.stringify(defaultOptions));
+    fetchCallback();
+  }
+
+  const saveStateToLocalStorage = (key: string) => {
+    localShowOptions.forEach((item) => {
+      if (item.key === key) {
+        item.active = !item.active;
+      }
+    });
+    localStorage.setItem("dont_show_again_configs", JSON.stringify(localShowOptions));
+    fetchCallback();
+  }
+
+  const fetchCallback = useCallback(() => {
+    fetchStateFromLocalStorage();
+  }, [localShowOptions]);
+
+
+  useEffect(() => {
+    fetchStateFromLocalStorage();
+  }, []);
+
   return (
     <DefaultLayout>
       <div className="mx-auto max-w-270">
@@ -24,32 +67,33 @@ const Settings = () => {
           <div className="col-span-5 xl:col-span-3">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
               <div className="border-b border-stroke px-7 py-4 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
+                <h3 className="font-medium text-black dark:text-white">
                   Configurações da Conta - Em Construção 🚧
                 </h3>
               </div>
               <div className="p-7">
-                <form action="#">
-
-              <div className="p-7">
-                  <div className="mb-5.5 flex flex-row gap-5.5 sm:flex-row">
-                    <div className="w-full flex flex-row gap-5.5 items-center">
+                <form onSubmit={(e) => setDefaultOptions(e)}>
+                  <fieldset className="p-4 border border-stroke mb-4">
+                    <legend className="px-1 dark:text-white">Configurações de exibição</legend>
+                    <div className="flex flex-col gap-5.5 sm:flex-row">
                       <label
-                        className="block text-sm font-medium text-black dark:text-white items-center"
-                        htmlFor="fullName"
+                        className="flex gap-4 text-sm font-medium items-center"
+                        htmlFor="dont_show_again_delete_extract_change"
                       >
+                        <input
+                          type="checkbox"
+                          id="dont_show_again_delete_extract_change"
+                          name="dont_show_again_delete_extract_change"
+                          checked={localShowOptions[0]?.active}
+                          onChange={() => saveStateToLocalStorage("show_delete_extract_alert")}
+                        />
                         Não exibir confirmação de exclusão de extrato
                       </label>
-                      <input
-                        type="checkbox"
-                        id="fullName"
-                        name="fullName"
-                        className="rounded border border-stroke bg-gray px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                      />
-
-                  </div>
-                  </div>
-                </div>
+                    </div>
+                  </fieldset>
+                  <button className="block mx-auto rounded-md px-4 py-2 text-white bg-blue-700 hover:bg-blue-600 transition duration-200">
+                    Redefinir configurações
+                  </button>
                 </form>
               </div>
             </div>
