@@ -2,7 +2,7 @@
 import numberFormat from "@/functions/formaters/numberFormat";
 import api from "@/utils/api";
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, CustomFlowbiteTheme, Flowbite, Badge } from "flowbite-react";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import UseMySwal from "@/hooks/useMySwal";
 import dateFormater from "@/functions/formaters/dateFormater";
 import { BsFillTrashFill } from "react-icons/bs";
@@ -38,7 +38,7 @@ const customTheme: CustomFlowbiteTheme = {
   }
 }
 
-type LocalValueProps = {
+export type LocalShowOptionsProps = {
   key: string;
   active: boolean;
 }
@@ -53,9 +53,9 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
   const [data, setData] = useState<any[]>([]);
   const [item, setItem] = useState<any>({});
-  const [loading, setLoading] =  useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [responseStaus, setResponseStatus] = useState<string>('');
-  const [localValue, setLocalValue] = useState<LocalValueProps[]>([]);
+  const [localShowOptions, setLocalShowOptions] = useState<LocalShowOptionsProps[]>([]);
   const [showModalMessage, setShowModalMessage] = useState<boolean>(true);
   const [lastId, setLastId] = useState<string | null>(null);
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
@@ -121,8 +121,8 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     const configs = localStorage.getItem("dont_show_again_configs");
     if (configs !== null) {
       const parsedValue = JSON.parse(configs);
-      setLocalValue(parsedValue);
-      localValue.forEach(element => {
+      setLocalShowOptions(parsedValue);
+      localShowOptions.forEach(element => {
         if (element.key === "show_delete_extract_alert") {
           setShowModalMessage(!element.active)
         }
@@ -137,18 +137,18 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
 
   useEffect(() => {
-    if (localValue.length <= 0) return;
+    if (localShowOptions.length <= 0) return;
 
-    localValue.forEach(element => {
+    localShowOptions.forEach(element => {
       if (element.key === "show_delete_extract_alert") {
         setShowModalMessage(!element.active)
       }
     });
-  }, [localValue]);
+  }, [localShowOptions]);
 
-    useEffect(() => {
-        setData([...newItem, ...data])
-    }, [newItem])
+  useEffect(() => {
+    setData([...newItem, ...data])
+  }, [newItem])
 
   const setDontShowAgainDeleteExtractAlert = (key: string): void => {
 
@@ -161,7 +161,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
       const configs = localStorage.getItem("dont_show_again_configs");
       if (configs !== null) {
         const parsedValue = JSON.parse(configs);
-        setLocalValue(parsedValue);
+        setLocalShowOptions(parsedValue);
       }
     } else {
       const configs = localStorage.getItem("dont_show_again_configs");
@@ -173,7 +173,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
           }
         }
         localStorage.setItem("dont_show_again_configs", JSON.stringify(parsedValue));
-        setLocalValue(parsedValue);
+        setLocalShowOptions(parsedValue);
       }
     }
   }
