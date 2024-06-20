@@ -242,10 +242,19 @@ input[type="search"]::-webkit-search-cancel-button {
     display: none !important;
 }
 
-.curved-edge {
-    --c: 70px; /* control the curvature (works with percentage) */
-    /* you can also update the 60%  */
-    mask: radial-gradient(60% var(--c) at top,#0000 calc(100% - 1px),#000);
-    filter: blur(15px);
-    background: #40C0CB;
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
 }
+
+input[type="password"]::-webkit-textfield-decoration-container {
+  display: none;
+}
+/* tailwind css */
+.typewriter {
+    animation: typewriter 4s steps(10) 1s infinite alternate both, blink 0.7s infinite step-end;
+    border-right: none; /* Ajuste a largura e cor do cursor */
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
