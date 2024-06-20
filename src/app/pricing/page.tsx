@@ -1,26 +1,65 @@
 import UnloggedLayout from '@/components/Layouts/UnloggedLayout'
+import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react'
+import { BiChevronDown } from 'react-icons/bi';
 
 const Pricing = () => {
     return (
         <UnloggedLayout>
-            <header className="max-w-6xl mx-auto py-8 px-5 flex justify-between lg:px-8">
-                <a href="#/" className="text-2xl text-gray-900 font-semibold">price<span className="text-indigo-600">ly</span></a>
-                <nav className="">
-                    <ul className="flex pt-1.5 text-md lg:pt-0 lg:text-lg">
-                        <li className="lg:px-4">
-                            <a href="#/" className="p-3 text-gray-500 font-semibold">about</a>
-                        </li>
-                        <li className="lg:px-4">
-                            <a href="#/" className="p-3 text-gray-500 font-semibold">blog</a>
-                        </li>
-                        <li className="lg:pl-4">
-                            <a href="#/" className="p-3 text-gray-500 font-semibold">contact</a>
-                        </li>
-                    </ul>
+            <header className="bg-black-2 absolute z-99 top-0 w-full py-6 px-16 flex items-center justify-between lg:px-8">
+                <Image
+                    className="block"
+                    src={"/images/logo/logo-dark.svg"}
+                    alt="Logo"
+                    width={176}
+                    height={32}
+                />
+                <nav className='flex items-center justify-center gap-12 text-white'>
+                    <Link href="#">Home</Link>
+                    <Link href="#" className='flex items-center gap-1'>
+                        <span>Produtos</span>
+                        <BiChevronDown />
+                    </Link>
+                    <Link href="#" className='flex items-center gap-1'>
+                        <span>Recursos</span>
+                        <BiChevronDown />
+                    </Link>
+                    <Link href="#">Sobre nós</Link>
                 </nav>
+                <div className='flex items-center gap-4'>
+                    <Link href="#" className="relative inline-flex items-center justify-start px-6 py-2 overflow-hidden font-medium transition-all border border-blue-700 rounded-md group">
+                        <span className="w-48 h-48 rounded bg-blue-700 absolute bottom-0 left-0 -translate-x-full ease-out duration-700 transition-all translate-y-full mb-9 group-hover:ml-0 group-hover:mb-32 group-hover:translate-x-0"></span>
+                        <span className="relative w-full text-left text-blue-700 transition-colors duration-700 ease-in-out group-hover:text-white">Entrar</span>
+                    </Link>
+                    <Link href="#" className="relative inline-flex items-center justify-start px-6 py-2 overflow-hidden font-medium transition-all border border-blue-700 rounded-md group">
+                        <span className="w-48 h-48 rounded bg-blue-700 absolute bottom-0 left-0 translate-x-0 ease-out duration-700 transition-all translate-y-full mb-10 group-hover:ml-0 group-hover:mb-32 group-hover:-translate-x-full"></span>
+                        <span className="relative w-full text-left text-white transition-colors duration-700 ease-in-out group-hover:text-blue-700">Cadastrar</span>
+                    </Link>
+                </div>
             </header>
-            <main className="max-w-6xl mx-auto pt-10 pb-36 px-8">
+            <div className='hidden relative overflow-hidden lg:flex flex-col items-center -z-2 pt-40 w-full h-screen bg-[#000000]'>
+                {/* =====> ellipses <===== */}
+                <div className='rounded-full bg-[#0025ce] w-full h-150 absolute z-0 rotate-12 -bottom-2/3 -left-1/4 blur-3xl'></div>
+                <div className='rounded-full bg-[#303e57] w-125 h-125 absolute z-0 top-[15%] -left-1/4 blur-3xl'></div>
+                <div className='rounded-full rotate-[35deg] bg-[#4d949a] w-125 h-125 absolute z-0 -bottom-[45%] -left-39 blur-3xl'></div>
+                <div className='rounded-full bg-[#4d3589] w-[990px] h-[900px] absolute z-0 -bottom-[90%] -right-1/4 blur-3xl'></div>
+                <div className='rounded-full bg-[#badaff] w-203 h-150 absolute z-0 -bottom-[80%] -right-1/4 blur-3xl'></div>
+
+                <h1 className='max-w-180 relative z-10 text-center text-white font-medium text-5xl'>
+                    Pacotes com preços para equipes de todos os tamanhos
+                </h1>
+
+            </div>
+            <div className='relative'>
+                <div className='absolute left-0 -top-[170px] flex w-full justify-between z-10 px-6'>
+                    <div className='bg-white rounded-lg p-6 flex flex-col gap-15 w-[300px] h-[340px] shadow-xl'></div>
+                    <div className='bg-white rounded-lg p-6 flex flex-col gap-15 w-[300px] h-[340px] shadow-4'></div>
+                    <div className='bg-white rounded-lg p-6 flex flex-col gap-15 w-[300px] h-[340px] shadow-4'></div>
+                    <div className='bg-white rounded-lg p-6 flex flex-col gap-15 w-[300px] h-[340px] shadow-4'></div>
+                </div>
+            </div>
+            <main className="pt-40 pb-36 px-8 bg-gray">
 
                 <div className="max-w-md mx-auto mb-14 text-center">
                     <h1 className="text-4xl font-semibold mb-6 lg:text-5xl"><span className="text-indigo-600">Flexible</span> Plans</h1>

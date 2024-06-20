@@ -27,7 +27,7 @@ const config: Config = {
         white: "#FFFFFF",
         black: "#1C2434",
         red: "#FB5454",
-        "black-2": "#010101",
+        "black-2": "#111111",
         body: "#64748B",
         bodydark: "#AEB7C0",
         bodydark1: "#DEE4EE",
@@ -239,6 +239,9 @@ const config: Config = {
         6: "6px",
         10: "10px",
         12: "12px",
+      },
+      borderRadius: {
+        'custom': '100px / 50px',
       },
       boxShadow: {
         default: "0px 8px 13px -3px rgba(0, 0, 0, 0.07)",
