@@ -1,4 +1,7 @@
 export interface CVLDResultProps {
+    id: string;
+    tipo_do_oficio: string;
+    credor: string;
     recalc_flag: string;
     npu: string;
     valor_principal: number;
@@ -29,4 +32,5 @@ export interface CVLDResultProps {
     valor_atualizado_principal: number;
     valor_liquido_disponivel: number;
     data_limite_de_atualizacao: string;
+    status: string;
   }
