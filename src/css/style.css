@@ -241,3 +241,11 @@ input[type="search"]::-webkit-search-cancel-button {
 [x-cloak] {
     display: none !important;
 }
+
+.curved-edge {
+    --c: 70px; /* control the curvature (works with percentage) */
+    /* you can also update the 60%  */
+    mask: radial-gradient(60% var(--c) at top,#0000 calc(100% - 1px),#000);
+    filter: blur(15px);
+    background: #40C0CB;
+}
