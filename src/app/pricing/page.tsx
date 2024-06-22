@@ -123,9 +123,9 @@ const Pricing = () => {
                                         {plan.offer.state && <p className='text-meta-1 line-through italic'>{plan.offer.text}</p>}
                                     </div>
                                     <ul className='flex flex-col gap-4'>
-                                        {plan.features.map(feature => {
+                                        {plan.features.map((feature, index) => {
                                             return (
-                                                <li className='flex items-center gap-4'>
+                                                <li key={index} className='flex items-center gap-4'>
                                                     <BiCheck className='w-6 h-6 text-meta-3' />
                                                     <span>{feature}</span>
                                                 </li>
@@ -149,9 +149,9 @@ const Pricing = () => {
                                         {plan.offer.state && <p className='text-red line-through italic'>{plan.offer.text}</p>}
                                     </div>
                                     <ul className='flex flex-col gap-4'>
-                                        {plan.features.map(feature => {
+                                        {plan.features.map((feature, index) => {
                                             return (
-                                                <li className='flex items-center gap-4'>
+                                                <li key={index} className='flex items-center gap-4'>
                                                     <BiCheck className='w-6 h-6 text-meta-3' />
                                                     <span>{feature}</span>
                                                 </li>
