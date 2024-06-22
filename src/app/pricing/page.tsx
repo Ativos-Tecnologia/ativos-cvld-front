@@ -2,7 +2,67 @@ import UnloggedLayout from '@/components/Layouts/UnloggedLayout'
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react'
-import { BiChevronDown } from 'react-icons/bi';
+import { BiCheck, BiChevronDown, BiRightArrowAlt } from 'react-icons/bi';
+import { BsStars } from 'react-icons/bs';
+
+const availablesPlans = [
+    {
+        type: 'normal',
+        title: '1º grau',
+        price: 'R$50',
+        offer: {
+            state: false,
+            text: 'none'
+        },
+        features: [
+            '50 créditos',
+            '10 possíveis cálculos',
+            'Suporte Básico'
+        ]
+    },
+    {
+        type: 'normal',
+        title: 'Tribunal',
+        price: 'R$197',
+        offer: {
+            state: true,
+            text: '21% OFF'
+        },
+        features: [
+            '100 créditos',
+            '20 possíveis cálculos',
+            'Suporte Padrão'
+        ]
+    },
+    {
+        type: 'normal',
+        title: 'Superior',
+        price: 'R$739',
+        offer: {
+            state: true,
+            text: '26% OFF'
+        },
+        features: [
+            '1000 créditos',
+            '200 possíveis cálculos',
+            'Suporte Prioritário'
+        ]
+    },
+    {
+        type: 'special',
+        title: 'Supremo',
+        price: 'R$1.600',
+        offer: {
+            state: true,
+            text: '36% OFF'
+        },
+        features: [
+            '2500 créditos',
+            '500 possíveis cálculos',
+            'Suporte Dedicado'
+        ]
+    }
+]
 
 const Pricing = () => {
     return (
@@ -52,11 +112,62 @@ const Pricing = () => {
 
             </div>
             <div className='relative'>
-                <div className='absolute left-0 -top-[170px] flex w-full justify-between z-10 px-6'>
-                    <div className='bg-white rounded-lg p-6 flex flex-col gap-15 w-[300px] h-[340px] shadow-xl'></div>
-                    <div className='bg-white rounded-lg p-6 flex flex-col gap-15 w-[300px] h-[340px] shadow-4'></div>
-                    <div className='bg-white rounded-lg p-6 flex flex-col gap-15 w-[300px] h-[340px] shadow-4'></div>
-                    <div className='bg-white rounded-lg p-6 flex flex-col gap-15 w-[300px] h-[340px] shadow-4'></div>
+                <div className='absolute left-0 -top-[230px] flex w-full justify-between z-10 px-6'>
+                    {availablesPlans.map((plan, index) => (
+                        <React.Fragment key={index}>
+                            {plan.type === 'normal' ? (
+                                <div className='bg-white rounded-md p-6 text-black flex flex-col gap-10 w-[300px] shadow-xl'>
+                                    <h3 className='text-2xl font-bold'>{plan.title}</h3>
+                                    <div className='flex items-center gap-5'>
+                                        <p className='text-3xl font-bold'>{plan.price}<span className='text-sm'>,00</span></p>
+                                        {plan.offer.state && <p className='text-meta-1 line-through italic'>{plan.offer.text}</p>}
+                                    </div>
+                                    <ul className='flex flex-col gap-4'>
+                                        {plan.features.map((feature, index) => {
+                                            return (
+                                                <li key={index} className='flex items-center gap-4'>
+                                                    <BiCheck className='w-6 h-6 text-meta-3' />
+                                                    <span>{feature}</span>
+                                                </li>
+                                            )
+                                        })}
+                                    </ul>
+                                    <button className='py-3 w-full flex gap-3 justify-center bg-blue-700 text-white rounded-md hover:bg-blue-800 transition-all duration-300 group'>
+                                        <span>Comprar pacote</span>
+                                        <BiRightArrowAlt className='w-6 h-6 group-hover:translate-x-1 transition-all duration-300' />
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className='relative rounded-b-md border-2 border-meta-1 bg-boxdark p-6 text-gray flex flex-col gap-10 w-[300px] shadow-xl '>
+                                    <div className='absolute w-[300px] rounded-t-md -top-6 -left-[2px] border-2 border-meta-1 flex items-center justify-center gap-3 text-sm bg-meta-1'>
+                                        <p>Melhor opção</p>
+                                        <BsStars/>
+                                    </div>
+                                    <h3 className='text-2xl font-bold'>{plan.title}</h3>
+                                    <div className='flex items-center gap-5'>
+                                        <p className='text-3xl font-bold'>{plan.price}<span className='text-sm'>,00</span></p>
+                                        {plan.offer.state && <p className='text-red line-through italic'>{plan.offer.text}</p>}
+                                    </div>
+                                    <ul className='flex flex-col gap-4'>
+                                        {plan.features.map((feature, index) => {
+                                            return (
+                                                <li key={index} className='flex items-center gap-4'>
+                                                    <BiCheck className='w-6 h-6 text-meta-3' />
+                                                    <span>{feature}</span>
+                                                </li>
+                                            )
+                                        })}
+                                    </ul>
+                                    <button className='py-3 w-full flex gap-3 justify-center bg-red text-white rounded-md hover:bg-meta-1 transition-all duration-300 group'>
+                                        <span>Comprar pacote</span>
+                                        <BiRightArrowAlt className='w-6 h-6 group-hover:translate-x-1 transition-all duration-300' />
+                                    </button>
+                                </div>
+                            )}
+                        </React.Fragment>
+                    ))}
+
+                    {/* <div className='bg-white rounded-lg p-6 flex flex-col gap-15 w-[300px] h-[340px] shadow-4'></div> */}
                 </div>
             </div>
             <main className="pt-40 pb-36 px-8 bg-gray">
