@@ -113,10 +113,10 @@ const Pricing = () => {
             </div>
             <div className='relative'>
                 <div className='absolute left-0 -top-[230px] flex w-full justify-between z-10 px-6'>
-                    {availablesPlans.map(plan => (
-                        <React.Fragment>
+                    {availablesPlans.map((plan, index) => (
+                        <React.Fragment key={index}>
                             {plan.type === 'normal' ? (
-                                <div key={plan.title} className='bg-white rounded-md p-6 text-black flex flex-col gap-10 w-[300px] shadow-xl'>
+                                <div className='bg-white rounded-md p-6 text-black flex flex-col gap-10 w-[300px] shadow-xl'>
                                     <h3 className='text-2xl font-bold'>{plan.title}</h3>
                                     <div className='flex items-center gap-5'>
                                         <p className='text-3xl font-bold'>{plan.price}<span className='text-sm'>,00</span></p>
@@ -138,7 +138,7 @@ const Pricing = () => {
                                     </button>
                                 </div>
                             ) : (
-                                <div key={plan.title} className='relative rounded-b-md border-2 border-meta-1 bg-boxdark p-6 text-gray flex flex-col gap-10 w-[300px] shadow-xl '>
+                                <div className='relative rounded-b-md border-2 border-meta-1 bg-boxdark p-6 text-gray flex flex-col gap-10 w-[300px] shadow-xl '>
                                     <div className='absolute w-[300px] rounded-t-md -top-6 -left-[2px] border-2 border-meta-1 flex items-center justify-center gap-3 text-sm bg-meta-1'>
                                         <p>Melhor opção</p>
                                         <BsStars/>
