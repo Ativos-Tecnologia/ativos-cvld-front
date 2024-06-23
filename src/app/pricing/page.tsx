@@ -1,7 +1,8 @@
+'use client'
 import UnloggedLayout from '@/components/Layouts/UnloggedLayout'
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react'
+import React, { useEffect } from 'react'
 import { BiCheck, BiChevronDown, BiRightArrowAlt } from 'react-icons/bi';
 import { BsStars } from 'react-icons/bs';
 
@@ -65,17 +66,44 @@ const availablesPlans = [
 ]
 
 const Pricing = () => {
+
+    const [currentTextIndex, setCurrentTextIndex] = React.useState<number>(0);
+
+    const texts: Array<string> = [
+        'Segurança jurídica',
+        'Confiança',
+        'Melhor preço do Mercado',
+        'Agilidade',
+        'Negociação justa',
+        'Transparência',
+        'Flexibilidade',
+        'Satisfação garantida',
+    ];
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (currentTextIndex === texts.length - 1) {
+                setCurrentTextIndex(0);
+            } else {
+                setCurrentTextIndex((prevIndex) => prevIndex + 1);
+            }
+            console.log('s')
+        }, 6000); // Muda de texto a cada 3 segundos
+
+        return () => clearInterval(interval);
+    });
+
     return (
         <UnloggedLayout>
-            <header className="bg-black-2 absolute z-99 top-0 w-full py-6 px-16 flex items-center justify-between lg:px-8">
+            <header className="py-6 px-16 flex items-center justify-between lg:px-8">
                 <Image
                     className="block"
-                    src={"/images/logo/logo-dark.svg"}
+                    src={"/images/logo/logo.svg"}
                     alt="Logo"
                     width={176}
                     height={32}
                 />
-                <nav className='flex items-center justify-center gap-12 text-white'>
+                <nav className='flex items-center text-strokedark justify-center gap-12'>
                     <Link href="#">Home</Link>
                     <Link href="#" className='flex items-center gap-1'>
                         <span>Produtos</span>
@@ -88,16 +116,56 @@ const Pricing = () => {
                     <Link href="#">Sobre nós</Link>
                 </nav>
                 <div className='flex items-center gap-4'>
-                    <Link href="#" className="relative inline-flex items-center justify-start px-6 py-2 overflow-hidden font-medium transition-all border border-blue-700 rounded-md group">
-                        <span className="w-48 h-48 rounded bg-blue-700 absolute bottom-0 left-0 -translate-x-full ease-out duration-700 transition-all translate-y-full mb-9 group-hover:ml-0 group-hover:mb-32 group-hover:translate-x-0"></span>
-                        <span className="relative w-full text-left text-blue-700 transition-colors duration-700 ease-in-out group-hover:text-white">Entrar</span>
+                    <Link href='/auth/signin/' className='px-6 py-3 border border-blue-700 rounded-md text-blue-700 hover:-translate-y-2 hover:bg-blue-800 hover:border-blue-800 hover:text-white transition-translate duration-300'>
+                        <span>Entrar</span>
                     </Link>
-                    <Link href="#" className="relative inline-flex items-center justify-start px-6 py-2 overflow-hidden font-medium transition-all border border-blue-700 rounded-md group">
-                        <span className="w-48 h-48 rounded bg-blue-700 absolute bottom-0 left-0 translate-x-0 ease-out duration-700 transition-all translate-y-full mb-10 group-hover:ml-0 group-hover:mb-32 group-hover:-translate-x-full"></span>
-                        <span className="relative w-full text-left text-white transition-colors duration-700 ease-in-out group-hover:text-blue-700">Cadastrar</span>
+                    <Link href='/auth/signup/' className='px-6 py-3 bg-blue-700 border border-blue-700 text-white rounded-md hover:-translate-y-2 hover:bg-blue-800 hover:border-blue-800 transition-all duration-300'>
+                        <span>Cadastrar</span>
                     </Link>
                 </div>
             </header>
+            <div className='w-230 h-75 mx-auto flex flex-col gap-2 justify-center items-center bg-gray'>
+                <h1 className='font-medium h-15 text-strokedark text-5xl'>
+                    Ativos é
+                </h1>
+                <div className="relative w-[600px] h-15 flex overflow-hidden font-semibold text-center">
+                    {texts.map((text, index) => (
+                        <div
+                            key={index}
+                            className={`absolute w-full h-full text-5xl left-0 text-blue-500 transition-all duration-500 ${index === currentTextIndex ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full'}`}
+                        >
+                            <span>{text}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+            <div className='min-h-screen py-20 px-5'>
+                <div className='flex gap-8'>
+                    <div className='w-[500px] flex flex-col justify-center gap-8'>
+                        <h2 className='font-bold text-6xl text-black'>
+                            Venda seu precatório com segurança
+                        </h2>
+                        <p className='text-lg'>
+                            Descubra como potencializar suas finanças antecipando seu precatório de forma segura e descomplicada. Maximize seu poder de compra e conquiste seus objetivos agora mesmo.
+                        </p>
+                        <Link href='#' className='py-3 px-6 max-w-fit flex gap-3 justify-center bg-blue-700 self-baseline text-white rounded-md hover:bg-blue-800 transition-all duration-300 group'>
+                            <span>Fale conosco</span>
+                            <BiRightArrowAlt className='w-6 h-6 group-hover:translate-x-1 transition-all duration-300' />
+                        </Link>
+                    </div>
+                    <div className="flex-1">
+                        <img
+                            src={"/images/done_deal.jpg"}
+                            alt='acordo'
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover'
+                            }}
+                        />
+                    </div>
+                </div>
+            </div>
             <div className='hidden relative overflow-hidden lg:flex flex-col items-center -z-2 pt-40 w-full h-screen bg-[#000000]'>
                 {/* =====> ellipses <===== */}
                 <div className='rounded-full bg-[#0025ce] w-full h-150 absolute z-0 rotate-12 -bottom-2/3 -left-1/4 blur-3xl'></div>
@@ -141,7 +209,7 @@ const Pricing = () => {
                                 <div className='relative rounded-b-md border-2 border-meta-1 bg-boxdark p-6 text-gray flex flex-col gap-10 w-[300px] shadow-xl '>
                                     <div className='absolute w-[300px] rounded-t-md -top-6 -left-[2px] border-2 border-meta-1 flex items-center justify-center gap-3 text-sm bg-meta-1'>
                                         <p>Melhor opção</p>
-                                        <BsStars/>
+                                        <BsStars />
                                     </div>
                                     <h3 className='text-2xl font-bold'>{plan.title}</h3>
                                     <div className='flex items-center gap-5'>
@@ -166,8 +234,6 @@ const Pricing = () => {
                             )}
                         </React.Fragment>
                     ))}
-
-                    {/* <div className='bg-white rounded-lg p-6 flex flex-col gap-15 w-[300px] h-[340px] shadow-4'></div> */}
                 </div>
             </div>
             <main className="pt-40 pb-36 px-8 bg-gray">

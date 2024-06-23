@@ -273,6 +273,13 @@ const config: Config = {
         5: "0px 1px 5px rgba(0, 0, 0, 0.2)",
       },
       keyframes: {
+        textRotator: {
+          '0%': {transform: 'translateY(0)' },
+          '25%': {transform: 'translateY(-24px)' },
+          '50%': {transform: 'translateY(-48px)' },
+          '75%': {transform: 'translateY(-72px)' },
+          '100%': {transform: 'translateY(-96px)' },
+        },
         typewriter: {
           '0%': { width: '0%' },
           '100%': { width: '100%' },
@@ -326,6 +333,7 @@ const config: Config = {
         },
       },
       animation: {
+        rotator: 'textRotator 10s linear infinite',
         typewriter: 'typewriter 4s steps(10) 1s infinite alternate both, blink 0.7s infinite step-end',
         linspin: "linspin 1568.2353ms linear infinite",
         easespin: "easespin 5332ms cubic-bezier(0.4, 0, 0.2, 1) infinite both",
