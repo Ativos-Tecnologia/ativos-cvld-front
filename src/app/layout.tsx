@@ -33,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="pt-br">
       <body suppressHydrationWarning={true}>
-        <div className="dark:bg-boxdark-2 dark:text-bodydark">
+        <div className="bg-[#f0f0f0] dark:bg-boxdark-2 dark:text-bodydark">
 
           {
             !isPublicRoute ? (
