@@ -25,6 +25,7 @@ const config: Config = {
         current: "currentColor",
         transparent: "transparent",
         white: "#FFFFFF",
+        snow: "#FAFAFA",
         black: "#1C2434",
         red: "#FB5454",
         "black-2": "#111111",
@@ -36,10 +37,12 @@ const config: Config = {
         secondary: "#80CAEE",
         stroke: "#E2E8F0",
         gray: "#EFF4FB",
+        "gray-400": "#666666",
+        "gray-500": "#555555",
+        "gray-700": "#333333",
         "gray-900": "#111827",
         graydark: "#333A48",
         "gray-2": "#F7F9FC",
-        "gray-3": "#FAFAFA",
         whiten: "#F1F5F9",
         whiter: "#F5F7FD",
         boxdark: "#24303F",
@@ -240,9 +243,6 @@ const config: Config = {
         10: "10px",
         12: "12px",
       },
-      borderRadius: {
-        'custom': '100px / 50px',
-      },
       boxShadow: {
         default: "0px 8px 13px -3px rgba(0, 0, 0, 0.07)",
         card: "0px 1px 3px rgba(0, 0, 0, 0.12)",
@@ -273,12 +273,10 @@ const config: Config = {
         5: "0px 1px 5px rgba(0, 0, 0, 0.2)",
       },
       keyframes: {
-        textRotator: {
-          '0%': {transform: 'translateY(0)' },
-          '25%': {transform: 'translateY(-24px)' },
-          '50%': {transform: 'translateY(-48px)' },
-          '75%': {transform: 'translateY(-72px)' },
-          '100%': {transform: 'translateY(-96px)' },
+        upforward: {
+          'to': {
+            transform: 'translateY(-3px)'
+          }
         },
         typewriter: {
           '0%': { width: '0%' },
@@ -333,7 +331,7 @@ const config: Config = {
         },
       },
       animation: {
-        rotator: 'textRotator 10s linear infinite',
+        upforward: 'upforward 1.5s infinite alternate ease-in-out',
         typewriter: 'typewriter 4s steps(10) 1s infinite alternate both, blink 0.7s infinite step-end',
         linspin: "linspin 1568.2353ms linear infinite",
         easespin: "easespin 5332ms cubic-bezier(0.4, 0, 0.2, 1) infinite both",
