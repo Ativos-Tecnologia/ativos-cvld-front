@@ -2,14 +2,15 @@
 import numberFormat from "@/functions/formaters/numberFormat";
 import api from "@/utils/api";
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, CustomFlowbiteTheme, Flowbite, Badge } from "flowbite-react";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import UseMySwal from "@/hooks/useMySwal";
 import dateFormater from "@/functions/formaters/dateFormater";
 import { BsFillTrashFill } from "react-icons/bs";
 import { AwesomeDrawer } from "../Drawer/Drawer";
 import DeleteExtractAlert from "../Modals/DeleteExtract";
-import { ApiResponse } from "../ResultCVLD";
 import { CVLDResultProps } from "@/interfaces/IResultCVLD";
+import { BiTask } from "react-icons/bi";
+import Loader from "../common/Loader";
 
 const customTheme: CustomFlowbiteTheme = {
   table: {
@@ -21,13 +22,13 @@ const customTheme: CustomFlowbiteTheme = {
     body: {
       base: "group/body",
       cell: {
-        base: "px-6 py-4 group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg dark:bg-boxdark dark:text-white"
+        base: "px-4 py-3 group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg dark:bg-boxdark dark:text-white border-b border-gray dark:border-gray"
       }
     },
     head: {
       base: "group/head text-xs uppercase text-gray-700 dark:text-gray-400",
       cell: {
-        base: "bg-stone-300 text-black px-6 py-3 group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg dark:bg-boxdark dark:text-white dark:border-b dark:border-gray"
+        base: "bg-stone-300 text-black px-4 py-3 group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg dark:bg-boxdark dark:text-white dark:border-b dark:border-gray"
       }
     },
     row: {
@@ -38,7 +39,7 @@ const customTheme: CustomFlowbiteTheme = {
   }
 }
 
-type LocalValueProps = {
+export type LocalShowOptionsProps = {
   key: string;
   active: boolean;
 }
@@ -53,9 +54,9 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
   const [data, setData] = useState<any[]>([]);
   const [item, setItem] = useState<any>({});
-  const [loading, setLoading] =  useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [responseStaus, setResponseStatus] = useState<string>('');
-  const [localValue, setLocalValue] = useState<LocalValueProps[]>([]);
+  const [localShowOptions, setLocalShowOptions] = useState<LocalShowOptionsProps[]>([]);
   const [showModalMessage, setShowModalMessage] = useState<boolean>(true);
   const [lastId, setLastId] = useState<string | null>(null);
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
@@ -71,8 +72,8 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
   const fetchDelete = async (id: string) => {
     try {
+      setLoading(true);
       const response = await api.delete(`api/extrato/delete/${id}/`);
-
       if (showModalMessage) {
         setResponseStatus('ok');
       } else {
@@ -101,6 +102,8 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
           showConfirmButton: false
         })
       }
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -121,8 +124,8 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     const configs = localStorage.getItem("dont_show_again_configs");
     if (configs !== null) {
       const parsedValue = JSON.parse(configs);
-      setLocalValue(parsedValue);
-      localValue.forEach(element => {
+      setLocalShowOptions(parsedValue);
+      localShowOptions.forEach(element => {
         if (element.key === "show_delete_extract_alert") {
           setShowModalMessage(!element.active)
         }
@@ -137,18 +140,18 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
 
   useEffect(() => {
-    if (localValue.length <= 0) return;
+    if (localShowOptions.length <= 0) return;
 
-    localValue.forEach(element => {
+    localShowOptions.forEach(element => {
       if (element.key === "show_delete_extract_alert") {
         setShowModalMessage(!element.active)
       }
     });
-  }, [localValue]);
+  }, [localShowOptions]);
 
-    useEffect(() => {
-        setData([...newItem, ...data])
-    }, [newItem])
+  useEffect(() => {
+    setData([...newItem, ...data])
+  }, [newItem])
 
   const setDontShowAgainDeleteExtractAlert = (key: string): void => {
 
@@ -161,7 +164,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
       const configs = localStorage.getItem("dont_show_again_configs");
       if (configs !== null) {
         const parsedValue = JSON.parse(configs);
-        setLocalValue(parsedValue);
+        setLocalShowOptions(parsedValue);
       }
     } else {
       const configs = localStorage.getItem("dont_show_again_configs");
@@ -173,7 +176,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
           }
         }
         localStorage.setItem("dont_show_again_configs", JSON.stringify(parsedValue));
-        setLocalValue(parsedValue);
+        setLocalShowOptions(parsedValue);
       }
     }
   }
@@ -184,40 +187,55 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
         <Table hoverable className="">
           <TableHead>
             <TableHeadCell className="text-center w-[120px]">Oficio</TableHeadCell>
-            <TableHeadCell className="text-center">Credor</TableHeadCell>
-            <TableHeadCell className="text-center">Principal</TableHeadCell>
-            <TableHeadCell className="text-center">Juros</TableHeadCell>
-            <TableHeadCell className="text-center">Data Base</TableHeadCell>
+            <TableHeadCell className="text-center">Nome do Credor</TableHeadCell>
+            <TableHeadCell className="text-center w-[180px]">Valor Líquido</TableHeadCell>
+            <TableHeadCell className="text-center w-[140px]">Status</TableHeadCell>
+            <TableHeadCell className="text-center w-[120px]">
+              <span className="sr-only text-center">Tarefas</span>
+            </TableHeadCell>
             <TableHeadCell className="text-center w-[40px]">
               <span className="sr-only text-center">Detalhes</span>
             </TableHeadCell>
-            <TableHeadCell>
-              <span className="sr-only text-center w-[60px]">Detalhes</span>
+            <TableHeadCell className="text-center w-[40px]">
+              <span className="sr-only text-center ">Detalhes</span>
             </TableHeadCell>
           </TableHead>
           <TableBody>
-            {data?.map((item: any) => (
+            {data?.map((item: CVLDResultProps) => (
 
               <TableRow key={item.id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
                 <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                  <Badge color="indigo" size="sm" className="max-w-full">
-                    {item.tipo_do_oficio}
+                  <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
+                    {item.tipo_do_oficio.toUpperCase()}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-center">{item?.credor || ""}</TableCell>
-                <TableCell className="text-center">{numberFormat(item.valor_principal)}</TableCell>
-                <TableCell className="text-center">{numberFormat(item.valor_juros)}</TableCell>
-                <TableCell className="text-center">{dateFormater(item.data_base)}</TableCell>
+                <TableCell className="text-center font-semibold text-[12px]">{item?.credor || ""}</TableCell>
+                <TableCell className="text-center font-semibold text-[12px]">{numberFormat(item.valor_liquido_disponivel)}</TableCell>
+                <TableCell className="text-center items-center">
+                  <Badge color="teal" size="sm" className="max-w-max text-center text-[12px]">
+                    {item.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-center">{
+                  <Badge aria-disabled size="sm" color="yellow" className="cursor-not-allowed hover:bg-yellow-200 dark:hover:bg-yellow-400 transition-all duration-300 justify-center">
+                    <div className="flex flex-row w-full justify-between items-baseline align-middle gap-1">
+                    <span className="text-[12px] font-medium text-gray-900 dark:text-prussianBlue">
+                      TAREFA
+                    </span>
+                <BiTask className="text-green-700 hover:text-green-950 dark:text-prussianBlue dark:hover:text-stone-300 h-4 w-4 self-center transition-all duration-300" />
+                  </div>
+                </Badge>}
+                </TableCell>
                 <TableCell className="text-center">
                   {showModalMessage ? (
                     <button onClick={() => setModalOptions({
                       open: true,
                       extractId: item.id
                     })} className="bg-transparent border-none flex transition-all duration-300 hover:bg-red-500 text-red-500 hover:text-white dark:hover:text-white dark:text-red-500 dark:hover:bg-red-500">
-                      <BsFillTrashFill className="text-meta-1 hover:text-meta-7 dark:text-white dark:hover:text-stone-300 h-4 w-4 self-center" />
+                      <BsFillTrashFill className="text-meta-1 hover:text-meta-7 dark:text-white dark:hover:text-stone-300 h-4 w-4 self-center" style={{ cursor: loading ? 'wait' : 'pointer' }}/>
                     </button>
                   ) : (
-                    <button onClick={() => fetchDelete(item.id)} className="bg-transparent border-none flex transition-all duration-300 hover:bg-red-500 text-red-500 hover:text-white dark:hover:text-white dark:text-red-500 dark:hover:bg-red-500">
+                    <button onClick={() => fetchDelete(item.id)} className="bg-transparent border-none flex transition-all duration-300 hover:bg-red-500 text-red-500 hover:text-white dark:hover:text-white dark:text-red-500 dark:hover:bg-red-500" style={{ cursor: loading ? 'wait' : 'pointer' }}>
                       <BsFillTrashFill className="text-meta-1 hover:text-meta-7 dark:text-white dark:hover:text-stone-300 h-4 w-4 self-center" />
                     </button>
                   )}
@@ -227,7 +245,9 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                     setOpenDrawer(true);
                     fetchDataById(item.id);
                   }} className="bg-transparent border-none transition-all duration-300 text-primary font-medium hover:text-blue-500 dark:hover:text-white dark:text-blue-500 border border-blue-500 hover:border-transparent">
-                    Detalhes
+                    <span className="text-[12px]">
+                      DETALHES
+                    </span>
                   </button>
                 </TableCell>
               </TableRow>
@@ -235,7 +255,9 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
           </TableBody>
         </Table>
       </Flowbite>
-      <AwesomeDrawer data={item} loading={loading} setData={setItem} open={openDrawer} setOpen={setOpenDrawer} />
+      <Suspense fallback={<Loader />}>
+        <AwesomeDrawer data={item} loading={loading} setData={setItem} open={openDrawer} setOpen={setOpenDrawer} />
+      </Suspense>
       {showModalMessage && (
         <DeleteExtractAlert
           response={responseStaus}
