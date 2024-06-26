@@ -273,6 +273,11 @@ const config: Config = {
         5: "0px 1px 5px rgba(0, 0, 0, 0.2)",
       },
       keyframes: {
+        downforward: {
+          'to': {
+            transform: 'translateY(8px)'
+          }
+        },
         upforward: {
           'to': {
             transform: 'translateY(-3px)'
@@ -331,6 +336,7 @@ const config: Config = {
         },
       },
       animation: {
+        downforward: 'downforward 1.0s infinite alternate ease-in-out',
         upforward: 'upforward 1.5s infinite alternate ease-in-out',
         typewriter: 'typewriter 4s steps(10) 1s infinite alternate both, blink 0.7s infinite step-end',
         linspin: "linspin 1568.2353ms linear infinite",
