@@ -273,6 +273,11 @@ const config: Config = {
         5: "0px 1px 5px rgba(0, 0, 0, 0.2)",
       },
       keyframes: {
+        sideforward: {
+          'to': {
+            transform: 'translateX(10px)'
+          }
+        },
         downforward: {
           'to': {
             transform: 'translateY(8px)'
