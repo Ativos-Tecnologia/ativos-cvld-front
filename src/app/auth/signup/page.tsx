@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -55,7 +55,7 @@ const SignUp: React.FC = () => {
 
   const onSubmit: SubmitHandler<SignUpInputs> = async (data) => {
     setLoading(true);
-    if (data.password === data.confirm_password) {
+    if (data.password === data.confirm_password && passwordRequirements.filled) {
 
       const formData = {
         username: data.username,
@@ -91,10 +91,18 @@ const SignUp: React.FC = () => {
         });
         console.error(error);
       }
-    } else {
+    } else if (data.password !== data.confirm_password) {
       MySwal.fire({
         title: "Ok, Houston...Temos um problema!",
         text: "Suas senhas não coincidem. Por favor, tente novamente.",
+        icon: "error",
+        showConfirmButton: true,
+
+      });
+    } else if (!passwordRequirements.filled) {
+      MySwal.fire({
+        title: "Ok, Houston...Temos um problema!",
+        text: "Sua senha não corresponde aos requisitos mínimos. Por favor, tente novamente.",
         icon: "error",
         showConfirmButton: true,
 
@@ -490,10 +498,10 @@ const SignUp: React.FC = () => {
                           value: 30,
                           message: "Máximo de 30 caracteres"
                         },
-                        pattern: {
-                          value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/,
-                          message: "Mínimo de 6 caracteres, 1 letra, 1 número e 1 caractere especial",
-                        }
+                        // pattern: {
+                        //   value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/,
+                        //   message: "Mínimo de 6 caracteres, 1 letra (maiúscula e minúscula), 1 número e 1 caractere especial",
+                        // }
                       })
                       }
                     />
@@ -571,7 +579,7 @@ const SignUp: React.FC = () => {
                 </div>
 
                 <div className="mb-5 text-sm sm:col-span-2 flex gap-2 items-center">
-                  <input type="checkbox" name="terms" id="terms" style={{ width: '14px', height: '14px'}} onChange={() => setTermsAccepted(!termsAccepted)} />
+                  <input type="checkbox" name="terms" id="terms" style={{ width: '14px', height: '14px' }} onChange={() => setTermsAccepted(!termsAccepted)} />
                   <p>
                     Aceitar nossos <span onClick={() => setOpenModal(true)} className="text-primary hover:underline cursor-pointer dark:text-blue-400">
                       termos e condições</span>
