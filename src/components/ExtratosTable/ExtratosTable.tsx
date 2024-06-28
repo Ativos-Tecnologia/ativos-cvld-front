@@ -279,7 +279,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
             {data?.length > 0 ? (
               <>
                 {data.map((item: CVLDResultProps) => (
-                  <div className="relative w-full bg-white border border-stroke shadow-3 grid gap-5 p-4 rounded-md dark:bg-gray-900 dark:border-strokedark">
+                  <div key={item.id} className="relative w-full bg-white border border-stroke shadow-3 grid gap-5 p-4 rounded-md dark:bg-gray-900 dark:border-strokedark">
                     <div className="absolute top-6 right-4">
                       {showModalMessage ? (
                         <button onClick={() => setModalOptions({
