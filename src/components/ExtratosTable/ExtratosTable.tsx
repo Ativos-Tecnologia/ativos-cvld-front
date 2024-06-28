@@ -15,19 +15,19 @@ const customTheme: CustomFlowbiteTheme = {
   table: {
     root: {
       base: "w-full text-left text-sm text-gray-500 dark:text-gray-400",
-      shadow: "absolute left-0 top-0 -z-10 h-full w-full rounded-lg bg-white drop-shadow-md dark:bg-black",
+      shadow: "absolute left-0 top-0 -z-10 h-full w-full rounded-sm bg-white drop-shadow-md dark:bg-black",
       wrapper: "relative"
     },
     body: {
       base: "group/body",
       cell: {
-        base: "px-4 py-3 group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg dark:bg-boxdark dark:text-white border-b border-gray dark:border-gray"
+        base: "px-4 py-3 group-first/body:group-first/row:first:rounded-tl-sm group-first/body:group-first/row:last:rounded-tr-sm group-last/body:group-last/row:first:rounded-bl-sm group-last/body:group-last/row:last:rounded-br-sm dark:bg-boxdark dark:text-white border-b border-gray dark:border-gray"
       }
     },
     head: {
       base: "group/head text-xs uppercase text-gray-700 dark:text-gray-400",
       cell: {
-        base: "bg-stone-300 text-black px-4 py-3 group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg dark:bg-boxdark dark:text-white dark:border-b dark:border-gray"
+        base: "bg-stone-300 text-black px-4 py-3 group-first/head:first:rounded-tl-sm group-first/head:last:rounded-tr-sm dark:bg-boxdark dark:text-white dark:border-b dark:border-gray"
       }
     },
     row: {
@@ -260,7 +260,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
         </Table>
       </Flowbite>
       {data.length === 0 && (
-        <p className="text-center py-5 bg-white dark:bg-boxdark rounded-b-md">
+        <p className="text-center py-5 bg-white dark:bg-boxdark rounded-b-sm">
           Não há registros para exibir
         </p>
       )}
