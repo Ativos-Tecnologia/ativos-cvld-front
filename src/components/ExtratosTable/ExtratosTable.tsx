@@ -8,7 +8,7 @@ import { BsFillTrashFill } from "react-icons/bs";
 import { AwesomeDrawer } from "../Drawer/Drawer";
 import DeleteExtractAlert from "../Modals/DeleteExtract";
 import { CVLDResultProps } from "@/interfaces/IResultCVLD";
-import { BiTask } from "react-icons/bi";
+import { BiListUl, BiTask, BiTrash } from "react-icons/bi";
 import Loader from "../common/Loader";
 
 const customTheme: CustomFlowbiteTheme = {
@@ -183,52 +183,104 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
   return (
     <div className="overflow-x-auto">
-      <Flowbite theme={{ theme: customTheme }}>
-        <Table hoverable className="">
-          <TableHead>
-            <TableHeadCell className="text-center w-[120px]">Oficio</TableHeadCell>
-            <TableHeadCell className="text-center">Nome do Credor</TableHeadCell>
-            <TableHeadCell className="text-center w-[180px]">Valor Líquido</TableHeadCell>
-            <TableHeadCell className="text-center w-[140px]">Status</TableHeadCell>
-            <TableHeadCell className="text-center w-[120px]">
-              <span className="sr-only text-center">Tarefas</span>
-            </TableHeadCell>
-            <TableHeadCell className="text-center w-[40px]">
-              <span className="sr-only text-center">Detalhes</span>
-            </TableHeadCell>
-            <TableHeadCell className="text-center w-[40px]">
-              <span className="sr-only text-center ">Detalhes</span>
-            </TableHeadCell>
-          </TableHead>
-          <TableBody>
-            {data?.length > 0 && (
+      {window.innerWidth >= 430 ? (
+        <>
+          {/* desktop view */}
+          <Flowbite theme={{ theme: customTheme }}>
+            <Table hoverable className="">
+              <TableHead>
+                <TableHeadCell className="text-center w-[120px]">Oficio</TableHeadCell>
+                <TableHeadCell className="text-center">Nome do Credor</TableHeadCell>
+                <TableHeadCell className="text-center w-[180px]">Valor Líquido</TableHeadCell>
+                <TableHeadCell className="text-center w-[140px]">Status</TableHeadCell>
+                <TableHeadCell className="text-center w-[120px]">
+                  <span className="sr-only text-center">Tarefas</span>
+                </TableHeadCell>
+                <TableHeadCell className="text-center w-[40px]">
+                  <span className="sr-only text-center">Detalhes</span>
+                </TableHeadCell>
+                <TableHeadCell className="text-center w-[40px]">
+                  <span className="sr-only text-center ">Detalhes</span>
+                </TableHeadCell>
+              </TableHead>
+              <TableBody>
+                {data?.length > 0 && (
+                  <>
+                    {data.map((item: CVLDResultProps) => (
+
+                      <TableRow key={item.id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                        <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                          <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
+                            {item.tipo_do_oficio.toUpperCase()}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-center font-semibold text-[12px]">{item?.credor || ""}</TableCell>
+                        <TableCell className="text-center font-semibold text-[12px]">{numberFormat(item.valor_liquido_disponivel)}</TableCell>
+                        <TableCell className="text-center items-center">
+                          <Badge color="teal" size="sm" className="max-w-max text-center text-[12px]">
+                            {item.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-center">{
+                          <Badge aria-disabled size="sm" color="yellow" className="cursor-not-allowed hover:bg-yellow-200 dark:hover:bg-yellow-400 transition-all duration-300 justify-center">
+                            <div className="flex flex-row w-full justify-between items-baseline align-middle gap-1">
+                              <span className="text-[12px] font-medium text-gray-900 dark:text-prussianBlue">
+                                TAREFA
+                              </span>
+                              <BiTask className="text-green-700 hover:text-green-950 dark:text-prussianBlue dark:hover:text-stone-300 h-4 w-4 self-center transition-all duration-300" />
+                            </div>
+                          </Badge>}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {showModalMessage ? (
+                            <button onClick={() => setModalOptions({
+                              open: true,
+                              extractId: item.id
+                            })} className="bg-transparent border-none flex transition-all duration-300 hover:bg-red-500 text-red-500 hover:text-white dark:hover:text-white dark:text-red-500 dark:hover:bg-red-500">
+                              <BsFillTrashFill className="text-meta-1 hover:text-meta-7 dark:text-white dark:hover:text-stone-300 h-4 w-4 self-center" style={{ cursor: loading ? 'wait' : 'pointer' }} />
+                            </button>
+                          ) : (
+                            <button onClick={() => fetchDelete(item.id)} className="bg-transparent border-none flex transition-all duration-300 hover:bg-red-500 text-red-500 hover:text-white dark:hover:text-white dark:text-red-500 dark:hover:bg-red-500" style={{ cursor: loading ? 'wait' : 'pointer' }}>
+                              <BsFillTrashFill className="text-meta-1 hover:text-meta-7 dark:text-white dark:hover:text-stone-300 h-4 w-4 self-center" />
+                            </button>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <button onClick={() => {
+                            setOpenDrawer(true);
+                            fetchDataById(item.id);
+                          }} className="bg-transparent border-none transition-all duration-300 text-primary font-medium hover:text-blue-500 dark:hover:text-white dark:text-blue-500 border border-blue-500 hover:border-transparent">
+                            <span className="text-[12px]">
+                              DETALHES
+                            </span>
+                          </button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </>
+                )}
+              </TableBody>
+            </Table>
+          </Flowbite>
+          {data?.length === 0 && (
+            <p className="text-center py-5 bg-white dark:bg-boxdark rounded-b-sm">
+              Não há registros para exibir
+            </p>
+          )}
+          {/* end desktop view */}
+        </>
+      ) : (
+        /* mobile view */
+        <div className="py-7 px-5 bg-white rounded-sm dark:bg-boxdark">
+          <h3 className="text-center dark:text-white pb-1 mb-6 border-b border-stroke dark:border-strokedark">
+            EXTRATOS
+          </h3>
+          <div className="grid gap-4">
+            {data?.length > 0 ? (
               <>
                 {data.map((item: CVLDResultProps) => (
-
-                  <TableRow key={item.id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                    <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                      <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
-                        {item.tipo_do_oficio.toUpperCase()}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-center font-semibold text-[12px]">{item?.credor || ""}</TableCell>
-                    <TableCell className="text-center font-semibold text-[12px]">{numberFormat(item.valor_liquido_disponivel)}</TableCell>
-                    <TableCell className="text-center items-center">
-                      <Badge color="teal" size="sm" className="max-w-max text-center text-[12px]">
-                        {item.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-center">{
-                      <Badge aria-disabled size="sm" color="yellow" className="cursor-not-allowed hover:bg-yellow-200 dark:hover:bg-yellow-400 transition-all duration-300 justify-center">
-                        <div className="flex flex-row w-full justify-between items-baseline align-middle gap-1">
-                          <span className="text-[12px] font-medium text-gray-900 dark:text-prussianBlue">
-                            TAREFA
-                          </span>
-                          <BiTask className="text-green-700 hover:text-green-950 dark:text-prussianBlue dark:hover:text-stone-300 h-4 w-4 self-center transition-all duration-300" />
-                        </div>
-                      </Badge>}
-                    </TableCell>
-                    <TableCell className="text-center">
+                  <div key={item.id} className="relative w-full bg-white border border-stroke shadow-3 grid gap-5 p-4 rounded-md dark:bg-gray-900 dark:border-strokedark">
+                    <div className="absolute top-6 right-4">
                       {showModalMessage ? (
                         <button onClick={() => setModalOptions({
                           open: true,
@@ -241,28 +293,47 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                           <BsFillTrashFill className="text-meta-1 hover:text-meta-7 dark:text-white dark:hover:text-stone-300 h-4 w-4 self-center" />
                         </button>
                       )}
-                    </TableCell>
-                    <TableCell className="text-center">
+                    </div>
+                    <div>
+                      <h4 className="max-w-55 text-xl dark:text-snow font-semibold mb-2">
+                        {item?.credor || "Nome não informado"}
+                      </h4>
+                      <p>
+                        {numberFormat(item.valor_liquido_disponivel)}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Badge color="indigo" size="sm" className="max-w-full text-[10px]">
+                        PRECATÓRIO
+                      </Badge>
+                      <Badge color="teal" size="sm" className="max-w-max text-center text-[10px]">
+                        ENCARTEIRADO
+                      </Badge>
+                    </div>
+                    <div className="flex gap-4 justify-center mt-3">
+                      <button className="flex gap-2 items-center py-2 px-6 bg-[#6afcbf] text-black rounded-md">
+                        <span>tarefa</span>
+                        <BiTask className="w-3 h-3" />
+                      </button>
                       <button onClick={() => {
                         setOpenDrawer(true);
                         fetchDataById(item.id);
-                      }} className="bg-transparent border-none transition-all duration-300 text-primary font-medium hover:text-blue-500 dark:hover:text-white dark:text-blue-500 border border-blue-500 hover:border-transparent">
-                        <span className="text-[12px]">
-                          DETALHES
-                        </span>
+                      }} className="flex gap-2 items-center py-2 px-6 bg-prussianBlue text-snow rounded-md">
+                        <span>detalhes</span>
+                        <BiListUl className="w-3 h-3" />
                       </button>
-                    </TableCell>
-                  </TableRow>
+                    </div>
+                  </div>
                 ))}
               </>
+            ) : (
+              <p className="text-center py-5 bg-white dark:bg-boxdark rounded-b-sm">
+                Não há registros para exibir
+              </p>
             )}
-          </TableBody>
-        </Table>
-      </Flowbite>
-      {data.length === 0 && (
-        <p className="text-center py-5 bg-white dark:bg-boxdark rounded-b-sm">
-          Não há registros para exibir
-        </p>
+          </div>
+        </div>
+        /* end mobile view */
       )}
       <Suspense fallback={<Loader />}>
         <AwesomeDrawer data={item} loading={loading} setData={setItem} open={openDrawer} setOpen={setOpenDrawer} />
