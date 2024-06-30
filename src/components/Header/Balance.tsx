@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Popover } from "flowbite-react";
-import { BiChevronRight } from "react-icons/bi";
-import { BsCoin } from "react-icons/bs";
+import { BiChevronRight, BiDollarCircle } from "react-icons/bi";
+import { BsCoin, BsExclamation } from "react-icons/bs";
 import { UserInfoAPIContext, UserInfoContextType } from "@/context/UserInfoContext";
 import Link from "next/link";
 
@@ -68,20 +68,42 @@ export const Balance = () => {
                         </div>
                     }
                 >
-                    <a href="#" className={`hidden sm:flex relative items-center justify-center rounded-full text-sm px-2 bg-gray ${credits.available_credits === 0 ? 'border border-meta-1 text-meta-1 hover:text-rose-500 hover:border-rose-500 dark:text-red dark:border-red dark:hover:text-rose-500 dark:hover:border-rose-500' : 'border-[0.5px] border-stone-300 dark:border-stone-500 dark:hover:text-stone-200 hover:text-primary'} dark:bg-meta-4 dark:text-white`}>
+                    {/* <a href="#" className={`hidden sm:flex items-center justify-center gap-2 text-sm ${credits.available_credits === 0 ? 'border border-meta-1 text-meta-1 hover:text-rose-500 hover:border-rose-500 dark:text-red dark:border-red dark:hover:text-rose-500 dark:hover:border-rose-500' : 'dark:border-stone-500 dark:hover:text-stone-200 hover:text-primary'} dark:bg-meta-4 dark:text-white`}>
                         <span
                             className={`absolute -top-1 -right-0.5 z-1 h-2.5 w-2.5 rounded-full bg-meta-1`}
                         >
                             {credits.available_credits <= 10 && (<span className="absolute -z-1 inline-flex h-full w-full top-0 left-0 animate-ping rounded-full bg-meta-1 opacity-75"></span>)}
                         </span>
-                        <p className="font-bold">Créditos: {credits.available_credits}</p>
+                        <p className="font-medium">Créditos: {credits.available_credits}</p>
+                        <div>
+                            <BsExclamation className="w-5 h-5 text-meta-1 dark:text-red animate-wiggle transition-all duration-300" />
+                        </div>
+                    </a> */}
+                    <a href="#" className="flex relative items-center justify-center rounded-full text-sm px-2 py-[2px] border-[0.5px] border-stroke dark:border-strokedark dark:bg-meta-4 dark:text-white dark:hover:text-bodydark2">
+                        {/* <span
+                            className={`absolute -bottom-1.5 w-[29px] -right-1.5 z-1 p-[3px] rounded-full text-white bg-meta-1 text-xs`}
+                        >
+                            {credits.available_credits <= 10 && (<span className="absolute -z-1 inline-flex h-full w-full top-0 left-0 animate-ping rounded-full bg-meta-1 opacity-75"></span>)}
+                            <p className="text-center">
+                                {credits.available_credits <= 99 ? credits.available_credits : '99+'}
+                            </p>
+                        </span> */}
+                        {credits.available_credits <= 10 && (
+                            <div className="absolute -top-1 -left-1 w-4 h-4 rounded-full flex items-center justify-center bg-meta-1">
+                                <BsExclamation className="w-4 h-4 text-white animate-wiggle transition-all duration-300" />
+                            </div>
+                        )}
+                        <BiDollarCircle className="w-6 h-6 text-yellow-300" />
+                        <p className="font-medium ml-1 pl-1 border-l border-stroke dark:border-form-strokedark">
+                            {credits.available_credits <= 99 ? credits.available_credits : '99+'}
+                        </p>
                     </a>
                 </Popover>
             )}
             {/* end view desktop/tablets */}
 
             {/* view mobile */}
-            {loading ? (
+            {/* {loading ? (
                 <div role="status" className="animate-pulse">
                     <div className="h-[36px] w-[44px] rounded-full bg-gray-200 dark:bg-boxdark"></div>
                 </div>
@@ -149,7 +171,7 @@ export const Balance = () => {
                         }} />
                     </a>
                 </Popover>
-            )}
+            )} */}
             {/* end view mobile */}
         </React.Fragment>
 
