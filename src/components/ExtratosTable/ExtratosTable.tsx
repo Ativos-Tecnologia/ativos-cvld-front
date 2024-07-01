@@ -1,6 +1,5 @@
 
 import api from "@/utils/api";
-import { CustomFlowbiteTheme } from "flowbite-react";
 import { Suspense, useEffect, useState } from "react";
 import UseMySwal from "@/hooks/useMySwal";
 import { AwesomeDrawer } from "../Drawer/Drawer";
@@ -81,15 +80,21 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
   const fetchDataById = async (id: string) => {
     setLoading(true);
+    console.log(loading);
+
     if (lastId === id) {
       setOpenDrawer(!openDrawer);
       setLoading(false);
       return;
     }
-    const response = await api.get(`api/extrato/${id}/`);
-    setItem(response.data);
+
+    setItem((await api.get(`api/extrato/${id}/`)).data);
     setLastId(id);
+
+
     setLoading(false);
+    console.log(loading);
+
   }
 
   const fetchStateFromLocalStorage = () => {

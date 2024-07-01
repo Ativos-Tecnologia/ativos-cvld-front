@@ -96,7 +96,9 @@ const TableView = ({data, showModalMessage, loading,  setModalOptions, fetchDele
                                             )}
                                         </TableCell>
                                         <TableCell className="text-center">
-                                            <button onClick={() => {
+                                            <button style={{
+                                                cursor: loading ? 'wait' : 'pointer'
+                                            }} onClick={() => {
                                                 setOpenDrawer(true);
                                                 fetchDataById(item.id);
                                             }} className="bg-transparent border-none transition-all duration-300 text-primary font-medium hover:text-blue-500 dark:hover:text-white dark:text-blue-500 border border-blue-500 hover:border-transparent">
