@@ -109,15 +109,21 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
   const fetchDataById = async (id: string) => {
     setLoading(true);
+    console.log(loading);
+
     if (lastId === id) {
       setOpenDrawer(!openDrawer);
       setLoading(false);
       return;
     }
-    const response = await api.get(`api/extrato/${id}/`);
-    setItem(response.data);
+
+    setItem((await api.get(`api/extrato/${id}/`)).data);
     setLastId(id);
+
+
     setLoading(false);
+    console.log(loading);
+
   }
 
   const fetchStateFromLocalStorage = () => {
@@ -241,7 +247,9 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                   )}
                 </TableCell>
                 <TableCell className="text-center">
-                  <button onClick={() => {
+                  <button style={{
+                    cursor: loading ? 'wait' : 'pointer'
+                  }} onClick={() => {
                     setOpenDrawer(true);
                     fetchDataById(item.id);
                   }} className="bg-transparent border-none transition-all duration-300 text-primary font-medium hover:text-blue-500 dark:hover:text-white dark:text-blue-500 border border-blue-500 hover:border-transparent">
