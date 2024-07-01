@@ -13,6 +13,7 @@ const config: Config = {
   theme: {
     fontFamily: {
       satoshi: ["Satoshi", "sans-serif"],
+      nexa: ["Nexa", "sans-serif"]
     },
     screens: {
       "2xsm": "375px",
@@ -25,9 +26,10 @@ const config: Config = {
         current: "currentColor",
         transparent: "transparent",
         white: "#FFFFFF",
+        snow: "#FAFAFA",
         black: "#1C2434",
         red: "#FB5454",
-        "black-2": "#010101",
+        "black-2": "#111111",
         body: "#64748B",
         bodydark: "#AEB7C0",
         bodydark1: "#DEE4EE",
@@ -36,10 +38,12 @@ const config: Config = {
         secondary: "#80CAEE",
         stroke: "#E2E8F0",
         gray: "#EFF4FB",
+        "gray-400": "#666666",
+        "gray-500": "#555555",
+        "gray-700": "#333333",
         "gray-900": "#111827",
         graydark: "#333A48",
         "gray-2": "#F7F9FC",
-        "gray-3": "#FAFAFA",
         whiten: "#F1F5F9",
         whiter: "#F5F7FD",
         boxdark: "#24303F",
@@ -270,6 +274,49 @@ const config: Config = {
         5: "0px 1px 5px rgba(0, 0, 0, 0.2)",
       },
       keyframes: {
+        'flip-vertical-right': {
+          from: {
+            transform: 'rotateY(0)'
+          },
+          to: {
+            transform: 'rotateY(360deg)'
+          }
+        },
+        wiggle: {
+          "0%": {
+            transform: 'scale(1)',
+          },
+          "2%": {
+            transform: 'scale(1.3)'
+          },
+          "5%, 15%, 25%, 35%": {
+            transform: 'rotate(25deg) scale(1.6)'
+          },
+          "10%, 20%, 30%, 40%": {
+            transform: 'rotate(-25deg) scale(1.6)'
+          },
+          "42%": {
+            transform: 'scale(1.3)'
+          },
+          "44%, 100%": {
+            transform: 'rotate(0deg) scale(1)'
+          }
+        },
+        sideforward: {
+          'to': {
+            transform: 'translateX(10px)'
+          }
+        },
+        downforward: {
+          'to': {
+            transform: 'translateY(8px)'
+          }
+        },
+        upforward: {
+          'to': {
+            transform: 'translateY(-3px)'
+          }
+        },
         typewriter: {
           '0%': { width: '0%' },
           '100%': { width: '100%' },
@@ -323,6 +370,10 @@ const config: Config = {
         },
       },
       animation: {
+        flip: 'flip-vertical-right 3.5s infinite linear',
+        wiggle: 'wiggle 2.5s infinite',
+        downforward: 'downforward 1.0s infinite alternate ease-in-out',
+        upforward: 'upforward 1.5s infinite alternate ease-in-out',
         typewriter: 'typewriter 4s steps(10) 1s infinite alternate both, blink 0.7s infinite step-end',
         linspin: "linspin 1568.2353ms linear infinite",
         easespin: "easespin 5332ms cubic-bezier(0.4, 0, 0.2, 1) infinite both",

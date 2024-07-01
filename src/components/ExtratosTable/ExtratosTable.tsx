@@ -1,43 +1,13 @@
 
-import numberFormat from "@/functions/formaters/numberFormat";
 import api from "@/utils/api";
-import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, CustomFlowbiteTheme, Flowbite, Badge } from "flowbite-react";
 import { Suspense, useEffect, useState } from "react";
 import UseMySwal from "@/hooks/useMySwal";
-import dateFormater from "@/functions/formaters/dateFormater";
-import { BsFillTrashFill } from "react-icons/bs";
 import { AwesomeDrawer } from "../Drawer/Drawer";
 import DeleteExtractAlert from "../Modals/DeleteExtract";
 import { CVLDResultProps } from "@/interfaces/IResultCVLD";
-import { BiTask } from "react-icons/bi";
 import Loader from "../common/Loader";
-
-const customTheme: CustomFlowbiteTheme = {
-  table: {
-    root: {
-      base: "w-full text-left text-sm text-gray-500 dark:text-gray-400",
-      shadow: "absolute left-0 top-0 -z-10 h-full w-full rounded-lg bg-white drop-shadow-md dark:bg-black",
-      wrapper: "relative"
-    },
-    body: {
-      base: "group/body",
-      cell: {
-        base: "px-4 py-3 group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg dark:bg-boxdark dark:text-white border-b border-gray dark:border-gray"
-      }
-    },
-    head: {
-      base: "group/head text-xs uppercase text-gray-700 dark:text-gray-400",
-      cell: {
-        base: "bg-stone-300 text-black px-4 py-3 group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg dark:bg-boxdark dark:text-white dark:border-b dark:border-gray"
-      }
-    },
-    row: {
-      base: "group/row",
-      hovered: "hover:bg-gray-50 dark:hover:bg-gray-600",
-      striped: "odd:bg-white even:bg-green-300 odd:dark:bg-gray-800 even:dark:bg-gray-700"
-    }
-  }
-}
+import TableView from "./TableView";
+import CardView from "./CardView";
 
 export type LocalShowOptionsProps = {
   key: string;
@@ -55,7 +25,8 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   const [data, setData] = useState<any[]>([]);
   const [item, setItem] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
-  const [responseStaus, setResponseStatus] = useState<string>('');
+  const [viewOption, setViewOption] = useState<string>('table');
+  const [responseStatus, setResponseStatus] = useState<string>('');
   const [localShowOptions, setLocalShowOptions] = useState<LocalShowOptionsProps[]>([]);
   const [showModalMessage, setShowModalMessage] = useState<boolean>(true);
   const [lastId, setLastId] = useState<string | null>(null);
@@ -185,90 +156,80 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
         setLocalShowOptions(parsedValue);
       }
     }
+
   }
 
   return (
     <div className="overflow-x-auto">
-      <Flowbite theme={{ theme: customTheme }}>
-        <Table hoverable className="">
-          <TableHead>
-            <TableHeadCell className="text-center w-[120px]">Oficio</TableHeadCell>
-            <TableHeadCell className="text-center">Nome do Credor</TableHeadCell>
-            <TableHeadCell className="text-center w-[180px]">Valor Líquido</TableHeadCell>
-            <TableHeadCell className="text-center w-[140px]">Status</TableHeadCell>
-            <TableHeadCell className="text-center w-[120px]">
-              <span className="sr-only text-center">Tarefas</span>
-            </TableHeadCell>
-            <TableHeadCell className="text-center w-[40px]">
-              <span className="sr-only text-center">Detalhes</span>
-            </TableHeadCell>
-            <TableHeadCell className="text-center w-[40px]">
-              <span className="sr-only text-center ">Detalhes</span>
-            </TableHeadCell>
-          </TableHead>
-          <TableBody>
-            {data?.map((item: CVLDResultProps) => (
-
-              <TableRow key={item.id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                  <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
-                    {item.tipo_do_oficio.toUpperCase()}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-center font-semibold text-[12px]">{item?.credor || ""}</TableCell>
-                <TableCell className="text-center font-semibold text-[12px]">{numberFormat(item.valor_liquido_disponivel)}</TableCell>
-                <TableCell className="text-center items-center">
-                  <Badge color="teal" size="sm" className="max-w-max text-center text-[12px]">
-                    {item.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-center">{
-                  <Badge aria-disabled size="sm" color="yellow" className="cursor-not-allowed hover:bg-yellow-200 dark:hover:bg-yellow-400 transition-all duration-300 justify-center">
-                    <div className="flex flex-row w-full justify-between items-baseline align-middle gap-1">
-                    <span className="text-[12px] font-medium text-gray-900 dark:text-prussianBlue">
-                      TAREFA
-                    </span>
-                <BiTask className="text-green-700 hover:text-green-950 dark:text-prussianBlue dark:hover:text-stone-300 h-4 w-4 self-center transition-all duration-300" />
-                  </div>
-                </Badge>}
-                </TableCell>
-                <TableCell className="text-center">
-                  {showModalMessage ? (
-                    <button onClick={() => setModalOptions({
-                      open: true,
-                      extractId: item.id
-                    })} className="bg-transparent border-none flex transition-all duration-300 hover:bg-red-500 text-red-500 hover:text-white dark:hover:text-white dark:text-red-500 dark:hover:bg-red-500">
-                      <BsFillTrashFill className="text-meta-1 hover:text-meta-7 dark:text-white dark:hover:text-stone-300 h-4 w-4 self-center" style={{ cursor: loading ? 'wait' : 'pointer' }}/>
-                    </button>
-                  ) : (
-                    <button onClick={() => fetchDelete(item.id)} className="bg-transparent border-none flex transition-all duration-300 hover:bg-red-500 text-red-500 hover:text-white dark:hover:text-white dark:text-red-500 dark:hover:bg-red-500" style={{ cursor: loading ? 'wait' : 'pointer' }}>
-                      <BsFillTrashFill className="text-meta-1 hover:text-meta-7 dark:text-white dark:hover:text-stone-300 h-4 w-4 self-center" />
-                    </button>
-                  )}
-                </TableCell>
-                <TableCell className="text-center">
-                  <button style={{
-                    cursor: loading ? 'wait' : 'pointer'
-                  }} onClick={() => {
-                    setOpenDrawer(true);
-                    fetchDataById(item.id);
-                  }} className="bg-transparent border-none transition-all duration-300 text-primary font-medium hover:text-blue-500 dark:hover:text-white dark:text-blue-500 border border-blue-500 hover:border-transparent">
-                    <span className="text-[12px]">
-                      DETALHES
-                    </span>
-                  </button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Flowbite>
+      {window.innerWidth >= 430 ? (
+        <>
+          {/* desktop view */}
+          <div className="py-7 px-5 bg-white rounded-sm dark:bg-boxdark">
+            <div className="flex flex-col items-center gap-4">
+              <h3 className="w-full font-nexa font-black text-center pb-2 border-b border-stroke dark:border-strokedark dark:text-white">
+                EXTRATOS
+              </h3>
+              <div className="flex w-full items-center justify-end gap-2 mb-5">
+                <div className="flex items-center gap-2">
+                  <label htmlFor="tableView" className="text-sm">tipo de visualização:</label>
+                  <select name="tableView" id="tableView" className="p-0 pl-3 text-sm rounded-sm dark:bg-boxdark" onChange={e => setViewOption(e.target.value)}>
+                    <option value="table">tabela</option>
+                    <option value="cards">cards</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            {viewOption === "table" &&
+              <TableView
+                data={data}
+                showModalMessage={showModalMessage}
+                loading={loading}
+                setModalOptions={setModalOptions}
+                fetchDelete={fetchDelete}
+                setOpenDrawer={setOpenDrawer}
+                fetchDataById={fetchDataById}
+              />
+            }
+            {viewOption === "cards" &&
+              <CardView
+                className="flex justify-center"
+                data={data}
+                showModalMessage={showModalMessage}
+                loading={loading}
+                setModalOptions={setModalOptions}
+                fetchDelete={fetchDelete}
+                setOpenDrawer={setOpenDrawer}
+                fetchDataById={fetchDataById}
+              />
+            }
+          </div>
+          {/* end desktop view */}
+        </>
+      ) : (
+        /* mobile view */
+        <div className="py-7 px-5 bg-white rounded-sm dark:bg-boxdark">
+          <h3 className="font-nexa text-center dark:text-white pb-1 mb-6 border-b border-stroke dark:border-strokedark">
+            EXTRATOS
+          </h3>
+          <CardView
+            className="grid gap-4"
+            data={data}
+            showModalMessage={showModalMessage}
+            loading={loading}
+            setModalOptions={setModalOptions}
+            fetchDelete={fetchDelete}
+            setOpenDrawer={setOpenDrawer}
+            fetchDataById={fetchDataById}
+          />
+        </div>
+        /* end mobile view */
+      )}
       <Suspense fallback={<Loader />}>
         <AwesomeDrawer data={item} loading={loading} setData={setItem} open={openDrawer} setOpen={setOpenDrawer} />
       </Suspense>
       {showModalMessage && (
         <DeleteExtractAlert
-          response={responseStaus}
+          response={responseStatus}
           setResponse={setResponseStatus}
           state={modalOptions}
           setState={setModalOptions}

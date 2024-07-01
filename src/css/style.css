@@ -250,11 +250,17 @@ input[type="password"]::-ms-clear {
 input[type="password"]::-webkit-textfield-decoration-container {
   display: none;
 }
+
 /* tailwind css */
-.typewriter {
-    animation: typewriter 4s steps(10) 1s infinite alternate both, blink 0.7s infinite step-end;
-    border-right: none; /* Ajuste a largura e cor do cursor */
-    white-space: nowrap;
-    overflow: hidden;
-  }
+@keyframes leftforward {
+    to {
+        transform: translateX(-2px);
+    }
+}
+
+@keyframes rightforward {
+    to {
+        transform: translateX(2px);
+    }
+}
 
