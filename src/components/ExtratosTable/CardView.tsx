@@ -28,8 +28,9 @@ const CardView = ({ className, data, showModalMessage, loading, setModalOptions,
                                 )}
                             </div>
                             <div>
-                                <h4 className="max-w-55 text-xl dark:text-snow font-semibold mb-2">
+                                <h4 className="max-w-55 max-h-21 text-xl overflow-hidden dark:text-snow font-semibold mb-2">
                                     {item?.credor || "Nome não informado"}
+                                    {item.credor &&item?.credor.length >= 55 && ' ...'}
                                 </h4>
                                 <p>
                                     {numberFormat(item.valor_liquido_disponivel)}
@@ -44,14 +45,14 @@ const CardView = ({ className, data, showModalMessage, loading, setModalOptions,
                                 </Badge>
                             </div>
                             <div className="flex gap-4 justify-center mt-3">
-                                <button className="flex flex-1 gap-2 items-center justify-center py-2 px-6 bg-[#6afcbf] text-black rounded-md">
+                                <button className="flex flex-1 gap-2 items-center justify-center py-2 px-6 bg-[#6afcbf] text-black rounded-md hover:shadow-2 hover:shadow-[#6afcbf] transition-all duration-200">
                                     <span>tarefa</span>
                                     <BiTask className="w-3 h-3" />
                                 </button>
                                 <button onClick={() => {
                                     setOpenDrawer(true);
                                     fetchDataById(item.id);
-                                }} className="flex flex-1 gap-2 items-center justify-center py-2 px-6 bg-prussianBlue text-snow rounded-md">
+                                }} className="flex flex-1 gap-2 items-center justify-center py-2 px-6 bg-prussianBlue text-snow rounded-md hover:shadow-2 hover:shadow-blue-800 transition-all duration-200">
                                     <span>detalhes</span>
                                     <BiListUl className="w-3 h-3" />
                                 </button>
