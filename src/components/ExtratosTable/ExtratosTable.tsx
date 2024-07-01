@@ -160,16 +160,18 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
         <>
           {/* desktop view */}
           <div className="py-7 px-5 bg-white rounded-sm dark:bg-boxdark">
-            <div className="flex items-center gap-4 pb-1 mb-6 border-b border-stroke dark:border-strokedark">
-              <h3 className="flex-1 text-center dark:text-white">
+            <div className="flex flex-col items-center gap-4">
+              <h3 className="w-full font-nexa font-black text-center pb-2 border-b border-stroke dark:border-strokedark dark:text-white">
                 EXTRATOS
               </h3>
-              <div className="flex items-center gap-2">
-                <label htmlFor="tableView" className="text-sm">tipo de visualização:</label>
-                <select name="tableView" id="tableView" className="p-0 pl-3 text-sm rounded-sm dark:bg-boxdark" onChange={e => setViewOption(e.target.value)}>
-                  <option value="table">tabela</option>
-                  <option value="cards">cards</option>
-                </select>
+              <div className="flex w-full items-center justify-end gap-2 mb-5">
+                <div className="flex items-center gap-2">
+                  <label htmlFor="tableView" className="text-sm">tipo de visualização:</label>
+                  <select name="tableView" id="tableView" className="p-0 pl-3 text-sm rounded-sm dark:bg-boxdark" onChange={e => setViewOption(e.target.value)}>
+                    <option value="table">tabela</option>
+                    <option value="cards">cards</option>
+                  </select>
+                </div>
               </div>
             </div>
             {viewOption === "table" &&
@@ -185,7 +187,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
             }
             {viewOption === "cards" &&
               <CardView
-                className="flex gap-4 flex-wrap"
+                className="flex gap-4 justify-center flex-wrap"
                 data={data}
                 showModalMessage={showModalMessage}
                 loading={loading}
@@ -201,7 +203,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
       ) : (
         /* mobile view */
         <div className="py-7 px-5 bg-white rounded-sm dark:bg-boxdark">
-          <h3 className="text-center dark:text-white pb-1 mb-6 border-b border-stroke dark:border-strokedark">
+          <h3 className="font-nexa text-center dark:text-white pb-1 mb-6 border-b border-stroke dark:border-strokedark">
             EXTRATOS
           </h3>
           <CardView
