@@ -187,7 +187,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
             }
             {viewOption === "cards" &&
               <CardView
-                className="flex gap-4 justify-center flex-wrap"
+                className="flex justify-center"
                 data={data}
                 showModalMessage={showModalMessage}
                 loading={loading}
