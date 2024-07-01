@@ -15,6 +15,10 @@ export type LocalShowOptionsProps = {
   active: boolean;
 }
 
+export type LocalExtractViewProps = {
+  type: string;
+}
+
 type ExtratosTableProps = {
   newItem: CVLDResultProps[];
 }
@@ -26,7 +30,9 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   const [data, setData] = useState<any[]>([]);
   const [item, setItem] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
-  const [viewOption, setViewOption] = useState<string>('table');
+  const [viewOption, setViewOption] = useState<LocalExtractViewProps>({
+    type: 'table'
+  });
   const [responseStatus, setResponseStatus] = useState<string>('');
   const [localShowOptions, setLocalShowOptions] = useState<LocalShowOptionsProps[]>([]);
   const [showModalMessage, setShowModalMessage] = useState<boolean>(true);
@@ -103,6 +109,65 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
         }
       });
     }
+
+    const viewMode = localStorage.getItem("extract_list_view_mode");
+    if (viewMode !== null) {
+      const parsedValue = JSON.parse(viewMode);
+      setViewOption(parsedValue);
+    }
+  }
+
+  const setDontShowAgainDeleteExtractAlert = (key: string): void => {
+    if (!localStorage.getItem("dont_show_again_configs")) {
+      const config = {
+        key: key,
+        active: true
+      }
+      localStorage.setItem("dont_show_again_configs", JSON.stringify([config]));
+      const configs = localStorage.getItem("dont_show_again_configs");
+      if (configs !== null) {
+        const parsedValue = JSON.parse(configs);
+        setLocalShowOptions(parsedValue);
+      }
+    } else {
+      const configs = localStorage.getItem("dont_show_again_configs");
+      if (configs !== null) {
+        const parsedValue = JSON.parse(configs);
+        parsedValue.forEach((item: LocalShowOptionsProps) => {
+          if (item.key === key) {
+            item.active = item.active ? false : true;
+          }
+        })
+        localStorage.setItem("dont_show_again_configs", JSON.stringify(parsedValue));
+        setLocalShowOptions(parsedValue);
+      }
+    }
+  }
+
+  const setExtractListView = (type: string): void => {
+    if (!localStorage.getItem("extract_list_view_mode")) {
+
+      const config: LocalExtractViewProps = {
+        type: type
+      }
+      localStorage.setItem("extract_list_view_mode", JSON.stringify(config));
+      const configs = localStorage.getItem("extract_list_view_mode");
+      if (configs !== null) {
+        const parsedValue = JSON.parse(configs);
+        setViewOption(parsedValue);
+      }
+
+    } else {
+
+      const configs = localStorage.getItem("extract_list_view_mode");
+      if (configs !== null) {
+        const parsedValue = JSON.parse(configs);
+        parsedValue.type = 'table' ? 'cards' : 'table';
+        localStorage.setItem("extract_list_view_mode", JSON.stringify(parsedValue));
+        setViewOption(parsedValue);
+      }
+      
+    }
   }
 
   useEffect(() => {
@@ -125,35 +190,6 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     setData([...newItem, ...data])
   }, [newItem])
 
-  const setDontShowAgainDeleteExtractAlert = (key: string): void => {
-
-    if (!localStorage.getItem("dont_show_again_configs")) {
-      const config = {
-        key: key,
-        active: true
-      }
-      localStorage.setItem("dont_show_again_configs", JSON.stringify([config]));
-      const configs = localStorage.getItem("dont_show_again_configs");
-      if (configs !== null) {
-        const parsedValue = JSON.parse(configs);
-        setLocalShowOptions(parsedValue);
-      }
-    } else {
-      const configs = localStorage.getItem("dont_show_again_configs");
-      if (configs !== null) {
-        const parsedValue = JSON.parse(configs);
-        for (const item of parsedValue) {
-          if (item.key === key) {
-            item.active = item.active ? false : true;
-          }
-        }
-        localStorage.setItem("dont_show_again_configs", JSON.stringify(parsedValue));
-        setLocalShowOptions(parsedValue);
-      }
-    }
-
-  }
-
   return (
     <div className="overflow-x-auto">
       {window.innerWidth >= 430 ? (
@@ -161,20 +197,20 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
           {/* desktop view */}
           <div className="py-7 px-5 bg-white rounded-sm dark:bg-boxdark">
             <div className="flex flex-col items-center gap-4">
-              <h3 className="w-full font-nexa font-black text-center pb-2 border-b border-stroke dark:border-strokedark dark:text-white">
+              <h3 className="w-full text-2xl font-bold text-center pb-2 border-b border-stroke dark:border-strokedark dark:text-white">
                 EXTRATOS
               </h3>
               <div className="flex w-full items-center justify-end gap-2 mb-5">
                 <div className="flex items-center gap-2">
                   <label htmlFor="tableView" className="text-sm">tipo de visualização:</label>
-                  <select name="tableView" id="tableView" className="p-0 pl-3 text-sm rounded-sm dark:bg-boxdark" onChange={e => setViewOption(e.target.value)}>
+                  <select name="tableView" id="tableView" className="p-0 pl-3 text-sm rounded-sm dark:bg-boxdark" onChange={(e) => setExtractListView(e.target.value)}>
                     <option value="table">tabela</option>
                     <option value="cards">cards</option>
                   </select>
                 </div>
               </div>
             </div>
-            {viewOption === "table" &&
+            {viewOption.type === "table" &&
               <TableView
                 data={data}
                 showModalMessage={showModalMessage}
@@ -185,7 +221,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                 fetchDataById={fetchDataById}
               />
             }
-            {viewOption === "cards" &&
+            {viewOption.type === "cards" &&
               <CardView
                 className="flex justify-center"
                 data={data}
@@ -203,7 +239,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
       ) : (
         /* mobile view */
         <div className="py-7 px-5 bg-white rounded-sm dark:bg-boxdark">
-          <h3 className="font-nexa text-center dark:text-white pb-1 mb-6 border-b border-stroke dark:border-strokedark">
+          <h3 className="text-center text-2xl font-bold dark:text-white pb-1 mb-6 border-b border-stroke dark:border-strokedark">
             EXTRATOS
           </h3>
           <CardView
