@@ -104,6 +104,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   }
 
   const fetchStateFromLocalStorage = () => {
+    // fetching the dont show again configs
     const configs = localStorage.getItem("dont_show_again_configs");
     if (configs !== null) {
       const parsedValue = JSON.parse(configs);
@@ -115,6 +116,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
       });
     }
 
+    // fetching the view mode configs
     const viewMode = localStorage.getItem("extract_list_view_mode");
     if (viewMode !== null) {
       const parsedValue = JSON.parse(viewMode);
@@ -167,7 +169,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
       const configs = localStorage.getItem("extract_list_view_mode");
       if (configs !== null) {
         const parsedValue = JSON.parse(configs);
-        parsedValue.type = 'table' ? 'cards' : 'table';
+        parsedValue.type = type;
         localStorage.setItem("extract_list_view_mode", JSON.stringify(parsedValue));
         setViewOption(parsedValue);
       }
@@ -209,6 +211,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                 <div className="flex items-center gap-2">
                   <label htmlFor="tableView" className="text-sm">tipo de visualização:</label>
                   <select name="tableView" id="tableView" className="p-0 pl-3 text-sm rounded-sm dark:bg-boxdark" onChange={(e) => setExtractListView(e.target.value)}>
+                    <option value="">------</option>
                     <option value="table">tabela</option>
                     <option value="cards">cards</option>
                   </select>
