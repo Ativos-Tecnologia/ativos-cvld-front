@@ -1,13 +1,16 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Popover } from "flowbite-react";
 import { BiChevronRight, BiDollarCircle } from "react-icons/bi";
-import { BsCoin, BsExclamation } from "react-icons/bs";
+import { BsExclamation } from "react-icons/bs";
 import { UserInfoAPIContext, UserInfoContextType } from "@/context/UserInfoContext";
 import Link from "next/link";
+import PricingModal from "../Shop/PricingModal";
+import ShopModal from "../Shop";
 
 export const Balance = () => {
 
     const { subscriptionData, credits, loading } = useContext<UserInfoContextType>(UserInfoAPIContext);
+    const [modalOpen, setModalOpen] = useState<boolean>(false);
     const todayDate = new Date();
     const expireCreditsDate = new Date(subscriptionData[0].end_date);
     const diffTime = expireCreditsDate.getTime() - todayDate.getTime();
@@ -57,13 +60,13 @@ export const Balance = () => {
                                     </p>
                                 )}
 
-                                <Link href='#' className="group text-primary text-sm mt-2 font-semibold dark:text-white">
+                                <button onClick={() => setModalOpen(true)} className="group self-start text-primary text-sm mt-2 font-semibold dark:text-white">
                                     Adquirir Créditos
                                     <BiChevronRight style={{
                                         width: "22px",
                                         height: "22px",
                                     }} className="inline-block ml-1 transition-all duration-300 group-hover:translate-x-1" />
-                                </Link>
+                                </button>
                             </div>
                         </div>
                     }
@@ -100,6 +103,8 @@ export const Balance = () => {
                     </a>
                 </Popover>
             )}
+
+            {modalOpen && <ShopModal state={modalOpen} setState={setModalOpen} />}
             {/* end view desktop/tablets */}
 
             {/* view mobile */}
