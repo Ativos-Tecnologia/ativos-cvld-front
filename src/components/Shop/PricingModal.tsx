@@ -65,7 +65,7 @@ const availablesPlans = [
 const PricingModal = ({ setData }: { setData: React.Dispatch<React.SetStateAction<any>> }) => {
 
   return (
-    <React.Fragment key={0}>
+    <React.Fragment>
       <div className='flex flex-col items-center justify-center gap-3 mb-10'>
         <h1 className='text-graydark underline font-bold text-3xl text-center dark:text-white'>
           Nossos pacotes

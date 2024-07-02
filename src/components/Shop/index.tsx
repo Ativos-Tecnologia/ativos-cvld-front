@@ -26,7 +26,7 @@ const ShopModal = ({ state, setState }: {
     const [data, setData] = React.useState<ShopProps[]>();
 
     const steps: React.JSX.Element[] = [
-        <PricingModal setData={setData} />
+        <PricingModal key={0} setData={setData} />
     ];
 
     const { currentStep, changeStep, isLastStep, currentComponent } = useHandleSteps(steps);
