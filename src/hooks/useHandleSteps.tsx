@@ -1,6 +1,6 @@
 import React, { FormEvent } from "react";
 
-const handleSteps =  (steps: React.JSX.Element[]) => {
+const useHandleSteps =  (steps: React.JSX.Element[]) => {
     const [currentStep, setCurrentStep] = React.useState<number>(0);
 
     function changeStep (i: number, e?: FormEvent) {
@@ -17,4 +17,4 @@ const handleSteps =  (steps: React.JSX.Element[]) => {
     }
 }
 
-export default handleSteps;
+export default useHandleSteps;

@@ -1,7 +1,7 @@
 import React, { FormEvent } from 'react'
 import { BiX } from 'react-icons/bi';
 import PricingModal from './PricingModal';
-import handleSteps from '@/hooks/useHandleSteps';
+import useHandleSteps from '@/hooks/useHandleSteps';
 
 type PlanProps = {
     type: string;
@@ -29,7 +29,7 @@ const ShopModal = ({ state, setState }: {
         <PricingModal setData={setData} />
     ];
 
-    const { currentStep, changeStep, isLastStep, currentComponent } = handleSteps(steps);
+    const { currentStep, changeStep, isLastStep, currentComponent } = useHandleSteps(steps);
 
     return (
         <div>
