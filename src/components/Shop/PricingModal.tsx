@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { BiCheck, BiChevronRight, BiX } from 'react-icons/bi';
+import { ShopProps } from '.';
 
 const availablesPlans = [
   {
@@ -62,7 +63,11 @@ const availablesPlans = [
   }
 ];
 
-const PricingModal = ({ setData }: { setData: React.Dispatch<React.SetStateAction<any>> }) => {
+const PricingModal = ({ setData, changeStep, currentStep }: { 
+  setData: React.Dispatch<React.SetStateAction<any>>,
+  changeStep: (i: number) => void,
+  currentStep: number
+ }) => {
 
   return (
     <React.Fragment>
@@ -108,7 +113,13 @@ const PricingModal = ({ setData }: { setData: React.Dispatch<React.SetStateActio
                     <span className='text-lg font-bold text-gray-500 dark:text-white'>{plan.price} </span>
                     <span className='text-xs'>/ pacote</span>
                   </div>
-                  <button onClick={() => console.log(plan)} className='flex gap-1 items-center justify-center bg-[#3147d9] hover:bg-[#172789] py-2 px-3 rounded-full text-snow transition-all duration-200'>
+                  <button onClick={() => {
+                    changeStep(currentStep + 1);
+                    setData((prevData: ShopProps) => ({
+                      ...prevData,
+                      plan: plan
+                    }))
+                  }} className='flex gap-1 items-center justify-center bg-[#3147d9] hover:bg-[#172789] py-2 px-3 rounded-full text-snow transition-all duration-200'>
                     <span className='text-sm font-semibold'>comprar</span>
                     <BiChevronRight className='w-5 h-5' />
                   </button>
