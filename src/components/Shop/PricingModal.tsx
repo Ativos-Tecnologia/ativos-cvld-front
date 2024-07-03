@@ -67,7 +67,7 @@ const PricingModal = ({ setData }: { setData: React.Dispatch<React.SetStateActio
   return (
     <React.Fragment>
       <div className='flex flex-col items-center justify-center gap-3 mb-10'>
-        <h1 className='text-graydark underline font-bold text-3xl text-center dark:text-white'>
+        <h1 className='text-graydark font-bold text-3xl text-center dark:text-white'>
           Nossos pacotes
         </h1>
         <p className='text-xl max-w-100 text-center'>

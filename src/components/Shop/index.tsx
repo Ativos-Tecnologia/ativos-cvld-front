@@ -2,6 +2,7 @@ import React, { FormEvent } from 'react'
 import { BiX } from 'react-icons/bi';
 import PricingModal from './PricingModal';
 import useHandleSteps from '@/hooks/useHandleSteps';
+import Steps from './Steps';
 
 type PlanProps = {
     type: string;
@@ -39,6 +40,7 @@ const ShopModal = ({ state, setState }: {
                     <span className='absolute top-4 right-4 cursor-pointer'>
                         <BiX style={{ width: '26px', height: '26px', fill: '#BAC1CB' }} onClick={() => setState(false)} />
                     </span>
+                    <Steps currentStep={currentStep} />
                     {currentComponent}
                 </div>
                 {/* end modal div */}
