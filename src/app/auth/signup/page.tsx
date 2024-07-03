@@ -22,7 +22,7 @@ import { HiOutlineArrowRight } from "react-icons/hi";
 import { AiOutlineLoading } from "react-icons/ai";
 import usePassword from "@/hooks/usePassword";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
-import Terms from "@/components/Modals/Terms_&_Conditions";
+import Terms from "@/components/Modals/Terms_and_Conditions";
 
 export type SignUpInputs = {
   username: string;
