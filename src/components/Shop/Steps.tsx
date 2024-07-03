@@ -3,24 +3,23 @@ import { RiCheckboxBlankCircleFill, RiCheckboxBlankCircleLine, RiCheckboxCircleF
 
 const Steps = ({ currentStep }: { currentStep: number }) => {
     return (
-        <div className='relative p-3 flex 2xsm:flex-col 2xsm:items-center 2xsm:gap-3 md:justify-between lg:w-full xl:w-203 mx-auto mb-5'>
+        <div className='relative py-3 flex justify-between lg:w-full xl:w-203 mx-auto mb-5 '>
             {/* line beyond the steps */}
-            <div className='absolute top-1/2 2xsm:left-1/5 2xsm:w-1/4 2xsm:rotate-90 md:w-11/12 h-px bg-slate-400'></div>
+            <div className='absolute top-1/2 w-11/12 h-px bg-slate-400'></div>
             {/* steps */}
-            <div className='relative flex z-1 items-center gap-2 px-2 bg-[#f1f1f1]'>
+            <div className='relative flex 2xsm:flex-col 2xsm:max-w-25 z-1 items-center gap-2 px-2 bg-[#f1f1f1] dark:bg-boxdark'>
                 {currentStep > 1 ? <RiCheckboxCircleFill className='fill-green-500' /> : <RiCheckboxBlankCircleFill className='fill-[#3147d9]' />}
-
-                <span className={`${currentStep > 1 && 'text-green-500'}`}>Escolha do pacote</span>
+                <span className={`${currentStep > 1 && 'text-green-500'} 2xsm:text-center 2xsm:text-sm 2xsm:leading-none`}>Escolha do pacote</span>
             </div>
-            <div className='relative flex z-1 items-center gap-2 px-2 bg-[#f1f1f1]'>
+            <div className='relative flex 2xsm:flex-col 2xsm:max-w-25 z-1 items-center gap-2 px-2 2xsm:px-3 bg-[#f1f1f1] dark:bg-boxdark'>
                 {currentStep < 2 && <RiCheckboxBlankCircleLine />}
                 {currentStep === 2 && <RiCheckboxBlankCircleFill className='fill-[#3147d9]' />}
                 {currentStep > 2 && <RiCheckboxCircleFill className='fill-green-500' />}
-                <span>Informações</span>
+                <span className={`${currentStep > 2 && 'text-green-500'} 2xsm:text-center 2xsm:text-sm  2xsm:leading-none`}>Informações</span>
             </div>
-            <div className='relative flex z-1 items-center gap-2 px-2 bg-[#f1f1f1]'>
+            <div className='relative flex 2xsm:flex-col 2xsm:max-w-25 z-1 items-center gap-2 px-2 bg-[#f1f1f1] dark:bg-boxdark'>
                 <RiCheckboxBlankCircleLine />
-                <span>Revise seu pedido</span>
+                <span className={`${currentStep > 3 && 'text-green-500'} 2xsm:text-center 2xsm:text-sm 2xsm:leading-none`}>Revise seu pedido</span>
             </div>
         </div>
     )
