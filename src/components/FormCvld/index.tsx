@@ -97,7 +97,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
       setValue("valor_pss", numberFormat(oficioForm.result[0].valor_pss).replace("R$", ""));
     }
 
-  }, [oficioForm]);
+  }, [oficioForm, setValue]);
 
   const isUserAdmin = () => {
     const token = localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`);
