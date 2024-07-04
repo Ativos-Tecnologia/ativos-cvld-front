@@ -153,7 +153,7 @@ const ReviewModal = ({ data, currentStep, changeStep }: {
                         <button onClick={() => {
                             changeStep(currentStep + 1)
                         }} className='flex items-center text-snow gap-1 py-2 px-3 rounded-md bg-green-400 hover:bg-green-500 transition-all duration-200'>
-                            <span>Finalizar</span>
+                            <span>Continuar</span>
                             <BiChevronRight />
                         </button>
                     </div>
