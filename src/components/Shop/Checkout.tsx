@@ -15,7 +15,7 @@ const Checkout = () => {
             spread: 70,
             origin: {
                 y: 0.53,
-                x: 0.58
+                x: window.innerWidth <= 430 ? 0.54 : 0.58
             }
         });
     }
@@ -34,7 +34,7 @@ const Checkout = () => {
                 <h1 className='text-2xl w-full font-bold text-center'>
                     Agradecemos a sua compra!
                 </h1>
-                <div className='grid place-items-center h-29 mb-5 mt-10 p-5'>
+                <div className='grid place-items-center h-29 md:mb-5 md:mt-10 p-5'>
                     {boxOpen ? (
                         <Image
                             src="/images/open_box.webp"
