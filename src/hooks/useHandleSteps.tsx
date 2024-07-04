@@ -5,7 +5,7 @@ const useHandleSteps =  (steps: number) => {
 
     function changeStep (i: number, e?: FormEvent) {
         if (e) e?.preventDefault();
-        if (i < 0 || i >= steps) return;
+        if (i < 0 || i >= steps + 1) return;
         setCurrentStep(i);
     }
 

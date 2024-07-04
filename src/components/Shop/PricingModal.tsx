@@ -63,21 +63,21 @@ const availablesPlans = [
   }
 ];
 
-const PricingModal = ({ setData, changeStep, currentStep }: { 
+const PricingModal = ({ setData, changeStep, currentStep }: {
   setData: React.Dispatch<React.SetStateAction<any>>,
   changeStep: (i: number) => void,
   currentStep: number
- }) => {
+}) => {
 
   return (
     <React.Fragment>
       <div className='flex flex-col items-center justify-center gap-3 mb-10'>
-        <h1 className='text-graydark font-bold text-3xl text-center dark:text-white'>
-          Nossos pacotes
+        <h1 className='text-gray-500 font-bold text-3xl text-center dark:text-white'>
+          escolha um pacote de créditos
         </h1>
-        <p className='text-xl max-w-100 text-center'>
+        {/* <p className='text-xl max-w-100 text-center'>
           pacotes com preços para equipes de todos os tamanhos
-        </p>
+        </p> */}
       </div>
       <div className='flex justify-center gap-3 max-h-90 flex-wrap 2xsm:overflow-y-auto '>
         {/* card */}
@@ -120,7 +120,7 @@ const PricingModal = ({ setData, changeStep, currentStep }: {
                       plan: plan
                     }))
                   }} className='flex gap-1 items-center justify-center bg-[#3147d9] hover:bg-[#172789] py-2 px-3 rounded-full text-snow transition-all duration-200'>
-                    <span className='text-sm font-semibold'>comprar</span>
+                    <span className='text-sm font-semibold'>COMPRAR</span>
                     <BiChevronRight className='w-5 h-5' />
                   </button>
                 </div>
@@ -155,8 +155,14 @@ const PricingModal = ({ setData, changeStep, currentStep }: {
                     <span className='text-lg font-bold text-gray-500 dark:text-white'>{plan.price} </span>
                     <span className='text-xs'>/ pacote</span>
                   </div>
-                  <button onClick={() => console.log(plan)} className='flex gap-1 items-center justify-center bg-[#f00211] hover:bg-[#b4212b] py-2 px-3 rounded-full text-snow transition-all duration-200'>
-                    <span className='text-sm font-semibold'>comprar</span>
+                  <button onClick={() => {
+                    changeStep(currentStep + 1);
+                    setData((prevData: ShopProps) => ({
+                      ...prevData,
+                      plan: plan
+                    }))
+                  }} className='flex gap-1 items-center justify-center bg-[#f00211] hover:bg-[#b4212b] py-2 px-3 rounded-full text-snow transition-all duration-200'>
+                    <span className='text-sm font-semibold'>COMPRAR</span>
                     <BiChevronRight className='w-5 h-5' />
                   </button>
                 </div>
