@@ -61,7 +61,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                 Preencha as informações para a compra
             </h1>
             <form onSubmit={handleSubmit(onSubmit)} className='grid gap-6 max-w-203 max-h-90 mx-auto px-3 text-black overflow-y-auto'>
-                <div className='flex gap-4'>
+                <div className='flex gap-4 2xsm:flex-col'>
                     <label htmlFor="fullname" className='relative grid flex-1 gap-1'>
                         <span>Nome completo *</span>
                         <Controller
@@ -109,7 +109,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                         )}
                     </label>
                 </div>
-                <div className='flex gap-4'>
+                <div className='flex gap-4 2xsm:flex-col'>
                     <label htmlFor="CPF" className='relative grid gap-1 select-none'>
                         <span>CPF</span>
                         <Controller
@@ -181,7 +181,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                         />
                     </label>
                 </div>
-                <div className='flex gap-4'>
+                <div className='flex gap-4 2xsm:flex-col'>
                     <label htmlFor="postal-code" className='relative grid gap-1'>
                         <span>CEP *</span>
                         <Controller
