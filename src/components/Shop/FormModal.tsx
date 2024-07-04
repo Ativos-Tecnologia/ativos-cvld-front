@@ -57,13 +57,13 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
 
     return (
         <React.Fragment>
-            <h1 className='text-2xl text-gray-500 font-bold text-center mb-10'>
+            <h1 className='text-2xl font-bold text-center mb-10'>
                 Preencha as informações para a compra
             </h1>
-            <form onSubmit={handleSubmit(onSubmit)} className='grid gap-6 max-w-203 max-h-90 mx-auto px-3 text-black overflow-y-auto'>
+            <form onSubmit={handleSubmit(onSubmit)} className='grid gap-6 max-w-203 max-h-90 mx-auto px-3 overflow-y-auto'>
                 <div className='flex gap-4 2xsm:flex-col md:flex-row'>
                     <label htmlFor="full_name" className='relative grid flex-1 gap-1'>
-                        <span>Nome completo *</span>
+                        <span className='text-meta-5'>Nome completo *</span>
                         <Controller
                             name='full_name'
                             control={control}
@@ -75,7 +75,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                                     {...field}
                                     type='text'
                                     placeholder='Ex: Carlos Antônio da Silva'
-                                    className={`${errors.full_name ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 focus:ring-0 text-black-2`}
+                                    className={`${errors.full_name ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 focus:ring-0 dark:bg-slate-600 dark:text-snow`}
                                 />
                             )}
                         />
@@ -86,7 +86,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                         )}
                     </label>
                     <label htmlFor="adress" className='relative grid flex-1 gap-1'>
-                        <span>Endereço de cobrança *</span>
+                        <span className='text-meta-5'>Endereço de cobrança *</span>
                         <Controller
                             name='adress'
                             control={control}
@@ -98,7 +98,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                                     {...field}
                                     type='text'
                                     placeholder='Ex: Rua da Alegria'
-                                    className={`${errors.adress ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 focus:ring-0 text-black-2`}
+                                    className={`${errors.adress ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 focus:ring-0 dark:bg-slate-600 dark:text-snow`}
                                 />
                             )}
                         />
@@ -111,7 +111,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                 </div>
                 <div className='flex gap-4 2xsm:flex-col md:flex-row'>
                     <label htmlFor="CPF" className='relative grid gap-1 select-none'>
-                        <span>CPF</span>
+                        <span className='text-meta-5'>CPF</span>
                         <Controller
                             name='CPF'
                             control={control}
@@ -130,7 +130,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                                     type='text'
                                     mask="999.999.999-99"
                                     readOnly
-                                    className={`${errors.CPF ? 'border-red' : 'border-slate-300'} opacity-70 cursor-not-allowed rounded-lg shadow-1 text-black-2`}
+                                    className={`${errors.CPF ? 'border-red' : 'border-slate-300'} opacity-70 cursor-not-allowed rounded-lg shadow-1 dark:bg-slate-600 dark:text-snow`}
                                 />
                             )}
                         />
@@ -141,7 +141,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                         )}
                     </label>
                     <label htmlFor="adress_number" className='relative grid gap-1'>
-                        <span>Número *</span>
+                        <span className='text-meta-5'>Número *</span>
                         <Controller
                             name='adress_number'
                             control={control}
@@ -153,7 +153,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                                     {...field}
                                     type='text'
                                     placeholder='Ex: 123'
-                                    className={`${errors.adress_number ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 focus:ring-0 text-black-2`}
+                                    className={`${errors.adress_number ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 focus:ring-0 dark:bg-slate-600 dark:text-snow`}
                                 />
                             )}
                         />
@@ -164,7 +164,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                         )}
                     </label>
                     <label htmlFor="neighborhood" className='relative grid w-full gap-1'>
-                        <span>Bairro</span>
+                        <span className='text-meta-5'>Bairro</span>
                         <Controller
                             name='neighborhood'
                             control={control}
@@ -175,7 +175,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                                 <input
                                     {...field}
                                     type='text'
-                                    className={`${errors.neighborhood ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 focus:ring-0 text-black-2`}
+                                    className={`${errors.neighborhood ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 focus:ring-0 dark:bg-slate-600 dark:text-snow`}
                                 />
                             )}
                         />
@@ -188,7 +188,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                 </div>
                 <div className='flex gap-4 2xsm:flex-col md:flex-row'>
                     <label htmlFor="postal-code" className='relative grid gap-1'>
-                        <span>CEP *</span>
+                        <span className='text-meta-5'>CEP *</span>
                         <Controller
                             name='postal_code'
                             control={control}
@@ -199,8 +199,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                                 <input
                                     {...field}
                                     type='text'
-                                    className={`${errors.postal_code ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 focus:ring-0 text-black-2`}
-
+                                    className={`${errors.postal_code ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 focus:ring-0 dark:bg-slate-600 dark:text-snow`}
                                 />
                             )}
                         />
@@ -211,7 +210,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                         )}
                     </label>
                     <label htmlFor="city" className='relative grid gap-1'>
-                        <span>Cidade *</span>
+                        <span className='text-meta-5'>Cidade *</span>
                         <Controller
                             name='city'
                             control={control}
@@ -222,7 +221,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                                 <input
                                     {...field}
                                     type='text'
-                                    className={`${errors.city ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 focus:ring-0 text-black-2`}
+                                    className={`${errors.city ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 focus:ring-0 dark:bg-slate-600 dark:text-snow`}
                                 />
                             )}
                         />
@@ -233,7 +232,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                         )}
                     </label>
                     <label htmlFor="state" className='relative grid w-full gap-1'>
-                        <span>Estado *</span>
+                        <span className='text-meta-5'>Estado *</span>
                         <Controller
                             name='state'
                             control={control}
@@ -244,7 +243,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                                 <input
                                     {...field}
                                     type='text'
-                                    className={`${errors.state ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 w-full focus:ring-0 text-black-2`}
+                                    className={`${errors.state ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 w-full focus:ring-0 dark:bg-slate-600 dark:text-snow`}
                                 />
                             )}
                         />
@@ -255,7 +254,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                         )}
                     </label>
                     <label htmlFor="country" className='relative grid w-full gap-1' >
-                        <span>País *</span>
+                        <span className='text-meta-5'>País *</span>
                         <Controller
                             name='country'
                             control={control}
@@ -266,7 +265,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                                 <input
                                     {...field}
                                     type='text'
-                                    className={`${errors.country ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 w-full focus:ring-0 text-black-2`}
+                                    className={`${errors.country ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 w-full focus:ring-0 dark:bg-slate-600 dark:text-snow`}
                                 />
                             )}
                         />
@@ -277,10 +276,10 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                         )}
                     </label>
                 </div>
-                <div className='flex gap-3 items-center justify-end'>
+                <div className='flex gap-3 items-center 2xsm:justify-center md:justify-end'>
                     <button onClick={() => {
                         changeStep(currentStep - 1)
-                    }} className='flex items-center gap-1 py-2 px-3 rounded-md hover:bg-slate-200 transition-all duration-200'>
+                    }} className='flex items-center gap-1 py-2 px-3 rounded-md hover:bg-slate-200 dark:hover:text-gray-500 transition-all duration-200'>
                         <BiChevronLeft />
                         <span>Voltar</span>
                     </button>

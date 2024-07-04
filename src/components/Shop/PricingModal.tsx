@@ -72,8 +72,8 @@ const PricingModal = ({ setData, changeStep, currentStep }: {
   return (
     <React.Fragment>
       <div className='flex flex-col items-center justify-center gap-3 mb-10'>
-        <h1 className='text-gray-500 font-bold text-3xl text-center dark:text-white'>
-          escolha um pacote de créditos
+        <h1 className='font-bold text-2xl text-center'>
+        Escolha um pacote de créditos
         </h1>
         {/* <p className='text-xl max-w-100 text-center'>
           pacotes com preços para equipes de todos os tamanhos
