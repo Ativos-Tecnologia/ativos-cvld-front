@@ -5,6 +5,7 @@ import useHandleSteps from '@/hooks/useHandleSteps';
 import Steps from './Steps';
 import FormModal, { ShopFormProps } from './FormModal';
 import ReviewModal from './ReviewModal';
+import Checkout from './Checkout';
 
 type PlanProps = {
     type: string;
@@ -47,16 +48,13 @@ const ShopModal = ({ state, setState }: {
     }, [data]);
 
     React.useEffect(() => {
-        if (!data) return;
 
-        const fetchLocalStorage = () => {
-            const shopInfo = localStorage.getItem('shop_info');
-            if (shopInfo !== null) {
-                const parsedData: ShopProps = JSON.parse(shopInfo);
-                setData(parsedData);
-            }
-        };
-        fetchLocalStorage();
+        const shopInfo = localStorage.getItem('shop_info');
+        if (shopInfo !== null) {
+            const parsedData: ShopProps = JSON.parse(shopInfo);
+            setData(parsedData);
+        }
+
     }, [])
 
     // change data values
@@ -83,6 +81,7 @@ const ShopModal = ({ state, setState }: {
                     {currentStep === 1 && <PricingModal key={0} setData={setData} changeStep={changeStep} currentStep={currentStep} />}
                     {currentStep === 2 && <FormModal data={data} currentStep={currentStep} setData={setData} changeStep={changeStep} />}
                     {currentStep === 3 && <ReviewModal data={data} currentStep={currentStep} changeStep={changeStep} />}
+                    {currentStep === 4 && <Checkout />}
                 </div>
                 {/* end modal div */}
             </div>

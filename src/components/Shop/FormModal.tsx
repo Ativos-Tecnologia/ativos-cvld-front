@@ -6,11 +6,11 @@ import { ShopProps } from '.';
 import InputMask from 'react-input-mask';
 
 export type ShopFormProps = {
-    fullname: string,
+    full_name: string,
     adress: string,
     CPF: string,
     adress_number: string,
-    complement: string,
+    neighborhood: string,
     postal_code: string,
     city: string,
     state: string,
@@ -43,11 +43,11 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
 
     React.useEffect(() => {
         if (data?.user_info) {
-            setValue('fullname', data.user_info.fullname);
+            setValue('full_name', data.user_info.full_name);
             setValue('adress', data.user_info.adress);
             setValue('CPF', data.user_info.CPF || '')
             setValue('adress_number', data.user_info.adress_number);
-            setValue('complement', data.user_info.complement);
+            setValue('neighborhood', data.user_info.neighborhood);
             setValue('postal_code', data.user_info.postal_code);
             setValue('city', data.user_info.city);
             setValue('state', data.user_info.state);
@@ -61,11 +61,11 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                 Preencha as informações para a compra
             </h1>
             <form onSubmit={handleSubmit(onSubmit)} className='grid gap-6 max-w-203 max-h-90 mx-auto px-3 text-black overflow-y-auto'>
-                <div className='flex gap-4 2xsm:flex-col'>
-                    <label htmlFor="fullname" className='relative grid flex-1 gap-1'>
+                <div className='flex gap-4 2xsm:flex-col md:flex-row'>
+                    <label htmlFor="full_name" className='relative grid flex-1 gap-1'>
                         <span>Nome completo *</span>
                         <Controller
-                            name='fullname'
+                            name='full_name'
                             control={control}
                             rules={
                                 { required: true }
@@ -75,11 +75,11 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                                     {...field}
                                     type='text'
                                     placeholder='Ex: Carlos Antônio da Silva'
-                                    className={`${errors.fullname ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 focus:ring-0 text-black-2`}
+                                    className={`${errors.full_name ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 focus:ring-0 text-black-2`}
                                 />
                             )}
                         />
-                        {errors.fullname && (
+                        {errors.full_name && (
                             <span className='absolute -bottom-4.5 left-1 text-red text-xs'>
                                 campo obrigatório
                             </span>
@@ -109,7 +109,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                         )}
                     </label>
                 </div>
-                <div className='flex gap-4 2xsm:flex-col'>
+                <div className='flex gap-4 2xsm:flex-col md:flex-row'>
                     <label htmlFor="CPF" className='relative grid gap-1 select-none'>
                         <span>CPF</span>
                         <Controller
@@ -152,6 +152,7 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                                 <input
                                     {...field}
                                     type='text'
+                                    placeholder='Ex: 123'
                                     className={`${errors.adress_number ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 focus:ring-0 text-black-2`}
                                 />
                             )}
@@ -162,26 +163,30 @@ const FormModal = ({ data, currentStep, changeStep, setData }: {
                             </span>
                         )}
                     </label>
-                    <label htmlFor="complement" className='relative grid w-full gap-1'>
-                        <span>Complemento (opcional)</span>
+                    <label htmlFor="neighborhood" className='relative grid w-full gap-1'>
+                        <span>Bairro</span>
                         <Controller
-                            name='complement'
+                            name='neighborhood'
                             control={control}
                             rules={
-                                { required: false }
+                                { required: true }
                             }
-                            defaultValue='não possui'
                             render={({ field }) => (
                                 <input
                                     {...field}
                                     type='text'
-                                    className={`${errors.complement ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 focus:ring-0 text-black-2`}
+                                    className={`${errors.neighborhood ? 'border-red' : 'border-slate-300'} rounded-lg shadow-1 focus:ring-0 text-black-2`}
                                 />
                             )}
                         />
+                        {errors.neighborhood && (
+                            <span className='absolute -bottom-4.5 left-1 text-red text-xs'>
+                                campo obrigatório
+                            </span>
+                        )}
                     </label>
                 </div>
-                <div className='flex gap-4 2xsm:flex-col'>
+                <div className='flex gap-4 2xsm:flex-col md:flex-row'>
                     <label htmlFor="postal-code" className='relative grid gap-1'>
                         <span>CEP *</span>
                         <Controller
