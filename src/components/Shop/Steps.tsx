@@ -15,7 +15,7 @@ const Steps = ({ currentStep }: { currentStep: number }) => {
                 {currentStep < 2 && <RiCheckboxBlankCircleLine />}
                 {currentStep === 2 && <RiCheckboxBlankCircleFill className='fill-[#3147d9]' />}
                 {currentStep > 2 && <RiCheckboxCircleFill className='fill-green-500' />}
-                <span className={`${currentStep > 2 && 'text-green-500'} 2xsm:text-center 2xsm:text-sm  2xsm:leading-none`}>Informações</span>
+                <span className={`${currentStep > 2 && 'text-green-500'} 2xsm:text-center 2xsm:text-sm  2xsm:leading-none`}>Informações do pedido</span>
             </div>
             <div className='relative flex 2xsm:flex-col 2xsm:max-w-25 z-1 items-center gap-2 px-2 bg-snow dark:bg-boxdark'>
                 {currentStep < 3 && <RiCheckboxBlankCircleLine />}
