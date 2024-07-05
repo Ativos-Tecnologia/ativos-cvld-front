@@ -79,7 +79,7 @@ const PricingModal = ({ setData, changeStep, currentStep }: {
           pacotes com preços para equipes de todos os tamanhos
         </p> */}
       </div>
-      <div className='flex justify-center gap-3 max-h-90 flex-wrap 2xsm:overflow-y-auto '>
+      <div className='flex justify-center gap-3 h-90 xl:h-100 flex-wrap 2xsm:overflow-y-auto '>
         {/* card */}
         {availablesPlans.map((plan, index) => (
           <React.Fragment key={index}>

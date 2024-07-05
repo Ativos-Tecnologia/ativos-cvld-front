@@ -25,7 +25,7 @@ export type ShopProps = {
 
 const ShopModal = ({ state, setState }: {
     state: boolean;
-    setState: (state: boolean) => void;
+    setState: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
 
     const [data, setData] = React.useState<ShopProps | undefined>();
@@ -81,7 +81,7 @@ const ShopModal = ({ state, setState }: {
                     {currentStep === 1 && <PricingModal key={0} setData={setData} changeStep={changeStep} currentStep={currentStep} />}
                     {currentStep === 2 && <FormModal data={data} currentStep={currentStep} setData={setData} changeStep={changeStep} />}
                     {currentStep === 3 && <ReviewModal data={data} currentStep={currentStep} changeStep={changeStep} />}
-                    {currentStep === 4 && <Checkout />}
+                    {currentStep === 4 && <Checkout data={data} setState={setState} />}
                 </div>
                 {/* end modal div */}
             </div>
