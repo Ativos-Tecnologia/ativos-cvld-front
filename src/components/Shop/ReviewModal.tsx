@@ -133,14 +133,6 @@ const ReviewModal = ({ data, currentStep, changeStep }: {
                                     {data?.user_info.state}
                                 </span>
                             </li>
-                            <li>
-                                <span className='font-bold mr-2'>
-                                    País:
-                                </span>
-                                <span>
-                                    {data?.user_info.country}
-                                </span>
-                            </li>
                         </ul>
                     </div>
                     <div className='flex gap-3 items-center justify-center xl:justify-end'>
@@ -152,7 +144,7 @@ const ReviewModal = ({ data, currentStep, changeStep }: {
                         </button>
                         <button onClick={() => {
                             changeStep(currentStep + 1)
-                        }} className='flex items-center text-snow gap-1 py-2 px-3 rounded-md bg-green-400 hover:bg-green-500 transition-all duration-200'>
+                        }} className='flex items-center text-snow gap-1 py-2 px-3 rounded-md bg-[#3147d9] hover:bg-[#172789] transition-all duration-200'>
                             <span>Continuar</span>
                             <BiChevronRight />
                         </button>
