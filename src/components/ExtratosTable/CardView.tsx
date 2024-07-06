@@ -14,7 +14,7 @@ const CardView = ({ className, data, showModalMessage, loading, setModalOptions,
                 {data?.length > 0 ? (
                     <>
                         {data.map((item: CVLDResultProps) => (
-                            <div key={item.id} className="relative flex-1 flex flex-col justify-between xsm:w-full md:max-w-[332px] lg:max-w-[315px] xl:max-w-90 bg-white border border-stroke shadow-3 gap-5 p-4 rounded-md dark:bg-gray-900 dark:border-strokedark">
+                            <div key={item.id} className="relative flex-1 flex flex-col justify-between xsm:w-full md:max-w-[332px] lg:max-w-[305px] xl:max-w-90 bg-white border border-stroke shadow-3 gap-5 p-4 rounded-md dark:bg-gray-900 dark:border-strokedark">
                                 <div className="absolute top-6 right-4">
                                     {showModalMessage ? (
                                         <button onClick={() => setModalOptions({
@@ -53,14 +53,14 @@ const CardView = ({ className, data, showModalMessage, loading, setModalOptions,
                                     </div>
                                 </div>
                                 <div className="flex w-full gap-4 justify-center">
-                                    <button className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 bg-[#6afcbf] text-black rounded-md hover:shadow-2 hover:shadow-strokedark dark:hover:shadow-[#6afcbf] transition-all duration-200">
+                                    <button className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 bg-[#4dbce9] text-black rounded-md hover:bg-[#26ade4] hover:text-snow transition-all duration-200">
                                         <span className="text-sm font-medium">TAREFA</span>
                                         <BiTask className="w-4 h-4" />
                                     </button>
                                     <button onClick={() => {
                                         setOpenDrawer(true);
                                         fetchDataById(item.id);
-                                    }} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 bg-prussianBlue text-snow rounded-md hover:shadow-2 hover:shadow-strokedark dark:hover:shadow-blue-800 transition-all duration-200">
+                                    }} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 bg-[#f1d989] text-black rounded-md hover:bg-[#ccb156] hover:text-snow transition-all duration-200">
                                         <span className="text-sm font-medium">DETALHES</span>
                                         <BiListUl className="w-4 h-4" />
                                     </button>
