@@ -1,6 +1,6 @@
 
 import api from "@/utils/api";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import UseMySwal from "@/hooks/useMySwal";
 import { AwesomeDrawer } from "../Drawer/Drawer";
 import DeleteExtractAlert from "../Modals/DeleteExtract";
@@ -41,6 +41,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     open: false,
     extractId: ''
   });
+  const viewModeRef = useRef<HTMLSelectElement | null>(null);
 
   const fetchData = async () => {
     const response = await api.get("api/extratos/");
@@ -121,10 +122,16 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     if (viewMode !== null) {
       const parsedValue = JSON.parse(viewMode);
       setViewOption(parsedValue);
+      if (viewModeRef.current) {
+        viewModeRef.current.value = parsedValue.type;
+      }
     }
   }
 
   const setDontShowAgainDeleteExtractAlert = (key: string): void => {
+    /* setting key on localStorage if don't exist.
+      if exist, update localOptions w/ preferences value
+    */
     if (!localStorage.getItem("dont_show_again_configs")) {
       const config = {
         key: key,
@@ -173,7 +180,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
         localStorage.setItem("extract_list_view_mode", JSON.stringify(parsedValue));
         setViewOption(parsedValue);
       }
-      
+
     }
   }
 
@@ -210,8 +217,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
               <div className="flex w-full items-center justify-end gap-2 mb-5">
                 <div className="flex items-center gap-2">
                   <label htmlFor="tableView" className="text-sm">tipo de visualização:</label>
-                  <select name="tableView" id="tableView" className="p-0 pl-3 text-sm rounded-sm dark:bg-boxdark" onChange={(e) => setExtractListView(e.target.value)}>
-                    <option value="">------</option>
+                  <select ref={viewModeRef} name="tableView" id="tableView" className="p-0 pl-3 text-sm rounded-md dark:bg-boxdark" onChange={(e) => setExtractListView(e.target.value)}>
                     <option value="table">tabela</option>
                     <option value="cards">cards</option>
                   </select>
