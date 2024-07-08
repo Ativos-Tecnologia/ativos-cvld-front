@@ -1025,14 +1025,14 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
 
           </div>
           <div className="flex justify-center my-8">
-            <Button gradientDuoTone="purpleToBlue" type='submit' className='flex items-center justify-center cursor-pointer rounded-lg px-5 my-8 focus:z-0 text-sm text-white hover:bg-opacity-90 dark:border-primary dark:hover:bg-opacity-90'>
+            <button type='submit' className='flex items-center justify-center cursor-pointer rounded-lg px-5 py-3 my-8 focus:z-0 text-sm text-white bg-blue-700 hover:bg-blue-800 transition-all duration-200'>
               <span className="text-[16px] font-medium" aria-disabled={loading}>
                 {loading ? "Fazendo cálculo..." : "Calcular"}
               </span>
               {
                 !loading ? (<BiLineChart className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
               }
-            </Button>
+            </button>
             {/* <Button
                 type="submit"
                 className="px-12 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:opacity-90 my-8"
