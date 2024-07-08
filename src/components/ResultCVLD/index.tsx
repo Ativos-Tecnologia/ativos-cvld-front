@@ -1,7 +1,6 @@
 import { ApexOptions } from "apexcharts";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { PROD_API_URL } from "@/constants/constants";
 import { Button } from "flowbite-react";
 import { BiDownload } from "react-icons/bi";
 import { CVLDResultProps } from "@/interfaces/IResultCVLD";
