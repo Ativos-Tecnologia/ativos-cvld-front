@@ -13,7 +13,7 @@ const Header = (props: {
   setSidebarOpen: (arg0: boolean) => void;
 }) => {
 
-  const { subscriptionData, loading } = useContext<UserInfoContextType>(UserInfoAPIContext);
+  const { subscriptionData, data, loading } = useContext<UserInfoContextType>(UserInfoAPIContext);
 
   return (
 
@@ -118,7 +118,7 @@ const Header = (props: {
               </div>
             ) : (
               <>
-                {subscriptionData[0].plan !== 'GOD_MODE' && subscriptionData[0].plan && <Balance />}
+                {subscriptionData[0].plan !== 'GOD_MODE' || data[0].role !== 'ativos' && subscriptionData[0].plan && <Balance />}
               </>
             )}
 
