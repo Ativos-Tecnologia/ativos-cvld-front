@@ -11,6 +11,10 @@ export interface UserInfo {
         phone: string;
         profile_picture: string;
         title: string;
+        role: string;
+        cpf_cnpj?: string | null | undefined;
+        email: string;
+        bio: string;
     };
 }
 
@@ -43,6 +47,12 @@ export interface UpdateUserProfile extends FormData {
     title: string;
 }
 
+export interface UpdateUser extends FormData {
+    email: string;
+    username: string;
+    password: string;
+}
+
 export type SubscriptionStatus = "PENDING" | "ACTIVE" | "CANCELLED" | "EXPIRED"
 
 export type SubscriptionPlan = "FREE" | "BASIC" | "PREMIUM" | "ENTERPRISE" | "GOD_MODE"
@@ -68,6 +78,10 @@ export const UserInfoAPIContext = createContext<UserInfoContextType>({
             phone: "",
             profile_picture: "",
             title: "",
+            role: "",
+            cpf_cnpj: "",
+            email: "",
+            bio: "",
         },
     },
 
@@ -123,6 +137,10 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
             phone: "",
             profile_picture: "",
             title: "",
+            role: "",
+            cpf_cnpj: "",
+            email: "",
+            bio: ""
         },
     });
 
