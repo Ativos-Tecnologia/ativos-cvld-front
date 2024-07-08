@@ -9,7 +9,7 @@ import api from "@/utils/api";
 import { APP_ROUTES } from "@/constants/app-routes";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
 import UseMySwal from "@/hooks/useMySwal";
-import { BiEnvelope, BiUser, BiLockAlt, BiIdCard, BiInfoCircle, BiX, BiCheck } from "react-icons/bi";
+import { BiEnvelope, BiUser, BiLockAlt, BiIdCard, BiInfoCircle, BiX, BiCheck, BiQuestionMark } from "react-icons/bi";
 import { FcGoogle } from "react-icons/fc";
 import { Button, Popover } from "flowbite-react";
 
@@ -435,9 +435,9 @@ const SignUp: React.FC = () => {
                             <div className="border-b border-stroke bg-gray-100 px-3 py-2 dark:border-strokedark dark:bg-boxdark-2">
                               <h3 id="default-popover" className="font-semibold text-gray-900 dark:text-white">A senha deve conter:</h3>
                             </div>
-                            <div className="px-3 py-2 flex flex-col dark:text-white dark:bg-boxdark">
+                            <div className="px-3 py-2 flex flex-col gap-2 dark:text-white dark:bg-boxdark">
                               <div className="flex items-center gap-2">
-                                {passwordRequirements.length ?
+                                {passwordRequirements.minLength ?
                                   <BiCheck className="w-6 h-6 fill-meta-3" /> :
                                   <BiX className="w-6 h-6 fill-meta-1" />}
                                 <span className="text-slate-500">No mínimo 6 caracteres</span>
@@ -465,6 +465,12 @@ const SignUp: React.FC = () => {
                                   <BiCheck className="w-6 h-6 fill-meta-3" /> :
                                   <BiX className="w-6 h-6 fill-meta-1" />}
                                 <span className="text-slate-500">Um caractere especial <br /> (ex: @, $, !, %, *, #, ?, &)</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {passwordRequirements.veryStrong ?
+                                  <BiCheck className="w-6 h-6 fill-meta-3" /> :
+                                  <BiQuestionMark className="w-6 h-6 fill-meta-6" />}
+                                <span className="text-slate-500 text-xs">Mínimo de 12 caracteres para <br /> senha mais forte (opcional)</span>
                               </div>
                             </div>
                           </div>
