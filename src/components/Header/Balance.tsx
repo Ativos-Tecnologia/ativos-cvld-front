@@ -3,7 +3,6 @@ import { Popover } from "flowbite-react";
 import { BiChevronRight, BiDollarCircle } from "react-icons/bi";
 import { BsExclamation } from "react-icons/bs";
 import { UserInfoAPIContext, UserInfoContextType } from "@/context/UserInfoContext";
-import Link from "next/link";
 import PricingModal from "../Shop/PricingModal";
 import ShopModal from "../Shop";
 
