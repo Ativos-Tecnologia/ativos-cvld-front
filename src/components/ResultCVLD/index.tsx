@@ -361,19 +361,20 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
 }>Limpar Resultado</button> */}
             </div>
           ) : (
-            <div className="flex flex-col justify-between w-fit mx-auto gap-5 items-center">
+            <div className="flex flex-col justify-between w-fit mx-auto gap-5 items-center" title="Sem resultados disponíveis - ainda">
               <h4 className="text-xl font-semibold text-black dark:text-white">
                 Ainda sem resultados
               </h4>
               <Image
                 src="/images/no-results.svg"
-                alt="Empty"
+                alt="Duas pessoas ao redor de um sinal de interrogação"
                 width={350}
                 height={450}
-
+                aria-selected={false}
+                draggable={false}
               />
               <span
-                className="text-center">
+                className="text-center select-none text-sm text-gray-500 dark:text-gray-400">
                 Opa! Parece que ainda não há resultados disponíveis.
               </span>
             </div>
