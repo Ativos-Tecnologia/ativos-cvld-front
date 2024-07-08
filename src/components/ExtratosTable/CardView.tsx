@@ -53,14 +53,18 @@ const CardView = ({ className, data, showModalMessage, loading, setModalOptions,
                                     </div>
                                 </div>
                                 <div className="flex w-full gap-4 justify-center">
-                                    <button className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 bg-[#4dbce9] text-black rounded-md hover:bg-[#26ade4] hover:text-snow transition-all duration-200">
+                                    <button className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-800 hover:text-snow hover:-translate-y-1 transition-all duration-300">
                                         <span className="text-sm font-medium">TAREFA</span>
                                         <BiTask className="w-4 h-4" />
                                     </button>
+                                    {/* <button className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 bg-[#4dbce9] text-black rounded-md hover:bg-[#26ade4] hover:text-snow transition-all duration-200">
+                                        <span className="text-sm font-medium">TAREFA</span>
+                                        <BiTask className="w-4 h-4" />
+                                    </button> */}
                                     <button onClick={() => {
                                         setOpenDrawer(true);
                                         fetchDataById(item.id);
-                                    }} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 bg-[#f1d989] text-black rounded-md hover:bg-[#ccb156] hover:text-snow transition-all duration-200">
+                                    }} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-800 hover:text-snow hover:-translate-y-1 transition-all duration-300">
                                         <span className="text-sm font-medium">DETALHES</span>
                                         <BiListUl className="w-4 h-4" />
                                     </button>

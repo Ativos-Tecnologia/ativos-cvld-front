@@ -206,7 +206,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
   return (
     <div className="overflow-x-auto">
-      {window.innerWidth >= 430 ? (
+      {window.innerWidth >= 435 ? (
         <>
           {/* desktop view */}
           <div className="py-7 px-5 bg-white rounded-sm dark:bg-boxdark">
