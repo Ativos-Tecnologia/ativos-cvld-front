@@ -38,7 +38,7 @@ interface CPFCNPJprops {
   numericOnly: boolean;
 }
 
-const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
+const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
   const {
     register,
     control,
@@ -1117,4 +1117,4 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
   );
 };
 
-export default CVLDForm;
+export default MainForm;
