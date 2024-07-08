@@ -53,6 +53,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
   const [oficioForm, setOficioForm] = useState<any>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
+  const [roleCNJ, setRoleCNJ] = useState<boolean>(false);
 
   const mySwal = UseMySwal();
 
@@ -96,7 +97,7 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
       setValue("valor_pss", numberFormat(oficioForm.result[0].valor_pss).replace("R$", ""));
     }
 
-  }, [oficioForm]);
+  }, [oficioForm, setValue]);
 
   const isUserAdmin = () => {
     const token = localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`);
@@ -165,53 +166,53 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
           available_credits: credits.available_credits - response.data.result[0].price,
         });
 
-      dataCallback(response.data);
-      setCalcStep('done');
+        dataCallback(response.data);
+        setCalcStep('done');
 
-      const formatedPrincipal = parseFloat(data.valor_principal).toFixed(2);
-      const formatedUpdatedPrincipal = parseFloat(response.data.result[0].principal_atualizado_requisicao).toFixed(2);
+        const formatedPrincipal = parseFloat(data.valor_principal).toFixed(2);
+        const formatedUpdatedPrincipal = parseFloat(response.data.result[0].principal_atualizado_requisicao).toFixed(2);
 
-      if (data.natureza === "TRIBUTÁRIA") {
+        if (data.natureza === "TRIBUTÁRIA") {
 
-        const series = [
-          {
-            name: "Valor Principal",
-            data: [Number(parseFloat(formatedPrincipal)), Number(parseFloat(formatedPrincipal))],
-          },
-          {
-            name: "Valor Juros",
-            data: [Number(parseFloat(data.valor_juros).toFixed(2)), Number(parseFloat(response.data.result[0].juros_atualizado).toFixed(2))],
-          },
-          {
-            name: "Total",
-            data: [Number(parseFloat(response.data.result[0].valor_inscrito).toFixed(2)), Number(parseFloat(response.data.result[0].valor_liquido_disponivel).toFixed(2))],
-          },
-        ]
+          const series = [
+            {
+              name: "Valor Principal",
+              data: [Number(parseFloat(formatedPrincipal)), Number(parseFloat(formatedPrincipal))],
+            },
+            {
+              name: "Valor Juros",
+              data: [Number(parseFloat(data.valor_juros).toFixed(2)), Number(parseFloat(response.data.result[0].juros_atualizado).toFixed(2))],
+            },
+            {
+              name: "Total",
+              data: [Number(parseFloat(response.data.result[0].valor_inscrito).toFixed(2)), Number(parseFloat(response.data.result[0].valor_liquido_disponivel).toFixed(2))],
+            },
+          ]
 
-        setState({ series });
-      } else {
-        const series = [
-          {
-            name: "Valor Principal",
-            data: [Number(parseFloat(formatedPrincipal)), Number(parseFloat(formatedUpdatedPrincipal))],
-          },
-          {
-            name: "Valor Juros",
-            data: [Number(parseFloat(data.valor_juros).toFixed(2)), Number(parseFloat(response.data.result[0].juros_atualizados_requisicao).toFixed(2))],
-          },
-          {
-            name: "Total",
-            data: [Number(parseFloat(response.data.result[0].valor_inscrito).toFixed(2)), Number(parseFloat(response.data.result[0].valor_liquido_disponivel).toFixed(2))],
-          },
-        ];
-        setState({ series });
+          setState({ series });
+        } else {
+          const series = [
+            {
+              name: "Valor Principal",
+              data: [Number(parseFloat(formatedPrincipal)), Number(parseFloat(formatedUpdatedPrincipal))],
+            },
+            {
+              name: "Valor Juros",
+              data: [Number(parseFloat(data.valor_juros).toFixed(2)), Number(parseFloat(response.data.result[0].juros_atualizados_requisicao).toFixed(2))],
+            },
+            {
+              name: "Total",
+              data: [Number(parseFloat(response.data.result[0].valor_inscrito).toFixed(2)), Number(parseFloat(response.data.result[0].valor_liquido_disponivel).toFixed(2))],
+            },
+          ];
+          setState({ series });
+        }
+
+
+
       }
-
-
-
+      setLoading(false);
     }
-    setLoading(false);
-  }
 
     catch (error: any) {
       if (error.response.status === 401 && error.response.data.code === "token_not_valid") {
@@ -231,19 +232,19 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
           html: (
             <div className="flex flex-col border border-stroke rounded-md dark:border-strokedark dark:bg-boxdark">
               <div className="flex items-center justify-center my-2">
-                    <p className="text-md font-semibold dark:text-white">Escolha uma das opções de recarga e continue utilizando a plataforma</p>
-                    </div>
-            <div className="flex flex-col mt-2 border border-stroke p-4 rounded-md dark:border-strokedark dark:bg-boxdark">
-              <Link href='#' className="flex flex-row items-center justify-center group text-primary text-md font-semibold dark:text-white">
+                <p className="text-md font-semibold dark:text-white">Escolha uma das opções de recarga e continue utilizando a plataforma</p>
+              </div>
+              <div className="flex flex-col mt-2 border border-stroke p-4 rounded-md dark:border-strokedark dark:bg-boxdark">
+                <Link href='#' className="flex flex-row items-center justify-center group text-primary text-md font-semibold dark:text-white">
                   Adquirir Créditos
 
                   <BiChevronRight style={{
-                      width: "22px",
-                      height: "22px",
+                    width: "22px",
+                    height: "22px",
                   }} className="inline-block ml-1 transition-all duration-300 group-hover:translate-x-1" />
-              </Link>
+                </Link>
+              </div>
             </div>
-          </div>
           )
         });
       } else if (error.response.status === 403) {
@@ -559,364 +560,366 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
 
             }
 
-            <div className="flex flex-col gap-2 sm:col-span-2">
-              <div className="flex gap-2 ">
-                <input
-                  type="checkbox"
-                  id="gerar_cvld"
-                  className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                  {...register("gerar_cvld")}
-                />
-                <label htmlFor="gerar_cvld" className="text-sm font-medium text-meta-5">
-                  Emitir Certidão de Valor Líquido Disponível (CVLD)?
-                </label>
-              </div>
-              <div className="flex flex-col gap-2">
-                {
-                  watch("gerar_cvld") ? (
-                    <>
-                      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4">
-                        <span className="text-lg font-semibold text-primary mt-8">Dados do Colaborador</span>
-                        &nbsp;
-                        <div className="flex flex-col gap-2">
-                          <label htmlFor="nome_funcionario" className="text-sm font-medium text-meta-5">
-                            Nome
-                          </label>
-                          <input
-                            type="text"
-                            id="nome_funcionario"
-                            className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                            {...register("nome_funcionario", {})} />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <label htmlFor="matricula" className="text-sm font-medium text-meta-5">
-                            Matrícula
-                          </label>
-                          <input
-                            type="text"
-                            id="matricula"
-                            className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                            {...register("matricula", {})} />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <label htmlFor="cargo" className="text-sm font-medium text-meta-5">
-                            Cargo
-                          </label>
-                          <input
-                            type="text"
-                            id="cargo"
-                            className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                            {...register("cargo", {})} />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <label htmlFor="und_administrativa" className="text-sm font-medium text-meta-5">
-                            Unidade Administrativa
-                          </label>
-                          <input
-                            type="text"
-                            id="und_administrativa"
-                            className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                            {...register("und_administrativa", {})} />
-                        </div>
-                        <div className="flex flex-col gap-2 sm:col-span-2 mt-4">
-                          <div className="flex gap-2 ">
-                            <input
-                              type="checkbox"
-                              id="possui_subscritor"
-                              className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                              {...register("possui_subscritor")}
-                            />
-                            <label htmlFor="possui_subscritor" className="text-sm font-medium text-meta-5">
-                              Suscritor, se houver
+            {/* CVLD */}
+            {roleCNJ && (
+              <div className="flex flex-col gap-2 sm:col-span-2">
+                <div className="flex gap-2 ">
+                  <input
+                    type="checkbox"
+                    id="gerar_cvld"
+                    className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                    {...register("gerar_cvld")}
+                  />
+                  <label htmlFor="gerar_cvld" className="text-sm font-medium text-meta-5">
+                    Emitir Certidão de Valor Líquido Disponível (CVLD)?
+                  </label>
+                </div>
+                <div className="flex flex-col gap-2">
+                  {
+                    watch("gerar_cvld") ? (
+                      <>
+                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4">
+                          <span className="text-lg font-semibold text-primary mt-8">Dados do Colaborador</span>
+                          &nbsp;
+                          <div className="flex flex-col gap-2">
+                            <label htmlFor="nome_funcionario" className="text-sm font-medium text-meta-5">
+                              Nome
                             </label>
-                          </div>
-                        </div>
-                        {
-                          watch("possui_subscritor") === true ? (
-                            <>
-                              <span className="text-lg font-semibold text-primary">Dados do Funcionário Subscritor</span>
-                              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
-
-                              <div className="flex flex-col">
-                                <label htmlFor="nome_funcionario_subscritor" className="text-sm font-medium text-meta-5">
-                                  Nome
-                                </label>
-                                <input
-                                  type="text"
-                                  id="nome_funcionario_subscritor"
-                                  className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                  {...register("nome_funcionario_subscritor", {})} />
-                              </div>
-                              <div className="flex flex-col gap-2">
-                                <label htmlFor="matricula_funcionario_subscritor" className="text-sm font-medium text-meta-5">
-                                  Matrícula
-                                </label>
-                                <input
-                                  type="text"
-                                  id="matricula_funcionario_subscritor"
-                                  className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                  {...register("matricula_funcionario_subscritor", {})} />
-                              </div>
-                              <div className="flex flex-col gap-2">
-                                <label htmlFor="cargo_funcionario_subscritor" className="text-sm font-medium text-meta-5">
-                                  Cargo
-                                </label>
-                                <input
-                                  type="text"
-                                  id="cargo_funcionario_subscritor"
-                                  className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                  {...register("cargo_funcionario_subscritor", {})} />
-                              </div>
-                              <div className="flex flex-col gap-2">
-                                <label htmlFor="und_administrativa_funcionario_subscritor" className="text-sm font-medium text-meta-5">
-                                  Unidade Administrativa
-                                </label>
-                                <input
-                                  type="text"
-                                  id="und_administrativa_funcionario_subscritor"
-                                  className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                  {...register("und_administrativa_funcionario_subscritor", {})} />
-                              </div>
-                            </>
-                          ) : null
-                        }
-                        <hr className="border border-stroke dark:border-strokedark my-8 sm:col-span-2" />
-
-
-
-                        <span className="text-lg font-semibold text-primary">Dados do Principal</span>
-                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
-
-                        <div className="flex flex-col gap-2">
-                          <label htmlFor="credor" className="text-sm font-medium text-meta-5">
-                            Nome/Razão Social do Credor Principal
-                          </label>
-                          <input
-                            type="text"
-                            id="credor"
-                            className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                            {...register("credor", {})} />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <label htmlFor="cpf_cnpj" className="text-sm font-medium text-meta-5">
-                            CPF/CNPJ
-                          </label>
-                          <input
-                            type="text"
-                            id="cpf_cnpj"
-                            className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                            {...register("cpf_cnpj", {})} />
-                        </div>
-
-                        <div className="flex flex-col gap-2 sm:col-span-2 mt-0">
-                          <div className="flex gap-2 ">
                             <input
-                              type="checkbox"
-                              id="possui_advogado"
-                              className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                              {...register("possui_advogado")}
-                            />
-                            <label htmlFor="possui_advogado" className="text-sm font-medium text-meta-5">
-                              Advogado, se houver
-                            </label>
+                              type="text"
+                              id="nome_funcionario"
+                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              {...register("nome_funcionario", {})} />
                           </div>
-                        </div>
-                        {
-                          watch("possui_advogado") ? (
-                            <>
-                              <span className="text-lg font-semibold text-primary">Dados do Advogado</span>
-                              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
+                          <div className="flex flex-col gap-2">
+                            <label htmlFor="matricula" className="text-sm font-medium text-meta-5">
+                              Matrícula
+                            </label>
+                            <input
+                              type="text"
+                              id="matricula"
+                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              {...register("matricula", {})} />
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <label htmlFor="cargo" className="text-sm font-medium text-meta-5">
+                              Cargo
+                            </label>
+                            <input
+                              type="text"
+                              id="cargo"
+                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              {...register("cargo", {})} />
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <label htmlFor="und_administrativa" className="text-sm font-medium text-meta-5">
+                              Unidade Administrativa
+                            </label>
+                            <input
+                              type="text"
+                              id="und_administrativa"
+                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              {...register("und_administrativa", {})} />
+                          </div>
+                          <div className="flex flex-col gap-2 sm:col-span-2 mt-4">
+                            <div className="flex gap-2 ">
+                              <input
+                                type="checkbox"
+                                id="possui_subscritor"
+                                className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                {...register("possui_subscritor")}
+                              />
+                              <label htmlFor="possui_subscritor" className="text-sm font-medium text-meta-5">
+                                Suscritor, se houver
+                              </label>
+                            </div>
+                          </div>
+                          {
+                            watch("possui_subscritor") === true ? (
+                              <>
+                                <span className="text-lg font-semibold text-primary">Dados do Funcionário Subscritor</span>
+                                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
 
+                                <div className="flex flex-col">
+                                  <label htmlFor="nome_funcionario_subscritor" className="text-sm font-medium text-meta-5">
+                                    Nome
+                                  </label>
+                                  <input
+                                    type="text"
+                                    id="nome_funcionario_subscritor"
+                                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                    {...register("nome_funcionario_subscritor", {})} />
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                  <label htmlFor="matricula_funcionario_subscritor" className="text-sm font-medium text-meta-5">
+                                    Matrícula
+                                  </label>
+                                  <input
+                                    type="text"
+                                    id="matricula_funcionario_subscritor"
+                                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                    {...register("matricula_funcionario_subscritor", {})} />
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                  <label htmlFor="cargo_funcionario_subscritor" className="text-sm font-medium text-meta-5">
+                                    Cargo
+                                  </label>
+                                  <input
+                                    type="text"
+                                    id="cargo_funcionario_subscritor"
+                                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                    {...register("cargo_funcionario_subscritor", {})} />
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                  <label htmlFor="und_administrativa_funcionario_subscritor" className="text-sm font-medium text-meta-5">
+                                    Unidade Administrativa
+                                  </label>
+                                  <input
+                                    type="text"
+                                    id="und_administrativa_funcionario_subscritor"
+                                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                    {...register("und_administrativa_funcionario_subscritor", {})} />
+                                </div>
+                              </>
+                            ) : null
+                          }
+                          <hr className="border border-stroke dark:border-strokedark my-8 sm:col-span-2" />
+
+
+
+                          <span className="text-lg font-semibold text-primary">Dados do Principal</span>
+                          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
+
+                          <div className="flex flex-col gap-2">
+                            <label htmlFor="credor" className="text-sm font-medium text-meta-5">
+                              Nome/Razão Social do Credor Principal
+                            </label>
+                            <input
+                              type="text"
+                              id="credor"
+                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              {...register("credor", {})} />
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <label htmlFor="cpf_cnpj" className="text-sm font-medium text-meta-5">
+                              CPF/CNPJ
+                            </label>
+                            <input
+                              type="text"
+                              id="cpf_cnpj"
+                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              {...register("cpf_cnpj", {})} />
+                          </div>
+
+                          <div className="flex flex-col gap-2 sm:col-span-2 mt-0">
+                            <div className="flex gap-2 ">
+                              <input
+                                type="checkbox"
+                                id="possui_advogado"
+                                className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                {...register("possui_advogado")}
+                              />
+                              <label htmlFor="possui_advogado" className="text-sm font-medium text-meta-5">
+                                Advogado, se houver
+                              </label>
+                            </div>
+                          </div>
+                          {
+                            watch("possui_advogado") ? (
+                              <>
+                                <span className="text-lg font-semibold text-primary">Dados do Advogado</span>
+                                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
+
+                                <div className="flex flex-col">
+                                  <label htmlFor="nome_advogado" className="text-sm font-medium text-meta-5">
+                                    Nome/Razão Social do Advogado
+                                  </label>
+                                  <input
+                                    type="text"
+                                    id="nome_advogado"
+                                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                    {...register("nome_advogado", {})} />
+                                </div>
+                                <div className="flex flex-col">
+                                  <label htmlFor="cpf_cnpj_advogado" className="text-sm font-medium text-meta-5">
+                                    CPF/CNPJ
+                                  </label>
+                                  <input
+                                    type="text"
+                                    id="cpf_cnpj_advogado"
+                                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                    {...register("cpf_cnpj_advogado", {})} />
+                                </div>
+                              </>
+                            ) : null
+                          }
+                          <div className="flex flex-col gap-2 sm:col-span-2">
+                            <div className="flex gap-2 ">
+                              <input
+                                type="checkbox"
+                                id="possui_cessionario"
+                                className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                {...register("possui_cessionario")}
+                              />
+                              <label htmlFor="possui_cessionario" className="text-sm font-medium text-meta-5">
+                                Cessionário, se houver
+                              </label>
+                            </div>
+                          </div>
+
+                          {watch("possui_cessionario") ? (
+                            <>
+                              <span className="text-lg font-semibold text-primary">Dados do Cessionário</span>
+                              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
                               <div className="flex flex-col">
-                                <label htmlFor="nome_advogado" className="text-sm font-medium text-meta-5">
-                                  Nome/Razão Social do Advogado
+                                <label htmlFor="nome_cessionario" className="text-sm font-medium text-meta-5">
+                                  Nome/Razão Social do Cessionário
                                 </label>
                                 <input
                                   type="text"
-                                  id="nome_advogado"
+                                  id="nome_cessionario"
                                   className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                  {...register("nome_advogado", {})} />
+                                  {...register("nome_cessionario", {})} />
                               </div>
                               <div className="flex flex-col">
-                                <label htmlFor="cpf_cnpj_advogado" className="text-sm font-medium text-meta-5">
+                                <label htmlFor="cpf_cnpj_cessionario" className="text-sm font-medium text-meta-5">
                                   CPF/CNPJ
                                 </label>
                                 <input
                                   type="text"
-                                  id="cpf_cnpj_advogado"
+                                  id="cpf_cnpj_cessionario"
                                   className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                  {...register("cpf_cnpj_advogado", {})} />
+                                  {...register("cpf_cnpj_cessionario", {})} />
                               </div>
                             </>
-                          ) : null
-                        }
-                        <div className="flex flex-col gap-2 sm:col-span-2">
-                          <div className="flex gap-2 ">
-                            <input
-                              type="checkbox"
-                              id="possui_cessionario"
-                              className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                              {...register("possui_cessionario")}
-                            />
-                            <label htmlFor="possui_cessionario" className="text-sm font-medium text-meta-5">
-                              Cessionário, se houver
+                          ) : null}
+                          <hr className="border border-stroke dark:border-strokedark my-8 sm:col-span-2" />
+                          <span className="text-lg font-semibold text-primary">Dados do Credor Solicitante</span>
+                          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
+                          <div className="flex flex-col gap-2">
+                            <label htmlFor="credor_solicitante" className="text-sm font-medium text-meta-5">
+                              Nome/Razão Social do Credor Solicitante
                             </label>
+                            <input
+                              type="text"
+                              id="credor_solicitante"
+                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              {...register("credor_solicitante", {})} />
                           </div>
+                          <div className="flex flex-col gap-2">
+                            <label htmlFor="cpf_cnpj_credor_solicitante" className="text-sm font-medium text-meta-5">
+                              CPF/CNPJ do Credor Solicitante
+                            </label>
+                            <input
+                              type="text"
+                              id="cpf_cnpj_credor_solicitante"
+                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              {...register("cpf_cnpj_credor_solicitante", {})} />
+                          </div>
+                          <hr className="border border-stroke dark:border-strokedark my-8 sm:col-span-2" />
+
+                          <span className="text-lg font-semibold text-primary">Dados do Processo</span>
+                          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
+
+                          <div className="flex flex-col gap-2">
+                            <label htmlFor="processo_origem" className="text-sm font-medium text-meta-5">
+                              Processo de Origem
+                            </label>
+                            <Controller
+                              name="processo_origem"
+                              control={control}
+                              defaultValue=""
+                              render={({ field }) => (
+                                <Cleave
+                                  {...field}
+                                  className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                  options={{
+                                    blocks: [7, 2, 4, 1, 2, 4],
+                                    delimiters: ['.', '-', '.', '.', '.'],
+                                    numericOnly: true
+                                  }}
+                                />
+                              )}
+                            />
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <label htmlFor="npu" className="text-sm font-medium text-meta-5">
+                              Processo de Execução
+                            </label>
+                            <Controller
+                              name="npu"
+                              control={control}
+                              defaultValue=""
+                              render={({ field }) => (
+                                <Cleave
+                                  {...field}
+                                  className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                  options={{
+                                    blocks: [7, 2, 4, 1, 2, 4],
+                                    delimiters: ['.', '-', '.', '.', '.'],
+                                    numericOnly: true
+                                  }}
+                                />
+                              )}
+                            />
+
+
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <label htmlFor="numero_requisicao" className="text-sm font-medium text-meta-5">
+                              Número da Requisição
+                            </label>
+                            <input
+                              type="text"
+                              id="numero_requisicao"
+                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              {...register("numero_requisicao", {})} />
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <label htmlFor="juizo_vara" className="text-sm font-medium text-meta-5">
+                              Juízo/Vara
+                            </label>
+                            <input
+                              type="text"
+                              id="juizo_vara"
+                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              {...register("juizo_vara", {})} />
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <label htmlFor="tribunal" className="text-sm font-medium text-meta-5">
+                              Tribunal
+                            </label>
+                            <select
+                              id="tribunal"
+                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              {...register("tribunal", {})}
+                              defaultValue="TRF1">
+                              <option value="TRF1">TRF1</option>
+                              <option value="TRF2">TRF2</option>
+                              <option value="TRF3">TRF3</option>
+                              <option value="TRF4">TRF4</option>
+                              <option value="TRF5">TRF5</option>
+                            </select>
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <label htmlFor="n_precatorio" className="text-sm font-medium text-meta-5">
+                              Número do Precatório
+                            </label>
+                            <input
+                              type="text"
+                              id="n_precatorio"
+                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              {...register("n_precatorio", {})} />
+                          </div>
+
                         </div>
 
-                        {watch("possui_cessionario") ? (
-                          <>
-                            <span className="text-lg font-semibold text-primary">Dados do Cessionário</span>
-                            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
-                            <div className="flex flex-col">
-                              <label htmlFor="nome_cessionario" className="text-sm font-medium text-meta-5">
-                                Nome/Razão Social do Cessionário
-                              </label>
-                              <input
-                                type="text"
-                                id="nome_cessionario"
-                                className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                {...register("nome_cessionario", {})} />
-                            </div>
-                            <div className="flex flex-col">
-                              <label htmlFor="cpf_cnpj_cessionario" className="text-sm font-medium text-meta-5">
-                                CPF/CNPJ
-                              </label>
-                              <input
-                                type="text"
-                                id="cpf_cnpj_cessionario"
-                                className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                {...register("cpf_cnpj_cessionario", {})} />
-                            </div>
-                          </>
-                        ) : null}
-                        <hr className="border border-stroke dark:border-strokedark my-8 sm:col-span-2" />
-                        <span className="text-lg font-semibold text-primary">Dados do Credor Solicitante</span>
-                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
-                        <div className="flex flex-col gap-2">
-                          <label htmlFor="credor_solicitante" className="text-sm font-medium text-meta-5">
-                            Nome/Razão Social do Credor Solicitante
-                          </label>
-                          <input
-                            type="text"
-                            id="credor_solicitante"
-                            className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                            {...register("credor_solicitante", {})} />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <label htmlFor="cpf_cnpj_credor_solicitante" className="text-sm font-medium text-meta-5">
-                            CPF/CNPJ do Credor Solicitante
-                          </label>
-                          <input
-                            type="text"
-                            id="cpf_cnpj_credor_solicitante"
-                            className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                            {...register("cpf_cnpj_credor_solicitante", {})} />
-                        </div>
-                        <hr className="border border-stroke dark:border-strokedark my-8 sm:col-span-2" />
 
-                        <span className="text-lg font-semibold text-primary">Dados do Processo</span>
-                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
-
-                        <div className="flex flex-col gap-2">
-                          <label htmlFor="processo_origem" className="text-sm font-medium text-meta-5">
-                            Processo de Origem
-                          </label>
-                          <Controller
-                            name="processo_origem"
-                            control={control}
-                            defaultValue=""
-                            render={({ field }) => (
-                              <Cleave
-                                {...field}
-                                className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                options={{
-                                  blocks: [7, 2, 4, 1, 2, 4],
-                                  delimiters: ['.', '-', '.', '.', '.'],
-                                  numericOnly: true
-                                }}
-                              />
-                            )}
-                          />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <label htmlFor="npu" className="text-sm font-medium text-meta-5">
-                            Processo de Execução
-                          </label>
-                          <Controller
-                            name="npu"
-                            control={control}
-                            defaultValue=""
-                            render={({ field }) => (
-                              <Cleave
-                                {...field}
-                                className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                options={{
-                                  blocks: [7, 2, 4, 1, 2, 4],
-                                  delimiters: ['.', '-', '.', '.', '.'],
-                                  numericOnly: true
-                                }}
-                              />
-                            )}
-                          />
+                        {/* <hr className="border border-stroke dark:border-strokedark my-6 col-span-2" /> */}
 
 
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <label htmlFor="numero_requisicao" className="text-sm font-medium text-meta-5">
-                            Número da Requisição
-                          </label>
-                          <input
-                            type="text"
-                            id="numero_requisicao"
-                            className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                            {...register("numero_requisicao", {})} />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <label htmlFor="juizo_vara" className="text-sm font-medium text-meta-5">
-                            Juízo/Vara
-                          </label>
-                          <input
-                            type="text"
-                            id="juizo_vara"
-                            className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                            {...register("juizo_vara", {})} />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <label htmlFor="tribunal" className="text-sm font-medium text-meta-5">
-                            Tribunal
-                          </label>
-                          <select
-                            id="tribunal"
-                            className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                            {...register("tribunal", {})}
-                            defaultValue="TRF1">
-                            <option value="TRF1">TRF1</option>
-                            <option value="TRF2">TRF2</option>
-                            <option value="TRF3">TRF3</option>
-                            <option value="TRF4">TRF4</option>
-                            <option value="TRF5">TRF5</option>
-                          </select>
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <label htmlFor="n_precatorio" className="text-sm font-medium text-meta-5">
-                            Número do Precatório
-                          </label>
-                          <input
-                            type="text"
-                            id="n_precatorio"
-                            className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                            {...register("n_precatorio", {})} />
-                        </div>
-
-                      </div>
-
-
-                      {/* <hr className="border border-stroke dark:border-strokedark my-6 col-span-2" /> */}
-
-
-                      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                        {/* <div className="flex flex-col gap-2">
+                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                          {/* <div className="flex flex-col gap-2">
                         <label htmlFor="valor_penhora" className="text-sm font-medium text-meta-5">
                           Penhora/Arresto <span className="text-xs text-meta-4">(se houver)</span>
                         </label>
@@ -974,50 +977,51 @@ const CVLDForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                           className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark disabled:opacity-50 cursor-not-allowed"
                           {...register("outras_deducoes", {})} />
                       </div> */}
-                      </div></>
+                        </div></>
+                    ) : null
+                  }
+                </div>
+                {
+                  isUserAdmin() && watch("gerar_cvld") ? (
+                    <><hr className="border border-stroke dark:border-strokedark my-8 col-span-2" /><div className="flex flex-col gap-2">
+                      <span className="text-lg font-semibold text-primary mb-4">Opções de Administrador 🛡️</span>
+                      <div className="flex flex-col gap-2 sm:col-span-2">
+                        <div className="flex gap-2">
+                          <input type="checkbox"
+                            id="upload_notion"
+                            defaultChecked={false}
+                            className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                            {...register("upload_notion")} />
+                          <label htmlFor="upload_notion" className="text-sm font-medium text-meta-5">
+                            Fazer upload para o Notion
+                          </label>
+                        </div>
+                        {watch("upload_notion") === true ? (
+                          <div className="flex flex-col gap-2">
+                            <label htmlFor="notion_db_id" className="text-sm font-medium text-meta-5">
+                              Banco de dados
+                            </label>
+                            <select id="notion_db_id" className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              {...register("notion_db_id", {
+                                required: "Campo obrigatório",
+                              })}
+                              defaultValue={"notion_prec_prospect_db_id"}>
+                              <option value="notion_prec_prospect_db_id">Comercial</option>
+                              <option value="notion_prec_prospect_partners_db_id">Parceiro - Distribuição</option>
+                              <option value="notion_prec_prospect_partners_brito_e_pimentel_db_id">Parceiro - Brito E Pimentel</option>
+                              <option value="notion_prec_prospect_partners_marcela_vasconcelos_db_id">Parceiro - Marcela Vasconcelos</option>
+                              <option value="notion_prec_prospect_partners_antecippe_db_id">Parceiro - Antecippe</option>
+                              <option value="notion_prec_prospect_dev_db_id">Dev</option>
+                            </select>
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+                    </>
                   ) : null
                 }
               </div>
-              {
-                isUserAdmin() && watch("gerar_cvld") ? (
-                  <><hr className="border border-stroke dark:border-strokedark my-8 col-span-2" /><div className="flex flex-col gap-2">
-                    <span className="text-lg font-semibold text-primary mb-4">Opções de Administrador 🛡️</span>
-                    <div className="flex flex-col gap-2 sm:col-span-2">
-                      <div className="flex gap-2">
-                        <input type="checkbox"
-                          id="upload_notion"
-                          defaultChecked={false}
-                          className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                          {...register("upload_notion")} />
-                        <label htmlFor="upload_notion" className="text-sm font-medium text-meta-5">
-                          Fazer upload para o Notion
-                        </label>
-                      </div>
-                      {watch("upload_notion") === true ? (
-                        <div className="flex flex-col gap-2">
-                          <label htmlFor="notion_db_id" className="text-sm font-medium text-meta-5">
-                            Banco de dados
-                          </label>
-                          <select id="notion_db_id" className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                            {...register("notion_db_id", {
-                              required: "Campo obrigatório",
-                            })}
-                            defaultValue={"notion_prec_prospect_db_id"}>
-                            <option value="notion_prec_prospect_db_id">Comercial</option>
-                            <option value="notion_prec_prospect_partners_db_id">Parceiro - Distribuição</option>
-                            <option value="notion_prec_prospect_partners_brito_e_pimentel_db_id">Parceiro - Brito E Pimentel</option>
-                            <option value="notion_prec_prospect_partners_marcela_vasconcelos_db_id">Parceiro - Marcela Vasconcelos</option>
-                            <option value="notion_prec_prospect_partners_antecippe_db_id">Parceiro - Antecippe</option>
-                            <option value="notion_prec_prospect_dev_db_id">Dev</option>
-                          </select>
-                        </div>
-                      ) : null}
-                    </div>
-                  </div>
-                  </>
-                ) : null
-              }
-            </div>
+            )}
 
           </div>
           <div className="flex justify-center my-8">

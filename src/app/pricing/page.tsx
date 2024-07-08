@@ -2,13 +2,21 @@
 import UnloggedLayout from '@/components/Layouts/UnloggedLayout'
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useEffect } from 'react'
-import { BiCheck, BiChevronDown, BiChevronsUp, BiRightArrowAlt } from 'react-icons/bi';
+import React, { useState, useRef, useEffect } from 'react'
+import { BiBulb, BiCheck, BiChevronDown, BiChevronLeft, BiChevronRight, BiChevronsDown, BiChevronsUp, BiRightArrowAlt } from 'react-icons/bi';
+import { FaFileInvoiceDollar, FaPenFancy, FaSearchDollar } from 'react-icons/fa';
 import { BsStars } from 'react-icons/bs';
 import { FiTarget } from 'react-icons/fi';
 import { GrUpdate } from 'react-icons/gr';
 import { MdElectricBolt } from 'react-icons/md';
 import { TbClockUp } from 'react-icons/tb';
+import { Swiper, SwiperSlide } from 'swiper/react';
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/effect-coverflow';
+import 'swiper/css/pagination';
+// import required modules
+import { EffectCoverflow, Pagination } from 'swiper/modules';
 
 const availablesPlans = [
     {
@@ -95,12 +103,72 @@ const benefits = [
         description: "Nossa plataforma está sempre atualizada com as mais recentes normativas e regulamentações, garantindo conformidade legal.",
         icon: <GrUpdate className='w-7 h-7 mb-5 text-blue-700' />
     }
-]
+];
+
+const steps = [
+    {
+        icon: <BiBulb />,
+        stage: 'Etapa 1',
+        title: 'Análise Preliminar',
+        description: 'Realizamos uma análise detalhada da situação fiscal da sua empresa. Essa etapa é crucial para compreendermos o contexto tributário específico e identificarmos as áreas de oportunidade para otimização.'
+    },
+    {
+        icon: <FaSearchDollar />,
+        stage: 'Etapa 2',
+        title: 'Levantamento de Dados Tributários e Contábeis',
+        description: 'Em seguida, dedicamos tempo a um minucioso levantamento dos dados tributários e contábeis da sua empresa. Esse processo nos permite obter uma visão abrangente e precisa das operações, facilitando a identificação de áreas passíveis de melhorias e ajustes fiscais.'
+    },
+    {
+        icon: <FaFileInvoiceDollar />,
+        stage: 'Etapa 3',
+        title: 'Elaboração do Relatório Analítico',
+        description: 'Com todos os dados em mãos, preparamos um relatório gratuito. Este documento não apenas resume a análise realizada, mas também destaca as oportunidades específicas para a sua empresa. Nossa abordagem é transparente, visando fornecer informações valiosas desde o início do processo.'
+    },
+    {
+        icon: <FaPenFancy />,
+        stage: 'Etapa 4',
+        title: 'Assinatura do Contrato',
+        description: 'Após a revisão do relatório e esclarecimento de dúvidas, avançamos para a assinatura do contrato. Este é um passo 100% digital e simples, também importante que formaliza nossa parceria para avançarmos para a implementação das melhorias identificadas.'
+    },
+    {
+        icon: <FaPenFancy />,
+        stage: 'Etapa 5',
+        title: 'Entrega com Homologação Oficial!',
+        description: 'Na última fase, executamos as otimizações propostas e, uma vez concluídas, apresentamos os resultados à homologação da Autoridade Fiscal competente. Garantimos que o que foi estabelecido será entregue, proporcionando a sua empresa não apenas conformidade, mas também eficiência fiscal. Nosso compromisso é ir além das expectativas, garantindo que cada etapa do processo seja concluída com excelência.'
+    },
+];
+
+// progressbar Component
+const ProgressBar = () => {
+    const [scroll, setScroll] = useState<number>(0);
+
+    useEffect(() => {
+        const progressBarHandler = () => {
+            const totalScrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPosition = window.scrollY;
+            const scrollPercentage = (scrollPosition / totalScrollHeight) * 100;
+            setScroll(scrollPercentage);
+        }
+        window.addEventListener("scroll", () => {
+            progressBarHandler();
+        })
+        return () => window.removeEventListener("scroll", progressBarHandler)
+    }, [])
+
+    return (
+        <div className='fixed top-0 w-full left-0 h-1 z-99999'>
+            <div className="h-full bg-blue-700" style={{ width: `${scroll}%` }} />
+        </div>
+    )
+}
 
 const Pricing = () => {
 
-    const [currentTextIndex, setCurrentTextIndex] = React.useState<number>(0);
-    const [loading, setLoading] = React.useState<boolean>(false);
+    const [currentTextIndex, setCurrentTextIndex] = useState<number>(0);
+    const [isScrollButtonVisible, setIsScrollButtonVisible] = useState<boolean>(false);
+    const headerRef = useRef<HTMLDivElement | null>(null);
+    const sectionRef = useRef<HTMLDivElement | null>(null);
+    const refs = useRef<(HTMLDivElement | null)[]>([]);
 
     const texts: Array<string> = [
         'Segurança jurídica',
@@ -112,6 +180,40 @@ const Pricing = () => {
         'Flexibilidade',
         'Satisfação garantida',
     ];
+
+    const addToRefs = (el: HTMLDivElement | null) => {
+        if (el && !refs.current.includes(el)) {
+            refs.current.push(el);
+        }
+    };
+
+    useEffect(() => {
+        refs.current.forEach((ref, index) => {
+            ref?.addEventListener('click', () => {
+                refs.current.forEach((ref) => {
+                    ref?.classList.remove('animate-walletfull');
+                    ref?.classList.remove('animate-walletpush');
+                })
+                if (index === refs.current.length - 1) {
+                    ref?.classList.add('animate-walletpush');
+                    return
+                }
+                ref?.classList.add('animate-walletfull');
+            })
+        });
+    }, []);
+
+    useEffect(() => {
+        const watchWindowScroll = () => {
+            if (window.scrollY > 700) {
+                setIsScrollButtonVisible(true);
+            } else {
+                setIsScrollButtonVisible(false);
+            }
+        }
+        window.addEventListener('scroll', watchWindowScroll);
+        return () => window.removeEventListener('scroll', watchWindowScroll);
+    }, [])
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -127,7 +229,8 @@ const Pricing = () => {
 
     return (
         <UnloggedLayout>
-            <div className="absolute t-0 w-full z-1 py-6 px-16 flex items-center justify-between lg:px-8 border-b border-stroke shadow-4 bg-snow">
+            <ProgressBar />
+            <div ref={headerRef} className="absolute t-0 w-full z-1 py-6 px-16 flex items-center justify-between lg:px-8 border-b border-stroke shadow-4 bg-snow">
                 <Image
                     className="block"
                     src={"/images/logo/logo.svg"}
@@ -156,8 +259,8 @@ const Pricing = () => {
                     </Link>
                 </div>
             </div>
-            <section className='w-230 h-screen mx-auto flex flex-col gap-2 justify-center items-center'>
-                <h1 className='font-medium h-15 text-strokedark text-5xl'>
+            <section className='relative w-230 h-screen mx-auto flex flex-col justify-center items-center'>
+                <h1 className='font-medium h-15 text-strokedark text-5xl mb-2'>
                     Ativos é
                 </h1>
                 <div className="relative w-[600px] h-15 flex overflow-hidden font-semibold text-center">
@@ -170,8 +273,18 @@ const Pricing = () => {
                         </div>
                     ))}
                 </div>
+                <BiChevronsDown className='absolute bottom-10 w-16 h-16 text-blue-500 cursor-pointer animate-downforward'
+                    onClick={
+                        () => {
+                            if (sectionRef.current) {
+                                sectionRef.current.scrollIntoView({
+                                    behavior: "smooth"
+                                })
+                            }
+                        }
+                    } />
             </section>
-            <section className='max-w-screen-xl mx-auto min-h-screen py-20 border-b border-stroke'>
+            <section ref={sectionRef} className='max-w-screen-xl mx-auto min-h-screen py-20 border-b border-stroke'>
                 <div className='flex gap-8'>
                     <div className='w-[500px] flex flex-col justify-center gap-8 p-5'>
                         <h2 className='font-bold text-6xl text-gray-700'>
@@ -189,7 +302,7 @@ const Pricing = () => {
                         <img
                             src={"/images/done_deal.jpg"}
                             alt='acordo'
-                            className='rounded-md'
+                            className='rounded-md hover:cursor-pointer hover:-translate-y-1 hover:shadow-4 transition-all duration-700'
                         />
                     </div>
                 </div>
@@ -200,6 +313,7 @@ const Pricing = () => {
                         <img
                             src="/images/man_thinking_tea.webp"
                             alt='acordo'
+                            className='rounded-md hover:cursor-pointer hover:-translate-y-1 hover:shadow-4 transition-all duration-700'
                         />
                     </div>
                     <div className='w-[550px] flex flex-col justify-center gap-8 p-5'>
@@ -225,6 +339,114 @@ const Pricing = () => {
             </section>
             <section className='max-w-screen-xl mx-auto min-h-screen py-20 border-b border-stroke'>
                 <div className='flex gap-8'>
+                    <div className='w-[550px] flex flex-col justify-center gap-8 p-5'>
+                        <h2 className='font-bold text-5xl text-gray-700'>
+                            Pare de desperdiçar dinheiro!
+                        </h2>
+                        <div className='flex flex-col gap-2 text-lg text-gray-500'>
+                            <p>
+                                A melhor forma de ganhar dinheiro começa por não perdê-lo.
+                            </p>
+                            <p>
+                                Desde a parametrização de NCMS, CST e regras fiscais, a identificação de tributação indevida nas operações de revenda ao levantamento de créditos, fazemos tudo para que seu passivo fiscal tenha o melhor tratamento.
+                            </p>
+                            <p>
+                                Acompanhamos a cadeia produtiva para identificação de oportunidades tributárias não aproveitadas, também vamos em busca de cada insumo e despesa legalmente possível que a maioria dos escritórios de contabilidade deixa passar para gerar créditos de PIS/COFINS.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="relative flex-1 grid place-content-center">
+                        <img
+                            src="/images/desperate_man_lose_money.webp"
+                            alt='acordo'
+                            className='rounded-md hover:cursor-pointer hover:-translate-y-1 hover:shadow-4 transition-all duration-700'
+                        />
+                    </div>
+                </div>
+            </section>
+            <section className='max-w-screen-xl mx-auto min-h-screen py-20 border-b border-stroke'>
+                <h2 className='font-bold text-5xl text-center text-gray-700 mb-20'>
+                    Conheça as etapas dos nossos serviços
+                </h2>
+                <Swiper
+                    effect={'coverflow'}
+                    grabCursor={true}
+                    centeredSlides={true}
+                    slidesPerView={1}
+                    coverflowEffect={{
+                        rotate: 50,
+                        stretch: 0,
+                        depth: 100,
+                        modifier: 1,
+                        slideShadows: true,
+                    }}
+                    pagination={true}
+                    modules={[EffectCoverflow, Pagination]}
+                    className="mySwiper w-203 h-96 rounded-md"
+                >
+                    <div className='absolute flex items-center bottom-5 right-10 z-99999 text-[#d2d2d2] select-none'>
+                        <BiChevronLeft style={{
+                            animation: "leftforward 1s infinite alternate"
+                        }} className='w-5 h-5' />
+                        <p>arraste</p>
+                        <BiChevronRight style={{
+                            animation: "rightforward 1s infinite alternate"
+                        }} className='w-5 h-5' />
+                    </div>
+                    {steps.map((step, index) => (
+                        <SwiperSlide key={index}>
+                            <div className={`bg-gradient-to-tr ${index === 4 ? 'from-[#00503C] to-[#00AA73]' : 'from-[#00113D] to-[#002A76]'} w-203 h-96 rounded-lg p-10 text-white`}>
+                                <div className='flex gap-2 items-center bg-black w-fit py-2 px-4 bg rounded-full text-sm font-medium'>
+                                    {step.icon}
+                                    <span>{step.stage}</span>
+                                </div>
+                                <h3 className='text-4xl font-bold mt-5 mb-5'>
+                                    {step.title}
+                                </h3>
+                                <p className='text-lg'>
+                                    {step.description}
+                                </p>
+                            </div>
+                        </SwiperSlide>
+                    ))}
+                </Swiper>
+            </section>
+            <section className='max-w-screen-xl mx-auto min-h-screen py-20 border-b border-stroke'>
+                <div className='flex gap-8'>
+                    <div className="relative w-[430px] grid place-content-center">
+                        <img
+                            src="/images/desperate_man_lose_money.webp"
+                            alt='acordo'
+                            className='rounded-md hover:cursor-pointer hover:-translate-y-1 hover:shadow-4 transition-all duration-700'
+                        />
+                    </div>
+                    <div className='flex flex-col flex-1 justify-center gap-8 py-18 pl-40 pr-13 rounded-md bg-gradient-to-tr from-blue-950 to-blue-800 text-slate-200'>
+                        <h2 className='font-bold text-5xl'>
+                            Deseja comprar precatório?
+                        </h2>
+                        <div className='flex flex-col gap-5 text-lg'>
+                            <p>
+                                Nossa parceria proporciona acesso privilegiado a uma equipe especializada de advogados e contadores prontos para oferecer soluções adaptadas às necessidades específicas dos seus clientes.
+                            </p>
+                            <p>
+                                O nosso programa de parcerias oferece uma série de benefícios, tais como:
+                            </p>
+                            <ul className='grid gap-2 font-medium list-disc ml-7'>
+                                <li>Acesso a uma ampla gama de  produtos tributários únicos;</li>
+                                <li>Suporte técnico e jurídico especializado;</li>
+                                <li>Participação em eventos e mentorias;</li>
+                                <li>Possibilidade de crescimento profissional e financeiro;</li>
+                                <li>Sistema white-label;</li>
+                            </ul>
+                            <p>
+                                A colaboração com a Ativos também abre portas para networking valioso, vamos juntos alcançar novos patamares de excelência tributária.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section className='max-w-screen-xl mx-auto min-h-screen py-20 border-b border-stroke'>
+                <div className='flex gap-8'>
                     <div className='w-[600px] flex flex-col justify-center p-5'>
                         <h2 className='font-bold text-5xl text-gray-700 mb-10'>
                             Transforme a Complexidade dos Precatórios em Simplicidade Instantânea
@@ -235,14 +457,14 @@ const Pricing = () => {
                     </div>
                     <div className="flex-1 relative">
                         <Image
-                            className="absolute top-5 left-5 rounded-md shadow-3"
+                            className="absolute top-5 left-5 rounded-md shadow-3 hover:cursor-pointer hover:scale-110 transition-all duration-700"
                             src={"/images/work_calculating2.jpg"}
                             alt='acordo'
                             width={350}
                             height={350}
                         />
                         <Image
-                            className="absolute bottom-5 right-5 rounded-md shadow-3"
+                            className="absolute bottom-5 right-5 rounded-md shadow-3 hover:cursor-pointer hover:scale-110 transition-all duration-700"
                             src={"/images/work_cheering.jpg"}
                             alt='acordo'
                             width={350}
@@ -439,11 +661,22 @@ const Pricing = () => {
                 </div>
 
             </main>
-            <div style={{
-                boxShadow: "0 0 5px #000"
-            }} className='fixed bottom-10 right-10 z-50 w-10 h-10 grid place-items-center bg-blue-600 rounded-full text-white cursor-pointer animate-upforward'>
+            <button
+                style={{
+                    boxShadow: "0 0 5px #000"
+                }} className={`${isScrollButtonVisible ? "opacity-100 cursor-pointer" : "opacity-0 cursor-default"} fixed bottom-10 right-10 z-50 w-10 grid h-10 place-items-center bg-blue-600 rounded-full text-white transition-all duration-300 animate-upforward`}
+                onClick={
+                    () => {
+                        if (headerRef.current) {
+                            headerRef.current.scrollIntoView({
+                                behavior: "smooth"
+                            })
+                        }
+                    }
+                }
+            >
                 <BiChevronsUp className='w-7 h-7' />
-            </div>
+            </button>
         </UnloggedLayout >
     )
 }

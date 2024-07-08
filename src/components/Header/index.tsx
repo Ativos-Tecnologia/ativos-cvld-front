@@ -27,7 +27,7 @@ const Header = (props: {
               e.stopPropagation();
               props.setSidebarOpen(!props.sidebarOpen);
             }}
-            className="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden"
+            className="z-1 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden"
           >
             <span className="relative block h-5.5 w-5.5 cursor-pointer">
               <span className="du-block absolute right-0 h-full w-full">
@@ -105,7 +105,7 @@ const Header = (props: {
           </div>
         </div>
 
-        <div className="flex items-center gap-3 2xsm:gap-7">
+        <div className="flex items-center 2xsm:gap-3">
           <ul className="flex items-center gap-2 2xsm:gap-4">
             {/* <!-- Dark Mode Toggler --> */}
             <DarkModeSwitcher />
@@ -134,7 +134,7 @@ const Header = (props: {
           </ul>
 
           {/* <!-- User Area --> */}
-            <DropdownUser />
+          <DropdownUser />
           {/* <!-- User Area --> */}
         </div>
       </div>

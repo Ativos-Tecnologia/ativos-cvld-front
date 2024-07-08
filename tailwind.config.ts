@@ -13,6 +13,7 @@ const config: Config = {
   theme: {
     fontFamily: {
       satoshi: ["Satoshi", "sans-serif"],
+      nexa: ["Nexa", "sans-serif"]
     },
     screens: {
       "2xsm": "375px",
@@ -273,6 +274,44 @@ const config: Config = {
         5: "0px 1px 5px rgba(0, 0, 0, 0.2)",
       },
       keyframes: {
+        'flip-vertical-right': {
+          from: {
+            transform: 'rotateY(0)'
+          },
+          to: {
+            transform: 'rotateY(360deg)'
+          }
+        },
+        wiggle: {
+          "0%": {
+            transform: 'scale(1)',
+          },
+          "2%": {
+            transform: 'scale(1.3)'
+          },
+          "5%, 15%, 25%, 35%": {
+            transform: 'rotate(25deg) scale(1.6)'
+          },
+          "10%, 20%, 30%, 40%": {
+            transform: 'rotate(-25deg) scale(1.6)'
+          },
+          "42%": {
+            transform: 'scale(1.3)'
+          },
+          "44%, 100%": {
+            transform: 'rotate(0deg) scale(1)'
+          }
+        },
+        sideforward: {
+          'to': {
+            transform: 'translateX(10px)'
+          }
+        },
+        downforward: {
+          'to': {
+            transform: 'translateY(8px)'
+          }
+        },
         upforward: {
           'to': {
             transform: 'translateY(-3px)'
@@ -331,6 +370,9 @@ const config: Config = {
         },
       },
       animation: {
+        flip: 'flip-vertical-right 3.5s infinite linear',
+        wiggle: 'wiggle 2.5s infinite',
+        downforward: 'downforward 1.0s infinite alternate ease-in-out',
         upforward: 'upforward 1.5s infinite alternate ease-in-out',
         typewriter: 'typewriter 4s steps(10) 1s infinite alternate both, blink 0.7s infinite step-end',
         linspin: "linspin 1568.2353ms linear infinite",

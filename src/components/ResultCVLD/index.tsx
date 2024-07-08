@@ -139,15 +139,15 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                   <ul key={item.npu + item.valor_inscrito} className="w-full flex flex-col gap-2">
                     {
                       item.recalc_flag === "after_12_2021" ? (
-                        <li className="text-sm text-gray-500 dark:text-gray-400">
+                        <li className="text-sm ">
                           <span className="font-bold">Regra de Cálculo:</span> Após 12/2021
                         </li>
                       ) : item.recalc_flag === "before_12_2021" ? (
-                        <li className="text-sm text-gray-500 dark:text-gray-400">
+                        <li className="text-sm ">
                           <span className="font-bold">Regra de Cálculo:</span> Antes 12/2021
                         </li>
                       ) : (
-                        <li className="text-sm text-gray-500 dark:text-gray-400">
+                        <li className="text-sm ">
                           <span className="font-bold">Regra de Cálculo:</span> Tributário
                         </li>
                       )
@@ -156,150 +156,150 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                       item.npu === "00000000000000000000" || !item.link_cvld ? (
                         null
                       ) : (
-                        <li className="text-sm text-gray-500 dark:text-gray-400">
+                        <li className="text-sm ">
                           <span className="font-bold">NPU:</span> {item.npu}
                         </li>
                       )
                     }
                     {
                       item.nome_credor && (
-                        <li className="text-sm text-gray-500 dark:text-gray-400">
+                        <li className="text-sm ">
                           <span className="font-bold">Nome do credor:</span> {item.nome_credor}
                         </li>
                       )
                     }
                     {
                       item.cpf_cnpj_credor && (
-                        <li className="text-sm text-gray-500 dark:text-gray-400">
+                        <li className="text-sm ">
                           <span className="font-bold">CPF/CNPJ do credor:</span> {item.cpf_cnpj_credor}
                         </li>
                       )
                     }
-                    <li className="text-sm text-gray-500 dark:text-gray-400">
+                    <li className="text-sm ">
                       <span className="font-bold">Valor Principal:</span> {numberFormat(item.valor_principal)}
                     </li>
                     {
                       item.valor_juros ? (
-                        <li className="text-sm text-gray-500 dark:text-gray-400">
+                        <li className="text-sm ">
                           <span className="font-bold">Valor Juros:</span> {numberFormat(item.valor_juros)}
                         </li>
                       ) : (
-                        <li className="text-sm text-gray-500 dark:text-gray-400">
+                        <li className="text-sm ">
                           <span className="font-bold">Valor Juros:</span> Não Informado
                         </li>
                       )
                     }
-                    <li className="text-sm text-gray-500 dark:text-gray-400">
+                    <li className="text-sm ">
                       <span className="font-bold">Valor Inscrito:</span> {numberFormat(item.valor_inscrito)}
                     </li>
                     {
                       item.valor_pss !== 0 && item.valor_pss && (
-                        <li className="text-sm text-gray-500 dark:text-gray-400">
+                        <li className="text-sm ">
                           <span className="font-bold">Valor PSS:</span> {numberFormat(item.valor_pss)}
                         </li>
                       )
                     }
-                    <li className="text-sm text-gray-500 dark:text-gray-400">
+                    <li className="text-sm ">
                       <span className="font-bold">Data Base:</span> {dateFormater(item.data_base)}
                     </li>
-                    <li className="text-sm text-gray-500 dark:text-gray-400">
+                    <li className="text-sm ">
                       <span className="font-bold">Data Requisição:</span> {dateFormater(item.data_requisicao)}
                     </li>
-                    <li className="text-sm text-gray-500 dark:text-gray-400">
+                    <li className="text-sm ">
                       <span className="font-bold">Atualizado até:</span> {dateFormater(item.data_limite_de_atualizacao)}
                     </li>
                     {
                       item.fator_correcao_ipca_e && (
-                        <li className="text-sm text-gray-500 dark:text-gray-400">
+                        <li className="text-sm ">
                           <span className="font-bold">Fator Correção IPCA-E:</span> {factorFormater(item.fator_correcao_ipca_e)}
                         </li>
                       )
                     }
                     {
                       item.valor_atualizado_principal && (
-                        <li className="text-sm text-gray-500 dark:text-gray-400">
+                        <li className="text-sm ">
                           <span className="font-bold">Principal Atualizado até 12/2021</span>: {numberFormat(item.valor_atualizado_principal)}
                         </li>
                       )
                     }
                     {
                       item.recalc_flag === "before_12_2021" && (
-                        <li className="text-sm text-gray-500 dark:text-gray-400">
+                        <li className="text-sm ">
                           <span className="font-bold">Juros Atualizado até 12/2021:</span> {numberFormat(item.valor_atualizado_juros)}
                         </li>
                       )
                     }
-                    <li className="text-sm text-gray-500 dark:text-gray-400">
+                    <li className="text-sm ">
                       <span className="font-bold">Fator Correção SELIC:</span> {factorFormater(item.fator_correcao_selic)}
                     </li>
                     {
                       item.principal_atualizado_requisicao && (
-                        <li className="text-sm text-gray-500 dark:text-gray-400">
+                        <li className="text-sm ">
                           <span className="font-bold">Principal Atualizado Requisição:</span> {numberFormat(item.principal_atualizado_requisicao)}
                         </li>
                       )
                     }
                     {
                       String(item.juros_atualizados_requisicao) !== "0.0" || String(item.juros_atualizados_requisicao) !== "0.0" && (
-                        <li className="text-sm text-gray-500 dark:text-gray-400">
+                        <li className="text-sm ">
                           <span className="font-bold">Juros Atualizados Requisição:</span> {numberFormat(item.juros_atualizados_requisicao)}
                         </li>
                       )
                     }
                     {
                       item.fator_periodo_graca_ipca_e && (
-                        <li className="text-sm text-gray-500 dark:text-gray-400">
+                        <li className="text-sm ">
                           <span className="font-bold">Fator Período Graça IPCA-E:</span> {factorFormater(item.fator_periodo_graca_ipca_e)}
                         </li>
                       )
                     }
                     {
                       item.recalc_flag === "before_12_2021" && item.valor_principal_ipca_e && (
-                        <li className="text-sm text-gray-500 dark:text-gray-400">
+                        <li className="text-sm ">
                           <span className="font-bold">Valor Principal IPCA-E:</span> {numberFormat(item.valor_principal_ipca_e)}
                         </li>
                       )
                     }
                     {
                       item.recalc_flag === "before_12_2021" && (
-                        <li className="text-sm text-gray-500 dark:text-gray-400">
+                        <li className="text-sm ">
                           <span className="font-bold">Valor Juros IPCA-E:</span> {numberFormat(item.valor_juros_ipca_e)}
                         </li>
                       )
                     }
                     {
                       item.recalc_flag === "before_12_2021" && item.pss_atualizado !== 0 && (
-                        <li className="text-sm text-gray-500 dark:text-gray-400">
+                        <li className="text-sm ">
                           <span className="font-bold">PSS Atualizado:</span> {numberFormat(item.pss_atualizado)}
                         </li>
                       )
                     }
-                    <li className="text-sm text-gray-500 dark:text-gray-400">
+                    <li className="text-sm ">
                       <span className="font-bold">Valor Bruto Atualizado Final:</span> {numberFormat(item.valor_bruto_atualizado_final)}
                     </li>
                     {
                       item.recalc_flag !== "tributario" && item.numero_de_meses !== 0 && (
-                        <li className="text-sm text-gray-500 dark:text-gray-400">
+                        <li className="text-sm ">
                           <span className="font-bold">Número de Meses:</span> {item.numero_de_meses}
                         </li>
                       )
                     }
-                    <li className="text-sm text-gray-500 dark:text-gray-400">
+                    <li className="text-sm ">
                       <span className="font-bold">Incidência IR:</span> {item.incidencia_rra_ir ? "Sim" : "Não"}
                     </li>
-                    <li className="text-sm text-gray-500 dark:text-gray-400">
+                    <li className="text-sm ">
                       <span className="font-bold">Imposto de Renda:</span> {numberFormat(item.imposto_de_renda)}
                     </li>
-                    <li className="text-sm text-gray-500 dark:text-gray-400">
+                    <li className="text-sm ">
                       <span className="font-bold">RRA:</span> {item.rra ? numberFormat(item.rra) : item.link_memoria_de_calculo_rra ? "Isento" : "Não Incidente"}
                     </li>
-                    <li className="text-sm text-gray-500 dark:text-gray-400">
+                    <li className="text-sm ">
                       <span className="font-bold">Valor Líquido Disponível:</span> {numberFormat(item.valor_liquido_disponivel)}
                     </li>
                     <hr className="border border-stroke dark:border-strokedark my-4" />
                     {
                       item.link_memoria_de_calculo_rra && (
-                        <li className="text-sm flex text-gray-500 dark:text-gray-400 w-full py-1">
+                        <li className="text-sm flex  w-full py-1">
                           <Button as={'a'} href={linkAdapter(item.link_memoria_de_calculo_rra)} gradientDuoTone="purpleToBlue" className="w-full text-center px-4 text-sm font-semibold text-white rounded-md hover:opacity-90">
                             <span className="text-[16px] font-medium">
                               Memória de Cálculo RRA
@@ -312,7 +312,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                         </li>
                       )
                     }
-                    <li className="text-sm flex text-gray-500 dark:text-gray-400 w-full py-1">
+                    <li className="text-sm flex  w-full py-1">
                       <Button as={'a'} href={linkAdapter(item.link_memoria_de_calculo_simples)} gradientDuoTone="purpleToBlue" className="w-full text-center px-4 text-sm font-semibold text-white rounded-md hover:opacity-90">
                         <span className="text-[16px] font-medium">
                           Memória de Cálculo Simples
@@ -325,7 +325,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                     </li>
                     {
                       item.link_cvld && (
-                        <li className="text-sm flex text-gray-500 dark:text-gray-400 w-full py-1">
+                        <li className="text-sm flex  w-full py-1">
                           <Button as={'a'} href={linkAdapter(item.link_cvld)} gradientDuoTone="purpleToBlue" className="w-full text-center px-4 text-sm font-semibold text-white rounded-md hover:opacity-90">
                             <span className="text-[16px] font-medium">
                               Baixar CVLD
@@ -338,7 +338,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                         </li>
                       )
                     }
-                    <li className="text-sm flex text-gray-500 dark:text-gray-400 w-full py-1">
+                    <li className="text-sm flex  w-full py-1">
                       <Button onClick={clearData} className="w-full text-center px-4 text-sm font-semibold text-white rounded-md hover:opacity-90 bg-gradient-to-r from-rose-400 to-meta-1">
                         <span className="text-[16px] font-medium">
                           Limpar Cálculo
@@ -373,7 +373,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
 
               />
               <span
-                className="text-gray-500 dark:text-gray-400 text-center">
+                className="text-center">
                 Opa! Parece que ainda não há resultados disponíveis.
               </span>
             </div>

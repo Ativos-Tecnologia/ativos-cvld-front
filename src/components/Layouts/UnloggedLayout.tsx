@@ -12,7 +12,7 @@ export default function UnloggedLayout({ children, }: { children: React.ReactNod
   return (
     <>
       {/* <!-- ===== Page Wrapper Start ===== --> */}
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex overflow-hidden">
         {/* <!-- ===== Sidebar Start ===== --> */}
         {/* <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} /> */}
         {/* <!-- ===== Sidebar End ===== --> */}
@@ -24,9 +24,9 @@ export default function UnloggedLayout({ children, }: { children: React.ReactNod
           {/* <!-- ===== Header End ===== --> */}
 
           {/* <!-- ===== Main Content Start ===== --> */}
-          {/* put p-4 md:p-6 on the children principal container */}
+          {/* put p-4 md:p-6 2xl:p-10 on the children principal container */}
           <main>
-            <div className="relative mx-auto overflow-hidden max-w-screen-2xl 2xl:p-10">
+            <div className="relative mx-auto overflow-hidden max-w-screen-2xl">
               {children}
             </div>
           </main>

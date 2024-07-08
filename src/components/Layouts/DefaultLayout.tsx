@@ -3,6 +3,8 @@ import React, { useState, ReactNode } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { UserInfoProvider } from "@/context/UserInfoContext";
+import { Alert } from "flowbite-react";
+import { HiInformationCircle } from "react-icons/hi";
 
 export default function DefaultLayout({
   children,
@@ -10,6 +12,8 @@ export default function DefaultLayout({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showAlert, setShowAlert] = useState(true);
+  const [styleRelated, setStyleRelated] = useState({ opacity: 1 });
   return (
     <>
       {/* <!-- ===== Page Wrapper Start ===== --> */}
@@ -32,9 +36,20 @@ export default function DefaultLayout({
           </main>
           {/* <!-- ===== Main Content End ===== --> */}
           {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
-            <div className="sticky w-full bottom-0 z-0 bg-orange-400 py-3 px-5 text-white text-center">
-              <span>Você está usando uma versão em desenvolvimento!</span>
+            showAlert && (
+              <div className="sticky w-full bottom-0 z-0 py-3 px-5 text-white text-center">
+            <Alert color="warning" icon={HiInformationCircle} className="mb-0 transition-all duration-300" onDismiss={() => {
+              setStyleRelated({ opacity: 0 });
+              setTimeout(() => {
+                setShowAlert(false);
+              }, 300);
+            }} style={
+              styleRelated
+            }>
+                Você está usando uma versão em desenvolvimento!
+              </Alert>
             </div>
+          )
           )}
         </div>
         {/* <!-- ===== Content Area End ===== --> */}
