@@ -35,6 +35,7 @@ export interface UserInfoContextType {
     setCredits: (value: IUserBalance) => void;
     updateProfilePicture: (id: string, data: FormData) => Promise<any>;
     removeProfilePicture: (id: string) => Promise<any>;
+    updateUserInfo: (id: string, data: any) => Promise<any>;
 }
 
 
@@ -106,7 +107,8 @@ export const UserInfoAPIContext = createContext<UserInfoContextType>({
     },
     setCredits: () => { },
     updateProfilePicture: async () => ({}),
-    removeProfilePicture: async () => ({})
+    removeProfilePicture: async () => ({}),
+    updateUserInfo: async () => ({})
 })
 
 
@@ -261,8 +263,43 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
         }
     }
 
+    const updateUserInfo = async (id: string, dataToUpdate: UpdateUser) => {
+        setLoading(true);
+        try {
+            const response = await api.patch(`/api/user/update/${id}/`, dataToUpdate, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            if (response.status === 200) {
+                setData({
+                    0: {
+                        id: data[0].id,
+                        first_name: data[0].first_name,
+                        last_name: data[0].last_name,
+                        title: data[0].title,
+                        phone: data[0].phone,
+                        bio: data[0].bio,
+                        profile_picture: data[0].profile_picture,
+                        role: data[0].role,
+                        user: response.data.username,
+                        email: response.data.email,
+                    }
+                });
+
+                setLoading(false);
+                return response
+            }
+        } catch (error: any) {
+            setError(error.message);
+            console.error(error);
+            return error
+        }
+    }
+
     return (
-        <UserInfoAPIContext.Provider value={{ data, loading, error, updateProfile, firstLogin, setFirstLogin, subscriptionData, credits, setCredits, updateProfilePicture, removeProfilePicture }}>
+        <UserInfoAPIContext.Provider value={{ data, loading, error, updateProfile, firstLogin, setFirstLogin, subscriptionData, credits, setCredits, updateProfilePicture, removeProfilePicture, updateUserInfo }}>
             {children}
         </UserInfoAPIContext.Provider>
     );

@@ -11,8 +11,7 @@ import {
 } from 'react-hook-form';
 import UseMySwal from "@/hooks/useMySwal";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
-import { BiLogoFacebook, BiLogoLinkedin, BiLogoTwitter, BiEditAlt, BiSave, BiChevronDown, BiTrashAlt, BiPencil, BiDotsVerticalRounded } from "react-icons/bi";
-import { BsXLg } from "react-icons/bs";
+import { BiTrashAlt, BiPencil, BiDotsVerticalRounded } from "react-icons/bi";
 import { Button, CustomFlowbiteTheme, Flowbite, Popover } from "flowbite-react";
 
 const customTheme: CustomFlowbiteTheme = {
@@ -28,7 +27,7 @@ const customTheme: CustomFlowbiteTheme = {
 
 const Profile = () => {
 
-  const { data, loading, error, updateProfile, firstLogin, setFirstLogin, updateProfilePicture, removeProfilePicture } = useContext(UserInfoAPIContext);
+  const { data, loading, error, updateProfile, firstLogin, setFirstLogin, updateProfilePicture, removeProfilePicture, updateUserInfo } = useContext(UserInfoAPIContext);
   const auxData = data;
   const [editModeProfile, setEditModeProfile] = useState<boolean>(false);
   const [editModeUser, setEditModeUser] = useState<boolean>(false);
@@ -71,45 +70,56 @@ const Profile = () => {
     }
   };
 
-  // const removeProfileImage = async () => {
-  //   const formData = new FormData();
-  //   formData.append("profile_picture", "")
-  //   await updateProfilePicture(`${data[0].id}`, formData)
-  // }
-
   const updateProfileDataSubmit: SubmitHandler<Record<string, any>> = async (data) => {
-    const formData = new FormData();
-    formData.append("first_name", data.first_name)
-    formData.append("last_name", data.last_name);
-    formData.append("title", data.title);
-    formData.append("bio", data.bio);
     setEditModeProfile(false);
     try {
-
-      const response = await updateProfile(`${auxData[0].id}`, formData);
+      const response = await updateProfile(`${auxData[0].id}`, data);
 
       if (response.status === 200) {
         setFirstLogin(false);
-        const firstUserResponse = await api.patch(`api/user/update-first-login/${auxData[0].id}/`);
-        if (firstUserResponse.status !== 200) {
-          UseMySwal().fire({
-            title: "Um erro inesperado ocorreu",
-            icon: "error",
-            timer: 3000,
-            timerProgressBar: true,
-          });
-        }
+        // const firstUserResponse = await api.patch(`api/user/update-first-login/${auxData[0].id}/`);
+        // if (firstUserResponse.status !== 200) {
+        //   UseMySwal().fire({
+        //     title: "Um erro inesperado ocorreu",
+        //     icon: "error",
+        //     timer: 3000,
+        //     timerProgressBar: true,
+        //   });
+        // }
         UseMySwal().fire({
           title: "Perfil atualizado",
           icon: "success",
         });
       } else {
         UseMySwal().fire({
-          title: "Profile not updated",
+          title: "Perfil não atualizado. Verifique os campos e tente novamente",
           icon: "error",
         });
       }
 
+
+    } catch (error) {
+      console.error(error);
+
+    }
+  }
+
+  const updateUserDataSubmit: SubmitHandler<Record<string, any>> = async (data) => {
+    setEditModeUser(false);
+    try {
+      const response = await updateUserInfo(`${auxData[0].id}`, data);
+
+      if (response.status === 200) {
+        UseMySwal().fire({
+          title: "Informações de usuário atualizadas",
+          icon: "success",
+        });
+      } else {
+        UseMySwal().fire({
+          title: "Informações de usuário não atualizadas. Verifique os campos e tente novamente",
+          icon: "error",
+        });
+      }
 
     } catch (error) {
       console.error(error);
@@ -433,8 +443,8 @@ const Profile = () => {
                         className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                         id="bio"
                         rows={6}
-                        placeholder="Write your bio here"
-                        defaultValue={data[0].bio}
+                        placeholder="Escreva algo sobre você..."
+                        defaultValue={data[0]?.bio}
                         {
                           ...register("bio")
                         }
@@ -446,8 +456,7 @@ const Profile = () => {
 
                   <div className="flex justify-end gap-4.5">
                     <Button
-                      gradientDuoTone="grayToGray"
-                      className="flex justify-center rounded border border-stroke px-4 py-1 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
+                      className="flex justify-center rounded border border-stroke px-4 py-1 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white bg-gray-100 hover:!bg-gray-300 transition-all duration-300"
                       type="button"
                       onClick={handleEditMode}
                     >
@@ -457,8 +466,7 @@ const Profile = () => {
                     </Button>
                     <Button
                     disabled={!editModeProfile}
-                    gradientDuoTone="purpleToBlue"
-                      className="flex justify-center rounded bg-primary px-4 py-1 font-medium text-gray hover:bg-opacity-90"
+                      className="flex justify-center rounded bg-blue-700 hover:!bg-blue-800 transition-all duration-300 px-4 py-1 font-medium text-gray dark:hover:!bg-blue-800 dark:bg-blue-700 dark:text-white"
                       type="submit"
                     >
                       Salvar
@@ -476,7 +484,7 @@ const Profile = () => {
                 </h3>
               </div>
               <div className="p-7">
-                <form action="#">
+                <form onSubmit={handleSubmit(updateUserDataSubmit)}>
                 <div className="mb-5.5">
                     <label
                       className="mb-3 block text-sm font-medium text-black dark:text-white"
@@ -511,12 +519,16 @@ const Profile = () => {
                         </svg>
                       </span>
                       <input
+                      disabled={!editModeUser}
                         className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                         type="email"
-                        name="emailAddress"
                         id="emailAddress"
                         placeholder="ada@lovelace.com"
-                        defaultValue={data[0]?.email} />
+                        defaultValue={data[0]?.email}
+                        {
+                          ...register("email")
+                        }
+                        />
                     </div>
                   </div>
 
@@ -528,31 +540,36 @@ const Profile = () => {
                       Nome de Usuário
                     </label>
                     <input
+                    disabled={!editModeUser}
                       className="w-full rounded border border-stroke bg-gray px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                       type="text"
-                      name="username"
                       id="username"
                       placeholder="adalovelace"
                       defaultValue={data[0]?.user}
+                      {
+                        ...register("username")
+                      }
                     />
                   </div>
 
 
                   <div className="flex justify-end gap-4.5">
-                    <button
-                    disabled
-                      className="flex justify-center rounded border border-stroke px-6 py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
+                    <Button
+                      className="flex justify-center rounded border border-stroke px-6 py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white bg-gray-100 hover:!bg-gray-300 transition-all duration-300"
+                      type="button"
+                      onClick={() => setEditModeUser(!editModeUser)}
+                    >
+                      {
+                        editModeUser ? "Cancelar" : "Editar"
+                      }
+                    </Button>
+                    <Button
+                    disabled={!editModeUser}
+                      className="flex justify-center rounded bg-blue-700 hover:!bg-blue-800 transition-all duration-300 px-6 py-2 font-medium text-gray dark:hover:!bg-blue-800 dark:bg-blue-700 dark:text-white"
                       type="submit"
                     >
-                      Cancel
-                    </button>
-                    <button
-                    disabled
-                      className="flex justify-center rounded bg-primary px-6 py-2 font-medium text-gray hover:bg-opacity-90"
-                      type="submit"
-                    >
-                      Save
-                    </button>
+                      Salvar
+                    </Button>
                   </div>
                 </form>
               </div>
