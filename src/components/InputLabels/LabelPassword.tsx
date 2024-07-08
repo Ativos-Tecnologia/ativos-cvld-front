@@ -32,7 +32,7 @@ const LabelPassword = ({ title, errors, register, field, passwordInput, strength
                                 </div>
                                 <div className="px-3 py-2 flex flex-col dark:text-white dark:bg-boxdark">
                                     <div className="flex items-center gap-2">
-                                        {passwordRequirements.length ?
+                                        {passwordRequirements.minLength ?
                                             <BiCheck className="w-6 h-6 fill-meta-3" /> :
                                             <BiX className="w-6 h-6 fill-meta-1" />}
                                         <span className="text-slate-500">No mínimo 6 caracteres</span>
