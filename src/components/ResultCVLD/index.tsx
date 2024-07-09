@@ -365,9 +365,9 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                 Ainda sem resultados
               </h4>
               <Image
-                src="/images/no-results.svg"
-                alt="Duas pessoas ao redor de um sinal de interrogação"
-                width={350}
+                src="/images/no-results-anim.svg"
+                alt="homem ao lado de uma pasta vazia"
+                width={200}
                 height={450}
                 aria-selected={false}
                 draggable={false}

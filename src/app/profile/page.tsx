@@ -11,7 +11,7 @@ import {
 } from 'react-hook-form';
 import UseMySwal from "@/hooks/useMySwal";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
-import { BiTrashAlt, BiPencil, BiDotsVerticalRounded } from "react-icons/bi";
+import { BiTrashAlt, BiPencil, BiDotsVerticalRounded, BiCheck, BiX } from "react-icons/bi";
 import { Button, CustomFlowbiteTheme, Flowbite, Popover } from "flowbite-react";
 
 const customTheme: CustomFlowbiteTheme = {
@@ -25,14 +25,28 @@ const customTheme: CustomFlowbiteTheme = {
   }
 };
 
+type CredentialsProps = {
+  username: boolean | undefined;
+  email: boolean | undefined;
+}
+
 const Profile = () => {
 
   const { data, loading, error, updateProfile, firstLogin, setFirstLogin, updateProfilePicture, removeProfilePicture, updateUserInfo } = useContext(UserInfoAPIContext);
   const auxData = data;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch
+  } = useForm();
   const [editModeProfile, setEditModeProfile] = useState<boolean>(false);
   const [editModeUser, setEditModeUser] = useState<boolean>(false);
-
   const [imageUrl, setImageUrl] = useState("");
+  const [checkCredentials, setCheckCredentials] = useState<CredentialsProps>({
+    username: undefined,
+    email: undefined
+  })
 
   useEffect(() => {
     if (firstLogin) {
@@ -50,12 +64,38 @@ const Profile = () => {
     setImageUrl(data[0]?.profile_picture);
   }, [data]);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch
-  } = useForm();
+  // useEffect(() => {
+
+  //   const verifyDuplicatedUsername = setInterval(async () => {
+
+  //       try {
+  //         const req = await api.get(`api/user/check-availability/${userFormFields.username}/`);
+  //         const res = req.data.available;
+  //         console.log(res)
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
+
+  //   }, 3000);
+
+  //   const verifyDuplicatedEmail = setInterval(async () => {
+
+  //     try {
+  //       const req = await api.get(`api/user/check-email-availability/${userFormFields.email}/`);
+  //       const res = req.data.available;
+  //       console.log(res)
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+
+  // }, 3000);
+
+  //   return () => {
+  //     clearInterval(verifyDuplicatedUsername);
+  //     clearInterval(verifyDuplicatedEmail);
+  //   }
+
+  // }, [userFormFields.username, userFormFields.email]);
 
   const handleImageChange = (e: any) => {
     const file = e.target.files[0];
@@ -105,24 +145,48 @@ const Profile = () => {
   }
 
   const updateUserDataSubmit: SubmitHandler<Record<string, any>> = async (data) => {
-    setEditModeUser(false);
-    try {
-      const response = await updateUserInfo(`${auxData[0].id}`, data);
 
-      if (response.status === 200) {
-        UseMySwal().fire({
-          title: "Informações de usuário atualizadas",
-          icon: "success",
-        });
-      } else {
-        UseMySwal().fire({
-          title: "Informações de usuário não atualizadas. Verifique os campos e tente novamente",
-          icon: "error",
-        });
+    const checkAvailability = await Promise.all([
+      await api.get(`api/user/check-availability/${data.username}/`),
+      await api.get(`api/user/check-email-availability/${data.email}/`)
+    ]);
+
+    if (checkAvailability[0].data.available && checkAvailability[1].data.available) {
+
+      try {
+        const response = await updateUserInfo(`${auxData[0].id}`, data);
+
+        if (response.status === 200) {
+
+          UseMySwal().fire({
+            title: "Informações de usuário atualizadas",
+            icon: "success",
+          });
+
+          setCheckCredentials({
+            username: undefined,
+            email: undefined
+          });
+          setEditModeUser(false);
+
+        } else {
+          UseMySwal().fire({
+            title: "Informações de usuário não atualizadas. Verifique os campos e tente novamente",
+            icon: "error",
+          });
+        }
+
+      } catch (error) {
+        console.error(error);
+
       }
 
-    } catch (error) {
-      console.error(error);
+    } else {
+
+      setCheckCredentials({
+        username: checkAvailability[0].data.available,
+        email: checkAvailability[1].data.available
+      });
 
     }
   }
@@ -223,23 +287,23 @@ const Profile = () => {
               </div>
             )}
             <div className="mt-4">
-                  <>
-                    <h3 className="mb-1.5 text-2xl font-semibold text-black dark:text-white">
-                      {loading ? (
-                        <div className="animate-pulse">
-                          <div className="w-[170px] h-[24px] mx-auto bg-slate-200 rounded-full dark:bg-slate-300"></div>
-                        </div>
-                      ) : `${data[0]?.first_name} ${data[0]?.last_name}`}
-                    </h3><p className="font-medium">{loading ? (
-                      <div className="animate-pulse">
-                        <div className="w-[280px] h-[18px] mx-auto bg-slate-200 rounded-full dark:bg-slate-300"></div>
-                      </div>
-                    ) : data[0]?.title}</p>
-                  </>
-              </div>
+              <>
+                <h3 className="mb-1.5 text-2xl font-semibold text-black dark:text-white">
+                  {loading ? (
+                    <div className="animate-pulse">
+                      <div className="w-[170px] h-[24px] mx-auto bg-slate-200 rounded-full dark:bg-slate-300"></div>
+                    </div>
+                  ) : `${data[0]?.first_name} ${data[0]?.last_name}`}
+                </h3><div className="font-medium">{loading ? (
+                  <div className="animate-pulse">
+                    <div className="w-[280px] h-[18px] mx-auto bg-slate-200 rounded-full dark:bg-slate-300"></div>
+                  </div>
+                ) : data[0]?.title}</div>
+              </>
             </div>
           </div>
-          <div className="mt-8 grid grid-cols-5 gap-8">
+        </div>
+        <div className="mt-8 grid grid-cols-5 gap-8">
           <div className="col-span-5 xl:col-span-3">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
               <div className="border-b border-stroke px-7 py-4 dark:border-strokedark">
@@ -255,7 +319,7 @@ const Profile = () => {
                         className="mb-3 block text-sm font-medium text-black dark:text-white"
                         htmlFor="first_name"
                       >
-                       Nome
+                        Nome
                       </label>
                       <div className="relative">
 
@@ -394,12 +458,12 @@ const Profile = () => {
                         id="title"
                         defaultValue={data[0]?.title}
                         {
-                          ...register("title")
+                        ...register("title")
                         }
                       />
                     </div>
                   </div>
-                <div className="mb-5.5">
+                  <div className="mb-5.5">
                     <label
                       className="mb-3 block text-sm font-medium text-black dark:text-white"
                       htmlFor="Username"
@@ -446,7 +510,7 @@ const Profile = () => {
                         placeholder="Escreva algo sobre você..."
                         defaultValue={data[0]?.bio}
                         {
-                          ...register("bio")
+                        ...register("bio")
                         }
                       ></textarea>
                     </div>
@@ -465,7 +529,7 @@ const Profile = () => {
                       }
                     </Button>
                     <Button
-                    disabled={!editModeProfile}
+                      disabled={!editModeProfile}
                       className="flex justify-center rounded bg-blue-700 hover:!bg-blue-800 transition-all duration-300 px-4 py-1 font-medium text-gray dark:hover:!bg-blue-800 dark:bg-blue-700 dark:text-white"
                       type="submit"
                     >
@@ -485,54 +549,42 @@ const Profile = () => {
               </div>
               <div className="p-7">
                 <form onSubmit={handleSubmit(updateUserDataSubmit)}>
-                <div className="mb-5.5">
+                  <div className="relative mb-8">
                     <label
                       className="mb-3 block text-sm font-medium text-black dark:text-white"
                       htmlFor="emailAddress"
                     >
                       Email
                     </label>
-                    <div className="relative">
-                      <span className="absolute left-4.5 top-4">
-                        <svg
-                          className="fill-current"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <g opacity="0.8">
-                            <path
-                              fillRule="evenodd"
-                              clipRule="evenodd"
-                              d="M3.33301 4.16667C2.87658 4.16667 2.49967 4.54357 2.49967 5V15C2.49967 15.4564 2.87658 15.8333 3.33301 15.8333H16.6663C17.1228 15.8333 17.4997 15.4564 17.4997 15V5C17.4997 4.54357 17.1228 4.16667 16.6663 4.16667H3.33301ZM0.833008 5C0.833008 3.6231 1.9561 2.5 3.33301 2.5H16.6663C18.0432 2.5 19.1663 3.6231 19.1663 5V15C19.1663 16.3769 18.0432 17.5 16.6663 17.5H3.33301C1.9561 17.5 0.833008 16.3769 0.833008 15V5Z"
-                              fill=""
-                            />
-                            <path
-                              fillRule="evenodd"
-                              clipRule="evenodd"
-                              d="M0.983719 4.52215C1.24765 4.1451 1.76726 4.05341 2.1443 4.31734L9.99975 9.81615L17.8552 4.31734C18.2322 4.05341 18.7518 4.1451 19.0158 4.52215C19.2797 4.89919 19.188 5.4188 18.811 5.68272L10.4776 11.5161C10.1907 11.7169 9.80879 11.7169 9.52186 11.5161L1.18853 5.68272C0.811486 5.4188 0.719791 4.89919 0.983719 4.52215Z"
-                              fill=""
-                            />
-                          </g>
-                        </svg>
-                      </span>
-                      <input
+                    <input
                       disabled={!editModeUser}
-                        className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                        type="email"
-                        id="emailAddress"
-                        placeholder="ada@lovelace.com"
-                        defaultValue={data[0]?.email}
-                        {
-                          ...register("email")
-                        }
-                        />
-                    </div>
+                      className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                      type="email"
+                      id="emailAddress"
+                      placeholder="ada@lovelace.com"
+                      defaultValue={data[0]?.email}
+                      {
+                      ...register("email")
+                      }
+                    />
+                    {checkCredentials.email !== undefined && (
+                      <span className="absolute -bottom-5 flex items-center gap-1 text-xs">
+                        {checkCredentials.email ? (
+                          <>
+                            <BiCheck className="w-5 h-5 text-green-500" />
+                            <span>E-mail disponível</span>
+                          </>
+                        ) : (
+                          <>
+                            <BiX className="w-5 h-5 text-meta-1" />
+                            <span>E-mail indisponível</span>
+                          </>
+                        )}
+                      </span>
+                    )}
                   </div>
 
-                  <div className="mb-5.5">
+                  <div className="relative mb-8">
                     <label
                       className="mb-3 block text-sm font-medium text-black dark:text-white"
                       htmlFor="username"
@@ -540,32 +592,53 @@ const Profile = () => {
                       Nome de Usuário
                     </label>
                     <input
-                    disabled={!editModeUser}
+                      disabled={!editModeUser}
                       className="w-full rounded border border-stroke bg-gray px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                       type="text"
                       id="username"
                       placeholder="adalovelace"
                       defaultValue={data[0]?.user}
                       {
-                        ...register("username")
+                      ...register("username")
                       }
                     />
+                    {checkCredentials.username !== undefined && (
+                      <span className="absolute -bottom-5 flex items-center gap-1 text-xs">
+                        {checkCredentials.username ? (
+                          <>
+                            <BiCheck className="w-5 h-5 text-green-500" />
+                            <span>Usuário disponível</span>
+                          </>
+                        ) : (
+                          <>
+                            <BiX className="w-5 h-5 text-meta-1" />
+                            <span>Usuário indisponível</span>
+                          </>
+                        )}
+                      </span>
+                    )}
                   </div>
 
 
                   <div className="flex justify-end gap-4.5">
                     <Button
-                      className="flex justify-center rounded border border-stroke px-6 py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white bg-gray-100 hover:!bg-gray-300 transition-all duration-300"
+                      className="flex justify-center rounded border border-stroke px-4 py-1 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white bg-gray-100 hover:!bg-gray-300 transition-all duration-300"
                       type="button"
-                      onClick={() => setEditModeUser(!editModeUser)}
+                      onClick={() => {
+                        setEditModeUser(!editModeUser);
+                        setCheckCredentials({
+                          username: undefined,
+                          email: undefined
+                        });
+                      }}
                     >
                       {
                         editModeUser ? "Cancelar" : "Editar"
                       }
                     </Button>
                     <Button
-                    disabled={!editModeUser}
-                      className="flex justify-center rounded bg-blue-700 hover:!bg-blue-800 transition-all duration-300 px-6 py-2 font-medium text-gray dark:hover:!bg-blue-800 dark:bg-blue-700 dark:text-white"
+                      disabled={!editModeUser}
+                      className="flex justify-center rounded bg-blue-700 hover:!bg-blue-800 transition-all duration-300 px-4 py-1 font-medium text-gray dark:hover:!bg-blue-800 dark:bg-blue-700 dark:text-white"
                       type="submit"
                     >
                       Salvar
@@ -576,7 +649,7 @@ const Profile = () => {
             </div>
           </div>
         </div>
-        </div>
+      </div>
 
     </DefaultLayout >
   );
