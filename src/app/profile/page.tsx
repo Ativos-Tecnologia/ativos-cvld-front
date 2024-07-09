@@ -38,15 +38,17 @@ const Profile = () => {
     register,
     handleSubmit,
     formState: { errors },
-    watch
+    watch,
   } = useForm();
   const [editModeProfile, setEditModeProfile] = useState<boolean>(false);
   const [editModeUser, setEditModeUser] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState("");
-  const [checkCredentials, setCheckCredentials] = useState<CredentialsProps>({
-    username: undefined,
-    email: undefined
-  })
+  // const [checkCredentials, setCheckCredentials] = useState<CredentialsProps>({
+  //   username: undefined,
+  //   email: undefined
+  // })
+  const [usernameExists, setUsernameExists] = useState<boolean | undefined>(undefined);
+  const [emailExists, setEmailExists] = useState<boolean | undefined>(undefined);
 
   useEffect(() => {
     if (firstLogin) {
@@ -63,6 +65,26 @@ const Profile = () => {
   useEffect(() => {
     setImageUrl(data[0]?.profile_picture);
   }, [data]);
+
+  useEffect(() => {
+    if (watch("username") && watch("username")?.length >= 6 && watch("username")?.length <= 30) {
+      if (watch("username") !== data[0]?.user) {
+        try {
+          api.get(`api/user/check-availability/${watch("username")}/`).then((res) => {
+            setUsernameExists(res.data.available);
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        setUsernameExists(undefined);
+      }
+    }
+
+    setUsernameExists(undefined);
+
+  }, [watch("username")]);
+
 
   // useEffect(() => {
 
@@ -95,7 +117,7 @@ const Profile = () => {
   //     clearInterval(verifyDuplicatedEmail);
   //   }
 
-  // }, [userFormFields.username, userFormFields.email]);
+  // }, []);
 
   const handleImageChange = (e: any) => {
     const file = e.target.files[0];
@@ -146,12 +168,12 @@ const Profile = () => {
 
   const updateUserDataSubmit: SubmitHandler<Record<string, any>> = async (data) => {
 
-    const checkAvailability = await Promise.all([
-      await api.get(`api/user/check-availability/${data.username}/`),
-      await api.get(`api/user/check-email-availability/${data.email}/`)
-    ]);
+    // const checkAvailability = await Promise.all([
+    //   await api.get(`api/user/check-availability/${data.username}/`),
+    //   await api.get(`api/user/check-email-availability/${data.email}/`)
+    // ]);
 
-    if (checkAvailability[0].data.available && checkAvailability[1].data.available) {
+    // if (checkAvailability[0].data.available && checkAvailability[1].data.available) {
 
       try {
         const response = await updateUserInfo(`${auxData[0].id}`, data);
@@ -163,10 +185,10 @@ const Profile = () => {
             icon: "success",
           });
 
-          setCheckCredentials({
-            username: undefined,
-            email: undefined
-          });
+          // setCheckCredentials({
+          //   username: undefined,
+          //   email: undefined
+          // });
           setEditModeUser(false);
 
         } else {
@@ -181,14 +203,14 @@ const Profile = () => {
 
       }
 
-    } else {
+    // } else {
 
-      setCheckCredentials({
-        username: checkAvailability[0].data.available,
-        email: checkAvailability[1].data.available
-      });
+    //   setCheckCredentials({
+    //     username: checkAvailability[0].data.available,
+    //     email: checkAvailability[1].data.available
+    //   });
 
-    }
+    // }
   }
 
   const handleEditMode = () => {
@@ -457,6 +479,7 @@ const Profile = () => {
                         type="text"
                         id="title"
                         defaultValue={data[0]?.title}
+                        maxLength={50}
                         {
                         ...register("title")
                         }
@@ -510,7 +533,10 @@ const Profile = () => {
                         placeholder="Escreva algo sobre você..."
                         defaultValue={data[0]?.bio}
                         {
-                        ...register("bio")
+                        ...register("bio", {
+                          maxLength:512,
+                        })
+
                         }
                       ></textarea>
                     </div>
@@ -567,9 +593,9 @@ const Profile = () => {
                       ...register("email")
                       }
                     />
-                    {checkCredentials.email !== undefined && (
+                    {emailExists !== undefined && (
                       <span className="absolute -bottom-5 flex items-center gap-1 text-xs">
-                        {checkCredentials.email ? (
+                        {emailExists ? (
                           <>
                             <BiCheck className="w-5 h-5 text-green-500" />
                             <span>E-mail disponível</span>
@@ -598,13 +624,22 @@ const Profile = () => {
                       id="username"
                       placeholder="adalovelace"
                       defaultValue={data[0]?.user}
+                      maxLength={30}
+                      min={6}
                       {
-                      ...register("username")
+                      ...register("username", {
+                        minLength: 6,
+                        maxLength: 30,
+                        pattern: {
+                          value: /^[a-zA-Z0-9_-]+$/,
+                          message: "O nome de usuário só pode conter letras e números",
+                        }
+                      })
                       }
                     />
-                    {checkCredentials.username !== undefined && (
+                    {usernameExists !== undefined && (
                       <span className="absolute -bottom-5 flex items-center gap-1 text-xs">
-                        {checkCredentials.username ? (
+                        {usernameExists ? (
                           <>
                             <BiCheck className="w-5 h-5 text-green-500" />
                             <span>Usuário disponível</span>
@@ -626,10 +661,10 @@ const Profile = () => {
                       type="button"
                       onClick={() => {
                         setEditModeUser(!editModeUser);
-                        setCheckCredentials({
-                          username: undefined,
-                          email: undefined
-                        });
+                        // setCheckCredentials({
+                        //   username: undefined,
+                        //   email: undefined
+                        // });
                       }}
                     >
                       {
