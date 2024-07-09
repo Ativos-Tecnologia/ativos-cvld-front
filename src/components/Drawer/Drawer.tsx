@@ -29,7 +29,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                 <Drawer.Items>
                   <div className="overflow-x-auto">
                     <Table className="min-w-full table-auto border-collapse">
-                      <tr className="bg-gradient-to-r from-purple-500 to-blue-700">
+                      <tr className="bg-blue-700">
                         <td className="text-white px-4 py-2">
                           Valores de Entrada
                         </td>
@@ -39,7 +39,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                       </tr>
                       {
                         data.recalc_flag === "after_12_2021" ? (
-                          <tr className="bg-blue-500">
+                          <tr className="bg-gray">
                             <td className="border border-stroke px-4 py-2 text-left text-boxdark">Regra de Cálculo</td>
                             <td className="border border-stroke px-4 py-2 text-boxdark">Após 12/2021</td>
                           </tr>
@@ -125,7 +125,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                       {
                         data.fator_correcao_ipca_e && (
                           <>
-                            <tr className="bg-gradient-to-r from-purple-500 to-blue-700">
+                            <tr className="bg-blue-700">
                               <td className="text-white px-4 py-2">
                                 IPCA-E
                               </td>
@@ -154,7 +154,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                           </>
                         )
                       }
-                      <tr className="bg-gradient-to-r from-purple-500 to-blue-700">
+                      <tr className="bg-blue-700">
                         <td className="text-white px-4 py-2">
                           SELIC
                         </td>
@@ -186,7 +186,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                           </tr>
                         )
                       }
-                      <tr className="bg-gradient-to-r from-purple-500 to-blue-700">
+                      <tr className="bg-blue-700">
                         <td className="text-white px-4 py-2">
                           Período de Graça IPCA-E
                         </td>
@@ -226,7 +226,8 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                           </tr>
                         )
                       }
-                      <tr className="bg-gradient-to-r from-purple-500 to-blue-700">
+                      
+                      <tr className="bg-blue-700">
                         <td className="text-white px-4 py-2">
                           Deduções
                         </td>
@@ -234,13 +235,13 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                           &nbsp;
                         </td>
                       </tr>
-                      <tr className="bg-gradient-to-r from-rose-200 to-rose-300">
+                      <tr className="bg-rose-300">
                         <td className="border border-stroke px-4 py-2 text-boxdark text-left">Imposto de Renda (3%)</td>
                         <td className="border border-stroke px-4 py-2 text-boxdark">{numberFormat(data.imposto_de_renda)}</td>
                       </tr>
                       {
                         data.link_memoria_de_calculo_rra && (
-                          <tr className="bg-gradient-to-r from-rose-200 to-rose-300">
+                          <tr className="bg-rose-300">
                             <td className="border border-stroke px-4 py-2 text-boxdark text-left">IR/RRA</td>
                             <td className="border border-stroke px-4 py-2 text-boxdark">{numberFormat(data.rra) ? numberFormat(data.rra) : "Não Informado"}</td>
                           </tr>
@@ -248,7 +249,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                       }
                       {
                         data.recalc_flag === "before_12_2021" && data.pss_atualizado !== 0 && (
-                          <tr className="bg-gradient-to-r from-rose-200 to-rose-300">
+                          <tr className="bg-rose-300">
                             <td className="border border-stroke px-4 py-2 text-boxdark text-left">PSS Atualizado</td>
                             <td className="border border-stroke px-4 py-2 text-boxdark">{numberFormat(data.pss_atualizado)}</td>
                           </tr>
@@ -262,7 +263,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                           &nbsp;
                         </td>
                       </tr>
-                      <tr className="bg-gradient-to-r from-green-200 to-green-300 text-boxdark">
+                      <tr className="bg-green-300 text-boxdark">
                         <td className="border border-stroke px-4 py-2 text-left font-semibold">Valor Líquido Disponível</td>
                         <td className="border border-stroke px-4 py-2 text-boxdark font-semibold">{numberFormat(data.valor_liquido_disponivel)}</td>
                       </tr>
@@ -270,7 +271,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                     <ul>
                       <hr className="border border-stroke dark:border-strokedark my-4" />
                       <li className="text-sm flex text-gray dark:text-gray-400 w-full py-1">
-                        <Button as={'a'} href={linkAdapter(data.link_memoria_de_calculo_simples)} gradientDuoTone="purpleToBlue" className="w-full text-center px-4 text-sm font-semibold text-boxdark rounded-md hover:opacity-90">
+                        <a href={linkAdapter(data.link_memoria_de_calculo_simples)} className="w-full text-center py-3 flex items-center justify-center text-sm font-semibold text-white rounded-md bg-blue-700 hover:bg-blue-800">
                           <span className="text-[16px] font-medium text-gray">
                             Memória de Cálculo Simples
                           </span>
@@ -278,12 +279,12 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                             width: "22px",
                             height: "22px",
                           }} className="ml-2 text-gray" />
-                        </Button>
+                        </a>
                       </li>
                       {
                         data.link_memoria_de_calculo_rra && (
                           <li className="text-sm flex text-gray-500 dark:text-gray-400 w-full py-1">
-                            <Button as={'a'} href={linkAdapter(data.link_memoria_de_calculo_rra)} gradientDuoTone="purpleToBlue" className="w-full text-center px-4 text-sm font-semibold text-boxdark rounded-md hover:opacity-90">
+                            <a href={linkAdapter(data.link_memoria_de_calculo_rra)} className="w-full text-center py-3 flex items-center justify-center text-sm font-semibold text-white rounded-md bg-blue-700 hover:bg-blue-800">
                               <span className="text-[16px] font-medium">
                                 Memória de Cálculo RRA
                               </span>
@@ -291,7 +292,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                                 width: "22px",
                                 height: "22px",
                               }} className="ml-2  text-gray" />
-                            </Button>
+                            </a>
                           </li>
                         )
                       }

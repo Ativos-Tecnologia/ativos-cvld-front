@@ -299,7 +299,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                     {
                       item.link_memoria_de_calculo_rra && (
                         <li className="text-sm flex  w-full py-1">
-                          <Button as={'a'} href={linkAdapter(item.link_memoria_de_calculo_rra)} gradientDuoTone="purpleToBlue" className="w-full text-center px-4 text-sm font-semibold text-white rounded-md hover:opacity-90">
+                          <a href={linkAdapter(item.link_memoria_de_calculo_rra)} className="w-full text-center p-4 flex items-center justify-center text-sm font-semibold text-white rounded-md bg-blue-700 hover:bg-blue-800">
                             <span className="text-[16px] font-medium">
                               Memória de Cálculo RRA
                             </span>
@@ -307,12 +307,12 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                               width: "22px",
                               height: "22px",
                             }} className="ml-2" />
-                          </Button>
+                          </a>
                         </li>
                       )
                     }
                     <li className="text-sm flex  w-full py-1">
-                      <Button as={'a'} href={linkAdapter(item.link_memoria_de_calculo_simples)} gradientDuoTone="purpleToBlue" className="w-full text-center px-4 text-sm font-semibold text-white rounded-md hover:opacity-90">
+                      <a href={linkAdapter(item.link_memoria_de_calculo_simples)} className="w-full text-center p-4 flex items-center justify-center text-sm font-semibold text-white rounded-md bg-blue-700 hover:bg-blue-800">
                         <span className="text-[16px] font-medium">
                           Memória de Cálculo Simples
                         </span>
@@ -320,12 +320,12 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                           width: "22px",
                           height: "22px",
                         }} className="ml-2 self-center" />
-                      </Button>
+                      </a>
                     </li>
                     {
                       item.link_cvld && (
                         <li className="text-sm flex  w-full py-1">
-                          <Button as={'a'} href={linkAdapter(item.link_cvld)} gradientDuoTone="purpleToBlue" className="w-full text-center px-4 text-sm font-semibold text-white rounded-md hover:opacity-90">
+                          <a href={linkAdapter(item.link_cvld)} className="w-full text-center p-4 flex items-center justify-center text-sm font-semibold text-white rounded-md bg-blue-700 hover:bg-blue-800">
                             <span className="text-[16px] font-medium">
                               Baixar CVLD
                             </span>
@@ -333,12 +333,12 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                               width: "22px",
                               height: "22px",
                             }} className="ml-2" />
-                          </Button>
+                          </a>
                         </li>
                       )
                     }
                     <li className="text-sm flex  w-full py-1">
-                      <Button onClick={clearData} className="w-full text-center px-4 text-sm font-semibold text-white rounded-md hover:opacity-90 bg-gradient-to-r from-rose-400 to-meta-1">
+                      <button onClick={clearData} className="w-full text-center p-4 flex items-center justify-center text-sm font-semibold text-white rounded-md bg-red hover:bg-meta-1 transition-all duration-200">
                         <span className="text-[16px] font-medium">
                           Limpar Cálculo
                         </span>
@@ -346,7 +346,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                           width: "22px",
                           height: "22px",
                         }} className="ml-2" />
-                      </Button>
+                      </button>
                     </li>
                   </ul>
                 ))}

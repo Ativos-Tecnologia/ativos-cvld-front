@@ -477,14 +477,14 @@ const SignUp: React.FC = () => {
                   </div>
 
                   <div className="mb-5 sm:col-span-2">
-                    <Button gradientDuoTone="purpleToBlue" disabled={!termsAccepted} type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-4 text-white hover:bg-opacity-90 dark:border-primary dark:bg-primary dark:hover:bg-opacity-90 disabled:cursor-not-allowed'>
+                    <button disabled={!termsAccepted} type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-6 text-white bg-blue-700 hover:bg-blue-800 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-blue-700'>
                       <span className="text-[16px] font-medium" aria-disabled={loading}>
                         {loading ? "Cadastrando usuário..." : "Criar conta"}
                       </span>
                       {
                         !loading ? (<HiOutlineArrowRight className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
                       }
-                    </Button>
+                    </button>
                   </div>
 
                   {/* <button disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 sm:col-span-2 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50 disabled:opacity-50 cursor-not-allowed">
