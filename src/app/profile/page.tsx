@@ -43,8 +43,6 @@ const Profile = () => {
     watch,
   } = useForm();
 
-  console.log(emailExists)
-
   useEffect(() => {
     if (firstLogin) {
       setEditModeProfile(true);
@@ -135,8 +133,6 @@ const Profile = () => {
           title: "Perfil atualizado",
           icon: "success",
         });
-        setUsernameExists(undefined);
-        setEmailExists('undefined');
       } else {
         UseMySwal().fire({
           title: "Perfil não atualizado. Verifique os campos e tente novamente",
@@ -153,13 +149,6 @@ const Profile = () => {
 
   const updateUserDataSubmit: SubmitHandler<Record<string, any>> = async (data) => {
 
-    // const checkAvailability = await Promise.all([
-    //   await api.get(`api/user/check-availability/${data.username}/`),
-    //   await api.get(`api/user/check-email-availability/${data.email}/`)
-    // ]);
-
-    // if (checkAvailability[0].data.available && checkAvailability[1].data.available) {
-
     try {
       const response = await updateUserInfo(`${auxData[0].id}`, data);
 
@@ -170,11 +159,9 @@ const Profile = () => {
           icon: "success",
         });
 
-        // setCheckCredentials({
-        //   username: undefined,
-        //   email: undefined
-        // });
         setEditModeUser(false);
+        setUsernameExists(undefined);
+        setEmailExists('undefined');
 
       } else {
         UseMySwal().fire({
@@ -188,14 +175,6 @@ const Profile = () => {
 
     }
 
-    // } else {
-
-    //   setCheckCredentials({
-    //     username: checkAvailability[0].data.available,
-    //     email: checkAvailability[1].data.available
-    //   });
-
-    // }
   }
 
   const handleEditMode = () => {
@@ -618,7 +597,7 @@ const Profile = () => {
                       min={6}
                       {
                       ...register("username", {
-                        minLength: 6,
+                        minLength: 4,
                         maxLength: 30,
                         pattern: {
                           value: /^[a-zA-Z0-9_-]+$/,
@@ -651,6 +630,8 @@ const Profile = () => {
                       type="button"
                       onClick={() => {
                         setEditModeUser(!editModeUser);
+                        setUsernameExists(undefined);
+                        setEmailExists('undefined');
                       }}
                     >
                       {
