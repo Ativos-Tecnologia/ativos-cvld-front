@@ -13,6 +13,7 @@ import UseMySwal from "@/hooks/useMySwal";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
 import { BiTrashAlt, BiPencil, BiDotsVerticalRounded, BiCheck, BiX } from "react-icons/bi";
 import { Button, CustomFlowbiteTheme, Flowbite, Popover } from "flowbite-react";
+import { BsExclamation } from "react-icons/bs";
 
 const customTheme: CustomFlowbiteTheme = {
   popover: {
@@ -25,30 +26,24 @@ const customTheme: CustomFlowbiteTheme = {
   }
 };
 
-type CredentialsProps = {
-  username: boolean | undefined;
-  email: boolean | undefined;
-}
-
 const Profile = () => {
 
   const { data, loading, error, updateProfile, firstLogin, setFirstLogin, updateProfilePicture, removeProfilePicture, updateUserInfo } = useContext(UserInfoAPIContext);
   const auxData = data;
+  const [editModeProfile, setEditModeProfile] = useState<boolean>(false);
+  const [editModeUser, setEditModeUser] = useState<boolean>(false);
+  const [imageUrl, setImageUrl] = useState("");
+  const [usernameExists, setUsernameExists] = useState<boolean | undefined>(undefined);
+  const [emailExists, setEmailExists] = useState<string>('undefined');
+  const emailRegex = /^[a-z0-9.\-_]{1,64}@[a-z0-9]{3,128}\.[a-z]{3,15}?(\.[a-z]{2,15})?$/;
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
   } = useForm();
-  const [editModeProfile, setEditModeProfile] = useState<boolean>(false);
-  const [editModeUser, setEditModeUser] = useState<boolean>(false);
-  const [imageUrl, setImageUrl] = useState("");
-  // const [checkCredentials, setCheckCredentials] = useState<CredentialsProps>({
-  //   username: undefined,
-  //   email: undefined
-  // })
-  const [usernameExists, setUsernameExists] = useState<boolean | undefined>(undefined);
-  const [emailExists, setEmailExists] = useState<boolean | undefined>(undefined);
+
+  console.log(emailExists)
 
   useEffect(() => {
     if (firstLogin) {
@@ -67,7 +62,7 @@ const Profile = () => {
   }, [data]);
 
   useEffect(() => {
-    if (watch("username") && watch("username")?.length >= 6 && watch("username")?.length <= 30) {
+    if (watch("username") && watch("username")?.length >= 4 && watch("username")?.length <= 30) {
       if (watch("username") !== data[0]?.user) {
         try {
           api.get(`api/user/check-availability/${watch("username")}/`).then((res) => {
@@ -85,39 +80,27 @@ const Profile = () => {
 
   }, [watch("username")]);
 
+  useEffect(() => {
 
-  // useEffect(() => {
+    if (!watch('email')) return;
 
-  //   const verifyDuplicatedUsername = setInterval(async () => {
+    if (watch("email") && watch("email")?.length > 4 && emailRegex.test(watch('email'))) {
+      if (watch("email") !== data[0]?.email) {
+        try {
+          api.get(`api/user/check-availability/${watch("email")}/`).then((res) => {
+            res.data.available ? setEmailExists('available') : setEmailExists('unavailable');
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        setEmailExists('undefined');
+      }
+    } else {
+      setEmailExists('invalid');
+    }
 
-  //       try {
-  //         const req = await api.get(`api/user/check-availability/${userFormFields.username}/`);
-  //         const res = req.data.available;
-  //         console.log(res)
-  //       } catch (error) {
-  //         console.log(error);
-  //       }
-
-  //   }, 3000);
-
-  //   const verifyDuplicatedEmail = setInterval(async () => {
-
-  //     try {
-  //       const req = await api.get(`api/user/check-email-availability/${userFormFields.email}/`);
-  //       const res = req.data.available;
-  //       console.log(res)
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-
-  // }, 3000);
-
-  //   return () => {
-  //     clearInterval(verifyDuplicatedUsername);
-  //     clearInterval(verifyDuplicatedEmail);
-  //   }
-
-  // }, []);
+  }, [watch("email")]);
 
   const handleImageChange = (e: any) => {
     const file = e.target.files[0];
@@ -152,6 +135,8 @@ const Profile = () => {
           title: "Perfil atualizado",
           icon: "success",
         });
+        setUsernameExists(undefined);
+        setEmailExists('undefined');
       } else {
         UseMySwal().fire({
           title: "Perfil não atualizado. Verifique os campos e tente novamente",
@@ -175,33 +160,33 @@ const Profile = () => {
 
     // if (checkAvailability[0].data.available && checkAvailability[1].data.available) {
 
-      try {
-        const response = await updateUserInfo(`${auxData[0].id}`, data);
+    try {
+      const response = await updateUserInfo(`${auxData[0].id}`, data);
 
-        if (response.status === 200) {
+      if (response.status === 200) {
 
-          UseMySwal().fire({
-            title: "Informações de usuário atualizadas",
-            icon: "success",
-          });
+        UseMySwal().fire({
+          title: "Informações de usuário atualizadas",
+          icon: "success",
+        });
 
-          // setCheckCredentials({
-          //   username: undefined,
-          //   email: undefined
-          // });
-          setEditModeUser(false);
+        // setCheckCredentials({
+        //   username: undefined,
+        //   email: undefined
+        // });
+        setEditModeUser(false);
 
-        } else {
-          UseMySwal().fire({
-            title: "Informações de usuário não atualizadas. Verifique os campos e tente novamente",
-            icon: "error",
-          });
-        }
-
-      } catch (error) {
-        console.error(error);
-
+      } else {
+        UseMySwal().fire({
+          title: "Informações de usuário não atualizadas. Verifique os campos e tente novamente",
+          icon: "error",
+        });
       }
+
+    } catch (error) {
+      console.error(error);
+
+    }
 
     // } else {
 
@@ -534,7 +519,7 @@ const Profile = () => {
                         defaultValue={data[0]?.bio}
                         {
                         ...register("bio", {
-                          maxLength:512,
+                          maxLength: 512,
                         })
 
                         }
@@ -593,17 +578,22 @@ const Profile = () => {
                       ...register("email")
                       }
                     />
-                    {emailExists !== undefined && (
+                    {emailExists !== 'undefined' && (
                       <span className="absolute -bottom-5 flex items-center gap-1 text-xs">
-                        {emailExists ? (
+                        {emailExists === 'available' ? (
                           <>
                             <BiCheck className="w-5 h-5 text-green-500" />
                             <span>E-mail disponível</span>
                           </>
-                        ) : (
+                        ) : emailExists === 'unavailable' ? (
                           <>
                             <BiX className="w-5 h-5 text-meta-1" />
                             <span>E-mail indisponível</span>
+                          </>
+                        ) : (
+                          <>
+                            <BsExclamation className="w-5 h-5 text-yellow-300" />
+                            <span>Formato de e-mail-inválido</span>
                           </>
                         )}
                       </span>
@@ -661,10 +651,6 @@ const Profile = () => {
                       type="button"
                       onClick={() => {
                         setEditModeUser(!editModeUser);
-                        // setCheckCredentials({
-                        //   username: undefined,
-                        //   email: undefined
-                        // });
                       }}
                     >
                       {
