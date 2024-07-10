@@ -6,6 +6,7 @@ import { BiDownload } from "react-icons/bi";
 import { CVLDResultProps } from "@/interfaces/IResultCVLD";
 import { BsEraser } from "react-icons/bs";
 import linkAdapter from "@/functions/formaters/linkFormater";
+import ReactApexChart from "react-apexcharts";
 
 const options: ApexOptions = {
   colors: ["#3C50E0", "#80CAEE"],
@@ -98,12 +99,71 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
     }
   }, [result])
 
+  const [state, setState] = useState<ChartTwoState>({
+    series: [
+      {
+        name: "Valor Principal",
+        data: [0, 0],
+      },
+      {
+        name: "Valor Juros",
+        data: [0, 0],
+      },
+    ],
+  });
+
   useEffect(() => {
     if (result.result.length > 0) {
       setFilledData(true);
       setAuxData(result);
+
+        const formatedPrincipal = result.result[0].valor_principal.toFixed(2);
+
+        const formatedUpdatedPrincipal = result.result[0].principal_atualizado_requisicao.toFixed(2);
+
+
+
+
+        if (result.result[0].recalc_flag === "tributario") {
+0
+          const series = [
+            {
+              name: "Valor Principal",
+              data: [Number(formatedPrincipal), Number(formatedPrincipal)],
+            },
+            {
+              name: "Valor Juros",
+              data: [Number(result.result[0].valor_juros.toFixed(2)), Number(result.result[0].juros_atualizado.toFixed(2))],
+            },
+            {
+              name: "Total",
+              data: [Number(result.result[0].valor_inscrito.toFixed(2)), Number(result.result[0].valor_liquido_disponivel.toFixed(2))],
+            },
+          ];
+
+          setState({ series });
+        }
+        else {
+          const series = [
+            {
+              name: "Valor Principal",
+              data: [Number(formatedPrincipal), Number(formatedUpdatedPrincipal)],
+            },
+            {
+              name: "Valor Juros",
+              data: [Number(result.result[0].valor_juros.toFixed(2)), Number(result.result[0].juros_atualizados_requisicao.toFixed(2))],
+            },
+            {
+              name: "Total",
+              data: [Number(result.result[0].valor_inscrito.toFixed(2)), Number(result.result[0].valor_liquido_disponivel.toFixed(2))],
+            },
+          ];
+          setState({ series });
+        }
     }
   }, [result]);
+
+
 
   const numberFormat = (value: number) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -125,8 +185,8 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
   }
 
   return (
-    <div ref={CVLDResultRef} className="scroll-m-20 scroll-smooth col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-4">
-      <div className="mb-4 justify-between gap-4 sm:flex">
+    <div ref={CVLDResultRef} className="scroll-m-20 scroll-smooth col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-5">
+      <div className="mb-4 justify-between gap-4 sm:flex flex-col">
         {
           filledData ? (
             <div>
@@ -295,6 +355,111 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                     <li className="text-sm ">
                       <span className="font-bold">Valor Líquido Disponível:</span> {numberFormat(item.valor_liquido_disponivel)}
                     </li>
+                    <div id="chartOne" className="mt-8">
+        <ReactApexChart
+          options={{
+            colors: ["#3C50E0", "#80CAEE", "#FFB946"],
+            chart: {
+              fontFamily: "Satoshi, sans-serif",
+              type: "bar",
+              height: 335,
+              stacked: true,
+              toolbar: {
+                show: true,
+              },
+              zoom: {
+                enabled: false,
+              },
+
+            },
+
+            responsive: [
+              {
+                breakpoint: 1536,
+                options: {
+                  plotOptions: {
+                    bar: {
+                      borderRadius: 0,
+                      columnWidth: "25%",
+                    },
+                  },
+                },
+              },
+            ],
+            plotOptions: {
+              bar: {
+                horizontal: false,
+                borderRadius: 0,
+                columnWidth: "25%",
+                borderRadiusApplication: "end",
+                borderRadiusWhenStacked: "last",
+              },
+            },
+            dataLabels: {
+              enabled: true,
+              textAnchor: "start",
+              style: {
+                fontSize: "8px",
+              },
+            },
+
+            xaxis: {
+              offsetX: 10,
+              categories: ["Data Base", "Data Requisição"],
+              labels: {
+                style: {
+                  fontSize: "10px",
+
+                },
+                trim: false,
+
+              },
+              title: {
+                text: "Movimentação",
+              },
+              position: "bottom",
+              axisBorder: {
+                show: false,
+              },
+              axisTicks: {
+                show: false,
+              },
+            },
+            yaxis: {
+              show: false,
+              title: {
+                text: "Valores",
+              },
+              labels: {
+                style: {
+                  fontSize: "10px",
+                },
+              },
+
+            },
+            legend: {
+              show: false,
+              position: "top",
+              horizontalAlign: "left",
+              fontFamily: "Satoshi",
+              fontWeight: 400,
+              fontSize: "6px",
+
+              markers: {
+                radius: 99,
+              },
+            },
+            fill: {
+              opacity: 1,
+            },
+          }}
+          series={state.series}
+          type="area"
+          height={350}
+          width={"100%"}
+
+        />
+      </div>
                     <hr className="border border-stroke dark:border-strokedark my-4" />
                     {
                       item.link_memoria_de_calculo_rra && (
@@ -351,13 +516,6 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                   </ul>
                 ))}
               </div>
-              {/* <button className="w-full text-center px-4 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:bg-primary-dark" onClick={
-  () => {
-    setData({ result: [] });
-    setFilledData(false);
-  }
-
-}>Limpar Resultado</button> */}
             </div>
           ) : (
             <div className="flex flex-col justify-between w-fit mx-auto gap-5 items-center" title="Sem resultados disponíveis - ainda">
@@ -379,6 +537,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
             </div>
           )
         }
+
       </div>
     </div>
   );

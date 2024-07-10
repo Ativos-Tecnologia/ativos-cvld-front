@@ -32,11 +32,11 @@ type CVLDFormProps = {
   setCalcStep: (stage: string) => void;
 };
 
-interface CPFCNPJprops {
-  blocks: Array<number>;
-  delimiters: Array<string>;
-  numericOnly: boolean;
-}
+// interface CPFCNPJprops {
+//   blocks: Array<number>;
+//   delimiters: Array<string>;
+//   numericOnly: boolean;
+// }
 
 const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
   const {
@@ -48,7 +48,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
     formState: { errors },
   } = useForm();
 
-  const { setCredits, credits } = useContext<UserInfoContextType>(UserInfoAPIContext);
+  const { setCredits, credits, data } = useContext<UserInfoContextType>(UserInfoAPIContext);
 
   const [oficioForm, setOficioForm] = useState<any>(null);
 
@@ -120,23 +120,11 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
     data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
     data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
 
-    // let formattedData = data.data_base.split("-")
-    // formattedData[2] = "01";
-    // data.data_base = formattedData.join("-");
 
-    // let formattedDataRequisicao = data.data_requisicao.split("-")
-    // formattedDataRequisicao[2] = "01";
-    // data.data_requisicao = formattedDataRequisicao.join("-");
 
     if (!data.data_limite_de_atualizacao_check) {
-      // definir como a data de hoje
       data.data_limite_de_atualizacao = new Date().toISOString().split("T")[0];
     }
-    // else {
-    //   let formattedDataLimite = data.data_limite_de_atualizacao.split("-")
-    //   formattedDataLimite[2] = "01";
-    //   data.data_limite_de_atualizacao = formattedDataLimite.join("-");
-    // }
 
     if (!data.ir_incidente_rra) {
       data.numero_de_meses = undefined;
@@ -267,7 +255,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
 
 
   return (
-    <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
+    <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-7">
       <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
         <h2 className="text-3xl font-extrabold dark:text-white">
           Calculadora de Atualização de Precatórios
@@ -405,10 +393,6 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                 <ErrorMessage errors={errors} field="data_requisicao" />
               </div>
             </div>
-
-
-
-
             <div className="flex gap-2 items-center">
               <input type="checkbox"
                 id="incidencia_rra_ir"
@@ -561,7 +545,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
             }
 
             {/* CVLD */}
-            {roleCNJ && (
+            {data[0].role === "cnj" || data[0].role === "ativos" && (
               <div className="flex flex-col gap-2 sm:col-span-2">
                 <div className="flex gap-2 ">
                   <input
@@ -1046,7 +1030,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
       }
       <hr className="border border-stroke dark:border-strokedark mb-8" />
 
-      <div id="chartOne" className="-ml-5">
+      {/* <div id="chartOne" className="-ml-5">
         <ReactApexChart
           options={{
             colors: ["#3C50E0", "#80CAEE", "#FFB946"],
@@ -1112,7 +1096,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
           height={350}
           width={"100%"}
         />
-      </div>
+      </div> */}
     </div>
   );
 };

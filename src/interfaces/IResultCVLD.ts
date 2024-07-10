@@ -33,4 +33,6 @@ export interface CVLDResultProps {
     valor_liquido_disponivel: number;
     data_limite_de_atualizacao: string;
     status: string;
+    natureza?: string;
+    juros_atualizado: number;
   }
