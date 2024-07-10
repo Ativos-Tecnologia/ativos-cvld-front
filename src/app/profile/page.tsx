@@ -39,6 +39,7 @@ const Profile = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
     watch,
   } = useForm();
@@ -112,6 +113,14 @@ const Profile = () => {
       reader.readAsDataURL(file);
     }
   };
+
+  const handleCancelProfileEdit = () => {
+    setEditModeUser(!editModeUser);
+    setUsernameExists(undefined);
+    setEmailExists('undefined');
+    setValue('email', data[0]?.email);
+    setValue('username', data[0]?.user);
+  }
 
   const updateProfileDataSubmit: SubmitHandler<Record<string, any>> = async (data) => {
     setEditModeProfile(false);
@@ -628,11 +637,7 @@ const Profile = () => {
                     <Button
                       className="flex justify-center rounded border border-stroke px-4 py-1 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white bg-gray-100 hover:!bg-gray-300 transition-all duration-300"
                       type="button"
-                      onClick={() => {
-                        setEditModeUser(!editModeUser);
-                        setUsernameExists(undefined);
-                        setEmailExists('undefined');
-                      }}
+                      onClick={handleCancelProfileEdit}
                     >
                       {
                         editModeUser ? "Cancelar" : "Editar"
