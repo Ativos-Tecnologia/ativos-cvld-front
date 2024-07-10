@@ -118,16 +118,23 @@ const SignUp: React.FC = () => {
             <div className="hidden w-full xl:block xl:w-1/2">
               <div className="px-26 py-17.5 mb-[15%] text-center">
                 <Link className="mb-5.5 inline-block" href="/">
-                  <Image
-                    className="hidden dark:block"
-                    src={"/images/logo/logo-dark.svg"}
-                    alt="Logo"
-                    width={176}
-                    height={32}
-                  />
+                  <div className="hidden dark:flex flex-col items-center gap-3 bg">
+                    <Image
+                      src={"/images/logo/celer-app-logo-dark.svg"}
+                      alt="Logo"
+                      width={160}
+                      height={32}
+                    />
+                    <Image
+                      src={"/images/logo/celer-app-text-dark.svg"}
+                      alt="Logo"
+                      width={200}
+                      height={32}
+                    />
+                  </div>
                   <div className="dark:hidden flex flex-col items-center gap-3 bg">
                     <Image
-                      src={"/images/logo/logo-new-celer.webp"}
+                      src={"/images/logo/celer-app-logo.svg"}
                       alt="Logo"
                       width={160}
                       height={32}

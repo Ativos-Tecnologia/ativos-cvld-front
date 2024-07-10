@@ -373,7 +373,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                 draggable={false}
               />
               <span
-                className="text-center select-none text-sm text-gray-500 dark:text-gray-400">
+                className="text-center select-none text-sm">
                 Opa! Parece que ainda não há resultados disponíveis.
               </span>
             </div>
