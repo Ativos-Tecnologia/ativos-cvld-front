@@ -39,11 +39,10 @@ const Profile = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
     watch,
   } = useForm();
-
-  console.log(emailExists)
 
   useEffect(() => {
     if (firstLogin) {
@@ -115,6 +114,14 @@ const Profile = () => {
     }
   };
 
+  const handleCancelProfileEdit = () => {
+    setEditModeUser(!editModeUser);
+    setUsernameExists(undefined);
+    setEmailExists('undefined');
+    setValue('email', data[0]?.email);
+    setValue('username', data[0]?.user);
+  }
+
   const updateProfileDataSubmit: SubmitHandler<Record<string, any>> = async (data) => {
     setEditModeProfile(false);
     try {
@@ -135,8 +142,6 @@ const Profile = () => {
           title: "Perfil atualizado",
           icon: "success",
         });
-        setUsernameExists(undefined);
-        setEmailExists('undefined');
       } else {
         UseMySwal().fire({
           title: "Perfil não atualizado. Verifique os campos e tente novamente",
@@ -153,13 +158,6 @@ const Profile = () => {
 
   const updateUserDataSubmit: SubmitHandler<Record<string, any>> = async (data) => {
 
-    // const checkAvailability = await Promise.all([
-    //   await api.get(`api/user/check-availability/${data.username}/`),
-    //   await api.get(`api/user/check-email-availability/${data.email}/`)
-    // ]);
-
-    // if (checkAvailability[0].data.available && checkAvailability[1].data.available) {
-
     try {
       const response = await updateUserInfo(`${auxData[0].id}`, data);
 
@@ -170,11 +168,9 @@ const Profile = () => {
           icon: "success",
         });
 
-        // setCheckCredentials({
-        //   username: undefined,
-        //   email: undefined
-        // });
         setEditModeUser(false);
+        setUsernameExists(undefined);
+        setEmailExists('undefined');
 
       } else {
         UseMySwal().fire({
@@ -188,14 +184,6 @@ const Profile = () => {
 
     }
 
-    // } else {
-
-    //   setCheckCredentials({
-    //     username: checkAvailability[0].data.available,
-    //     email: checkAvailability[1].data.available
-    //   });
-
-    // }
   }
 
   const handleEditMode = () => {
@@ -618,7 +606,7 @@ const Profile = () => {
                       min={6}
                       {
                       ...register("username", {
-                        minLength: 6,
+                        minLength: 4,
                         maxLength: 30,
                         pattern: {
                           value: /^[a-zA-Z0-9_-]+$/,
@@ -649,9 +637,7 @@ const Profile = () => {
                     <Button
                       className="flex justify-center rounded border border-stroke px-4 py-1 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white bg-gray-100 hover:!bg-gray-300 transition-all duration-300"
                       type="button"
-                      onClick={() => {
-                        setEditModeUser(!editModeUser);
-                      }}
+                      onClick={handleCancelProfileEdit}
                     >
                       {
                         editModeUser ? "Cancelar" : "Editar"
