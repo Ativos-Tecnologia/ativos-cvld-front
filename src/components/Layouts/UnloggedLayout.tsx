@@ -2,13 +2,16 @@
 import React, { useState, ReactNode } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
+import useColorMode from "@/hooks/useColorMode";
 
 export default function UnloggedLayout({ children, }: { children: React.ReactNode }) {
   if (localStorage.getItem('ATIVOS_access') === undefined) {
     localStorage.removeItem('ATIVOS_access');
     localStorage.removeItem('ATIVOS_refresh');
   }
-  //   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // automatically will set the dark or light mode using the localStorage value
+  const [colorMode, setColorMode] = useColorMode();
   return (
     <>
       {/* <!-- ===== Page Wrapper Start ===== --> */}
