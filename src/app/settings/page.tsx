@@ -6,12 +6,6 @@ import { UserInfoAPIContext } from "@/context/UserInfoContext";
 import { Avatar } from "flowbite-react";
 import { LocalShowOptionsProps } from "@/components/ExtratosTable/ExtratosTable";
 
-// export const metadata: Metadata = {
-//   title: "Next.js Settings | TailAdmin - Next.js Dashboard Template",
-//   description:
-//     "This is Next.js Settings page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
-// };
-
 const defaultOptions: LocalShowOptionsProps[] = [
   {
     key: "show_delete_extract_alert",
@@ -91,7 +85,7 @@ const Settings = () => {
                       </label>
                     </div>
                   </fieldset>
-                  <button className="block mx-auto rounded-md px-4 py-2 text-white bg-blue-700 hover:bg-blue-600 transition duration-200">
+                  <button className="block mx-auto rounded-md px-4 py-2 text-white bg-blue-700 hover:bg-blue-800 transition duration-200">
                     Redefinir configurações
                   </button>
                 </form>

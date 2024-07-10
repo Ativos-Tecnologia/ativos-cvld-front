@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 
 export type PasswordRequirements = {
-    length: boolean;
+    minLength: boolean;
+    veryStrong: boolean;
     uppercase: boolean;
     lowercase: boolean;
     number: boolean;
@@ -21,7 +22,8 @@ const usePassword = (passwordInput: string, confirmPasswordInput?: string) => {
     const [strengthColor, setStrengthColor] = useState<string>('slate-400');
     const [barWidth, setBarWidth] = useState<string>('w-0');
     const [passwordRequirements, setPasswordRequirements] = useState<PasswordRequirements>({
-        length: false,
+        minLength: false,
+        veryStrong: false,
         uppercase: false,
         lowercase: false,
         number: false,
@@ -91,9 +93,15 @@ const usePassword = (passwordInput: string, confirmPasswordInput?: string) => {
             // verifying password requirements:
             if (password.length >= 6) {
               reqNum += 1;
-              passwordRequirements.length = true;
+              passwordRequirements.minLength = true;
             } else {
-              passwordRequirements.length = false;
+              passwordRequirements.minLength = false;
+            }
+
+            if (password.length >= 12) {
+              passwordRequirements.veryStrong = true;
+            } else {
+              passwordRequirements.veryStrong = false;
             }
     
             if (/[A-Z]/.test(password)) {
@@ -146,7 +154,8 @@ const usePassword = (passwordInput: string, confirmPasswordInput?: string) => {
           } else {
             reqNum = 0;
             setPasswordRequirements({
-              length: false,
+              minLength: false,
+              veryStrong: false,
               uppercase: false,
               lowercase: false,
               number: false,

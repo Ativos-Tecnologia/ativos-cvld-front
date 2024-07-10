@@ -237,6 +237,7 @@ const config: Config = {
       },
       backgroundImage: {
         video: "url('../images/video/video.png')",
+        'main-unlogged': "url('/images/logo/main-logo-img.png')"
       },
       content: {
         "icon-copy": 'url("../images/icon/icon-copy-alt.svg")',
