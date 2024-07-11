@@ -84,7 +84,7 @@ const PricingModal = ({ setData, changeStep, currentStep }: {
         {availablesPlans.map((plan, index) => (
           <React.Fragment key={index}>
             {plan.type !== 'MELHOR ESCOLHA' ? (
-              <div className='w-70 flex flex-col xl:flex-1 gap-11 rounded-md bg-white border border-stroke dark:bg-boxdark-2 dark:border-strokedark shadow-3 px-3 py-6'>
+              <div className='w-70 h-fit flex flex-col xl:flex-1 gap-11 rounded-md bg-white border border-stroke dark:bg-boxdark-2 dark:border-strokedark shadow-3 px-3 py-6'>
                 <div className='relative grid gap-2 pb-3 border-b border-stroke'>
                   <span className='py-1 px-2 rounded-full bg-[#3147d9] w-fit text-xs text-snow'>
                     {plan.type}
@@ -110,8 +110,8 @@ const PricingModal = ({ setData, changeStep, currentStep }: {
                 </ul>
                 <div className='flex items-center justify-between border-t border-stroke pt-3'>
                   <div>
-                    <span className='text-lg font-bold text-gray-500 dark:text-white'>{plan.price} </span>
-                    <span className='text-xs'>/ pacote</span>
+                    <span className='text-xl font-bold text-gray-500 dark:text-white'>{plan.price},00 </span>
+                    {/* <span className='text-xs'>/ pacote</span> */}
                   </div>
                   <button onClick={() => {
                     changeStep(currentStep + 1);
@@ -126,7 +126,7 @@ const PricingModal = ({ setData, changeStep, currentStep }: {
                 </div>
               </div>
             ) : (
-              <div className='w-70 flex flex-col xl:flex-1 gap-11 rounded-md bg-white border border-stroke dark:bg-boxdark-2 dark:border-strokedark shadow-3 px-3 py-6'>
+              <div className='w-70 h-fit flex flex-col xl:flex-1 gap-11 rounded-md bg-white border border-stroke dark:bg-boxdark-2 dark:border-strokedark shadow-3 px-3 py-6'>
                 <div className='relative grid gap-2 pb-3 border-b border-stroke'>
                   <span className='py-1 px-2 rounded-full bg-[#f00211] w-fit text-xs text-snow'>
                     {plan.type}
@@ -152,8 +152,8 @@ const PricingModal = ({ setData, changeStep, currentStep }: {
                 </ul>
                 <div className='flex items-center justify-between border-t border-stroke pt-3'>
                   <div>
-                    <span className='text-lg font-bold text-gray-500 dark:text-white'>{plan.price} </span>
-                    <span className='text-xs'>/ pacote</span>
+                    <span className='text-lg font-bold text-gray-500 dark:text-white'>{plan.price},00 </span>
+                    {/* <span className='text-xs'>/ pacote</span> */}
                   </div>
                   <button onClick={() => {
                     changeStep(currentStep + 1);
