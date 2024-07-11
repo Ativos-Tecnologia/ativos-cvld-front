@@ -24,7 +24,7 @@ const Checkout = ({ data, setState }: {
     const whatsappRedirection = () => {
         if (data) {
             const phoneNumber = '5581996871762';
-            const message = `Olá ✌️ , fiz um pedido de um pacote e gostaria de realizar o pagamento.
+            const message = `Olá 👋🏻 , fiz um pedido de um pacote e gostaria de realizar o pagamento.
             
 Nome completo: ${data.user_info.full_name}
 CPF/CNPJ: ${data.user_info.CPF}
@@ -58,7 +58,7 @@ Agradeço desde já!`;
 
     return (
         <React.Fragment>
-            <div className='max-w-203 h-90 mx-auto p-3 overflow-y-auto'>
+            <div className='max-w-203 h-fit mx-auto p-3 overflow-y-auto'>
                 <h1 className='text-2xl w-full font-bold text-center'>
                     Agradecemos a sua compra!
                 </h1>
@@ -85,12 +85,12 @@ Agradeço desde já!`;
                         O número do seu pedido é o <b>#000001</b>. Ao clicar no botão abaixo, você será redirecionado para o whatsapp, onde será efetuada toda a parte de pagamento.
                     </p>
                 </div>
-                <div className='flex gap-3 items-center justify-center'>
-                    <button disabled={true} className='flex items-center gap-1 py-2 px-3 bg-slate-200 disabled:cursor-not-allowed disabled:opacity-50 rounded-md transition-all duration-200'>
+                <div className='flex 2xsm:flex-col md:flex-row gap-3 items-center justify-center'>
+                    <button disabled={true} className='flex 2xsm:w-full md:w-fit items-center justify-center gap-1 py-2 px-3 bg-slate-200 disabled:cursor-not-allowed disabled:opacity-50 rounded-md transition-all duration-200'>
                         <span>Meus pedidos</span>
                         <TbClipboardList />
                     </button>
-                    <button onClick={whatsappRedirection} className='flex items-center text-snow gap-1 py-2 px-3 rounded-md bg-green-400 hover:bg-green-500 transition-all duration-200'>
+                    <button onClick={whatsappRedirection} className='flex 2xsm:w-full md:w-fit items-center justify-center text-snow gap-1 py-2 px-3 rounded-md bg-green-400 hover:bg-green-500 transition-all duration-200'>
                         <span>Realizar pagamento</span>
                         <BiDollar />
                     </button>
