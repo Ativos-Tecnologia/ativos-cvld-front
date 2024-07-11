@@ -168,24 +168,39 @@ const SignIn: React.FC = () => {
               <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
                 <div className="block w-full xl:hidden xl:w-1/2">
                   <div className="sm:px-26 pt-5 text-center">
-                    <Link className="sm:mb-5.5 flex flex-col justify-center items-center mb-5" href="/">
-                      <Image
-                        className="hidden dark:block"
-                        src={"/images/logo/logo-dark.svg"}
-                        alt="Logo"
-                        width={176}
-                        height={32}
-                      />
-                      <Image
-                        className="dark:hidden"
-                        src={"/images/logo/logo.svg"}
-                        alt="Logo"
-                        width={176}
-                        height={150}
-                      />
-                      {/* <p className="2sm:px-20 my-4" aria-selected="false">
-                        Comprometa-se com o extraordinário
-                      </p> */}
+                    <Link className="flex flex-col justify-center items-center mb-15" href="/">
+                      <div className="hidden dark:flex flex-col items-center gap-3 bg">
+                        <Image
+                          src={"/images/logo/celer-app-logo-dark.svg"}
+                          alt="Logo"
+                          width={0}
+                          height={0}
+                          className="2xsm:w-20 md:w-28"
+                        />
+                        <Image
+                          src={"/images/logo/celer-app-text-dark.svg"}
+                          alt="Logo"
+                          width={0}
+                          height={0}
+                          className="2xsm:w-45"
+                        />
+                      </div>
+                      <div className="dark:hidden flex flex-col items-center gap-3 bg">
+                        <Image
+                          src={"/images/logo/celer-app-logo.svg"}
+                          alt="Logo"
+                          width={0}
+                          height={0}
+                          className="2xsm:w-20 md:w-28"
+                        />
+                        <Image
+                          src={"/images/logo/celer-app-text.svg"}
+                          alt="Logo"
+                          width={0}
+                          height={0}
+                          className="2xsm:w-45"
+                        />
+                      </div>
                     </Link>
                   </div>
                 </div>
@@ -193,7 +208,7 @@ const SignIn: React.FC = () => {
                   Celer App
                 </span> */}
                 <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-                  Faça login para começar
+                  Acesse sua conta
                 </h2>
 
                 {/* Fim do Bloco Mobile */}
