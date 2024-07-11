@@ -1,6 +1,7 @@
 export type ExtractTableProps = {
     className?: string;
     data: any[];
+    setData: React.Dispatch<React.SetStateAction<any[]>>;
     showModalMessage: boolean;
     loading: boolean;
     setModalOptions: React.Dispatch<React.SetStateAction<{
