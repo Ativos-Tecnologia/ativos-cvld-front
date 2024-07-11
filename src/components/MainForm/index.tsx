@@ -846,8 +846,6 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                                 />
                               )}
                             />
-
-
                           </div>
                           <div className="flex flex-col gap-2">
                             <label htmlFor="numero_requisicao" className="text-sm font-medium text-meta-5">
@@ -895,13 +893,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                               className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                               {...register("n_precatorio", {})} />
                           </div>
-
                         </div>
-
-
-                        {/* <hr className="border border-stroke dark:border-strokedark my-6 col-span-2" /> */}
-
-
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                           {/* <div className="flex flex-col gap-2">
                         <label htmlFor="valor_penhora" className="text-sm font-medium text-meta-5">
@@ -1017,86 +1009,9 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                 !loading ? (<BiLineChart className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
               }
             </button>
-            {/* <Button
-                type="submit"
-                className="px-12 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:opacity-90 my-8"
-              >
-                Calcular {
-                  watch("gerar_cvld") ? "e Emitir CVLD" : ""
-                }
-              </Button> */}
           </div>
         </form>
       }
-      <hr className="border border-stroke dark:border-strokedark mb-8" />
-
-      {/* <div id="chartOne" className="-ml-5">
-        <ReactApexChart
-          options={{
-            colors: ["#3C50E0", "#80CAEE", "#FFB946"],
-            chart: {
-              fontFamily: "Satoshi, sans-serif",
-              type: "bar",
-              height: 335,
-              stacked: true,
-              toolbar: {
-                show: false,
-              },
-              zoom: {
-                enabled: false,
-              },
-            },
-
-            responsive: [
-              {
-                breakpoint: 1536,
-                options: {
-                  plotOptions: {
-                    bar: {
-                      borderRadius: 0,
-                      columnWidth: "25%",
-                    },
-                  },
-                },
-              },
-            ],
-            plotOptions: {
-              bar: {
-                horizontal: false,
-                borderRadius: 0,
-                columnWidth: "25%",
-                borderRadiusApplication: "end",
-                borderRadiusWhenStacked: "last",
-              },
-            },
-            dataLabels: {
-              enabled: false,
-            },
-
-            xaxis: {
-              categories: ["Data Base", "Data Requisição"],
-            },
-            legend: {
-              position: "top",
-              horizontalAlign: "left",
-              fontFamily: "Satoshi",
-              fontWeight: 400,
-              fontSize: "12px",
-
-              markers: {
-                radius: 99,
-              },
-            },
-            fill: {
-              opacity: 1,
-            },
-          }}
-          series={state.series}
-          type="area"
-          height={350}
-          width={"100%"}
-        />
-      </div> */}
     </div>
   );
 };
