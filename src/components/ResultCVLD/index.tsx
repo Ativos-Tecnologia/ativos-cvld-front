@@ -119,13 +119,13 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
 
         const formatedPrincipal = result.result[0].valor_principal.toFixed(2);
 
-        const formatedUpdatedPrincipal = result.result[0].principal_atualizado_requisicao.toFixed(2);
+        const formatedUpdatedPrincipal = result.result[0]?.principal_atualizado_requisicao?.toFixed(2);
 
 
 
 
         if (result.result[0].recalc_flag === "tributario") {
-0
+
           const series = [
             {
               name: "Valor Principal",
