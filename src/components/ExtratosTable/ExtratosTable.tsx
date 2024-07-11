@@ -105,7 +105,6 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   }
 
   const fetchStateFromLocalStorage = () => {
-    // fetching the dont show again configs
     const configs = localStorage.getItem("dont_show_again_configs");
     if (configs !== null) {
       const parsedValue = JSON.parse(configs);
@@ -227,6 +226,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
             {viewOption.type === "table" &&
               <TableView
                 data={data}
+                setData={setData}
                 showModalMessage={showModalMessage}
                 loading={loading}
                 setModalOptions={setModalOptions}
@@ -239,6 +239,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
               <CardView
                 className="flex justify-center"
                 data={data}
+                setData={setData}
                 showModalMessage={showModalMessage}
                 loading={loading}
                 setModalOptions={setModalOptions}
@@ -259,6 +260,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
           <CardView
             className="grid gap-4"
             data={data}
+            setData={setData}
             showModalMessage={showModalMessage}
             loading={loading}
             setModalOptions={setModalOptions}
