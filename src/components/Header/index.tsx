@@ -62,8 +62,16 @@ const Header = (props: {
             <Image
               width={32}
               height={32}
-              src={"/images/logo/logo-new-celer.webp"}
+              src={"/images/logo/celer-app-logo.svg"}
               alt="Logo"
+              className="dark:hidden"
+            />
+            <Image
+              width={32}
+              height={32}
+              src={"/images/logo/celer-app-logo-dark.svg"}
+              alt="Logo"
+              className="hidden dark:block"
             />
           </Link>
         </div>
