@@ -9,6 +9,8 @@ const useColorMode = () => {
     const className = "dark";
     const bodyClass = window.document.body.classList;
 
+    if (window.location.pathname === "/pricing") return;
+
     colorMode === "dark"
       ? bodyClass.add(className)
       : bodyClass.remove(className);
