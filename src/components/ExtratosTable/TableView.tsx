@@ -5,6 +5,9 @@ import React from 'react';
 import { BiTask } from 'react-icons/bi';
 import { CVLDResultProps } from '@/interfaces/IResultCVLD';
 import { BsFillTrashFill } from 'react-icons/bs';
+import statusOficio from '@/enums/statusOficio.enum';
+import tipoOficio from '@/enums/tipoOficio.enum';
+import api from '@/utils/api';
 
 const customTheme: CustomFlowbiteTheme = {
     table: {
@@ -33,7 +36,56 @@ const customTheme: CustomFlowbiteTheme = {
     }
 }
 
-const TableView = ({data, showModalMessage, loading,  setModalOptions, fetchDelete, setOpenDrawer, fetchDataById}: ExtractTableProps) => {
+const TableView = ({data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDrawer, fetchDataById}: ExtractTableProps) => {
+    const enumOficiosList = Object.values(statusOficio);
+    const enumTipoOficiosList = Object.values(tipoOficio);
+
+    const updateOficioStatus = async (id: string, status: statusOficio) => {
+        try {
+            const response = await api.put(`/api/extrato/update/status/${id}/`, {
+                status
+            });
+
+            const updatedData = data.map((item: CVLDResultProps) => {
+                if (item.id === id) {
+                    return {
+                        ...item,
+                        status: response.data.status
+                    }
+                }
+
+                return item;
+            });
+
+            setData(updatedData);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const updateOficioTipo = async (id: string, tipo: tipoOficio) => {
+        try {
+            const response = await api.put(`/api/extrato/update/tipo/${id}/`, {
+                tipo_do_oficio: tipo
+            });
+
+            const updatedData = data.map((item: CVLDResultProps) => {
+                if (item.id === id) {
+                    return {
+                        ...item,
+                        tipo_do_oficio: response.data.tipo_do_oficio
+                    }
+                }
+
+                return item;
+            });
+
+            setData(updatedData);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     return (
         <div>
             <Flowbite theme={{ theme: customTheme }}>
@@ -61,15 +113,44 @@ const TableView = ({data, showModalMessage, loading,  setModalOptions, fetchDele
                                     <TableRow key={item.id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
                                         <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
                                             <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
-                                                {item.tipo_do_oficio.toUpperCase()}
+                                                <select className="text-[12px] bg-transparent border-none py-0" onChange={(e) => updateOficioTipo(item.id, e.target.value as tipoOficio)}>
+                                                    {
+                                                        item.tipo_do_oficio && (
+                                                            <option value={item.tipo_do_oficio} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                                {item.tipo_do_oficio}
+                                                            </option>
+                                                        )
+                                                    }
+                                                    {enumTipoOficiosList.filter((status) => status !== item.tipo_do_oficio).map((status) => (
+                                                        <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                            {status}
+                                                        </option>
+                                                    ))}
+                                                </select>
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="text-center font-semibold text-[12px]">{item?.credor || ""}</TableCell>
                                         <TableCell className="text-center font-semibold text-[12px]">{numberFormat(item.valor_liquido_disponivel)}</TableCell>
                                         <TableCell className="text-center items-center">
                                             <Badge color="teal" size="sm" className="max-w-max text-center text-[12px]">
-                                                {item.status}
+                                            <select className="text-[12px] bg-transparent border-none py-0" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
+                                                {
+                                                    item.status && (
+                                                        <option value={item.status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                            {item.status}
+                                                        </option>
+                                                    )
+                                                }
+                                                {enumOficiosList.filter((status) => status !== item.status).map((status) => (
+                                                    <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                        {status}
+                                                    </option>
+                                                ))}
+
+                                            </select>
                                             </Badge>
+
+
                                         </TableCell>
                                         <TableCell className="text-center">{
                                             <Badge aria-disabled size="sm" color="yellow" className="cursor-not-allowed hover:bg-yellow-200 dark:hover:bg-yellow-400 transition-all duration-300 justify-center">
@@ -80,6 +161,18 @@ const TableView = ({data, showModalMessage, loading,  setModalOptions, fetchDele
                                                     <BiTask className="text-green-700 hover:text-green-950 dark:text-prussianBlue dark:hover:text-stone-300 h-4 w-4 self-center transition-all duration-300" />
                                                 </div>
                                             </Badge>}
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                            <button style={{
+                                                cursor: loading ? 'wait' : 'pointer'
+                                            }} onClick={() => {
+                                                setOpenDrawer(true);
+                                                fetchDataById(item.id);
+                                            }} className="bg-transparent border-none transition-all duration-300 text-primary font-medium hover:text-blue-500 dark:hover:text-white dark:text-blue-500 border border-blue-500 hover:border-transparent">
+                                                <span className="text-[12px]">
+                                                    DETALHES
+                                                </span>
+                                            </button>
                                         </TableCell>
                                         <TableCell className="text-center">
                                             {showModalMessage ? (
@@ -94,18 +187,6 @@ const TableView = ({data, showModalMessage, loading,  setModalOptions, fetchDele
                                                     <BsFillTrashFill className="text-meta-1 hover:text-meta-7 dark:text-white dark:hover:text-stone-300 h-4 w-4 self-center" />
                                                 </button>
                                             )}
-                                        </TableCell>
-                                        <TableCell className="text-center">
-                                            <button style={{
-                                                cursor: loading ? 'wait' : 'pointer'
-                                            }} onClick={() => {
-                                                setOpenDrawer(true);
-                                                fetchDataById(item.id);
-                                            }} className="bg-transparent border-none transition-all duration-300 text-primary font-medium hover:text-blue-500 dark:hover:text-white dark:text-blue-500 border border-blue-500 hover:border-transparent">
-                                                <span className="text-[12px]">
-                                                    DETALHES
-                                                </span>
-                                            </button>
                                         </TableCell>
                                     </TableRow>
                                 ))}
