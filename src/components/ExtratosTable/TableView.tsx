@@ -1,13 +1,14 @@
 import { Badge, CustomFlowbiteTheme, Flowbite, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from 'flowbite-react';
 import numberFormat from "@/functions/formaters/numberFormat";
 import { ExtractTableProps } from '@/types/extractTable';
-import React from 'react';
-import { BiTask } from 'react-icons/bi';
+import React, { useState } from 'react';
+import { BiPlug, BiPlus, BiTask } from 'react-icons/bi';
 import { CVLDResultProps } from '@/interfaces/IResultCVLD';
 import { BsFillTrashFill } from 'react-icons/bs';
 import statusOficio from '@/enums/statusOficio.enum';
 import tipoOficio from '@/enums/tipoOficio.enum';
 import api from '@/utils/api';
+import { TaskDrawer } from '../TaskElements';
 
 const customTheme: CustomFlowbiteTheme = {
     table: {
@@ -39,6 +40,7 @@ const customTheme: CustomFlowbiteTheme = {
 const TableView = ({data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDrawer, fetchDataById}: ExtractTableProps) => {
     const enumOficiosList = Object.values(statusOficio);
     const enumTipoOficiosList = Object.values(tipoOficio);
+    const [openTaskDrawer, setOpenTaskDrawer] = useState(false);
 
     const updateOficioStatus = async (id: string, status: statusOficio) => {
         try {
@@ -94,7 +96,7 @@ const TableView = ({data, showModalMessage, loading, setData, setModalOptions, f
                         <TableHeadCell className="text-center w-[120px]">Oficio</TableHeadCell>
                         <TableHeadCell className="text-center">Nome do Credor</TableHeadCell>
                         <TableHeadCell className="text-center w-[180px]">Valor Líquido</TableHeadCell>
-                        <TableHeadCell className="text-center w-[140px]">Status</TableHeadCell>
+                        <TableHeadCell className="text-center w-[100px]">Status</TableHeadCell>
                         <TableHeadCell className="text-center w-[120px]">
                             <span className="sr-only text-center">Tarefas</span>
                         </TableHeadCell>
@@ -152,27 +154,34 @@ const TableView = ({data, showModalMessage, loading, setData, setModalOptions, f
 
 
                                         </TableCell>
-                                        <TableCell className="text-center">{
-                                            <Badge aria-disabled size="sm" color="yellow" className="cursor-not-allowed hover:bg-yellow-200 dark:hover:bg-yellow-400 transition-all duration-300 justify-center">
-                                                <div className="flex flex-row w-full justify-between items-baseline align-middle gap-1">
-                                                    <span className="text-[12px] font-medium text-gray-900 dark:text-prussianBlue">
-                                                        TAREFA
+                                        <TableCell className="text-center">
+                                            <Badge onClick={
+                                                () => setOpenTaskDrawer(true)
+                                            } size="sm" color="yellow" className="hover:bg-yellow-200 dark:hover:bg-yellow-400 transition-all duration-300 justify-center px-2 py-1">
+                                                <div className="flex flex-row w-full justify-between align-middle gap-2">
+                                                    <span className="text-[12px] font-bold
+                                                     text-yellow-700 dark:text-gray-400">
+                                                        TAREFAS
                                                     </span>
                                                     <BiTask className="text-green-700 hover:text-green-950 dark:text-prussianBlue dark:hover:text-stone-300 h-4 w-4 self-center transition-all duration-300" />
                                                 </div>
-                                            </Badge>}
+                                            </Badge>
+
                                         </TableCell>
                                         <TableCell className="text-center">
-                                            <button style={{
+                                            <Badge color="blue" size="sm" style={{
                                                 cursor: loading ? 'wait' : 'pointer'
                                             }} onClick={() => {
                                                 setOpenDrawer(true);
                                                 fetchDataById(item.id);
-                                            }} className="bg-transparent border-none transition-all duration-300 text-primary font-medium hover:text-blue-500 dark:hover:text-white dark:text-blue-500 border border-blue-500 hover:border-transparent">
-                                                <span className="text-[12px]">
+                                            }} className="border-none transition-all duration-300 text-primary font-medium hover:text-blue-500 dark:hover:text-white dark:text-blue-500 border border-blue-500 hover:border-transparent">
+                                            <div className="flex flex-row w-full justify-between align-middle gap-2">
+                                                <span className="text-[12px] font-bold">
                                                     DETALHES
                                                 </span>
-                                            </button>
+                                                <BiPlus className="text-blue-500 dark:text-blue-500 h-4 w-4 self-center" />
+                                            </div>
+                                            </Badge>
                                         </TableCell>
                                         <TableCell className="text-center">
                                             {showModalMessage ? (
@@ -195,6 +204,7 @@ const TableView = ({data, showModalMessage, loading, setData, setModalOptions, f
                     </TableBody>
                 </Table>
             </Flowbite>
+            <TaskDrawer open={openTaskDrawer} setOpen={setOpenTaskDrawer} />
             {data?.length === 0 && (
                 <p className="text-center py-5 bg-white dark:bg-boxdark rounded-b-sm">
                     Não há registros para exibir
