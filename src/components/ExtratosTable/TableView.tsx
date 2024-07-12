@@ -41,6 +41,7 @@ const TableView = ({data, showModalMessage, loading, setData, setModalOptions, f
     const enumOficiosList = Object.values(statusOficio);
     const enumTipoOficiosList = Object.values(tipoOficio);
     const [openTaskDrawer, setOpenTaskDrawer] = useState(false);
+    const [extratoId, setExtractId] = useState<string>("");
 
     const updateOficioStatus = async (id: string, status: statusOficio) => {
         try {
@@ -156,7 +157,10 @@ const TableView = ({data, showModalMessage, loading, setData, setModalOptions, f
                                         </TableCell>
                                         <TableCell className="text-center">
                                             <Badge onClick={
-                                                () => setOpenTaskDrawer(true)
+                                                    () => {
+                                                        setOpenTaskDrawer(true);
+                                                        setExtractId(item.id);
+                                                    }
                                             } size="sm" color="yellow" className="hover:bg-yellow-200 dark:hover:bg-yellow-400 transition-all duration-300 justify-center px-2 py-1">
                                                 <div className="flex flex-row w-full justify-between align-middle gap-2">
                                                     <span className="text-[12px] font-bold
@@ -204,7 +208,7 @@ const TableView = ({data, showModalMessage, loading, setData, setModalOptions, f
                     </TableBody>
                 </Table>
             </Flowbite>
-            <TaskDrawer open={openTaskDrawer} setOpen={setOpenTaskDrawer} />
+            <TaskDrawer open={openTaskDrawer} setOpen={setOpenTaskDrawer} id={extratoId} />
             {data?.length === 0 && (
                 <p className="text-center py-5 bg-white dark:bg-boxdark rounded-b-sm">
                     Não há registros para exibir
