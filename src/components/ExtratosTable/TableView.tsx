@@ -9,6 +9,7 @@ import statusOficio from '@/enums/statusOficio.enum';
 import tipoOficio from '@/enums/tipoOficio.enum';
 import api from '@/utils/api';
 import { TaskDrawer } from '../TaskElements';
+import useUpdateOficio from '@/hooks/useUpdateOficio';
 
 const customTheme: CustomFlowbiteTheme = {
     table: {
@@ -37,56 +38,15 @@ const customTheme: CustomFlowbiteTheme = {
     }
 }
 
-const TableView = ({data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDrawer, fetchDataById}: ExtractTableProps) => {
+const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById }: ExtractTableProps) => {
     const enumOficiosList = Object.values(statusOficio);
     const enumTipoOficiosList = Object.values(tipoOficio);
-    const [openTaskDrawer, setOpenTaskDrawer] = useState(false);
-    const [extratoId, setExtractId] = useState<string>("");
 
-    const updateOficioStatus = async (id: string, status: statusOficio) => {
-        try {
-            const response = await api.put(`/api/extrato/update/status/${id}/`, {
-                status
-            });
+    const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
 
-            const updatedData = data.map((item: CVLDResultProps) => {
-                if (item.id === id) {
-                    return {
-                        ...item,
-                        status: response.data.status
-                    }
-                }
-
-                return item;
-            });
-
-            setData(updatedData);
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    const updateOficioTipo = async (id: string, tipo: tipoOficio) => {
-        try {
-            const response = await api.put(`/api/extrato/update/tipo/${id}/`, {
-                tipo_do_oficio: tipo
-            });
-
-            const updatedData = data.map((item: CVLDResultProps) => {
-                if (item.id === id) {
-                    return {
-                        ...item,
-                        tipo_do_oficio: response.data.tipo_do_oficio
-                    }
-                }
-
-                return item;
-            });
-
-            setData(updatedData);
-        } catch (error) {
-            console.error(error);
-        }
+    const handleTask = (id: string) => {
+        setOpenTaskDrawer(true);
+        setExtractId(id);
     }
 
     return (
@@ -136,38 +96,32 @@ const TableView = ({data, showModalMessage, loading, setData, setModalOptions, f
                                         <TableCell className="text-center font-semibold text-[12px]">{numberFormat(item.valor_liquido_disponivel)}</TableCell>
                                         <TableCell className="text-center items-center">
                                             <Badge color="teal" size="sm" className="max-w-max text-center text-[12px]">
-                                            <select className="text-[12px] bg-transparent border-none py-0" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
-                                                {
-                                                    item.status && (
-                                                        <option value={item.status} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                            {item.status}
+                                                <select className="text-[12px] bg-transparent border-none py-0" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
+                                                    {
+                                                        item.status && (
+                                                            <option value={item.status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                                {item.status}
+                                                            </option>
+                                                        )
+                                                    }
+                                                    {enumOficiosList.filter((status) => status !== item.status).map((status) => (
+                                                        <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                            {status}
                                                         </option>
-                                                    )
-                                                }
-                                                {enumOficiosList.filter((status) => status !== item.status).map((status) => (
-                                                    <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                        {status}
-                                                    </option>
-                                                ))}
+                                                    ))}
 
-                                            </select>
+                                                </select>
                                             </Badge>
 
 
                                         </TableCell>
                                         <TableCell className="text-center">
-                                            <Badge onClick={
-                                                    () => {
-                                                        setOpenTaskDrawer(true);
-                                                        setExtractId(item.id);
-                                                    }
-                                            } size="sm" color="yellow" className="hover:bg-yellow-200 dark:hover:bg-yellow-400 transition-all duration-300 justify-center px-2 py-1">
+                                            <Badge onClick={() => handleTask(item.id)} size="sm" color="yellow" className="hover:bg-yellow-200 dark:hover:bg-yellow-300 transition-all duration-300 justify-center px-2 py-1 cursor-pointer group">
                                                 <div className="flex flex-row w-full justify-between align-middle gap-2">
-                                                    <span className="text-[12px] font-bold
-                                                     text-yellow-700 dark:text-gray-400">
+                                                    <span className="text-[12px] font-bold transition-all duration-200">
                                                         TAREFAS
                                                     </span>
-                                                    <BiTask className="text-green-700 hover:text-green-950 dark:text-prussianBlue dark:hover:text-stone-300 h-4 w-4 self-center transition-all duration-300" />
+                                                    <BiTask className="h-4 w-4 self-center transition-all duration-200" />
                                                 </div>
                                             </Badge>
 
@@ -176,15 +130,15 @@ const TableView = ({data, showModalMessage, loading, setData, setModalOptions, f
                                             <Badge color="blue" size="sm" style={{
                                                 cursor: loading ? 'wait' : 'pointer'
                                             }} onClick={() => {
-                                                setOpenDrawer(true);
+                                                setOpenDetailsDrawer(true);
                                                 fetchDataById(item.id);
-                                            }} className="border-none transition-all duration-300 text-primary font-medium hover:text-blue-500 dark:hover:text-white dark:text-blue-500 border border-blue-500 hover:border-transparent">
-                                            <div className="flex flex-row w-full justify-between align-middle gap-2">
-                                                <span className="text-[12px] font-bold">
-                                                    DETALHES
-                                                </span>
-                                                <BiPlus className="text-blue-500 dark:text-blue-500 h-4 w-4 self-center" />
-                                            </div>
+                                            }} className="border-none transition-all duration-300 text-blue-700 font-medium px-2 py-1 hover:bg-blue-200 dark:hover:bg-blue-400 group">
+                                                <div className="flex flex-row w-full justify-between align-middle gap-2">
+                                                    <span className="text-[12px] font-bold">
+                                                        DETALHES
+                                                    </span>
+                                                    <BiPlus className="h-4 w-4 self-center" />
+                                                </div>
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="text-center">
@@ -208,7 +162,7 @@ const TableView = ({data, showModalMessage, loading, setData, setModalOptions, f
                     </TableBody>
                 </Table>
             </Flowbite>
-            <TaskDrawer open={openTaskDrawer} setOpen={setOpenTaskDrawer} id={extratoId} />
+            {/* <TaskDrawer open={openTaskDrawer} setOpen={setOpenTaskDrawer} id={extratoId} /> */}
             {data?.length === 0 && (
                 <p className="text-center py-5 bg-white dark:bg-boxdark rounded-b-sm">
                     Não há registros para exibir

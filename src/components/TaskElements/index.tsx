@@ -1,8 +1,9 @@
-import { Avatar, Badge, Button, Datepicker, Drawer, Label, Textarea, TextInput, theme } from "flowbite-react";
+import { Drawer, Flowbite } from "flowbite-react";
 import { Suspense, useState } from "react";
 import { BiTask } from "react-icons/bi";
 import { HiCalendar, HiUserAdd } from "react-icons/hi";
 import { twMerge } from "tailwind-merge";
+import { customDrawerTheme } from "@/themes/FlowbiteThemes";
 import {
   useForm, SubmitHandler,
   Controller
@@ -24,6 +25,7 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
 
   const onSubmit: SubmitHandler<any> = async (data) => {
     data["extrato_id"] = id;
+    console.log(id)
     const response = await api.post("api/task/create/", data);
     console.log(response);
   };
@@ -33,38 +35,34 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
       {/* <div className="flex min-h-[50vh] items-center justify-center">
         <Button onClick={}>Show drawer</Button>
       </div> */}
-
-
-      <Drawer open={open} onClose={handleClose} className="dark:bg-boxdark">
-        <Drawer.Header title="NOVA TAREFA" titleIcon={BiTask} className="dark:text-white" />
-        <Drawer.Items>
-          <p className="text-xs text-gray-600 dark:text-gray-400 text-center">Crie uma nova tarefa para o extrato</p>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="my-6">
-              <Label htmlFor="title" className="mb-2 block">
-                Título
-              </Label>
-              <TextInput id="title" placeholder="Apple Keynote" {
-                ...register("title")
-
-              } />
-            </div>
-            <div className="mb-6">
-              <Label htmlFor="description" className="mb-2 block">
-                Descrição
-              </Label>
-              <Textarea id="description" placeholder="Write event description..." rows={4} {
-                ...register("description")
-
-              } />
-            </div>
-            <div className="mb-6 w-full">
-              <input type="date" id="due_date" placeholder="Data de entrega" className="block w-full rounded-lg border text-sm disabled:cursor-not-allowed disabled:opacity-50 border-gray-300 bg-gray-50 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500" {
-                ...register("due_date")
-
-              } />
-            </div>
-            {/* <div className="mb-6">
+      <Flowbite theme={{ theme: customDrawerTheme }}>
+        <Drawer open={open} onClose={handleClose}>
+          <Drawer.Header title="NOVA TAREFA" titleIcon={BiTask} />
+          <Drawer.Items>
+            <p className="text-sm text-center">Crie uma nova tarefa para o extrato</p>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="my-6">
+                <label htmlFor="title" className="mb-2 block">
+                  Título
+                </label>
+                <input type='text' id="title" placeholder="Apple Keynote"
+                  {...register("title")}
+                  className="w-full rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
+                />
+              </div>
+              <div className="mb-6">
+                <label htmlFor="description" className="mb-2 block">
+                  Descrição
+                </label>
+                <textarea id="description" placeholder="Write event description..." rows={4}
+                  {...register("description")}
+                  className="w-full rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
+                />
+              </div>
+              <div className="mb-6 w-full">
+                <input type="date" id="due_date" placeholder="Data de entrega" className="w-full rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2" {...register("due_date")} />
+              </div>
+              {/* <div className="mb-6">
               <TextInput
                 id="guests"
                 name="guests"
@@ -91,13 +89,14 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
               <Avatar alt="" img="/images/people/profile-picture-3.jpg" rounded size="sm" stacked />
               <Avatar alt="" img="/images/people/profile-picture-4.jpg" rounded size="sm" stacked />
             </Avatar.Group> */}
-            <button className="w-full flex items-center justify-center align-middle bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200 dark:bg-cyan-700 dark:hover:bg-cyan-800" type="submit">
-              <HiCalendar className="mr-2 items-center" />
-              Criar Tarefa
-            </button>
-          </form>
-        </Drawer.Items>
-      </Drawer>
+              <button className="w-full flex items-center justify-center py-2 px-4 bg-blue-700 hover:bg-blue-800 text-white rounded-md transition-all duration-200" type="submit">
+                <HiCalendar className="mr-2" />
+                Criar Tarefa
+              </button>
+            </form>
+          </Drawer.Items>
+        </Drawer>
+      </Flowbite>
     </>
   );
 }

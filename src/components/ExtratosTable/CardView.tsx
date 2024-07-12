@@ -5,8 +5,22 @@ import { BiListUl, BiTask } from 'react-icons/bi';
 import { CVLDResultProps } from '@/interfaces/IResultCVLD';
 import { BsFillTrashFill } from 'react-icons/bs';
 import { Badge } from "flowbite-react";
+import statusOficio from "@/enums/statusOficio.enum";
+import tipoOficio from "@/enums/tipoOficio.enum";
+import useUpdateOficio from "@/hooks/useUpdateOficio";
 
-const CardView = ({ className, data, showModalMessage, loading, setModalOptions, fetchDelete, setOpenDrawer, fetchDataById }: ExtractTableProps) => {
+const CardView = ({ className, data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById }: ExtractTableProps) => {
+
+    const enumOficiosList = Object.values(statusOficio);
+    const enumTipoOficiosList = Object.values(tipoOficio);
+
+    const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
+
+    const handleTask = (id: string) => {
+        setOpenTaskDrawer(true);
+        setExtractId(id);
+    }
+
     return (
         <div className={className}>
             <div className="flex gap-4 flex-wrap">
@@ -14,7 +28,7 @@ const CardView = ({ className, data, showModalMessage, loading, setModalOptions,
                 {data?.length > 0 ? (
                     <>
                         {data.map((item: CVLDResultProps) => (
-                            <div key={item.id} className="relative flex-1 flex flex-col justify-between xsm:w-full md:max-w-[332px] lg:max-w-[305px] xl:max-w-90 bg-white border border-stroke shadow-3 gap-5 p-4 rounded-md dark:bg-gray-900 dark:border-strokedark">
+                            <div key={item.id} className="relative flex-1 flex flex-col justify-between xsm:w-full md:max-w-[332px] lg:max-w-[305px] xl:max-w-90 bg-white border border-stroke shadow-3 gap-5 p-4 rounded-md dark:bg-black/60 dark:border-slate-600">
                                 <div className="absolute top-6 right-4">
                                     {showModalMessage ? (
                                         <button onClick={() => setModalOptions({
@@ -41,19 +55,46 @@ const CardView = ({ className, data, showModalMessage, loading, setModalOptions,
                                 <div className="flex gap-2">
                                     <div>
                                         <p className="text-[10px]">TIPO</p>
-                                        <Badge color="indigo" size="sm" className="max-w-full text-[10px]">
-                                            {item.tipo_do_oficio.toUpperCase()}
+                                        <Badge color="indigo" size="sm" className="w-fit text-[10px]">
+                                            <select className="text-[10px] w-full bg-transparent border-none py-0 !pl-2 !pr-8" onChange={(e) => updateOficioTipo(item.id, e.target.value as tipoOficio)}>
+                                                {
+                                                    item.tipo_do_oficio && (
+                                                        <option value={item.tipo_do_oficio} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                            {item.tipo_do_oficio}
+                                                        </option>
+                                                    )
+                                                }
+                                                {enumTipoOficiosList.filter((status) => status !== item.tipo_do_oficio).map((status) => (
+                                                    <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                        {status}
+                                                    </option>
+                                                ))}
+                                            </select>
                                         </Badge>
                                     </div>
                                     <div>
                                         <p className="text-[10px]">STATUS</p>
                                         <Badge color="teal" size="sm" className="max-w-max text-center text-[10px]">
-                                            {item.status}
+                                            <select className="text-[10px] w-full bg-transparent border-none py-0 !pl-2 !pr-8" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
+                                                {
+                                                    item.status && (
+                                                        <option value={item.status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                            {item.status}
+                                                        </option>
+                                                    )
+                                                }
+                                                {enumOficiosList.filter((status) => status !== item.status).map((status) => (
+                                                    <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                        {status}
+                                                    </option>
+                                                ))}
+
+                                            </select>
                                         </Badge>
                                     </div>
                                 </div>
                                 <div className="flex w-full gap-4 justify-center">
-                                    <button className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-800 hover:text-snow hover:-translate-y-1 transition-all duration-300">
+                                    <button onClick={() => handleTask(item.id)} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-800 hover:border-blue-800 hover:text-snow hover:-translate-y-1 transition-all duration-300">
                                         <span className="text-sm font-medium">TAREFA</span>
                                         <BiTask className="w-4 h-4" />
                                     </button>
@@ -62,9 +103,9 @@ const CardView = ({ className, data, showModalMessage, loading, setModalOptions,
                                         <BiTask className="w-4 h-4" />
                                     </button> */}
                                     <button onClick={() => {
-                                        setOpenDrawer(true);
+                                        setOpenDetailsDrawer(true);
                                         fetchDataById(item.id);
-                                    }} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-800 hover:text-snow hover:-translate-y-1 transition-all duration-300">
+                                    }} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-800 hover:border-blue-800 hover:text-snow hover:-translate-y-1 transition-all duration-300">
                                         <span className="text-sm font-medium">DETALHES</span>
                                         <BiListUl className="w-4 h-4" />
                                     </button>
