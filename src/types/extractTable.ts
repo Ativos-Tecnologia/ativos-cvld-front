@@ -9,6 +9,8 @@ export type ExtractTableProps = {
         extractId: string
     }>>;
     fetchDelete: (id: string) => void;
-    setOpenDrawer: React.Dispatch<React.SetStateAction<boolean>>;
+    setOpenDetailsDrawer: React.Dispatch<React.SetStateAction<boolean>>;
+    setOpenTaskDrawer: React.Dispatch<React.SetStateAction<boolean>>;
+    setExtractId: React.Dispatch<React.SetStateAction<string>>;
     fetchDataById: (id: string) => void;
 }
