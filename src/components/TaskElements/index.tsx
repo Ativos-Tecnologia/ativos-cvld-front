@@ -24,7 +24,7 @@ export type TaskRelatedItems = {
 
 export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
 
-  const taskTitlePlaceholders =  ["Entrar em contato com o cliente", "Reunião com a equipe", "Reunião com o cliente", "Reunião com o fornecedor", "Reunião com o time de desenvolvimento", "Reunião com o time de marketing", "Reunião com o time de vendas"];
+  const taskTitlePlaceholders = ["Entrar em contato com o cliente", "Reunião com a equipe", "Reunião com o cliente", "Reunião com o fornecedor", "Reunião com o time de desenvolvimento", "Reunião com o time de marketing", "Reunião com o time de vendas"];
 
   const taskDescriptionPlaceholders = ["Necessário entrar em contato com o cliente para alinhar as expectativas", "Reunião com a equipe para alinhar as metas do mês", "Reunião com o cliente para apresentar o novo projeto", "Reunião com o fornecedor para alinhar as entregas", "Reunião com o time de desenvolvimento para alinhar as entregas", "Reunião com o time de marketing para alinhar as entregas", "Reunião com o time de vendas para alinhar as entregas"];
 
@@ -74,57 +74,60 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
         <Button onClick={}>Show drawer</Button>
       </div> */}
 
-  <Flowbite theme={{ theme: customDrawerTheme }}>
-      <Drawer open={open} onClose={handleClose}>
-        <Drawer.Header title="NOVA TAREFA" titleIcon={BiTask} className="dark:text-white" />
-        <Drawer.Items>
-          <p className="text-xs text-gray-600 dark:text-gray-400 text-center">Crie uma nova tarefa para o extrato</p>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="my-6">
-              <Label htmlFor="title" className="mb-2 block">
-                Título
-              </Label>
-              <TextInput id="title" placeholder={
-               taskTitlePlaceholders[Math.floor(Math.random() * taskTitlePlaceholders.length + 1)]
-              } {
-                ...register("title")
+      <Flowbite theme={{ theme: customDrawerTheme }}>
+        <Drawer open={open} onClose={handleClose} className="w-[360px]">
+          <Drawer.Header title="NOVA TAREFA" titleIcon={BiTask} className="dark:text-white" />
+          <Drawer.Items>
+            <p className="text-sm text-center">Crie uma nova tarefa para o extrato</p>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="my-6">
+                <label htmlFor="title" className="mb-2 block">
+                  Título
+                </label>
+                <input type='text' id="title" placeholder={
+                  taskTitlePlaceholders[Math.floor(Math.random() * taskTitlePlaceholders.length)]
+                }
+                  {...register("title")}
+                  className="w-full rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
+                />
+              </div>
+              <div className="mb-6">
+                <label htmlFor="description" className="mb-2 block">
+                  Descrição
+                </label>
+                <textarea id="description" placeholder={
+                  taskDescriptionPlaceholders[Math.floor(Math.random() * taskDescriptionPlaceholders.length)]
+                } rows={4}
+                  {...register("description")}
+                  className="w-full rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
+                />
+              </div>
+              <div className="mb-6 w-full">
+                <input type="date" id="due_date" placeholder="Data de entrega" className="w-full rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2" {
+                  ...register("due_date")
 
-              } />
-            </div>
-            <div className="mb-6">
-              <Label htmlFor="description" className="mb-2 block">
-                Descrição
-              </Label>
-              <textarea id="description" placeholder={
-                taskDescriptionPlaceholders[Math.floor(Math.random() * taskDescriptionPlaceholders.length + 1)]
-              } rows={4} {
-                ...register("description")
+                } />
+              </div>
+              <div className="mb-6 grid grid-cols-2 gap-4">
+                <Badge size="sm" color="cyan" className="mb-2 px-0">
+                  <select id="status" className="text-[10px] w-full overflow-hidden text-ellipsis whitespace-nowrap focus-within:ring-0 bg-transparent border-none py-0 col-span-1" {
+                    ...register("statusName")
 
-              } />
-            </div>
-            <div className="mb-6 w-full">
-              <input type="date" id="due_date" placeholder="Data de entrega" className="block w-full rounded-lg border text-sm disabled:cursor-not-allowed disabled:opacity-50 border-gray-300 bg-gray-50 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500" {
-                ...register("due_date")
-
-              } />
-            </div>
-            <div className="mb-6 grid grid-cols-2 gap-4">
-              <Badge size="sm" color="cyan" className="mb-2 px-0">
-              <select id="status" className="text-[10px] bg-transparent border-none py-0 col-span-1" {
-                ...register("statusName")
-
-              }>
-                <option className={
-                  "text-[10px] bg-transparent border-none py-0 col-span-1"
-                } defaultValue={""} value="" disabled><span className="pl-0 text-indigo-900">STATUS DA TAREFA</span></option>
-                <option className="text-[10px] bg-transparent border-none py-0 col-span-1" value="">VAZIO</option>
-                <hr className="col-span-2 py-2" />
-                {taskStatus.map((status) => (
-                  <option key={status.id} value={status.id}>{status.statusName.toUpperCase()}</option>
-                ))}
-              </select>
-              </Badge>
-              {/* <Badge size="sm" color="lime" className="mb-2 px-0">
+                  }>
+                    <option className={
+                      "text-[10px] bg-transparent border-none py-0 col-span-1"
+                    } defaultValue={""} value="" disabled><span className="pl-0 text-indigo-900">STATUS DA TAREFA</span></option>
+                    <option className="text-[10px] bg-transparent border-none py-0 col-span-1" value="">VAZIO</option>
+                    <hr className="col-span-2 py-2" />
+                    {taskStatus.map((status) => (
+                      <option
+                      key={status.id} 
+                      value={status.id}>{status.statusName.toUpperCase()}
+                      </option>
+                    ))}
+                  </select>
+                </Badge>
+                {/* <Badge size="sm" color="lime" className="mb-2 px-0">
               <select id="goal" className="text-[10px] bg-transparent border-none py-0 col-span-1" {
                 ...register("goalName")
 
@@ -137,23 +140,23 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
                 ))}
               </select>
               </Badge> */}
-              <Controller
-                name="goalName"
-                control={control}
-                render={({ field: { onChange, onBlur, value, ref } }) => (
-                  <MarvelousSelect
-                    label="METAS"
-                    data={taskGoals}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    value={value}
-                    ref={ref}
-                    nameRef="goalName"
-                  />
-                )}
-              />
-            </div>
-            {/* <div className="mb-6">
+                <Controller
+                  name="goalName"
+                  control={control}
+                  render={({ field: { onChange, onBlur, value, ref } }) => (
+                    <MarvelousSelect
+                      label="METAS"
+                      data={taskGoals}
+                      onChange={onChange}
+                      onBlur={onBlur}
+                      value={value}
+                      ref={ref}
+                      nameRef="goalName"
+                    />
+                  )}
+                />
+              </div>
+              {/* <div className="mb-6">
       <Flowbite theme={{ theme: customDrawerTheme }}>
         <Drawer open={open} onClose={handleClose}>
           <Drawer.Header title="NOVA TAREFA" titleIcon={BiTask} />

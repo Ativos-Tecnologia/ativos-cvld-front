@@ -27,7 +27,7 @@ export const customDrawerTheme: CustomFlowbiteTheme = {
         },
         "header": {
             "inner": {
-                "closeButton": "absolute end-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-white/30 transition-all duration-200",
+                "closeButton": "absolute end-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 dark:text-gray-100 dark:hover:text-black hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-white/30 transition-all duration-200",
                 "closeIcon": "h-4 w-4",
                 "titleIcon": "me-2.5 h-4 w-4 text-gray-700 dark:text-white",
                 "titleText": "mb-4 inline-flex items-center text-base font-semibold dark:text-white"
