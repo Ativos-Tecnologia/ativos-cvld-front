@@ -75,7 +75,7 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
               onChange("");
             }} />
           ) : (
-            (isOpen ? <BsChevronUp className="w-4 h-4 mr-2 animate-topbottom1" /> : <BsChevronUp className="w-4 h-4 mr-2 animate-bottomtotoparrow" />)
+            (isOpen ? <BsChevronUp className="w-3 h-3 mr-2 animate-topbottom1" /> : <BsChevronUp className="w-3 h-3 mr-2 animate-bottomtotoparrow" />)
           )
         }
       </div>
@@ -152,7 +152,6 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
               </Popover>
             </div>
           ))}
-
       </div>
     </div>
   )});
