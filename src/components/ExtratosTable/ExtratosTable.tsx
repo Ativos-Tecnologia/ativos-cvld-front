@@ -8,6 +8,7 @@ import { CVLDResultProps } from "@/interfaces/IResultCVLD";
 import Loader from "../common/Loader";
 import TableView from "./TableView";
 import CardView from "./CardView";
+import { TaskDrawer } from "../TaskElements";
 
 export type LocalShowOptionsProps = {
   key: string;
@@ -36,7 +37,9 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   const [localShowOptions, setLocalShowOptions] = useState<LocalShowOptionsProps[]>([]);
   const [showModalMessage, setShowModalMessage] = useState<boolean>(true);
   const [lastId, setLastId] = useState<string | null>(null);
-  const [openDrawer, setOpenDrawer] = useState<boolean>(false);
+  const [extratoId, setExtractId] = useState<string>("");
+  const [openDetailsDrawer, setOpenDetailsDrawer] = useState<boolean>(false);
+  const [openTaskDrawer, setOpenTaskDrawer] = useState<boolean>(false);
   const [modalOptions, setModalOptions] = useState({
     open: false,
     extractId: ''
@@ -87,10 +90,9 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
   const fetchDataById = async (id: string) => {
     setLoading(true);
-    console.log(loading);
 
     if (lastId === id) {
-      setOpenDrawer(!openDrawer);
+      setOpenDetailsDrawer(!openDetailsDrawer);
       setLoading(false);
       return;
     }
@@ -231,7 +233,9 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                 loading={loading}
                 setModalOptions={setModalOptions}
                 fetchDelete={fetchDelete}
-                setOpenDrawer={setOpenDrawer}
+                setOpenDetailsDrawer={setOpenDetailsDrawer}
+                setOpenTaskDrawer={setOpenTaskDrawer}
+                setExtractId={setExtractId}
                 fetchDataById={fetchDataById}
               />
             }
@@ -244,7 +248,9 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                 loading={loading}
                 setModalOptions={setModalOptions}
                 fetchDelete={fetchDelete}
-                setOpenDrawer={setOpenDrawer}
+                setOpenDetailsDrawer={setOpenDetailsDrawer}
+                setOpenTaskDrawer={setOpenTaskDrawer} // ainda não utilizado
+                setExtractId={setExtractId} // ainda não utilizado
                 fetchDataById={fetchDataById}
               />
             }
@@ -265,14 +271,17 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
             loading={loading}
             setModalOptions={setModalOptions}
             fetchDelete={fetchDelete}
-            setOpenDrawer={setOpenDrawer}
+            setOpenDetailsDrawer={setOpenDetailsDrawer}
+            setOpenTaskDrawer={setOpenTaskDrawer} // ainda não utilizado
+            setExtractId={setExtractId} // ainda não utilizado
             fetchDataById={fetchDataById}
           />
         </div>
         /* end mobile view */
       )}
       <Suspense fallback={<Loader />}>
-        <AwesomeDrawer data={item} loading={loading} setData={setItem} open={openDrawer} setOpen={setOpenDrawer} />
+        <AwesomeDrawer data={item} loading={loading} setData={setItem} open={openDetailsDrawer} setOpen={setOpenDetailsDrawer} />
+        <TaskDrawer id={extratoId} open={openTaskDrawer} setOpen={setOpenTaskDrawer} />
       </Suspense>
       {showModalMessage && (
         <DeleteExtractAlert

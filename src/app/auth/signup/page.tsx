@@ -115,19 +115,27 @@ const SignUp: React.FC = () => {
       <div className="p-4">
         <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
           <div className="flex flex-wrap items-center">
+            {/* bloco desktop */}
             <div className="hidden w-full xl:block xl:w-1/2">
               <div className="px-26 py-17.5 mb-[15%] text-center">
                 <Link className="mb-5.5 inline-block" href="/">
-                  <Image
-                    className="hidden dark:block"
-                    src={"/images/logo/logo-dark.svg"}
-                    alt="Logo"
-                    width={176}
-                    height={32}
-                  />
+                  <div className="hidden dark:flex flex-col items-center gap-3 bg">
+                    <Image
+                      src={"/images/logo/celer-app-logo-dark.svg"}
+                      alt="Logo"
+                      width={160}
+                      height={32}
+                    />
+                    <Image
+                      src={"/images/logo/celer-app-text-dark.svg"}
+                      alt="Logo"
+                      width={200}
+                      height={32}
+                    />
+                  </div>
                   <div className="dark:hidden flex flex-col items-center gap-3 bg">
                     <Image
-                      src={"/images/logo/logo-new-celer.webp"}
+                      src={"/images/logo/celer-app-logo.svg"}
                       alt="Logo"
                       width={160}
                       height={32}
@@ -145,28 +153,49 @@ const SignUp: React.FC = () => {
                 </p>
               </div>
             </div>
+            {/* Fim do bloco desktop */}
 
             <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
               <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
+                {/* bloco mobile */}
                 <div className="block w-full xl:hidden xl:w-1/2">
                   <div className="px-26 pt-5 text-center">
-                    <Link className="mb-5.5 inline-block" href="/">
-                      <Image
-                        className="hidden dark:block"
-                        src={"/images/logo/logo-dark.svg"}
-                        alt="Logo"
-                        width={176}
-                        height={32}
-                      />
-                      <Image
-                        className="dark:hidden"
-                        src={"/images/logo/logo.svg"}
-                        alt="Logo"
-                        width={176}
-                        height={150}
-                      />
+                    <Link className="mb-15 inline-block" href="/">
+                      <div className="hidden dark:flex flex-col items-center gap-3 bg">
+                        <Image
+                          src={"/images/logo/celer-app-logo-dark.svg"}
+                          alt="Logo"
+                          width={0}
+                          height={0}
+                          className="2xsm:w-20 md:w-28"
+                        />
+                        <Image
+                          src={"/images/logo/celer-app-text-dark.svg"}
+                          alt="Logo"
+                          width={0}
+                          height={0}
+                          className="2xsm:w-45"
+                        />
+                      </div>
+                      <div className="dark:hidden flex flex-col items-center gap-3 bg">
+                        <Image
+                          src={"/images/logo/celer-app-logo.svg"}
+                          alt="Logo"
+                          width={0}
+                          height={0}
+                          className="2xsm:w-20 md:w-28"
+                        />
+                        <Image
+                          src={"/images/logo/celer-app-text.svg"}
+                          alt="Logo"
+                          width={0}
+                          height={0}
+                          className="2xsm:w-45"
+                        />
+                      </div>
                     </Link>
                   </div>
+                  {/* fim do bloco mobile */}
                 </div>
                 {/* <span className="xl:mb-1.5 mb-10 mt-[-15px] block font-medium xl:text-2xl xl:text-left text-center text-lg">Celer App</span> */}
                 <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
