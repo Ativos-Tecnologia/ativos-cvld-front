@@ -19,8 +19,17 @@ export type TaskDrawerProps = {
 
 export type TaskRelatedItems = {
   id: string;
-  [key: string]: string;
+  statusName?: string;
+  goalName?: string;
+  nameRef?: string;
+  title: string;
+  non_editable?: boolean;
 };
+
+// export interface TaskRelatedItems {
+//   id: string;
+// }
+
 
 export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
 
@@ -38,7 +47,6 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
 
   const onSubmit: SubmitHandler<any> = async (data) => {
     data["extrato_id"] = id;
-    console.log(id)
     const response = await api.post("api/task/create/", data);
     console.log(response);
   };
@@ -111,7 +119,7 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
               } />
             </div>
             <div className="mb-6 grid grid-cols-2 gap-4">
-              <Badge size="sm" color="cyan" className="mb-2 px-0">
+              {/* <Badge size="sm" color="cyan" className="mb-2 px-0">
               <select id="status" className="text-[10px] bg-transparent border-none py-0 col-span-1" {
                 ...register("statusName")
 
@@ -122,10 +130,10 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
                 <option className="text-[10px] bg-transparent border-none py-0 col-span-1" value="">VAZIO</option>
                 <hr className="col-span-2 py-2" />
                 {taskStatus.map((status) => (
-                  <option key={status.id} value={status.id}>{status.statusName.toUpperCase()}</option>
+                  <option key={status.id} value={status.id}>{status.statusName?.toUpperCase()}</option>
                 ))}
               </select>
-              </Badge>
+              </Badge> */}
               {/* <Badge size="sm" color="lime" className="mb-2 px-0">
               <select id="goal" className="text-[10px] bg-transparent border-none py-0 col-span-1" {
                 ...register("goalName")
@@ -139,6 +147,21 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
                 ))}
               </select>
               </Badge> */}
+              <Controller
+                name="statusName"
+                control={control}
+                render={({ field: { onChange, onBlur, value, ref } }) => (
+                  <MarvelousSelect
+                    label="STATUS"
+                    data={taskStatus}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    value={value}
+                    ref={ref}
+                    nameRef="statusName"
+                  />
+                )}
+              />
               <Controller
                 name="goalName"
                 control={control}

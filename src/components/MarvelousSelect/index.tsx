@@ -1,4 +1,4 @@
-import React, { forwardRef, useState } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import { BiDotsVerticalRounded, BiX } from "react-icons/bi";
 import { BsChevronBarDown, BsChevronDown, BsChevronUp, BsThreeDots, BsX } from "react-icons/bs";
 import { TaskRelatedItems } from "../TaskElements";
@@ -39,10 +39,20 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
   const [labelReleatedEdit, setLabelReleatedEdit] = useState(false);
   const [tootipToggle, settootipToggle] = useState(false);
 
+  const aux = nameRef === "goalName" ? "goalName" : "statusName";
+
   const [selected, setSelected] = useState<TaskRelatedItems>({
     id: "",
-    goalName: label,
+    title: label,
   });
+
+  data.map((tag) => {
+    if (aux === "goalName") {
+      tag.nameRef = tag.goalName;
+    } else {
+      tag.nameRef = tag.statusName;
+    }
+  })
 
   const handleSelect = (tag:any) => {
     setSelected(tag);
@@ -52,16 +62,16 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
 
   return (
     <div className="relative" ref={ref}>
-      <input type="hidden" name={nameRef} value={selected?.id} />
+      {/* <input type="hidden" name={nameRef} value={selected?.id} /> */}
       <div
         className={`flex py-0.5 h-fit gap-1 font-semibold ${color === undefined ? "bg-blue-100 text-blue-800 group-hover:bg-blue-200 dark:bg-blue-200 dark:text-blue-900 dark:group-hover:bg-blue-300" : color} flex w-full cursor-pointer flex-row items-center justify-between rounded text-[10px]`}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <p className="pl-3">{selected?.goalName}</p>{" "}
+        <p className="pl-3">{selected?.nameRef || selected.title}</p>{" "}
         {
-          selected?.goalName !== label ? (
+          selected?.nameRef && selected.title !== label ? (
             <BiX className="w-4 h-4 mr-2 text-red-500" onClick={() => {
-              setSelected({ id: "", goalName: label })
+              setSelected({ id: "", title: label })
               onChange("");
             }} />
           ) : (
@@ -83,7 +93,7 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
                 className="w-full p-2 text-xs font-bold hover:bg-gray-100"
                 onClick={() => handleSelect(tag)}
               >
-                <p>{tag.goalName}</p>
+                <p>{tag.nameRef}</p>
               </div>
 
 
@@ -110,7 +120,7 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             const newLabel = e.currentTarget.innerText;
-                            tag.goalName = newLabel;
+                            tag.title = newLabel;
                             // const newTags = data.map((item) => {
                             //   if (item.id === tag.id) {
                             //     return tag;
@@ -130,7 +140,7 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
                         className="text-xs word-break w-fit font-semibold text-gray-900 dark:text-white cursor-pointer"
                         title="Duplo clique para editar"
                       >
-                        {tag.goalName}
+                        {tag.nameRef}
                       </p>
 
                     </div>
