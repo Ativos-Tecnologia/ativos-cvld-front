@@ -81,7 +81,7 @@ export const Balance = () => {
                             <BsExclamation className="w-5 h-5 text-meta-1 dark:text-red animate-wiggle transition-all duration-300" />
                         </div>
                     </a> */}
-                    <a href="#" className="flex relative items-center justify-center rounded-full text-sm px-2 py-[2px] border-[0.5px] border-stroke dark:border-strokedark dark:bg-meta-4 dark:text-white dark:hover:text-bodydark2">
+                    <a href="#" className="flex relative items-center justify-center rounded-full text-sm px-2 py-[2px] border-[0.5px] border-stroke dark:border-strokedark dark:bg-meta-4 dark:text-white">
                         {/* <span
                             className={`absolute -bottom-1.5 w-[29px] -right-1.5 z-1 p-[3px] rounded-full text-white bg-meta-1 text-xs`}
                         >
@@ -97,7 +97,7 @@ export const Balance = () => {
                         )}
                         <BiDollarCircle className="w-6 h-6 text-yellow-300" />
                         <p className="font-medium ml-1 pl-1 border-l border-stroke dark:border-form-strokedark">
-                            {credits.available_credits <= 99 ? credits.available_credits : '99+'}
+                            {credits.available_credits <= 9999 ? credits.available_credits : '9999+'}
                         </p>
                     </a>
                 </Popover>

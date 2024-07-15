@@ -518,22 +518,22 @@ const Profile = () => {
 
 
                   <div className="flex justify-end gap-4.5">
-                    <Button
-                      className="flex justify-center rounded border border-stroke px-4 py-1 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white bg-gray-100 hover:!bg-gray-300 transition-all duration-300"
+                    <button
+                      className="flex justify-center rounded border border-stroke px-4 py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white dark:bg-white/20 dark:hover:bg-white/30 bg-gray-100 hover:bg-gray-300 transition-all duration-200"
                       type="button"
                       onClick={handleEditMode}
                     >
                       {
                         editModeProfile ? "Cancelar" : "Editar"
                       }
-                    </Button>
-                    <Button
+                    </button>
+                    <button
                       disabled={!editModeProfile}
-                      className="flex justify-center rounded bg-blue-700 hover:!bg-blue-800 transition-all duration-300 px-4 py-1 font-medium text-gray dark:hover:!bg-blue-800 dark:bg-blue-700 dark:text-white"
+                      className="flex justify-center rounded bg-blue-700 hover:!bg-blue-800 transition-all duration-300 px-4 py-2 font-medium text-gray dark:hover:!bg-blue-800 dark:bg-blue-700 dark:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:!hover-blue-700"
                       type="submit"
                     >
                       Salvar
-                    </Button>
+                    </button>
                   </div>
                 </form>
               </div>
@@ -634,22 +634,22 @@ const Profile = () => {
 
 
                   <div className="flex justify-end gap-4.5">
-                    <Button
-                      className="flex justify-center rounded border border-stroke px-4 py-1 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white bg-gray-100 hover:!bg-gray-300 transition-all duration-300"
+                    <button
+                      className="flex justify-center rounded border border-stroke px-4 py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white dark:bg-white/20 dark:hover:bg-white/30 bg-gray-100 hover:bg-gray-300 transition-all duration-200"
                       type="button"
                       onClick={handleCancelProfileEdit}
                     >
                       {
                         editModeUser ? "Cancelar" : "Editar"
                       }
-                    </Button>
-                    <Button
+                    </button>
+                    <button
                       disabled={!editModeUser}
-                      className="flex justify-center rounded bg-blue-700 hover:!bg-blue-800 transition-all duration-300 px-4 py-1 font-medium text-gray dark:hover:!bg-blue-800 dark:bg-blue-700 dark:text-white"
+                      className="flex justify-center rounded bg-blue-700 hover:!bg-blue-800 transition-all duration-300 px-4 py-2 font-medium text-gray dark:hover:!bg-blue-800 dark:bg-blue-700 dark:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:!hover-blue-700"
                       type="submit"
                     >
                       Salvar
-                    </Button>
+                    </button>
                   </div>
                 </form>
               </div>

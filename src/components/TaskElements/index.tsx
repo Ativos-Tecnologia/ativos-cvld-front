@@ -25,9 +25,7 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
 
   const onSubmit: SubmitHandler<any> = async (data) => {
     data["extrato_id"] = id;
-    console.log(id)
     const response = await api.post("api/task/create/", data);
-    console.log(response);
   };
 
   return (
