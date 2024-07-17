@@ -146,7 +146,7 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
                     value={value}
                     ref={ref}
                     nameRef="statusName"
-                    setData={setTaskStatus}
+                    setData={setTaskStatus as unknown as React.Dispatch<React.SetStateAction<TaskRelatedItems[]>>}
                   />
                 )}
               />
@@ -162,12 +162,12 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
                     value={value}
                     ref={ref}
                     nameRef="goalName"
-                    setData={setTaskGoals}
+                    setData={setTaskGoals as unknown as React.Dispatch<React.SetStateAction<TaskRelatedItems[]>>}
                   />
                 )}
               />
             </div>
-              <div className="mb-6">
+              {/* <div className="mb-6">
               <TextInput
                 id="guests"
                 name="guests"
@@ -193,7 +193,7 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
               <Avatar alt="" img="/images/people/profile-picture-2.jpg" rounded size="sm" stacked />
               <Avatar alt="" img="/images/people/profile-picture-3.jpg" rounded size="sm" stacked />
               <Avatar alt="" img="/images/people/profile-picture-4.jpg" rounded size="sm" stacked />
-            </Avatar.Group>
+            </Avatar.Group> */}
               <button className="w-full flex items-center justify-center py-2 px-4 bg-blue-700 hover:bg-blue-800 text-white rounded-md transition-all duration-200" type="submit">
                 <HiCalendar className="mr-2" />
                 Criar Tarefa
