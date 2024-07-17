@@ -1,9 +1,11 @@
-import React, { forwardRef, useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
 import { BiDotsVerticalRounded, BiX } from "react-icons/bi";
 import { BsChevronBarDown, BsChevronDown, BsChevronUp, BsThreeDots, BsX } from "react-icons/bs";
 import { PaginatedResponse, TaskRelatedItems } from "../TaskElements";
 import { Button, Popover, Tooltip } from "flowbite-react";
 import api from "@/utils/api";
+import { TfiCheckBox, TfiPencilAlt } from "react-icons/tfi";
+import { DynamicForm } from "./DynamicForm";
 
 export type TaskDrawerProps = {
   label: string;
@@ -12,6 +14,7 @@ export type TaskDrawerProps = {
   nameRef?: string;
   onChange: (...event: any[]) => void;
   onBlur: () => void;
+  setData: React.Dispatch<React.SetStateAction<Array<TaskRelatedItems>>>;
   value: string;
 };
 
@@ -31,13 +34,14 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
   nameRef,
   onChange,
   onBlur,
-  value
+  value,
+  setData
 }, ref) => {
   MarvelousSelect.displayName = "MarvelousSelect";
 
   const [isOpen, setIsOpen] = useState(false);
-  const [labelReleatedEdit, setLabelReleatedEdit] = useState(false);
-  const [tootipToggle, settootipToggle] = useState(false);
+  const [labelReleatedEditId, setLabelReleatedEditId] = useState<string | null>(null);
+  const selectRef = useRef<HTMLDivElement | null>(null);
 
   const aux = nameRef === "goalName" ? "goalName" : "statusName";
 
@@ -52,22 +56,84 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
     } else {
       tag.nameRef = tag.statusName;
     }
-  })
+  });
 
-  const handleSelect = (tag:any) => {
+  // teste de clique
+
+  // fim do teste de clique
+
+  useEffect(() => {
+    document?.addEventListener('mousedown', (e: MouseEvent) => {
+
+      if (selectRef.current && !selectRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+
+    });
+
+    return document?.addEventListener('mousedown', (e: MouseEvent) => {
+
+      if (selectRef.current && !selectRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+
+    })
+  }, [])
+
+  const handleSelect = (tag: any) => {
     setSelected(tag);
     onChange(tag.id);
     setIsOpen(false);
   };
 
+  const handleChangeValue = (value: string, targetTag: TaskRelatedItems) => {
+
+    targetTag.title = value;
+    targetTag.nameRef = value;
+
+    if (targetTag.title?.length > 0) {
+      if (targetTag?.goalName) {
+
+        api.patch(`api/task/goals/update-goal-name/${targetTag.id}/`, {
+          goalName: value,
+        }).then((response) => {
+
+          const updatedData = data.map((item) => {
+            if (item.id === targetTag.id) {
+
+              return {
+                ...item,
+                nameRef: targetTag.title,
+                goalName: targetTag.title
+              }
+
+            }
+            return item;
+          });
+
+          setData(updatedData);
+          setLabelReleatedEditId(null);
+
+
+        });
+
+      } else {
+        /* ... */
+        return;
+      }
+    }
+  }
+
   return (
-    <div className="relative" ref={ref}>
-      {/* <input type="hidden" name={nameRef} value={selected?.id} /> */}
+    <div className="relative" ref={ref} >
+
+      <DynamicForm label={label} />
+
       <div
         className={`flex py-0.5 h-fit gap-1 font-semibold ${color === undefined ? "bg-blue-100 text-blue-800 group-hover:bg-blue-200 dark:bg-blue-200 dark:text-blue-900 dark:group-hover:bg-blue-300" : color} flex w-full cursor-pointer flex-row items-center justify-between rounded text-[10px]`}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <p className="pl-3">{selected?.nameRef || selected.title}</p>{" "}
+        <p className="pl-3 w-full overflow-hidden text-ellipsis whitespace-nowrap">{selected?.nameRef || selected.title}</p>{" "}
         {
           selected?.nameRef && selected.title !== label ? (
             <BiX className="w-4 h-4 mr-2 text-red-500" onClick={() => {
@@ -79,25 +145,86 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
           )
         }
       </div>
-      <div
-        className="mt-2 w-full rounded bg-white shadow-lg absolute z-10"
-        style={{ display: isOpen ? "block" : "none" }}
+      <div ref={selectRef}
+        className={`${isOpen ? "h-40" : "h-0 border-none"} absolute z-10 mt-2 w-full rounded bg-white border border-stroke dark:border-strokedark dark:bg-boxdark shadow-lg overflow-y-auto transition-all duration-500 linear`}
       >
         {isOpen &&
           data.map((tag) => (
             <div
               key={tag.id}
-              className="flex items-center justify-between border-b border-gray-100"
-            >
+              className="flex items-center justify-between border-b border-gray-100 cursor-pointer select-none">
               <div
-                className="w-full p-2 text-xs font-bold hover:bg-gray-100"
-                onClick={() => handleSelect(tag)}
+                className="relative w-full p-1"
+                title={tag.nameRef}
+                onClick={() => {
+                  if (labelReleatedEditId === null) handleSelect(tag);
+                }}
               >
-                <p>{tag.nameRef}</p>
+                <input
+                  type="text"
+                  defaultValue={tag.nameRef}
+                  disabled={labelReleatedEditId === tag.id ? false : true}
+                  className="px-2 w-full text-ellipsis overflow-hidden whitespace-nowrap rounded-md text-xs font-medium border-none border-b border-black bg-blue-100 dark:hover:bg-white/30 dark:focus:text-black disabled:hover:bg-gray disabled:bg-transparent disabled:cursor-pointer transition-all duration-200"
+                  // onChange={(e) => { handleChangeValue(e.target.value, tag) }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleChangeValue(e.currentTarget.value, tag)
+                    }
+                  }}
+                />
+
+                {labelReleatedEditId === null && (
+                  <div className="absolute inset-0 bg-transparent cursor-pointer"
+                    onClick={() => {
+                      handleSelect(tag);
+                    }}
+                  ></div>
+                )}
+
+                {/* <p contentEditable={labelReleatedEditId === tag.id ? true : false}
+                  tabIndex={0}
+                  className={`px-1`}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      const newLabel = e.currentTarget.innerText;
+                      tag.title = newLabel;
+                      const newTags = data.map((item) => {
+                        if (item.id === tag.id) {
+                          return tag;
+                        }
+                        return item;
+                      });
+                      api.patch(`api/task/goals/update-goal-name/${tag.id}/`, {
+                        goalName: newLabel,
+                      }).then((response) => {
+                        setLabelReleatedEditId(null);
+                      });
+
+                    }
+                  }}>
+                  {tag.nameRef}
+                </p> */}
               </div>
 
+              {!tag.non_editable && (
+                <div className="px-1">
+                  {labelReleatedEditId === tag.id ? (
+                    <TfiCheckBox title="Concluir" className="w-3.5 h-3.5 cursor-pointer hover:fill-slate-600 dark:hover:fill-slate-500 transition-all duration-200" onClick={(e) => {
+                      const el = e.target as HTMLElement;
+                      const value = el.parentElement?.parentElement?.querySelector("input")?.value as string;
+                      handleChangeValue(value, tag);
+                    }} />
+                  ) : (
+                    <TfiPencilAlt title="Editar" className="w-3.5 h-3.5 cursor-pointer hover:fill-slate-600  dark:hover:fill-slate-500 transition-all duration-200" onClick={() => {
+                      setLabelReleatedEditId(tag.id);
+                    }} />
+                  )}
+                </div>
+              )}
 
-              <Popover
+
+              {/* <Popover
 
                 aria-labelledby="default-popover"
                 theme={tooltipTheme}
@@ -107,7 +234,7 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
                       <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
                         OPÇÕES
                       </h3>
-                      {/* <BsX className="w-6 h-4 cursor-pointer" onClick={() => settootipToggle(false)} /> */}
+                      <BsX className="w-6 h-4 cursor-pointer" onClick={() => settootipToggle(false)} />
                     </div>
                     <div className="px-3 py-2">
                       <p
@@ -121,12 +248,12 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
                           if (e.key === "Enter") {
                             const newLabel = e.currentTarget.innerText;
                             tag.title = newLabel;
-                            // const newTags = data.map((item) => {
-                            //   if (item.id === tag.id) {
-                            //     return tag;
-                            //   }
-                            //   return item;
-                            // });
+                            const newTags = data.map((item) => {
+                              if (item.id === tag.id) {
+                                return tag;
+                              }
+                              return item;
+                            });
                             api.patch(`api/task/goals/update-goal-name/${tag.id}/`, {
                               goalName: newLabel,
                             }).then((response) => {
@@ -137,7 +264,7 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
                         }}
                         contentEditable={labelReleatedEdit}
                         id="default-popover"
-                        className="text-xs word-break w-fit font-semibold text-gray-900 dark:text-white cursor-pointer"
+                        className="text-xs word-break w-fit font-semibold text-gray-900 dark:text-white cursor-text"
                         title="Duplo clique para editar"
                       >
                         {tag.nameRef}
@@ -148,12 +275,12 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
                 }
                 arrow={false}
               >
-                <BiDotsVerticalRounded className="w-6 h-4 cursor-pointer" onClick={() => settootipToggle(true)} />
-              </Popover>
+              </Popover> */}
             </div>
           ))}
       </div>
     </div>
-  )});
+  )
+});
 
 export default MarvelousSelect;

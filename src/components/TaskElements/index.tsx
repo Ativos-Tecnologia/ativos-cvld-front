@@ -3,7 +3,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { BiTask } from "react-icons/bi";
 import { HiCalendar, HiUserAdd } from "react-icons/hi";
 import { twMerge } from "tailwind-merge";
-import { customDrawerTheme } from "@/themes/FlowbiteThemes";
+import { customFlowBiteTheme } from "@/themes/FlowbiteThemes";
 import {
   useForm, SubmitHandler,
   Controller
@@ -40,11 +40,8 @@ export type TaskRelatedItems = {
 
 export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
 
-  const taskTitlePlaceholders = ["Entrar em contato com o cliente", "Reunião com a equipe", "Reunião com o cliente", "Reunião com o fornecedor", "Reunião com o time de desenvolvimento", "Reunião com o time de marketing", "Reunião com o time de vendas"];
-
-  const taskDescriptionPlaceholders = ["Necessário entrar em contato com o cliente para alinhar as expectativas", "Reunião com a equipe para alinhar as metas do mês", "Reunião com o cliente para apresentar o novo projeto", "Reunião com o fornecedor para alinhar as entregas", "Reunião com o time de desenvolvimento para alinhar as entregas", "Reunião com o time de marketing para alinhar as entregas", "Reunião com o time de vendas para alinhar as entregas"];
-
-
+  const [taskTitlePlaceholders, setTaskTitlePlaceholders] = useState<string>('');
+  const [taskDescriptionPlaceholders, setTaskDescriptionPlaceholders] = useState<string>('')
   const { register, control, handleSubmit, watch, formState: { errors } } = useForm();
   const [taskStatus, setTaskStatus] = useState<PaginatedResponse<TaskRelatedItems>>({ count: 0, next: "", previous: "", results: [] });
   const [taskGoals, setTaskGoals] = useState<PaginatedResponse<TaskRelatedItems>>({ count: 0, next: "", previous: "", results: [] });
@@ -76,6 +73,16 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
   }
 
   useEffect(() => {
+
+    const titleTemplatePlaceholders: string[] = ["Entrar em contato com o cliente", "Reunião com a equipe", "Reunião com o cliente", "Reunião com o fornecedor", "Reunião com o time de desenvolvimento", "Reunião com o time de marketing", "Reunião com o time de vendas"];
+    const descriptionTemplatePlaceholders: string[] = ["Necessário entrar em contato com o cliente para alinhar as expectativas", "Reunião com a equipe para alinhar as metas do mês", "Reunião com o cliente para apresentar o novo projeto", "Reunião com o fornecedor para alinhar as entregas", "Reunião com o time de desenvolvimento para alinhar as entregas", "Reunião com o time de marketing para alinhar as entregas", "Reunião com o time de vendas para alinhar as entregas"];
+
+    setTaskTitlePlaceholders(titleTemplatePlaceholders[Math.floor(Math.random() * titleTemplatePlaceholders.length)]);
+    setTaskDescriptionPlaceholders(descriptionTemplatePlaceholders[Math.floor(Math.random() * descriptionTemplatePlaceholders.length)]);
+
+  }, [])
+
+  useEffect(() => {
     const fetchData = async () => {
       await Promise.all([fetchTaskStatus()]);
       await Promise.all([fetchTaskGoals()]);
@@ -90,7 +97,7 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
         <Button onClick={}>Show drawer</Button>
       </div> */}
 
-      <Flowbite theme={{ theme: customDrawerTheme }}>
+      <Flowbite theme={{ theme: customFlowBiteTheme }}>
         <Drawer open={open} onClose={handleClose} className="w-[360px]">
           <Drawer.Header title="NOVA TAREFA" titleIcon={BiTask} className="dark:text-white" />
           <Drawer.Items>
@@ -101,10 +108,10 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
                   Título
                 </label>
                 <input type='text' id="title" placeholder={
-                  taskTitlePlaceholders[Math.floor(Math.random() * taskTitlePlaceholders.length)]
+                  `Ex: ${taskTitlePlaceholders}`
                 }
                   {...register("title")}
-                  className="w-full rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
+                  className="w-full rounded-md text-ellipsis overflow-hidden whitespace-nowrap border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
                 />
               </div>
               <div className="mb-6">
@@ -112,10 +119,10 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
                   Descrição
                 </label>
                 <textarea id="description" placeholder={
-                  taskDescriptionPlaceholders[Math.floor(Math.random() * taskDescriptionPlaceholders.length)]
+                  `Ex: ${taskDescriptionPlaceholders}`
                 } rows={4}
                   {...register("description")}
-                  className="w-full rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
+                  className="w-full rounded-md resize-none border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
                 />
               </div>
               <div className="mb-6 w-full">
@@ -139,6 +146,7 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
                     value={value}
                     ref={ref}
                     nameRef="statusName"
+                    setData={setTaskStatus}
                   />
                 )}
               />
@@ -154,6 +162,7 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
                     value={value}
                     ref={ref}
                     nameRef="goalName"
+                    setData={setTaskGoals}
                   />
                 )}
               />
