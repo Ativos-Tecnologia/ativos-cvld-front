@@ -17,6 +17,13 @@ export type TaskDrawerProps = {
   id: string;
 };
 
+export type PaginatedResponse<T> = {
+  count: number;
+  next: string;
+  previous: string;
+  results: T[];
+};
+
 export type TaskRelatedItems = {
   id: string;
   statusName?: string;
@@ -39,8 +46,8 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
 
 
   const { register, control, handleSubmit, watch, formState: { errors } } = useForm();
-  const [taskStatus, setTaskStatus] = useState(Array<TaskRelatedItems>());
-  const [taskGoals, setTaskGoals] = useState(Array<TaskRelatedItems>());
+  const [taskStatus, setTaskStatus] = useState<PaginatedResponse<TaskRelatedItems>>({ count: 0, next: "", previous: "", results: [] });
+  const [taskGoals, setTaskGoals] = useState<PaginatedResponse<TaskRelatedItems>>({ count: 0, next: "", previous: "", results: [] });
   const selectRef = useRef<HTMLDivElement>(null);
 
   const handleClose = () => setOpen(false);
@@ -117,70 +124,16 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
 
                 } />
               </div>
-              {/* <div className="mb-6 grid grid-cols-2 gap-4">
-                <Badge size="sm" color="cyan" className="mb-2 px-0">
-                  <select id="status" className="text-[10px] w-full overflow-hidden text-ellipsis whitespace-nowrap focus-within:ring-0 bg-transparent border-none py-0 col-span-1" {
-                    ...register("statusName")
 
-              } />
-            </div> */}
-            {/* <div className="mb-6 w-full">
-              <input type="date" id="due_date" placeholder="Data de entrega" className="block w-full rounded-lg border text-sm disabled:cursor-not-allowed disabled:opacity-50 border-gray-300 bg-gray-50 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500" {
-                ...register("due_date")
-
-              } />
-            </div> */}
             <div className="mb-6 grid grid-cols-2 gap-4">
-              {/* <Badge size="sm" color="cyan" className="mb-2 px-0">
-              <select id="status" className="text-[10px] bg-transparent border-none py-0 col-span-1" {
-                ...register("statusName")
 
-              }>
-                <option className={
-                  "text-[10px] bg-transparent border-none py-0 col-span-1"
-                } defaultValue={""} value="" disabled><span className="pl-0 text-indigo-900">STATUS DA TAREFA</span></option>
-                <option className="text-[10px] bg-transparent border-none py-0 col-span-1" value="">VAZIO</option>
-                <hr className="col-span-2 py-2" />
-                {taskStatus.map((status) => (
-                  <option key={status.id} value={status.id}>{status.statusName?.toUpperCase()}</option>
-                ))}
-              </select>
-              </Badge> */}
-              {/* <Badge size="sm" color="lime" className="mb-2 px-0">
-                  }>
-                    <option className={
-                      "text-[10px] bg-transparent border-none py-0 col-span-1"
-                    } defaultValue={""} value="" disabled><span className="pl-0 text-indigo-900">STATUS DA TAREFA</span></option>
-                    <option className="text-[10px] bg-transparent border-none py-0 col-span-1" value="">VAZIO</option>
-                    <hr className="col-span-2 py-2" />
-                    {taskStatus.map((status) => (
-                      <option
-                      key={status.id}
-                      value={status.id}>{status.statusName.toUpperCase()}
-                      </option>
-                    ))}
-                  </select>
-                </Badge>
-                {/* <Badge size="sm" color="lime" className="mb-2 px-0">
-              <select id="goal" className="text-[10px] bg-transparent border-none py-0 col-span-1" {
-                ...register("goalName")
-
-              }>
-                <option defaultValue={""} value="" disabled>METAS</option>
-                <option className="text-[10px] bg-transparent border-none py-0 col-span-1" value="">VAZIO</option>
-                <hr className="col-span-2 py-2" />
-                {taskGoals.map((status) => (
-                  <option key={status.id} value={status.id}>{status.goalName}</option>
-                ))}
-              </select>
-              </Badge> */}
               <Controller
                 name="statusName"
                 control={control}
                 render={({ field: { onChange, onBlur, value, ref } }) => (
                   <MarvelousSelect
                     label="STATUS"
-                    data={taskStatus}
+                    data={taskStatus.results}
                     onChange={onChange}
                     onBlur={onBlur}
                     value={value}
@@ -195,7 +148,7 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
                 render={({ field: { onChange, onBlur, value, ref } }) => (
                   <MarvelousSelect
                     label="METAS"
-                    data={taskGoals}
+                    data={taskGoals.results}
                     onChange={onChange}
                     onBlur={onBlur}
                     value={value}
@@ -205,52 +158,7 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
                 )}
               />
             </div>
-            {/* <div className="mb-6">
-                <Controller
-                  name="goalName"
-                  control={control}
-                  render={({ field: { onChange, onBlur, value, ref } }) => (
-                    <MarvelousSelect
-                      label="METAS"
-                      data={taskGoals}
-                      onChange={onChange}
-                      onBlur={onBlur}
-                      value={value}
-                      ref={ref}
-                      nameRef="goalName"
-                    />
-                  )}
-                />
-              </div>
-              {/* <div className="mb-6">
-      <Flowbite theme={{ theme: customDrawerTheme }}>
-        <Drawer open={open} onClose={handleClose}>
-          <Drawer.Header title="NOVA TAREFA" titleIcon={BiTask} />
-          <Drawer.Items>
-            <p className="text-sm text-center">Crie uma nova tarefa para o extrato</p>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="my-6">
-                <label htmlFor="title" className="mb-2 block">
-                  Título
-                </label>
-                <input type='text' id="title" placeholder="Apple Keynote"
-                  {...register("title")}
-                  className="w-full rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
-                />
-              </div>
               <div className="mb-6">
-                <label htmlFor="description" className="mb-2 block">
-                  Descrição
-                </label>
-                <textarea id="description" placeholder="Write event description..." rows={4}
-                  {...register("description")}
-                  className="w-full rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
-                />
-              </div>
-              <div className="mb-6 w-full">
-                <input type="date" id="due_date" placeholder="Data de entrega" className="w-full rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2" {...register("due_date")} />
-              </div>
-              {/* <div className="mb-6">
               <TextInput
                 id="guests"
                 name="guests"
@@ -276,7 +184,7 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
               <Avatar alt="" img="/images/people/profile-picture-2.jpg" rounded size="sm" stacked />
               <Avatar alt="" img="/images/people/profile-picture-3.jpg" rounded size="sm" stacked />
               <Avatar alt="" img="/images/people/profile-picture-4.jpg" rounded size="sm" stacked />
-            </Avatar.Group> */}
+            </Avatar.Group>
               <button className="w-full flex items-center justify-center py-2 px-4 bg-blue-700 hover:bg-blue-800 text-white rounded-md transition-all duration-200" type="submit">
                 <HiCalendar className="mr-2" />
                 Criar Tarefa

@@ -126,7 +126,7 @@ const Header = (props: {
               </div>
             ) : (
               <>
-                {data[0].role === 'ativos' || subscriptionData[0].plan !== 'GOD_MODE' && subscriptionData[0].plan && <Balance />}
+                {data.role === 'ativos' || subscriptionData.plan !== 'GOD_MODE' && subscriptionData.plan && <Balance />}
               </>
             )}
 

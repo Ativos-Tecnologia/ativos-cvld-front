@@ -25,9 +25,9 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
         <div className={className}>
             <div className="flex gap-4 flex-wrap">
 
-                {data?.length > 0 ? (
+                {data.results?.length > 0 ? (
                     <>
-                        {data.map((item: CVLDResultProps) => (
+                        {data.results.map((item: CVLDResultProps) => (
                             <div key={item.id} className="relative flex-1 flex flex-col justify-between xsm:w-full md:max-w-[332px] lg:max-w-[305px] xl:max-w-90 bg-white border border-stroke shadow-3 gap-5 p-4 rounded-md dark:bg-black/60 dark:border-slate-600">
                                 <div className="absolute top-6 right-4">
                                     {showModalMessage ? (

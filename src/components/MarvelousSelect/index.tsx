@@ -1,13 +1,13 @@
 import React, { forwardRef, useEffect, useState } from "react";
 import { BiDotsVerticalRounded, BiX } from "react-icons/bi";
 import { BsChevronBarDown, BsChevronDown, BsChevronUp, BsThreeDots, BsX } from "react-icons/bs";
-import { TaskRelatedItems } from "../TaskElements";
+import { PaginatedResponse, TaskRelatedItems } from "../TaskElements";
 import { Button, Popover, Tooltip } from "flowbite-react";
 import api from "@/utils/api";
 
 export type TaskDrawerProps = {
   label: string;
-  data: Array<TaskRelatedItems>;
+  data: TaskRelatedItems[];
   color?: string;
   nameRef?: string;
   onChange: (...event: any[]) => void;
