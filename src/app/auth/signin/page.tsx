@@ -59,7 +59,7 @@ const SignIn: React.FC = () => {
       try {
         const response = await api.get("/api/check-first-login/");
 
-        if (response.data[0].is_first_login === true) {
+        if (response.data.is_first_login === true) {
           return true;
         }
 
