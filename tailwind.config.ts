@@ -13,6 +13,7 @@ const config: Config = {
   theme: {
     fontFamily: {
       satoshi: ["Satoshi", "sans-serif"],
+      nexa: ["Nexa", "sans-serif"]
     },
     screens: {
       "2xsm": "375px",
@@ -37,6 +38,9 @@ const config: Config = {
         secondary: "#80CAEE",
         stroke: "#E2E8F0",
         gray: "#EFF4FB",
+        "gray-100": "#F7F9FC",
+        "gray-200": "#E5E7EB",
+        "gray-300": "#D1D5DB",
         "gray-400": "#666666",
         "gray-500": "#555555",
         "gray-700": "#333333",
@@ -233,6 +237,7 @@ const config: Config = {
       },
       backgroundImage: {
         video: "url('../images/video/video.png')",
+        'main-unlogged': "url('/images/logo/main-logo-img.png')"
       },
       content: {
         "icon-copy": 'url("../images/icon/icon-copy-alt.svg")',
@@ -273,6 +278,52 @@ const config: Config = {
         5: "0px 1px 5px rgba(0, 0, 0, 0.2)",
       },
       keyframes: {
+        'flip-vertical-right': {
+          from: {
+            transform: 'rotateY(0)'
+          },
+          to: {
+            transform: 'rotateY(360deg)'
+          }
+        },
+        topToBottomArrow: {
+          "0%": { rotate: "0deg" },
+          "100%": { rotate: "180deg" },
+        },
+        bottomToTopArrow: {
+          "0%": { rotate: "180deg" },
+          "100%": { rotate: "0deg" },
+        },
+        wiggle: {
+          "0%": {
+            transform: 'scale(1)',
+          },
+          "2%": {
+            transform: 'scale(1.3)'
+          },
+          "5%, 15%, 25%, 35%": {
+            transform: 'rotate(25deg) scale(1.6)'
+          },
+          "10%, 20%, 30%, 40%": {
+            transform: 'rotate(-25deg) scale(1.6)'
+          },
+          "42%": {
+            transform: 'scale(1.3)'
+          },
+          "44%, 100%": {
+            transform: 'rotate(0deg) scale(1)'
+          }
+        },
+        sideforward: {
+          'to': {
+            transform: 'translateX(10px)'
+          }
+        },
+        downforward: {
+          'to': {
+            transform: 'translateY(8px)'
+          }
+        },
         upforward: {
           'to': {
             transform: 'translateY(-3px)'
@@ -330,7 +381,11 @@ const config: Config = {
           "50%": { transform: "translateY(0)" },
         },
       },
+
       animation: {
+        flip: 'flip-vertical-right 3.5s infinite linear',
+        wiggle: 'wiggle 2.5s infinite',
+        downforward: 'downforward 1.0s infinite alternate ease-in-out',
         upforward: 'upforward 1.5s infinite alternate ease-in-out',
         typewriter: 'typewriter 4s steps(10) 1s infinite alternate both, blink 0.7s infinite step-end',
         linspin: "linspin 1568.2353ms linear infinite",
@@ -349,6 +404,8 @@ const config: Config = {
         line1: "line 10s infinite linear",
         line2: "line-revert 8s infinite linear",
         line3: "line 7s infinite linear",
+        topbottom1: "topToBottomArrow 0.5s forwards",
+        bottomtotoparrow: "bottomToTopArrow 0.5s forwards"
       },
     },
   },

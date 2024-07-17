@@ -3,7 +3,7 @@ import { createContext, use, useEffect, useState } from "react";
 import api from "@/utils/api";
 
 export interface UserInfo {
-    0: {
+
         id?: number | string | null | undefined;
         first_name: string;
         last_name: string;
@@ -11,7 +11,11 @@ export interface UserInfo {
         phone: string;
         profile_picture: string;
         title: string;
-    };
+        role: string;
+        cpf_cnpj?: string | null | undefined;
+        email: string;
+        bio: string;
+
 }
 
 export interface IUserBalance {
@@ -31,6 +35,7 @@ export interface UserInfoContextType {
     setCredits: (value: IUserBalance) => void;
     updateProfilePicture: (id: string, data: FormData) => Promise<any>;
     removeProfilePicture: (id: string) => Promise<any>;
+    updateUserInfo: (id: string, data: any) => Promise<any>;
 }
 
 
@@ -43,32 +48,37 @@ export interface UpdateUserProfile extends FormData {
     title: string;
 }
 
+export interface UpdateUser extends FormData {
+    email: string;
+    username: string;
+    password: string;
+}
+
 export type SubscriptionStatus = "PENDING" | "ACTIVE" | "CANCELLED" | "EXPIRED"
 
 export type SubscriptionPlan = "FREE" | "BASIC" | "PREMIUM" | "ENTERPRISE" | "GOD_MODE"
 
 export interface ISubscriptionInfo {
-    0: {
         id: string;
         user: number;
         status: SubscriptionStatus;
         plan: SubscriptionPlan;
         start_date: string;
         end_date: string;
-    }
-
 }
 
 export const UserInfoAPIContext = createContext<UserInfoContextType>({
     data: {
-        0: {
             first_name: "",
             last_name: "",
             user: "",
             phone: "",
             profile_picture: "",
             title: "",
-        },
+            role: "",
+            cpf_cnpj: "",
+            email: "",
+            bio: "",
     },
 
     loading: true,
@@ -77,14 +87,12 @@ export const UserInfoAPIContext = createContext<UserInfoContextType>({
     firstLogin: null,
     setFirstLogin: () => { },
     subscriptionData: {
-        0: {
             id: "",
             user: 0,
             status: "PENDING",
             plan: "FREE",
             start_date: "",
             end_date: "",
-        }
     },
     credits: {
         id: 0,
@@ -92,7 +100,8 @@ export const UserInfoAPIContext = createContext<UserInfoContextType>({
     },
     setCredits: () => { },
     updateProfilePicture: async () => ({}),
-    removeProfilePicture: async () => ({})
+    removeProfilePicture: async () => ({}),
+    updateUserInfo: async () => ({})
 })
 
 
@@ -100,14 +109,13 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
 
     const [firstLogin, setFirstLogin] = useState<boolean | null>(null);
     const [subscriptionData, setSubscriptionData] = useState<ISubscriptionInfo>({
-        0: {
             id: "",
             user: 0,
             status: "PENDING",
             plan: "FREE",
             start_date: "",
             end_date: "",
-        }
+
     });
 
     const [credits, setCredits] = useState<IUserBalance>({
@@ -116,14 +124,18 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
     });
 
     const [data, setData] = useState<UserInfo>({
-        0: {
+
             first_name: "",
             last_name: "",
             user: "",
             phone: "",
             profile_picture: "",
             title: "",
-        },
+            role: "",
+            cpf_cnpj: "",
+            email: "",
+            bio: ""
+
     });
 
     const [loading, setLoading] = useState<boolean>(true);
@@ -226,7 +238,7 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
             });
 
             if (response.status === 200) {
-                setData([response.data]);
+                setData(response.data);
                 setLoading(false);
 
                 return response
@@ -243,8 +255,41 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
         }
     }
 
+    const updateUserInfo = async (id: string, dataToUpdate: UpdateUser) => {
+        setLoading(true);
+        try {
+            const response = await api.patch(`/api/user/update/${id}/`, dataToUpdate, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            if (response.status === 200) {
+                setData({
+                        id: data.id,
+                        first_name: data.first_name,
+                        last_name: data.last_name,
+                        title: data.title,
+                        phone: data.phone,
+                        bio: data.bio,
+                        profile_picture: data.profile_picture,
+                        role: data.role,
+                        user: response.data.username,
+                        email: response.data.email,
+                });
+
+                setLoading(false);
+                return response
+            }
+        } catch (error: any) {
+            setError(error.message);
+            console.error(error);
+            return error
+        }
+    }
+
     return (
-        <UserInfoAPIContext.Provider value={{ data, loading, error, updateProfile, firstLogin, setFirstLogin, subscriptionData, credits, setCredits, updateProfilePicture, removeProfilePicture }}>
+        <UserInfoAPIContext.Provider value={{ data, loading, error, updateProfile, firstLogin, setFirstLogin, subscriptionData, credits, setCredits, updateProfilePicture, removeProfilePicture, updateUserInfo }}>
             {children}
         </UserInfoAPIContext.Provider>
     );

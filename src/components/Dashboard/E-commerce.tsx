@@ -1,12 +1,13 @@
 "use client";
 import React, { useState } from "react";
-import CVLDForm from "../FormCvld";
+import MainForm from "../MainForm";
 import CVLDResult, { ApiResponse } from "../ResultCVLD";
 import { ExtratosTable } from "../ExtratosTable/ExtratosTable";
 import ResultCVLDSkeleton from "../Skeletons/ResultCVLDSkeleton";
 
 const ECommerce: React.FC = () => {
   const [data, setData] = useState<ApiResponse>({ result: [], setData: () => { } });
+
   const [calcStep, setCalcStep] = useState<string | null>(null);
 
   return (
@@ -99,7 +100,7 @@ const ECommerce: React.FC = () => {
       </div> */}
 
       <div className="w-full mt-0 grid grid-cols-12 gap-4 md:gap-6 2xl:gap-7.5">
-        <CVLDForm dataCallback={setData} setCalcStep={setCalcStep} />
+        <MainForm dataCallback={setData} setCalcStep={setCalcStep} />
         {calcStep === 'calculating' ? (
             <ResultCVLDSkeleton />
         ) : <CVLDResult result={data.result} setData={setData} />}

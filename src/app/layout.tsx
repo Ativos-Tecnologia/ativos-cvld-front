@@ -3,6 +3,7 @@ import "jsvectormap/dist/css/jsvectormap.css";
 import "flatpickr/dist/flatpickr.min.css";
 import "@/css/satoshi.css";
 import "@/css/style.css";
+import "@/css/scrollbar.css";
 import React, { useEffect, useState } from "react";
 import Loader from "@/components/common/Loader";
 import { usePathname } from "next/navigation";
@@ -32,8 +33,8 @@ export default function RootLayout({
 
   return (
     <html lang="pt-br">
-      <body suppressHydrationWarning={true}>
-        <div className="bg-[#f0f0f0] dark:bg-boxdark-2 dark:text-bodydark">
+      <body suppressHydrationWarning={true} className="2xl:min-h-screen">
+        <div className="bg-[#f0f0f0] dark:bg-boxdark-2 dark:text-bodydark 2xl:min-h-screen">
 
           {
             !isPublicRoute ? (
