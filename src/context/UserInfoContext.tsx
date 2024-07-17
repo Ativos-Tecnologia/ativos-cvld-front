@@ -3,7 +3,7 @@ import { createContext, use, useEffect, useState } from "react";
 import api from "@/utils/api";
 
 export interface UserInfo {
-    0: {
+
         id?: number | string | null | undefined;
         first_name: string;
         last_name: string;
@@ -15,7 +15,7 @@ export interface UserInfo {
         cpf_cnpj?: string | null | undefined;
         email: string;
         bio: string;
-    };
+
 }
 
 export interface IUserBalance {
@@ -59,20 +59,16 @@ export type SubscriptionStatus = "PENDING" | "ACTIVE" | "CANCELLED" | "EXPIRED"
 export type SubscriptionPlan = "FREE" | "BASIC" | "PREMIUM" | "ENTERPRISE" | "GOD_MODE"
 
 export interface ISubscriptionInfo {
-    0: {
         id: string;
         user: number;
         status: SubscriptionStatus;
         plan: SubscriptionPlan;
         start_date: string;
         end_date: string;
-    }
-
 }
 
 export const UserInfoAPIContext = createContext<UserInfoContextType>({
     data: {
-        0: {
             first_name: "",
             last_name: "",
             user: "",
@@ -83,7 +79,6 @@ export const UserInfoAPIContext = createContext<UserInfoContextType>({
             cpf_cnpj: "",
             email: "",
             bio: "",
-        },
     },
 
     loading: true,
@@ -92,14 +87,12 @@ export const UserInfoAPIContext = createContext<UserInfoContextType>({
     firstLogin: null,
     setFirstLogin: () => { },
     subscriptionData: {
-        0: {
             id: "",
             user: 0,
             status: "PENDING",
             plan: "FREE",
             start_date: "",
             end_date: "",
-        }
     },
     credits: {
         id: 0,
@@ -116,14 +109,13 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
 
     const [firstLogin, setFirstLogin] = useState<boolean | null>(null);
     const [subscriptionData, setSubscriptionData] = useState<ISubscriptionInfo>({
-        0: {
             id: "",
             user: 0,
             status: "PENDING",
             plan: "FREE",
             start_date: "",
             end_date: "",
-        }
+
     });
 
     const [credits, setCredits] = useState<IUserBalance>({
@@ -132,7 +124,7 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
     });
 
     const [data, setData] = useState<UserInfo>({
-        0: {
+
             first_name: "",
             last_name: "",
             user: "",
@@ -143,7 +135,7 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
             cpf_cnpj: "",
             email: "",
             bio: ""
-        },
+
     });
 
     const [loading, setLoading] = useState<boolean>(true);
@@ -246,7 +238,7 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
             });
 
             if (response.status === 200) {
-                setData([response.data]);
+                setData(response.data);
                 setLoading(false);
 
                 return response
@@ -274,18 +266,16 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
 
             if (response.status === 200) {
                 setData({
-                    0: {
-                        id: data[0].id,
-                        first_name: data[0].first_name,
-                        last_name: data[0].last_name,
-                        title: data[0].title,
-                        phone: data[0].phone,
-                        bio: data[0].bio,
-                        profile_picture: data[0].profile_picture,
-                        role: data[0].role,
+                        id: data.id,
+                        first_name: data.first_name,
+                        last_name: data.last_name,
+                        title: data.title,
+                        phone: data.phone,
+                        bio: data.bio,
+                        profile_picture: data.profile_picture,
+                        role: data.role,
                         user: response.data.username,
                         email: response.data.email,
-                    }
                 });
 
                 setLoading(false);

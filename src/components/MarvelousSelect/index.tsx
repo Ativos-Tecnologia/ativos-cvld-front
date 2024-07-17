@@ -1,15 +1,15 @@
 import React, { forwardRef, useEffect, useRef, useState } from "react";
-import { BiPlus, BiX } from "react-icons/bi";
-import { BsChevronUp } from "react-icons/bs";
-import { TaskRelatedItems } from "../TaskElements";
-import { Popover } from "flowbite-react";
+import { BiDotsVerticalRounded, BiX } from "react-icons/bi";
+import { BsChevronBarDown, BsChevronDown, BsChevronUp, BsThreeDots, BsX } from "react-icons/bs";
+import { PaginatedResponse, TaskRelatedItems } from "../TaskElements";
+import { Button, Popover, Tooltip } from "flowbite-react";
 import api from "@/utils/api";
 import { TfiCheckBox, TfiPencilAlt } from "react-icons/tfi";
 import { DynamicForm } from "./DynamicForm";
 
 export type TaskDrawerProps = {
   label: string;
-  data: Array<TaskRelatedItems>;
+  data: TaskRelatedItems[];
   color?: string;
   nameRef?: string;
   onChange: (...event: any[]) => void;
@@ -132,6 +132,7 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
       <div
         className={`flex py-0.5 h-fit gap-1 font-semibold ${color === undefined ? "bg-blue-100 text-blue-800 group-hover:bg-blue-200 dark:bg-blue-200 dark:text-blue-900 dark:group-hover:bg-blue-300" : color} flex w-full cursor-pointer flex-row items-center justify-between rounded text-[10px]`}
         onClick={() => setIsOpen(!isOpen)}
+        title={selected?.nameRef || selected.title}
       >
         <p className="pl-3 w-full overflow-hidden text-ellipsis whitespace-nowrap">{selected?.nameRef || selected.title}</p>{" "}
         {

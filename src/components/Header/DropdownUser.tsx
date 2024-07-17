@@ -56,7 +56,7 @@ const DropdownUser = () => {
                 <div className="animate-pulse">
                   <div className="w-[75px] h-[15px] bg-slate-200 rounded-full dark:bg-slate-300"></div>
                 </div>
-              ) : `${data[0].first_name} ${data[0].last_name}`
+              ) : `${data.first_name} ${data.last_name}`
             }
           </span>
           <span className="block text-xs">
@@ -66,7 +66,7 @@ const DropdownUser = () => {
                   <div className="w-[100px] h-[12px] bg-slate-200 rounded-full dark:bg-slate-300"></div>
                 </div>
               )
-                : data[0].title
+                : data.title
             }
           </span>
         </span>
@@ -79,8 +79,8 @@ const DropdownUser = () => {
               </div>
             ) : (
               <React.Fragment>
-                <Avatar img={data[0].profile_picture} size="md" alt="Profile Picture" rounded placeholderInitials={data[0].first_name.charAt(0) + data[0].last_name.charAt(0)} />
-                {subscriptionData[0].plan === 'GOD_MODE' && (
+                <Avatar img={data.profile_picture} size="md" alt="Profile Picture" rounded placeholderInitials={data.first_name.charAt(0) + data.last_name.charAt(0)} />
+                {subscriptionData.plan === 'GOD_MODE' && (
                   <span className="absolute bottom-2 left-0 w-4 h-4 rounded-full" style={{
                     filter: 'drop-shadow(0px 0px 3px rgba(0, 0, 0, 1))'
                   }}>

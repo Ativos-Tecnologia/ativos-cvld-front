@@ -7,6 +7,7 @@ import ResultCVLDSkeleton from "../Skeletons/ResultCVLDSkeleton";
 
 const ECommerce: React.FC = () => {
   const [data, setData] = useState<ApiResponse>({ result: [], setData: () => { } });
+
   const [calcStep, setCalcStep] = useState<string | null>(null);
 
   return (
