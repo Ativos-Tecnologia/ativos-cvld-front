@@ -545,7 +545,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
             }
 
             {/* CVLD */}
-            {data[0].role === "cnj" || data[0].role === "ativos" && (
+            {data.role === "cnj" || data.role === "ativos" && (
               <div className="flex flex-col gap-2 sm:col-span-2">
                 <div className="flex gap-2 ">
                   <input

@@ -1,14 +1,15 @@
-import { Drawer, Flowbite } from "flowbite-react";
-import { Suspense, useState } from "react";
+import { Avatar, Badge, Button, Datepicker, Drawer, Flowbite, Label, Textarea, TextInput, theme } from "flowbite-react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { BiTask } from "react-icons/bi";
 import { HiCalendar, HiUserAdd } from "react-icons/hi";
 import { twMerge } from "tailwind-merge";
-import { customDrawerTheme } from "@/themes/FlowbiteThemes";
+import { customFlowBiteTheme } from "@/themes/FlowbiteThemes";
 import {
   useForm, SubmitHandler,
   Controller
 } from 'react-hook-form';
 import api from "@/utils/api";
+import MarvelousSelect from "../MarvelousSelect";
 
 export type TaskDrawerProps = {
   open: boolean;
@@ -16,10 +17,35 @@ export type TaskDrawerProps = {
   id: string;
 };
 
+export type PaginatedResponse<T> = {
+  count: number;
+  next: string;
+  previous: string;
+  results: T[];
+};
+
+export type TaskRelatedItems = {
+  id: string;
+  statusName?: string;
+  goalName?: string;
+  nameRef?: string;
+  title: string;
+  non_editable?: boolean;
+};
+
+// export interface TaskRelatedItems {
+//   id: string;
+// }
+
+
 export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
 
-
+  const [taskTitlePlaceholders, setTaskTitlePlaceholders] = useState<string>('');
+  const [taskDescriptionPlaceholders, setTaskDescriptionPlaceholders] = useState<string>('')
   const { register, control, handleSubmit, watch, formState: { errors } } = useForm();
+  const [taskStatus, setTaskStatus] = useState<PaginatedResponse<TaskRelatedItems>>({ count: 0, next: "", previous: "", results: [] });
+  const [taskGoals, setTaskGoals] = useState<PaginatedResponse<TaskRelatedItems>>({ count: 0, next: "", previous: "", results: [] });
+  const selectRef = useRef<HTMLDivElement>(null);
 
   const handleClose = () => setOpen(false);
 
@@ -28,14 +54,52 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
     const response = await api.post("api/task/create/", data);
   };
 
+  const fetchTaskStatus = async () => {
+    const response = await api.get("api/task/status/");
+    if (response.status === 200) {
+      setTaskStatus(response.data);
+    } else {
+      console.log("Error fetching task status");
+    }
+  }
+
+  const fetchTaskGoals = async () => {
+    const response = await api.get("api/task/goals/");
+    if (response.status === 200) {
+      setTaskGoals(response.data);
+    } else {
+      console.log("Error fetching task goals");
+    }
+  }
+
+  useEffect(() => {
+
+    const titleTemplatePlaceholders: string[] = ["Entrar em contato com o cliente", "Reunião com a equipe", "Reunião com o cliente", "Reunião com o fornecedor", "Reunião com o time de desenvolvimento", "Reunião com o time de marketing", "Reunião com o time de vendas"];
+    const descriptionTemplatePlaceholders: string[] = ["Necessário entrar em contato com o cliente para alinhar as expectativas", "Reunião com a equipe para alinhar as metas do mês", "Reunião com o cliente para apresentar o novo projeto", "Reunião com o fornecedor para alinhar as entregas", "Reunião com o time de desenvolvimento para alinhar as entregas", "Reunião com o time de marketing para alinhar as entregas", "Reunião com o time de vendas para alinhar as entregas"];
+
+    setTaskTitlePlaceholders(titleTemplatePlaceholders[Math.floor(Math.random() * titleTemplatePlaceholders.length)]);
+    setTaskDescriptionPlaceholders(descriptionTemplatePlaceholders[Math.floor(Math.random() * descriptionTemplatePlaceholders.length)]);
+
+  }, [])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await Promise.all([fetchTaskStatus()]);
+      await Promise.all([fetchTaskGoals()]);
+    }
+    fetchData();
+  }, []);
+
+
   return (
     <>
       {/* <div className="flex min-h-[50vh] items-center justify-center">
         <Button onClick={}>Show drawer</Button>
       </div> */}
-      <Flowbite theme={{ theme: customDrawerTheme }}>
-        <Drawer open={open} onClose={handleClose}>
-          <Drawer.Header title="NOVA TAREFA" titleIcon={BiTask} />
+
+      <Flowbite theme={{ theme: customFlowBiteTheme }}>
+        <Drawer open={open} onClose={handleClose} className="w-[360px]">
+          <Drawer.Header title="NOVA TAREFA" titleIcon={BiTask} className="dark:text-white" />
           <Drawer.Items>
             <p className="text-sm text-center">Crie uma nova tarefa para o extrato</p>
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -43,23 +107,66 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
                 <label htmlFor="title" className="mb-2 block">
                   Título
                 </label>
-                <input type='text' id="title" placeholder="Apple Keynote"
+                <input type='text' id="title" placeholder={
+                  `Ex: ${taskTitlePlaceholders}`
+                }
                   {...register("title")}
-                  className="w-full rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
+                  className="w-full rounded-md text-ellipsis overflow-hidden whitespace-nowrap border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
                 />
               </div>
               <div className="mb-6">
                 <label htmlFor="description" className="mb-2 block">
                   Descrição
                 </label>
-                <textarea id="description" placeholder="Write event description..." rows={4}
+                <textarea id="description" placeholder={
+                  `Ex: ${taskDescriptionPlaceholders}`
+                } rows={4}
                   {...register("description")}
-                  className="w-full rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
+                  className="w-full rounded-md resize-none border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
                 />
               </div>
               <div className="mb-6 w-full">
-                <input type="date" id="due_date" placeholder="Data de entrega" className="w-full rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2" {...register("due_date")} />
+                <input type="date" id="due_date" placeholder="Data de entrega" className="w-full rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2" {
+                  ...register("due_date")
+
+                } />
               </div>
+
+            <div className="mb-6 grid grid-cols-2 gap-4">
+
+              <Controller
+                name="statusName"
+                control={control}
+                render={({ field: { onChange, onBlur, value, ref } }) => (
+                  <MarvelousSelect
+                    label="STATUS"
+                    data={taskStatus.results}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    value={value}
+                    ref={ref}
+                    nameRef="statusName"
+                    setData={setTaskStatus as unknown as React.Dispatch<React.SetStateAction<TaskRelatedItems[]>>}
+                  />
+                )}
+              />
+              <Controller
+                name="goalName"
+                control={control}
+                render={({ field: { onChange, onBlur, value, ref } }) => (
+                  <MarvelousSelect
+                    label="METAS"
+                    data={taskGoals.results}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    value={value}
+                    ref={ref}
+                    nameRef="goalName"
+                    setData={setTaskGoals as unknown as React.Dispatch<React.SetStateAction<TaskRelatedItems[]>>}
+                  />
+                )}
+              />
+            </div>
               {/* <div className="mb-6">
               <TextInput
                 id="guests"

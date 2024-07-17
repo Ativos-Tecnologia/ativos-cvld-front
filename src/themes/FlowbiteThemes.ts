@@ -1,9 +1,9 @@
 import { CustomFlowbiteTheme } from "flowbite-react";
 
-export const customDrawerTheme: CustomFlowbiteTheme = {
+export const customFlowBiteTheme: CustomFlowbiteTheme = {
     drawer: {
         "root": {
-            "base": "fixed z-40 overflow-y-auto bg-white p-4 transition-transform bg-snow dark:bg-boxdark",
+            "base": "fixed z-40 overflow-y-hidden bg-white p-4 transition-transform bg-snow dark:bg-boxdark",
             "backdrop": "fixed inset-0 z-30 bg-gray-900/50 dark:bg-gray-900/80",
             "edge": "bottom-16",
             "position": {
@@ -27,7 +27,7 @@ export const customDrawerTheme: CustomFlowbiteTheme = {
         },
         "header": {
             "inner": {
-                "closeButton": "absolute end-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-white/30 transition-all duration-200",
+                "closeButton": "absolute end-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 dark:text-gray-100 dark:hover:text-black hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-white/30 transition-all duration-200",
                 "closeIcon": "h-4 w-4",
                 "titleIcon": "me-2.5 h-4 w-4 text-gray-700 dark:text-white",
                 "titleText": "mb-4 inline-flex items-center text-base font-semibold dark:text-white"
@@ -39,6 +39,14 @@ export const customDrawerTheme: CustomFlowbiteTheme = {
         },
         "items": {
             "base": ""
+        }
+    },
+    popover: {
+        "base": "absolute z-20 inline-block w-max max-w-[100vw] bg-white outline-none border border-gray-200 rounded-lg shadow-2 dark:border-gray-600 dark:bg-gray-800",
+        "content": "z-10 overflow-hidden rounded-[7px]",
+        "arrow": {
+            "base": "absolute h-2 w-2 z-0 rotate-45 mix-blend-lighten bg-white border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:mix-blend-color",
+            "placement": "-4px"
         }
     }
 }

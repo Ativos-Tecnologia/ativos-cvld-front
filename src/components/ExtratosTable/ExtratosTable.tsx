@@ -8,7 +8,7 @@ import { CVLDResultProps } from "@/interfaces/IResultCVLD";
 import Loader from "../common/Loader";
 import TableView from "./TableView";
 import CardView from "./CardView";
-import { TaskDrawer } from "../TaskElements";
+import { PaginatedResponse, TaskDrawer } from "../TaskElements";
 
 export type LocalShowOptionsProps = {
   key: string;
@@ -27,7 +27,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
   const mySwal = UseMySwal();
 
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<PaginatedResponse<CVLDResultProps>>({ count: 0, next: "", previous: "", results: [] });
   const [item, setItem] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [viewOption, setViewOption] = useState<LocalExtractViewProps>({
@@ -68,7 +68,10 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
         })
       }
 
-      setData(data.filter((item) => item.id !== id));
+      setData(prevData => ({
+        ...prevData,
+        results: prevData.results.filter((item) => item.id !== id)
+      }));
       return response;
     } catch (error) {
       if (showModalMessage) {
@@ -202,7 +205,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   }, [localShowOptions]);
 
   useEffect(() => {
-    setData([...newItem, ...data])
+    setData({ ...data, results: [...newItem, ...data.results] });
   }, [newItem])
 
   return (

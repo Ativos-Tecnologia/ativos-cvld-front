@@ -2,7 +2,7 @@ import dateFormater from "@/functions/formaters/dateFormater";
 import factorFormater from "@/functions/formaters/factorFormater";
 import linkAdapter from "@/functions/formaters/linkFormater";
 import numberFormat from "@/functions/formaters/numberFormat";
-import { customDrawerTheme } from "@/themes/FlowbiteThemes";
+import { customFlowBiteTheme } from "@/themes/FlowbiteThemes";
 import { Button, Drawer, Flowbite, Table } from "flowbite-react";
 import React from "react";
 import { AiOutlineLoading } from "react-icons/ai";
@@ -16,7 +16,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
     <>
       {
         data["valor_principal"] && (
-          <Flowbite theme={{ theme: customDrawerTheme }}>
+          <Flowbite theme={{ theme: customFlowBiteTheme }}>
             <Drawer open={open} onClose={handleClose} style={{
               boxShadow: "2px 0 2px 0 rgba(0, 0, 0, 0.1)"
             }} className="min-w-48 sm:w-115 flex flex-col" backdrop={true}>

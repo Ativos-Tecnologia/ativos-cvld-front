@@ -286,6 +286,14 @@ const config: Config = {
             transform: 'rotateY(360deg)'
           }
         },
+        topToBottomArrow: {
+          "0%": { rotate: "0deg" },
+          "100%": { rotate: "180deg" },
+        },
+        bottomToTopArrow: {
+          "0%": { rotate: "180deg" },
+          "100%": { rotate: "0deg" },
+        },
         wiggle: {
           "0%": {
             transform: 'scale(1)',
@@ -373,6 +381,7 @@ const config: Config = {
           "50%": { transform: "translateY(0)" },
         },
       },
+
       animation: {
         flip: 'flip-vertical-right 3.5s infinite linear',
         wiggle: 'wiggle 2.5s infinite',
@@ -395,6 +404,8 @@ const config: Config = {
         line1: "line 10s infinite linear",
         line2: "line-revert 8s infinite linear",
         line3: "line 7s infinite linear",
+        topbottom1: "topToBottomArrow 0.5s forwards",
+        bottomtotoparrow: "bottomToTopArrow 0.5s forwards"
       },
     },
   },
