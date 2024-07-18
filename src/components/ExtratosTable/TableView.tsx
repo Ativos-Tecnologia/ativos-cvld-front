@@ -69,9 +69,9 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                         </TableHeadCell>
                     </TableHead>
                     <TableBody>
-                        {data?.length > 0 && (
+                        {data.results?.length > 0 && (
                             <>
-                                {data.map((item: CVLDResultProps) => (
+                                {data.results.map((item: CVLDResultProps) => (
 
                                     <TableRow key={item.id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
                                         <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
@@ -163,7 +163,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                 </Table>
             </Flowbite>
             {/* <TaskDrawer open={openTaskDrawer} setOpen={setOpenTaskDrawer} id={extratoId} /> */}
-            {data?.length === 0 && (
+            {data.results.length === 0 && (
                 <p className="text-center py-5 bg-white dark:bg-boxdark rounded-b-sm">
                     Não há registros para exibir
                 </p>

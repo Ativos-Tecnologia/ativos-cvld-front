@@ -57,12 +57,12 @@ const Profile = () => {
   }, [firstLogin]);
 
   useEffect(() => {
-    setImageUrl(data[0]?.profile_picture);
+    setImageUrl(data?.profile_picture);
   }, [data]);
 
   useEffect(() => {
     if (watch("username") && watch("username")?.length >= 4 && watch("username")?.length <= 30) {
-      if (watch("username") !== data[0]?.user) {
+      if (watch("username") !== data?.user) {
         try {
           api.get(`api/user/check-availability/${watch("username")}/`).then((res) => {
             setUsernameExists(res.data.available);
@@ -84,7 +84,7 @@ const Profile = () => {
     if (!watch('email')) return;
 
     if (watch("email") && watch("email")?.length > 4 && emailRegex.test(watch('email'))) {
-      if (watch("email") !== data[0]?.email) {
+      if (watch("email") !== data?.email) {
         try {
           api.get(`api/user/check-availability/${watch("email")}/`).then((res) => {
             res.data.available ? setEmailExists('available') : setEmailExists('unavailable');
@@ -102,13 +102,13 @@ const Profile = () => {
   }, [watch("email")]);
 
   const handleImageChange = (e: any) => {
-    const file = e.target.files[0];
+    const file = e.target.filesdata;
     if (file) {
       const reader = new FileReader();
       reader.onloadend = async () => {
         const formData = new FormData();
         formData.append("profile_picture", file);
-        await updateProfilePicture(`${auxData[0].id}`, formData);
+        await updateProfilePicture(`${auxData.id}`, formData);
       };
       reader.readAsDataURL(file);
     }
@@ -118,18 +118,18 @@ const Profile = () => {
     setEditModeUser(!editModeUser);
     setUsernameExists(undefined);
     setEmailExists('undefined');
-    setValue('email', data[0]?.email);
-    setValue('username', data[0]?.user);
+    setValue('email', data?.email);
+    setValue('username', data?.user);
   }
 
   const updateProfileDataSubmit: SubmitHandler<Record<string, any>> = async (data) => {
     setEditModeProfile(false);
     try {
-      const response = await updateProfile(`${auxData[0].id}`, data);
+      const response = await updateProfile(`${auxData.id}`, data);
 
       if (response.status === 200) {
         setFirstLogin(false);
-        // const firstUserResponse = await api.patch(`api/user/update-first-login/${auxData[0].id}/`);
+        // const firstUserResponse = await api.patch(`api/user/update-first-login/${auxData.id}/`);
         // if (firstUserResponse.status !== 200) {
         //   UseMySwal().fire({
         //     title: "Um erro inesperado ocorreu",
@@ -159,7 +159,7 @@ const Profile = () => {
   const updateUserDataSubmit: SubmitHandler<Record<string, any>> = async (data) => {
 
     try {
-      const response = await updateUserInfo(`${auxData[0].id}`, data);
+      const response = await updateUserInfo(`${auxData.id}`, data);
 
       if (response.status === 200) {
 
@@ -227,13 +227,13 @@ const Profile = () => {
                       width={160}
                       height={160}
                       className="rounded-full sm:max-w-42 sm:max-h-42 max-h-38 max-h-44 object-cover object-center aspect-square"
-                      alt={`Imagem de perfil de ${data[0]?.first_name} ${data[0]?.last_name}`}
-                      title={`Imagem de perfil de ${data[0]?.first_name} ${data[0]?.last_name}`}
+                      alt={`Imagem de perfil de ${data?.first_name} ${data?.last_name}`}
+                      title={`Imagem de perfil de ${data?.first_name} ${data?.last_name}`}
                     />
                   ) : (
                     <div className="rounded-full flex items-center justify-center text-6xl text-strokedark dark:text-white sm:max-w-42 sm:max-h-42 max-h-38 max-h-44 object-cover object-center aspect-square">
-                      <span>{data[0]?.first_name[0]}</span>
-                      <span>{data[0]?.last_name[0]}</span>
+                      <span>{data?.first_name}</span>
+                      <span>{data?.last_name}</span>
                     </div>
                   )}
                   <Flowbite theme={{ theme: customTheme }}>
@@ -263,7 +263,7 @@ const Profile = () => {
                               />
                             </form>
                           </button>
-                          <button onClick={() => removeProfilePicture(data[0]?.id as string)} className="flex items-center p-2 w-full hover:bg-black/10 dark:hover:bg-white/10">
+                          <button onClick={() => removeProfilePicture(data?.id as string)} className="flex items-center p-2 w-full hover:bg-black/10 dark:hover:bg-white/10">
                             <BiTrashAlt className="mr-2 w-4 h-4" />
                             <span>Remover foto</span>
                           </button>
@@ -288,12 +288,12 @@ const Profile = () => {
                     <div className="animate-pulse">
                       <div className="w-[170px] h-[24px] mx-auto bg-slate-200 rounded-full dark:bg-slate-300"></div>
                     </div>
-                  ) : `${data[0]?.first_name} ${data[0]?.last_name}`}
+                  ) : `${data?.first_name} ${data?.last_name}`}
                 </h3><div className="font-medium">{loading ? (
                   <div className="animate-pulse">
                     <div className="w-[280px] h-[18px] mx-auto bg-slate-200 rounded-full dark:bg-slate-300"></div>
                   </div>
-                ) : data[0]?.title}</div>
+                ) : data?.title}</div>
               </>
             </div>
           </div>
@@ -323,7 +323,7 @@ const Profile = () => {
                           className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                           type="text"
                           id="first_name"
-                          defaultValue={data[0]?.first_name}
+                          defaultValue={data?.first_name}
                           {
                           ...register("first_name")
                           }
@@ -343,7 +343,7 @@ const Profile = () => {
                         className="w-full rounded border border-stroke bg-gray px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                         type="text"
                         id="last_name"
-                        defaultValue={data[0]?.last_name}
+                        defaultValue={data?.last_name}
                         {
                         ...register("last_name")
                         }
@@ -392,7 +392,7 @@ const Profile = () => {
                         name="emailAddress"
                         id="emailAddress"
                         placeholder="ada@lovelace.com"
-                        defaultValue={data[0]?.email} />
+                        defaultValue={data?.email} />
                     </div>
                   </div>
 
@@ -410,7 +410,7 @@ const Profile = () => {
                       name="username"
                       id="username"
                       placeholder="adalovelace"
-                      defaultValue={data[0]?.user}
+                      defaultValue={data?.user}
                     />
                   </div> */}
                   <div className="mb-5.5">
@@ -451,7 +451,7 @@ const Profile = () => {
                         className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                         type="text"
                         id="title"
-                        defaultValue={data[0]?.title}
+                        defaultValue={data?.title}
                         maxLength={50}
                         {
                         ...register("title")
@@ -504,7 +504,7 @@ const Profile = () => {
                         id="bio"
                         rows={6}
                         placeholder="Escreva algo sobre você..."
-                        defaultValue={data[0]?.bio}
+                        defaultValue={data?.bio}
                         {
                         ...register("bio", {
                           maxLength: 512,
@@ -561,7 +561,7 @@ const Profile = () => {
                       type="email"
                       id="emailAddress"
                       placeholder="ada@lovelace.com"
-                      defaultValue={data[0]?.email}
+                      defaultValue={data?.email}
                       {
                       ...register("email")
                       }
@@ -601,7 +601,7 @@ const Profile = () => {
                       type="text"
                       id="username"
                       placeholder="adalovelace"
-                      defaultValue={data[0]?.user}
+                      defaultValue={data?.user}
                       maxLength={30}
                       min={6}
                       {
