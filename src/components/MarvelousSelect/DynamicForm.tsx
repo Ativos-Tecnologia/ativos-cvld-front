@@ -2,17 +2,64 @@ import { customFlowBiteTheme } from '@/themes/FlowbiteThemes';
 import { Flowbite, Popover } from 'flowbite-react'
 import React, { use, useCallback, useState } from 'react'
 import { BiPlus } from 'react-icons/bi'
-import { useForm } from 'react-hook-form'
+import { TaskRelatedItems } from '../TaskElements';
+import api from '@/utils/api';
 
-const DynamicForm = ({ label }: { label: string }) => {
+const DynamicForm = ({ label, data,  setData }: {
+    label: string;
+    data: TaskRelatedItems[];
+    setData: React.Dispatch<React.SetStateAction<Array<TaskRelatedItems>>>;
+}) => {
 
     const [open, setOpen] = useState<boolean>(false);
     const [newLabel, setNewLabel] = useState<string>('');
-    console.log('a')
+    const [error, setError] = useState<boolean>(false);
 
     const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        setNewLabel(e.target.value)
-    }, [])
+        setNewLabel(e.target.value);
+    }, []);
+
+
+    const handleCreateNewLabel = async () => {
+
+        if (newLabel.trim() !== '') {
+
+            if (label.toLowerCase() === 'metas') {
+                const response = await api.post('/api/task/goals/create/', {
+                    goalName: newLabel
+                }).then(res => {
+                    return res
+                });
+
+                data.unshift({
+                    id: response.data.task_id, 
+                    title: newLabel,
+                    goalName: newLabel,
+                    nameRef: newLabel,
+                    non_editable: false
+                })
+                setNewLabel('');
+            } else {
+                const response = await api.post('/api/task/status/create/', {
+                    statusName: newLabel
+                }).then(res => {
+                    return res
+                });
+                data.unshift({
+                    id: response.data.task_id, 
+                    title: newLabel,
+                    statusName: newLabel,
+                    nameRef: newLabel,
+                    non_editable: false
+                })
+                setNewLabel('');
+            }
+
+        } else {
+            setError(true);
+        }
+
+    }
 
 
     return (
@@ -28,11 +75,12 @@ const DynamicForm = ({ label }: { label: string }) => {
             <Popover
                 aria-labelledby="area-popover"
                 open={open}
+                arrow={false}
                 onOpenChange={setOpen}
                 placement='top'
                 content={
-                    <div className="flex w-50 flex-col gap-4 p-4 text-sm text-gray-500 dark:text-gray-400">
-                        <div className='relative mb-4'>
+                    <div className={`flex w-50 flex-col gap-4 p-4 text-sm transition-all duration-200`}>
+                        <div className='relative mb-3'>
                             <label htmlFor="new-label" className='font-medium'>
                                 {label.toLowerCase() === 'status' ? 'Novo status' : 'Nova meta'}
                             </label>
@@ -41,19 +89,30 @@ const DynamicForm = ({ label }: { label: string }) => {
                                 value={newLabel}
                                 onChange={handleInputChange}
                                 placeholder={label.toLowerCase() === 'status' ? 'Ex: em andamento' : 'Ex: primeiro contato'}
-                                className='w-full mt-1 text-sm text-ellipsis overflow-hidden whitespace-nowrap rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white'
+                                className='w-full mt-1 text-xs text-ellipsis overflow-hidden whitespace-nowrap rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white'
                             />
+                            {error && (
+                                <span className='absolute -bottom-2 left-0 text-red'>
+                                    Campo obrigatório.
+                                </span>
+                            )}
                         </div>
                         <div className="flex gap-2">
-                            <button type='button'>Reset</button>
-                            <button type='submit'>
-                                Save
+                            <button type='button' className='flex flex-1 justify-center rounded border border-stroke px-3 py-1 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white dark:bg-white/20 dark:hover:bg-white/30 bg-gray-100 hover:bg-gray-300 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50'
+                            onClick={() => {setNewLabel('')}}
+                            disabled={newLabel.trim() === ''}>
+                                Limpar
+                            </button>
+                            <button type='button' className="flex flex-1 justify-center rounded bg-blue-700 hover:!bg-blue-800 transition-all duration-300 px-3 py-1 font-medium text-gray dark:hover:!bg-blue-800 dark:bg-blue-700 dark:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:!hover-blue-700"
+                            onClick={handleCreateNewLabel}
+                            disabled={newLabel.trim() === ''}>
+                                Salvar
                             </button>
                         </div>
                     </div>
                 }
             >
-                <button type='button' className="flex items-center gap-1 p-1 rounded-full mb-1 cursor-pointer w-fit hover:text-black dark:hover:text-white transition-all duration-200">
+                <button type='button' className={`${open && 'text-black dark:text-white'} flex items-center gap-1 p-1 rounded-full mb-1 cursor-pointer w-fit hover:text-black dark:hover:text-white transition-all duration-200`}>
                     <BiPlus />
                     <span className="text-xs">
                         adicionar {label.toLowerCase() === 'status' ? 'novo status' : 'nova meta'}

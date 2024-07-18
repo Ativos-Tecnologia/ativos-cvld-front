@@ -43,6 +43,8 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
   const [isOpen, setIsOpen] = useState(false);
   const [labelReleatedEditId, setLabelReleatedEditId] = useState<string | null>(null);
   const selectRef = useRef<HTMLDivElement | null>(null);
+  const selectNameRef = useRef<HTMLDivElement | null>(null);
+
 
   const aux = nameRef === "goalName" ? "goalName" : "statusName";
 
@@ -51,7 +53,7 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
     title: label,
   });
 
-  data.map((tag) => {
+  data?.map((tag) => {
     if (aux === "goalName") {
       tag.nameRef = tag.goalName;
     } else {
@@ -66,7 +68,8 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
   useEffect(() => {
     document?.addEventListener('mousedown', (e: MouseEvent) => {
 
-      if (selectRef.current && !selectRef.current.contains(e.target as Node)) {
+      if (selectRef.current && !selectRef.current.contains(e.target as Node)
+        && selectNameRef.current && !selectNameRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
 
@@ -74,7 +77,8 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
 
     return document?.addEventListener('mousedown', (e: MouseEvent) => {
 
-      if (selectRef.current && !selectRef.current.contains(e.target as Node)) {
+      if (selectRef.current && !selectRef.current.contains(e.target as Node)
+       && selectNameRef.current && !selectNameRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
 
@@ -115,7 +119,6 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
           setData(updatedData);
           setLabelReleatedEditId(null);
 
-
         });
 
       } else {
@@ -128,9 +131,10 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
   return (
     <div className="relative" ref={ref} >
 
-      <DynamicForm label={label} />
+      <DynamicForm label={label} data={data} setData={setData} />
 
       <div
+        ref={selectNameRef}
         className={`flex py-0.5 h-fit gap-1 font-semibold ${color === undefined ? "bg-blue-100 text-blue-800 group-hover:bg-blue-200 dark:bg-blue-200 dark:text-blue-900 dark:group-hover:bg-blue-300" : color} flex w-full cursor-pointer flex-row items-center justify-between rounded text-[10px]`}
         onClick={() => setIsOpen(!isOpen)}
         title={selected?.nameRef || selected.title}
@@ -151,7 +155,7 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
         className={`${isOpen ? "h-40" : "h-0 border-none"} absolute z-10 mt-2 w-full rounded bg-white border border-stroke dark:border-strokedark dark:bg-boxdark shadow-lg overflow-y-auto transition-all duration-500 linear`}
       >
         {isOpen &&
-          data.map((tag) => (
+          data?.map((tag) => (
             <div
               key={tag.id}
               className="flex items-center justify-between border-b border-gray-100 cursor-pointer select-none">

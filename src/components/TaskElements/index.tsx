@@ -45,7 +45,6 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
   const { register, control, handleSubmit, watch, formState: { errors } } = useForm();
   const [taskStatus, setTaskStatus] = useState<PaginatedResponse<TaskRelatedItems>>({ count: 0, next: "", previous: "", results: [] });
   const [taskGoals, setTaskGoals] = useState<PaginatedResponse<TaskRelatedItems>>({ count: 0, next: "", previous: "", results: [] });
-  const selectRef = useRef<HTMLDivElement>(null);
 
   const handleClose = () => setOpen(false);
 
