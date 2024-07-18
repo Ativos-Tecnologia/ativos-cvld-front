@@ -5,7 +5,8 @@ import { PaginatedResponse, TaskRelatedItems } from "../TaskElements";
 import { Button, Popover, Tooltip } from "flowbite-react";
 import api from "@/utils/api";
 import { TfiCheckBox, TfiPencilAlt } from "react-icons/tfi";
-import { DynamicForm } from "./DynamicForm";
+import DynamicForm from "./DynamicForm";
+
 
 export type TaskDrawerProps = {
   label: string;

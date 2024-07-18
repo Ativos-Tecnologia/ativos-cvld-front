@@ -1,11 +1,19 @@
 import { customFlowBiteTheme } from '@/themes/FlowbiteThemes';
 import { Flowbite, Popover } from 'flowbite-react'
-import React, { useState } from 'react'
+import React, { use, useCallback, useState } from 'react'
 import { BiPlus } from 'react-icons/bi'
+import { useForm } from 'react-hook-form'
 
-export const DynamicForm = ({ label }: { label: string }) => {
+const DynamicForm = ({ label }: { label: string }) => {
 
     const [open, setOpen] = useState<boolean>(false);
+    const [newLabel, setNewLabel] = useState<string>('');
+    console.log('a')
+
+    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setNewLabel(e.target.value)
+    }, [])
+
 
     return (
         // <div className="relative">
@@ -24,19 +32,21 @@ export const DynamicForm = ({ label }: { label: string }) => {
                 placement='top'
                 content={
                     <div className="flex w-50 flex-col gap-4 p-4 text-sm text-gray-500 dark:text-gray-400">
-                        <div>
+                        <div className='relative mb-4'>
                             <label htmlFor="new-label" className='font-medium'>
                                 {label.toLowerCase() === 'status' ? 'Novo status' : 'Nova meta'}
                             </label>
-                            <input 
-                            type="text" 
-                            title={'teste'}
-                            placeholder={`Digite o nome ${label.toLowerCase() === 'status' ? 'do novo status' : 'da nova meta'}`}
-                            className='w-full mt-1 text-sm text-ellipsis overflow-hidden whitespace-nowrap rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white' />
+                            <input
+                                type="text"
+                                value={newLabel}
+                                onChange={handleInputChange}
+                                placeholder={label.toLowerCase() === 'status' ? 'Ex: em andamento' : 'Ex: primeiro contato'}
+                                className='w-full mt-1 text-sm text-ellipsis overflow-hidden whitespace-nowrap rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white'
+                            />
                         </div>
                         <div className="flex gap-2">
-                            <button color="gray">Reset</button>
-                            <button color="success" onClick={() => setOpen(false)}>
+                            <button type='button'>Reset</button>
+                            <button type='submit'>
                                 Save
                             </button>
                         </div>
@@ -53,3 +63,5 @@ export const DynamicForm = ({ label }: { label: string }) => {
         </Flowbite>
     )
 }
+
+export default React.memo(DynamicForm)
