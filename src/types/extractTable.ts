@@ -3,7 +3,7 @@ import { CVLDResultProps } from "@/interfaces/IResultCVLD";
 
 export type ExtractTableProps = {
     className?: string;
-    data: PaginatedResponse<CVLDResultProps>;
+    data: PaginatedResponse<CVLDResultProps> | any;
     setData: React.Dispatch<React.SetStateAction<any>>;
     showModalMessage: boolean;
     loading: boolean;
@@ -16,4 +16,8 @@ export type ExtractTableProps = {
     setOpenTaskDrawer: React.Dispatch<React.SetStateAction<boolean>>;
     setExtractId: React.Dispatch<React.SetStateAction<string>>;
     fetchDataById: (id: string) => void;
+    count: number;
+    onPageChange: (page: number) => void;
+    currentPage: number;
+    setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
 }
