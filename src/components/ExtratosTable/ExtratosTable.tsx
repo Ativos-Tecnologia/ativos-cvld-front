@@ -115,7 +115,6 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
 
     setLoading(false);
-    console.log(loading);
 
   }
 

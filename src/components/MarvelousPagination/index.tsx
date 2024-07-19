@@ -16,13 +16,6 @@ export interface MarvelousPaginationProps {
   loading?: boolean;
 }
 
-interface PageProps
-  extends Omit<MarvelousPaginationProps, "onPageChange" | "setCurrentPage"> {
-  counter: number;
-  page_size: number;
-  currentPage: number;
-}
-
 const PageHelper: React.FC<PageProps> = ({
   counter,
   page_size,
@@ -46,6 +39,16 @@ const PageHelper: React.FC<PageProps> = ({
     </div>
   );
 };
+
+
+interface PageProps
+  extends Omit<MarvelousPaginationProps, "onPageChange" | "setCurrentPage"> {
+  counter: number;
+  page_size: number;
+  currentPage: number;
+}
+
+
 
 export default function MarvelousPagination({
   counter,
