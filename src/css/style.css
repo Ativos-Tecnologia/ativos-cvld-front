@@ -264,3 +264,23 @@ input[type="password"]::-webkit-textfield-decoration-container {
     }
 }
 
+.table-scroll {
+    display: block;
+    max-height: 600px;
+    overflow-y: auto;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+  }
+
+  /* Estilo para o cabeçalho da tabela */
+  .table-scroll thead tr th {
+    position: sticky;
+    top: 0;
+    /* background: #fff; Cor de fundo para o cabeçalho */
+    z-index: 2;
+  }
+
+  /* Estilo para as células da tabela */
+  .table-scroll tbody tr td {
+    /* background: #f9f9f9; Cor de fundo para as células */
+    border-bottom: 1px solid #ddd; /* Borda inferior para as células */
+  }
