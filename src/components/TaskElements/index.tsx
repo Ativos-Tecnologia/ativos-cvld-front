@@ -45,7 +45,6 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
   const { register, control, handleSubmit, watch, formState: { errors } } = useForm();
   const [taskStatus, setTaskStatus] = useState<PaginatedResponse<TaskRelatedItems>>({ count: 0, next: "", previous: "", results: [] });
   const [taskGoals, setTaskGoals] = useState<PaginatedResponse<TaskRelatedItems>>({ count: 0, next: "", previous: "", results: [] });
-  const selectRef = useRef<HTMLDivElement>(null);
 
   const handleClose = () => setOpen(false);
 
@@ -140,13 +139,13 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
                 render={({ field: { onChange, onBlur, value, ref } }) => (
                   <MarvelousSelect
                     label="STATUS"
-                    data={taskStatus.results}
+                    data={taskStatus}
                     onChange={onChange}
                     onBlur={onBlur}
                     value={value}
                     ref={ref}
                     nameRef="statusName"
-                    setData={setTaskStatus as unknown as React.Dispatch<React.SetStateAction<TaskRelatedItems[]>>}
+                    setData={setTaskStatus as unknown as React.Dispatch<React.SetStateAction<PaginatedResponse<TaskRelatedItems>>>}
                   />
                 )}
               />
@@ -156,13 +155,13 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
                 render={({ field: { onChange, onBlur, value, ref } }) => (
                   <MarvelousSelect
                     label="METAS"
-                    data={taskGoals.results}
+                    data={taskGoals}
                     onChange={onChange}
                     onBlur={onBlur}
                     value={value}
                     ref={ref}
                     nameRef="goalName"
-                    setData={setTaskGoals as unknown as React.Dispatch<React.SetStateAction<TaskRelatedItems[]>>}
+                    setData={setTaskGoals as unknown as React.Dispatch<React.SetStateAction<PaginatedResponse<TaskRelatedItems>>>}
                   />
                 )}
               />
