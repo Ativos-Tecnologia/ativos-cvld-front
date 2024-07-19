@@ -2,18 +2,24 @@ import { customFlowBiteTheme } from '@/themes/FlowbiteThemes';
 import { Flowbite, Popover } from 'flowbite-react'
 import React, { use, useCallback, useState } from 'react'
 import { BiPlus } from 'react-icons/bi'
-import { TaskRelatedItems } from '../TaskElements';
+import { PaginatedResponse, TaskRelatedItems } from '../TaskElements';
 import api from '@/utils/api';
+
+interface IFallbackMessageProps {
+    trigger: boolean;
+    type: string;
+    message: string;
+}
 
 const DynamicForm = ({ label, data,  setData }: {
     label: string;
-    data: TaskRelatedItems[];
-    setData: React.Dispatch<React.SetStateAction<Array<TaskRelatedItems>>>;
+    data: PaginatedResponse<TaskRelatedItems>;
+    setData: React.Dispatch<React.SetStateAction<PaginatedResponse<TaskRelatedItems>>>;
 }) => {
 
     const [open, setOpen] = useState<boolean>(false);
     const [newLabel, setNewLabel] = useState<string>('');
-    const [error, setError] = useState<boolean>(false);
+    const [message, setMessage] = useState<IFallbackMessageProps>();
 
     const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         setNewLabel(e.target.value);
@@ -30,33 +36,77 @@ const DynamicForm = ({ label, data,  setData }: {
                 }).then(res => {
                     return res
                 });
-
-                data.unshift({
-                    id: response.data.task_id, 
-                    title: newLabel,
-                    goalName: newLabel,
-                    nameRef: newLabel,
-                    non_editable: false
+                
+                setData({
+                    ...data,
+                    results: [
+                        {
+                            id: response.data.task_id,
+                            title: newLabel,
+                            goalName: newLabel,
+                            nameRef: newLabel,
+                            non_editable: false
+                        },
+                        ...data.results
+                    ]
                 })
                 setNewLabel('');
+                setMessage({
+                    trigger: true,
+                    type: 'success',
+                    message: 'meta criada com sucesso.'
+                })
+                setTimeout(() => {
+                    setOpen(false);
+                    setMessage({
+                        trigger: false,
+                        type: '',
+                        message: ''
+                    })
+                }, 1000);
+
             } else {
                 const response = await api.post('/api/task/status/create/', {
                     statusName: newLabel
                 }).then(res => {
                     return res
                 });
-                data.unshift({
-                    id: response.data.task_id, 
-                    title: newLabel,
-                    statusName: newLabel,
-                    nameRef: newLabel,
-                    non_editable: false
+                
+                setData({
+                    ...data,
+                    results: [
+                        {
+                            id: response.data.task_id,
+                            title: newLabel,
+                            statusName: newLabel,
+                            nameRef: newLabel,
+                            non_editable: false
+                        },
+                        ...data.results
+                    ]
                 })
                 setNewLabel('');
+                setMessage({
+                    trigger: true,
+                    type: 'success',
+                    message: 'status criado com sucesso.'
+                })
+                setTimeout(() => {
+                    setOpen(false);
+                    setMessage({
+                        trigger: false,
+                        type: '',
+                        message: ''
+                    })
+                }, 1000);
             }
 
         } else {
-            setError(true);
+            setMessage({
+                trigger: true,
+                type: 'error',
+                message: 'campo obrigatório.'
+            });
         }
 
     }
@@ -91,9 +141,9 @@ const DynamicForm = ({ label, data,  setData }: {
                                 placeholder={label.toLowerCase() === 'status' ? 'Ex: em andamento' : 'Ex: primeiro contato'}
                                 className='w-full mt-1 text-xs text-ellipsis overflow-hidden whitespace-nowrap rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white'
                             />
-                            {error && (
-                                <span className='absolute -bottom-2 left-0 text-red'>
-                                    Campo obrigatório.
+                            {message?.trigger && (
+                                <span className={`absolute -bottom-4 left-1 text-xs ${message.type === 'error' ? 'text-red-500' : 'text-green-500'}`}>
+                                    {message.message}
                                 </span>
                             )}
                         </div>
