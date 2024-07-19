@@ -59,10 +59,6 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
     }
   });
 
-  // teste de clique
-
-  // fim do teste de clique
-
   useEffect(() => {
     document?.addEventListener('mousedown', (e: MouseEvent) => {
 
@@ -124,8 +120,33 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
 
         });
 
-      } else {
-        /* ... */
+      } else if (targetTag?.statusName) {
+
+        api.patch(`api/task/status/update-status-name/${targetTag.id}/`, {
+          statusName: value,
+        }).then((response) => {
+
+          const updatedData = data.results.map((item) => {
+            if (item.id === targetTag.id) {
+
+              return {
+                ...item,
+                nameRef: targetTag.title,
+                statusName: targetTag.title
+              }
+
+            }
+            return item;
+          });
+
+          setData({
+            ...data,
+            results: updatedData
+          });
+          setLabelReleatedEditId(null);
+
+        });
+
         return;
       }
     }
