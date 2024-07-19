@@ -139,13 +139,13 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
                 render={({ field: { onChange, onBlur, value, ref } }) => (
                   <MarvelousSelect
                     label="STATUS"
-                    data={taskStatus.results}
+                    data={taskStatus}
                     onChange={onChange}
                     onBlur={onBlur}
                     value={value}
                     ref={ref}
                     nameRef="statusName"
-                    setData={setTaskStatus as unknown as React.Dispatch<React.SetStateAction<TaskRelatedItems[]>>}
+                    setData={setTaskStatus as unknown as React.Dispatch<React.SetStateAction<PaginatedResponse<TaskRelatedItems>>>}
                   />
                 )}
               />
@@ -155,13 +155,13 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
                 render={({ field: { onChange, onBlur, value, ref } }) => (
                   <MarvelousSelect
                     label="METAS"
-                    data={taskGoals.results}
+                    data={taskGoals}
                     onChange={onChange}
                     onBlur={onBlur}
                     value={value}
                     ref={ref}
                     nameRef="goalName"
-                    setData={setTaskGoals as unknown as React.Dispatch<React.SetStateAction<TaskRelatedItems[]>>}
+                    setData={setTaskGoals as unknown as React.Dispatch<React.SetStateAction<PaginatedResponse<TaskRelatedItems>>>}
                   />
                 )}
               />
