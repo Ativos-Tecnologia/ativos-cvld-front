@@ -50,7 +50,11 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
     title: label,
   });
 
-  data.map((tag) => {
+  console.log('====================================');
+  console.log(data);
+  console.log('====================================');
+
+  data?.map((tag) => {
     if (aux === "goalName") {
       tag.nameRef = tag.goalName;
     } else {
@@ -150,7 +154,7 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
         className={`${isOpen ? "h-40" : "h-0 border-none"} absolute z-10 mt-2 w-full rounded bg-white border border-stroke dark:border-strokedark dark:bg-boxdark shadow-lg overflow-y-auto transition-all duration-500 linear`}
       >
         {isOpen &&
-          data.map((tag) => (
+          data?.map((tag) => (
             <div
               key={tag.id}
               className="flex items-center justify-between border-b border-gray-100 cursor-pointer select-none">

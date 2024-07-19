@@ -8,8 +8,9 @@ import { Badge } from "flowbite-react";
 import statusOficio from "@/enums/statusOficio.enum";
 import tipoOficio from "@/enums/tipoOficio.enum";
 import useUpdateOficio from "@/hooks/useUpdateOficio";
+import MarvelousPagination from "../MarvelousPagination";
 
-const CardView = ({ className, data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById }: ExtractTableProps) => {
+const CardView = ({ className, data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage }: ExtractTableProps) => {
 
     const enumOficiosList = Object.values(statusOficio);
     const enumTipoOficiosList = Object.values(tipoOficio);
@@ -22,7 +23,7 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
     }
 
     return (
-        <div className={className}>
+        <><div className={className}>
             <div className="flex gap-4 flex-wrap">
 
                 {data.results?.length > 0 ? (
@@ -57,13 +58,11 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
                                         <p className="text-[10px]">TIPO</p>
                                         <Badge color="indigo" size="sm" className="w-fit text-[10px]">
                                             <select className="text-[10px] w-full bg-transparent border-none py-0 !pl-2 !pr-8" onChange={(e) => updateOficioTipo(item.id, e.target.value as tipoOficio)}>
-                                                {
-                                                    item.tipo_do_oficio && (
-                                                        <option value={item.tipo_do_oficio} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                            {item.tipo_do_oficio}
-                                                        </option>
-                                                    )
-                                                }
+                                                {item.tipo_do_oficio && (
+                                                    <option value={item.tipo_do_oficio} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                        {item.tipo_do_oficio}
+                                                    </option>
+                                                )}
                                                 {enumTipoOficiosList.filter((status) => status !== item.tipo_do_oficio).map((status) => (
                                                     <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                         {status}
@@ -76,13 +75,11 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
                                         <p className="text-[10px]">STATUS</p>
                                         <Badge color="teal" size="sm" className="max-w-max text-center text-[10px]">
                                             <select className="text-[10px] w-full bg-transparent border-none py-0 !pl-2 !pr-8" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
-                                                {
-                                                    item.status && (
-                                                        <option value={item.status} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                            {item.status}
-                                                        </option>
-                                                    )
-                                                }
+                                                {item.status && (
+                                                    <option value={item.status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                        {item.status}
+                                                    </option>
+                                                )}
                                                 {enumOficiosList.filter((status) => status !== item.status).map((status) => (
                                                     <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                         {status}
@@ -99,13 +96,13 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
                                         <BiTask className="w-4 h-4" />
                                     </button>
                                     {/* <button className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 bg-[#4dbce9] text-black rounded-md hover:bg-[#26ade4] hover:text-snow transition-all duration-200">
-                                        <span className="text-sm font-medium">TAREFA</span>
-                                        <BiTask className="w-4 h-4" />
-                                    </button> */}
+                        <span className="text-sm font-medium">TAREFA</span>
+                        <BiTask className="w-4 h-4" />
+                    </button> */}
                                     <button onClick={() => {
                                         setOpenDetailsDrawer(true);
                                         fetchDataById(item.id);
-                                    }} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-800 hover:border-blue-800 hover:text-snow hover:-translate-y-1 transition-all duration-300">
+                                    } } className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-800 hover:border-blue-800 hover:text-snow hover:-translate-y-1 transition-all duration-300">
                                         <span className="text-sm font-medium">DETALHES</span>
                                         <BiListUl className="w-4 h-4" />
                                     </button>
@@ -119,7 +116,22 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
                     </p>
                 )}
             </div>
-        </div>
+        </div><div className="flex overflow-x-auto sm:justify-center">
+                {/* <Pagination
+layout="pagination"
+currentPage={currentPage}
+totalPages={count}
+onPageChange={(page) => {
+setCurrentPage(page);
+onPageChange(page);
+}}
+previousLabel="Go back"
+nextLabel="Go forward"
+showIcons
+/> */}
+
+                <MarvelousPagination counter={count} page_size={20} currentPage={currentPage} onPageChange={onPageChange} setCurrentPage={setCurrentPage} loading={loading} />
+            </div></>
     )
 }
 

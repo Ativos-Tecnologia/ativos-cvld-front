@@ -27,7 +27,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
   const mySwal = UseMySwal();
 
-  const [data, setData] = useState<PaginatedResponse<CVLDResultProps>>({ count: 0, next: "", previous: "", results: [] });
+  const [data, setData] = useState<PaginatedResponse<CVLDResultProps>>({ results: [], count: 0, next: "", previous: "" });
   const [item, setItem] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [viewOption, setViewOption] = useState<LocalExtractViewProps>({
@@ -40,6 +40,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   const [extratoId, setExtractId] = useState<string>("");
   const [openDetailsDrawer, setOpenDetailsDrawer] = useState<boolean>(false);
   const [openTaskDrawer, setOpenTaskDrawer] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [modalOptions, setModalOptions] = useState({
     open: false,
     extractId: ''
@@ -47,9 +48,20 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   const viewModeRef = useRef<HTMLSelectElement | null>(null);
 
   const fetchData = async () => {
+    setLoading(true);
     const response = await api.get("api/extratos/");
     setData(response.data);
+    setLoading(false);
   }
+
+  const onPageChange = async (page: number) => {
+    setLoading(true);
+    const response = await api.get(`api/extratos/?page=${page}`);
+    setData(response.data);
+    setLoading(false);
+  }
+
+
 
   const fetchDelete = async (id: string) => {
     try {
@@ -68,10 +80,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
         })
       }
 
-      setData(prevData => ({
-        ...prevData,
-        results: prevData.results.filter((item) => item.id !== id)
-      }));
+      setData({ results: data.results.filter((item) => item.id !== id), count: data.count, next: data.next, previous: data.previous });
       return response;
     } catch (error) {
       if (showModalMessage) {
@@ -205,8 +214,12 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   }, [localShowOptions]);
 
   useEffect(() => {
-    setData({ ...data, results: [...newItem, ...data.results] });
-  }, [newItem])
+    setData((prevData) => ({
+      ...prevData,
+      results: [...newItem, ...prevData.results]
+    }));
+  }, [newItem]);
+
 
   return (
     <div className="overflow-x-auto">
@@ -240,6 +253,10 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                 setOpenTaskDrawer={setOpenTaskDrawer}
                 setExtractId={setExtractId}
                 fetchDataById={fetchDataById}
+                count={data.count}
+                onPageChange={(page) => onPageChange(page)}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
               />
             }
             {viewOption.type === "cards" &&
@@ -255,6 +272,10 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                 setOpenTaskDrawer={setOpenTaskDrawer} // ainda não utilizado
                 setExtractId={setExtractId} // ainda não utilizado
                 fetchDataById={fetchDataById}
+                count={data.count}
+                onPageChange={(page) => onPageChange(page)}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
               />
             }
           </div>
@@ -278,6 +299,10 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
             setOpenTaskDrawer={setOpenTaskDrawer} // ainda não utilizado
             setExtractId={setExtractId} // ainda não utilizado
             fetchDataById={fetchDataById}
+            count={data.count}
+            onPageChange={(page) => onPageChange(page)}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
           />
         </div>
         /* end mobile view */

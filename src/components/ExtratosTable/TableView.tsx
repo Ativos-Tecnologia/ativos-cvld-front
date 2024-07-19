@@ -1,4 +1,4 @@
-import { Badge, CustomFlowbiteTheme, Flowbite, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from 'flowbite-react';
+import { Badge, CustomFlowbiteTheme, Flowbite, Pagination, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from 'flowbite-react';
 import numberFormat from "@/functions/formaters/numberFormat";
 import { ExtractTableProps } from '@/types/extractTable';
 import React, { useState } from 'react';
@@ -10,6 +10,7 @@ import tipoOficio from '@/enums/tipoOficio.enum';
 import api from '@/utils/api';
 import { TaskDrawer } from '../TaskElements';
 import useUpdateOficio from '@/hooks/useUpdateOficio';
+import MarvelousPagination from '../MarvelousPagination';
 
 const customTheme: CustomFlowbiteTheme = {
     table: {
@@ -32,13 +33,13 @@ const customTheme: CustomFlowbiteTheme = {
         },
         row: {
             base: "group/row",
-            hovered: "hover:bg-gray-50 dark:hover:bg-gray-600",
+            hovered: "hover:bg-red dark:hover:bg-gray-600",
             striped: "odd:bg-white even:bg-green-300 odd:dark:bg-gray-800 even:dark:bg-gray-700"
         }
     }
 }
 
-const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById }: ExtractTableProps) => {
+const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage }: ExtractTableProps) => {
     const enumOficiosList = Object.values(statusOficio);
     const enumTipoOficiosList = Object.values(tipoOficio);
 
@@ -50,7 +51,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
     }
 
     return (
-        <div>
+        <><div className='table-scroll'>
             <Flowbite theme={{ theme: customTheme }}>
                 <Table hoverable className="">
                     <TableHead>
@@ -68,22 +69,20 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                             <span className="sr-only text-center ">Detalhes</span>
                         </TableHeadCell>
                     </TableHead>
-                    <TableBody>
+                    <TableBody className='max-h-[200px] overflow-x-scroll'>
                         {data.results?.length > 0 && (
                             <>
                                 {data.results.map((item: CVLDResultProps) => (
 
-                                    <TableRow key={item.id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                                        <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                                    <TableRow key={item.id} className="bg-white dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                        <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600">
                                             <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
                                                 <select className="text-[12px] bg-transparent border-none py-0" onChange={(e) => updateOficioTipo(item.id, e.target.value as tipoOficio)}>
-                                                    {
-                                                        item.tipo_do_oficio && (
-                                                            <option value={item.tipo_do_oficio} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                                {item.tipo_do_oficio}
-                                                            </option>
-                                                        )
-                                                    }
+                                                    {item.tipo_do_oficio && (
+                                                        <option value={item.tipo_do_oficio} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                            {item.tipo_do_oficio}
+                                                        </option>
+                                                    )}
                                                     {enumTipoOficiosList.filter((status) => status !== item.tipo_do_oficio).map((status) => (
                                                         <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                             {status}
@@ -97,13 +96,11 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                         <TableCell className="text-center items-center">
                                             <Badge color="teal" size="sm" className="max-w-max text-center text-[12px]">
                                                 <select className="text-[12px] bg-transparent border-none py-0" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
-                                                    {
-                                                        item.status && (
-                                                            <option value={item.status} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                                {item.status}
-                                                            </option>
-                                                        )
-                                                    }
+                                                    {item.status && (
+                                                        <option value={item.status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                            {item.status}
+                                                        </option>
+                                                    )}
                                                     {enumOficiosList.filter((status) => status !== item.status).map((status) => (
                                                         <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                             {status}
@@ -132,7 +129,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                             }} onClick={() => {
                                                 setOpenDetailsDrawer(true);
                                                 fetchDataById(item.id);
-                                            }} className="border-none transition-all duration-300 text-blue-700 font-medium px-2 py-1 hover:bg-blue-200 dark:hover:bg-blue-400 group">
+                                            } } className="border-none transition-all duration-300 text-blue-700 font-medium px-2 py-1 hover:bg-blue-200 dark:hover:bg-blue-400 group">
                                                 <div className="flex flex-row w-full justify-between align-middle gap-2">
                                                     <span className="text-[12px] font-bold">
                                                         DETALHES
@@ -163,12 +160,27 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                 </Table>
             </Flowbite>
             {/* <TaskDrawer open={openTaskDrawer} setOpen={setOpenTaskDrawer} id={extratoId} /> */}
-            {data.results.length === 0 && (
+            {data.results?.length === 0 && (
                 <p className="text-center py-5 bg-white dark:bg-boxdark rounded-b-sm">
                     Não há registros para exibir
                 </p>
             )}
-        </div>
+        </div><div className="flex overflow-x-auto sm:justify-center">
+                {/* <Pagination
+      layout="pagination"
+      currentPage={currentPage}
+      totalPages={count}
+      onPageChange={(page) => {
+          setCurrentPage(page);
+          onPageChange(page);
+          }}
+      previousLabel="Go back"
+      nextLabel="Go forward"
+      showIcons
+    /> */}
+
+                <MarvelousPagination counter={count} page_size={20} currentPage={currentPage} onPageChange={onPageChange} setCurrentPage={setCurrentPage} />
+            </div></>
     )
 }
 
