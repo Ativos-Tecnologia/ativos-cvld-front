@@ -55,6 +55,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   }
 
   const onPageChange = async (page: number) => {
+    if (page === currentPage) return;
     setLoading(true);
     const response = await api.get(`api/extratos/?page=${page}`);
     setData(response.data);

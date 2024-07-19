@@ -1,7 +1,7 @@
 import numberFormat from "@/functions/formaters/numberFormat";
 import { ExtractTableProps } from '@/types/extractTable';
 import React from 'react';
-import { BiListUl, BiTask } from 'react-icons/bi';
+import { BiListUl, BiLoader, BiTask } from 'react-icons/bi';
 import { CVLDResultProps } from '@/interfaces/IResultCVLD';
 import { BsFillTrashFill } from 'react-icons/bs';
 import { Badge } from "flowbite-react";
@@ -129,8 +129,17 @@ previousLabel="Go back"
 nextLabel="Go forward"
 showIcons
 /> */}
+    <div className='w-full flex-col justify-center items-center'>
+            {
+                <div className='w-full mt-4 h-4 flex justify-center items-center'>
+                                        <div className={`${loading ? "opacity-100 visible" : "opacity-0 invisible"} text-center flex justify-center items-center transition-all duration-300`}>
+                                            <span className='text-sm mr-2 text-meta-4'>Buscando informações </span><BiLoader className="animate-spin h-5 w-5" />
+                                        </div>
+                                </div>
+                        }
 
                 <MarvelousPagination counter={count} page_size={20} currentPage={currentPage} onPageChange={onPageChange} setCurrentPage={setCurrentPage} loading={loading} />
+            </div>
             </div></>
     )
 }
