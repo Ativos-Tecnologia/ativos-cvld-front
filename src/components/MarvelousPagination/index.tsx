@@ -17,9 +17,7 @@ export interface MarvelousPaginationProps {
 }
 
 export default function MarvelousPagination({ counter, page_size, currentPage, onPageChange, setCurrentPage, loading  }: MarvelousPaginationProps) {
-    console.log('====================================');
-    console.log(loading);
-    console.log('====================================');
+  
     const pageNum = Math.ceil(counter / page_size);
 
     if (page_size > counter) {
