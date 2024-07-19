@@ -1,10 +1,8 @@
 import React, { forwardRef, useEffect, useRef, useState } from "react";
 import { BiCheck, BiDotsVerticalRounded, BiX } from "react-icons/bi";
-import { BsChevronBarDown, BsChevronDown, BsChevronUp, BsThreeDots, BsX } from "react-icons/bs";
+import { BsChevronUp } from "react-icons/bs";
 import { PaginatedResponse, TaskRelatedItems } from "../TaskElements";
-import { Button, Popover, Tooltip } from "flowbite-react";
 import api from "@/utils/api";
-import { TfiCheckBox, TfiPencilAlt, TfiTrash } from "react-icons/tfi";
 import DynamicForm from "./DynamicForm";
 
 
