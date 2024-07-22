@@ -1,0 +1,6 @@
+@font-face {
+    font-family: "Polaris";
+    src: url("../../public/fonts/Polaris.otf") format("opentype");
+    font-style: normal;
+    font-display: swap;
+}

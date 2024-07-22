@@ -10,7 +10,7 @@ import api from "@/utils/api";
 import ReactApexChart from "react-apexcharts";
 import Cleave from "cleave.js/react";
 import UseMySwal from "@/hooks/useMySwal";
-import { Button } from "flowbite-react";
+import statusOficio from "@/enums/statusOficio.enum";
 import { ErrorMessage } from "../ErrorMessage/ErrorMessage";
 import { UpdatePrecatorioButton } from "../Button/UpdatePrecatorioButton";
 import numberFormat from "@/functions/formaters/numberFormat";
@@ -18,6 +18,7 @@ import { UserInfoAPIContext, UserInfoContextType } from "@/context/UserInfoConte
 import { BiChevronRight, BiLineChart } from "react-icons/bi";
 import { AiOutlineLoading } from "react-icons/ai";
 import Link from "next/link";
+import tipoOficio from "@/enums/tipoOficio.enum";
 
 
 interface ChartTwoState {
@@ -47,6 +48,10 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
     setValue,
     formState: { errors },
   } = useForm();
+
+  const enumOficiosList = Object.values(statusOficio);
+  const enumTipoOficiosList = Object.values(tipoOficio);
+
 
   const { setCredits, credits, data } = useContext<UserInfoContextType>(UserInfoAPIContext);
 
@@ -255,26 +260,101 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
 
 
   return (
-    <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-7">
+    <div className="col-span-12 rounded-md border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-7">
       <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
-        <h2 className="text-3xl font-extrabold dark:text-white">
-          Calculadora de Atualização de Precatórios
+        <h2 className="text-3xl font-extrabold dark:text-white w-full text-center pt-4 pb-8 uppercase font-polaris">
+          Celler<span className="text-blue-500">IA J</span>
         </h2>
-        <div className="flex flex-col items-center w-full sm:w-60">
-          <UpdatePrecatorioButton setStateFunction={setOficioForm} />
-          <span className="apexcharts-legend-text" style={{ "color": "rgb(55, 61, 63)", "fontSize": "12px", "fontWeight": "400", "fontFamily": "Satoshi" }}>TRF1 ao TRF4 (beta)</span>
-        </div>
       </div>
+        <div className="flex flex-col items-center w-full">
+          <UpdatePrecatorioButton setStateFunction={setOficioForm} />
+          <span className="apexcharts-legend-text mt-2" style={{ "color": "rgb(55, 61, 63)", "fontSize": "12px", "fontWeight": "400", "fontFamily": "Satoshi" }}>TRF1 ao TRF4 (beta)</span>
+        </div>
       {
         <form className="mt-5 space-y-5" onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-            <div className="flex flex-col gap-2 w-full sm:col-span-2">
+
+            <div className="flex flex-col gap-2 w-full sm:col-span-1">
+              <label htmlFor="tipo" className="text-sm text-meta-5 font-semibold">
+                Tipo
+              </label>
+              <select
+                id="tipo"
+                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark"
+                {
+                ...register("tipo", {
+                  required: "Campo obrigatório",
+                })
+                }
+                defaultValue={enumTipoOficiosList[0]}
+              >
+                {
+                  enumTipoOficiosList.map((status) => (
+                    <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                      {status}
+                    </option>
+                  ))
+                }
+              </select>
+            </div>
+            <div className="flex flex-col gap-2 w-full sm:col-span-1">
+              <label htmlFor="status" className="text-sm font-semibold text-meta-5">
+                Status
+              </label>
+              <select
+                id="status"
+                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark"
+                {
+                ...register("status", {
+                  required: "Campo obrigatório",
+                })
+                }
+                defaultValue={enumOficiosList[0]}
+              >
+                {
+                  enumOficiosList.map((status) => (
+                    <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                      {status}
+                    </option>
+                  ))
+                }
+              </select>
+            </div>
+
+
+            <span className="text-lg font-semibold text-primary">Dados do Principal</span>
+                          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
+
+                          <div className="flex flex-col gap-2">
+                            <label htmlFor="credor" className="text-sm font-medium text-meta-5">
+                              Nome/Razão Social do Credor Principal
+                            </label>
+                            <input
+                              type="text"
+                              id="credor"
+                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              {...register("credor", {})} />
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <label htmlFor="cpf_cnpj" className="text-sm font-medium text-meta-5">
+                              CPF/CNPJ
+                            </label>
+                            <input
+                              type="text"
+                              id="cpf_cnpj"
+                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              {...register("cpf_cnpj", {})} />
+                          </div>
+
+
+
+            <div className="flex flex-col gap-2 w-full sm:col-span-1">
               <label htmlFor="natureza" className="text-sm font-medium text-meta-5">
-                Natureza do Precatório
+                Natureza
               </label>
               <select
                 id="natureza"
-                className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
                 {
                 ...register("natureza", {
                   required: "Campo obrigatório",
@@ -285,6 +365,24 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                 <option value="NÃO TRIBUTÁRIA">Não Tributário</option>
                 <option value="TRIBUTÁRIA">Tributário</option>
               </select>
+            </div>
+            <div className="flex flex-col gap-2 w-full sm:col-span-1 invisible">
+              {/* <label htmlFor="natureza" className="text-sm font-medium text-meta-5">
+                Natureza
+              </label>
+              <select
+                id="natureza"
+                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                {
+                ...register("natureza", {
+                  required: "Campo obrigatório",
+                })
+                }
+                defaultValue={"NÃO TRIBUTÁRIA"}
+              >
+                <option value="NÃO TRIBUTÁRIA">Não Tributário</option>
+                <option value="TRIBUTÁRIA">Tributário</option>
+              </select> */}
             </div>
             <div className="flex flex-col gap-2">
               <label htmlFor="valor_principal" className="text-sm font-medium text-meta-5">
@@ -299,7 +397,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                 render={({ field }) => (
                   <Cleave
                     {...field}
-                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                     options={{
                       numeral: true,
                       numeralThousandsGroupStyle: "thousand",
@@ -325,7 +423,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                 render={({ field }) => (
                   <Cleave
                     {...field}
-                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                     options={{
                       numeral: true,
                       numeralPositiveOnly: true,
@@ -349,7 +447,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                 <input
                   type="date"
                   id="data_base"
-                  className={`${errors.data_base && '!border-rose-400 !ring-0'} w-full rounded-sm border bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark`}
+                  className={`${errors.data_base && '!border-rose-400 !ring-0'} w-full rounded-md border bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark`}
                   {
                   ...register("data_base", {
                     required: "Campo obrigatório",
@@ -363,7 +461,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                 <input
                   type="checkbox"
                   id="incidencia_juros_moratorios"
-                  className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                  className="rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                   defaultChecked
                   {
                   ...register("incidencia_juros_moratorios")
@@ -383,7 +481,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                 <input
                   type="date"
                   id="data_requisicao"
-                  className={`${errors.data_requisicao && '!border-rose-400 !ring-0'} w-full rounded-sm border bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark`}
+                  className={`${errors.data_requisicao && '!border-rose-400 !ring-0'} w-full rounded-md border bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark`}
                   {
                   ...register("data_requisicao", {
                     required: "Campo obrigatório",
@@ -396,7 +494,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
             <div className="flex gap-2 items-center">
               <input type="checkbox"
                 id="incidencia_rra_ir"
-                className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                className="rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                 defaultChecked
                 {
                 ...register("incidencia_rra_ir")
@@ -413,7 +511,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                 <div className="flex gap-2 items-center">
                   <input type="checkbox"
                     id="ir_incidente_rra"
-                    className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                    className="rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                     {
                     ...register("ir_incidente_rra")
                     }
@@ -433,7 +531,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                   <input
                     type="number"
                     id="numero_de_meses"
-                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                     min={0}
                     {
                     ...register("numero_de_meses", {
@@ -452,7 +550,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                 <div className="flex gap-2 items-center">
                   <input type="checkbox"
                     id="incidencia_pss"
-                    className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                    className="rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                     {
                     ...register("incidencia_pss")
                     }
@@ -476,7 +574,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                     render={({ field }) => (
                       <Cleave
                         {...field}
-                        className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                        className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                         options={{
                           numeral: true,
                           numeralThousandsGroupStyle: "thousand",
@@ -501,7 +599,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                 <input
                   type="checkbox"
                   id="data_limite_de_atualizacao_check"
-                  className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                  className="rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                   {
                   ...register("data_limite_de_atualizacao_check")
                   }
@@ -522,7 +620,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                   <input
                     type="date"
                     id="data_limite_de_atualizacao"
-                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                     {
                     ...register("data_limite_de_atualizacao", {
                     })
@@ -545,13 +643,13 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
             }
 
             {/* CVLD */}
-            {data.role === "cnj" || data.role === "ativos" && (
+            {data.role === "cnj" && (
               <div className="flex flex-col gap-2 sm:col-span-2">
                 <div className="flex gap-2 ">
                   <input
                     type="checkbox"
                     id="gerar_cvld"
-                    className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                    className="rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                     {...register("gerar_cvld")}
                   />
                   <label htmlFor="gerar_cvld" className="text-sm font-medium text-meta-5">
@@ -572,7 +670,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                             <input
                               type="text"
                               id="nome_funcionario"
-                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                               {...register("nome_funcionario", {})} />
                           </div>
                           <div className="flex flex-col gap-2">
@@ -582,7 +680,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                             <input
                               type="text"
                               id="matricula"
-                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                               {...register("matricula", {})} />
                           </div>
                           <div className="flex flex-col gap-2">
@@ -592,7 +690,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                             <input
                               type="text"
                               id="cargo"
-                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                               {...register("cargo", {})} />
                           </div>
                           <div className="flex flex-col gap-2">
@@ -602,7 +700,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                             <input
                               type="text"
                               id="und_administrativa"
-                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                               {...register("und_administrativa", {})} />
                           </div>
                           <div className="flex flex-col gap-2 sm:col-span-2 mt-4">
@@ -610,7 +708,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                               <input
                                 type="checkbox"
                                 id="possui_subscritor"
-                                className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                className="rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                                 {...register("possui_subscritor")}
                               />
                               <label htmlFor="possui_subscritor" className="text-sm font-medium text-meta-5">
@@ -631,7 +729,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                                   <input
                                     type="text"
                                     id="nome_funcionario_subscritor"
-                                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                                     {...register("nome_funcionario_subscritor", {})} />
                                 </div>
                                 <div className="flex flex-col gap-2">
@@ -641,7 +739,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                                   <input
                                     type="text"
                                     id="matricula_funcionario_subscritor"
-                                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                                     {...register("matricula_funcionario_subscritor", {})} />
                                 </div>
                                 <div className="flex flex-col gap-2">
@@ -651,7 +749,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                                   <input
                                     type="text"
                                     id="cargo_funcionario_subscritor"
-                                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                                     {...register("cargo_funcionario_subscritor", {})} />
                                 </div>
                                 <div className="flex flex-col gap-2">
@@ -661,7 +759,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                                   <input
                                     type="text"
                                     id="und_administrativa_funcionario_subscritor"
-                                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                                     {...register("und_administrativa_funcionario_subscritor", {})} />
                                 </div>
                               </>
@@ -681,7 +779,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                             <input
                               type="text"
                               id="credor"
-                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                               {...register("credor", {})} />
                           </div>
                           <div className="flex flex-col gap-2">
@@ -691,7 +789,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                             <input
                               type="text"
                               id="cpf_cnpj"
-                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                               {...register("cpf_cnpj", {})} />
                           </div>
 
@@ -700,7 +798,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                               <input
                                 type="checkbox"
                                 id="possui_advogado"
-                                className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                className="rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                                 {...register("possui_advogado")}
                               />
                               <label htmlFor="possui_advogado" className="text-sm font-medium text-meta-5">
@@ -721,7 +819,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                                   <input
                                     type="text"
                                     id="nome_advogado"
-                                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                                     {...register("nome_advogado", {})} />
                                 </div>
                                 <div className="flex flex-col">
@@ -731,7 +829,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                                   <input
                                     type="text"
                                     id="cpf_cnpj_advogado"
-                                    className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                                     {...register("cpf_cnpj_advogado", {})} />
                                 </div>
                               </>
@@ -742,7 +840,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                               <input
                                 type="checkbox"
                                 id="possui_cessionario"
-                                className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                className="rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                                 {...register("possui_cessionario")}
                               />
                               <label htmlFor="possui_cessionario" className="text-sm font-medium text-meta-5">
@@ -762,7 +860,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                                 <input
                                   type="text"
                                   id="nome_cessionario"
-                                  className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                  className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                                   {...register("nome_cessionario", {})} />
                               </div>
                               <div className="flex flex-col">
@@ -772,7 +870,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                                 <input
                                   type="text"
                                   id="cpf_cnpj_cessionario"
-                                  className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                  className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                                   {...register("cpf_cnpj_cessionario", {})} />
                               </div>
                             </>
@@ -787,7 +885,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                             <input
                               type="text"
                               id="credor_solicitante"
-                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                               {...register("credor_solicitante", {})} />
                           </div>
                           <div className="flex flex-col gap-2">
@@ -797,7 +895,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                             <input
                               type="text"
                               id="cpf_cnpj_credor_solicitante"
-                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                               {...register("cpf_cnpj_credor_solicitante", {})} />
                           </div>
                           <hr className="border border-stroke dark:border-strokedark my-8 sm:col-span-2" />
@@ -816,7 +914,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                               render={({ field }) => (
                                 <Cleave
                                   {...field}
-                                  className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                  className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                                   options={{
                                     blocks: [7, 2, 4, 1, 2, 4],
                                     delimiters: ['.', '-', '.', '.', '.'],
@@ -837,7 +935,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                               render={({ field }) => (
                                 <Cleave
                                   {...field}
-                                  className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                  className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                                   options={{
                                     blocks: [7, 2, 4, 1, 2, 4],
                                     delimiters: ['.', '-', '.', '.', '.'],
@@ -854,7 +952,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                             <input
                               type="text"
                               id="numero_requisicao"
-                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                               {...register("numero_requisicao", {})} />
                           </div>
                           <div className="flex flex-col gap-2">
@@ -864,7 +962,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                             <input
                               type="text"
                               id="juizo_vara"
-                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                               {...register("juizo_vara", {})} />
                           </div>
                           <div className="flex flex-col gap-2">
@@ -873,7 +971,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                             </label>
                             <select
                               id="tribunal"
-                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                               {...register("tribunal", {})}
                               defaultValue="TRF1">
                               <option value="TRF1">TRF1</option>
@@ -890,7 +988,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                             <input
                               type="text"
                               id="n_precatorio"
-                              className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                               {...register("n_precatorio", {})} />
                           </div>
                         </div>
@@ -902,7 +1000,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                         <input
                           type="text"
                           id="valor_penhora"
-                          className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark disabled:opacity-50 cursor-not-allowed"
+                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark disabled:opacity-50 cursor-not-allowed"
                           disabled
                           {...register("valor_penhora", {})} />
                       </div>
@@ -914,7 +1012,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                         <input
                           type="text"
                           id="valor_fgts"
-                          className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark disabled:opacity-50 cursor-not-allowed"
+                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark disabled:opacity-50 cursor-not-allowed"
                           disabled
                           {...register("valor_fgts", {})} />
                       </div>
@@ -927,7 +1025,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                           type="text"
                           id="valor_fgts"
                           disabled
-                          className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark disabled:opacity-50 cursor-not-allowed"
+                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark disabled:opacity-50 cursor-not-allowed"
                           {...register("valor_fgts", {})} />
                       </div>
                       <div className="flex flex-col gap-2">
@@ -938,7 +1036,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                           type="text"
                           id="valor_fgts"
                           disabled
-                          className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark disabled:opacity-50 cursor-not-allowed"
+                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark disabled:opacity-50 cursor-not-allowed"
                           {...register("valor_fgts", {})} />
                       </div>
 
@@ -950,7 +1048,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                           type="text"
                           id="outras_deducoes"
                           disabled
-                          className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark disabled:opacity-50 cursor-not-allowed"
+                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark disabled:opacity-50 cursor-not-allowed"
                           {...register("outras_deducoes", {})} />
                       </div> */}
                         </div></>
@@ -966,7 +1064,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                           <input type="checkbox"
                             id="upload_notion"
                             defaultChecked={false}
-                            className="rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                            className="rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                             {...register("upload_notion")} />
                           <label htmlFor="upload_notion" className="text-sm font-medium text-meta-5">
                             Fazer upload para o Notion
@@ -977,7 +1075,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                             <label htmlFor="notion_db_id" className="text-sm font-medium text-meta-5">
                               Banco de dados
                             </label>
-                            <select id="notion_db_id" className="w-full rounded-sm border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                            <select id="notion_db_id" className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                               {...register("notion_db_id", {
                                 required: "Campo obrigatório",
                               })}

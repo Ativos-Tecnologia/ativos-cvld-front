@@ -74,8 +74,8 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
 
   return (
     <div className="relative flex w-full items-center justify-center cursor-pointer">
-      <label htmlFor="dropzone-file" className='relative flex h-24 flex-col items-center justify-center w-full bg-slate-50 dark:bg-black/50 border-2 border-dashed rounded-lg hover:border-strokedark hover:text-strokedark dark:hover:border-white dark:hover:text-white transition-all duration-150 ease-in-out'>
-        <BiCloudUpload className='w-8 h-8' />
+      <label htmlFor="dropzone-file" className='relative flex h-18 flex-col items-center justify-center w-full bg-slate-50 dark:bg-black/50 border-2 border-dashed rounded-lg hover:border-strokedark hover:text-strokedark dark:hover:border-white dark:hover:text-white transition-all duration-150 ease-in-out'>
+        <BiCloudUpload className='w-full h-8' />
         <div className='text-center text-sm'>
           <p><b>Clique</b>, ou arraste um ofício</p>
           <p>PDF</p>

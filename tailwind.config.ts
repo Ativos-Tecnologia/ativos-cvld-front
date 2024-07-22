@@ -13,7 +13,8 @@ const config: Config = {
   theme: {
     fontFamily: {
       satoshi: ["Satoshi", "sans-serif"],
-      nexa: ["Nexa", "sans-serif"]
+      nexa: ["Nexa", "sans-serif"],
+      polaris: ["Polaris", "comic-sans"],
     },
     screens: {
       "2xsm": "375px",

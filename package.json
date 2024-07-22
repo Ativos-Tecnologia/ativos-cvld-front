@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@next/font": "^14.2.5",
     "apexcharts": "^3.45.2",
     "axios": "^1.6.8",
     "canvas-confetti": "^1.9.3",
