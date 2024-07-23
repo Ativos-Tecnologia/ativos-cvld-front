@@ -40,7 +40,7 @@ const customTheme: CustomFlowbiteTheme = {
     }
 }
 
-const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage }: ExtractTableProps) => {
+const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop }: ExtractTableProps) => {
     const enumOficiosList = Object.values(statusOficio);
     const enumTipoOficiosList = Object.values(tipoOficio);
 
@@ -70,6 +70,19 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
 
             if (response.status === 200) {
                 setEditLabelState('success');
+                const newResults = data.results.map((item: CVLDResultProps) => {
+                    if (item.id === id) {
+                        return {
+                            ...item,
+                            credor: value
+                        }
+                    }
+                    return item;
+                })
+                setData({
+                    ...data,
+                    results: newResults
+                });
                 setTimeout(() => {
                     setEditableLabel(null);
                     setEditLabelState('');
@@ -114,7 +127,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                             <>
                                 {data.results.map((item: CVLDResultProps, index: number) => (
 
-                                    <TableRow key={item.id} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 border-b border-stroke dark:border-form-strokedark">
+                                    <TableRow key={item.id} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 border-b border-stroke dark:border-form-strokedark group">
                                         <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600">
                                             <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
                                                 <select className="text-[12px] bg-transparent border-none py-0" onChange={(e) => updateOficioTipo(item.id, e.target.value as tipoOficio)}>
@@ -163,7 +176,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
 
                                             {/* absolute div that covers the entire cell */}
                                             {editableLabel !== item.id && (
-                                                <div className='absolute inset-0 rounded-md flex items-center cursor-pointer transition-all duration-200 group'>
+                                                <div className='absolute inset-0 rounded-md flex items-center transition-all duration-200'>
 
                                                     <div className='flex-1 h-full'
                                                         onClick={() => {
@@ -173,12 +186,12 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
 
                                                     <div
                                                         title='Detalhes'
-                                                        className='py-1 px-2 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200'
+                                                        className='py-1 px-2 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
                                                         onClick={() => {
                                                             setOpenDetailsDrawer(true);
                                                             fetchDataById(item.id);
                                                         }}>
-                                                        <BiSolidDockLeft className='text-lg cursor-pointer'
+                                                        <BiSolidDockLeft className='text-lg'
                                                         />
                                                         <span className='text-xs'>Detalhes</span>
                                                     </div>
@@ -207,7 +220,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
 
                                         </TableCell>
                                         <TableCell className="text-center">
-                                            <Badge onClick={() => handleTask(item.id)} size="sm" color="yellow" className="hover:bg-yellow-200 dark:hover:bg-yellow-300 transition-all duration-300 justify-center px-2 py-1 cursor-pointer group">
+                                            <Badge onClick={() => handleTask(item.id)} size="sm" color="yellow" className="hover:bg-yellow-200 dark:hover:bg-yellow-300 transition-all duration-300 justify-center px-2 py-1 cursor-pointer">
                                                 <div className="flex flex-row w-full justify-between align-middle gap-2">
                                                     <span className="text-[12px] font-bold transition-all duration-200">
                                                         TAREFAS
@@ -284,7 +297,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                         </div>
                     }
 
-                    <MarvelousPagination counter={count} page_size={20} currentPage={currentPage} onPageChange={onPageChange} setCurrentPage={setCurrentPage} loading={loading} />
+                    <MarvelousPagination counter={count} page_size={20} currentPage={currentPage} onPageChange={onPageChange} setCurrentPage={setCurrentPage} callScrollTop={callScrollTop} loading={loading} />
                 </div>
             </div></>
     )

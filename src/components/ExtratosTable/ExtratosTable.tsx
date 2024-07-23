@@ -46,6 +46,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     extractId: ''
   });
   const viewModeRef = useRef<HTMLSelectElement | null>(null);
+  const mainRef = useRef<HTMLDivElement | null>(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -61,8 +62,6 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     setData(response.data);
     setLoading(false);
   }
-
-
 
   const fetchDelete = async (id: string) => {
     try {
@@ -197,6 +196,13 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     }
   }
 
+  const callScrollTop = () => {
+    if (mainRef.current) {
+      console.log('scrolling')
+      mainRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
   useEffect(() => {
     fetchData();
     fetchStateFromLocalStorage();
@@ -222,7 +228,9 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
 
   return (
-    <div className="overflow-x-auto">
+    <div 
+      ref={mainRef}
+      className="overflow-x-auto">
       {window.innerWidth >= 435 ? (
         <>
           {/* desktop view */}
@@ -257,6 +265,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                 onPageChange={(page) => onPageChange(page)}
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
+                callScrollTop={callScrollTop}
               />
             }
             {viewOption.type === "cards" &&
@@ -269,13 +278,14 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                 setModalOptions={setModalOptions}
                 fetchDelete={fetchDelete}
                 setOpenDetailsDrawer={setOpenDetailsDrawer}
-                setOpenTaskDrawer={setOpenTaskDrawer} // ainda não utilizado
-                setExtractId={setExtractId} // ainda não utilizado
+                setOpenTaskDrawer={setOpenTaskDrawer}
+                setExtractId={setExtractId}
                 fetchDataById={fetchDataById}
                 count={data.count}
                 onPageChange={(page) => onPageChange(page)}
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
+                callScrollTop={callScrollTop}
               />
             }
           </div>
@@ -296,13 +306,14 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
             setModalOptions={setModalOptions}
             fetchDelete={fetchDelete}
             setOpenDetailsDrawer={setOpenDetailsDrawer}
-            setOpenTaskDrawer={setOpenTaskDrawer} // ainda não utilizado
-            setExtractId={setExtractId} // ainda não utilizado
+            setOpenTaskDrawer={setOpenTaskDrawer}
+            setExtractId={setExtractId}
             fetchDataById={fetchDataById}
             count={data.count}
             onPageChange={(page) => onPageChange(page)}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
+            callScrollTop={callScrollTop}
           />
         </div>
         /* end mobile view */
