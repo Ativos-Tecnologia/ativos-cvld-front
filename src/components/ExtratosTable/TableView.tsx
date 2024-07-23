@@ -1,17 +1,17 @@
-import { Badge, CustomFlowbiteTheme, Flowbite, Pagination, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from 'flowbite-react';
+import { Badge, CustomFlowbiteTheme, Flowbite, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from 'flowbite-react';
 import numberFormat from "@/functions/formaters/numberFormat";
 import { ExtractTableProps } from '@/types/extractTable';
-import React, { useState } from 'react';
-import { BiListUl, BiLoader, BiPlug, BiPlus, BiSolidDockLeft, BiTask } from 'react-icons/bi';
+import React, { useRef, useState } from 'react';
+import { BiCheck, BiLoader, BiSolidDockLeft, BiTask, BiX } from 'react-icons/bi';
 import { CVLDResultProps } from '@/interfaces/IResultCVLD';
 import { BsFillTrashFill } from 'react-icons/bs';
 import statusOficio from '@/enums/statusOficio.enum';
 import tipoOficio from '@/enums/tipoOficio.enum';
-import api from '@/utils/api';
-import { TaskDrawer } from '../TaskElements';
 import useUpdateOficio from '@/hooks/useUpdateOficio';
 import MarvelousPagination from '../MarvelousPagination';
 import Loader from '../common/Loader';
+import api from '@/utils/api';
+import { ImSpinner2 } from 'react-icons/im';
 
 const customTheme: CustomFlowbiteTheme = {
     table: {
@@ -29,7 +29,7 @@ const customTheme: CustomFlowbiteTheme = {
         head: {
             base: "group/head text-xs uppercase text-gray-700 dark:text-gray-400",
             cell: {
-                base: "bg-zinc-200 text-black px-4 py-3 group-first/head:first:rounded-tl-sm group-first/head:last:rounded-tr-sm dark:bg-meta-4 dark:text-white dark:border-b dark:border-strokedark"
+                base: "bg-zinc-200  text-black px-4 py-3 group-first/head:first:rounded-tl-sm group-first/head:last:rounded-tr-sm dark:bg-meta-4 dark:text-white dark:border-b dark:border-strokedark"
             }
         },
         row: {
@@ -46,10 +46,47 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
 
     const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
     const [editableLabel, setEditableLabel] = useState<string | null>(null);
+    const [editLabelState, setEditLabelState] = useState<string>('');
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const inputRefs = useRef<HTMLInputElement[] | null>([]);
 
     const handleTask = (id: string) => {
         setOpenTaskDrawer(true);
         setExtractId(id);
+    }
+
+    const handleEditInput = (index: number) => {
+        if (inputRefs.current) {
+            inputRefs.current[index].focus();
+        }
+    }
+
+    const handleChangeCreditorName = async (index: number, id: string, value: string) => {
+
+        setIsLoading(true);
+        await api.patch(`/api/extrato/update/credor/${id}/`, {
+            credor: value
+        }).then(response => {
+
+            if (response.status === 200) {
+                setEditLabelState('success');
+                setTimeout(() => {
+                    setEditableLabel(null);
+                    setEditLabelState('');
+                    inputRefs.current![index].blur();
+                }, 1500);
+            } else {
+                setEditLabelState('error');
+                setTimeout(() => {
+                    setEditableLabel(null);
+                    setEditLabelState('');
+                    inputRefs.current![index].blur();
+                }, 1500);
+            }
+
+        });
+        setIsLoading(false);
+
     }
 
     return (
@@ -75,7 +112,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
 
                         {data.results?.length > 0 ? (
                             <>
-                                {data.results.map((item: CVLDResultProps) => (
+                                {data.results.map((item: CVLDResultProps, index: number) => (
 
                                     <TableRow key={item.id} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 border-b border-stroke dark:border-form-strokedark">
                                         <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600">
@@ -94,24 +131,48 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                 </select>
                                             </Badge>
                                         </TableCell>
-                                        <TableCell title={item?.credor || 'NOME NÃO INFORMADO'} className="relative h-full flex font-semibold text-[12px]">
+                                        <TableCell title={item?.credor || 'NOME NÃO INFORMADO'} className="relative h-full flex items-center gap-2 font-semibold text-[12px]">
                                             <input
                                                 type="text"
+                                                ref={(input) => { if (input) inputRefs.current![index] = input; }}
                                                 defaultValue={item?.credor || ''}
-                                                className={`${editableLabel === item.id && '!border-2 !border-blue-700'} w-11/12 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        handleChangeCreditorName(index, item.id, e.currentTarget.value)
+                                                    }
+                                                }}
+                                                className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-10/12 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                             />
 
-                                            <div className='w-1/12'></div>
+                                            <div title='Confirmar Edição' className={`${editableLabel === item.id ? 'opacity-100 visible' : 'opacity-0 invisible'} ${editLabelState === 'success' && 'animate-jump !bg-green-500 !text-white'} ${editLabelState === 'error' && 'animate-jump !bg-meta-1 !text-white'} w-6 h-6 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 transition-all duration-500 cursor-pointer group`}>
+                                                {isLoading ?
+                                                    <ImSpinner2 className={`${editableLabel === item.id ? 'opacity-100 visible animate-spin' : 'opacity-0 invisible'} text-2xl`}
+                                                    /> :
+
+                                                    <>
+                                                        {editLabelState === '' && <BiCheck onClick={(e) => {
+                                                            const target = e.target as HTMLElement;
+                                                            const value = target.parentElement?.parentElement?.querySelector("input")?.value as string;
+                                                            handleChangeCreditorName(index, item.id, value);
+                                                        }} className='text-2xl group-hover:text-black dark:group-hover:text-white transition-all duration-200' />}
+                                                        {editLabelState === 'success' && <BiCheck className='text-2xl' />}
+                                                        {editLabelState === 'error' && <BiX className='text-2xl' />}
+                                                    </>
+                                                }
+                                            </div>
 
                                             {/* absolute div that covers the entire cell */}
                                             {editableLabel !== item.id && (
                                                 <div className='absolute inset-0 rounded-md flex items-center cursor-pointer transition-all duration-200 group'>
 
                                                     <div className='flex-1 h-full'
-                                                        onClick={() => setEditableLabel(item.id)}></div>
+                                                        onClick={() => {
+                                                            setEditableLabel(item.id)
+                                                            handleEditInput(index);
+                                                        }}></div>
 
-                                                    <div 
-                                                        title='Detalhes' 
+                                                    <div
+                                                        title='Detalhes'
                                                         className='py-1 px-2 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200'
                                                         onClick={() => {
                                                             setOpenDetailsDrawer(true);
@@ -211,17 +272,20 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
       nextLabel="Go forward"
       showIcons
     /> */}
-    <div className='w-full flex-col justify-center items-center'>
-            {
-                <div className='w-full mt-4 h-4 flex justify-center items-center'>
-                                        <div className={`${loading ? "opacity-100 visible" : "opacity-0 invisible"} text-center flex justify-center items-center transition-all duration-300`}>
-                                            <span className='text-sm mr-2 text-meta-4'>Buscando informações </span><BiLoader className="animate-spin h-5 w-5" />
-                                        </div>
-                                </div>
-                        }
+                <div className='w-full flex-col justify-center items-center'>
+                    {
+                        <div className='w-full mt-4 h-4 flex justify-center items-center'>
+                            <div className={`${loading ? "opacity-100 visible" : "opacity-0 invisible"} text-center flex justify-center items-center transition-all duration-300`}>
+                                <span className='text-sm mr-2 text-meta-4'>
+                                    Buscando informações
+                                </span>
+                                <BiLoader className="animate-spin h-5 w-5" />
+                            </div>
+                        </div>
+                    }
 
-                <MarvelousPagination counter={count} page_size={20} currentPage={currentPage} onPageChange={onPageChange} setCurrentPage={setCurrentPage} loading={loading} />
-            </div>
+                    <MarvelousPagination counter={count} page_size={20} currentPage={currentPage} onPageChange={onPageChange} setCurrentPage={setCurrentPage} loading={loading} />
+                </div>
             </div></>
     )
 }

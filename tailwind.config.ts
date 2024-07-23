@@ -226,6 +226,8 @@ const config: Config = {
         999: "999",
         99: "99",
         9: "9",
+        3: "3",
+        2: "2",
         1: "1",
       },
       opacity: {
@@ -278,6 +280,16 @@ const config: Config = {
         5: "0px 1px 5px rgba(0, 0, 0, 0.2)",
       },
       keyframes: {
+        jump:{
+          '0,100%': {
+            transform: 'translateY(0)',
+            'animation-timing-function': 'cubic-bezier(0, 0, 0.2, 1)'
+          },
+          "50%": {
+            transform: 'translateY(-7px)',
+            'animation-timing-function': 'cubic-bezier(0.8, 0, 1, 1)'
+          },
+        },
         'flip-vertical-right': {
           from: {
             transform: 'rotateY(0)'
@@ -383,6 +395,7 @@ const config: Config = {
       },
 
       animation: {
+        jump: 'jump 500ms ease-in-out',
         flip: 'flip-vertical-right 3.5s infinite linear',
         wiggle: 'wiggle 2.5s infinite',
         downforward: 'downforward 1.0s infinite alternate ease-in-out',
