@@ -1,3 +1,10 @@
+/*
+    import font Polaris
+    Author: Fontfabrica
+    source: https://dafont.com/polaris.font
+
+*/
+
 @font-face {
     font-family: "Polaris";
     src: url("../fonts/Polaris.otf") format("opentype");
