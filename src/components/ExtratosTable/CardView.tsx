@@ -21,8 +21,6 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
     const [editLabelState, setEditLabelState] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    console.log(data)
-
     // page refs
     const inputRefs = useRef<HTMLTextAreaElement[] | null>([]);
 
