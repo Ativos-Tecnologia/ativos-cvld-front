@@ -9,7 +9,13 @@ const MapOne: React.FC = () => {
     const mapOne = new jsVectorMap({
       selector: "#mapOne",
       map: "us_aea_en",
-      zoomButtons: true,
+      // zoomButtons: true,
+
+      onLoaded(map:any) {
+        window.addEventListener("resize", () => {
+          map.updateSize();
+        });
+      },
 
       regionStyle: {
         initial: {
@@ -39,6 +45,8 @@ const MapOne: React.FC = () => {
         },
       },
     });
+
+
 
     return () => {
       mapOne.destroy();

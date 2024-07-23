@@ -12,6 +12,7 @@ import PrivateRoute from "@/components/PrivateRoute";
 import { UserInfoProvider } from "@/context/UserInfoContext";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 
+
 export default function RootLayout({
   children,
 }: Readonly<{
