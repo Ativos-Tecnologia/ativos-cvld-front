@@ -11,9 +11,8 @@ import useUpdateOficio from "@/hooks/useUpdateOficio";
 import MarvelousPagination from "../MarvelousPagination";
 import api from "@/utils/api";
 import { ImSpinner2 } from "react-icons/im";
-import { set } from "react-hook-form";
 
-const CardView = ({ className, data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage }: ExtractTableProps) => {
+const CardView = ({ className, data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop }: ExtractTableProps) => {
 
     const enumOficiosList = Object.values(statusOficio);
     const enumTipoOficiosList = Object.values(tipoOficio);
@@ -21,6 +20,10 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
     const [newLabelValue, setNewLabelValue] = useState<string>('');
     const [editLabelState, setEditLabelState] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    console.log(data)
+
+    // page refs
     const inputRefs = useRef<HTMLTextAreaElement[] | null>([]);
 
     const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
@@ -45,6 +48,19 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
 
             if (response.status === 200) {
                 setEditLabelState('success');
+                const newResults = data.results.map((item: CVLDResultProps) => {
+                    if (item.id === id) {
+                        return {
+                            ...item,
+                            credor: value
+                        }
+                    }
+                    return item;
+                })
+                setData({
+                    ...data,
+                    results: newResults
+                });
                 setTimeout(() => {
                     setEditableLabel(null);
                     setEditLabelState('');
@@ -65,7 +81,8 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
 
     return (
         <><div className={className}>
-            <div className="flex gap-4 flex-wrap">
+            <div
+                className="flex gap-4 flex-wrap">
 
                 {data.results?.length > 0 ? (
                     <>
@@ -136,9 +153,7 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
                                             title={item?.credor || newLabelValue || "NOME NÃO INFORMADO"}
                                             ref={(input) => { if (input) inputRefs.current![index] = input }}
                                             defaultValue={
-                                                item?.credor.length >= 45 ? item?.credor.slice(0, 45) + ' ...' : item?.credor ||
-                                                    newLabelValue.trim().length >= 45 ? newLabelValue.slice(0, 45) + ' ...' : newLabelValue.trim() ||
-                                                "NOME NÃO INFORMADO"}
+                                                item?.credor.length >= 45 ? item?.credor.slice(0, 45) + ' ...' : item?.credor || "NOME NÃO INFORMADO"}
                                             className="w-55 h-22 bg-transparent px-0 dark:text-white font-semibold border-none rounded-md overflow-hidden resize-none"
                                         />
                                     </div>
@@ -224,12 +239,12 @@ showIcons
                     {
                         <div className='w-full mt-4 h-4 flex justify-center items-center'>
                             <div className={`${loading ? "opacity-100 visible" : "opacity-0 invisible"} text-center flex justify-center items-center transition-all duration-300`}>
-                                <span className='text-sm mr-2 text-meta-4'>Buscando informações </span><BiLoader className="animate-spin h-5 w-5" />
+                                <span className='text-sm mr-2'>Buscando informações </span><BiLoader className="animate-spin h-5 w-5" />
                             </div>
                         </div>
                     }
 
-                    <MarvelousPagination counter={count} page_size={20} currentPage={currentPage} onPageChange={onPageChange} setCurrentPage={setCurrentPage} loading={loading} />
+                    <MarvelousPagination counter={count} page_size={20} currentPage={currentPage} onPageChange={onPageChange} setCurrentPage={setCurrentPage} callScrollTop={callScrollTop} loading={loading} />
                 </div>
             </div></>
     )

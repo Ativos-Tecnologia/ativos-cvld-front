@@ -38,6 +38,7 @@ const config: Config = {
         secondary: "#80CAEE",
         stroke: "#E2E8F0",
         gray: "#EFF4FB",
+        "gray-50": "#F9FAFB",
         "gray-100": "#F7F9FC",
         "gray-200": "#E5E7EB",
         "gray-300": "#D1D5DB",

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useImperativeHandle, useState } from "react";
 import {
   BiArrowFromLeft,
   BiArrowFromRight,
@@ -13,6 +13,7 @@ export interface MarvelousPaginationProps {
   currentPage: number;
   onPageChange: (page: number) => void;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  callScrollTop: () => void;
   loading?: boolean;
 }
 
@@ -46,6 +47,7 @@ interface PageProps
   counter: number;
   page_size: number;
   currentPage: number;
+  callScrollTop: () => void;
 }
 
 
@@ -57,6 +59,7 @@ export default function MarvelousPagination({
   onPageChange,
   setCurrentPage,
   loading,
+  callScrollTop
 }: MarvelousPaginationProps) {
   const [selectedPage, setSelectedPage] = useState(1);
   const pageNum = Math.ceil(counter / page_size);
@@ -65,12 +68,15 @@ export default function MarvelousPagination({
     page_size = counter;
   }
 
-
   const handleClick = (page: number) => {
     if (page >= 1 && page <= pageNum) {
+      // debugger
       onPageChange(page);
       setCurrentPage(page);
       setSelectedPage(page);
+      setTimeout(() => {
+        callScrollTop();
+      }, 1000);
     }
   };
 
@@ -92,6 +98,10 @@ export default function MarvelousPagination({
 
     return pages;
   };
+
+  // useEffect(() => {
+
+  // }, [currentPage])
 
   return (
     <div className="mt-0 flex w-full items-center justify-between border-gray-200 px-4 pt-4 sm:px-6">
@@ -116,9 +126,9 @@ export default function MarvelousPagination({
           </button>
           <div className="z-10 inline-flex items-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 rounded-md">
             {
-                currentPage
+              currentPage
             }
-            </div>
+          </div>
           <button
             disabled={currentPage === pageNum}
             onClick={() => handleClick(currentPage + 1)}
@@ -127,7 +137,7 @@ export default function MarvelousPagination({
             Próximo
           </button>
           <button
-          disabled={currentPage === pageNum}
+            disabled={currentPage === pageNum}
             onClick={() => handleClick(pageNum)}
             className="hover:bg-gray-50 relative inline-flex items-center rounded-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-700 focus:z-20 focus:outline-offset-0 disabled:cursor-not-allowed"
           >
@@ -141,6 +151,7 @@ export default function MarvelousPagination({
           counter={counter}
           page_size={page_size}
           currentPage={currentPage}
+          callScrollTop={callScrollTop}
         />
       </div>
       <div className="hidden flex-col-reverse sm:flex sm:flex-1 sm:items-center sm:justify-between">
@@ -158,6 +169,7 @@ export default function MarvelousPagination({
           counter={counter}
           page_size={page_size}
           currentPage={currentPage}
+          callScrollTop={callScrollTop}
         />
         <div>
           <nav
