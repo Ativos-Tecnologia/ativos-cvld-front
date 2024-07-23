@@ -28,8 +28,18 @@ const config: Config = {
         white: "#FFFFFF",
         snow: "#FAFAFA",
         black: "#1C2434",
-        red: "#FB5454",
         "black-2": "#111111",
+        "red-50": "#FFF0F0",
+        "red-100": "#ffdddd",
+        "red-200": "#ffc0c0",
+        "red-300": "#ff9494",
+        "red-400": "#ff5757",
+        "red-500": "#ff2323",
+        "red-600": "#ff0000",
+        "red-700": "#d70000",
+        "red-800": "#b10303",
+        "red-900": "#920a0a",
+        "red-950": "#500000",
         body: "#64748B",
         bodydark: "#AEB7C0",
         bodydark1: "#DEE4EE",
@@ -38,6 +48,7 @@ const config: Config = {
         secondary: "#80CAEE",
         stroke: "#E2E8F0",
         gray: "#EFF4FB",
+        "gray-50": "#F9FAFB",
         "gray-100": "#F7F9FC",
         "gray-200": "#E5E7EB",
         "gray-300": "#D1D5DB",
@@ -226,6 +237,8 @@ const config: Config = {
         999: "999",
         99: "99",
         9: "9",
+        3: "3",
+        2: "2",
         1: "1",
       },
       opacity: {
@@ -278,6 +291,16 @@ const config: Config = {
         5: "0px 1px 5px rgba(0, 0, 0, 0.2)",
       },
       keyframes: {
+        jump:{
+          '0,100%': {
+            transform: 'translateY(0)',
+            'animation-timing-function': 'cubic-bezier(0, 0, 0.2, 1)'
+          },
+          "50%": {
+            transform: 'translateY(-7px)',
+            'animation-timing-function': 'cubic-bezier(0.8, 0, 1, 1)'
+          },
+        },
         'flip-vertical-right': {
           from: {
             transform: 'rotateY(0)'
@@ -383,6 +406,7 @@ const config: Config = {
       },
 
       animation: {
+        jump: 'jump 500ms ease-in-out',
         flip: 'flip-vertical-right 3.5s infinite linear',
         wiggle: 'wiggle 2.5s infinite',
         downforward: 'downforward 1.0s infinite alternate ease-in-out',
