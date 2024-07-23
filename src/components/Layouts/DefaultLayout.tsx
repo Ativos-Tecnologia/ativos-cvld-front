@@ -6,6 +6,7 @@ import { UserInfoProvider } from "@/context/UserInfoContext";
 import { Alert } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
 
+
 export default function DefaultLayout({
   children,
 }: {

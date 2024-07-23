@@ -73,12 +73,13 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
   const swal = UseMySwal();
 
   return (
-    <div className="relative flex w-full items-center justify-center cursor-pointer">
-      <label htmlFor="dropzone-file" className='relative flex h-18 flex-col items-center justify-center w-full bg-slate-50 dark:bg-black/50 border-2 border-dashed rounded-lg hover:border-strokedark hover:text-strokedark dark:hover:border-white dark:hover:text-white transition-all duration-150 ease-in-out'>
+    <div className="flex w-full justify-end">
+    <div className="relative flex flex-col w-full py-4 items-center cursor-pointer">
+      <label htmlFor="dropzone-file" className='relative flex h-25rem flex-col items-center justify-center w-full bg-slate-50 dark:bg-black/50 border-2 border-dashed rounded-lg hover:border-strokedark hover:text-strokedark dark:hover:border-white dark:hover:text-white transition-all duration-150 ease-in-out'>
         <BiCloudUpload className='w-full h-8' />
         <div className='text-center text-sm'>
-          <p><b>Clique</b>, ou arraste um ofício</p>
-          <p>PDF</p>
+          <p className='p-1'><b>Clique</b>, ou arraste um ofício em PDF</p>
+          {/* <p>PDF</p> */}
         </div>
         <input type='file' id="dropzone-file" className='absolute opacity-0 w-full h-full inset-0 cursor-pointer' {...register("pdf_file")} accept='.pdf' onChange={(e) => {
           if (e.target.files) {
@@ -136,7 +137,9 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
             console.log(e.dataTransfer.files);
           }}
         />
-      </Label> */}
+        </Label> */}
+        <span className="apexcharts-legend-text mt-0 w-full text-center" style={{ "color": "rgb(55, 61, 63)", "fontSize": "10px", "fontWeight": "400", "fontFamily": "Satoshi" }}>TRF1 ao TRF4 (beta)</span>
+        </div>
     </div>
   )
 }

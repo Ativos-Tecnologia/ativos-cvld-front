@@ -260,29 +260,32 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
 
 
   return (
-    <div className="col-span-12 rounded-md border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-7">
-      <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
-        <h2 className="text-3xl font-extrabold dark:text-white w-full text-center pt-4 pb-8 uppercase font-polaris">
-          Celler<span className="text-blue-500">IA J</span>
+    <div className="col-span-12 rounded-md border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-10">
+      <div className="flex-col flex-wrap items-start justify-between gap-3 sm:flex-nowrap pb-0">
+        <h2 className="text-4xl dark:text-white w-full text-center font-nexa antialiased" style={{fontWeight: 600}}>
+          Celler <span className="text-blue-500 font-polaris">ia</span>
         </h2>
+        <p className="text-sm pt-2 font-normal text-center apexcharts-legend-text">
+          Nosso modelo de atualização de valores de precatórios e RPVs
+        </p>
       </div>
         <div className="flex flex-col items-center w-full">
           <UpdatePrecatorioButton setStateFunction={setOficioForm} />
-          <span className="apexcharts-legend-text mt-2" style={{ "color": "rgb(55, 61, 63)", "fontSize": "12px", "fontWeight": "400", "fontFamily": "Satoshi" }}>TRF1 ao TRF4 (beta)</span>
+
         </div>
       {
-        <form className="mt-5 space-y-5" onSubmit={handleSubmit(onSubmit)}>
+        <form className="mt-8 space-y-5" onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
 
             <div className="flex flex-col gap-2 w-full sm:col-span-1">
-              <label htmlFor="tipo" className="text-sm text-meta-5 font-semibold">
+              <label htmlFor="tipo" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                 Tipo
               </label>
               <select
                 id="tipo"
                 className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark"
                 {
-                ...register("tipo", {
+                ...register("tipo_do_oficio", {
                   required: "Campo obrigatório",
                 })
                 }
@@ -298,7 +301,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
               </select>
             </div>
             <div className="flex flex-col gap-2 w-full sm:col-span-1">
-              <label htmlFor="status" className="text-sm font-semibold text-meta-5">
+              <label htmlFor="status" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                 Status
               </label>
               <select
@@ -326,7 +329,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
 
                           <div className="flex flex-col gap-2">
-                            <label htmlFor="credor" className="text-sm font-medium text-meta-5">
+                            <label htmlFor="credor" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                               Nome/Razão Social do Credor Principal
                             </label>
                             <input
@@ -336,7 +339,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                               {...register("credor", {})} />
                           </div>
                           <div className="flex flex-col gap-2">
-                            <label htmlFor="cpf_cnpj" className="text-sm font-medium text-meta-5">
+                            <label htmlFor="cpf_cnpj" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                               CPF/CNPJ
                             </label>
                             <input
@@ -349,7 +352,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
 
 
             <div className="flex flex-col gap-2 w-full sm:col-span-1">
-              <label htmlFor="natureza" className="text-sm font-medium text-meta-5">
+              <label htmlFor="natureza" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                 Natureza
               </label>
               <select
@@ -385,7 +388,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
               </select> */}
             </div>
             <div className="flex flex-col gap-2">
-              <label htmlFor="valor_principal" className="text-sm font-medium text-meta-5">
+              <label htmlFor="valor_principal" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                 Valor Principal
               </label>
               <Controller
@@ -413,7 +416,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
 
             </div>
             <div className="flex flex-col gap-2">
-              <label htmlFor="valor_juros" className="text-sm font-medium text-meta-5">
+              <label htmlFor="valor_juros" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                 Juros
               </label>
               <Controller
@@ -441,7 +444,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
 
             <div className="flex flex-col gap-2 min-h-17.5">
               <div className="relative flex flex-col justify-between mb-6">
-                <label htmlFor="data_base" className="text-sm font-medium text-meta-5 mb-1">
+                <label htmlFor="data_base" className="text-xs text-meta-5 font-semibold font-nexa uppercase mb-1">
                   Data Base
                 </label>
                 <input
@@ -467,7 +470,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                   ...register("incidencia_juros_moratorios")
                   }
                 />
-                <label htmlFor="incidencia_juros_moratorios" className="text-sm font-medium text-meta-5">
+                <label htmlFor="incidencia_juros_moratorios" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                   Juros de Mora fixados em sentença
                 </label>
               </div>
@@ -475,7 +478,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
 
             <div className="flex flex-col gap-2">
               <div className="relative flex flex-col justify-between mb-6">
-                <label htmlFor="data_requisicao" className="text-sm font-medium text-meta-5 mb-1">
+                <label htmlFor="data_requisicao" className="text-xs text-meta-5 font-semibold font-nexa uppercase mb-1">
                   Data de Requisição
                 </label>
                 <input
@@ -500,7 +503,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                 ...register("incidencia_rra_ir")
                 }
               />
-              <label htmlFor="incidencia_rra_ir" className="text-sm font-medium text-meta-5">
+              <label htmlFor="incidencia_rra_ir" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                 Incidência de IR
               </label>
             </div>
@@ -516,7 +519,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                     ...register("ir_incidente_rra")
                     }
                   />
-                  <label htmlFor="ir_incidente_rra" className="text-sm font-medium text-meta-5">
+                  <label htmlFor="ir_incidente_rra" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                     IR incidente sobre RRA?
                   </label>
                 </div>
@@ -525,7 +528,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
             {
               watch("ir_incidente_rra") === true && watch("natureza") !== "TRIBUTÁRIA" ? (
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="numero_de_meses" className="text-sm font-medium text-meta-5">
+                  <label htmlFor="numero_de_meses" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                     Número de meses
                   </label>
                   <input
@@ -555,7 +558,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                     ...register("incidencia_pss")
                     }
                   />
-                  <label htmlFor="incidencia_pss" className="text-sm font-medium text-meta-5">
+                  <label htmlFor="incidencia_pss" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                     Incide PSS?
                   </label>
                 </div>
@@ -564,7 +567,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
             {
               watch("incidencia_pss") && watch("natureza") !== "TRIBUTÁRIA" ? (
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="valor_pss" className="text-sm font-medium text-meta-5">
+                  <label htmlFor="valor_pss" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                     PSS
                   </label>
                   <Controller
@@ -604,7 +607,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                   ...register("data_limite_de_atualizacao_check")
                   }
                 />
-                <label htmlFor="data_limite_de_atualizacao_check" className="text-sm font-medium text-meta-5 mb-1">
+                <label htmlFor="data_limite_de_atualizacao_check" className="text-xs text-meta-5 font-semibold font-nexa uppercase mb-1">
                   Atualizar para data passada?
                 </label>
               </div>
@@ -614,7 +617,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
             {
               watch("data_limite_de_atualizacao_check") ? (
                 <div className="flex flex-col justify-between">
-                  <label htmlFor="data_limite_de_atualizacao" className="text-sm font-medium text-meta-5">
+                  <label htmlFor="data_limite_de_atualizacao" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                     Atualizado até:
                   </label>
                   <input
@@ -643,7 +646,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
             }
 
             {/* CVLD */}
-            {data.role === "cnj" && (
+            {data.role === "cnj" || data.role === "ativos" && (
               <div className="flex flex-col gap-2 sm:col-span-2">
                 <div className="flex gap-2 ">
                   <input

@@ -14,7 +14,7 @@ const config: Config = {
     fontFamily: {
       satoshi: ["Satoshi", "sans-serif"],
       nexa: ["Nexa", "sans-serif"],
-      polaris: ["Polaris", "comic-sans"],
+      polaris: ["Polaris", "sans-serif"],
     },
     screens: {
       "2xsm": "375px",
