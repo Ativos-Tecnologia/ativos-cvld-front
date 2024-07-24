@@ -11,7 +11,7 @@ import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
 import UseMySwal from "@/hooks/useMySwal";
 import { BiEnvelope, BiUser, BiLockAlt, BiIdCard, BiInfoCircle, BiX, BiCheck, BiQuestionMark } from "react-icons/bi";
 import { FcGoogle } from "react-icons/fc";
-import { Button, Popover } from "flowbite-react";
+import { Popover } from "flowbite-react";
 
 
 
@@ -23,6 +23,7 @@ import { AiOutlineLoading } from "react-icons/ai";
 import usePassword from "@/hooks/usePassword";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import Terms from "@/components/Modals/Terms_and_Conditions";
+import { Button } from "@/components/ui/button";
 
 export type SignUpInputs = {
   username: string;
@@ -508,20 +509,28 @@ const SignUp: React.FC = () => {
                   <div className="mb-5 text-sm sm:col-span-2 flex gap-2 items-center">
                     <input type="checkbox" name="terms" id="terms" style={{ width: '14px', height: '14px' }} onChange={() => setTermsAccepted(!termsAccepted)} />
                     <p>
-                      Aceitar nossos <span onClick={() => setOpenModal(true)} className="text-primary hover:underline cursor-pointer dark:text-blue-400">
+                      Aceitar nossos <span onClick={() => setOpenModal(true)} className="text-blue-700 hover:underline cursor-pointer dark:text-blue-400">
                         termos e condições</span>
                     </p>
                   </div>
 
                   <div className="mb-5 sm:col-span-2">
-                    <button disabled={!termsAccepted} type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-6 text-white bg-blue-700 hover:bg-blue-800 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-blue-700'>
+                    <Button type="submit" disabled={!termsAccepted} className="w-full py-8 flex items-center justify-center bg-blue-700 hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-blue-700 transition-all duration-200">
                       <span className="text-[16px] font-medium" aria-disabled={loading}>
                         {loading ? "Cadastrando usuário..." : "Criar conta"}
                       </span>
                       {
                         !loading ? (<HiOutlineArrowRight className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
                       }
-                    </button>
+                    </Button>
+                    {/* <button disabled={!termsAccepted} type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-6 text-white bg-blue-700 hover:bg-blue-800 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-blue-700'>
+                      <span className="text-[16px] font-medium" aria-disabled={loading}>
+                        {loading ? "Cadastrando usuário..." : "Criar conta"}
+                      </span>
+                      {
+                        !loading ? (<HiOutlineArrowRight className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
+                      }
+                    </button> */}
                   </div>
 
                   {/* <button disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 sm:col-span-2 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50 disabled:opacity-50 cursor-not-allowed">
@@ -535,7 +544,7 @@ const SignUp: React.FC = () => {
                   <div className="mt-6 text-center sm:col-span-2">
                     <p>
                       Já tem uma conta?{" "}
-                      <Link href="/auth/signin" className="text-primary dark:text-blue-400">
+                      <Link href="/auth/signin" className="text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-500">
                         Conecte-se
                       </Link>
                     </p>

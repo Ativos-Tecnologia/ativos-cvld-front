@@ -3,7 +3,6 @@ import defaultTheme from "tailwindcss/defaultTheme";
 import flowbite from "flowbite-react/tailwind";
 
 const config = {
-  darkMode: ["class"],
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -11,14 +10,18 @@ const config = {
     './src/**/*.{ts,tsx}',
     flowbite.content(),
 	],
+  darkMode: ["class"],
   prefix: "",
   theme: {
     container: {
       center: true,
       padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
+    },
+    screens: {
+      "2xsm": "375px",
+      xsm: "425px",
+      "3xl": "2000px",
+      ...defaultTheme.screens,
     },
     extend: {
       colors: {
