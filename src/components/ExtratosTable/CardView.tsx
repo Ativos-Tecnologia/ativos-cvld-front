@@ -1,7 +1,7 @@
 import numberFormat from "@/functions/formaters/numberFormat";
 import { ExtractTableProps } from '@/types/extractTable';
-import React from 'react';
-import { BiListUl, BiTask } from 'react-icons/bi';
+import React, { useRef, useState } from 'react';
+import { BiCheck, BiEditAlt, BiListUl, BiLoader, BiTask, BiX } from 'react-icons/bi';
 import { CVLDResultProps } from '@/interfaces/IResultCVLD';
 import { BsFillTrashFill } from 'react-icons/bs';
 import { Badge } from "flowbite-react";
@@ -9,11 +9,22 @@ import statusOficio from "@/enums/statusOficio.enum";
 import tipoOficio from "@/enums/tipoOficio.enum";
 import useUpdateOficio from "@/hooks/useUpdateOficio";
 import MarvelousPagination from "../MarvelousPagination";
+import api from "@/utils/api";
+import { ImSpinner2 } from "react-icons/im";
 
-const CardView = ({ className, data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage }: ExtractTableProps) => {
+const CardView = ({ className, data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop }: ExtractTableProps) => {
 
     const enumOficiosList = Object.values(statusOficio);
     const enumTipoOficiosList = Object.values(tipoOficio);
+    const [editableLabel, setEditableLabel] = useState<string | null>(null);
+    const [newLabelValue, setNewLabelValue] = useState<string>('');
+    const [editLabelState, setEditLabelState] = useState<string>('');
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    console.log(data)
+
+    // page refs
+    const inputRefs = useRef<HTMLTextAreaElement[] | null>([]);
 
     const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
 
@@ -22,34 +33,132 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
         setExtractId(id);
     }
 
+    const handleEditInput = (index: number) => {
+        if (inputRefs.current) {
+            inputRefs.current[index].focus();
+        }
+    }
+
+    const handleChangeCreditorName = async (index: number, id: string, value: string) => {
+
+        setIsLoading(true);
+        await api.patch(`/api/extrato/update/credor/${id}/`, {
+            credor: value
+        }).then(response => {
+
+            if (response.status === 200) {
+                setEditLabelState('success');
+                const newResults = data.results.map((item: CVLDResultProps) => {
+                    if (item.id === id) {
+                        return {
+                            ...item,
+                            credor: value
+                        }
+                    }
+                    return item;
+                })
+                setData({
+                    ...data,
+                    results: newResults
+                });
+                setTimeout(() => {
+                    setEditableLabel(null);
+                    setEditLabelState('');
+                    inputRefs.current![index].blur();
+                }, 1500);
+            } else {
+                setEditLabelState('error');
+                setTimeout(() => {
+                    setEditableLabel(null);
+                    setEditLabelState('');
+                    inputRefs.current![index].blur();
+                }, 1500);
+            }
+
+        });
+        setIsLoading(false);
+    }
+
     return (
         <><div className={className}>
-            <div className="flex gap-4 flex-wrap">
+            <div
+                className="flex gap-4 flex-wrap">
 
                 {data.results?.length > 0 ? (
                     <>
-                        {data.results.map((item: CVLDResultProps) => (
-                            <div key={item.id} className="relative flex-1 flex flex-col justify-between xsm:w-full md:max-w-[332px] lg:max-w-[305px] xl:max-w-90 bg-white border border-stroke shadow-3 gap-5 p-4 rounded-md dark:bg-black/60 dark:border-slate-600">
-                                <div className="absolute top-6 right-4">
-                                    {showModalMessage ? (
-                                        <button onClick={() => setModalOptions({
-                                            open: true,
-                                            extractId: item.id
-                                        })} className="bg-transparent border-none flex transition-all duration-300 hover:bg-red-500 text-red-500 hover:text-white dark:hover:text-white dark:text-red-500 dark:hover:bg-red-500">
-                                            <BsFillTrashFill className="text-meta-1 hover:text-meta-7 dark:text-white dark:hover:text-stone-300 h-4 w-4 self-center" style={{ cursor: loading ? 'wait' : 'pointer' }} />
-                                        </button>
-                                    ) : (
-                                        <button onClick={() => fetchDelete(item.id)} className="bg-transparent border-none flex transition-all duration-300 hover:bg-red-500 text-red-500 hover:text-white dark:hover:text-white dark:text-red-500 dark:hover:bg-red-500" style={{ cursor: loading ? 'wait' : 'pointer' }}>
-                                            <BsFillTrashFill className="text-meta-1 hover:text-meta-7 dark:text-white dark:hover:text-stone-300 h-4 w-4 self-center" />
-                                        </button>
-                                    )}
-                                </div>
-                                <div className="h-29">
-                                    <h4 className="max-w-55 max-h-21 text-xl overflow-hidden dark:text-snow font-semibold mb-2">
-                                        {item?.credor || "NOME NÃO INFORMADO"}
-                                        {item.credor && item?.credor.length >= 55 && ' ...'}
-                                    </h4>
-                                    <p>
+                        {data.results.map((item: CVLDResultProps, index: number) => (
+                            <div id={item.id} key={item.id} className="relative flex-1 flex flex-col justify-between xsm:w-full md:max-w-[332px] lg:max-w-[305px] xl:max-w-90 bg-white border border-stroke shadow-3 gap-5 p-4 rounded-md dark:bg-black/60 dark:border-slate-600">
+                                <div className="relative h-29">
+                                    <div className="absolute flex flex-col items-center top-2 right-0">
+                                        {showModalMessage ? (
+                                            <button onClick={() => setModalOptions({
+                                                open: true,
+                                                extractId: item.id
+                                            })} className="bg-transparent border-none flex transition-all duration-300 hover:opacity-80 dark:dark:text-red-500">
+                                                <BsFillTrashFill className="dark:hover:text-white h-4 w-4 self-center" style={{ cursor: loading ? 'wait' : 'pointer' }} />
+                                            </button>
+                                        ) : (
+                                            <button onClick={() => fetchDelete(item.id)} className="bg-transparent border-none flex transition-all duration-300 hover:opacity-80 dark:hover:text-white" style={{ cursor: loading ? 'wait' : 'pointer' }}>
+                                                <BsFillTrashFill className="dark:hover:text-white h-4 w-4 self-center" />
+                                            </button>
+                                        )}
+                                        <div className="relative mt-1.5 flex flex-col items-center justify-center pt-1.5 border-t border-stroke dark:border-form-strokedark">
+                                            <BiEditAlt
+                                                title="Editar Credor"
+                                                onClick={
+                                                    () => {
+                                                        setEditableLabel(item.id)
+                                                        handleEditInput(index);
+                                                    }
+                                                }
+                                                className={`${editableLabel === item.id ? 'opacity-0 invisible duration-500' : 'opacity-100 visible duration-1000'} absolute top-0 mt-1.5 z-2 text-xl hover:opacity-80 dark:hover:text-white cursor-pointer transition-all `}
+                                            />
+
+                                            {isLoading ? <ImSpinner2 className={`${editableLabel === item.id ? 'opacity-100 visible animate-spin' : 'opacity-0 invisible'} text-2xl`} /> :
+                                                <BiCheck
+                                                    title="Confirmar Edição"
+                                                    onClick={(e) => {
+                                                        const target = e.target as HTMLElement;
+                                                        const value = target.parentElement?.parentElement?.parentElement?.parentElement?.querySelector('textarea')?.value as string;
+                                                        handleChangeCreditorName(index, item.id, value);
+                                                    }}
+                                                    className={`${editableLabel === item.id ? 'opacity-100 visible duration-1000' : 'opacity-0 invisible'} ${editLabelState === 'success' && 'text-green-500'} text-2xl hover:opacity-80 dark:hover:text-white cursor-pointer transition-all`}
+                                                />
+                                            }
+
+                                            <BiX
+                                                title="Cancelar Edição"
+                                                onClick={() => {
+                                                    setEditableLabel(null);
+                                                    setEditLabelState('');
+                                                }} className={`${editableLabel === item.id ? 'opacity-100 visible translate-y-7 duration-1000' : 'opacity-0 invisible translate-y-0 rotate-90 duration-200'} ${editLabelState === 'error' && 'text-meta-1'} absolute top-0 mt-1.5 z-1 text-2xl hover:opacity-80 dark:hover:text-white cursor-pointer transition-all`} />
+                                        </div>
+                                    </div>
+                                    <div className="relative w-55 h-22">
+                                        {/* <h4
+                                            title={item?.credor || newLabelValue || "NOME NÃO INFORMADO"}
+                                            ref={(input) => { if (input) inputRefs.current![index] = input }}
+                                            contentEditable={editableLabel === item.id}
+                                            className={`${editableLabel === item.id && '!border-black dark:!border-white'} border-2 border-transparent p-1 rounded-md max-w-55 max-h-22 text-xl overflow-hidden text-ellipsis dark:text-snow font-semibold mb-2`}>
+                                            {item?.credor.slice(0, 45) || newLabelValue.trim() && newLabelValue.slice(0, 45) || "NOME NÃO INFORMADO"}
+                                            
+                                            {item?.credor.length >= 45 && ' ...'}
+                                        </h4> */}
+
+                                        {editableLabel !== item.id && <div
+                                            title={item?.credor || newLabelValue || "NOME NÃO INFORMADO"}
+                                            className="absolute inset-0 bg-transparent"></div>}
+
+                                        <textarea
+                                            title={item?.credor || newLabelValue || "NOME NÃO INFORMADO"}
+                                            ref={(input) => { if (input) inputRefs.current![index] = input }}
+                                            defaultValue={
+                                                item?.credor.length >= 45 ? item?.credor.slice(0, 45) + ' ...' : item?.credor || "NOME NÃO INFORMADO"}
+                                            className="w-55 h-22 bg-transparent px-0 dark:text-white font-semibold border-none rounded-md overflow-hidden resize-none"
+                                        />
+                                    </div>
+
+                                    <p className="font-medium">
                                         {numberFormat(item.valor_liquido_disponivel)}
                                     </p>
                                 </div>
@@ -91,18 +200,15 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
                                     </div>
                                 </div>
                                 <div className="flex w-full gap-4 justify-center">
-                                    <button onClick={() => handleTask(item.id)} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-800 hover:border-blue-800 hover:text-snow hover:-translate-y-1 transition-all duration-300">
+                                    <button onClick={() => handleTask(item.id)} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md dark:border-snow dark:text-snow hover:bg-blue-800 hover:!border-blue-800 hover:text-snow hover:-translate-y-1 transition-all duration-300">
                                         <span className="text-sm font-medium">TAREFA</span>
                                         <BiTask className="w-4 h-4" />
                                     </button>
-                                    {/* <button className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 bg-[#4dbce9] text-black rounded-md hover:bg-[#26ade4] hover:text-snow transition-all duration-200">
-                        <span className="text-sm font-medium">TAREFA</span>
-                        <BiTask className="w-4 h-4" />
-                    </button> */}
+
                                     <button onClick={() => {
                                         setOpenDetailsDrawer(true);
                                         fetchDataById(item.id);
-                                    } } className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-800 hover:border-blue-800 hover:text-snow hover:-translate-y-1 transition-all duration-300">
+                                    }} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-800 hover:!border-blue-800 dark:border-snow dark:text-snow hover:text-snow hover:-translate-y-1 transition-all duration-300">
                                         <span className="text-sm font-medium">DETALHES</span>
                                         <BiListUl className="w-4 h-4" />
                                     </button>
@@ -129,8 +235,17 @@ previousLabel="Go back"
 nextLabel="Go forward"
 showIcons
 /> */}
+                <div className='w-full flex-col justify-center items-center'>
+                    {
+                        <div className='w-full mt-4 h-4 flex justify-center items-center'>
+                            <div className={`${loading ? "opacity-100 visible" : "opacity-0 invisible"} text-center flex justify-center items-center transition-all duration-300`}>
+                                <span className='text-sm mr-2'>Buscando informações </span><BiLoader className="animate-spin h-5 w-5" />
+                            </div>
+                        </div>
+                    }
 
-                <MarvelousPagination counter={count} page_size={20} currentPage={currentPage} onPageChange={onPageChange} setCurrentPage={setCurrentPage} loading={loading} />
+                    <MarvelousPagination counter={count} page_size={20} currentPage={currentPage} onPageChange={onPageChange} setCurrentPage={setCurrentPage} callScrollTop={callScrollTop} loading={loading} />
+                </div>
             </div></>
     )
 }

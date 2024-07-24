@@ -120,7 +120,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     <React.Fragment>
                       <Link
                         href="#"
-                        className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-blue-300/50 dark:hover:bg-meta-4 ${(pathname === "/" ||
+                        className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark1 hover:bg-blue-300/50 dark:hover:bg-meta-4 ${(pathname === "/" ||
                           pathname.includes("dashboard")) &&
                           "bg-blue-300/50 dark:bg-meta-4"
                           }`}
@@ -144,7 +144,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           <li>
                             <Link
                               href="/"
-                              className={`group relative flex items-center gap-2.5 px-4 py-2 font-medium rounded-md text-white duration-300 ease-in-out hover:text-white ${pathname === "/" && "bg-blue-300/50 dark:bg-meta-4"
+                              className={`group relative flex items-center gap-2.5 px-4 py-2 font-medium rounded-md text-white hover:text-white ${pathname === "/" && "bg-blue-300/50 dark:bg-meta-4"
                                 }`}
                             >
                               <BiCalculator />

@@ -38,7 +38,7 @@ export default function DefaultLayout({
           {/* <!-- ===== Main Content End ===== --> */}
           {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
             showAlert && (
-              <div className="sticky w-full bottom-0 z-0 py-3 px-5 text-white text-center">
+              <div className="sticky w-full bottom-0 z-9 py-3 px-5 text-white text-center">
             <Alert color="warning" icon={HiInformationCircle} className="mb-0 transition-all duration-300" onDismiss={() => {
               setStyleRelated({ opacity: 0 });
               setTimeout(() => {

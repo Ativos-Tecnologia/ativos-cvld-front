@@ -20,4 +20,5 @@ export type ExtractTableProps = {
     onPageChange: (page: number) => void;
     currentPage: number;
     setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+    callScrollTop: () => void;
 }
