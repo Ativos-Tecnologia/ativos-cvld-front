@@ -163,13 +163,17 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                     /> :
 
                                                     <>
-                                                        {editLabelState === '' && <BiCheck onClick={(e) => {
-                                                            const target = e.target as HTMLElement;
-                                                            const value = target.parentElement?.parentElement?.querySelector("input")?.value as string;
-                                                            handleChangeCreditorName(index, item.id, value);
-                                                        }} className='text-2xl group-hover:text-black dark:group-hover:text-white transition-all duration-200' />}
-                                                        {editLabelState === 'success' && <BiCheck className='text-2xl' />}
-                                                        {editLabelState === 'error' && <BiX className='text-2xl' />}
+                                                        {editLabelState === '' &&
+                                                            <BiCheck onClick={(e) => {
+                                                                const target = e.target as HTMLElement;
+                                                                const value = target.parentElement?.parentElement?.querySelector("input")?.value as string;
+                                                                handleChangeCreditorName(index, item.id, value);
+                                                            }}
+                                                                className='text-2xl group-hover:text-black dark:group-hover:text-white transition-all duration-200' />}
+                                                        {editLabelState === 'success' && 
+                                                        <BiCheck className='text-2xl' />}
+                                                        {editLabelState === 'error' && 
+                                                        <BiX className='text-2xl' />}
                                                     </>
                                                 }
                                             </div>
