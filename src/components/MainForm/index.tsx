@@ -19,6 +19,7 @@ import { BiChevronRight, BiLineChart } from "react-icons/bi";
 import { AiOutlineLoading } from "react-icons/ai";
 import Link from "next/link";
 import tipoOficio from "@/enums/tipoOficio.enum";
+import Image from "next/image";
 
 
 interface ChartTwoState {
@@ -261,10 +262,13 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
 
   return (
     <div className="col-span-12 rounded-md border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-10">
-      <div className="flex-col flex-wrap items-start justify-between gap-3 sm:flex-nowrap pb-0">
-        <h2 className="text-4xl dark:text-white w-full text-center font-nexa antialiased" style={{fontWeight: 600}}>
+      <div className="flex-col flex-wrap items-center justify-center align-middle gap-3 sm:flex-nowrap pb-0">
+        {/* <h2 className="text-4xl dark:text-white w-full text-center font-nexa antialiased" style={{fontWeight: 600}}>
           Celler <span className="text-blue-500 font-polaris">ia</span>
-        </h2>
+        </h2> */}
+        <div className="w-full flex justify-center">
+        <Image src="/images/logo/celer-ia-logo.svg" alt="Celleria" width={200} height={50} />
+        </div>
         <p className="text-sm pt-2 font-normal text-center apexcharts-legend-text">
           Nosso modelo de atualização de valores de precatórios e RPVs
         </p>
