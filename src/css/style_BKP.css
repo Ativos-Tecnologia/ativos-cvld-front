@@ -65,71 +65,7 @@
   * {
     @apply border-border;
   }
-  
   body {
-    @apply relative bg-background text-black;
-  }
-
-}
-@layer utilities {
-  /* Chrome, Safari and Opera */
-  .no-scrollbar::-webkit-scrollbar {
-      display: none;
-  }
-
-  .no-scrollbar {
-      -ms-overflow-style: none; /* IE and Edge */
-      scrollbar-width: none; /* Firefox */
-  }
-
-  .chat-height {
-      @apply h-[calc(100vh_-_8.125rem)] lg:h-[calc(100vh_-_5.625rem)];
-  }
-
-  .inbox-height {
-      @apply h-[calc(100vh_-_8.125rem)] lg:h-[calc(100vh_-_5.625rem)];
+    @apply bg-background text-foreground;
   }
 }
-
-input[type="password"]::-ms-reveal,
-input[type="password"]::-ms-clear {
-  display: none;
-}
-
-input[type="password"]::-webkit-textfield-decoration-container {
-  display: none;
-}
-
-/* tailwind css */
-@keyframes leftforward {
-    to {
-        transform: translateX(-2px);
-    }
-}
-
-@keyframes rightforward {
-    to {
-        transform: translateX(2px);
-    }
-}
-
-.table-scroll {
-    display: block;
-    max-height: 648px;
-    overflow-y: auto;
-    -ms-overflow-style: -ms-autohiding-scrollbar;
-  }
-
-  /* Estilo para o cabeçalho da tabela */
-  .table-scroll thead tr th {
-    position: sticky;
-    top: 0;
-    /* background: #fff; Cor de fundo para o cabeçalho */
-    z-index: 2;
-  }
-
-  /* Estilo para as células da tabela */
-  .table-scroll tbody tr td {
-    /* background: #f9f9f9; Cor de fundo para as células */
-    border-bottom: 1px solid #ddd; /* Borda inferior para as células */
-  }

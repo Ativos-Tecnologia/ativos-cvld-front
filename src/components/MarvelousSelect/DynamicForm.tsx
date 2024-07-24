@@ -5,16 +5,12 @@ import { BiCheck, BiPlus, BiX } from 'react-icons/bi'
 import { PaginatedResponse, TaskRelatedItems } from '../TaskElements';
 import api from '@/utils/api';
 import { ImSpinner2 } from 'react-icons/im';
+import { toast } from 'sonner';
 
 interface IFallbackMessageProps {
     trigger: boolean;
     type: string;
     message: string;
-}
-
-interface IResponseStatusProps {
-    isLoading: boolean;
-    passed: boolean | null;
 }
 
 const DynamicForm = ({ label, data, setData }: {
@@ -25,10 +21,8 @@ const DynamicForm = ({ label, data, setData }: {
 
     const [open, setOpen] = useState<boolean>(false);
     const [newLabel, setNewLabel] = useState<string>('');
-    const [responseStatus, setResponseStatus] = useState<IResponseStatusProps>({
-        isLoading: false,
-        passed: null,
-    });
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [passed, setPassed] = useState<boolean | null>(null);
 
     const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         setNewLabel(e.target.value);
@@ -39,10 +33,7 @@ const DynamicForm = ({ label, data, setData }: {
 
         if (newLabel.trim() !== '') {
 
-            setResponseStatus({
-                ...responseStatus,
-                isLoading: true,
-            });
+            setIsLoading(true);
 
             if (label.toLowerCase() === 'metas') {
                 const response = await api.post('/api/task/goals/create/', {
@@ -66,23 +57,47 @@ const DynamicForm = ({ label, data, setData }: {
                             ...data.results
                         ]
                     })
-                    setResponseStatus({
-                        isLoading: false,
-                        passed: true,
-                    });
+                    
+                    toast("Meta criada com sucesso!", {
+                        classNames: {
+                            toast: "!bg-green-200 !border-none",
+                            title: "!text-black",
+                            description: "!text-green-800",
+                            actionButton: "!bg-white/70 hover:!opacity-80"
+                        },
+                        description: "você pode encontrá-lo na sua lista de metas.",
+                        action: {
+                            label: "Fechar",
+                            onClick: () => console.log('done')
+                        }
+                    })
+
+                    setIsLoading(false);
+                    setPassed(true);
+
                     setTimeout(() => {
                         setNewLabel('');
-                        setOpen(false)
-                        setResponseStatus({
-                            isLoading: false,
-                            passed: null,
-                        })
+                        setPassed(null);
                     }, 1500);
                 } else {
-                    setResponseStatus({
-                        isLoading: false,
-                        passed: false,
-                    });
+
+                    setIsLoading(false);
+                    setPassed(false);
+
+                    toast("Ooops!", {
+                        classNames: {
+                            toast: "!bg-rose-200",
+                            title: "!text-black",
+                            description: "!text-green-800",
+                            actionButton: "!bg-white/70 hover:!opacity-80"
+                        },
+                        description: "aconteceu algo inesperado, tente novamente mais tarde.",
+                        action: {
+                            label: "Fechar",
+                            onClick: () => {return}
+                        }
+                    })
+
                 }
 
 
@@ -106,17 +121,27 @@ const DynamicForm = ({ label, data, setData }: {
                         ...data.results
                     ]
                 })
-                setResponseStatus({
-                    isLoading: false,
-                    passed: true,
-                });
+
+                toast("Status criado com sucesso!", {
+                    classNames: {
+                        toast: "!bg-green-200 !border-none",
+                        title: "!text-black",
+                        description: "!text-green-800",
+                        actionButton: "!bg-white/70 hover:!opacity-80"
+                    },
+                    description: "você pode encontrá-lo na sua lista de status.",
+                    action: {
+                        label: "Fechar",
+                        onClick: () => {return}
+                    }
+                })
+
+                setIsLoading(false);
+                setPassed(true);
+
                 setTimeout(() => {
                     setNewLabel('');
-                    setOpen(false)
-                    setResponseStatus({
-                        isLoading: false,
-                        passed: null,
-                    })
+                    setPassed(null);
                 }, 1500);
             }
 
@@ -157,22 +182,19 @@ const DynamicForm = ({ label, data, setData }: {
 
                             <button
                                 type='button'
-                                className={`${responseStatus.passed === null && 'bg-blue-700 hover:bg-blue-800 dark:hover:bg-blue-800 dark:bg-blue-700'} ${responseStatus.passed === false && 'bg-meta-1 hover:bg-red dark:hover:bg-red dark:bg-meta-1'} ${responseStatus.passed && 'bg-green-500 hover:bg-green-600 dark:hover:bg-green-600 dark:bg-green-500'} flex flex-1 gap-2 items-center justify-center rounded px-3 py-1 font-medium text-gray disabled:cursor-not-allowed disabled:opacity-50 disabled:!hover-blue-700 transition-all duration-300`}
+                                className={`${passed === null && 'bg-blue-700 hover:bg-blue-800 dark:hover:bg-blue-800 dark:bg-blue-700'} ${passed === false && 'bg-meta-1 hover:bg-red dark:hover:bg-red dark:bg-meta-1'} ${passed && 'bg-green-500 hover:bg-green-600 dark:hover:bg-green-600 dark:bg-green-500'} flex flex-1 gap-2 items-center justify-center rounded px-3 py-1 font-medium text-gray disabled:cursor-not-allowed disabled:opacity-50 disabled:!hover-blue-700 transition-all duration-300`}
                                 onClick={handleCreateNewLabel}
                                 disabled={newLabel.trim() === ''}>
 
-                                {responseStatus.isLoading ?
+                                {isLoading ?
                                     <>
                                         <ImSpinner2 className='w-5 h-5 animate-spin' />
                                     </>
                                     :
                                     <>
-                                        {responseStatus.passed === null &&
-                                        <span>Salvar</span>}
-                                        {responseStatus.passed && 
-                                        <BiCheck className='w-5 h-5' />}
-                                        {responseStatus.passed === false && 
-                                        <BiX className='w-5 h-5' />}
+                                        {passed === null && <span>Salvar</span>}
+                                        {passed && <span>Salvo!</span>}
+                                        {passed === false && <BiX className='w-5 h-5' />}
                                     </>
                                 }
                             </button>

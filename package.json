@@ -9,16 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.1.0",
     "apexcharts": "^3.45.2",
     "axios": "^1.6.8",
     "canvas-confetti": "^1.9.3",
+    "class-variance-authority": "^0.7.0",
     "cleave.js": "^1.6.0",
+    "clsx": "^2.1.1",
     "flatpickr": "^4.6.13",
     "flowbite": "^2.3.0",
     "flowbite-react": "^0.9.0",
     "jsvectormap": "^1.5.3",
     "jwt-decode": "^4.0.0",
+    "lucide-react": "^0.414.0",
     "next": "^14.2.3",
+    "next-themes": "^0.3.0",
     "react": "^18",
     "react-apexcharts": "^1.4.1",
     "react-dom": "^18",
@@ -27,9 +32,12 @@
     "react-input-mask": "^2.0.4",
     "react-intersection-observer": "^9.10.3",
     "react-number-format": "^5.3.4",
+    "sonner": "^1.5.0",
     "sweetalert2": "^11.6.13",
     "sweetalert2-react-content": "^5.0.7",
-    "swiper": "^11.1.4"
+    "swiper": "^11.1.4",
+    "tailwind-merge": "^2.4.0",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@types/canvas-confetti": "^1.6.4",

@@ -155,7 +155,7 @@ const SignIn: React.FC = () => {
                     />
                   </div>
                 </Link>
-                <p className="2xl:px-10 text-xl font-medium">
+                <p className="2xl:px-10 text-lg font-medium">
                   Atualização inteligente dos valores de precatórios com base na legislação vigente
                 </p>
               </div>
