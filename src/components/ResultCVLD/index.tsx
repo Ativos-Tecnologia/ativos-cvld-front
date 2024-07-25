@@ -185,7 +185,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
   }
 
   return (
-    <div ref={CVLDResultRef} className="scroll-m-20 scroll-smooth col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-2">
+    <div ref={CVLDResultRef} className="scroll-m-20 min-w-100 scroll-smooth col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-2">
       <div className="mb-4 justify-between gap-4 sm:flex flex-col">
         {
           filledData ? (
@@ -456,7 +456,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
           series={state.series}
           type="area"
           height={350}
-          width={270}
+          width={'100%'}
 
         />
       </div>

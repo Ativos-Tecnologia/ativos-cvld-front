@@ -107,6 +107,16 @@ const DropdownUser = () => {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
+        <DropdownMenuItem>
+          <Link
+            href="/settings"
+            className={`flex items-center w-full gap-3.5 !text-sm font-medium duration-300 ease-in-out hover:text-blue-700 dark:hover:text-white lg:text-base`}
+          >
+            <AiOutlineSetting className='w-4.5 h-4.5 fill-current' />
+            Configurações
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem
           className="flex items-center gap-3.5 !text-sm font-medium duration-300 ease-in-out lg:text-base cursor-pointer"
           onClick={logout}
@@ -118,16 +128,6 @@ const DropdownUser = () => {
           >
             <AiOutlineLogout className='w-4.5 h-4.5 fill-current' />
             Sair
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <Link
-            href="/settings"
-            className={`flex items-center w-full gap-3.5 !text-sm font-medium duration-300 ease-in-out hover:text-blue-700 dark:hover:text-white lg:text-base`}
-          >
-            <AiOutlineSetting className='w-4.5 h-4.5 fill-current' />
-            Configurações
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
