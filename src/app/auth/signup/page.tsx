@@ -515,7 +515,7 @@ const SignUp: React.FC = () => {
                   </div>
 
                   <div className="mb-5 sm:col-span-2">
-                    <Button type="submit" disabled={!termsAccepted} className="w-full py-8 flex items-center justify-center bg-blue-700 hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-blue-700 transition-all duration-200">
+                    <Button type="submit" disabled={!termsAccepted} className="w-full py-8 flex items-center justify-center bg-blue-700 text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-blue-700 transition-all duration-200">
                       <span className="text-[16px] font-medium" aria-disabled={loading}>
                         {loading ? "Cadastrando usuário..." : "Criar conta"}
                       </span>

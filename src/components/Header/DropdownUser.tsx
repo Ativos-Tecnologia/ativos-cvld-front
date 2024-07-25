@@ -2,9 +2,8 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import useLogout from "@/hooks/useLogout";
 import { UserInfoAPIContext, UserInfoContextType } from "@/context/UserInfoContext";
-import { BiLogOut, BiUser } from "react-icons/bi";
 import { Avatar } from "flowbite-react";
-import { AiFillCrown } from "react-icons/ai";
+import { AiFillCrown, AiOutlineLogout, AiOutlineSetting, AiOutlineUser } from "react-icons/ai";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem, DropdownMenuSeparator } from "../ui/dropdown-menu";
 
 const DropdownUser = () => {
@@ -97,29 +96,39 @@ const DropdownUser = () => {
           </span>
         </Link>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-max text-black">
+      <DropdownMenuContent className="w-max">
         <DropdownMenuItem>
           <Link
             href="/profile"
-            className="flex items-center w-full gap-3.5 text-xs font-medium duration-300 ease-in-out hover:text-blue-700 lg:text-base"
+            className="flex items-center w-full gap-3.5 !text-sm font-medium duration-300 ease-in-out hover:text-blue-700 dark:hover:text-white lg:text-base"
           >
-            <BiUser className='w-5.5 h-5.5 fill-current' />
+            <AiOutlineUser className='w-4.5 h-4.5 fill-current' />
             Perfil
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          className="flex items-center gap-3.5 text-xs font-medium duration-300 ease-in-out hover:text-blue-700 lg:text-base cursor-pointer"
+          className="flex items-center gap-3.5 !text-sm font-medium duration-300 ease-in-out lg:text-base cursor-pointer"
           onClick={logout}
         >
           <Link
             href="#"
             onClick={logout}
-            className="flex items-center w-full gap-3.5 text-xs font-medium duration-300 ease-in-out hover:text-blue-700 lg:text-base"
+            className="flex items-center w-full gap-3.5 !text-sm font-medium duration-300 ease-in-out hover:text-blue-700 dark:hover:text-white lg:text-base"
           >
-            <BiLogOut className='w-5.5 h-5.5 fill-current' />
+            <AiOutlineLogout className='w-4.5 h-4.5 fill-current' />
             Sair
-          </Link> 
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>
+          <Link
+            href="/settings"
+            className={`flex items-center w-full gap-3.5 !text-sm font-medium duration-300 ease-in-out hover:text-blue-700 dark:hover:text-white lg:text-base`}
+          >
+            <AiOutlineSetting className='w-4.5 h-4.5 fill-current' />
+            Configurações
+          </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

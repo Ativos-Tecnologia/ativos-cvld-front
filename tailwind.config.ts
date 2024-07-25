@@ -62,7 +62,7 @@ const config = {
         transparent: "transparent",
         white: "#FFFFFF",
         snow: "#FAFAFA",
-        black: "#1C2434",
+        black: "#4f4f4f",
         red: "#FB5454",
         "black-2": "#111111",
         body: "#64748B",
