@@ -187,7 +187,7 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
 
       <div
         ref={selectNameRef}
-        className={`flex py-0.5 h-fit gap-1 font-semibold ${color === undefined ? "bg-blue-100 text-blue-800 group-hover:bg-blue-200 dark:bg-blue-200 dark:text-blue-900 dark:group-hover:bg-blue-300" : color} flex w-full cursor-pointer flex-row items-center justify-between rounded text-[10px]`}
+        className={`flex py-1.5 h-fit gap-1 font-semibold ${color === undefined ? "bg-blue-100 text-blue-800 group-hover:bg-blue-200 dark:bg-blue-200 dark:text-blue-900 dark:group-hover:bg-blue-300" : color} flex w-full cursor-pointer flex-row items-center justify-between rounded text-[10px]`}
         onClick={() => setIsOpen(!isOpen)}
         title={selected?.nameRef || selected.title}
       >
