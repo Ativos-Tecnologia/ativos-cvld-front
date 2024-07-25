@@ -1,10 +1,7 @@
-import React, { useEffect } from 'react'
-import api from '@/utils/api';
-import {
-  Controller,
-  useForm,
-} from "react-hook-form";
 import UseMySwal from '@/hooks/useMySwal';
+import api from '@/utils/api';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { AiOutlineCloudUpload } from 'react-icons/ai';
 
 interface SubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -143,7 +140,7 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
           }}
         />
         </Label> */}
-        <span className="apexcharts-legend-text mt-0 w-full text-center" style={{ "color": "rgb(55, 61, 63)", "fontSize": "10px", "fontWeight": "400", "fontFamily": "Satoshi" }}>TRF1 ao TRF4 (beta)</span>
+        <span className="apexcharts-legend-text mt-2 w-full text-center text-gray-400" style={{ "fontSize": "10px", "fontWeight": "400", "fontFamily": "Satoshi" }}>TRF1 ao TRF4 (beta)</span>
       </div>
     </div>
   )

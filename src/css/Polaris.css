@@ -4,11 +4,3 @@
     source: https://dafont.com/polaris.font
 
 */
-
-@font-face {
-    font-family: "Polaris";
-    src: url("../fonts/Polaris.otf") format("opentype");
-    font-style: normal;
-    font-display: swap;
-    font-weight: 300;
-}
