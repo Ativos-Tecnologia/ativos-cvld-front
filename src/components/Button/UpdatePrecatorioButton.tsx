@@ -2,7 +2,7 @@ import UseMySwal from '@/hooks/useMySwal';
 import api from '@/utils/api';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { BiCloudUpload } from 'react-icons/bi';
+import { AiOutlineCloudUpload } from 'react-icons/ai';
 
 interface SubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children?: React.ReactNode,
@@ -70,31 +70,37 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
 
   return (
     <div className="flex w-full justify-end">
-    <div className="relative flex flex-col w-full py-4 items-center cursor-pointer">
-      <label htmlFor="dropzone-file" className='relative flex h-25rem flex-col items-center justify-center w-full bg-slate-50 dark:bg-black/50 border-2 border-dashed rounded-lg hover:border-strokedark hover:text-strokedark dark:hover:border-white dark:hover:text-white transition-all duration-150 ease-in-out'>
-        <BiCloudUpload className='w-full h-8' />
-        <div className='text-center text-sm'>
-          <p className='p-1'><b>Clique</b>, ou arraste um ofício em PDF</p>
-          {/* <p>PDF</p> */}
-        </div>
-        <input type='file' id="dropzone-file" className='absolute opacity-0 w-full h-full inset-0 cursor-pointer' {...register("pdf_file")} accept='.pdf' onChange={(e) => {
-          if (e.target.files) {
-            const formData = new FormData();
-            formData.append("pdf_file", e.target.files[0]);
-            loadOficio(formData);
-          }
-        }}
-          onDrop={e => {
-            e.preventDefault();
-            if (e.dataTransfer.files) {
-              const formData = new FormData();
-              formData.append("pdf_file", e.dataTransfer.files[0]);
-              loadOficio(formData);
-            }
-          }}
-        />
-      </label>
-      {/* <Label
+      <div className="relative flex flex-col w-full py-4 items-center cursor-pointer">
+        <label htmlFor="dropzone-file" className='relative flex h-20 flex-col items-center justify-center w-full bg-slate-50 dark:bg-boxdark-2 border-2 border-stroke dark:border-strokedark border-dashed rounded-lg hover:border-strokedark hover:text-strokedark dark:hover:border-white dark:hover:text-white'>
+          <AiOutlineCloudUpload className='w-full h-8' />
+          <div className='text-center text-sm'>
+            <p className='p-1'><b>Clique</b>, ou arraste um ofício em PDF</p>
+            {/* <p>PDF</p> */}
+          </div>
+          <input
+            type='file'
+            id="dropzone-file"
+            className='absolute opacity-0 w-full h-full inset-0 cursor-pointer'
+            {...register("pdf_file")}
+            accept='.pdf'
+            onChange={(e) => {
+              if (e.target.files) {
+                const formData = new FormData();
+                formData.append("pdf_file", e.target.files[0]);
+                loadOficio(formData);
+              }
+            }}
+            onDrop={e => {
+              e.preventDefault();
+              if (e.dataTransfer.files) {
+                const formData = new FormData();
+                formData.append("pdf_file", e.dataTransfer.files[0]);
+                loadOficio(formData);
+              }
+            }}
+          />
+        </label>
+        {/* <Label
         htmlFor="dropzone-file"
         className="flex h-24 w-full cursor-pointer flex-col items-center text-slate-500/90 justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
       >
@@ -134,8 +140,8 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
           }}
         />
         </Label> */}
-        <span className="apexcharts-legend-text w-full text-center mt-2" style={{"fontSize": "10px", "fontWeight": "400", "fontFamily": "Satoshi" }}>TRF1 ao TRF4 (beta)</span>
-        </div>
+        <span className="apexcharts-legend-text mt-2 w-full text-center text-gray-400" style={{ "fontSize": "10px", "fontWeight": "400", "fontFamily": "Satoshi" }}>TRF1 ao TRF4 (beta)</span>
+      </div>
     </div>
   )
 }

@@ -334,7 +334,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
             </div>
 
 
-            <span className="text-lg font-semibold text-primary">Dados do Principal</span>
+            <span className="text-lg font-semibold text-black dark:text-white">Dados do Principal</span>
                           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
 
                           <div className="flex flex-col gap-2">

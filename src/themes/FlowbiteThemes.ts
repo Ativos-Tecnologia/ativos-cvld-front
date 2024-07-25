@@ -3,8 +3,8 @@ import { CustomFlowbiteTheme } from "flowbite-react";
 export const customFlowBiteTheme: CustomFlowbiteTheme = {
     drawer: {
         "root": {
-            "base": "fixed z-40 overflow-y-auto bg-white p-4 transition-transform bg-snow dark:bg-boxdark",
-            "backdrop": "fixed inset-0 z-30 bg-gray-900/50 dark:bg-gray-900/80",
+            "base": "fixed z-40 overflow-y-auto bg-white p-4 transition-transform duration-500 bg-snow dark:bg-boxdark",
+            "backdrop": "fixed inset-0 z-30 bg-gray-900/50 dark:bg-gray-900/80 backdrop-blur-[2px] transition-opacity duration-500",
             "edge": "bottom-16",
             "position": {
                 "top": {
