@@ -21,8 +21,6 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
     const [editLabelState, setEditLabelState] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    console.log(data)
-
     // page refs
     const inputRefs = useRef<HTMLTextAreaElement[] | null>([]);
 
@@ -153,7 +151,7 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
                                             title={item?.credor || newLabelValue || "NOME NÃO INFORMADO"}
                                             ref={(input) => { if (input) inputRefs.current![index] = input }}
                                             defaultValue={
-                                                item?.credor.length >= 45 ? item?.credor.slice(0, 45) + ' ...' : item?.credor || "NOME NÃO INFORMADO"}
+                                                item?.credor?.length >= 45 ? item?.credor?.slice(0, 45) + ' ...' : item?.credor || "NOME NÃO INFORMADO"}
                                             className="w-55 h-22 bg-transparent px-0 dark:text-white font-semibold border-none rounded-md overflow-hidden resize-none"
                                         />
                                     </div>
@@ -200,7 +198,7 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
                                     </div>
                                 </div>
                                 <div className="flex w-full gap-4 justify-center">
-                                    <button onClick={() => handleTask(item.id)} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md dark:border-snow dark:text-snow hover:bg-blue-800 hover:!border-blue-800 hover:text-snow hover:-translate-y-1 transition-all duration-300">
+                                    <button onClick={() => handleTask(item.id)} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md dark:border-snow dark:text-snow hover:bg-blue-800 hover:!border-blue-800 hover:text-snow hover:-translate-y-1 transition- duration-300">
                                         <span className="text-sm font-medium">TAREFA</span>
                                         <BiTask className="w-4 h-4" />
                                     </button>
@@ -208,7 +206,7 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
                                     <button onClick={() => {
                                         setOpenDetailsDrawer(true);
                                         fetchDataById(item.id);
-                                    }} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-800 hover:!border-blue-800 dark:border-snow dark:text-snow hover:text-snow hover:-translate-y-1 transition-all duration-300">
+                                    }} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-800 hover:!border-blue-800 dark:border-snow dark:text-snow hover:text-snow hover:-translate-y-1 transition- duration-300">
                                         <span className="text-sm font-medium">DETALHES</span>
                                         <BiListUl className="w-4 h-4" />
                                     </button>
