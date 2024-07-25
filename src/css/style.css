@@ -65,7 +65,7 @@
   * {
     @apply border-border;
   }
-  
+
   body {
     @apply relative bg-background text-body;
   }
