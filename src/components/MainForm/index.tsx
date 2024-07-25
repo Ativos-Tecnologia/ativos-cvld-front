@@ -1,25 +1,23 @@
-import React, { useEffect, useState, useContext, useImperativeHandle, useRef, } from "react";
-import {
-  Controller,
-  useForm,
-} from "react-hook-form";
-import { jwtDecode } from "jwt-decode";
-import { ACCESS_TOKEN } from "@/constants/constants";
-import { JWTToken } from "@/types/jwtToken";
-import api from "@/utils/api";
-import ReactApexChart from "react-apexcharts";
-import Cleave from "cleave.js/react";
-import UseMySwal from "@/hooks/useMySwal";
-import statusOficio from "@/enums/statusOficio.enum";
-import { ErrorMessage } from "../ErrorMessage/ErrorMessage";
-import { UpdatePrecatorioButton } from "../Button/UpdatePrecatorioButton";
-import numberFormat from "@/functions/formaters/numberFormat";
-import { UserInfoAPIContext, UserInfoContextType } from "@/context/UserInfoContext";
-import { BiChevronRight, BiLineChart } from "react-icons/bi";
-import { AiOutlineLoading } from "react-icons/ai";
-import Link from "next/link";
-import tipoOficio from "@/enums/tipoOficio.enum";
-import Image from "next/image";
+import { ACCESS_TOKEN } from '@/constants/constants';
+import { UserInfoAPIContext, UserInfoContextType } from '@/context/UserInfoContext';
+import statusOficio from '@/enums/statusOficio.enum';
+import tipoOficio from '@/enums/tipoOficio.enum';
+import numberFormat from '@/functions/formaters/numberFormat';
+import UseMySwal from '@/hooks/useMySwal';
+import { JWTToken } from '@/types/jwtToken';
+import api from '@/utils/api';
+import Cleave from 'cleave.js/react';
+import { jwtDecode } from 'jwt-decode';
+import { Slash } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import React, { useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { AiOutlineLoading } from 'react-icons/ai';
+import { BiChevronRight, BiLineChart } from 'react-icons/bi';
+
+import { UpdatePrecatorioButton } from '../Button/UpdatePrecatorioButton';
+import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
 
 
 interface ChartTwoState {
@@ -266,10 +264,17 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
         {/* <h2 className="text-4xl dark:text-white w-full text-center font-nexa antialiased" style={{fontWeight: 600}}>
           Celler <span className="text-blue-500 font-polaris">ia</span>
         </h2> */}
-        <div className="w-full flex justify-center">
-        <Image src="/images/logo/celer-ia-logo.svg" alt="Celleria" width={200} height={50} />
+        <div className="w-full flex justify-center align-middle">
+          <h2 className='font-nexa text-3xl font-semibold text-primary flex flex-col justify-center select-none'>
+            Celer
+            </h2>
+            <p className='text-xs font-semibold text-primary flex flex-col justify-center'>
+              <Slash className='w-5 h-5 text-gray-200 -rotate-45 mt-1 -mr-3' />
+              </p>
+        <Image src="/images/logo/celer-ia-only-logo.svg" alt="Celler IA Engine" width={56} height={50} className='mt-[6.1px] select-none antialiased' aria-selected={false}
+                draggable={false}/>
         </div>
-        <p className="text-sm pt-2 font-normal text-center apexcharts-legend-text">
+        <p className="text-sm font-normal text-center apexcharts-legend-text mt-0">
           Nosso modelo de atualização de valores de precatórios e RPVs
         </p>
       </div>
