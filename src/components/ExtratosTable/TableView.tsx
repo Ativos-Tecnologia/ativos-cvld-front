@@ -1,8 +1,9 @@
 import { Badge, CustomFlowbiteTheme, Flowbite, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from 'flowbite-react';
 import numberFormat from "@/functions/formaters/numberFormat";
 import { ExtractTableProps } from '@/types/extractTable';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BiCheck, BiLoader, BiSolidDockLeft, BiTask, BiX } from 'react-icons/bi';
+import { PiCursorClick } from "react-icons/pi";
 import { CVLDResultProps } from '@/interfaces/IResultCVLD';
 import { BsFillTrashFill } from 'react-icons/bs';
 import statusOficio from '@/enums/statusOficio.enum';
@@ -23,13 +24,13 @@ const customTheme: CustomFlowbiteTheme = {
         body: {
             base: "group/body",
             cell: {
-                base: "px-4 py-3 group-first/body:group-first/row:first:rounded-tl-sm group-first/body:group-first/row:last:rounded-tr-sm group-last/body:group-last/row:first:rounded-bl-sm group-last/body:group-last/row:last:rounded-br-sm dark:bg-boxdark"
+                base: "px-3 py-1.5 group-first/body:group-first/row:first:rounded-tl-sm group-first/body:group-first/row:last:rounded-tr-sm group-last/body:group-last/row:first:rounded-bl-sm group-last/body:group-last/row:last:rounded-br-sm dark:bg-boxdark"
             }
         },
         head: {
             base: "group/head text-xs uppercase text-gray-700 dark:text-gray-400",
             cell: {
-                base: "bg-zinc-200  text-black px-4 py-3 group-first/head:first:rounded-tl-sm group-first/head:last:rounded-tr-sm dark:bg-meta-4 dark:text-white dark:border-b dark:border-strokedark"
+                base: "bg-zinc-200 text-black px-4 py-3 group-first/head:first:rounded-tl-sm group-first/head:last:rounded-tr-sm dark:bg-meta-4 dark:text-white"
             }
         },
         row: {
@@ -102,15 +103,30 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
 
     }
 
+    useEffect(() => {
+        const keyHandler = ({ keyCode }: KeyboardEvent) => {
+            if (keyCode !== 27) return;
+
+            data.results.forEach((item: CVLDResultProps, index: number) => {
+                if (editableLabel === item.id) {
+                    setEditableLabel(null);
+                    inputRefs.current![index].blur();
+                }
+            })
+        };
+        document.addEventListener("keydown", keyHandler);
+        return () => document.removeEventListener("keydown", keyHandler);
+    });
+
     return (
         <><div className=''>
             <Flowbite theme={{ theme: customTheme }}>
                 <Table hoverable className="">
                     <TableHead>
-                        <TableHeadCell className="text-center w-[120px]">Oficio</TableHeadCell>
-                        <TableHeadCell className="text-center">Nome do Credor</TableHeadCell>
-                        <TableHeadCell className="text-center w-[180px]">Valor Líquido</TableHeadCell>
-                        <TableHeadCell className="text-center w-[100px]">Status</TableHeadCell>
+                        <TableHeadCell className="w-[120px] border-r border-zinc-300 dark:border-zinc-600">Oficio</TableHeadCell>
+                        <TableHeadCell className='border-r border-zinc-300 dark:border-zinc-600'>Nome do Credor</TableHeadCell>
+                        <TableHeadCell className="w-[180px] border-r border-zinc-300 dark:border-zinc-600">Valor Líquido</TableHeadCell>
+                        <TableHeadCell className="w-[100px] border-r border-zinc-300 dark:border-zinc-600">Status</TableHeadCell>
                         <TableHeadCell className="text-center w-[120px]">
                             <span className="sr-only text-center">Tarefas</span>
                         </TableHeadCell>
@@ -127,8 +143,8 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                             <>
                                 {data.results.map((item: CVLDResultProps, index: number) => (
 
-                                    <TableRow key={item.id} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 border-b border-stroke dark:border-form-strokedark group">
-                                        <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600">
+                                    <TableRow key={item.id} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 border-b border-zinc-300 dark:border-zinc-600 group">
+                                        <TableCell className="text-center border-x border-zinc-300 dark:border-zinc-600 whitespace-nowrap font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600">
                                             <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
                                                 <select className="text-[12px] bg-transparent border-none py-0" onChange={(e) => updateOficioTipo(item.id, e.target.value as tipoOficio)}>
                                                     {item.tipo_do_oficio && (
@@ -144,7 +160,8 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                 </select>
                                             </Badge>
                                         </TableCell>
-                                        <TableCell title={item?.credor || 'NOME NÃO INFORMADO'} className="relative h-full flex items-center gap-2 font-semibold text-[12px]">
+                                        <TableCell title={item?.credor || ''}
+                                            className="relative h-full border-r border-zinc-300 dark:border-zinc-600 flex items-center gap-2 font-semibold text-[12px]">
                                             <input
                                                 type="text"
                                                 ref={(input) => { if (input) inputRefs.current![index] = input; }}
@@ -154,7 +171,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                         handleChangeCreditorName(index, item.id, e.currentTarget.value)
                                                     }
                                                 }}
-                                                className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-10/12 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-10/12 pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                             />
 
                                             <div title='Confirmar Edição' className={`${editableLabel === item.id ? 'opacity-100 visible' : 'opacity-0 invisible'} ${editLabelState === 'success' && 'animate-jump !bg-green-500 !text-white'} ${editLabelState === 'error' && 'animate-jump !bg-meta-1 !text-white'} w-6 h-6 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 transition-all duration-500 cursor-pointer group`}>
@@ -170,10 +187,10 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                                 handleChangeCreditorName(index, item.id, value);
                                                             }}
                                                                 className='text-2xl group-hover:text-black dark:group-hover:text-white transition-all duration-200' />}
-                                                        {editLabelState === 'success' && 
-                                                        <BiCheck className='text-2xl' />}
-                                                        {editLabelState === 'error' && 
-                                                        <BiX className='text-2xl' />}
+                                                        {editLabelState === 'success' &&
+                                                            <BiCheck className='text-2xl' />}
+                                                        {editLabelState === 'error' &&
+                                                            <BiX className='text-2xl' />}
                                                     </>
                                                 }
                                             </div>
@@ -182,15 +199,22 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                             {editableLabel !== item.id && (
                                                 <div className='absolute inset-0 rounded-md flex items-center transition-all duration-200'>
 
-                                                    <div className='flex-1 h-full'
+                                                    <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200'
                                                         onClick={() => {
                                                             setEditableLabel(item.id)
                                                             handleEditInput(index);
-                                                        }}></div>
+                                                        }}>
+                                                        {item.credor.length === 0 && (
+                                                            <div className='flex gap-1 pl-4'>
+                                                                <PiCursorClick className='text-base' />
+                                                                <span>Clique para adicionar nome</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
 
                                                     <div
                                                         title='Detalhes'
-                                                        className='py-1 px-2 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                                                        className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
                                                         onClick={() => {
                                                             setOpenDetailsDrawer(true);
                                                             fetchDataById(item.id);
@@ -203,8 +227,8 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                             )}
 
                                         </TableCell>
-                                        <TableCell className="text-center font-semibold text-[12px]">{numberFormat(item.valor_liquido_disponivel)}</TableCell>
-                                        <TableCell className="text-center items-center">
+                                        <TableCell className="border-r border-zinc-300 dark:border-zinc-600 font-semibold text-[14px]">{numberFormat(item.valor_liquido_disponivel)}</TableCell>
+                                        <TableCell className="text-center items-center border-r border-zinc-300 dark:border-zinc-600">
                                             <Badge color="teal" size="sm" className="max-w-max text-center text-[12px]">
                                                 <select className="text-[12px] bg-transparent border-none py-0" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
                                                     {item.status && (
@@ -249,7 +273,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                 </div>
                                             </Badge>
                                         </TableCell> */}
-                                        <TableCell className="text-center">
+                                        <TableCell className="text-center border-r border-zinc-300 dark:border-zinc-600">
                                             {showModalMessage ? (
                                                 <button onClick={() => setModalOptions({
                                                     open: true,
