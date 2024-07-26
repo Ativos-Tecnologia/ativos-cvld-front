@@ -1,7 +1,7 @@
-import type { Config } from "tailwindcss"
-import defaultTheme from "tailwindcss/defaultTheme";
-import flowbite from "flowbite-react/tailwind";
+import flowbite from 'flowbite-react/tailwind';
+import defaultTheme from 'tailwindcss/defaultTheme';
 
+import type { Config } from "tailwindcss"
 const config = {
   content: [
     './pages/**/*.{ts,tsx}',
@@ -23,7 +23,13 @@ const config = {
       "3xl": "2000px",
       ...defaultTheme.screens,
     },
+    fontFamily: {
+      nexa: ["Nexa", "sans-serif"],
+      // sans: ["Inter", "sans-serif"],
+    },
+
     extend: {
+
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

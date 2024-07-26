@@ -262,7 +262,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
     <div className="col-span-12 rounded-md border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
       <div className="flex-col flex-wrap items-start justify-between gap-3 sm:flex-nowrap pb-0">
         <div className="w-full flex justify-center align-middle">
-          <h2 className='font-nexa text-3xl font-semibold text-primary flex flex-col justify-center select-none'>
+          <h2 className='font-nexa text-3xl mt-1.5 font-normal antialiased text-primary flex flex-col justify-center select-none'>
             Celer
             </h2>
             <p className='text-xs font-semibold text-primary flex flex-col justify-center'>
