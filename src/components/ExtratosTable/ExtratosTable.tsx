@@ -9,6 +9,7 @@ import Loader from "../common/Loader";
 import TableView from "./TableView";
 import CardView from "./CardView";
 import { PaginatedResponse, TaskDrawer } from "../TaskElements";
+import { PiGridFour, PiTable } from "react-icons/pi";
 
 export type LocalShowOptionsProps = {
   key: string;
@@ -228,7 +229,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
 
   return (
-    <div 
+    <div
       ref={mainRef}
       className="overflow-x-auto">
       {window.innerWidth >= 435 ? (
@@ -239,13 +240,28 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
               <h3 className="w-full text-2xl font-bold text-center pb-2 border-b border-stroke dark:border-strokedark dark:text-white">
                 EXTRATOS
               </h3>
-              <div className="flex w-full items-center justify-end gap-2 mb-5">
-                <div className="flex items-center gap-2">
-                  <label htmlFor="tableView" className="text-sm">tipo de visualização:</label>
+              <div className="flex w-full h-full items-center justify-end mb-5">
+                <div className="flex items-center gap-1">
+                  {/* <label htmlFor="tableView" className="text-sm">tipo de visualização:</label>
                   <select ref={viewModeRef} name="tableView" id="tableView" className="p-0 pl-3 text-sm rounded-md dark:bg-boxdark" onChange={(e) => setExtractListView(e.target.value)}>
                     <option value="table">tabela</option>
                     <option value="cards">cards</option>
-                  </select>
+                  </select> */}
+                  <div
+                  title="Mudar para visualização tabela"
+                  onClick={() => setExtractListView("table")}
+                  className="flex w-7 h-7 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer group">
+                    <PiTable className="text-xl group-hover:text-black-2 dark:group-hover:text-white" />
+                  </div>
+                  {/* separator */}
+                  <div className="w-px mx-1 h-5 bg-zinc-300 dark:bg-form-strokedark"></div>
+                  {/* separator */}
+                  <div 
+                  title="Mudar para visualização cards"
+                  onClick={() => setExtractListView("cards")}
+                  className="flex w-7 h-7 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer group">
+                    <PiGridFour className="text-xl group-hover:text-black-2 dark:group-hover:text-white" />
+                  </div>
                 </div>
               </div>
             </div>

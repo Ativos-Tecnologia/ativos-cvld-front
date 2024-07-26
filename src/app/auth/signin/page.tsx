@@ -283,7 +283,7 @@ const SignIn: React.FC = () => {
                   </p>
 
                   <div className="mb-5">
-                    <Button className="w-full py-8 flex items-center justify-center bg-blue-700 hover:bg-blue-800 text-white transition-all duration-200">
+                    <Button className="w-full py-8 flex items-center justify-center transition-all duration-200">
                       <span className="text-[16px] font-medium" aria-disabled={loading}>
                         {loading ? "Fazendo login..." : "Acessar"}
                       </span>
