@@ -6,6 +6,11 @@ import Link from "next/link";
 import Image from "next/image";
 import SidebarLinkGroup from "./SidebarLinkGroup";
 import { BiCalculator, BiChevronDown, BiGridAlt, BiUser } from "react-icons/bi";
+import { CiViewBoard } from "react-icons/ci";
+import { AiOutlineBars, AiOutlineDown, AiOutlinePlus } from "react-icons/ai";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { Button } from "../ui/button";
+import { FiClipboard } from "react-icons/fi";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -101,10 +106,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
       <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
         {/* <!-- Sidebar Menu --> */}
-        <nav className="mt-5 px-4 py-4 lg:mt-9 lg:px-6">
+        <nav className="mt-5 px-4 py-4 lg:mt-9 lg:px-6 text-white">
           {/* <!-- Menu Group --> */}
           <div>
-            <h3 className="mb-4 ml-4 text-sm font-semibold text-bodydark2">
+            <h3 className="mb-4 ml-4 text-sm font-semibold">
               MENU
             </h3>
 
@@ -120,7 +125,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     <React.Fragment>
                       <Link
                         href="#"
-                        className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark1 hover:bg-blue-300/50 dark:hover:bg-meta-4 ${(pathname === "/" ||
+                        className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium hover:bg-blue-300/50 dark:hover:bg-meta-4 ${(pathname === "/" ||
                           pathname.includes("dashboard")) &&
                           "bg-blue-300/50 dark:bg-meta-4"
                           }`}
@@ -131,9 +136,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             : setSidebarExpanded(true);
                         }}
                       >
-                        <BiGridAlt style={{ width: '22px', height: '22px', fill: '#DEE4EE' }} />
+                        <BiGridAlt style={{ width: '22px', height: '22px' }} />
                         Dashboard
-                        <BiChevronDown className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current w-5 h-5 ${open && "rotate-180"}`} />
+                        <AiOutlineDown className={`absolute right-4 top-1/2 -translate-y-1/2 transition-all duration-300 fill-current ${open && "rotate-180"}`} />
                       </Link>
 
                       <div
@@ -144,7 +149,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           <li>
                             <Link
                               href="/"
-                              className={`group relative flex items-center gap-2.5 px-4 py-2 font-medium rounded-md text-white hover:text-white ${pathname === "/" && "bg-blue-300/50 dark:bg-meta-4"
+                              className={`group relative flex items-center gap-2.5 px-4 py-2 font-medium rounded-md hover:bg-blue-300/50 dark:hover:bg-meta-4 ${pathname === "/" && "bg-blue-300/50 dark:bg-meta-4"
                                 }`}
                             >
                               <BiCalculator />
@@ -168,11 +173,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     <React.Fragment>
                       <Link
                         href="#"
-                        className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-blue-300/50 dark:hover:bg-meta-4 ${
-                          (pathname === "/tasks" ||
-                            pathname.includes("tasks")) &&
+                        className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium duration-300 ease-in-out hover:bg-blue-300/50 dark:hover:bg-meta-4 ${(pathname === "/tasks" ||
+                          pathname.includes("tasks")) &&
                           "bg-blue-300/50 dark:bg-meta-4"
-                        }`}
+                          }`}
                         onClick={(e) => {
                           e.preventDefault();
                           sidebarExpanded
@@ -180,79 +184,24 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             : setSidebarExpanded(true);
                         }}
                       >
-                        <svg
-                          className="fill-current"
-                          width="18"
-                          height="18"
-                          viewBox="0 0 18 18"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <g clipPath="url(#clip0_130_9728)">
-                            <path
-                              d="M3.45928 0.984375H1.6874C1.04053 0.984375 0.478027 1.51875 0.478027 2.19375V3.96563C0.478027 4.6125 1.0124 5.175 1.6874 5.175H3.45928C4.10615 5.175 4.66865 4.64063 4.66865 3.96563V2.16562C4.64053 1.51875 4.10615 0.984375 3.45928 0.984375ZM3.3749 3.88125H1.77178V2.25H3.3749V3.88125Z"
-                              fill=""
-                            />
-                            <path
-                              d="M7.22793 3.71245H16.8748C17.2123 3.71245 17.5217 3.4312 17.5217 3.06558C17.5217 2.69995 17.2404 2.4187 16.8748 2.4187H7.22793C6.89043 2.4187 6.58105 2.69995 6.58105 3.06558C6.58105 3.4312 6.89043 3.71245 7.22793 3.71245Z"
-                              fill=""
-                            />
-                            <path
-                              d="M3.45928 6.75H1.6874C1.04053 6.75 0.478027 7.28437 0.478027 7.95937V9.73125C0.478027 10.3781 1.0124 10.9406 1.6874 10.9406H3.45928C4.10615 10.9406 4.66865 10.4062 4.66865 9.73125V7.95937C4.64053 7.28437 4.10615 6.75 3.45928 6.75ZM3.3749 9.64687H1.77178V8.01562H3.3749V9.64687Z"
-                              fill=""
-                            />
-                            <path
-                              d="M16.8748 8.21252H7.22793C6.89043 8.21252 6.58105 8.49377 6.58105 8.8594C6.58105 9.22502 6.86231 9.47815 7.22793 9.47815H16.8748C17.2123 9.47815 17.5217 9.1969 17.5217 8.8594C17.5217 8.5219 17.2123 8.21252 16.8748 8.21252Z"
-                              fill=""
-                            />
-                            <path
-                              d="M3.45928 12.8531H1.6874C1.04053 12.8531 0.478027 13.3875 0.478027 14.0625V15.8344C0.478027 16.4813 1.0124 17.0438 1.6874 17.0438H3.45928C4.10615 17.0438 4.66865 16.5094 4.66865 15.8344V14.0625C4.64053 13.3875 4.10615 12.8531 3.45928 12.8531ZM3.3749 15.75H1.77178V14.1188H3.3749V15.75Z"
-                              fill=""
-                            />
-                            <path
-                              d="M16.8748 14.2875H7.22793C6.89043 14.2875 6.58105 14.5687 6.58105 14.9344C6.58105 15.3 6.86231 15.5812 7.22793 15.5812H16.8748C17.2123 15.5812 17.5217 15.3 17.5217 14.9344C17.5217 14.5687 17.2123 14.2875 16.8748 14.2875Z"
-                              fill=""
-                            />
-                          </g>
-                          <defs>
-                            <clipPath id="clip0_130_9728">
-                              <rect width="18" height="18" fill="white" />
-                            </clipPath>
-                          </defs>
-                        </svg>
+                        <AiOutlineBars />
                         Tarefas
-                        <svg
-                          className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${
-                            open && "rotate-180"
-                          }`}
-                          width="20"
-                          height="20"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M4.41107 6.9107C4.73651 6.58527 5.26414 6.58527 5.58958 6.9107L10.0003 11.3214L14.4111 6.91071C14.7365 6.58527 15.2641 6.58527 15.5896 6.91071C15.915 7.23614 15.915 7.76378 15.5896 8.08922L10.5896 13.0892C10.2641 13.4147 9.73651 13.4147 9.41107 13.0892L4.41107 8.08922C4.08563 7.76378 4.08563 7.23614 4.41107 6.9107Z"
-                            fill=""
-                          />
-                        </svg>
+                        <AiOutlineDown className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current transition--all duration-300 ${open && "rotate-180"
+                          }`} />
                       </Link>
                       {/* <!-- Dropdown Menu Start --> */}
                       <div
-                        className={`translate transform overflow-hidden ${
-                          !open && "hidden"
-                        }`}
+                        className={`translate transform overflow-hidden ${!open && "hidden"
+                          }`}
                       >
                         <ul className="mb-5.5 mt-4 flex flex-col gap-2.5 pl-6">
                           <li>
                             <Link
                               href="/tasks/task-list"
-                              className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ${
-                                pathname === "/tasks/task-list" && "bg-blue-300/50 dark:bg-meta-4 text-white"
-                              }`}
+                              className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium hover:bg-blue-300/50 dark:hover:bg-meta-4 duration-300 ease-in-out ${pathname === "/tasks/task-list" && "bg-blue-300/50 dark:bg-meta-4 text-white"
+                                }`}
                             >
+                              <FiClipboard />
                               Lista
                               {/* <span className="absolute right-4 block rounded bg-primary px-2 py-1 text-xs font-medium text-white">
                                 Pro
@@ -262,16 +211,277 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           <li>
                             <Link
                               href="/tasks/task-kanban"
-                              className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ${
-                                pathname === "/tasks/task-kanban" &&
+                              className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium hover:bg-blue-300/50 dark:hover:bg-meta-4 duration-300 ease-in-out ${pathname === "/tasks/task-kanban" &&
                                 "bg-blue-300/50 dark:bg-meta-4 text-white"
-                              } `}
+                                } `}
                             >
+                              <CiViewBoard />
                               Kanban
                               {/* <span className="absolute right-4 block rounded bg-primary px-2 py-1 text-xs font-medium text-white">
                                 Pro
                               </span> */}
                             </Link>
+                          </li>
+                          <li>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <button className="group w-full relative flex items-center gap-1 rounded-md px-4 py-2 font-medium duration-300 ease-in-out hover:bg-blue-300/50 dark:hover:bg-meta-4">
+                                  <AiOutlinePlus />
+                                  Adicionar tarefa
+                                </button>
+                              </DialogTrigger>
+                              <DialogContent className="sm:max-w-[500px]">
+                                <DialogTitle>
+                                  Adicionar nova tarefa
+                                </DialogTitle>
+                                <div className="relative w-full max-w-180 rounded-sm border border-stroke bg-snow p-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:p-8 xl:p-10">
+
+                                  <form action="#">
+                                    <div className="mb-5">
+                                      <label
+                                        htmlFor="taskTitle"
+                                        className="mb-2.5 block font-medium text-black dark:text-white"
+                                      >
+                                        Task title
+                                      </label>
+                                      <input
+                                        type="text"
+                                        name="taskTitle"
+                                        id="taskTitle"
+                                        placeholder="Enter task title"
+                                        className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
+                                      />
+                                    </div>
+
+                                    <div className="mb-5">
+                                      <label
+                                        htmlFor="taskDescription"
+                                        className="mb-2.5 block font-medium text-black dark:text-white"
+                                      >
+                                        Task description
+                                      </label>
+                                      <textarea
+                                        name="taskDescription"
+                                        id="taskDescription"
+                                        cols={30}
+                                        rows={7}
+                                        placeholder="Enter task description"
+                                        className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
+                                      ></textarea>
+                                    </div>
+
+                                    <div className="mb-5">
+                                      <label
+                                        htmlFor="taskList"
+                                        className="mb-2.5 block font-medium text-black dark:text-white"
+                                      >
+                                        Task list
+                                      </label>
+                                      <div className="flex flex-col gap-3.5">
+                                        <div className="flex items-center gap-2.5">
+                                          <input
+                                            type="text"
+                                            name="taskList"
+                                            id="taskList"
+                                            placeholder="Enter list text"
+                                            className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
+                                          />
+
+                                          <button className="flex h-12.5 w-12.5 items-center justify-center rounded-sm border border-stroke bg-white p-4 hover:text-primary dark:border-strokedark dark:bg-boxdark">
+                                            <svg
+                                              className="fill-current"
+                                              width="20"
+                                              height="20"
+                                              viewBox="0 0 20 20"
+                                              fill="none"
+                                              xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                              <g clipPath="url(#clip0_75_12779)">
+                                                <path
+                                                  d="M18.75 9.3125H10.7187V1.25C10.7187 0.875 10.4062 0.53125 10 0.53125C9.625 0.53125 9.28125 0.84375 9.28125 1.25V9.3125H1.25C0.875 9.3125 0.53125 9.625 0.53125 10.0312C0.53125 10.4062 0.84375 10.75 1.25 10.75H9.3125V18.75C9.3125 19.125 9.625 19.4687 10.0312 19.4687C10.4062 19.4687 10.75 19.1562 10.75 18.75V10.7187H18.75C19.125 10.7187 19.4687 10.4062 19.4687 10C19.4687 9.625 19.125 9.3125 18.75 9.3125Z"
+                                                  fill=""
+                                                />
+                                              </g>
+                                              <defs>
+                                                <clipPath id="clip0_75_12779">
+                                                  <rect width="20" height="20" fill="white" />
+                                                </clipPath>
+                                              </defs>
+                                            </svg>
+                                          </button>
+                                        </div>
+                                        <div className="flex items-center gap-2.5">
+                                          <input
+                                            type="text"
+                                            name="taskList"
+                                            id="taskList"
+                                            placeholder="Enter list text"
+                                            className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
+                                          />
+
+                                          <button className="flex h-12.5 w-12.5 items-center justify-center rounded-sm border border-stroke bg-white p-4 hover:text-primary dark:border-strokedark dark:bg-boxdark">
+                                            <svg
+                                              className="fill-current"
+                                              width="20"
+                                              height="20"
+                                              viewBox="0 0 20 20"
+                                              fill="none"
+                                              xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                              <path
+                                                d="M18.4375 10.7187H1.5625C1.1875 10.7187 0.84375 10.4062 0.84375 10C0.84375 9.625 1.15625 9.28125 1.5625 9.28125H18.4375C18.8125 9.28125 19.1562 9.59375 19.1562 10C19.1562 10.375 18.8125 10.7187 18.4375 10.7187Z"
+                                                fill=""
+                                              />
+                                            </svg>
+                                          </button>
+                                          <button className="flex h-12.5 w-12.5 items-center justify-center rounded-sm border border-stroke bg-white p-4 hover:text-primary dark:border-strokedark dark:bg-boxdark">
+                                            <svg
+                                              className="fill-current"
+                                              width="20"
+                                              height="20"
+                                              viewBox="0 0 20 20"
+                                              fill="none"
+                                              xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                              <g clipPath="url(#clip0_75_12779)">
+                                                <path
+                                                  d="M18.75 9.3125H10.7187V1.25C10.7187 0.875 10.4062 0.53125 10 0.53125C9.625 0.53125 9.28125 0.84375 9.28125 1.25V9.3125H1.25C0.875 9.3125 0.53125 9.625 0.53125 10.0312C0.53125 10.4062 0.84375 10.75 1.25 10.75H9.3125V18.75C9.3125 19.125 9.625 19.4687 10.0312 19.4687C10.4062 19.4687 10.75 19.1562 10.75 18.75V10.7187H18.75C19.125 10.7187 19.4687 10.4062 19.4687 10C19.4687 9.625 19.125 9.3125 18.75 9.3125Z"
+                                                  fill=""
+                                                />
+                                              </g>
+                                              <defs>
+                                                <clipPath id="clip0_75_12779">
+                                                  <rect width="20" height="20" fill="white" />
+                                                </clipPath>
+                                              </defs>
+                                            </svg>
+                                          </button>
+                                        </div>
+                                        <div className="flex items-center gap-2.5">
+                                          <input
+                                            type="text"
+                                            name="taskList"
+                                            id="taskList"
+                                            placeholder="Enter list text"
+                                            className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
+                                          />
+
+                                          <button className="flex h-12.5 w-12.5 items-center justify-center rounded-sm border border-stroke bg-white p-4 hover:text-primary dark:border-strokedark dark:bg-boxdark">
+                                            <svg
+                                              className="fill-current"
+                                              width="20"
+                                              height="20"
+                                              viewBox="0 0 20 20"
+                                              fill="none"
+                                              xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                              <path
+                                                d="M18.4375 10.7187H1.5625C1.1875 10.7187 0.84375 10.4062 0.84375 10C0.84375 9.625 1.15625 9.28125 1.5625 9.28125H18.4375C18.8125 9.28125 19.1562 9.59375 19.1562 10C19.1562 10.375 18.8125 10.7187 18.4375 10.7187Z"
+                                                fill=""
+                                              />
+                                            </svg>
+                                          </button>
+                                          <button className="flex h-12.5 w-12.5 items-center justify-center rounded-sm border border-stroke bg-white p-4 hover:text-primary dark:border-strokedark dark:bg-boxdark">
+                                            <svg
+                                              className="fill-current"
+                                              width="20"
+                                              height="20"
+                                              viewBox="0 0 20 20"
+                                              fill="none"
+                                              xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                              <g clipPath="url(#clip0_75_12779)">
+                                                <path
+                                                  d="M18.75 9.3125H10.7187V1.25C10.7187 0.875 10.4062 0.53125 10 0.53125C9.625 0.53125 9.28125 0.84375 9.28125 1.25V9.3125H1.25C0.875 9.3125 0.53125 9.625 0.53125 10.0312C0.53125 10.4062 0.84375 10.75 1.25 10.75H9.3125V18.75C9.3125 19.125 9.625 19.4687 10.0312 19.4687C10.4062 19.4687 10.75 19.1562 10.75 18.75V10.7187H18.75C19.125 10.7187 19.4687 10.4062 19.4687 10C19.4687 9.625 19.125 9.3125 18.75 9.3125Z"
+                                                  fill=""
+                                                />
+                                              </g>
+                                              <defs>
+                                                <clipPath id="clip0_75_12779">
+                                                  <rect width="20" height="20" fill="white" />
+                                                </clipPath>
+                                              </defs>
+                                            </svg>
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <div className="mb-5">
+                                      <label
+                                        htmlFor="taskImg"
+                                        className="mb-2.5 block font-medium text-black dark:text-white"
+                                      >
+                                        Add image
+                                      </label>
+                                      <div>
+                                        <div
+                                          id="FileUpload"
+                                          className="relative block w-full appearance-none rounded-sm border border-dashed border-stroke bg-white px-4 py-4 dark:border-strokedark dark:bg-boxdark sm:py-14"
+                                        >
+                                          <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="absolute inset-0 z-50 m-0 h-full w-full p-0 opacity-0 outline-none"
+
+                                          />
+                                          <div className="flex flex-col items-center justify-center space-y-3">
+                                            <span className="flex h-11.5 w-11.5 items-center justify-center rounded-full border border-stroke bg-primary/5 dark:border-strokedark">
+                                              <svg
+                                                width="20"
+                                                height="20"
+                                                viewBox="0 0 20 20"
+                                                fill="none"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                              >
+                                                <g clipPath="url(#clip0_75_12841)">
+                                                  <path
+                                                    d="M2.5 15.8333H17.5V17.5H2.5V15.8333ZM10.8333 4.85663V14.1666H9.16667V4.85663L4.1075 9.91663L2.92917 8.73829L10 1.66663L17.0708 8.73746L15.8925 9.91579L10.8333 4.85829V4.85663Z"
+                                                    fill="#3C50E0"
+                                                  />
+                                                </g>
+                                                <defs>
+                                                  <clipPath id="clip0_75_12841">
+                                                    <rect width="20" height="20" fill="white" />
+                                                  </clipPath>
+                                                </defs>
+                                              </svg>
+                                            </span>
+                                            <p className="text-xs">
+                                              <span className="text-primary">Click to upload</span> or
+                                              drag and drop
+                                            </p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <Button className="w-full">
+                                      <svg
+                                        className="fill-current"
+                                        width="20"
+                                        height="20"
+                                        viewBox="0 0 20 20"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <g clipPath="url(#clip0_60_9740)">
+                                          <path
+                                            d="M18.75 9.3125H10.7187V1.25C10.7187 0.875 10.4062 0.53125 10 0.53125C9.625 0.53125 9.28125 0.84375 9.28125 1.25V9.3125H1.25C0.875 9.3125 0.53125 9.625 0.53125 10.0312C0.53125 10.4062 0.84375 10.75 1.25 10.75H9.3125V18.75C9.3125 19.125 9.625 19.4687 10.0312 19.4687C10.4062 19.4687 10.75 19.1562 10.75 18.75V10.7187H18.75C19.125 10.7187 19.4687 10.4062 19.4687 10C19.4687 9.625 19.125 9.3125 18.75 9.3125Z"
+                                            fill=""
+                                          />
+                                        </g>
+                                        <defs>
+                                          <clipPath id="clip0_60_9740">
+                                            <rect width="20" height="20" fill="white" />
+                                          </clipPath>
+                                        </defs>
+                                      </svg>
+                                      Adicionar
+                                    </Button>
+                                  </form>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
                           </li>
                         </ul>
                       </div>

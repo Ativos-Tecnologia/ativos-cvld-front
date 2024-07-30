@@ -19,6 +19,7 @@
     "class-variance-authority": "^0.7.0",
     "cleave.js": "^1.6.0",
     "clsx": "^2.1.1",
+    "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
     "flatpickr": "^4.6.13",
     "flowbite": "^2.3.0",

@@ -13,6 +13,7 @@ import MarvelousPagination from '../MarvelousPagination';
 import Loader from '../common/Loader';
 import api from '@/utils/api';
 import { ImSpinner2 } from 'react-icons/im';
+import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants';
 
 const customTheme: CustomFlowbiteTheme = {
     table: {
@@ -42,8 +43,6 @@ const customTheme: CustomFlowbiteTheme = {
 }
 
 const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop }: ExtractTableProps) => {
-    const enumOficiosList = Object.values(statusOficio);
-    const enumTipoOficiosList = Object.values(tipoOficio);
 
     const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
     const [editableLabel, setEditableLabel] = useState<string | null>(null);
@@ -139,7 +138,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                     </TableHead>
                     <TableBody className='max-h-[200px] overflow-x-scroll'>
 
-                        {data.results?.length > 0 ? (
+                        {data.results?.length > 0 && (
                             <>
                                 {data.results.map((item: CVLDResultProps, index: number) => (
 
@@ -152,7 +151,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                             {item.tipo_do_oficio}
                                                         </option>
                                                     )}
-                                                    {enumTipoOficiosList.filter((status) => status !== item.tipo_do_oficio).map((status) => (
+                                                    {ENUM_TIPO_OFICIOS_LIST.filter((status) => status !== item.tipo_do_oficio).map((status) => (
                                                         <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                             {status}
                                                         </option>
@@ -204,7 +203,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                             setEditableLabel(item.id)
                                                             handleEditInput(index);
                                                         }}>
-                                                        {item.credor.length === 0 && (
+                                                        {item?.credor?.length === 0 && (
                                                             <div className='flex gap-1 pl-4'>
                                                                 <PiCursorClick className='text-base' />
                                                                 <span>Clique para adicionar nome</span>
@@ -236,7 +235,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                             {item.status}
                                                         </option>
                                                     )}
-                                                    {enumOficiosList.filter((status) => status !== item.status).map((status) => (
+                                                    {ENUM_OFICIOS_LIST.filter((status) => status !== item.status).map((status) => (
                                                         <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                             {status}
                                                         </option>
@@ -244,8 +243,6 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
 
                                                 </select>
                                             </Badge>
-
-
                                         </TableCell>
                                         <TableCell className="text-center">
                                             <Badge onClick={() => handleTask(item.id)} size="sm" color="yellow" className="hover:bg-yellow-200 dark:hover:bg-yellow-300 transition-all duration-300 justify-center px-2 py-1 cursor-pointer">
@@ -290,7 +287,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                     </TableRow>
                                 ))}
                             </>
-                        ) : <Loader />}
+                        )}
                     </TableBody>
                 </Table>
             </Flowbite>
