@@ -20,8 +20,8 @@ export const customFlowBiteTheme: CustomFlowbiteTheme = {
                     "off": "bottom-0 left-0 right-0 w-full translate-y-full"
                 },
                 "left": {
-                    "on": "left-0 top-0 h-screen w-80 transform-none",
-                    "off": "left-0 top-0 h-screen w-80 -translate-x-full"
+                    "on": "left-0 top-0 h-screen transition-transform duration-500 w-80 transform-none",
+                    "off": "left-0 top-0 h-screen transition-transform duration-500 w-80 -translate-x-full"
                 }
             }
         },

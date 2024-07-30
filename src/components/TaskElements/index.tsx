@@ -134,7 +134,7 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
-                      className={"w-full justify-start text-left font-normal"}
+                      className={"w-full border border-stroke dark:border-strokedark bg-white text-body hover:bg-white dark:bg-boxdark-2 dark:text-bodydark flex items-center justify-start text-left font-normal"}
                     >
                       <BiCalendarAlt className="mr-2 h-4 w-4" />
                       {date ? format(date, "dd/MM/yyyy") : <span>Selecione a data de entrega</span>}

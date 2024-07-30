@@ -75,7 +75,7 @@ export const Balance = () => {
 
                         {credits.available_credits <= 10 && (
                             <div className="absolute -top-1 -left-1 w-4 h-4 rounded-full flex items-center justify-center bg-meta-1">
-                                <BsExclamation className="w-4 h-4 text-white animate-wiggle transition-all duration-300" />
+                                <BsExclamation className="w-4 h-4 text-white animate-wiggle" />
                             </div>
                         )}
                         <BiDollarCircle className="w-6 h-6 text-yellow-300" />

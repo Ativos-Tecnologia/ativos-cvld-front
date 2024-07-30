@@ -10,6 +10,9 @@ import TableView from "./TableView";
 import CardView from "./CardView";
 import { PaginatedResponse, TaskDrawer } from "../TaskElements";
 import { PiGridFour, PiTable } from "react-icons/pi";
+import statusOficio from "@/enums/statusOficio.enum";
+import Filters from "../Filters";
+import { useFilter } from "@/hooks/useFilter";
 
 export type LocalShowOptionsProps = {
   key: string;
@@ -28,7 +31,11 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
   const mySwal = UseMySwal();
 
+  // states
   const [data, setData] = useState<PaginatedResponse<CVLDResultProps>>({ results: [], count: 0, next: "", previous: "" });
+  const [auxData, setAuxData] = useState<PaginatedResponse<CVLDResultProps>>({ results: [], count: 0, next: "", previous: "" });
+  const [statusSelectValue, setStatusSelectValue] = useState<statusOficio | null>(null);
+  const [oficioSelectValue, setOficioSelectValue] = useState<string | null>(null);
   const [item, setItem] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [viewOption, setViewOption] = useState<LocalExtractViewProps>({
@@ -46,6 +53,9 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     open: false,
     extractId: ''
   });
+  const { filterData, resetFilters } = useFilter(data, setData, setStatusSelectValue, auxData, statusSelectValue, oficioSelectValue);
+
+  // refs
   const viewModeRef = useRef<HTMLSelectElement | null>(null);
   const mainRef = useRef<HTMLDivElement | null>(null);
 
@@ -199,7 +209,6 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
   const callScrollTop = () => {
     if (mainRef.current) {
-      console.log('scrolling')
       mainRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }
@@ -221,6 +230,12 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   }, [localShowOptions]);
 
   useEffect(() => {
+    if (auxData.results.length === 0 && data.results.length > 0) {
+      setAuxData(data)
+    }
+  }, [data]);
+
+  useEffect(() => {
     setData((prevData) => ({
       ...prevData,
       results: [...newItem, ...prevData.results]
@@ -237,32 +252,39 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
           {/* desktop view */}
           <div className="py-7 px-5 bg-white rounded-sm dark:bg-boxdark">
             <div className="flex flex-col items-center gap-4">
-              <h3 className="w-full text-2xl font-bold text-center pb-2 border-b border-stroke dark:border-strokedark dark:text-white">
-                EXTRATOS
-              </h3>
-              <div className="flex w-full h-full items-center justify-end mb-5">
+              <div className="flex w-full h-full items-center justify-between mb-5">
+
+                {/* filters */}
+                <Filters
+                  resetFilters={resetFilters}
+                  filterData={filterData}
+                  statusSelectValue={statusSelectValue}
+                  setStatusSelectValue={setStatusSelectValue}
+                  setOficioSelectValue= {setOficioSelectValue}
+                />
+                {/* end filters */}
+
+                {/* alternate between view extract mode */}
                 <div className="flex items-center gap-1">
-                  {/* <label htmlFor="tableView" className="text-sm">tipo de visualização:</label>
-                  <select ref={viewModeRef} name="tableView" id="tableView" className="p-0 pl-3 text-sm rounded-md dark:bg-boxdark" onChange={(e) => setExtractListView(e.target.value)}>
-                    <option value="table">tabela</option>
-                    <option value="cards">cards</option>
-                  </select> */}
                   <div
-                  title="Mudar para visualização tabela"
-                  onClick={() => setExtractListView("table")}
-                  className="flex w-7 h-7 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer group">
+                    title="Mudar para visualização tabela"
+                    onClick={() => setExtractListView("table")}
+                    className={`flex w-7 h-7 items-center justify-center rounded-full ${viewOption.type === "table" && "bg-slate-200 dark:bg-slate-600"} hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer group`}>
                     <PiTable className="text-xl group-hover:text-black-2 dark:group-hover:text-white" />
                   </div>
+
                   {/* separator */}
                   <div className="w-px mx-1 h-5 bg-zinc-300 dark:bg-form-strokedark"></div>
                   {/* separator */}
-                  <div 
-                  title="Mudar para visualização cards"
-                  onClick={() => setExtractListView("cards")}
-                  className="flex w-7 h-7 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer group">
+
+                  <div
+                    title="Mudar para visualização cards"
+                    onClick={() => setExtractListView("cards")}
+                    className={`flex w-7 h-7 items-center justify-center rounded-full ${viewOption.type === "cards" && "bg-slate-200 dark:bg-slate-600"} hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer group`}>
                     <PiGridFour className="text-xl group-hover:text-black-2 dark:group-hover:text-white" />
                   </div>
                 </div>
+                {/* end alternate between view extract mode */}
               </div>
             </div>
             {viewOption.type === "table" &&
