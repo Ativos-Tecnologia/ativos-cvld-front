@@ -12,6 +12,9 @@ const StatusFilter: React.FC<IFilterProps> = ({ filterData, statusSelectValue, s
     const [filteredValues, setFilteredValues] = useState<statusOficio[]>(ENUM_OFICIOS_LIST);
     const searchRef = useRef<HTMLInputElement | null>(null);
 
+    // refs
+    const selectStatusRef = useRef<any>(null);
+
     const searchStatus = (value: string) => {
         if (!value) {
             setFilteredValues(ENUM_OFICIOS_LIST);
@@ -26,6 +29,27 @@ const StatusFilter: React.FC<IFilterProps> = ({ filterData, statusSelectValue, s
         setStatusSelectValue(status);
         searchRef.current!.value = '';
     }
+
+    // close on click outside
+    useEffect(() => {
+        const clickHandler = ({ target }: MouseEvent) => {
+            if (!open) return;
+            if (selectStatusRef?.current?.contains(target)) return;
+            setOpen(false);
+        };
+        document.addEventListener("click", clickHandler);
+        return () => document.removeEventListener("click", clickHandler);
+    });
+
+    // close if the esc key is pressed
+    useEffect(() => {
+        const keyHandler = ({ keyCode }: KeyboardEvent) => {
+            if (!open || keyCode !== 27) return;
+            setOpen(false);
+        };
+        document.addEventListener("keydown", keyHandler);
+        return () => document.removeEventListener("keydown", keyHandler);
+    });
 
     useEffect(() => {
 
@@ -51,7 +75,9 @@ const StatusFilter: React.FC<IFilterProps> = ({ filterData, statusSelectValue, s
 
             {open && (
 
-                <div className={`absolute mt-3 w-[230px] z-3 p-3 rounded-md bg-white dark:bg-form-strokedark shadow-1 border border-stroke dark:border-strokedark ${open ? 'opacity-100 visible animate-in fade-in-0 zoom-in-95' : ' animate-out fade-out-0 zoom-out-95 invisible opacity-0'} transition-opacity duration-500`}>
+                <div
+                    ref={selectStatusRef}
+                    className={`absolute mt-3 w-[230px] z-3 p-3 rounded-md bg-white dark:bg-form-strokedark shadow-1 border border-stroke dark:border-strokedark ${open ? 'opacity-100 visible animate-in fade-in-0 zoom-in-95' : ' animate-out fade-out-0 zoom-out-95 invisible opacity-0'} transition-opacity duration-500`}>
                     <div className='flex gap-1 items-center justify-center border-b border-stroke dark:border-bodydark2'>
                         <AiOutlineSearch className='text-lg' />
                         <input
