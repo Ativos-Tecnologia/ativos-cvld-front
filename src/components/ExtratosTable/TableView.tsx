@@ -145,7 +145,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                     <TableRow key={item.id} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 border-b border-zinc-300 dark:border-zinc-600 group">
                                         <TableCell className="text-center border-x border-zinc-300 dark:border-zinc-600 whitespace-nowrap font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600">
                                             <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
-                                                <select className="text-[12px] bg-transparent border-none py-0" onChange={(e) => updateOficioTipo(item.id, e.target.value as tipoOficio)}>
+                                                <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => updateOficioTipo(item.id, e.target.value as tipoOficio)}>
                                                     {item.tipo_do_oficio && (
                                                         <option value={item.tipo_do_oficio} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                             {item.tipo_do_oficio}
@@ -229,7 +229,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                         <TableCell className="border-r border-zinc-300 dark:border-zinc-600 font-semibold text-[14px]">{numberFormat(item.valor_liquido_disponivel)}</TableCell>
                                         <TableCell className="text-center items-center border-r border-zinc-300 dark:border-zinc-600">
                                             <Badge color="teal" size="sm" className="max-w-max text-center text-[12px]">
-                                                <select className="text-[12px] bg-transparent border-none py-0" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
+                                                <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
                                                     {item.status && (
                                                         <option value={item.status} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                             {item.status}
