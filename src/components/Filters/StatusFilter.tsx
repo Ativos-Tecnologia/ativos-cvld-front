@@ -2,7 +2,7 @@
 import { ENUM_OFICIOS_LIST } from '@/constants/constants';
 import statusOficio from '@/enums/statusOficio.enum';
 import { LucideChevronsUpDown } from 'lucide-react';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AiOutlineSearch } from 'react-icons/ai';
 import { IFilterProps } from '.';
 
@@ -21,22 +21,31 @@ const StatusFilter: React.FC<IFilterProps> = ({ filterData, statusSelectValue, s
     }
 
     const handleSelectStatus = (status: statusOficio) => {
-        filterData('status', status);
         setOpen(false);
         setFilteredValues(ENUM_OFICIOS_LIST);
         setStatusSelectValue(status);
         searchRef.current!.value = '';
     }
 
+    useEffect(() => {
+
+        if (statusSelectValue !== null) {
+            filterData();
+        }
+
+    }, [statusSelectValue])
+
     return (
         <div className='relative'>
-            <div
-                onClick={() => setOpen(!open)}
-                className={`flex items-center justify-center gap-2 text-xs font-semibold py-1 px-2 hover:bg-slate-100 uppercase dark:hover:bg-slate-700 ${open && 'bg-slate-100 dark:bg-slate-700'} rounded-md transition-colors duration-200 cursor-pointer`}>
-                <span>
-                    {statusSelectValue || 'Status'}
-                </span>
-                <LucideChevronsUpDown className='w-4 h-4' />
+            <div className='flex items-center justify-center'>
+                <div
+                    onClick={() => setOpen(!open)}
+                    className={`min-w-48 flex items-center justify-between gap-1 border border-stroke dark:border-strokedark text-xs font-semibold py-1 px-2 hover:bg-slate-100 uppercase dark:hover:bg-slate-700 ${open && 'bg-slate-100 dark:bg-slate-700'} rounded-md transition-colors duration-200 cursor-pointer`}>
+                    <span>
+                        {statusSelectValue || 'Status'}
+                    </span>
+                    <LucideChevronsUpDown className='w-4 h-4' />
+                </div>
             </div>
             {/* ==== popover ==== */}
 
