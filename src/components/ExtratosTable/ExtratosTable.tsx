@@ -53,7 +53,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     open: false,
     extractId: ''
   });
-  const { filterData, resetFilters } = useFilter(data, setData, setStatusSelectValue, auxData, statusSelectValue, oficioSelectValue);
+  const { filterData, resetFilters } = useFilter(data, setData, setStatusSelectValue, setOficioSelectValue, auxData, statusSelectValue, oficioSelectValue);
 
   // refs
   const viewModeRef = useRef<HTMLSelectElement | null>(null);
@@ -259,6 +259,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                   resetFilters={resetFilters}
                   filterData={filterData}
                   statusSelectValue={statusSelectValue}
+                  oficioSelectValue={oficioSelectValue}
                   setStatusSelectValue={setStatusSelectValue}
                   setOficioSelectValue= {setOficioSelectValue}
                 />

@@ -19,8 +19,7 @@
 import { PaginatedResponse } from '@/components/TaskElements';
 import statusOficio from '@/enums/statusOficio.enum';
 import { CVLDResultProps } from '@/interfaces/IResultCVLD';
-import { set } from 'date-fns';
-import React, { useState } from 'react';
+import React from 'react';
 
 interface IUseFilterProps extends PaginatedResponse<CVLDResultProps> {
   alreadyFiltered: boolean
@@ -30,183 +29,39 @@ export function useFilter(
   data: PaginatedResponse<CVLDResultProps>,
   setData: React.Dispatch<React.SetStateAction<PaginatedResponse<CVLDResultProps>>>,
   setStatusSelectValue: React.Dispatch<React.SetStateAction<statusOficio | null>>,
+  setOficioSelectValue: React.Dispatch<React.SetStateAction<string | null>>,
   auxData: PaginatedResponse<CVLDResultProps>,
-  statusSelectValue: string | null,
+  statusSelectValue: statusOficio | null,
   oficioSelectValue: string | null
 ) {
-
-  const [filterCount, setFilterCount] = useState<number>(0);
-  const [oficiosFilter, setOficiosFilter] = useState<IUseFilterProps>({ results: [], count: 0, next: "", previous: "", alreadyFiltered: false });
-  const [statusFilter, setStatusFilter] = useState<IUseFilterProps>({ results: [], count: 0, next: "", previous: "", alreadyFiltered: false });
-
-  console.log(statusSelectValue, oficioSelectValue)
-  console.log(oficiosFilter.alreadyFiltered, statusFilter.alreadyFiltered)
 
   const resetFilters = () => {
     setData(auxData);
     setStatusSelectValue(null);
-    setOficiosFilter({ results: [], count: 0, next: "", previous: "", alreadyFiltered: false });
-    setStatusFilter({ results: [], count: 0, next: "", previous: "", alreadyFiltered: false });
-    setFilterCount(0);
+    setOficioSelectValue(null);
   }
 
-  const filterData = (type: string, value: string) => {
+  const filterData = (): void => {
+   
+    const conditions: any[] = [];
 
-    /* primero caso: quando não há nenhuma condição de filtro */
-    if (filterCount === 0) {
-
-      const newData = auxData.results.filter((item: any) => item[type] === value);
-
-      if (type === 'tipo_do_oficio') {
-        setOficiosFilter({
-          ...auxData,
-          count: newData.length,
-          results: newData,
-          alreadyFiltered: true
-        });
-      } else {
-        setStatusFilter({
-          ...auxData,
-          count: newData.length,
-          results: newData,
-          alreadyFiltered: true
-        });
-      }
-
-      setData({
-        ...data,
-        count: newData.length,
-        results: newData
-      });
-      setFilterCount(prev => prev + 1);
-
-      return;
+    if (oficioSelectValue !== null) {
+      const filterParamOne = (item: any) => item.tipo_do_oficio === oficioSelectValue;
+      conditions.push(filterParamOne);
     }
 
-    if (filterCount === 1) {
-
-      if (type === 'tipo_do_oficio') {
-
-        if (statusFilter.alreadyFiltered) {
-
-          const newData = auxData.results.filter((item: any) => item[type] === value && item.status === statusSelectValue);
-
-          setOficiosFilter({
-            ...auxData,
-            count: newData.length,
-            results: newData,
-            alreadyFiltered: true
-          });
-
-          setData({
-            ...data,
-            count: newData.length,
-            results: newData
-          })
-
-        } else {
-
-          const newData = auxData.results.filter((item: any) => item[type] === value);
-
-          setOficiosFilter({
-            ...auxData,
-            count: newData.length,
-            results: newData,
-            alreadyFiltered: true
-          });
-
-          setData({
-            ...data,
-            count: newData.length,
-            results: newData
-          });
-
-        }
-        return;
-
-      }
-
-      if (type === 'status') {
-        
-        if (oficiosFilter.alreadyFiltered) {
-
-          const newData = auxData.results.filter((item: any) => item[type] === value && item.tipo_do_oficio === oficioSelectValue);
-
-          setStatusFilter({
-            ...auxData,
-            count: newData.length,
-            results: newData,
-            alreadyFiltered: true
-          });
-
-          setData({
-            ...data,
-            count: newData.length,
-            results: newData
-          })
-
-        } else {
-          
-          const newData = auxData.results.filter((item: any) => item[type] === value);
-
-          setStatusFilter({
-            ...auxData,
-            count: newData.length,
-            results: newData,
-            alreadyFiltered: true
-          });
-
-          setData({
-            ...data,
-            count: newData.length,
-            results: newData
-          });
-
-        }
-        return;
-
-      }
-
-      // if (oficiosFilter.alreadyFiltered) {
-
-      //   const newData = auxData.results.filter((item: any) => item[type] === value);
-      //   setOficiosFilter({
-      //     ...auxData,
-      //     count: newData.length,
-      //     results: newData,
-      //     alreadyFiltered: true
-      //   });
-
-      //   setData({
-      //     ...data,
-      //     count: newData.length,
-      //     results: newData
-      //   });
-
-      //   return;
-
-      // }
-
-      // if (statusFilter.alreadyFiltered) {
-
-      //   const newData = auxData.results.filter((item: any) => item[type] === value);
-      //   setOficiosFilter({
-      //     ...auxData,
-      //     count: newData.length,
-      //     results: newData,
-      //     alreadyFiltered: true
-      //   });
-
-      //   setData({
-      //     ...data,
-      //     count: newData.length,
-      //     results: newData
-      //   });
-
-      //   return;
-      // }
-
+    if (statusSelectValue !== null) {
+      const filterParamTwo = (item: any) => item.status === statusSelectValue;
+      conditions.push(filterParamTwo);
     }
+
+    const newData = auxData.results.filter((item: any) => conditions.every(condition => condition(item)));
+
+    setData({
+      ...data,
+      count: newData.length,
+      results: newData
+    });
 
   }
 
