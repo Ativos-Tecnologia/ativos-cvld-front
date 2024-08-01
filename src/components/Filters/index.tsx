@@ -52,7 +52,7 @@ const Filters: React.FC<IFilterProps> = ({ resetFilters, filterData, statusSelec
                     resetFilters!();
                     setActive('ALL');
                 }}
-                className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-slate-700 rounded-md transition-colors duration-200 cursor-pointer ${active === "ALL" && 'bg-slate-100 dark:bg-slate-700'}`}>
+                className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${active === "ALL" && 'bg-slate-100 dark:bg-form-strokedark'}`}>
                 <ImTable />
                 <span>todos</span>
             </div>
@@ -61,7 +61,7 @@ const Filters: React.FC<IFilterProps> = ({ resetFilters, filterData, statusSelec
                     <div
                         key={oficio}
                         onClick={() => handleOficioStatus(oficio)}
-                        className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-slate-700 rounded-md transition-colors duration-200 cursor-pointer ${active === oficio && 'bg-slate-100 dark:bg-slate-700'}`}>
+                        className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${active === oficio && 'bg-slate-100 dark:bg-form-strokedark'}`}>
                         <ImTable />
                         <span>{oficio}</span>
                     </div>
