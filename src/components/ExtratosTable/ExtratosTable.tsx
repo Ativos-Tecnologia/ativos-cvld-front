@@ -42,6 +42,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     type: 'table'
   });
   const [responseStatus, setResponseStatus] = useState<string>('');
+  const [checkedList, setCheckedList] = useState<string[]>([]);
   const [localShowOptions, setLocalShowOptions] = useState<LocalShowOptionsProps[]>([]);
   const [showModalMessage, setShowModalMessage] = useState<boolean>(true);
   const [lastId, setLastId] = useState<string | null>(null);
@@ -92,6 +93,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
       }
 
       setData({ results: data.results.filter((item) => item.id !== id), count: data.count, next: data.next, previous: data.previous });
+      setCheckedList([]);
       return response;
     } catch (error) {
       if (showModalMessage) {
@@ -252,7 +254,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
           {/* desktop view */}
           <div className="py-7 px-5 bg-white rounded-sm dark:bg-boxdark">
             <div className="flex flex-col items-center gap-4">
-              <div className="flex w-full h-full items-center justify-between mb-5">
+              <div className="flex w-full h-full items-center justify-between">
 
                 {/* filters */}
                 <Filters
@@ -305,6 +307,8 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
                 callScrollTop={callScrollTop}
+                checkedList={checkedList}
+                setCheckedList={setCheckedList}
               />
             }
             {viewOption.type === "cards" &&

@@ -154,6 +154,9 @@ export default function MarvelousPagination({
           callScrollTop={callScrollTop}
         />
       </div>
+
+      {/* view mobile */}
+
       <div className="hidden flex-col-reverse sm:flex sm:flex-1 sm:items-center sm:justify-between">
         {/* <div className="flex justify-between flex-1 mt-2">
           <p className="text-xs text-gray-700 dark:text-gray-300">
@@ -250,6 +253,7 @@ export default function MarvelousPagination({
           </nav>
         </div>
       </div>
+      {/* end view mobile */}
     </div>
   );
 }
