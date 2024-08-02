@@ -215,6 +215,51 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     }
   }
 
+  const handleSelectAllRows = () => {
+    setCheckedList!(data.results.map((item: CVLDResultProps) => item.id))
+  }
+
+  const handleDeleteExtrato = () => {
+    if (showModalMessage) {
+      if (checkedList && checkedList.length === 1) {
+        setModalOptions({
+          open: true,
+          extractId: checkedList[0]
+        });
+      } else {
+        /* ... more logic here */
+        return;
+      }
+    } else {
+      if (checkedList && checkedList.length === 1) {
+        fetchDelete(checkedList[0])
+      } else {
+        /* ... more logic here */
+        return;
+      }
+    }
+  }
+
+  const handleSelectRow = (id: string) => {
+
+    if (checkedList && setCheckedList) {
+
+      if (checkedList!.length === 0) {
+        setCheckedList([id]);
+        return;
+      }
+
+      checkedList.forEach(item => {
+        if (item === id) {
+          setCheckedList(checkedList.filter(item => item !== id));
+        } else {
+          setCheckedList([...checkedList, id]);
+        }
+      })
+    }
+
+  }
+
   useEffect(() => {
     fetchData();
     fetchStateFromLocalStorage();
@@ -263,7 +308,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                   statusSelectValue={statusSelectValue}
                   oficioSelectValue={oficioSelectValue}
                   setStatusSelectValue={setStatusSelectValue}
-                  setOficioSelectValue= {setOficioSelectValue}
+                  setOficioSelectValue={setOficioSelectValue}
                 />
                 {/* end filters */}
 
@@ -309,6 +354,9 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                 callScrollTop={callScrollTop}
                 checkedList={checkedList}
                 setCheckedList={setCheckedList}
+                handleDeleteExtrato={handleDeleteExtrato}
+                handleSelectRow={handleSelectRow}
+                handleSelectAllRows={handleSelectAllRows}
               />
             }
             {viewOption.type === "cards" &&
@@ -328,6 +376,11 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
                 callScrollTop={callScrollTop}
+                checkedList={checkedList}
+                setCheckedList={setCheckedList}
+                handleDeleteExtrato={handleDeleteExtrato}
+                handleSelectRow={handleSelectRow}
+                handleSelectAllRows={handleSelectAllRows}
               />
             }
           </div>
@@ -356,6 +409,11 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
             callScrollTop={callScrollTop}
+            checkedList={checkedList}
+            setCheckedList={setCheckedList}
+            handleDeleteExtrato={handleDeleteExtrato}
+            handleSelectRow={handleSelectRow}
+            handleSelectAllRows={handleSelectAllRows}
           />
         </div>
         /* end mobile view */

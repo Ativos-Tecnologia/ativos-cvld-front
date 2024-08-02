@@ -19,7 +19,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 
 
 import { ShadSelect } from '../ShadSelect';
@@ -79,9 +78,6 @@ export function DrawerConta({ loading, open, setOpen }: { loading: boolean, open
         </DialogHeader>
         <div className="flex items-center space-x-2">
           <div className="grid flex-1 gap-2">
-            <Label htmlFor="link" className="sr-only">
-              Link
-            </Label>
             <Input
               id="link"
               defaultValue="https://ui.shadcn.com/docs/installation"

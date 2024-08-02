@@ -17,6 +17,7 @@ import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants
 import { AiOutlineUser } from 'react-icons/ai';
 import { MdOutlineArchive } from 'react-icons/md';
 import { toast } from 'sonner';
+import { MiniMenu } from './MiniMenu';
 
 const customTheme: CustomFlowbiteTheme = {
     table: {
@@ -45,7 +46,7 @@ const customTheme: CustomFlowbiteTheme = {
     }
 }
 
-const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop, checkedList, setCheckedList }: ExtractTableProps) => {
+const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop, checkedList, setCheckedList, handleDeleteExtrato, handleSelectRow, handleSelectAllRows }: ExtractTableProps) => {
 
     const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
     const [editableLabel, setEditableLabel] = useState<string | null>(null);
@@ -84,51 +85,6 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
     const handleEditInput = (index: number) => {
         if (inputRefs.current) {
             inputRefs.current[index].focus();
-        }
-    }
-
-    const handleSelectRow = (id: string) => {
-
-        if (checkedList && setCheckedList) {
-
-            if (checkedList!.length === 0) {
-                setCheckedList([id]);
-                return;
-            }
-
-            checkedList.forEach(item => {
-                if (item === id) {
-                    setCheckedList(checkedList.filter(item => item !== id));
-                } else {
-                    setCheckedList([...checkedList, id]);
-                }
-            })
-        }
-
-    }
-
-    const handleSelectAllRows = () => {
-        setCheckedList!(data.results.map((item: CVLDResultProps) => item.id))
-    }
-
-    const handleDeleteExtrato = () => {
-        if (showModalMessage) {
-            if (checkedList && checkedList.length === 1) {
-                setModalOptions({
-                    open: true,
-                    extractId: checkedList[0]
-                });
-            } else {
-                /* ... more logic here */
-                return;
-            }
-        } else {
-            if (checkedList && checkedList.length === 1) {
-                fetchDelete(checkedList[0])
-            } else {
-                /* ... more logic here */
-                return;
-            }
         }
     }
 
@@ -194,62 +150,16 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
 
     return (
         <><div className='relative'>
-            <div className="flex max-h-6 items-center justify-between my-3">
-                <div className='flex items-center'>
-                    <div className={`w-10 flex items-center justify-center border-r border-transparent`}>
-                        <div className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer">
 
-                            {checkedList!.length === 0 ? (
-                                <div
-                                    className={`relative z-3 w-[15px] h-[15px] flex items-center justify-center duration-100 border-2 border-body dark:border-bodydark rounded-[3px]`}
-                                    onClick={handleSelectAllRows}
-                                >
+            <MiniMenu 
+            checkedList={checkedList}
+            setCheckedList={setCheckedList}
+            count={count}
+            currentPage={currentPage}
+            handleDeleteExtrato={handleDeleteExtrato}
+            handleSelectAllRows={handleSelectAllRows} 
+            />
 
-                                </div>
-                            ) : (
-                                <div
-                                    className={`relative z-3 w-[15px] h-[15px] flex items-center justify-center duration-100 border-2 border-body dark:border-bodydark rounded-[3px]`}
-                                    onClick={() => setCheckedList!([])}
-                                >
-                                    <BiMinus />
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                    <div className={`flex items-center w-0 overflow-hidden ${checkedList!.length > 0 && 'w-fit'} transition-width duration-300`}>
-                        {/* separator */}
-                        <div className="w-px mx-1 h-5 mr-3 bg-zinc-300 dark:bg-form-strokedark"></div>
-                        {/* separator */}
-
-                        <div className='text-xs py-1 px-3 h-6 bg-blue-50 dark:bg-form-strokedark rounded-md font-medium mr-2'>
-                            <span>{checkedList!.length} {checkedList!.length === 1 ? ' item selecionado' : '    itens selecionados'}</span>
-                        </div>
-
-                        <div
-                            title='Excluir selecionado(s)'
-                            className='w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer'
-                            onClick={handleDeleteExtrato}
-                        >
-                            <BiTrash className='text-lg' />
-                        </div>
-
-                        <div
-                            title='Arquivar selecionado(s)'
-                            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer"
-                        >
-                            <MdOutlineArchive className='text-lg' />
-                        </div>
-
-                    </div>
-                </div>
-                <div className='text-sm font-medium'>
-                    <span>
-                        {`${currentPage * 20 - 20 + 1}-${currentPage * 20 > count
-                            ? count
-                            : currentPage * 20} de ${count}`}
-                    </span>
-                </div>
-            </div>
             <Flowbite theme={{ theme: customTheme }}>
                 <Table>
                     <TableHead>
