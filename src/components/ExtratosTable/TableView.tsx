@@ -2,18 +2,21 @@ import { Badge, CustomFlowbiteTheme, Flowbite, Table, TableBody, TableCell, Tabl
 import numberFormat from "@/functions/formaters/numberFormat";
 import { ExtractTableProps } from '@/types/extractTable';
 import React, { useEffect, useRef, useState } from 'react';
-import { BiCheck, BiLoader, BiSolidDockLeft, BiTask, BiX } from 'react-icons/bi';
+import { BiArchiveIn, BiCheck, BiLoader, BiMinus, BiSolidDockLeft, BiTask, BiTrash, BiX } from 'react-icons/bi';
+import { LiaCoinsSolid } from "react-icons/lia";
+import { IoDocumentTextOutline } from "react-icons/io5";
 import { PiCursorClick } from "react-icons/pi";
 import { CVLDResultProps } from '@/interfaces/IResultCVLD';
-import { BsFillTrashFill } from 'react-icons/bs';
 import statusOficio from '@/enums/statusOficio.enum';
 import tipoOficio from '@/enums/tipoOficio.enum';
 import useUpdateOficio from '@/hooks/useUpdateOficio';
 import MarvelousPagination from '../MarvelousPagination';
-import Loader from '../common/Loader';
 import api from '@/utils/api';
-import { ImSpinner2 } from 'react-icons/im';
+import { ImCopy, ImSpinner2 } from 'react-icons/im';
 import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants';
+import { AiOutlineUser } from 'react-icons/ai';
+import { MdOutlineArchive } from 'react-icons/md';
+import { toast } from 'sonner';
 
 const customTheme: CustomFlowbiteTheme = {
     table: {
@@ -25,7 +28,7 @@ const customTheme: CustomFlowbiteTheme = {
         body: {
             base: "group/body",
             cell: {
-                base: "px-3 py-1.5 group-first/body:group-first/row:first:rounded-tl-sm group-first/body:group-first/row:last:rounded-tr-sm group-last/body:group-last/row:first:rounded-bl-sm group-last/body:group-last/row:last:rounded-br-sm dark:bg-boxdark"
+                base: "px-3 py-1.5 bg-transparent dark:bg-transparent group-first/body:group-first/row:first:rounded-tl-sm group-first/body:group-first/row:last:rounded-tr-sm group-last/body:group-last/row:first:rounded-bl-sm group-last/body:group-last/row:last:rounded-br-sm"
             }
         },
         head: {
@@ -36,18 +39,22 @@ const customTheme: CustomFlowbiteTheme = {
         },
         row: {
             base: "group/row",
-            hovered: "hover:bg-red dark:hover:bg-gray-600",
-            striped: "odd:bg-white even:bg-green-300 odd:dark:bg-gray-800 even:dark:bg-gray-700"
+            hovered: "hover:bg-slate-50 dark:hover:bg-slate-50",
+            striped: "odd:bg-white even:bg-green-300 odd:dark:bg-white even:dark:bg-snow"
         }
     }
 }
 
-const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop }: ExtractTableProps) => {
+const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop, checkedList, setCheckedList }: ExtractTableProps) => {
 
     const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
     const [editableLabel, setEditableLabel] = useState<string | null>(null);
     const [editLabelState, setEditLabelState] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    console.log(checkedList)
+
+    // refs
     const inputRefs = useRef<HTMLInputElement[] | null>([]);
 
     const handleTask = (id: string) => {
@@ -55,9 +62,73 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
         setExtractId(id);
     }
 
+    const handleCopyValue = (index: number) => {
+
+        navigator.clipboard.writeText(numberFormat(data.results[index].valor_liquido_disponivel));
+
+        toast("Copiado!", {
+            classNames: {
+                toast: "dark:bg-form-strokedark",
+                title: "dark:text-snow",
+                description: "dark:text-snow",
+                actionButton: "!bg-slate-100 dark:bg-form-strokedark"
+            },
+            description: "valor copiado para sua área de transferência.",
+            action: {
+                label: "Fechar",
+                onClick: () => console.log('done')
+            }
+        })
+    }
+
     const handleEditInput = (index: number) => {
         if (inputRefs.current) {
             inputRefs.current[index].focus();
+        }
+    }
+
+    const handleSelectRow = (id: string) => {
+
+        if (checkedList && setCheckedList) {
+
+            if (checkedList!.length === 0) {
+                setCheckedList([id]);
+                return;
+            }
+
+            checkedList.forEach(item => {
+                if (item === id) {
+                    setCheckedList(checkedList.filter(item => item !== id));
+                } else {
+                    setCheckedList([...checkedList, id]);
+                }
+            })
+        }
+
+    }
+
+    const handleSelectAllRows = () => {
+        setCheckedList!(data.results.map((item: CVLDResultProps) => item.id))
+    }
+
+    const handleDeleteExtrato = () => {
+        if (showModalMessage) {
+            if (checkedList && checkedList.length === 1) {
+                setModalOptions({
+                    open: true,
+                    extractId: checkedList[0]
+                });
+            } else {
+                /* ... more logic here */
+                return;
+            }
+        } else {
+            if (checkedList && checkedList.length === 1) {
+                fetchDelete(checkedList[0])
+            } else {
+                /* ... more logic here */
+                return;
+            }
         }
     }
 
@@ -118,49 +189,143 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
     });
 
     return (
-        <><div className=''>
+        <><div className='relative'>
+            <div className="flex max-h-6 items-center justify-between my-3">
+                <div className='flex items-center'>
+                    <div className={`w-10 flex items-center justify-center border-r border-transparent`}>
+                        <div className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer">
+
+                            {checkedList!.length === 0 ? (
+                                <div
+                                    className={`relative z-3 w-[15px] h-[15px] flex items-center justify-center duration-100 border-2 border-body dark:border-bodydark rounded-[3px]`}
+                                    onClick={handleSelectAllRows}
+                                >
+
+                                </div>
+                            ) : (
+                                <div
+                                    className={`relative z-3 w-[15px] h-[15px] flex items-center justify-center duration-100 border-2 border-body dark:border-bodydark rounded-[3px]`}
+                                    onClick={() => setCheckedList!([])}
+                                >
+                                    <BiMinus />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <div className={`flex items-center w-0 overflow-hidden ${checkedList!.length > 0 && 'w-fit'} transition-width duration-300`}>
+                        {/* separator */}
+                        <div className="w-px mx-1 h-5 mr-3 bg-zinc-300 dark:bg-form-strokedark"></div>
+                        {/* separator */}
+
+                        <div className='text-xs py-1 px-3 h-6 bg-blue-50 dark:bg-form-strokedark rounded-md font-medium mr-2'>
+                            <span>{checkedList!.length} {checkedList!.length === 1 ? ' item selecionado' : '    itens selecionados'}</span>
+                        </div>
+
+                        <div
+                            title='Excluir selecionado(s)'
+                            className='w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer'
+                            onClick={handleDeleteExtrato}
+                        >
+                            <BiTrash className='text-lg' />
+                        </div>
+
+                        <div
+                            title='Arquivar selecionado(s)'
+                            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer"
+                        >
+                            <MdOutlineArchive className='text-lg' />
+                        </div>
+
+                    </div>
+                </div>
+                <div className='text-sm font-medium'>
+                    <span>
+                        {`${currentPage * 20 - 20 + 1}-${currentPage * 20 > count
+                            ? count
+                            : currentPage * 20} de ${count}`}
+                    </span>
+                </div>
+            </div>
             <Flowbite theme={{ theme: customTheme }}>
-                <Table hoverable className="">
+                <Table>
                     <TableHead>
-                        <TableHeadCell className="w-[120px] border-r border-zinc-300 dark:border-zinc-600">Oficio</TableHeadCell>
-                        <TableHeadCell className='border-r border-zinc-300 dark:border-zinc-600'>Nome do Credor</TableHeadCell>
-                        <TableHeadCell className="w-[180px] border-r border-zinc-300 dark:border-zinc-600">Valor Líquido</TableHeadCell>
-                        <TableHeadCell className="w-[100px] border-r border-zinc-300 dark:border-zinc-600">Status</TableHeadCell>
+                        {/* <TableHeadCell className="text-center w-10 px-1">
+                            <span className="sr-only text-center ">Checkbox</span>
+                        </TableHeadCell> */}
+                        <TableHeadCell className="w-[120px]">
+                            <div className='flex gap-2 items-center'>
+                                <IoDocumentTextOutline className='text-base' />
+                                Oficio
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell>
+                            <div className='flex gap-2 items-center'>
+                                <AiOutlineUser className='text-base' />
+                                Nome do Credor
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="w-[180px]">
+                            <div className="flex gap-2 items-center">
+                                <LiaCoinsSolid className='text-base' />
+                                Valor Líquido
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="w-[0px]">
+                            <div className="flex gap-2 items-center">
+                                <BiLoader className='text-base' />
+                                Status
+                            </div>
+                        </TableHeadCell>
                         <TableHeadCell className="text-center w-[120px]">
                             <span className="sr-only text-center">Tarefas</span>
                         </TableHeadCell>
                         {/* <TableHeadCell className="text-center w-[40px]">
                             <span className="sr-only text-center">Detalhes</span>
                         </TableHeadCell> */}
-                        <TableHeadCell className="text-center w-[40px]">
-                            <span className="sr-only text-center ">Deletar</span>
-                        </TableHeadCell>
                     </TableHead>
-                    <TableBody className='max-h-[200px] overflow-x-scroll'>
+                    <TableBody className=''>
 
                         {data.results?.length > 0 && (
                             <>
                                 {data.results.map((item: CVLDResultProps, index: number) => (
 
-                                    <TableRow key={item.id} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 border-b border-zinc-300 dark:border-zinc-600 group">
-                                        <TableCell className="text-center border-x border-zinc-300 dark:border-zinc-600 whitespace-nowrap font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600">
-                                            <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
-                                                <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => updateOficioTipo(item.id, e.target.value as tipoOficio)}>
-                                                    {item.tipo_do_oficio && (
-                                                        <option value={item.tipo_do_oficio} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                            {item.tipo_do_oficio}
-                                                        </option>
-                                                    )}
-                                                    {ENUM_TIPO_OFICIOS_LIST.filter((status) => status !== item.tipo_do_oficio).map((status) => (
-                                                        <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                            {status}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </Badge>
+                                    <TableRow key={item.id} className={`${checkedList!.includes(item.id) && 'bg-blue-50 dark:bg-form-strokedark'} hover:shadow-3 group`}>
+
+                                        {/* <TableCell className="px-1 text-center ">
+                                            <input
+                                                type="checkbox"
+                                                checked={checkedList!.includes(item.id)}
+                                                className={`opacity-50 w-[15px] group-hover:opacity-100 ${checkedList!.includes(item.id) && '!opacity-100'} h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
+                                                onChange={() => handleSelectRow(item.id)}
+                                            />
+                                        </TableCell> */}
+
+                                        <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                                            <div className='flex items-center justify-center gap-3'>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={checkedList!.includes(item.id)}
+                                                    className={`opacity-50 w-[15px] group-hover:opacity-100 ${checkedList!.includes(item.id) && '!opacity-100'} h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
+                                                    onChange={() => handleSelectRow(item.id)}
+                                                />
+                                                <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
+                                                    <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => updateOficioTipo(item.id, e.target.value as tipoOficio)}>
+                                                        {item.tipo_do_oficio && (
+                                                            <option value={item.tipo_do_oficio} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                                {item.tipo_do_oficio}
+                                                            </option>
+                                                        )}
+                                                        {ENUM_TIPO_OFICIOS_LIST.filter((status) => status !== item.tipo_do_oficio).map((status) => (
+                                                            <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                                {status}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </Badge>
+                                            </div>
                                         </TableCell>
                                         <TableCell title={item?.credor || ''}
-                                            className="relative h-full border-r border-zinc-300 dark:border-zinc-600 flex items-center gap-2 font-semibold text-[12px]">
+                                            className="relative h-full  flex items-center gap-2 font-semibold text-[12px]">
                                             <input
                                                 type="text"
                                                 ref={(input) => { if (input) inputRefs.current![index] = input; }}
@@ -212,7 +377,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                     </div>
 
                                                     <div
-                                                        title='Detalhes'
+                                                        title='Abrir'
                                                         className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
                                                         onClick={() => {
                                                             setOpenDetailsDrawer(true);
@@ -220,16 +385,25 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                         }}>
                                                         <BiSolidDockLeft className='text-lg'
                                                         />
-                                                        <span className='text-xs'>Detalhes</span>
+                                                        <span className='text-xs'>Abrir</span>
                                                     </div>
                                                 </div>
                                             )}
 
                                         </TableCell>
-                                        <TableCell className="border-r border-zinc-300 dark:border-zinc-600 font-semibold text-[14px]">{numberFormat(item.valor_liquido_disponivel)}</TableCell>
-                                        <TableCell className="text-center items-center border-r border-zinc-300 dark:border-zinc-600">
-                                            <Badge color="teal" size="sm" className="max-w-max text-center text-[12px]">
-                                                <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
+                                        <TableCell className=" font-semibold text-[14px]">
+                                            <div className="relative">
+                                                {numberFormat(item.valor_liquido_disponivel)}
+                                                <ImCopy
+                                                    title='Copiar valor'
+                                                    onClick={() => handleCopyValue(index)}
+                                                    className='absolute top-1/2 -translate-y-1/2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                                                />
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-center items-center ">
+                                            <Badge color="teal" size="sm" className="text-center text-[12px]">
+                                                <select className="text-[12px] w-44 text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
                                                     {item.status && (
                                                         <option value={item.status} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                             {item.status}
@@ -270,7 +444,8 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                 </div>
                                             </Badge>
                                         </TableCell> */}
-                                        <TableCell className="text-center border-r border-zinc-300 dark:border-zinc-600">
+
+                                        {/* <TableCell className="text-center ">
                                             {showModalMessage ? (
                                                 <button onClick={() => setModalOptions({
                                                     open: true,
@@ -283,7 +458,8 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                     <BsFillTrashFill className="text-meta-1 hover:text-meta-7 dark:text-white dark:hover:text-stone-300 h-4 w-4 self-center" />
                                                 </button>
                                             )}
-                                        </TableCell>
+                                        </TableCell> */}
+
                                     </TableRow>
                                 ))}
                             </>

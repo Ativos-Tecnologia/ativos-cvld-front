@@ -114,7 +114,6 @@ input[type="password"]::-webkit-textfield-decoration-container {
 }
 
 .table-scroll {
-    display: block;
     max-height: 648px;
     overflow-y: auto;
     -ms-overflow-style: -ms-autohiding-scrollbar;

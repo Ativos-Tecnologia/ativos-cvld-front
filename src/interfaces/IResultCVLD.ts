@@ -35,4 +35,5 @@ export interface CVLDResultProps {
     status: string;
     natureza?: string;
     juros_atualizado: number;
+    checked?: boolean
   }

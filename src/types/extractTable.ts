@@ -1,5 +1,6 @@
 import { PaginatedResponse } from "@/components/TaskElements";
 import { CVLDResultProps } from "@/interfaces/IResultCVLD";
+import { Dispatch } from "react";
 
 export type ExtractTableProps = {
     className?: string;
@@ -21,4 +22,6 @@ export type ExtractTableProps = {
     currentPage: number;
     setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
     callScrollTop: () => void;
+    checkedList?: string[];
+    setCheckedList?: React.Dispatch<React.SetStateAction<string[]>>
 }
