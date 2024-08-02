@@ -134,7 +134,10 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
 
     const handleChangeCreditorName = async (index: number, id: string, value: string) => {
 
-        setIsLoading(true);
+        setEditableLabel(null);
+        setEditLabelState('');
+        inputRefs.current![index].blur();
+
         await api.patch(`/api/extrato/update/credor/${id}/`, {
             credor: value
         }).then(response => {
@@ -154,39 +157,40 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                     ...data,
                     results: newResults
                 });
-                setTimeout(() => {
-                    setEditableLabel(null);
-                    setEditLabelState('');
-                    inputRefs.current![index].blur();
-                }, 1500);
             } else {
-                setEditLabelState('error');
-                setTimeout(() => {
-                    setEditableLabel(null);
-                    setEditLabelState('');
-                    inputRefs.current![index].blur();
-                }, 1500);
+                toast("Erro!", {
+                    classNames: {
+                        toast: "dark:bg-form-strokedark",
+                        title: "dark:text-snow",
+                        description: "dark:text-snow",
+                        actionButton: "!bg-slate-100 dark:bg-form-strokedark"
+                    },
+                    description: `houve um erro inesperado ao salvar os dados. Erro ${response.status}`,
+                    action: {
+                        label: "Fechar",
+                        onClick: () => console.log('done')
+                    }
+                })
             }
 
         });
-        setIsLoading(false);
 
     }
 
-    useEffect(() => {
-        const keyHandler = ({ keyCode }: KeyboardEvent) => {
-            if (keyCode !== 27) return;
+    // useEffect(() => {
+    //     const keyHandler = ({ keyCode }: KeyboardEvent) => {
+    //         if (keyCode !== 27) return;
 
-            data.results.forEach((item: CVLDResultProps, index: number) => {
-                if (editableLabel === item.id) {
-                    setEditableLabel(null);
-                    inputRefs.current![index].blur();
-                }
-            })
-        };
-        document.addEventListener("keydown", keyHandler);
-        return () => document.removeEventListener("keydown", keyHandler);
-    });
+    //         data.results.forEach((item: CVLDResultProps, index: number) => {
+    //             if (editableLabel === item.id) {
+    //                 setEditableLabel(null);
+    //                 inputRefs.current![index].blur();
+    //             }
+    //         })
+    //     };
+    //     document.addEventListener("keydown", keyHandler);
+    //     return () => document.removeEventListener("keydown", keyHandler);
+    // });
 
     return (
         <><div className='relative'>
@@ -289,7 +293,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                             <>
                                 {data.results.map((item: CVLDResultProps, index: number) => (
 
-                                    <TableRow key={item.id} className={`${checkedList!.includes(item.id) && 'bg-blue-50 dark:bg-form-strokedark'} hover:shadow-3 group`}>
+                                    <TableRow key={item.id} className={`${checkedList!.includes(item.id) && 'bg-blue-50 dark:bg-form-strokedark'} hover:shadow-3 dark:hover:shadow-body group`}>
 
                                         {/* <TableCell className="px-1 text-center ">
                                             <input
@@ -325,20 +329,24 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                             </div>
                                         </TableCell>
                                         <TableCell title={item?.credor || ''}
-                                            className="relative h-full  flex items-center gap-2 font-semibold text-[12px]">
+                                            className="relative h-full  flex items-center gap-2 font-semibold text-[12px]"
+                                            >
                                             <input
                                                 type="text"
                                                 ref={(input) => { if (input) inputRefs.current![index] = input; }}
                                                 defaultValue={item?.credor || ''}
                                                 onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') {
+                                                    if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
                                                         handleChangeCreditorName(index, item.id, e.currentTarget.value)
                                                     }
                                                 }}
-                                                className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-10/12 pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                onBlur={(e) => handleChangeCreditorName(index, item.id, e.currentTarget.value)}
+                                                className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                             />
 
-                                            <div title='Confirmar Edição' className={`${editableLabel === item.id ? 'opacity-100 visible' : 'opacity-0 invisible'} ${editLabelState === 'success' && 'animate-jump !bg-green-500 !text-white'} ${editLabelState === 'error' && 'animate-jump !bg-meta-1 !text-white'} w-6 h-6 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 transition-all duration-500 cursor-pointer group`}>
+                                            {/* =====> confirm edition old button <===== */}
+
+                                            {/* <div title='Confirmar Edição' className={`${editableLabel === item.id ? 'opacity-100 visible' : 'opacity-0 invisible'} ${editLabelState === 'success' && 'animate-jump !bg-green-500 !text-white'} ${editLabelState === 'error' && 'animate-jump !bg-meta-1 !text-white'} w-6 h-6 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 transition-all duration-500 cursor-pointer group`}>
                                                 {isLoading ?
                                                     <ImSpinner2 className={`${editableLabel === item.id ? 'opacity-100 visible animate-spin' : 'opacity-0 invisible'} text-2xl`}
                                                     /> :
@@ -357,36 +365,42 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                             <BiX className='text-2xl' />}
                                                     </>
                                                 }
-                                            </div>
+                                            </div> */}
+                                            {/* ====> end confirm old button <==== */}
+
 
                                             {/* absolute div that covers the entire cell */}
                                             {editableLabel !== item.id && (
                                                 <div className='absolute inset-0 rounded-md flex items-center transition-all duration-200'>
 
-                                                    <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200'
-                                                        onClick={() => {
-                                                            setEditableLabel(item.id)
-                                                            handleEditInput(index);
-                                                        }}>
-                                                        {item?.credor?.length === 0 && (
-                                                            <div className='flex gap-1 pl-4'>
-                                                                <PiCursorClick className='text-base' />
-                                                                <span>Clique para adicionar nome</span>
+                                                    {editableLabel === null && (
+                                                        <React.Fragment>
+                                                            <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200'
+                                                                onClick={() => {
+                                                                    setEditableLabel(item.id)
+                                                                    handleEditInput(index);
+                                                                }}>
+                                                                {item?.credor?.length === 0 && (
+                                                                    <div className='flex gap-1 pl-4 text-slate-400'>
+                                                                        <PiCursorClick className='text-base' />
+                                                                        <span>Clique para adicionar nome</span>
+                                                                    </div>
+                                                                )}
                                                             </div>
-                                                        )}
-                                                    </div>
 
-                                                    <div
-                                                        title='Abrir'
-                                                        className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
-                                                        onClick={() => {
-                                                            setOpenDetailsDrawer(true);
-                                                            fetchDataById(item.id);
-                                                        }}>
-                                                        <BiSolidDockLeft className='text-lg'
-                                                        />
-                                                        <span className='text-xs'>Abrir</span>
-                                                    </div>
+                                                            <div
+                                                                title='Abrir'
+                                                                className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                                                                onClick={() => {
+                                                                    setOpenDetailsDrawer(true);
+                                                                    fetchDataById(item.id);
+                                                                }}>
+                                                                <BiSolidDockLeft className='text-lg'
+                                                                />
+                                                                <span className='text-xs'>Abrir</span>
+                                                            </div>
+                                                        </React.Fragment>
+                                                    )}
                                                 </div>
                                             )}
 
