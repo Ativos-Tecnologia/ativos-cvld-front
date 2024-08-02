@@ -133,3 +133,32 @@ input[type="password"]::-webkit-textfield-decoration-container {
     /* background: #f9f9f9; Cor de fundo para as células */
     border-bottom: 1px solid #ddd; /* Borda inferior para as células */
   }
+
+  .expand-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem; /* Largura inicial do botão */
+    height: 2.25rem; /* Altura do botão */
+    overflow: hidden;
+    transition: width 0.3s ease; /* Animação suave */
+    cursor: pointer;
+  }
+
+  .expand-button .text {
+    white-space: nowrap;
+    opacity: 0; /* Texto escondido inicialmente */
+    transition: opacity 0.3s ease; /* Animação suave para o texto */
+  }
+
+  .expand-button:hover {
+    width: 130px; /* Nova largura ao passar o mouse */
+  }
+
+  .expand-button:hover .text {
+    opacity: 1; /* Mostrar o texto ao passar o mouse */
+  }
+
+  .expand-button .icon {
+    font-size: 36px; /* Tamanho do "+" */
+  }

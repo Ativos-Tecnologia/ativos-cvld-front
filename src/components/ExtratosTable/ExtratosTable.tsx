@@ -3,7 +3,6 @@ import api from "@/utils/api";
 import { Suspense, useEffect, useRef, useState } from "react";
 import UseMySwal from "@/hooks/useMySwal";
 import { AwesomeDrawer } from "../Drawer/Drawer";
-import DeleteExtractAlert from "../Modals/DeleteExtract";
 import { CVLDResultProps } from "@/interfaces/IResultCVLD";
 import Loader from "../common/Loader";
 import TableView from "./TableView";
@@ -13,6 +12,7 @@ import { PiGridFour, PiTable } from "react-icons/pi";
 import statusOficio from "@/enums/statusOficio.enum";
 import Filters from "../Filters";
 import { useFilter } from "@/hooks/useFilter";
+import DeleteExtractAlert from "../Modals/DeleteExtract";
 
 export type LocalShowOptionsProps = {
   key: string;

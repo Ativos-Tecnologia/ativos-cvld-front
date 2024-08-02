@@ -17,7 +17,9 @@ import { AiOutlineLoading } from 'react-icons/ai';
 import { BiChevronRight, BiLineChart } from 'react-icons/bi';
 
 import { UpdatePrecatorioButton } from '../Button/UpdatePrecatorioButton';
+import { DrawerConta } from '../Drawer/DrawerConta';
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
+
 
 
 interface ChartTwoState {
@@ -58,6 +60,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
 
   const [loading, setLoading] = useState<boolean>(false);
   const [roleCNJ, setRoleCNJ] = useState<boolean>(false);
+  const [toggleNovaConta, setToggleNovaConta] = useState<boolean>(false);
 
   const mySwal = UseMySwal();
 
@@ -264,24 +267,111 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
         <div className="w-full flex justify-center align-middle">
           <h2 className='font-nexa text-3xl mt-1.5 font-normal antialiased text-primary flex flex-col justify-center select-none'>
             Celer
-            </h2>
-            <p className='text-xs font-semibold text-primary flex flex-col justify-center'>
-              <Slash className='w-5 h-5 text-gray-200 -rotate-45 mt-1 -mr-3' />
-              </p>
-        <Image src="/images/logo/celer-ia-only-logo.svg" alt="Celler IA Engine" width={56} height={50} className='mt-[6.1px] select-none antialiased' aria-selected={false}
-                draggable={false}/>
+          </h2>
+          <p className='text-xs font-semibold text-primary flex flex-col justify-center'>
+            <Slash className='w-5 h-5 text-gray-200 -rotate-45 mt-1 -mr-3' />
+          </p>
+          <Image src="/images/logo/celer-ia-only-logo.svg" alt="Celler IA Engine" width={56} height={50} className='mt-[6.1px] select-none antialiased' aria-selected={false}
+            draggable={false} />
         </div>
         <p className="text-sm font-normal text-center apexcharts-legend-text mt-0">
           Nosso modelo de atualização de valores de precatórios e RPVs
         </p>
       </div>
-        <div className="flex flex-col items-center w-full">
-          <UpdatePrecatorioButton setStateFunction={setOficioForm} />
+      <div className="flex flex-col items-center w-full">
+        <UpdatePrecatorioButton setStateFunction={setOficioForm} />
 
-        </div>
+      </div>
       {
         <form className="mt-8 space-y-5" onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <div className="grid grid-cols-2 gap-5 sm:grid-cols-2">
+            <div className="flex gap-2 w-full sm:col-span-2 justify-end">
+              <div>
+                <div className="flex -space-x-2">
+
+                  <button type="button" className="h-9 w-9 rounded-full border-2 border-white dark:border-boxdark">
+                    <Image
+                      width={36}
+                      height={36}
+                      src={"/images/user/user-07.png"}
+                      alt="User"
+                    />
+                  </button>
+                  <button type="button" className="h-9 w-9 rounded-full border-2 border-white dark:border-boxdark">
+                    <Image
+                      width={36}
+                      height={36}
+                      src={"/images/user/user-08.png"}
+                      alt="User"
+                    />
+                  </button>
+                  <button type="button" className="h-9 w-9 rounded-full border-2 border-white dark:border-boxdark">
+                    <Image
+                      width={36}
+                      height={36}
+                      src={"/images/user/user-09.png"}
+                      alt="User"
+                    />
+                  </button>
+                  <button type="button" className="h-9 w-9 rounded-full border-2 border-white dark:border-boxdark">
+                    <Image
+                      width={36}
+                      height={36}
+                      src={"/images/user/user-10.png"}
+                      alt="User"
+                    />
+                  </button>
+                  {/* <button type="button" className="expand-button flex h-9 w-30 items-center justify-center rounded-full border border-stroke bg-gray-200 text-primary dark:border-strokedark dark:bg-[#4f5e77] dark:text-white" onClick={() => setToggleNovaConta(!toggleNovaConta)}>
+                    <p className='pr-2 font-semibold text'>Nova conta</p>
+                    <svg
+                      className="fill-black dark:fill-gray-300 icon"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M15 7H9V1C9 0.4 8.6 0 8 0C7.4 0 7 0.4 7 1V7H1C0.4 7 0 7.4 0 8C0 8.6 0.4 9 1 9H7V15C7 15.6 7.4 16 8 16C8.6 16 9 15.6 9 15V9H15C15.6 9 16 8.6 16 8C16 7.4 15.6 7 15 7Z"
+                        fill=""
+                      />
+                    </svg>
+                  </button> */}
+<button
+  type="button"
+  className="group flex h-9 w-9 items-center justify-center rounded-full border border-stroke bg-gray-200 text-primary dark:border-strokedark dark:bg-[#4f5e77] dark:text-white transition-all duration-300 ease-in-out hover:w-32 overflow-hidden"
+  onClick={() => setToggleNovaConta(!toggleNovaConta)}
+>
+  <div className="flex items-center justify-center">
+    <svg
+      className="fill-black dark:fill-gray-300"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M15 7H9V1C9 0.4 8.6 0 8 0C7.4 0 7 0.4 7 1V7H1C0.4 7 0 7.4 0 8C0 8.6 0.4 9 1 9H7V15C7 15.6 7.4 16 8 16C8.6 16 9 15.6 9 15V9H15C15.6 9 16 8.6 16 8C16 7.4 15.6 7 15 7Z"
+        fill=""
+      />
+    </svg>
+    <span className="-ml-20 opacity-0 transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:ml-2 whitespace-nowrap">
+      Nova conta
+    </span>
+  </div>
+</button>
+
+
+
+
+                </div>
+
+
+
+              </div>
+            </div>
+
+
 
             <div className="flex flex-col gap-2 w-full sm:col-span-1">
               <label htmlFor="tipo" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
@@ -332,28 +422,28 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
 
 
             <span className="text-lg font-semibold text-black dark:text-white">Dados do Principal</span>
-                          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
 
-                          <div className="flex flex-col gap-2">
-                            <label htmlFor="credor" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                              Nome/Razão Social do Credor Principal
-                            </label>
-                            <input
-                              type="text"
-                              id="credor"
-                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                              {...register("credor", {})} />
-                          </div>
-                          <div className="flex flex-col gap-2">
-                            <label htmlFor="cpf_cnpj" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                              CPF/CNPJ
-                            </label>
-                            <input
-                              type="text"
-                              id="cpf_cnpj"
-                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                              {...register("cpf_cnpj", {})} />
-                          </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="credor" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                Nome/Razão Social do Credor Principal
+              </label>
+              <input
+                type="text"
+                id="credor"
+                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                {...register("credor", {})} />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="cpf_cnpj" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                CPF/CNPJ
+              </label>
+              <input
+                type="text"
+                id="cpf_cnpj"
+                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                {...register("cpf_cnpj", {})} />
+            </div>
 
 
 
@@ -1119,6 +1209,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
           </div>
         </form>
       }
+      <DrawerConta open={toggleNovaConta} setOpen={setToggleNovaConta} loading={loading} />
     </div>
   );
 };
