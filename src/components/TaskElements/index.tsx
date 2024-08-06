@@ -1,5 +1,5 @@
 import { Avatar, Badge, Datepicker, Drawer, Flowbite, Label, Textarea, TextInput, theme } from "flowbite-react";
-import { Suspense, useEffect, useRef, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import { BiCalendarAlt, BiTask } from "react-icons/bi";
 import { HiCalendar, HiUserAdd } from "react-icons/hi";
 import { twMerge } from "tailwind-merge";
@@ -15,6 +15,9 @@ import { Calendar } from "../ui/calendar";
 import { format } from "date-fns";
 import { ptBR } from 'date-fns/locale';
 import { Button } from "../ui/button";
+import { toast } from "sonner";
+import { CVLDResultProps } from "@/interfaces/IResultCVLD";
+import { LinkedTaskProps } from "./LinkedTasks";
 
 export type TaskDrawerProps = {
   open: boolean;
@@ -43,21 +46,50 @@ export type TaskRelatedItems = {
 // }
 
 
-export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
+export function TaskDrawer({ id, extratoTasks, setExtratosTasks }: { id: string, setExtratosTasks: React.Dispatch<React.SetStateAction<PaginatedResponse<LinkedTaskProps>>>, extratoTasks: PaginatedResponse<LinkedTaskProps> }) {
 
   const [taskTitlePlaceholders, setTaskTitlePlaceholders] = useState<string>('');
   const [taskDescriptionPlaceholders, setTaskDescriptionPlaceholders] = useState<string>('')
-  const { register, control, handleSubmit, watch, formState: { errors } } = useForm();
+  const { register, control, handleSubmit, reset, formState: { errors } } = useForm();
   const [taskStatus, setTaskStatus] = useState<PaginatedResponse<TaskRelatedItems>>({ count: 0, next: "", previous: "", results: [] });
   const [taskGoals, setTaskGoals] = useState<PaginatedResponse<TaskRelatedItems>>({ count: 0, next: "", previous: "", results: [] });
   const [date, setDate] = useState<Date>();
 
-  const handleClose = () => setOpen(false);
+  // const handleClose = () => setOpen(false);
 
   const onSubmit: SubmitHandler<any> = async (data) => {
     data["extrato_id"] = id;
     data["due_date"] = format(date!, "yyyy-MM-dd");
     const response = await api.post("api/task/create/", data);
+
+    if (response.status === 201) {
+
+      toast("Tarefa criada com sucesso!", {
+        classNames: {
+          toast: "dark:bg-form-strokedark",
+          title: "dark:text-snow",
+          description: "dark:text-snow",
+          actionButton: "!bg-slate-100 dark:bg-form-strokedark"
+        },
+        action: {
+          label: "Fechar",
+          onClick: () => console.log('done')
+        }
+      });
+
+      setExtratosTasks({
+        count: extratoTasks.results.length,
+        next: '',
+        previous: '',
+        results: [data, ...extratoTasks.results] 
+      });
+
+      reset();
+
+    } else {
+      console.log("Error creating task");
+    }
+
   };
 
   const fetchTaskStatus = async () => {
@@ -98,100 +130,96 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
 
 
   return (
-    <>
-      <Flowbite theme={{ theme: customFlowBiteTheme }}>
-        <Drawer open={open} onClose={handleClose} className="w-[360px]">
-          <Drawer.Header title="NOVA TAREFA" titleIcon={BiTask} className="dark:text-white" />
-          <Drawer.Items>
-            <p className="text-sm text-center">Crie uma nova tarefa para o extrato</p>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="my-6">
-                <label htmlFor="title" className="mb-2 block">
-                  Título
-                </label>
-                <input type='text' id="title" placeholder={
-                  `Ex: ${taskTitlePlaceholders}`
-                }
-                  {...register("title")}
-                  className="w-full rounded-md text-ellipsis overflow-hidden whitespace-nowrap border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
-                />
-              </div>
-              <div className="mb-6">
-                <label htmlFor="description" className="mb-2 block">
-                  Descrição
-                </label>
-                <textarea id="description" placeholder={
-                  `Ex: ${taskDescriptionPlaceholders}`
-                } rows={4}
-                  {...register("description")}
-                  className="w-full rounded-md resize-none border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
-                />
-              </div>
-              <div className="mb-6 w-full">
-                <label htmlFor="due_date" className="mb-2 block">
-                  Data de entrega
-                </label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      className={"w-full border border-stroke dark:border-strokedark bg-white text-body hover:bg-white dark:bg-boxdark-2 dark:text-bodydark flex items-center justify-start text-left font-normal"}
-                    >
-                      <BiCalendarAlt className="mr-2 h-4 w-4" />
-                      {date ? format(date, "dd/MM/yyyy") : <span>Selecione a data de entrega</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      locale={ptBR}
-                      mode="single"
-                      selected={date}
-                      onSelect={setDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                {/* <input type="date" id="due_date" placeholder="Data de entrega" className="w-full rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2" {
+    <React.Fragment>
+      <h1 className="text-center font-medium mt-5">Crie uma nova tarefa para o extrato</h1>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="my-6">
+          <label htmlFor="title" className="mb-2 block">
+            Título
+          </label>
+          <input type='text' id="title" placeholder={
+            `Ex: ${taskTitlePlaceholders}`
+          }
+            {...register("title")}
+            className="w-full rounded-md text-ellipsis overflow-hidden whitespace-nowrap border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
+          />
+        </div>
+        <div className="mb-6">
+          <label htmlFor="description" className="mb-2 block">
+            Descrição
+          </label>
+          <textarea id="description" placeholder={
+            `Ex: ${taskDescriptionPlaceholders}`
+          } rows={4}
+            {...register("description")}
+            className="w-full rounded-md resize-none border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
+          />
+        </div>
+        <div className="mb-6 w-full">
+          <label htmlFor="due_date" className="mb-2 block">
+            Data de entrega
+          </label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                className={"w-full border border-stroke dark:border-strokedark bg-white text-body hover:bg-white dark:bg-boxdark-2 dark:text-bodydark flex items-center justify-start text-left font-normal"}
+              >
+                <BiCalendarAlt className="mr-2 h-4 w-4" />
+                {date ? format(date, "dd/MM/yyyy") : <span>Selecione a data de entrega</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                locale={ptBR}
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+          {/* <input type="date" id="due_date" placeholder="Data de entrega" className="w-full rounded-md border-stroke shadow-1 dark:border-strokedark dark:bg-boxdark-2" {
                   ...register("due_date")
 
                 } /> */}
-              </div>
+        </div>
 
-              <div className="mb-6 grid grid-cols-2 gap-4">
+        <div className="mb-6 grid grid-cols-2 gap-4">
 
-                <Controller
-                  name="statusName"
-                  control={control}
-                  render={({ field: { onChange, onBlur, value, ref } }) => (
-                    <MarvelousSelect
-                      label="STATUS"
-                      data={taskStatus}
-                      onChange={onChange}
-                      onBlur={onBlur}
-                      value={value}
-                      ref={ref}
-                      nameRef="statusName"
-                      setData={setTaskStatus as unknown as React.Dispatch<React.SetStateAction<PaginatedResponse<TaskRelatedItems>>>}
-                    />
-                  )}
-                />
-                <Controller
-                  name="goalName"
-                  control={control}
-                  render={({ field: { onChange, onBlur, value, ref } }) => (
-                    <MarvelousSelect
-                      label="METAS"
-                      data={taskGoals}
-                      onChange={onChange}
-                      onBlur={onBlur}
-                      value={value}
-                      ref={ref}
-                      nameRef="goalName"
-                      setData={setTaskGoals as unknown as React.Dispatch<React.SetStateAction<PaginatedResponse<TaskRelatedItems>>>}
-                    />
-                  )}
-                />
-              </div>
-              {/* <div className="mb-6">
+          <Controller
+            name="statusName"
+            control={control}
+            render={({ field: { onChange, onBlur, value, ref } }) => (
+              <MarvelousSelect
+                label="STATUS"
+                data={taskStatus}
+                onChange={onChange}
+                onBlur={onBlur}
+                value={value}
+                ref={ref}
+                nameRef="statusName"
+                setData={setTaskStatus as unknown as React.Dispatch<React.SetStateAction<PaginatedResponse<TaskRelatedItems>>>}
+              />
+            )}
+          />
+          <Controller
+            name="goalName"
+            control={control}
+            render={({ field: { onChange, onBlur, value, ref } }) => (
+              <MarvelousSelect
+                label="METAS"
+                data={taskGoals}
+                onChange={onChange}
+                onBlur={onBlur}
+                value={value}
+                ref={ref}
+                nameRef="goalName"
+                setData={setTaskGoals as unknown as React.Dispatch<React.SetStateAction<PaginatedResponse<TaskRelatedItems>>>}
+              />
+            )}
+          />
+        </div>
+        {/* <div className="mb-6">
               <TextInput
                 id="guests"
                 name="guests"
@@ -218,14 +246,11 @@ export function TaskDrawer({ open, setOpen, id }: TaskDrawerProps) {
               <Avatar alt="" img="/images/people/profile-picture-3.jpg" rounded size="sm" stacked />
               <Avatar alt="" img="/images/people/profile-picture-4.jpg" rounded size="sm" stacked />
             </Avatar.Group> */}
-              <button className="w-full flex items-center justify-center py-2 px-4 bg-blue-700 hover:bg-blue-800 text-white rounded-md transition-all duration-200" type="submit">
-                <HiCalendar className="mr-2" />
-                Criar Tarefa
-              </button>
-            </form>
-          </Drawer.Items>
-        </Drawer>
-      </Flowbite>
-    </>
+        <button className="w-full flex items-center justify-center py-2 px-4 mb-5 bg-blue-700 hover:bg-blue-800 text-white rounded-md transition-all duration-200" type="submit">
+          <HiCalendar className="mr-2" />
+          Criar Tarefa
+        </button>
+      </form>
+    </React.Fragment>
   );
 }
