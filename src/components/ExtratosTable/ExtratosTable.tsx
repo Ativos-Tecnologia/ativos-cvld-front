@@ -116,11 +116,11 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   const fetchDataById = async (id: string) => {
     setLoading(true);
 
-    if (lastId === id) {
-      setOpenDetailsDrawer(!openDetailsDrawer);
-      setLoading(false);
-      return;
-    }
+    // if (lastId === id) {
+    //   setOpenDetailsDrawer(!openDetailsDrawer);
+    //   setLoading(false);
+    //   return;
+    // }
 
     setItem((await api.get(`api/extrato/${id}/`)).data);
     setLastId(id);
@@ -362,7 +362,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
       )}
       <Suspense fallback={<Loader />}>
         <AwesomeDrawer data={item} loading={loading} setData={setItem} open={openDetailsDrawer} setOpen={setOpenDetailsDrawer} />
-        <TaskDrawer id={extratoId} open={openTaskDrawer} setOpen={setOpenTaskDrawer} />
+        {/* <TaskDrawer id={extratoId} open={openTaskDrawer} setOpen={setOpenTaskDrawer} /> */}
       </Suspense>
       {showModalMessage && (
         <DeleteExtractAlert

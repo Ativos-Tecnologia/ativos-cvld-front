@@ -52,8 +52,6 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
     const [editLabelState, setEditLabelState] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    console.log(checkedList)
-
     // refs
     const inputRefs = useRef<HTMLInputElement[] | null>([]);
 
@@ -66,14 +64,13 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
 
         navigator.clipboard.writeText(numberFormat(data.results[index].valor_liquido_disponivel));
 
-        toast("Copiado!", {
+        toast("Valor copiado para sua área de transferência.", {
             classNames: {
                 toast: "dark:bg-form-strokedark",
                 title: "dark:text-snow",
                 description: "dark:text-snow",
                 actionButton: "!bg-slate-100 dark:bg-form-strokedark"
             },
-            description: "valor copiado para sua área de transferência.",
             action: {
                 label: "Fechar",
                 onClick: () => console.log('done')
@@ -280,9 +277,9 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                 Status
                             </div>
                         </TableHeadCell>
-                        <TableHeadCell className="text-center w-[120px]">
+                        {/* <TableHeadCell className="text-center w-[120px]">
                             <span className="sr-only text-center">Tarefas</span>
-                        </TableHeadCell>
+                        </TableHeadCell> */}
                         {/* <TableHeadCell className="text-center w-[40px]">
                             <span className="sr-only text-center">Detalhes</span>
                         </TableHeadCell> */}
@@ -432,7 +429,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                 </select>
                                             </Badge>
                                         </TableCell>
-                                        <TableCell className="text-center">
+                                        {/* <TableCell className="text-center">
                                             <Badge onClick={() => handleTask(item.id)} size="sm" color="yellow" className="hover:bg-yellow-200 dark:hover:bg-yellow-300 transition-all duration-300 justify-center px-2 py-1 cursor-pointer">
                                                 <div className="flex flex-row w-full justify-between align-middle gap-2">
                                                     <span className="text-[12px] font-bold transition-all duration-200">
@@ -442,7 +439,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                 </div>
                                             </Badge>
 
-                                        </TableCell>
+                                        </TableCell> */}
                                         {/* <TableCell className="text-center">
                                             <Badge color="blue" size="sm" style={{
                                                 cursor: loading ? 'wait' : 'pointer'

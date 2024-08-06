@@ -204,7 +204,7 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
         }
       </div>
       <div ref={selectRef}
-        className={`${isOpen ? "h-40" : "h-0 border-none"} absolute z-10 mt-2 w-full rounded bg-white border border-stroke dark:border-strokedark dark:bg-boxdark shadow-lg overflow-y-auto overflow-x-hidden transition-all duration-500`}
+        className={`${isOpen ? "h-40 animate-in fade-in-0 zoom-in-95" : "h-0 border-none animate-out fade-out-0 zoom-out-95"} absolute z-10 bottom-9 w-full rounded bg-white border border-stroke dark:border-strokedark dark:bg-boxdark shadow-lg overflow-y-auto overflow-x-hidden transition-all duration-500`}
       >
         {isOpen &&
           data.results.map((tag) => (
@@ -336,60 +336,6 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
                 </div>
 
               </div>
-
-
-              {/* <Popover
-
-                aria-labelledby="default-popover"
-                theme={tooltipTheme}
-                content={
-                  <div className="w-64 text-sm text-gray-500 dark:text-gray-400">
-                    <div className="dark:border-gray-600 border-b border-gray-200 bg-gray-100 px-3 py-2 dark:bg-gray-700 flex items-center justify-between w-[210px]">
-                      <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
-                        OPÇÕES
-                      </h3>
-                      <BsX className="w-6 h-4 cursor-pointer" onClick={() => settootipToggle(false)} />
-                    </div>
-                    <div className="px-3 py-2">
-                      <p
-                        onDoubleClick={() => {
-                          setLabelReleatedEdit(true);
-                        }}
-                        onBlur={() => {
-                          setLabelReleatedEdit(false);
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            const newLabel = e.currentTarget.innerText;
-                            tag.title = newLabel;
-                            const newTags = data.map((item) => {
-                              if (item.id === tag.id) {
-                                return tag;
-                              }
-                              return item;
-                            });
-                            api.patch(`api/task/goals/update-goal-name/${tag.id}/`, {
-                              goalName: newLabel,
-                            }).then((response) => {
-                              setLabelReleatedEdit(false);
-                            });
-
-                          }
-                        }}
-                        contentEditable={labelReleatedEdit}
-                        id="default-popover"
-                        className="text-xs word-break w-fit font-semibold text-gray-900 dark:text-white cursor-text"
-                        title="Duplo clique para editar"
-                      >
-                        {tag.nameRef}
-                      </p>
-
-                    </div>
-                  </div>
-                }
-                arrow={false}
-              >
-              </Popover> */}
             </div>
           ))}
       </div>

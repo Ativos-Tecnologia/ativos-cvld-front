@@ -4,13 +4,24 @@ import linkAdapter from "@/functions/formaters/linkFormater";
 import numberFormat from "@/functions/formaters/numberFormat";
 import { customFlowBiteTheme } from "@/themes/FlowbiteThemes";
 import { Button, Drawer, Flowbite, Table } from "flowbite-react";
-import React from "react";
+import React, { useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
-import { BiDownload } from "react-icons/bi";
-import { MdAddChart } from "react-icons/md";
+import { BiDownload, BiPlus } from "react-icons/bi";
+import { CgDetailsMore } from "react-icons/cg";
+import { LinkedTasks } from "../TaskElements/LinkedTasks";
 
 export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data: any, loading: boolean, setData: any, open: boolean, setOpen: any }) {
-  const handleClose = () => setOpen(false);
+  
+  const [openTaskDrawer, setOpenTaskDrawer] = useState<boolean>(false);
+  const [openSubTask, setOpenSubTask] = useState<boolean>(false);
+  const [editableTaskInput, setEditableTaskInput] = useState<boolean>(false);
+
+  const handleClose = () => {
+    setOpen(false);
+    setOpenTaskDrawer(false);
+    setOpenSubTask(false);
+    setEditableTaskInput(false);
+  };
 
   return (
     <>
@@ -27,7 +38,20 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                 </div>
               ) : (
                 <React.Fragment>
-                  <Drawer.Header title="Detalhes" onClose={handleClose} titleIcon={MdAddChart} className="mb-1 text-center" />
+                  <Drawer.Header title={data.credor || 'Sem título'} onClose={handleClose} titleIcon={CgDetailsMore} className="mb-1 border-b dark:border-form-strokedark" />
+                  <Drawer.Items>
+
+                    <LinkedTasks 
+                      data={data}
+                      openTaskDrawer={openTaskDrawer}
+                      setOpenTaskDrawer={setOpenTaskDrawer}
+                      openSubTask={openSubTask}
+                      setOpenSubTask={setOpenSubTask}
+                      editableTaskInput={editableTaskInput}
+                      setEditableTaskInput={setEditableTaskInput}
+                    />
+
+                  </Drawer.Items>
                   <Drawer.Items>
                     <div className="overflow-x-auto">
                       <Table className="min-w-full table-auto border-collapse">
