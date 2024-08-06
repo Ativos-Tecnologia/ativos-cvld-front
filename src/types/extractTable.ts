@@ -22,6 +22,9 @@ export type ExtractTableProps = {
     currentPage: number;
     setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
     callScrollTop: () => void;
-    checkedList?: string[];
-    setCheckedList?: React.Dispatch<React.SetStateAction<string[]>>
+    checkedList: string[];
+    setCheckedList: React.Dispatch<React.SetStateAction<string[]>>;
+    handleSelectRow: (id: string) => void;
+    handleSelectAllRows: () => void;
+    handleDeleteExtrato: () => void;
 }
