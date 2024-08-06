@@ -137,7 +137,7 @@ export const LinkedTasks = ({ data, openTaskDrawer, setOpenTaskDrawer, openSubTa
                       <ul
                         className={`ml-6 flex flex-col gap-2`}>
                         {subtasks.map(subtask => (
-                          <li className="flex items-center justify-between gap-2 peer">
+                          <li key={subtask} className="flex items-center justify-between gap-2 peer">
                             <label htmlFor={subtask} className="flex items-center gap-2 cursor-pointer">
                               <input
                                 id={subtask}
