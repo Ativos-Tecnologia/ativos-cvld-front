@@ -11,7 +11,7 @@ import { CgDetailsMore } from "react-icons/cg";
 import { LinkedTasks } from "../TaskElements/LinkedTasks";
 
 export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data: any, loading: boolean, setData: any, open: boolean, setOpen: any }) {
-  
+
   const [openTaskDrawer, setOpenTaskDrawer] = useState<boolean>(false);
   const [openSubTask, setOpenSubTask] = useState<boolean>(false);
   const [editableTaskInput, setEditableTaskInput] = useState<boolean>(false);
@@ -40,8 +40,8 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                 <React.Fragment>
                   <Drawer.Header title={data.credor || 'Sem título'} onClose={handleClose} titleIcon={CgDetailsMore} className="mb-1 border-b dark:border-form-strokedark" />
                   <Drawer.Items>
-
-                    <LinkedTasks 
+                  {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
+                    <LinkedTasks
                       data={data}
                       openTaskDrawer={openTaskDrawer}
                       setOpenTaskDrawer={setOpenTaskDrawer}
@@ -50,6 +50,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                       editableTaskInput={editableTaskInput}
                       setEditableTaskInput={setEditableTaskInput}
                     />
+                  )}
 
                   </Drawer.Items>
                   <Drawer.Items>
