@@ -58,6 +58,45 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
   const enumOficiosList = Object.values(statusOficio);
   const enumTipoOficiosList = Object.values(tipoOficio);
 
+  const estados = [
+    { id: "AC", nome: "Acre" },
+    { id: "AL", nome: "Alagoas" },
+    { id: "AP", nome: "Amapá" },
+    { id: "AM", nome: "Amazonas" },
+    { id: "BA", nome: "Bahia" },
+    { id: "CE", nome: "Ceará" },
+    { id: "DF", nome: "Distrito Federal" },
+    { id: "ES", nome: "Espírito Santo" },
+    { id: "GO", nome: "Goiás" },
+    { id: "MA", nome: "Maranhão" },
+    { id: "MT", nome: "Mato Grosso" },
+    { id: "MS", nome: "Mato Grosso do Sul" },
+    { id: "MG", nome: "Minas Gerais" },
+    { id: "PA", nome: "Pará" },
+    { id: "PB", nome: "Paraíba" },
+    { id: "PR", nome: "Paraná" },
+    { id: "PE", nome: "Pernambuco" },
+    { id: "PI", nome: "Piauí" },
+    { id: "RJ", nome: "Rio de Janeiro" },
+    { id: "RN", nome: "Rio Grande do Norte" },
+    { id: "RS", nome: "Rio Grande do Sul" },
+    { id: "RO", nome: "Rondônia" },
+    { id: "RR", nome: "Roraima" },
+    { id: "SC", nome: "Santa Catarina" },
+    { id: "SP", nome: "São Paulo" },
+    { id: "SE", nome: "Sergipe" },
+    { id: "TO", nome: "Tocantins" },
+  ]
+
+  const tribunais = [
+    { id: "TRF1", nome: "Tribunal Regional Federal - 1ª Região" },
+    { id: "TRF2", nome: "Tribunal Regional Federal - 2ª Região" },
+    { id: "TRF3", nome: "Tribunal Regional Federal - 3ª Região" },
+    { id: "TRF4", nome: "Tribunal Regional Federal - 4ª Região" },
+    { id: "TRF5", nome: "Tribunal Regional Federal - 5ª Região" },
+    { id: "TRF6", nome: "Tribunal Regional Federal - 6ª Região" },
+  ]
+
 
   const { setCredits, credits, data } = useContext<UserInfoContextType>(UserInfoAPIContext);
 
@@ -364,6 +403,9 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                 <SelectItem value="TRIBUTÁRIA">Tributária</SelectItem>
               </ShadSelect>
             </div>
+            <div className="flex flex-col gap-2 w-full sm:col-span-1 invisible ">
+
+</div>
 
             <div className="flex flex-col gap-2">
               <label htmlFor="valor_principal" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
@@ -636,7 +678,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                   {/* <label htmlFor="gerar_cvld" className="text-sm font-medium text-meta-5">
                     Emitir Certidão de Valor Líquido Disponível (CVLD)?
                   </label> */}
-                  <label htmlFor="gerar_cvld" className="text-sm font-medium text-meta-5">
+                  <label htmlFor="gerar_cvld" className="text-xs font-nexa font-semibold text-meta-5 uppercase">
                     Salvar informações de ofício e recálculo?
                   </label>
                 </div>
@@ -644,73 +686,73 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                   {
                     watch("gerar_cvld") ? (
                       <>
-                        <span className="text-lg font-semibold text-black dark:text-white">Dados do Principal</span>
-                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
+                        {/* <span className="text-lg font-semibold text-black dark:text-white">Dados do Principal</span> */}
+                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2"></div>
 
                         <div className="flex gap-2 w-full sm:col-span-2 justify-end mb-4">
-              <div className='flex flex-col'>
-                <div className='flex justify-end'>
-                  <div className="flex -space-x-1 self-end">
+                          <div className='flex flex-col'>
+                            <div className='flex justify-end'>
+                              <div className="flex -space-x-1 self-end">
 
-                    {
-                      accountList?.results.map((account) => (
-                        <Avatar onClick={() => {
-                          setSelectedAccount({
-                            id: account.id,
-                            nome_razao_social: account.nome_razao_social,
-                          })
+                                {
+                                  accountList?.results.map((account) => (
+                                    <Avatar onClick={() => {
+                                      setSelectedAccount({
+                                        id: account.id,
+                                        nome_razao_social: account.nome_razao_social,
+                                      })
 
-                          console.log(selectedAccount);
+                                      console.log(selectedAccount);
 
 
-                        }} key={account.id} rounded placeholderInitials={account.nome_razao_social.split(" ").length > 1 ? account.nome_razao_social.split(" ")[0].charAt(0) + account.nome_razao_social.split(" ")[1].charAt(0) : account.nome_razao_social.charAt(0)} alt={account.nome_razao_social} className='[&>div>div]:bg-[#4f5e77] [&>div>div>span]:text-white [&>div>div>span]:text-xs [&>div>div]:border [&>div>div]:border-whiter' size='sm' />
-                      ))
-                    }
+                                    }} key={account.id} rounded placeholderInitials={account.nome_razao_social.split(" ").length > 1 ? account.nome_razao_social.split(" ")[0].charAt(0) + account.nome_razao_social.split(" ")[1].charAt(0) : account.nome_razao_social.charAt(0)} alt={account.nome_razao_social} className='[&>div>div]:bg-[#4f5e77] [&>div>div>span]:text-white [&>div>div>span]:text-xs [&>div>div]:border [&>div>div]:border-whiter' size='sm' />
+                                  ))
+                                }
 
-                    <button
-                      type="button"
-                      className="relative group flex h-8 w-8 items-center justify-center rounded-full border border-stroke bg-gray-200 text-primary dark:border-strokedark dark:bg-[#4f5e77] dark:text-white transition-all duration-300 ease-in-out hover:w-32 overflow-hidden"
-                      onClick={() => setToggleNovaConta(!toggleNovaConta)}
-                    >
-                      <div className="flex items-center justify-center">
-                        <svg
-                          className="fill-black dark:fill-gray-300"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M15 7H9V1C9 0.4 8.6 0 8 0C7.4 0 7 0.4 7 1V7H1C0.4 7 0 7.4 0 8C0 8.6 0.4 9 1 9H7V15C7 15.6 7.4 16 8 16C8.6 16 9 15.6 9 15V9H15C15.6 9 16 8.6 16 8C16 7.4 15.6 7 15 7Z"
-                            fill=""
-                          />
-                        </svg>
-                        <span className="-ml-20 opacity-0 font-satoshi font-normal transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:ml-2 whitespace-nowrap">
-                          Nova conta
-                        </span>
-                      </div>
-                    </button>
-                  </div>
-                </div>
-                {
-                  selectedAccount.nome_razao_social ? (
-                    <div className="flex flex-col gap-2 w-full sm:col-span-2">
-                      <label htmlFor="conta" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                        Conta
-                      </label>
-                      <input
-                        type="text"
-                        id="conta"
-                        className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                        value={selectedAccount.nome_razao_social}
-                        readOnly
-                      />
-                    </div>
-                  ) : (<span className='text-xs font-semibold self-end'>Vincular ou criar nova conta</span>)
-                }
-              </div>
+                                <button
+                                  type="button"
+                                  className="relative group flex h-8 w-8 items-center justify-center rounded-full border border-stroke bg-gray-200 text-primary dark:border-strokedark dark:bg-[#4f5e77] dark:text-white transition-all duration-300 ease-in-out hover:w-32 overflow-hidden"
+                                  onClick={() => setToggleNovaConta(!toggleNovaConta)}
+                                >
+                                  <div className="flex items-center justify-center">
+                                    <svg
+                                      className="fill-black dark:fill-gray-300"
+                                      width="16"
+                                      height="16"
+                                      viewBox="0 0 16 16"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        d="M15 7H9V1C9 0.4 8.6 0 8 0C7.4 0 7 0.4 7 1V7H1C0.4 7 0 7.4 0 8C0 8.6 0.4 9 1 9H7V15C7 15.6 7.4 16 8 16C8.6 16 9 15.6 9 15V9H15C15.6 9 16 8.6 16 8C16 7.4 15.6 7 15 7Z"
+                                        fill=""
+                                      />
+                                    </svg>
+                                    <span className="-ml-20 opacity-0 font-satoshi font-normal transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:ml-2 whitespace-nowrap">
+                                      Nova conta
+                                    </span>
+                                  </div>
+                                </button>
+                              </div>
+                            </div>
+                            {
+                              selectedAccount.nome_razao_social ? (
+                                <div className="flex flex-col gap-2 w-full sm:col-span-2">
+                                  <label htmlFor="conta" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                                    Conta
+                                  </label>
+                                  <input
+                                    type="text"
+                                    id="conta"
+                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                    value={selectedAccount.nome_razao_social}
+                                    readOnly
+                                  />
+                                </div>
+                              ) : (<span className='text-xs font-semibold self-end'>Vincular ou criar nova conta</span>)
+                            }
+                          </div>
 
-            </div>
+                        </div>
 
                         <div className="flex flex-col gap-2">
                           <label htmlFor="credor" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
@@ -722,7 +764,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                             className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                             {...register("credor", {})} />
                         </div>
-                        <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2">
+                        <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2 my-4">
 
                           <div className="flex flex-col gap-2 w-full sm:col-span-1">
                             <label htmlFor="cpf_cnpj" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
@@ -734,22 +776,47 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                               className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                               {...register("cpf_cnpj", {})} />
                           </div>
+                          <div className="flex flex-col gap-2 w-full sm:col-span-1 invisible ">
+
+                          </div>
 
 
 
+
+
+
+                        </div>
+                        <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2 my-4">
+
+                          <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                            <label htmlFor="npu" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                              Processo de Execução - NPU
+                            </label>
+                            <Controller
+                              name="npu"
+                              control={control}
+                              defaultValue=""
+                              render={({ field }) => (
+                                <Cleave
+                                  {...field}
+                                  className="w-full rounded-md border border-stroke bg-white px-3 text-sm font-medium dark:border-strokedark dark:bg-boxdark h-[34.5px]"
+                                  options={{
+                                    blocks: [7, 2, 4, 1, 2, 4],
+                                    delimiters: ['.', '-', '.', '.', '.'],
+                                    numericOnly: true
+                                  }}
+                                />
+                              )}
+                            />
+                          </div>
 
                           <div className="flex flex-col gap-2 w-full sm:col-span-1">
                             <label htmlFor="natureza" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                               Esfera
                             </label>
-
                             <ShadSelect
                               name='esfera'
                               control={control}
-
-
-                            // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
-
                             >
                               <SelectItem value="FEDERAL">Federal</SelectItem>
                               <SelectItem value="ESTADUAL">Estadual</SelectItem>
@@ -758,29 +825,74 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                           </div>
                         </div>
 
+                        <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2 my-4">
+
+                          <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                            <label htmlFor="ente_devedor" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                              Ente Devedor
+                            </label>
+                            <input
+                              type="text"
+                              id="ente_devedor"
+                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark  h-[34.5px]"
+                              {...register("ente_devedor", {})} />
+
+                          </div>
+
+                          <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                            <label htmlFor="estado_ente_devedor" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                              Estado do Ente Devedor
+                            </label>
+                            <ShadSelect
+                              name='estado_ente_devedor'
+                              control={control}
+                            >
+                              {
+                                estados.map((estado) => (
+                                  <SelectItem key={estado.id} value={estado.id}>{estado.nome}</SelectItem>
+                                ))
+                              }
+                            </ShadSelect>
+                          </div>
+                        </div>
+
+
+                        <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2 my-4">
+                          <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                          <label htmlFor="juizo_vara" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                              Juízo/Vara
+                            </label>
+                            <input
+                              type="text"
+                              id="juizo_vara"
+                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark h-[34.5px]"
+                              {...register("juizo_vara", {})} />
+                          </div>
+                          <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                            <label htmlFor="tribunal" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                              Tribunal
+                            </label>
+                            <ShadSelect
+                              name="tribunal"
+                              control={control}
+                              defaultValue={tribunais[0].nome}
+                            >
+                              {
+                                tribunais.map((tribunal) => (
+                                  <SelectItem key={tribunal.id} value={tribunal.id}>{tribunal.nome}</SelectItem>
+                                ))
+                              }
+                            </ShadSelect>
+                          </div>
+
+                        </div>
+
                         <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2">
                           <div className="flex flex-col gap-2 w-full sm:col-span-1">
                             <label htmlFor="tipo" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                               Tipo
                             </label>
-                            {/* <select
-                  id="tipo"
-                  className="rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark"
-                  {
-                  ...register("tipo_do_oficio", {
-                    required: "Campo obrigatório",
-                  })
-                  }
-                  defaultValue={enumTipoOficiosList[0]}
-                >
-                  {
-                    enumTipoOficiosList.map((status) => (
-                      <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                        {status}
-                      </option>
-                    ))
-                  }
-                </select> */}
+
                             <ShadSelect
                               name="tipo_do_oficio"
                               control={control}
@@ -797,24 +909,6 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                             <label htmlFor="status" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                               Status
                             </label>
-                            {/* <select
-                  id="status"
-                  className="rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark"
-                  {
-                  ...register("status", {
-                    required: "Campo obrigatório",
-                  })
-                  }
-                  defaultValue={enumOficiosList[0]}
-                >
-                  {
-                    enumOficiosList.map((status) => (
-                      <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                        {status}
-                      </option>
-                    ))
-                  }
-                </select> */}
                             <ShadSelect
                               name="status"
                               control={control}
