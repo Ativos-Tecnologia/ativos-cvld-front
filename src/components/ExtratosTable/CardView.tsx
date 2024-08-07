@@ -11,8 +11,9 @@ import useUpdateOficio from "@/hooks/useUpdateOficio";
 import MarvelousPagination from "../MarvelousPagination";
 import api from "@/utils/api";
 import { ImSpinner2 } from "react-icons/im";
+import { MiniMenu } from "./MiniMenu";
 
-const CardView = ({ className, data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop }: ExtractTableProps) => {
+const CardView = ({ className, data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop, checkedList, setCheckedList, handleDeleteExtrato, handleSelectRow, handleSelectAllRows }: ExtractTableProps) => {
 
     const enumOficiosList = Object.values(statusOficio);
     const enumTipoOficiosList = Object.values(tipoOficio);
@@ -85,21 +86,15 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
                 {data.results?.length > 0 ? (
                     <>
                         {data.results.map((item: CVLDResultProps, index: number) => (
-                            <div id={item.id} key={item.id} className="relative flex-1 flex flex-col justify-between xsm:w-full sm:max-w-[375px] bg-white border border-stroke shadow-3 gap-5 p-4 rounded-md dark:bg-black/20 dark:border-slate-600">
+                            <div id={item.id} key={item.id} className={`${checkedList!.some(target => target.id === item.id) && '!border-blue-400'} relative flex-1 flex flex-col justify-between xsm:w-full sm:max-w-[375px] bg-white border border-stroke shadow-3 gap-5 p-4 rounded-md dark:bg-black/20 dark:border-slate-600`}>
                                 <div className="relative h-29">
                                     <div className="absolute flex flex-col items-center top-2 right-0">
-                                        {showModalMessage ? (
-                                            <button onClick={() => setModalOptions({
-                                                open: true,
-                                                extractId: item.id
-                                            })} className="bg-transparent border-none flex transition-all duration-300 hover:opacity-80 dark:dark:text-red-500">
-                                                <BsFillTrashFill className="dark:hover:text-white h-4 w-4 self-center" style={{ cursor: loading ? 'wait' : 'pointer' }} />
-                                            </button>
-                                        ) : (
-                                            <button onClick={() => fetchDelete(item.id)} className="bg-transparent border-none flex transition-all duration-300 hover:opacity-80 dark:hover:text-white" style={{ cursor: loading ? 'wait' : 'pointer' }}>
-                                                <BsFillTrashFill className="dark:hover:text-white h-4 w-4 self-center" />
-                                            </button>
-                                        )}
+                                        <input
+                                            type="checkbox"
+                                            checked={checkedList!.some(target => target.id === item.id)}
+                                            className={`w-[15px] h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
+                                            onChange={() => handleSelectRow(item)}
+                                        />
                                         <div className="relative mt-1.5 flex flex-col items-center justify-center pt-1.5 border-t border-stroke dark:border-form-strokedark">
                                             <BiEditAlt
                                                 title="Editar Credor"
