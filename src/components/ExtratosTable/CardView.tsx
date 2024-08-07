@@ -80,30 +80,20 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
 
     return (
         <><div>
-
-            <MiniMenu
-                checkedList={checkedList}
-                setCheckedList={setCheckedList}
-                count={count}
-                currentPage={currentPage}
-                handleDeleteExtrato={handleDeleteExtrato}
-                handleSelectAllRows={handleSelectAllRows}
-            />
-
             <div
                 className="flex gap-4 flex-wrap">
 
                 {data.results?.length > 0 ? (
                     <>
                         {data.results.map((item: CVLDResultProps, index: number) => (
-                            <div id={item.id} key={item.id} className={`${checkedList!.includes(item.id) && '!border-blue-400'} relative flex-1 flex flex-col justify-between xsm:w-full sm:max-w-[375px] bg-white border border-stroke shadow-3 gap-5 p-4 rounded-md dark:bg-black/20 dark:border-slate-600`}>
+                            <div id={item.id} key={item.id} className={`${checkedList!.some(target => target.id === item.id) && '!border-blue-400'} relative flex-1 flex flex-col justify-between xsm:w-full sm:max-w-[375px] bg-white border border-stroke shadow-3 gap-5 p-4 rounded-md dark:bg-black/20 dark:border-slate-600`}>
                                 <div className="relative h-29">
                                     <div className="absolute flex flex-col items-center top-2 right-0">
                                         <input
                                             type="checkbox"
-                                            checked={checkedList!.includes(item.id)}
+                                            checked={checkedList!.some(target => target.id === item.id)}
                                             className={`w-[15px] h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
-                                            onChange={() => handleSelectRow(item.id)}
+                                            onChange={() => handleSelectRow(item)}
                                         />
                                         <div className="relative mt-1.5 flex flex-col items-center justify-center pt-1.5 border-t border-stroke dark:border-form-strokedark">
                                             <BiEditAlt
