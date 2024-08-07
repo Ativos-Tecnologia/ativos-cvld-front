@@ -28,9 +28,6 @@ import { SelectItem } from '../ui/select';
 export function DrawerConta({ loading, open, setOpen }: { loading: boolean, open: boolean, setOpen: any }) {
   const selectRef = React.useRef<HTMLDivElement | null>(null);
 
-  console.log(selectRef);
-
-
   const { register, handleSubmit, control } = useForm();
   const onSubmit = (data: any) => console.log(data);
   const handleClose = () => setOpen(false);

@@ -19,6 +19,10 @@ import { BiChevronRight, BiLineChart } from 'react-icons/bi';
 import { UpdatePrecatorioButton } from '../Button/UpdatePrecatorioButton';
 import { DrawerConta } from '../Drawer/DrawerConta';
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
+import { ShadSelect } from '../ShadSelect';
+import { SelectItem } from '../ui/select';
+import { PaginatedResponse } from '../TaskElements';
+import { Avatar } from 'flowbite-react';
 
 
 
@@ -32,6 +36,7 @@ interface ChartTwoState {
 type CVLDFormProps = {
   dataCallback: (data: any) => void;
   setCalcStep: (stage: string) => void;
+  setDataToAppend: (data: any) => void;
 };
 
 // interface CPFCNPJprops {
@@ -40,7 +45,7 @@ type CVLDFormProps = {
 //   numericOnly: boolean;
 // }
 
-const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
+const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataToAppend }) => {
   const {
     register,
     control,
@@ -61,8 +66,18 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [roleCNJ, setRoleCNJ] = useState<boolean>(false);
   const [toggleNovaConta, setToggleNovaConta] = useState<boolean>(false);
+  const [accountList, setAccountList] = useState<PaginatedResponse<any> | null>(null);
+  const [selectedAccount, setSelectedAccount] = useState<{
+    id: string;
+    nome_razao_social: string;
+  }>({
+    id: '',
+    nome_razao_social: '',
+  });
 
   const mySwal = UseMySwal();
+
+
 
 
   const [state, setState] = useState<ChartTwoState>({
@@ -106,6 +121,27 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
 
   }, [oficioForm, setValue]);
 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const [accountList] = await Promise.all([api.get("/api/conta/list/")]);
+      if (accountList.status === 200) {
+        setAccountList(accountList.data);
+      }
+      setLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    // Atualiza o valor do campo hidden quando selectedAccount mudar
+    if (selectedAccount?.id) {
+      setValue("conta", selectedAccount.id);
+    }
+  }, [selectedAccount, setValue]);
+
   const isUserAdmin = () => {
     const token = localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`);
     const decoded: JWTToken = jwtDecode(token!);
@@ -133,12 +169,20 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
       data.data_limite_de_atualizacao = new Date().toISOString().split("T")[0];
     }
 
+    if (!data.status) {
+      data.status = 'ENCARTEIRADO';
+    }
+
+    if (!data.natureza) {
+      data.natureza = "NÃO TRIBUTÁRIA";
+    }
+
     if (!data.ir_incidente_rra) {
       data.numero_de_meses = undefined;
     }
 
     if (!data.incidencia_pss) {
-      data.valor_pss = undefined;
+      data.valor_pss = 0;
     }
 
     if (!data.upload_notion) {
@@ -149,19 +193,29 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
       data.npu = "0000000-00.0000.0.00.0000";
     }
 
+    if (!data.numero_de_meses) {
+      data.numero_de_meses = 0;
+    }
+
     setLoading(true);
 
     try {
       setCalcStep("calculating");
 
-      const response = await api.post("/api/extrato/create/", data)
-      if (response.status === 201) {
+      const response = data.gerar_cvld ? await api.post("/api/extrato/create/", data) : await api.post("/api/extrato/query/", data);
+
+
+      if (response.status === 201 || response.status === 200) {
         setCredits({
           ...credits,
           available_credits: credits.available_credits - response.data.result[0].price,
         });
 
-        dataCallback(response.data);
+        response.status === 200 ? dataCallback(response.data) : (
+          setDataToAppend(response.data),
+          dataCallback(response.data)
+        )
+
         setCalcStep('done');
 
         const formatedPrincipal = parseFloat(data.valor_principal).toFixed(2);
@@ -284,166 +338,12 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
       </div>
       {
         <form className="mt-8 space-y-5" onSubmit={handleSubmit(onSubmit)}>
+          <input type="hidden" {...register("conta")} />
           <div className="grid grid-cols-2 gap-5 sm:grid-cols-2">
-            <div className="flex gap-2 w-full sm:col-span-2 justify-end">
-              <div>
-                <div className="flex -space-x-2">
-
-                  <button type="button" className="h-9 w-9 rounded-full border-2 border-white dark:border-boxdark">
-                    <Image
-                      width={36}
-                      height={36}
-                      src={"/images/user/user-07.png"}
-                      alt="User"
-                    />
-                  </button>
-                  <button type="button" className="h-9 w-9 rounded-full border-2 border-white dark:border-boxdark">
-                    <Image
-                      width={36}
-                      height={36}
-                      src={"/images/user/user-08.png"}
-                      alt="User"
-                    />
-                  </button>
-                  <button type="button" className="h-9 w-9 rounded-full border-2 border-white dark:border-boxdark">
-                    <Image
-                      width={36}
-                      height={36}
-                      src={"/images/user/user-09.png"}
-                      alt="User"
-                    />
-                  </button>
-                  <button type="button" className="h-9 w-9 rounded-full border-2 border-white dark:border-boxdark">
-                    <Image
-                      width={36}
-                      height={36}
-                      src={"/images/user/user-10.png"}
-                      alt="User"
-                    />
-                  </button>
-                  {/* <button type="button" className="expand-button flex h-9 w-30 items-center justify-center rounded-full border border-stroke bg-gray-200 text-primary dark:border-strokedark dark:bg-[#4f5e77] dark:text-white" onClick={() => setToggleNovaConta(!toggleNovaConta)}>
-                    <p className='pr-2 font-semibold text'>Nova conta</p>
-                    <svg
-                      className="fill-black dark:fill-gray-300 icon"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 16 16"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M15 7H9V1C9 0.4 8.6 0 8 0C7.4 0 7 0.4 7 1V7H1C0.4 7 0 7.4 0 8C0 8.6 0.4 9 1 9H7V15C7 15.6 7.4 16 8 16C8.6 16 9 15.6 9 15V9H15C15.6 9 16 8.6 16 8C16 7.4 15.6 7 15 7Z"
-                        fill=""
-                      />
-                    </svg>
-                  </button> */}
-<button
-  type="button"
-  className="group flex h-9 w-9 items-center justify-center rounded-full border border-stroke bg-gray-200 text-primary dark:border-strokedark dark:bg-[#4f5e77] dark:text-white transition-all duration-300 ease-in-out hover:w-32 overflow-hidden"
-  onClick={() => setToggleNovaConta(!toggleNovaConta)}
->
-  <div className="flex items-center justify-center">
-    <svg
-      className="fill-black dark:fill-gray-300"
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M15 7H9V1C9 0.4 8.6 0 8 0C7.4 0 7 0.4 7 1V7H1C0.4 7 0 7.4 0 8C0 8.6 0.4 9 1 9H7V15C7 15.6 7.4 16 8 16C8.6 16 9 15.6 9 15V9H15C15.6 9 16 8.6 16 8C16 7.4 15.6 7 15 7Z"
-        fill=""
-      />
-    </svg>
-    <span className="-ml-20 opacity-0 transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:ml-2 whitespace-nowrap">
-      Nova conta
-    </span>
-  </div>
-</button>
 
 
 
 
-                </div>
-
-
-
-              </div>
-            </div>
-
-
-
-            <div className="flex flex-col gap-2 w-full sm:col-span-1">
-              <label htmlFor="tipo" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                Tipo
-              </label>
-              <select
-                id="tipo"
-                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark"
-                {
-                ...register("tipo_do_oficio", {
-                  required: "Campo obrigatório",
-                })
-                }
-                defaultValue={enumTipoOficiosList[0]}
-              >
-                {
-                  enumTipoOficiosList.map((status) => (
-                    <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                      {status}
-                    </option>
-                  ))
-                }
-              </select>
-            </div>
-            <div className="flex flex-col gap-2 w-full sm:col-span-1">
-              <label htmlFor="status" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                Status
-              </label>
-              <select
-                id="status"
-                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark"
-                {
-                ...register("status", {
-                  required: "Campo obrigatório",
-                })
-                }
-                defaultValue={enumOficiosList[0]}
-              >
-                {
-                  enumOficiosList.map((status) => (
-                    <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                      {status}
-                    </option>
-                  ))
-                }
-              </select>
-            </div>
-
-
-            <span className="text-lg font-semibold text-black dark:text-white">Dados do Principal</span>
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
-
-            <div className="flex flex-col gap-2">
-              <label htmlFor="credor" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                Nome/Razão Social do Credor Principal
-              </label>
-              <input
-                type="text"
-                id="credor"
-                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                {...register("credor", {})} />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label htmlFor="cpf_cnpj" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                CPF/CNPJ
-              </label>
-              <input
-                type="text"
-                id="cpf_cnpj"
-                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                {...register("cpf_cnpj", {})} />
-            </div>
 
 
 
@@ -451,38 +351,20 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
               <label htmlFor="natureza" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                 Natureza
               </label>
-              <select
-                id="natureza"
-                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
-                {
-                ...register("natureza", {
-                  required: "Campo obrigatório",
-                })
-                }
+
+              <ShadSelect
+                name='natureza'
+                control={control}
                 defaultValue={"NÃO TRIBUTÁRIA"}
+
+              // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
+
               >
-                <option value="NÃO TRIBUTÁRIA">Não Tributário</option>
-                <option value="TRIBUTÁRIA">Tributário</option>
-              </select>
+                <SelectItem defaultValue="NÃO TRIBUTÁRIA" value="NÃO TRIBUTÁRIA">Não Tributária</SelectItem>
+                <SelectItem value="TRIBUTÁRIA">Tributária</SelectItem>
+              </ShadSelect>
             </div>
-            <div className="flex flex-col gap-2 w-full sm:col-span-1 invisible">
-              {/* <label htmlFor="natureza" className="text-sm font-medium text-meta-5">
-                Natureza
-              </label>
-              <select
-                id="natureza"
-                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                {
-                ...register("natureza", {
-                  required: "Campo obrigatório",
-                })
-                }
-                defaultValue={"NÃO TRIBUTÁRIA"}
-              >
-                <option value="NÃO TRIBUTÁRIA">Não Tributário</option>
-                <option value="TRIBUTÁRIA">Tributário</option>
-              </select> */}
-            </div>
+
             <div className="flex flex-col gap-2">
               <label htmlFor="valor_principal" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                 Valor Principal
@@ -751,15 +633,203 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                     className="rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                     {...register("gerar_cvld")}
                   />
-                  <label htmlFor="gerar_cvld" className="text-sm font-medium text-meta-5">
+                  {/* <label htmlFor="gerar_cvld" className="text-sm font-medium text-meta-5">
                     Emitir Certidão de Valor Líquido Disponível (CVLD)?
+                  </label> */}
+                  <label htmlFor="gerar_cvld" className="text-sm font-medium text-meta-5">
+                    Salvar informações de ofício e recálculo?
                   </label>
                 </div>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 mt-4">
                   {
                     watch("gerar_cvld") ? (
                       <>
-                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4">
+                        <span className="text-lg font-semibold text-black dark:text-white">Dados do Principal</span>
+                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4"></div>
+
+                        <div className="flex gap-2 w-full sm:col-span-2 justify-end mb-4">
+              <div className='flex flex-col'>
+                <div className='flex justify-end'>
+                  <div className="flex -space-x-1 self-end">
+
+                    {
+                      accountList?.results.map((account) => (
+                        <Avatar onClick={() => {
+                          setSelectedAccount({
+                            id: account.id,
+                            nome_razao_social: account.nome_razao_social,
+                          })
+
+                          console.log(selectedAccount);
+
+
+                        }} key={account.id} rounded placeholderInitials={account.nome_razao_social.split(" ").length > 1 ? account.nome_razao_social.split(" ")[0].charAt(0) + account.nome_razao_social.split(" ")[1].charAt(0) : account.nome_razao_social.charAt(0)} alt={account.nome_razao_social} className='[&>div>div]:bg-[#4f5e77] [&>div>div>span]:text-white [&>div>div>span]:text-xs [&>div>div]:border [&>div>div]:border-whiter' size='sm' />
+                      ))
+                    }
+
+                    <button
+                      type="button"
+                      className="relative group flex h-8 w-8 items-center justify-center rounded-full border border-stroke bg-gray-200 text-primary dark:border-strokedark dark:bg-[#4f5e77] dark:text-white transition-all duration-300 ease-in-out hover:w-32 overflow-hidden"
+                      onClick={() => setToggleNovaConta(!toggleNovaConta)}
+                    >
+                      <div className="flex items-center justify-center">
+                        <svg
+                          className="fill-black dark:fill-gray-300"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M15 7H9V1C9 0.4 8.6 0 8 0C7.4 0 7 0.4 7 1V7H1C0.4 7 0 7.4 0 8C0 8.6 0.4 9 1 9H7V15C7 15.6 7.4 16 8 16C8.6 16 9 15.6 9 15V9H15C15.6 9 16 8.6 16 8C16 7.4 15.6 7 15 7Z"
+                            fill=""
+                          />
+                        </svg>
+                        <span className="-ml-20 opacity-0 font-satoshi font-normal transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:ml-2 whitespace-nowrap">
+                          Nova conta
+                        </span>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+                {
+                  selectedAccount.nome_razao_social ? (
+                    <div className="flex flex-col gap-2 w-full sm:col-span-2">
+                      <label htmlFor="conta" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                        Conta
+                      </label>
+                      <input
+                        type="text"
+                        id="conta"
+                        className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                        value={selectedAccount.nome_razao_social}
+                        readOnly
+                      />
+                    </div>
+                  ) : (<span className='text-xs font-semibold self-end'>Vincular ou criar nova conta</span>)
+                }
+              </div>
+
+            </div>
+
+                        <div className="flex flex-col gap-2">
+                          <label htmlFor="credor" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                            Nome/Razão Social do Credor Principal
+                          </label>
+                          <input
+                            type="text"
+                            id="credor"
+                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                            {...register("credor", {})} />
+                        </div>
+                        <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2">
+
+                          <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                            <label htmlFor="cpf_cnpj" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                              CPF/CNPJ
+                            </label>
+                            <input
+                              type="text"
+                              id="cpf_cnpj"
+                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              {...register("cpf_cnpj", {})} />
+                          </div>
+
+
+
+
+                          <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                            <label htmlFor="natureza" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                              Esfera
+                            </label>
+
+                            <ShadSelect
+                              name='esfera'
+                              control={control}
+
+
+                            // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
+
+                            >
+                              <SelectItem value="FEDERAL">Federal</SelectItem>
+                              <SelectItem value="ESTADUAL">Estadual</SelectItem>
+                              <SelectItem value="MUNICIPAL">Municipal</SelectItem>
+                            </ShadSelect>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2">
+                          <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                            <label htmlFor="tipo" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                              Tipo
+                            </label>
+                            {/* <select
+                  id="tipo"
+                  className="rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark"
+                  {
+                  ...register("tipo_do_oficio", {
+                    required: "Campo obrigatório",
+                  })
+                  }
+                  defaultValue={enumTipoOficiosList[0]}
+                >
+                  {
+                    enumTipoOficiosList.map((status) => (
+                      <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                        {status}
+                      </option>
+                    ))
+                  }
+                </select> */}
+                            <ShadSelect
+                              name="tipo_do_oficio"
+                              control={control}
+                              defaultValue={enumTipoOficiosList[0]}
+                            >
+                              {
+                                enumTipoOficiosList.map((status) => (
+                                  <SelectItem key={status} value={status}>{status}</SelectItem>
+                                ))
+                              }
+                            </ShadSelect>
+                          </div>
+                          <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                            <label htmlFor="status" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                              Status
+                            </label>
+                            {/* <select
+                  id="status"
+                  className="rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark"
+                  {
+                  ...register("status", {
+                    required: "Campo obrigatório",
+                  })
+                  }
+                  defaultValue={enumOficiosList[0]}
+                >
+                  {
+                    enumOficiosList.map((status) => (
+                      <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                        {status}
+                      </option>
+                    ))
+                  }
+                </select> */}
+                            <ShadSelect
+                              name="status"
+                              control={control}
+                              defaultValue={enumOficiosList[0]}
+                            >
+                              {
+                                enumOficiosList.map((status) => (
+                                  <SelectItem key={status} value={status}>{status}</SelectItem>
+                                ))
+                              }
+                            </ShadSelect>
+                          </div>
+
+                        </div>
+                        {/* <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4">
                           <span className="text-lg font-semibold text-primary mt-8">Dados do Colaborador</span>
                           &nbsp;
                           <div className="flex flex-col gap-2">
@@ -1090,7 +1160,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep }) => {
                               className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                               {...register("n_precatorio", {})} />
                           </div>
-                        </div>
+                        </div> */}
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                           {/* <div className="flex flex-col gap-2">
                         <label htmlFor="valor_penhora" className="text-sm font-medium text-meta-5">

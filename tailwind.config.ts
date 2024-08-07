@@ -25,6 +25,7 @@ const config = {
     },
     fontFamily: {
       nexa: ["Nexa", "sans-serif"],
+      satoshi : ["Satoshi", "sans-serif"],
       // sans: ["Inter", "sans-serif"],
     },
 
