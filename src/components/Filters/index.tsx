@@ -5,6 +5,8 @@ import { ImTable } from 'react-icons/im'
 import statusOficio from '@/enums/statusOficio.enum';
 import StatusFilter from './StatusFilter';
 import { MdOutlineFilterAltOff } from 'react-icons/md';
+import { BiArchive } from 'react-icons/bi';
+import { PiWarningCircleLight } from 'react-icons/pi';
 
 export interface IFilterProps {
     resetFilters?: () => void;
@@ -13,13 +15,26 @@ export interface IFilterProps {
     oficioSelectValue?: string | null;
     setStatusSelectValue: React.Dispatch<React.SetStateAction<statusOficio | null>>;
     setOficioSelectValue?: React.Dispatch<React.SetStateAction<string | null>>;
+    fetchData?: (query: string) => Promise<void>;
 }
 
 type ActiveState = "ALL" | "PRECATÓRIO" | "R.P.V" | "CREDITÓRIO";
+type ActiveFilterState = "NONE" | "ARQUIVADOS";
 
-const Filters: React.FC<IFilterProps> = ({ resetFilters, filterData, statusSelectValue, oficioSelectValue, setStatusSelectValue, setOficioSelectValue }) => {
+const Filters: React.FC<IFilterProps> = ({ resetFilters, filterData, statusSelectValue, oficioSelectValue, setStatusSelectValue, setOficioSelectValue, fetchData }) => {
 
     const [active, setActive] = useState<ActiveState>('ALL');
+    const [tableFilter, setTableFilter] = useState<ActiveFilterState>('NONE');
+
+    const handleFilterTable = () => {
+        if (tableFilter === "ARQUIVADOS") {
+            setTableFilter("NONE");
+            fetchData!('');
+        } else {
+            setTableFilter("ARQUIVADOS");
+            fetchData!('?showMode=archived');
+        }
+    }
 
     const handleOficioStatus = (oficio: string) => {
         setActive(oficio as ActiveState)
@@ -75,14 +90,32 @@ const Filters: React.FC<IFilterProps> = ({ resetFilters, filterData, statusSelec
             <div className='flex items-center justify-center gap-1'>
                 <StatusFilter filterData={filterData} statusSelectValue={statusSelectValue} setStatusSelectValue={setStatusSelectValue} />
 
-                <div
-                    title='limpar filtro de status'
-                    className={`${statusSelectValue ? 'opacity-100 visible translate-x-0' : 'opacity-0 invisible translate-y-5'} relative w-6 h-6 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md transition-all duration-500 cursor-pointer`}
-                    onClick={handleCleanStatusFilter}
-                >
-                    <MdOutlineFilterAltOff />
-                </div>
+                {statusSelectValue && (
+                    <div
+                        title='limpar filtro de status'
+                        className={`${statusSelectValue ? 'opacity-100 visible translate-x-0' : 'opacity-0 invisible translate-y-5'} relative w-6 h-6 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md transition-all duration-500 cursor-pointer`}
+                        onClick={handleCleanStatusFilter}
+                    >
+                        <MdOutlineFilterAltOff />
+                    </div>
+                )}
             </div>
+
+            {/* separator */}
+            <div className="w-px mx-1 h-5 bg-zinc-300 dark:bg-form-strokedark"></div>
+            {/* separator */}
+
+            <div
+                title='Clique uma vez para filtrar. Clique novamente para retirar o filtro.'
+                onClick={handleFilterTable}
+                className={`relative flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs uppercase border-b border-transparent hover:border-slate-300 dark:hover:border-slate-700 transition-colors duration-200 cursor-pointer ${tableFilter === "ARQUIVADOS" && '!border-slate-300 dark:!border-slate-700'}`}>
+                <BiArchive className='text-sm' />
+                <span>ARQUIVADOS</span>
+                <PiWarningCircleLight title='Esta feature está em desenvolvimento e pode apresentar problemas.'
+                    className='absolute -right-2 top-0'
+                />
+            </div>
+
         </div>
     )
 }
