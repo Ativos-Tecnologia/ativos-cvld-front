@@ -15,7 +15,6 @@ import api from '@/utils/api';
 import { ImCopy, ImSpinner2 } from 'react-icons/im';
 import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants';
 import { AiOutlineUser } from 'react-icons/ai';
-import { MdOutlineArchive } from 'react-icons/md';
 import { toast } from 'sonner';
 import { MiniMenu } from './MiniMenu';
 
@@ -55,11 +54,6 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
 
     // refs
     const inputRefs = useRef<HTMLInputElement[] | null>([]);
-
-    const handleTask = (id: string) => {
-        setOpenTaskDrawer(true);
-        setExtractId(id);
-    }
 
     const handleCopyValue = (index: number) => {
 
@@ -111,14 +105,13 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                     results: newResults
                 });
             } else {
-                toast("Erro!", {
+                toast(`houve um erro inesperado ao salvar os dados. Erro ${response.status}`, {
                     classNames: {
                         toast: "dark:bg-form-strokedark",
                         title: "dark:text-snow",
                         description: "dark:text-snow",
                         actionButton: "!bg-slate-100 dark:bg-form-strokedark"
                     },
-                    description: `houve um erro inesperado ao salvar os dados. Erro ${response.status}`,
                     action: {
                         label: "Fechar",
                         onClick: () => console.log('done')
@@ -147,15 +140,6 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
 
     return (
         <><div className='relative'>
-
-            <MiniMenu 
-            checkedList={checkedList}
-            setCheckedList={setCheckedList}
-            count={count}
-            currentPage={currentPage}
-            handleDeleteExtrato={handleDeleteExtrato}
-            handleSelectAllRows={handleSelectAllRows} 
-            />
 
             <Flowbite theme={{ theme: customTheme }}>
                 <Table>
@@ -200,7 +184,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                             <>
                                 {data.results.map((item: CVLDResultProps, index: number) => (
 
-                                    <TableRow key={item.id} className={`${checkedList!.includes(item.id) && 'bg-blue-50 dark:bg-form-strokedark'} hover:shadow-3 dark:hover:shadow-body group`}>
+                                    <TableRow key={item.id} className={`${checkedList!.some(target => target.id === item.id) && 'bg-blue-50 dark:bg-form-strokedark'} hover:shadow-3 dark:hover:shadow-body group`}>
 
                                         {/* <TableCell className="px-1 text-center ">
                                             <input
@@ -215,9 +199,9 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                             <div className='flex items-center justify-center gap-3'>
                                                 <input
                                                     type="checkbox"
-                                                    checked={checkedList!.includes(item.id)}
-                                                    className={`opacity-50 w-[15px] group-hover:opacity-100 ${checkedList!.includes(item.id) && '!opacity-100'} h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
-                                                    onChange={() => handleSelectRow(item.id)}
+                                                    checked={checkedList!.some(target => target.id === item.id)}
+                                                    className={`opacity-50 w-[15px] group-hover:opacity-100 ${checkedList!.some(target => target.id === item.id) && '!opacity-100'} h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
+                                                    onChange={() => handleSelectRow(item)}
                                                 />
                                                 <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
                                                     <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => updateOficioTipo(item.id, e.target.value as tipoOficio)}>

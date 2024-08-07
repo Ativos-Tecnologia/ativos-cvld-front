@@ -1,17 +1,19 @@
+import { CVLDResultProps } from '@/interfaces/IResultCVLD';
 import React from 'react'
 import { BiMinus, BiTrash } from 'react-icons/bi';
 import { MdOutlineArchive } from 'react-icons/md';
 
 interface ITableMenuProps {
-    checkedList: string[] | undefined;
-    setCheckedList: React.Dispatch<React.SetStateAction<string[]>> | undefined;
+    checkedList: CVLDResultProps[] | undefined;
+    setCheckedList: React.Dispatch<React.SetStateAction<CVLDResultProps[] | never[]>> | undefined;
     count: number;
     currentPage: number;
     handleSelectAllRows: () => void;
     handleDeleteExtrato: () => void;
+    handleArchieveExtrato: (ids: string[]) => void;
 }
 
-export const MiniMenu = ({ checkedList, setCheckedList, count, currentPage, handleSelectAllRows, handleDeleteExtrato }: ITableMenuProps) => {
+export const MiniMenu = ({ checkedList, setCheckedList, count, currentPage, handleSelectAllRows, handleDeleteExtrato, handleArchieveExtrato }: ITableMenuProps) => {
     return (
         <div className="flex max-h-6 items-center justify-between my-3">
             <div className='flex items-center'>
@@ -60,6 +62,7 @@ export const MiniMenu = ({ checkedList, setCheckedList, count, currentPage, hand
                     <div
                         title='Arquivar selecionado(s)'
                         className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer"
+                        onClick={() => handleArchieveExtrato(checkedList!.map(item => item.id))}
                     >
                         <MdOutlineArchive className='text-lg' />
                     </div>
