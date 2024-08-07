@@ -50,7 +50,6 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
     const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
     const [editableLabel, setEditableLabel] = useState<string | null>(null);
     const [editLabelState, setEditLabelState] = useState<string>('');
-    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     // refs
     const inputRefs = useRef<HTMLInputElement[] | null>([]);
@@ -59,7 +58,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
 
         navigator.clipboard.writeText(numberFormat(data.results[index].valor_liquido_disponivel));
 
-        toast("Valor copiado para sua área de transferência.", {
+        toast("Valor copiado para área de transferência.", {
             classNames: {
                 toast: "dark:bg-form-strokedark",
                 title: "dark:text-snow",

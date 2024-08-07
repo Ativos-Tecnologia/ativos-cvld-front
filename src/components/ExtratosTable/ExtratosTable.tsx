@@ -63,9 +63,9 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   const viewModeRef = useRef<HTMLSelectElement | null>(null);
   const mainRef = useRef<HTMLDivElement | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = async (query: string) => {
     setLoading(true);
-    const response = await api.get("api/extratos/");
+    const response = await api.get(`api/extratos/${query}`);
     setData(response.data);
     setLoading(false);
   }
@@ -102,7 +102,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
         })
       }
 
-      fetchData();
+      fetchData('');
       setCheckedList([]);
 
     } catch (error) {
@@ -133,7 +133,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
       return;
     }
 
-    fetchData();
+    fetchData('');
 
     // setData({
     //   results: [...checkedList, ...data.results],
@@ -162,7 +162,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
       return;
     }
 
-    fetchData();
+    fetchData('');
   }
 
   const fetchDataById = async (id: string) => {
@@ -306,7 +306,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
         }
       })
 
-      fetchData();
+      fetchData('');
       setCheckedList([]);
 
     } catch (error) {
@@ -335,7 +335,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   }
 
   useEffect(() => {
-    fetchData();
+    fetchData('');
     fetchStateFromLocalStorage();
   }, []);
 
@@ -374,7 +374,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     };
     document.addEventListener("keydown", keyHandler);
     return () => document.removeEventListener("keydown", keyHandler);
-  }, []);
+  });
 
   return (
     <div
@@ -395,6 +395,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                   oficioSelectValue={oficioSelectValue}
                   setStatusSelectValue={setStatusSelectValue}
                   setOficioSelectValue={setOficioSelectValue}
+                  fetchData={fetchData}
                 />
                 {/* end filters */}
 
