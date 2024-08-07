@@ -8,20 +8,22 @@ interface ShadSelectProps {
   children: React.ReactNode;
   label?: string;
   placeholder?: string;
+  defaultValue?: string;
+  required?: boolean;
 }
 
-export const ShadSelect = ({ name, control, children, label, placeholder }: ShadSelectProps) => {
+export const ShadSelect = ({ name, control, children, label, placeholder, defaultValue, required=false}: ShadSelectProps) => {
   return (
     <Controller
       name={name}
       control={control}
       render={({ field: { onChange, value } }) => (
-        <Select required value={value} onValueChange={onChange}>
+        <Select required={required} value={value} onValueChange={onChange} name={name} defaultValue={defaultValue} >
           <SelectTrigger>
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
+          <SelectContent >
+            <SelectGroup >
               {label && <SelectLabel>{label}</SelectLabel>}
               {children}
             </SelectGroup>

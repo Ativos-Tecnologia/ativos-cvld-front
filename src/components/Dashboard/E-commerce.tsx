@@ -8,6 +8,7 @@ import MapOne from "../Maps/MapOne";
 
 const ECommerce: React.FC = () => {
   const [data, setData] = useState<ApiResponse>({ result: [], setData: () => { } });
+  const [dataToAppend, setDataToAppend] = useState<ApiResponse>({ result: [], setData: () => { } });
 
   const [calcStep, setCalcStep] = useState<string | null>(null);
 
@@ -101,7 +102,7 @@ const ECommerce: React.FC = () => {
       </div> */}
 
       <div className="w-full mt-0 grid grid-cols-12 gap-4 md:gap-6 2xl:gap-7.5">
-        <MainForm dataCallback={setData} setCalcStep={setCalcStep} />
+        <MainForm dataCallback={setData} setCalcStep={setCalcStep} setDataToAppend={setDataToAppend} />
         {calcStep === 'calculating' ? (
             <ResultCVLDSkeleton />
         ) : <CVLDResult result={data.result} setData={setData} />}
@@ -109,7 +110,7 @@ const ECommerce: React.FC = () => {
         {/* <MapOne /> */}
         {/* <div className="col-span-12 xl:col-span-8"> */}
         <div className="col-span-12">
-          <ExtratosTable newItem={data.result} />
+          <ExtratosTable newItem={dataToAppend.result} />
         </div>
         {/*
         <ChatCard /> */}
