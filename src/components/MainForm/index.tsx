@@ -14,7 +14,7 @@ import Link from 'next/link';
 import React, { useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { AiOutlineLoading } from 'react-icons/ai';
-import { BiChevronRight, BiLineChart } from 'react-icons/bi';
+import { BiChevronRight, BiLineChart, BiLogoUpwork } from 'react-icons/bi';
 
 import { UpdatePrecatorioButton } from '../Button/UpdatePrecatorioButton';
 import { DrawerConta } from '../Drawer/DrawerConta';
@@ -103,7 +103,6 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
   const [oficioForm, setOficioForm] = useState<any>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [roleCNJ, setRoleCNJ] = useState<boolean>(false);
   const [toggleNovaConta, setToggleNovaConta] = useState<boolean>(false);
   const [accountList, setAccountList] = useState<PaginatedResponse<any> | null>(null);
   const [selectedAccount, setSelectedAccount] = useState<{
@@ -405,7 +404,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
             </div>
             <div className="flex flex-col gap-2 w-full sm:col-span-1 invisible ">
 
-</div>
+            </div>
 
             <div className="flex flex-col gap-2">
               <label htmlFor="valor_principal" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
@@ -666,264 +665,293 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
             }
 
             {/* CVLD */}
-            {data.role === "cnj" || data.role === "ativos" && (
-              <div className="flex flex-col gap-2 sm:col-span-2">
-                <div className="flex gap-2 ">
-                  <input
-                    type="checkbox"
-                    id="gerar_cvld"
-                    className="rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                    {...register("gerar_cvld")}
-                  />
-                  {/* <label htmlFor="gerar_cvld" className="text-sm font-medium text-meta-5">
+            <div className="flex flex-col gap-2 sm:col-span-2">
+              <div className="flex gap-2 ">
+                <input
+                  type="checkbox"
+                  id="gerar_cvld"
+                  className="rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                  {...register("gerar_cvld")}
+                />
+                {/* <label htmlFor="gerar_cvld" className="text-sm font-medium text-meta-5">
                     Emitir Certidão de Valor Líquido Disponível (CVLD)?
                   </label> */}
-                  <label htmlFor="gerar_cvld" className="text-xs font-nexa font-semibold text-meta-5 uppercase">
-                    Salvar informações de ofício e recálculo?
-                  </label>
-                </div>
-                <div className="flex flex-col gap-2 mt-4">
-                  {
-                    watch("gerar_cvld") ? (
-                      <>
-                        {/* <span className="text-lg font-semibold text-black dark:text-white">Dados do Principal</span> */}
-                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2"></div>
+                <label htmlFor="gerar_cvld" className="text-xs font-nexa font-semibold text-meta-5 uppercase">
+                  Salvar informações de ofício e recálculo?
+                </label>
+              </div>
+              <div className="flex flex-col gap-2 mt-4">
+                {
+                  watch("gerar_cvld") ? (
+                    <>
+                      {/* <span className="text-lg font-semibold text-black dark:text-white">Dados do Principal</span> */}
+                      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2"></div>
 
-                        <div className="flex gap-2 w-full sm:col-span-2 justify-end mb-4">
-                          <div className='flex flex-col'>
-                            <div className='flex justify-end'>
-                              <div className="flex -space-x-1 self-end">
+                      <div className="flex gap-2 w-full sm:col-span-2 justify-end mb-4">
+                        <div className='flex flex-col'>
+                          <div className='flex justify-end'>
+                            <div className="flex -space-x-1 self-end">
 
-                                {
-                                  accountList?.results.map((account) => (
-                                    <Avatar onClick={() => {
-                                      setSelectedAccount({
-                                        id: account.id,
-                                        nome_razao_social: account.nome_razao_social,
-                                      })
+                              {
+                                accountList?.results.map((account) => (
+                                  <Avatar onClick={() => {
+                                    setSelectedAccount({
+                                      id: account.id,
+                                      nome_razao_social: account.nome_razao_social,
+                                    })
 
-                                      console.log(selectedAccount);
+                                    console.log(selectedAccount);
 
 
-                                    }} key={account.id} rounded placeholderInitials={account.nome_razao_social.split(" ").length > 1 ? account.nome_razao_social.split(" ")[0].charAt(0) + account.nome_razao_social.split(" ")[1].charAt(0) : account.nome_razao_social.charAt(0)} alt={account.nome_razao_social} className='[&>div>div]:bg-[#4f5e77] [&>div>div>span]:text-white [&>div>div>span]:text-xs [&>div>div]:border [&>div>div]:border-whiter' size='sm' />
-                                  ))
-                                }
+                                  }} key={account.id} rounded placeholderInitials={account.nome_razao_social.split(" ").length > 1 ? account.nome_razao_social.split(" ")[0].charAt(0) + account.nome_razao_social.split(" ")[1].charAt(0) : account.nome_razao_social.charAt(0)} alt={account.nome_razao_social} className='[&>div>div]:bg-[#4f5e77] [&>div>div>span]:text-white [&>div>div>span]:text-xs [&>div>div]:border [&>div>div]:border-whiter' size='sm' />
+                                ))
+                              }
 
-                                <button
-                                  type="button"
-                                  className="relative group flex h-8 w-8 items-center justify-center rounded-full border border-stroke bg-gray-200 text-primary dark:border-strokedark dark:bg-[#4f5e77] dark:text-white transition-all duration-300 ease-in-out hover:w-32 overflow-hidden"
-                                  onClick={() => setToggleNovaConta(!toggleNovaConta)}
-                                >
-                                  <div className="flex items-center justify-center">
-                                    <svg
-                                      className="fill-black dark:fill-gray-300"
-                                      width="16"
-                                      height="16"
-                                      viewBox="0 0 16 16"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M15 7H9V1C9 0.4 8.6 0 8 0C7.4 0 7 0.4 7 1V7H1C0.4 7 0 7.4 0 8C0 8.6 0.4 9 1 9H7V15C7 15.6 7.4 16 8 16C8.6 16 9 15.6 9 15V9H15C15.6 9 16 8.6 16 8C16 7.4 15.6 7 15 7Z"
-                                        fill=""
-                                      />
-                                    </svg>
-                                    <span className="-ml-20 opacity-0 font-satoshi font-normal transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:ml-2 whitespace-nowrap">
-                                      Nova conta
-                                    </span>
-                                  </div>
-                                </button>
-                              </div>
-                            </div>
-                            {
-                              selectedAccount.nome_razao_social ? (
-                                <div className="flex flex-col gap-2 w-full sm:col-span-2">
-                                  <label htmlFor="conta" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                                    Conta
-                                  </label>
-                                  <input
-                                    type="text"
-                                    id="conta"
-                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                    value={selectedAccount.nome_razao_social}
-                                    readOnly
-                                  />
+                              <button
+                                type="button"
+                                className="relative group flex h-8 w-8 items-center justify-center rounded-full border border-stroke bg-gray-200 text-primary dark:border-strokedark dark:bg-[#4f5e77] dark:text-white transition-all duration-300 ease-in-out hover:w-32 overflow-hidden"
+                                onClick={() => setToggleNovaConta(!toggleNovaConta)}
+                              >
+                                <div className="flex items-center justify-center">
+                                  <svg
+                                    className="fill-black dark:fill-gray-300"
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 16 16"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path
+                                      d="M15 7H9V1C9 0.4 8.6 0 8 0C7.4 0 7 0.4 7 1V7H1C0.4 7 0 7.4 0 8C0 8.6 0.4 9 1 9H7V15C7 15.6 7.4 16 8 16C8.6 16 9 15.6 9 15V9H15C15.6 9 16 8.6 16 8C16 7.4 15.6 7 15 7Z"
+                                      fill=""
+                                    />
+                                  </svg>
+                                  <span className="-ml-20 opacity-0 font-satoshi font-normal transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:ml-2 whitespace-nowrap">
+                                    Nova conta
+                                  </span>
                                 </div>
-                              ) : (<span className='text-xs font-semibold self-end'>Vincular ou criar nova conta</span>)
-                            }
+                              </button>
+                            </div>
                           </div>
-
+                          {
+                            selectedAccount.nome_razao_social ? (
+                              <div className="flex flex-col gap-2 w-full sm:col-span-2">
+                                <label htmlFor="conta" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                                  Conta
+                                </label>
+                                <input
+                                  type="text"
+                                  id="conta"
+                                  className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                  value={selectedAccount.nome_razao_social}
+                                  readOnly
+                                />
+                              </div>
+                            ) : (<span className='text-xs font-semibold self-end'>Vincular ou criar nova conta</span>)
+                          }
                         </div>
 
-                        <div className="flex flex-col gap-2">
-                          <label htmlFor="credor" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                            Nome/Razão Social do Credor Principal
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        <label htmlFor="credor" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                          Nome/Razão Social do Credor Principal
+                        </label>
+                        <input
+                          type="text"
+                          id="credor"
+                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                          {...register("credor", {})} />
+                      </div>
+                      <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2 my-4">
+
+                        <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                          <label htmlFor="cpf_cnpj" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                            CPF/CNPJ
                           </label>
                           <input
                             type="text"
-                            id="credor"
+                            id="cpf_cnpj"
                             className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                            {...register("credor", {})} />
+                            {...register("cpf_cnpj", {})} />
                         </div>
-                        <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2 my-4">
+                        <div className="flex flex-col gap-2 w-full sm:col-span-1 invisible ">
 
-                          <div className="flex flex-col gap-2 w-full sm:col-span-1">
-                            <label htmlFor="cpf_cnpj" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                              CPF/CNPJ
-                            </label>
-                            <input
-                              type="text"
-                              id="cpf_cnpj"
-                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                              {...register("cpf_cnpj", {})} />
-                          </div>
-                          <div className="flex flex-col gap-2 w-full sm:col-span-1 invisible ">
-
-                          </div>
-
-
-
-
-
-
-                        </div>
-                        <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2 my-4">
-
-                          <div className="flex flex-col gap-2 w-full sm:col-span-1">
-                            <label htmlFor="npu" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                              Processo de Execução - NPU
-                            </label>
-                            <Controller
-                              name="npu"
-                              control={control}
-                              defaultValue=""
-                              render={({ field }) => (
-                                <Cleave
-                                  {...field}
-                                  className="w-full rounded-md border border-stroke bg-white px-3 text-sm font-medium dark:border-strokedark dark:bg-boxdark h-[34.5px]"
-                                  options={{
-                                    blocks: [7, 2, 4, 1, 2, 4],
-                                    delimiters: ['.', '-', '.', '.', '.'],
-                                    numericOnly: true
-                                  }}
-                                />
-                              )}
-                            />
-                          </div>
-
-                          <div className="flex flex-col gap-2 w-full sm:col-span-1">
-                            <label htmlFor="natureza" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                              Esfera
-                            </label>
-                            <ShadSelect
-                              name='esfera'
-                              control={control}
-                            >
-                              <SelectItem value="FEDERAL">Federal</SelectItem>
-                              <SelectItem value="ESTADUAL">Estadual</SelectItem>
-                              <SelectItem value="MUNICIPAL">Municipal</SelectItem>
-                            </ShadSelect>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2 my-4">
-
-                          <div className="flex flex-col gap-2 w-full sm:col-span-1">
-                            <label htmlFor="ente_devedor" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                              Ente Devedor
-                            </label>
-                            <input
-                              type="text"
-                              id="ente_devedor"
-                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark  h-[34.5px]"
-                              {...register("ente_devedor", {})} />
-
-                          </div>
-
-                          <div className="flex flex-col gap-2 w-full sm:col-span-1">
-                            <label htmlFor="estado_ente_devedor" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                              Estado do Ente Devedor
-                            </label>
-                            <ShadSelect
-                              name='estado_ente_devedor'
-                              control={control}
-                            >
-                              {
-                                estados.map((estado) => (
-                                  <SelectItem key={estado.id} value={estado.id}>{estado.nome}</SelectItem>
-                                ))
-                              }
-                            </ShadSelect>
-                          </div>
                         </div>
 
 
-                        <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2 my-4">
-                          <div className="flex flex-col gap-2 w-full sm:col-span-1">
+
+
+
+
+                      </div>
+                      <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2 my-4">
+
+                        <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                          <label htmlFor="npu" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                            Processo de Execução - NPU
+                          </label>
+                          <Controller
+                            name="npu"
+                            control={control}
+                            defaultValue=""
+                            render={({ field }) => (
+                              <Cleave
+                                {...field}
+                                className="w-full rounded-md border border-stroke bg-white px-3 text-sm font-medium dark:border-strokedark dark:bg-boxdark h-[34.5px]"
+                                options={{
+                                  blocks: [7, 2, 4, 1, 2, 4],
+                                  delimiters: ['.', '-', '.', '.', '.'],
+                                  numericOnly: true
+                                }}
+                              />
+                            )}
+                          />
+                        </div>
+
+                        <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                          <label htmlFor="natureza" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                            Esfera
+                          </label>
+                          <ShadSelect
+                            name='esfera'
+                            control={control}
+                          >
+                            <SelectItem value="FEDERAL">Federal</SelectItem>
+                            <SelectItem value="ESTADUAL">Estadual</SelectItem>
+                            <SelectItem value="MUNICIPAL">Municipal</SelectItem>
+                          </ShadSelect>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2 my-4">
+
+                        <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                          <label htmlFor="ente_devedor" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                            Ente Devedor
+                          </label>
+                          <input
+                            type="text"
+                            id="ente_devedor"
+                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark  h-[34.5px]"
+                            {...register("ente_devedor", {})} />
+
+                        </div>
+
+                        <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                          <label htmlFor="estado_ente_devedor" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                            Estado do Ente Devedor
+                          </label>
+                          <ShadSelect
+                            name='estado_ente_devedor'
+                            control={control}
+                          >
+                            {
+                              estados.map((estado) => (
+                                <SelectItem key={estado.id} value={estado.id}>{estado.nome}</SelectItem>
+                              ))
+                            }
+                          </ShadSelect>
+                        </div>
+                      </div>
+
+
+                      <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2 my-4">
+                        <div className="flex flex-col gap-2 w-full sm:col-span-1">
                           <label htmlFor="juizo_vara" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                              Juízo/Vara
-                            </label>
-                            <input
-                              type="text"
-                              id="juizo_vara"
-                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark h-[34.5px]"
-                              {...register("juizo_vara", {})} />
-                          </div>
-                          <div className="flex flex-col gap-2 w-full sm:col-span-1">
-                            <label htmlFor="tribunal" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                              Tribunal
-                            </label>
-                            <ShadSelect
-                              name="tribunal"
-                              control={control}
-                              defaultValue={tribunais[0].nome}
-                            >
-                              {
-                                tribunais.map((tribunal) => (
-                                  <SelectItem key={tribunal.id} value={tribunal.id}>{tribunal.nome}</SelectItem>
-                                ))
-                              }
-                            </ShadSelect>
-                          </div>
+                            Juízo/Vara
+                          </label>
+                          <input
+                            type="text"
+                            id="juizo_vara"
+                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark h-[34.5px]"
+                            {...register("juizo_vara", {})} />
+                        </div>
+                        <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                          <label htmlFor="tribunal" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                            Tribunal
+                          </label>
+                          <ShadSelect
+                            name="tribunal"
+                            control={control}
+                            defaultValue={tribunais[0].nome}
+                          >
+                            {
+                              tribunais.map((tribunal) => (
+                                <SelectItem key={tribunal.id} value={tribunal.id}>{tribunal.nome}</SelectItem>
+                              ))
+                            }
+                          </ShadSelect>
+                        </div>
+
+                      </div>
+
+                      <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2">
+                        <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                          <label htmlFor="tipo" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                            Tipo
+                          </label>
+
+                          <ShadSelect
+                            name="tipo_do_oficio"
+                            control={control}
+                            defaultValue={enumTipoOficiosList[0]}
+                          >
+                            {
+                              enumTipoOficiosList.map((status) => (
+                                <SelectItem key={status} value={status}>{status}</SelectItem>
+                              ))
+                            }
+                          </ShadSelect>
+                        </div>
+                        <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                          <label htmlFor="status" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                            Status
+                          </label>
+                          <ShadSelect
+                            name="status"
+                            control={control}
+                            defaultValue={enumOficiosList[0]}
+                          >
+                            {
+                              enumOficiosList.map((status) => (
+                                <SelectItem key={status} value={status}>{status}</SelectItem>
+                              ))
+                            }
+                          </ShadSelect>
+                        </div>
+
+                      </div>
+                      <span className="text-lg font-semibold text-primary mt-8">Contato</span>
+                      <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2">
+
+                        <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                          <label htmlFor="email" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                            Email de Contato
+                          </label>
+
+                          <input
+                            type="email"
+                            id="email_contato"
+                            placeholder='ada@lovelace.com'
+                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                            {...register("email_contato", {})} />
+                        </div>
+                        <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                          <label htmlFor="status" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                            Telefone de Contato
+                          </label>
+                          <input
+                            type="tel"
+                            id="telefone_contato"
+                            placeholder='(00) 00000-0000'
+                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                            {...register("telefone_contato", {})} />
+
 
                         </div>
 
-                        <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2">
-                          <div className="flex flex-col gap-2 w-full sm:col-span-1">
-                            <label htmlFor="tipo" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                              Tipo
-                            </label>
-
-                            <ShadSelect
-                              name="tipo_do_oficio"
-                              control={control}
-                              defaultValue={enumTipoOficiosList[0]}
-                            >
-                              {
-                                enumTipoOficiosList.map((status) => (
-                                  <SelectItem key={status} value={status}>{status}</SelectItem>
-                                ))
-                              }
-                            </ShadSelect>
-                          </div>
-                          <div className="flex flex-col gap-2 w-full sm:col-span-1">
-                            <label htmlFor="status" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                              Status
-                            </label>
-                            <ShadSelect
-                              name="status"
-                              control={control}
-                              defaultValue={enumOficiosList[0]}
-                            >
-                              {
-                                enumOficiosList.map((status) => (
-                                  <SelectItem key={status} value={status}>{status}</SelectItem>
-                                ))
-                              }
-                            </ShadSelect>
-                          </div>
-
-                        </div>
-                        {/* <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4">
+                      </div>
+                      {/* <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4">
                           <span className="text-lg font-semibold text-primary mt-8">Dados do Colaborador</span>
                           &nbsp;
                           <div className="flex flex-col gap-2">
@@ -1255,8 +1283,8 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                               {...register("n_precatorio", {})} />
                           </div>
                         </div> */}
-                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                          {/* <div className="flex flex-col gap-2">
+                      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                        {/* <div className="flex flex-col gap-2">
                         <label htmlFor="valor_penhora" className="text-sm font-medium text-meta-5">
                           Penhora/Arresto <span className="text-xs text-meta-4">(se houver)</span>
                         </label>
@@ -1314,51 +1342,63 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                           className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark disabled:opacity-50 cursor-not-allowed"
                           {...register("outras_deducoes", {})} />
                       </div> */}
-                        </div></>
-                    ) : null
-                  }
-                </div>
-                {
-                  isUserAdmin() && watch("gerar_cvld") ? (
-                    <><hr className="border border-stroke dark:border-strokedark my-8 col-span-2" /><div className="flex flex-col gap-2">
-                      <span className="text-lg font-semibold text-primary mb-4">Opções de Administrador 🛡️</span>
-                      <div className="flex flex-col gap-2 sm:col-span-2">
-                        <div className="flex gap-2">
-                          <input type="checkbox"
-                            id="upload_notion"
-                            defaultChecked={false}
-                            className="rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                            {...register("upload_notion")} />
-                          <label htmlFor="upload_notion" className="text-sm font-medium text-meta-5">
-                            Fazer upload para o Notion
-                          </label>
-                        </div>
-                        {watch("upload_notion") === true ? (
-                          <div className="flex flex-col gap-2">
-                            <label htmlFor="notion_db_id" className="text-sm font-medium text-meta-5">
-                              Banco de dados
-                            </label>
-                            <select id="notion_db_id" className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                              {...register("notion_db_id", {
-                                required: "Campo obrigatório",
-                              })}
-                              defaultValue={"notion_prec_prospect_db_id"}>
-                              <option value="notion_prec_prospect_db_id">Comercial</option>
-                              <option value="notion_prec_prospect_partners_db_id">Parceiro - Distribuição</option>
-                              <option value="notion_prec_prospect_partners_brito_e_pimentel_db_id">Parceiro - Brito E Pimentel</option>
-                              <option value="notion_prec_prospect_partners_marcela_vasconcelos_db_id">Parceiro - Marcela Vasconcelos</option>
-                              <option value="notion_prec_prospect_partners_antecippe_db_id">Parceiro - Antecippe</option>
-                              <option value="notion_prec_prospect_dev_db_id">Dev</option>
-                            </select>
-                          </div>
-                        ) : null}
-                      </div>
-                    </div>
-                    </>
+                      </div></>
                   ) : null
                 }
               </div>
-            )}
+              {
+                data.role === "ativos" || data.role === "judit" && watch("gerar_cvld") ? (
+                  <><hr className="border border-stroke dark:border-strokedark my-8 col-span-2" /><div className="flex flex-col gap-2">
+                    {/* <span className="text-lg font-semibold text-primary mb-4">Opções de Administrador 🛡️</span> */}
+                    <div className="flex flex-col gap-2 sm:col-span-2">
+                      <div className="flex gap-2">
+                        <input type="checkbox"
+                          id="upload_notion"
+                          defaultChecked={false}
+                          className="rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                          {...register("upload_notion")} />
+                        <label htmlFor="upload_notion" className="text-sm font-medium text-meta-5">
+                          Fazer upload para o Notion
+                        </label>
+                      </div>
+                      {watch("upload_notion") === true ? (
+                        <div className="flex flex-col gap-2">
+                          <label htmlFor="notion_db_id" className="text-sm font-medium text-meta-5 flex flex-row align-self-baseline">
+                            <BiLogoUpwork className="h-4 w-4 mt-0.5 mr-2" /> Selecione o Workspace
+                          </label>
+                          <select id="notion_db_id" className="flex uppercase font-semibold font-satoshi text-xs w-full items-center justify-between rounded-md border border-input bg-background px-2 py-2  ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 dark:bg-boxdark-2"
+
+                            {...register("notion_db_id", {
+                              required: "Campo obrigatório",
+                            })}
+                            defaultValue={"notion_prec_fed_db_id"}>
+                            {data.role === "ativos" && (
+                              <>
+                              <option value="notion_prec_fed_db_id">PRECATÓRIOS FEDERAIS - BASE PRÓPRIA</option>
+                              <option value="notion_prec_reg_com_db_id">PRECATÓRIOS REGIME COMUM - BASE PRÓPRIA</option>
+                              <option value="notion_prec_fed_partners_db_id">PRECATÓRIOS FEDERAIS - PARCEIROS</option>
+                              <option value="notion_prec_reg_com_partners_db_id">PRECATÓRIOS REGIME COMUM - PARCEIROS</option>
+                              <option value="notion_prec_prospect_dev_db_id">Dev</option></>
+                            )}
+
+                            {
+                              data.role === "judit" || data.role === "ativos" && (
+                                <>
+                                  <option value="notion_prec_fed_judit_db_id">PRECATÓRIOS FEDERAIS - JUDIT</option>
+                                  <option value="notion_prec_reg_com_judit_db_id">PRECATÓRIOS REGIME COMUM - JUDIT</option>
+                                </>
+                              )
+                            }
+                          </select>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                  </>
+                ) : null
+              }
+            </div>
+
 
           </div>
           <div className="flex justify-center my-8">
