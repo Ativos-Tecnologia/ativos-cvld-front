@@ -56,6 +56,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     items: []
   });
   const { filterData, resetFilters } = useFilter(data, setData, setStatusSelectValue, setOficioSelectValue, auxData, statusSelectValue, oficioSelectValue);
+  console.log(checkedList)
 
   // refs
   const viewModeRef = useRef<HTMLSelectElement | null>(null);
@@ -295,23 +296,32 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     }
   }
 
+  // - função que seleciona uma linha/card da extratos table
   const handleSelectRow = (item: CVLDResultProps) => {
 
-    if (checkedList && setCheckedList) {
-
-      if (checkedList!.length === 0) {
-        setCheckedList([item]);
-        return;
-      }
-
-      checkedList.forEach(target => {
-        if (target.id === item.id) {
-          setCheckedList(checkedList.filter(target => target.id !== item.id));
-        } else {
-          setCheckedList([...checkedList, item]);
-        }
-      })
+    if (checkedList.length === 0) {
+      setCheckedList([item]);
+      return;
     }
+
+    const alreadySelected = checkedList.some(target => target.id === item.id);
+
+    if (alreadySelected) {
+      setCheckedList(checkedList.filter(target => target.id !== item.id));
+    } else {
+      setCheckedList([...checkedList, item]);
+    }
+
+    // checkedList.forEach(target => {
+
+    //   console.log(target.id, item.id)
+
+    //   if (target.id === item.id) {
+    //     setCheckedList(checkedList.filter(target => target.id !== item.id));
+    //   } else {
+    //     setCheckedList([...checkedList, item]);
+    //   }
+    // })
 
   }
 
