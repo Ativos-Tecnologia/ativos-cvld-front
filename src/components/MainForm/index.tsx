@@ -423,7 +423,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                 render={({ field }) => (
                   <Cleave
                     {...field}
-                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                     options={{
                       numeral: true,
                       numeralThousandsGroupStyle: "thousand",
@@ -449,7 +449,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                 render={({ field }) => (
                   <Cleave
                     {...field}
-                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                     options={{
                       numeral: true,
                       numeralPositiveOnly: true,
@@ -473,7 +473,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                 <input
                   type="date"
                   id="data_base"
-                  className={`${errors.data_base && '!border-rose-400 !ring-0'} w-full rounded-md border bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark`}
+                  className={`${errors.data_base && '!border-rose-400 !ring-0'} w-full rounded-md border bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
                   {
                   ...register("data_base", {
                     required: "Campo obrigatório",
@@ -507,7 +507,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                 <input
                   type="date"
                   id="data_requisicao"
-                  className={`${errors.data_requisicao && '!border-rose-400 !ring-0'} w-full rounded-md border bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark`}
+                  className={`${errors.data_requisicao && '!border-rose-400 !ring-0'} w-full rounded-md border bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
                   {
                   ...register("data_requisicao", {
                     required: "Campo obrigatório",
@@ -557,7 +557,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                   <input
                     type="number"
                     id="numero_de_meses"
-                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                     min={0}
                     {
                     ...register("numero_de_meses", {
@@ -600,7 +600,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                     render={({ field }) => (
                       <Cleave
                         {...field}
-                        className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                        className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                         options={{
                           numeral: true,
                           numeralThousandsGroupStyle: "thousand",
@@ -646,7 +646,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                   <input
                     type="date"
                     id="data_limite_de_atualizacao"
-                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                     {
                     ...register("data_limite_de_atualizacao", {
                     })
@@ -767,7 +767,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                         <input
                           type="text"
                           id="credor"
-                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                           {...register("credor", {})} />
                       </div>
                       <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2 my-4">
@@ -779,7 +779,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                           <input
                             type="text"
                             id="cpf_cnpj"
-                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                             {...register("cpf_cnpj", {})} />
                         </div>
                         <div className="flex flex-col gap-2 w-full sm:col-span-1 invisible ">
@@ -808,7 +808,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                             render={({ field }) => (
                               <Cleave
                                 {...field}
-                                className="w-full rounded-md border border-stroke bg-white px-3 text-sm font-medium dark:border-strokedark dark:bg-boxdark h-[34.5px]"
+                                className="w-full rounded-md border border-stroke bg-white px-3 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2 h-[34.5px]"
                                 options={{
                                   blocks: [7, 2, 4, 1, 2, 4],
                                   delimiters: ['.', '-', '.', '.', '.'],
@@ -843,7 +843,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                           <input
                             type="text"
                             id="ente_devedor"
-                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark  h-[34.5px]"
+                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2 h-[34.5px]"
                             {...register("ente_devedor", {})} />
 
                         </div>
@@ -874,7 +874,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                           <input
                             type="text"
                             id="juizo_vara"
-                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark h-[34.5px]"
+                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2 h-[34.5px]"
                             {...register("juizo_vara", {})} />
                         </div>
                         <div className="flex flex-col gap-2 w-full sm:col-span-1">
@@ -943,7 +943,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                             type="email"
                             id="email_contato"
                             placeholder='ada@lovelace.com'
-                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                             {...register("email_contato", {})}
                           />
                         </div>
@@ -951,13 +951,35 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                           <label htmlFor="telefone_contato" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                             Telefone de Contato
                           </label>
-                          <input
+
+                          <Controller
+                            name="telefone_contato"
+                            control={control}
+                            defaultValue=""
+                            rules={{
+                              pattern: {
+                                value: /^(?:\d{2})\d{8,9}$/,
+                                message: "Número de telefone inválido"
+                              }
+                            }}
+                            render={({ field }) => (
+                              <InputMask
+                                {...field}
+                                mask="(99) 99999-9999"
+                                maskChar={null}
+                                placeholder="(00) 00000-0000"
+                                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                              />
+                            )}
+                          />
+
+                          {/* <input
                             type="tel"
                             id="telefone_contato"
                             placeholder='(00) 00000-0000'
                             className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                             {...register("telefone_contato", {})}
-                          />
+                          /> */}
                         </div>
                         {contatoNumberCount === 1 && (
                           <div
@@ -976,7 +998,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                               Telefone de Contato (2)
                             </label>
 
-                            {/* <Controller
+                            <Controller
                               name="telefone_contato_2"
                               control={control}
                               defaultValue=""
@@ -992,18 +1014,18 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                                   mask="(99) 99999-9999"
                                   maskChar={null}
                                   placeholder="(00) 00000-0000"
-                                  className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                  className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                                 />
                               )}
-                            /> */}
+                            />
 
-                            <input
+                            {/* <input
                               type="tel"
                               id="telefone_contato"
                               placeholder='(00) 00000-0000'
                               className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                               {...register("telefone_contato_2", {})}
-                            />
+                            /> */}
                             {contatoNumberCount === 2 && (
                               <>
                                 <div
@@ -1027,13 +1049,34 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                                 Telefone de Contato (3)
                               </label>
 
-                              <input
+                              <Controller
+                                name="telefone_contato_3"
+                                control={control}
+                                defaultValue=""
+                                rules={{
+                                  pattern: {
+                                    value: /^(?:\d{2})\d{8,9}$/,
+                                    message: "Número de telefone inválido"
+                                  }
+                                }}
+                                render={({ field }) => (
+                                  <InputMask
+                                    {...field}
+                                    mask="(99) 99999-9999"
+                                    maskChar={null}
+                                    placeholder="(00) 00000-0000"
+                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                  />
+                                )}
+                              />
+
+                              {/* <input
                                 type="tel"
                                 id="telefone_contato"
                                 placeholder='(00) 00000-0000'
                                 className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                                 {...register("telefone_contato_3", {})}
-                              />
+                              /> */}
                               {contatoNumberCount === 3 && (
                                 <div
                                   title='Remover telefone de contato'
