@@ -1347,7 +1347,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                 }
               </div>
               {
-                data.role === "ativos" || data.role === "judit" && watch("gerar_cvld") ? (
+                (data.role === "ativos" || data.role === "judit") && watch("gerar_cvld") ? (
                   <><hr className="border border-stroke dark:border-strokedark my-8 col-span-2" /><div className="flex flex-col gap-2">
                     {/* <span className="text-lg font-semibold text-primary mb-4">Opções de Administrador 🛡️</span> */}
                     <div className="flex flex-col gap-2 sm:col-span-2">
