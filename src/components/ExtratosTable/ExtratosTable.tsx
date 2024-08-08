@@ -1,4 +1,3 @@
-
 import api from "@/utils/api";
 import { Suspense, useEffect, useRef, useState } from "react";
 import UseMySwal from "@/hooks/useMySwal";
@@ -13,7 +12,6 @@ import statusOficio from "@/enums/statusOficio.enum";
 import Filters from "../Filters";
 import { useFilter } from "@/hooks/useFilter";
 import DeleteExtractAlert from "../Modals/DeleteExtract";
-import { set } from "date-fns";
 import { toast } from "sonner";
 import { MiniMenu } from "./MiniMenu";
 
@@ -135,13 +133,6 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
     fetchData('');
 
-    // setData({
-    //   results: [...checkedList, ...data.results],
-    //   count: data.count,
-    //   next: data.next,
-    //   previous: data.previous
-    // });
-
     if (showModalMessage) {
       setModalOptions({
         open: false,
@@ -167,19 +158,9 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
   const fetchDataById = async (id: string) => {
     setLoading(true);
-
-    // if (lastId === id) {
-    //   setOpenDetailsDrawer(!openDetailsDrawer);
-    //   setLoading(false);
-    //   return;
-    // }
-
     setItem((await api.get(`api/extrato/${id}/`)).data);
     setLastId(id);
-
-
     setLoading(false);
-
   }
 
   const fetchStateFromLocalStorage = () => {
