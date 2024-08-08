@@ -16,7 +16,9 @@ const SidebarLinkGroup = ({
     setOpen(!open);
   };
 
-  return <li>{children(handleClick, open)}</li>;
+  return <li className="relative">
+    {children(handleClick, open)}
+  </li>;
 };
 
 export default SidebarLinkGroup;

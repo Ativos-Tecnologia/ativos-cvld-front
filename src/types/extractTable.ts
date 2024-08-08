@@ -1,5 +1,6 @@
 import { PaginatedResponse } from "@/components/TaskElements";
 import { CVLDResultProps } from "@/interfaces/IResultCVLD";
+import { Dispatch } from "react";
 
 export type ExtractTableProps = {
     className?: string;
@@ -9,9 +10,9 @@ export type ExtractTableProps = {
     loading: boolean;
     setModalOptions: React.Dispatch<React.SetStateAction<{
         open: boolean,
-        extractId: string
+        items: CVLDResultProps[] | never[]
     }>>;
-    fetchDelete: (id: string) => void;
+    fetchDelete: (ids: string[]) => void;
     setOpenDetailsDrawer: React.Dispatch<React.SetStateAction<boolean>>;
     setOpenTaskDrawer: React.Dispatch<React.SetStateAction<boolean>>;
     setExtractId: React.Dispatch<React.SetStateAction<string>>;
@@ -21,4 +22,9 @@ export type ExtractTableProps = {
     currentPage: number;
     setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
     callScrollTop: () => void;
+    checkedList: CVLDResultProps[] | never[];
+    setCheckedList: React.Dispatch<React.SetStateAction<CVLDResultProps[] | never[]>>;
+    handleSelectRow: (item: CVLDResultProps) => void;
+    handleSelectAllRows: () => void;
+    handleDeleteExtrato: () => void;
 }

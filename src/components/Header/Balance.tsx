@@ -1,10 +1,10 @@
 import React, { useContext, useState } from "react";
-import { Popover } from "flowbite-react";
 import { BiChevronRight, BiDollarCircle } from "react-icons/bi";
 import { BsExclamation } from "react-icons/bs";
 import { UserInfoAPIContext, UserInfoContextType } from "@/context/UserInfoContext";
 import PricingModal from "../Shop/PricingModal";
 import ShopModal from "../Shop";
+import { Popover } from "flowbite-react";
 
 export const Balance = () => {
 
@@ -59,7 +59,7 @@ export const Balance = () => {
                                     </p>
                                 )}
 
-                                <button onClick={() => setModalOpen(true)} className="group self-start text-primary text-sm mt-2 font-semibold dark:text-white">
+                                <button onClick={() => setModalOpen(true)} className="group self-start text-blue-700 hover:text-blue-800 dark:text-blue-500 dark:hover:text-blue-600 text-sm mt-5 font-semibold">
                                     Adquirir Créditos
                                     <BiChevronRight style={{
                                         width: "22px",
@@ -70,29 +70,12 @@ export const Balance = () => {
                         </div>
                     }
                 >
-                    {/* <a href="#" className={`hidden sm:flex items-center justify-center gap-2 text-sm ${credits.available_credits === 0 ? 'border border-meta-1 text-meta-1 hover:text-rose-500 hover:border-rose-500 dark:text-red dark:border-red dark:hover:text-rose-500 dark:hover:border-rose-500' : 'dark:border-stone-500 dark:hover:text-stone-200 hover:text-primary'} dark:bg-meta-4 dark:text-white`}>
-                        <span
-                            className={`absolute -top-1 -right-0.5 z-1 h-2.5 w-2.5 rounded-full bg-meta-1`}
-                        >
-                            {credits.available_credits <= 10 && (<span className="absolute -z-1 inline-flex h-full w-full top-0 left-0 animate-ping rounded-full bg-meta-1 opacity-75"></span>)}
-                        </span>
-                        <p className="font-medium">Créditos: {credits.available_credits}</p>
-                        <div>
-                            <BsExclamation className="w-5 h-5 text-meta-1 dark:text-red animate-wiggle transition-all duration-300" />
-                        </div>
-                    </a> */}
+
                     <a href="#" className="flex relative items-center justify-center rounded-full text-sm px-2 py-[2px] border-[0.5px] border-stroke dark:border-strokedark dark:bg-meta-4 dark:text-white">
-                        {/* <span
-                            className={`absolute -bottom-1.5 w-[29px] -right-1.5 z-1 p-[3px] rounded-full text-white bg-meta-1 text-xs`}
-                        >
-                            {credits.available_credits <= 10 && (<span className="absolute -z-1 inline-flex h-full w-full top-0 left-0 animate-ping rounded-full bg-meta-1 opacity-75"></span>)}
-                            <p className="text-center">
-                                {credits.available_credits <= 99 ? credits.available_credits : '99+'}
-                            </p>
-                        </span> */}
+
                         {credits.available_credits <= 10 && (
                             <div className="absolute -top-1 -left-1 w-4 h-4 rounded-full flex items-center justify-center bg-meta-1">
-                                <BsExclamation className="w-4 h-4 text-white animate-wiggle transition-all duration-300" />
+                                <BsExclamation className="w-4 h-4 text-white animate-wiggle" />
                             </div>
                         )}
                         <BiDollarCircle className="w-6 h-6 text-yellow-300" />

@@ -1,0 +1,35 @@
+import * as React from 'react';
+import { Select, SelectTrigger, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectValue } from '@/components/ui/select';
+import { Controller } from 'react-hook-form';
+
+interface ShadSelectProps {
+  name: string;
+  control: any;
+  children: React.ReactNode;
+  label?: string;
+  placeholder?: string;
+  defaultValue?: string;
+  required?: boolean;
+}
+
+export const ShadSelect = ({ name, control, children, label, placeholder, defaultValue, required=false}: ShadSelectProps) => {
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field: { onChange, value } }) => (
+        <Select required={required} value={value} onValueChange={onChange} name={name} defaultValue={defaultValue} >
+          <SelectTrigger>
+            <SelectValue placeholder={placeholder} />
+          </SelectTrigger>
+          <SelectContent >
+            <SelectGroup >
+              {label && <SelectLabel>{label}</SelectLabel>}
+              {children}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      )}
+    />
+  );
+};

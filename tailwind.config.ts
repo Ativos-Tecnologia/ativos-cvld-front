@@ -1,19 +1,21 @@
-import type { Config } from "tailwindcss";
-import defaultTheme from "tailwindcss/defaultTheme";
-import flowbite from "flowbite-react/tailwind";
+import flowbite from 'flowbite-react/tailwind';
+import defaultTheme from 'tailwindcss/defaultTheme';
 
-const config: Config = {
+import type { Config } from "tailwindcss"
+const config = {
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    './pages/**/*.{ts,tsx}',
+    './components/**/*.{ts,tsx}',
+    './app/**/*.{ts,tsx}',
+    './src/**/*.{ts,tsx}',
     flowbite.content(),
-  ],
-  darkMode: "class",
+	],
+  darkMode: ["class"],
+  prefix: "",
   theme: {
-    fontFamily: {
-      satoshi: ["Satoshi", "sans-serif"],
-      nexa: ["Nexa", "sans-serif"]
+    container: {
+      center: true,
+      padding: "2rem",
     },
     screens: {
       "2xsm": "375px",
@@ -21,13 +23,54 @@ const config: Config = {
       "3xl": "2000px",
       ...defaultTheme.screens,
     },
+    fontFamily: {
+      nexa: ["Nexa", "sans-serif"],
+      satoshi : ["Satoshi", "sans-serif"],
+      // sans: ["Inter", "sans-serif"],
+    },
+
     extend: {
+
       colors: {
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
         current: "currentColor",
         transparent: "transparent",
         white: "#FFFFFF",
         snow: "#FAFAFA",
-        black: "#1C2434",
+        black: "#4f4f4f",
+        red: "#FB5454",
         "black-2": "#111111",
         "red-50": "#FFF0F0",
         "red-100": "#ffdddd",
@@ -44,16 +87,14 @@ const config: Config = {
         bodydark: "#AEB7C0",
         bodydark1: "#DEE4EE",
         bodydark2: "#8A99AF",
-        primary: "#3C50E0",
-        secondary: "#80CAEE",
         stroke: "#E2E8F0",
         gray: "#EFF4FB",
         "gray-50": "#F9FAFB",
         "gray-100": "#F7F9FC",
         "gray-200": "#E5E7EB",
         "gray-300": "#D1D5DB",
-        "gray-400": "#666666",
-        "gray-500": "#555555",
+        "gray-400": "#9ca3af",
+        "gray-500": "#6b7280",
         "gray-700": "#333333",
         "gray-900": "#111827",
         graydark: "#333A48",
@@ -290,7 +331,20 @@ const config: Config = {
         4: "0px 0px 2px rgba(0, 0, 0, 0.2)",
         5: "0px 1px 5px rgba(0, 0, 0, 0.2)",
       },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
       keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
         jump:{
           '0,100%': {
             transform: 'translateY(0)',
@@ -404,8 +458,9 @@ const config: Config = {
           "50%": { transform: "translateY(0)" },
         },
       },
-
       animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
         jump: 'jump 500ms ease-in-out',
         flip: 'flip-vertical-right 3.5s infinite linear',
         wiggle: 'wiggle 2.5s infinite',
@@ -433,6 +488,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [flowbite.plugin()],
-};
-export default config;
+  plugins: [require("tailwindcss-animate"), flowbite.plugin()],
+} satisfies Config
+
+export default config

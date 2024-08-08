@@ -11,8 +11,9 @@ import useUpdateOficio from "@/hooks/useUpdateOficio";
 import MarvelousPagination from "../MarvelousPagination";
 import api from "@/utils/api";
 import { ImSpinner2 } from "react-icons/im";
+import { MiniMenu } from "./MiniMenu";
 
-const CardView = ({ className, data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop }: ExtractTableProps) => {
+const CardView = ({ className, data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop, checkedList, setCheckedList, handleDeleteExtrato, handleSelectRow, handleSelectAllRows }: ExtractTableProps) => {
 
     const enumOficiosList = Object.values(statusOficio);
     const enumTipoOficiosList = Object.values(tipoOficio);
@@ -78,28 +79,22 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
     }
 
     return (
-        <><div className={className}>
+        <><div>
             <div
                 className="flex gap-4 flex-wrap">
 
                 {data.results?.length > 0 ? (
                     <>
                         {data.results.map((item: CVLDResultProps, index: number) => (
-                            <div id={item.id} key={item.id} className="relative flex-1 flex flex-col justify-between xsm:w-full md:max-w-[332px] lg:max-w-[305px] xl:max-w-90 bg-white border border-stroke shadow-3 gap-5 p-4 rounded-md dark:bg-black/60 dark:border-slate-600">
+                            <div id={item.id} key={item.id} className={`${checkedList!.some(target => target.id === item.id) && '!border-blue-400'} relative flex-1 flex flex-col justify-between xsm:w-full sm:max-w-[375px] bg-white border border-stroke shadow-3 gap-5 p-4 rounded-md dark:bg-black/20 dark:border-slate-600`}>
                                 <div className="relative h-29">
                                     <div className="absolute flex flex-col items-center top-2 right-0">
-                                        {showModalMessage ? (
-                                            <button onClick={() => setModalOptions({
-                                                open: true,
-                                                extractId: item.id
-                                            })} className="bg-transparent border-none flex transition-all duration-300 hover:opacity-80 dark:dark:text-red-500">
-                                                <BsFillTrashFill className="dark:hover:text-white h-4 w-4 self-center" style={{ cursor: loading ? 'wait' : 'pointer' }} />
-                                            </button>
-                                        ) : (
-                                            <button onClick={() => fetchDelete(item.id)} className="bg-transparent border-none flex transition-all duration-300 hover:opacity-80 dark:hover:text-white" style={{ cursor: loading ? 'wait' : 'pointer' }}>
-                                                <BsFillTrashFill className="dark:hover:text-white h-4 w-4 self-center" />
-                                            </button>
-                                        )}
+                                        <input
+                                            type="checkbox"
+                                            checked={checkedList!.some(target => target.id === item.id)}
+                                            className={`w-[15px] h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
+                                            onChange={() => handleSelectRow(item)}
+                                        />
                                         <div className="relative mt-1.5 flex flex-col items-center justify-center pt-1.5 border-t border-stroke dark:border-form-strokedark">
                                             <BiEditAlt
                                                 title="Editar Credor"
@@ -151,7 +146,7 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
                                             title={item?.credor || newLabelValue || "NOME NÃO INFORMADO"}
                                             ref={(input) => { if (input) inputRefs.current![index] = input }}
                                             defaultValue={
-                                                item?.credor.length >= 45 ? item?.credor.slice(0, 45) + ' ...' : item?.credor || "NOME NÃO INFORMADO"}
+                                                item?.credor?.length >= 45 ? item?.credor?.slice(0, 45) + ' ...' : item?.credor || "NOME NÃO INFORMADO"}
                                             className="w-55 h-22 bg-transparent px-0 dark:text-white font-semibold border-none rounded-md overflow-hidden resize-none"
                                         />
                                     </div>
@@ -198,7 +193,7 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
                                     </div>
                                 </div>
                                 <div className="flex w-full gap-4 justify-center">
-                                    <button onClick={() => handleTask(item.id)} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md dark:border-snow dark:text-snow hover:bg-blue-800 hover:!border-blue-800 hover:text-snow hover:-translate-y-1 transition-all duration-300">
+                                    <button onClick={() => handleTask(item.id)} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md dark:border-snow dark:text-snow hover:bg-blue-800 hover:!border-blue-800 hover:text-snow hover:-translate-y-1 transition- duration-300">
                                         <span className="text-sm font-medium">TAREFA</span>
                                         <BiTask className="w-4 h-4" />
                                     </button>
@@ -206,7 +201,7 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
                                     <button onClick={() => {
                                         setOpenDetailsDrawer(true);
                                         fetchDataById(item.id);
-                                    }} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-800 hover:!border-blue-800 dark:border-snow dark:text-snow hover:text-snow hover:-translate-y-1 transition-all duration-300">
+                                    }} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-800 hover:!border-blue-800 dark:border-snow dark:text-snow hover:text-snow hover:-translate-y-1 transition- duration-300">
                                         <span className="text-sm font-medium">DETALHES</span>
                                         <BiListUl className="w-4 h-4" />
                                     </button>

@@ -3,10 +3,13 @@ import DarkModeSwitcher from "./DarkModeSwitcher";
 import DropdownMessage from "./DropdownMessage";
 import DropdownNotification from "./DropdownNotification";
 import DropdownUser from "./DropdownUser";
+import { toast } from "sonner"
 import Image from "next/image";
 import { Balance } from "./Balance";
 import { useContext } from "react";
 import { UserInfoAPIContext, UserInfoContextType } from "@/context/UserInfoContext";
+import { Button } from "../ui/button";
+import { Toaster } from "../ui/sonner";
 
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;

@@ -1,17 +1,22 @@
 import { Badge, CustomFlowbiteTheme, Flowbite, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from 'flowbite-react';
 import numberFormat from "@/functions/formaters/numberFormat";
 import { ExtractTableProps } from '@/types/extractTable';
-import React, { useRef, useState } from 'react';
-import { BiCheck, BiLoader, BiSolidDockLeft, BiTask, BiX } from 'react-icons/bi';
+import React, { useEffect, useRef, useState } from 'react';
+import { BiArchiveIn, BiCheck, BiLoader, BiMinus, BiSolidDockLeft, BiTask, BiTrash, BiX } from 'react-icons/bi';
+import { LiaCoinsSolid } from "react-icons/lia";
+import { IoDocumentTextOutline } from "react-icons/io5";
+import { PiCursorClick } from "react-icons/pi";
 import { CVLDResultProps } from '@/interfaces/IResultCVLD';
-import { BsFillTrashFill } from 'react-icons/bs';
 import statusOficio from '@/enums/statusOficio.enum';
 import tipoOficio from '@/enums/tipoOficio.enum';
 import useUpdateOficio from '@/hooks/useUpdateOficio';
 import MarvelousPagination from '../MarvelousPagination';
-import Loader from '../common/Loader';
 import api from '@/utils/api';
-import { ImSpinner2 } from 'react-icons/im';
+import { ImCopy, ImSpinner2 } from 'react-icons/im';
+import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants';
+import { AiOutlineUser } from 'react-icons/ai';
+import { toast } from 'sonner';
+import { MiniMenu } from './MiniMenu';
 
 const customTheme: CustomFlowbiteTheme = {
     table: {
@@ -23,36 +28,48 @@ const customTheme: CustomFlowbiteTheme = {
         body: {
             base: "group/body",
             cell: {
-                base: "px-4 py-3 group-first/body:group-first/row:first:rounded-tl-sm group-first/body:group-first/row:last:rounded-tr-sm group-last/body:group-last/row:first:rounded-bl-sm group-last/body:group-last/row:last:rounded-br-sm dark:bg-boxdark"
+                base: "px-3 py-1.5 bg-transparent dark:bg-transparent group-first/body:group-first/row:first:rounded-tl-sm group-first/body:group-first/row:last:rounded-tr-sm group-last/body:group-last/row:first:rounded-bl-sm group-last/body:group-last/row:last:rounded-br-sm"
             }
         },
         head: {
             base: "group/head text-xs uppercase text-gray-700 dark:text-gray-400",
             cell: {
-                base: "bg-zinc-200  text-black px-4 py-3 group-first/head:first:rounded-tl-sm group-first/head:last:rounded-tr-sm dark:bg-meta-4 dark:text-white dark:border-b dark:border-strokedark"
+                base: "bg-zinc-200 text-black px-4 py-3 group-first/head:first:rounded-tl-sm group-first/head:last:rounded-tr-sm dark:bg-meta-4 dark:text-white"
             }
         },
         row: {
             base: "group/row",
-            hovered: "hover:bg-red dark:hover:bg-gray-600",
-            striped: "odd:bg-white even:bg-green-300 odd:dark:bg-gray-800 even:dark:bg-gray-700"
+            hovered: "hover:bg-slate-50 dark:hover:bg-slate-50",
+            striped: "odd:bg-white even:bg-green-300 odd:dark:bg-white even:dark:bg-snow"
         }
     }
 }
 
-const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop }: ExtractTableProps) => {
-    const enumOficiosList = Object.values(statusOficio);
-    const enumTipoOficiosList = Object.values(tipoOficio);
+const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop, checkedList, setCheckedList, handleDeleteExtrato, handleSelectRow, handleSelectAllRows }: ExtractTableProps) => {
 
     const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
     const [editableLabel, setEditableLabel] = useState<string | null>(null);
     const [editLabelState, setEditLabelState] = useState<string>('');
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    // refs
     const inputRefs = useRef<HTMLInputElement[] | null>([]);
 
-    const handleTask = (id: string) => {
-        setOpenTaskDrawer(true);
-        setExtractId(id);
+    const handleCopyValue = (index: number) => {
+
+        navigator.clipboard.writeText(numberFormat(data.results[index].valor_liquido_disponivel));
+
+        toast("Valor copiado para área de transferência.", {
+            classNames: {
+                toast: "dark:bg-form-strokedark",
+                title: "dark:text-snow",
+                description: "dark:text-snow",
+                actionButton: "!bg-slate-100 dark:bg-form-strokedark"
+            },
+            action: {
+                label: "Fechar",
+                onClick: () => console.log('done')
+            }
+        })
     }
 
     const handleEditInput = (index: number) => {
@@ -63,7 +80,10 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
 
     const handleChangeCreditorName = async (index: number, id: string, value: string) => {
 
-        setIsLoading(true);
+        setEditableLabel(null);
+        setEditLabelState('');
+        inputRefs.current![index].blur();
+
         await api.patch(`/api/extrato/update/credor/${id}/`, {
             credor: value
         }).then(response => {
@@ -83,132 +103,217 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                     ...data,
                     results: newResults
                 });
-                setTimeout(() => {
-                    setEditableLabel(null);
-                    setEditLabelState('');
-                    inputRefs.current![index].blur();
-                }, 1500);
             } else {
-                setEditLabelState('error');
-                setTimeout(() => {
-                    setEditableLabel(null);
-                    setEditLabelState('');
-                    inputRefs.current![index].blur();
-                }, 1500);
+                toast(`houve um erro inesperado ao salvar os dados. Erro ${response.status}`, {
+                    classNames: {
+                        toast: "dark:bg-form-strokedark",
+                        title: "dark:text-snow",
+                        description: "dark:text-snow",
+                        actionButton: "!bg-slate-100 dark:bg-form-strokedark"
+                    },
+                    action: {
+                        label: "Fechar",
+                        onClick: () => console.log('done')
+                    }
+                })
             }
 
         });
-        setIsLoading(false);
 
     }
 
+    // useEffect(() => {
+    //     const keyHandler = ({ keyCode }: KeyboardEvent) => {
+    //         if (keyCode !== 27) return;
+
+    //         data.results.forEach((item: CVLDResultProps, index: number) => {
+    //             if (editableLabel === item.id) {
+    //                 setEditableLabel(null);
+    //                 inputRefs.current![index].blur();
+    //             }
+    //         })
+    //     };
+    //     document.addEventListener("keydown", keyHandler);
+    //     return () => document.removeEventListener("keydown", keyHandler);
+    // });
+
     return (
-        <><div className=''>
+        <><div className='relative'>
+
             <Flowbite theme={{ theme: customTheme }}>
-                <Table hoverable className="">
+                <Table>
                     <TableHead>
-                        <TableHeadCell className="text-center w-[120px]">Oficio</TableHeadCell>
-                        <TableHeadCell className="text-center">Nome do Credor</TableHeadCell>
-                        <TableHeadCell className="text-center w-[180px]">Valor Líquido</TableHeadCell>
-                        <TableHeadCell className="text-center w-[100px]">Status</TableHeadCell>
-                        <TableHeadCell className="text-center w-[120px]">
-                            <span className="sr-only text-center">Tarefas</span>
+                        {/* <TableHeadCell className="text-center w-10 px-1">
+                            <span className="sr-only text-center ">Checkbox</span>
+                        </TableHeadCell> */}
+                        <TableHeadCell className="w-[120px]">
+                            <div className='flex gap-2 items-center'>
+                                <IoDocumentTextOutline className='text-base' />
+                                Oficio
+                            </div>
                         </TableHeadCell>
+                        <TableHeadCell>
+                            <div className='flex gap-2 items-center'>
+                                <AiOutlineUser className='text-base' />
+                                Nome do Credor
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="w-[180px]">
+                            <div className="flex gap-2 items-center">
+                                <LiaCoinsSolid className='text-base' />
+                                Valor Líquido
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="w-[0px]">
+                            <div className="flex gap-2 items-center">
+                                <BiLoader className='text-base' />
+                                Status
+                            </div>
+                        </TableHeadCell>
+                        {/* <TableHeadCell className="text-center w-[120px]">
+                            <span className="sr-only text-center">Tarefas</span>
+                        </TableHeadCell> */}
                         {/* <TableHeadCell className="text-center w-[40px]">
                             <span className="sr-only text-center">Detalhes</span>
                         </TableHeadCell> */}
-                        <TableHeadCell className="text-center w-[40px]">
-                            <span className="sr-only text-center ">Deletar</span>
-                        </TableHeadCell>
                     </TableHead>
-                    <TableBody className='max-h-[200px] overflow-x-scroll'>
+                    <TableBody className=''>
 
-                        {data.results?.length > 0 ? (
+                        {data.results?.length > 0 && (
                             <>
                                 {data.results.map((item: CVLDResultProps, index: number) => (
 
-                                    <TableRow key={item.id} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 border-b border-stroke dark:border-form-strokedark group">
-                                        <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600">
-                                            <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
-                                                <select className="text-[12px] bg-transparent border-none py-0" onChange={(e) => updateOficioTipo(item.id, e.target.value as tipoOficio)}>
-                                                    {item.tipo_do_oficio && (
-                                                        <option value={item.tipo_do_oficio} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                            {item.tipo_do_oficio}
-                                                        </option>
-                                                    )}
-                                                    {enumTipoOficiosList.filter((status) => status !== item.tipo_do_oficio).map((status) => (
-                                                        <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                            {status}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </Badge>
+                                    <TableRow key={item.id} className={`${checkedList!.some(target => target.id === item.id) && 'bg-blue-50 dark:bg-form-strokedark'} hover:shadow-3 dark:hover:shadow-body group`}>
+
+                                        {/* <TableCell className="px-1 text-center ">
+                                            <input
+                                                type="checkbox"
+                                                checked={checkedList!.includes(item.id)}
+                                                className={`opacity-50 w-[15px] group-hover:opacity-100 ${checkedList!.includes(item.id) && '!opacity-100'} h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
+                                                onChange={() => handleSelectRow(item.id)}
+                                            />
+                                        </TableCell> */}
+
+                                        <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                                            <div className='flex items-center justify-center gap-3'>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={checkedList!.some(target => target.id === item.id)}
+                                                    className={`opacity-50 w-[15px] group-hover:opacity-100 ${checkedList!.some(target => target.id === item.id) && '!opacity-100'} h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
+                                                    onChange={() => handleSelectRow(item)}
+                                                />
+                                                <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
+                                                    <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => updateOficioTipo(item.id, e.target.value as tipoOficio)}>
+                                                        {item.tipo_do_oficio && (
+                                                            <option value={item.tipo_do_oficio} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                                {item.tipo_do_oficio}
+                                                            </option>
+                                                        )}
+                                                        {ENUM_TIPO_OFICIOS_LIST.filter((status) => status !== item.tipo_do_oficio).map((status) => (
+                                                            <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                                {status}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </Badge>
+                                            </div>
                                         </TableCell>
-                                        <TableCell title={item?.credor || 'NOME NÃO INFORMADO'} className="relative h-full flex items-center gap-2 font-semibold text-[12px]">
+                                        <TableCell title={item?.credor || ''}
+                                            className="relative h-full  flex items-center gap-2 font-semibold text-[12px]"
+                                            >
                                             <input
                                                 type="text"
                                                 ref={(input) => { if (input) inputRefs.current![index] = input; }}
                                                 defaultValue={item?.credor || ''}
                                                 onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') {
+                                                    if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
                                                         handleChangeCreditorName(index, item.id, e.currentTarget.value)
                                                     }
                                                 }}
-                                                className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-10/12 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                onBlur={(e) => handleChangeCreditorName(index, item.id, e.currentTarget.value)}
+                                                className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                             />
 
-                                            <div title='Confirmar Edição' className={`${editableLabel === item.id ? 'opacity-100 visible' : 'opacity-0 invisible'} ${editLabelState === 'success' && 'animate-jump !bg-green-500 !text-white'} ${editLabelState === 'error' && 'animate-jump !bg-meta-1 !text-white'} w-6 h-6 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 transition-all duration-500 cursor-pointer group`}>
+                                            {/* =====> confirm edition old button <===== */}
+
+                                            {/* <div title='Confirmar Edição' className={`${editableLabel === item.id ? 'opacity-100 visible' : 'opacity-0 invisible'} ${editLabelState === 'success' && 'animate-jump !bg-green-500 !text-white'} ${editLabelState === 'error' && 'animate-jump !bg-meta-1 !text-white'} w-6 h-6 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 transition-all duration-500 cursor-pointer group`}>
                                                 {isLoading ?
                                                     <ImSpinner2 className={`${editableLabel === item.id ? 'opacity-100 visible animate-spin' : 'opacity-0 invisible'} text-2xl`}
                                                     /> :
 
                                                     <>
-                                                        {editLabelState === '' && <BiCheck onClick={(e) => {
-                                                            const target = e.target as HTMLElement;
-                                                            const value = target.parentElement?.parentElement?.querySelector("input")?.value as string;
-                                                            handleChangeCreditorName(index, item.id, value);
-                                                        }} className='text-2xl group-hover:text-black dark:group-hover:text-white transition-all duration-200' />}
-                                                        {editLabelState === 'success' && <BiCheck className='text-2xl' />}
-                                                        {editLabelState === 'error' && <BiX className='text-2xl' />}
+                                                        {editLabelState === '' &&
+                                                            <BiCheck onClick={(e) => {
+                                                                const target = e.target as HTMLElement;
+                                                                const value = target.parentElement?.parentElement?.querySelector("input")?.value as string;
+                                                                handleChangeCreditorName(index, item.id, value);
+                                                            }}
+                                                                className='text-2xl group-hover:text-black dark:group-hover:text-white transition-all duration-200' />}
+                                                        {editLabelState === 'success' &&
+                                                            <BiCheck className='text-2xl' />}
+                                                        {editLabelState === 'error' &&
+                                                            <BiX className='text-2xl' />}
                                                     </>
                                                 }
-                                            </div>
+                                            </div> */}
+                                            {/* ====> end confirm old button <==== */}
+
 
                                             {/* absolute div that covers the entire cell */}
                                             {editableLabel !== item.id && (
                                                 <div className='absolute inset-0 rounded-md flex items-center transition-all duration-200'>
 
-                                                    <div className='flex-1 h-full'
-                                                        onClick={() => {
-                                                            setEditableLabel(item.id)
-                                                            handleEditInput(index);
-                                                        }}></div>
+                                                    {editableLabel === null && (
+                                                        <React.Fragment>
+                                                            <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200'
+                                                                onClick={() => {
+                                                                    setEditableLabel(item.id)
+                                                                    handleEditInput(index);
+                                                                }}>
+                                                                {item?.credor?.length === 0 && (
+                                                                    <div className='flex gap-1 pl-4 text-slate-400'>
+                                                                        <PiCursorClick className='text-base' />
+                                                                        <span>Clique para adicionar nome</span>
+                                                                    </div>
+                                                                )}
+                                                            </div>
 
-                                                    <div
-                                                        title='Detalhes'
-                                                        className='py-1 px-2 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
-                                                        onClick={() => {
-                                                            setOpenDetailsDrawer(true);
-                                                            fetchDataById(item.id);
-                                                        }}>
-                                                        <BiSolidDockLeft className='text-lg'
-                                                        />
-                                                        <span className='text-xs'>Detalhes</span>
-                                                    </div>
+                                                            <div
+                                                                title='Abrir'
+                                                                className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                                                                onClick={() => {
+                                                                    setOpenDetailsDrawer(true);
+                                                                    fetchDataById(item.id);
+                                                                }}>
+                                                                <BiSolidDockLeft className='text-lg'
+                                                                />
+                                                                <span className='text-xs'>Abrir</span>
+                                                            </div>
+                                                        </React.Fragment>
+                                                    )}
                                                 </div>
                                             )}
 
                                         </TableCell>
-                                        <TableCell className="text-center font-semibold text-[12px]">{numberFormat(item.valor_liquido_disponivel)}</TableCell>
-                                        <TableCell className="text-center items-center">
-                                            <Badge color="teal" size="sm" className="max-w-max text-center text-[12px]">
-                                                <select className="text-[12px] bg-transparent border-none py-0" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
+                                        <TableCell className=" font-semibold text-[14px]">
+                                            <div className="relative">
+                                                {numberFormat(item.valor_liquido_disponivel)}
+                                                <ImCopy
+                                                    title='Copiar valor'
+                                                    onClick={() => handleCopyValue(index)}
+                                                    className='absolute top-1/2 -translate-y-1/2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                                                />
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-center items-center ">
+                                            <Badge color="teal" size="sm" className="text-center text-[12px]">
+                                                <select className="text-[12px] w-44 text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
                                                     {item.status && (
                                                         <option value={item.status} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                             {item.status}
                                                         </option>
                                                     )}
-                                                    {enumOficiosList.filter((status) => status !== item.status).map((status) => (
+                                                    {ENUM_OFICIOS_LIST.filter((status) => status !== item.status).map((status) => (
                                                         <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                             {status}
                                                         </option>
@@ -216,10 +321,8 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
 
                                                 </select>
                                             </Badge>
-
-
                                         </TableCell>
-                                        <TableCell className="text-center">
+                                        {/* <TableCell className="text-center">
                                             <Badge onClick={() => handleTask(item.id)} size="sm" color="yellow" className="hover:bg-yellow-200 dark:hover:bg-yellow-300 transition-all duration-300 justify-center px-2 py-1 cursor-pointer">
                                                 <div className="flex flex-row w-full justify-between align-middle gap-2">
                                                     <span className="text-[12px] font-bold transition-all duration-200">
@@ -229,7 +332,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                 </div>
                                             </Badge>
 
-                                        </TableCell>
+                                        </TableCell> */}
                                         {/* <TableCell className="text-center">
                                             <Badge color="blue" size="sm" style={{
                                                 cursor: loading ? 'wait' : 'pointer'
@@ -245,7 +348,8 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                 </div>
                                             </Badge>
                                         </TableCell> */}
-                                        <TableCell className="text-center">
+
+                                        {/* <TableCell className="text-center ">
                                             {showModalMessage ? (
                                                 <button onClick={() => setModalOptions({
                                                     open: true,
@@ -258,11 +362,12 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                     <BsFillTrashFill className="text-meta-1 hover:text-meta-7 dark:text-white dark:hover:text-stone-300 h-4 w-4 self-center" />
                                                 </button>
                                             )}
-                                        </TableCell>
+                                        </TableCell> */}
+
                                     </TableRow>
                                 ))}
                             </>
-                        ) : <Loader />}
+                        )}
                     </TableBody>
                 </Table>
             </Flowbite>

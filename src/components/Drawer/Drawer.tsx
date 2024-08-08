@@ -4,13 +4,24 @@ import linkAdapter from "@/functions/formaters/linkFormater";
 import numberFormat from "@/functions/formaters/numberFormat";
 import { customFlowBiteTheme } from "@/themes/FlowbiteThemes";
 import { Button, Drawer, Flowbite, Table } from "flowbite-react";
-import React from "react";
+import React, { useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
-import { BiDownload } from "react-icons/bi";
-import { MdAddChart } from "react-icons/md";
+import { BiDownload, BiPlus } from "react-icons/bi";
+import { CgDetailsMore } from "react-icons/cg";
+import { LinkedTasks } from "../TaskElements/LinkedTasks";
 
 export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data: any, loading: boolean, setData: any, open: boolean, setOpen: any }) {
-  const handleClose = () => setOpen(false);
+
+  const [openTaskDrawer, setOpenTaskDrawer] = useState<boolean>(false);
+  const [openSubTask, setOpenSubTask] = useState<boolean>(false);
+  const [editableTaskInput, setEditableTaskInput] = useState<boolean>(false);
+
+  const handleClose = () => {
+    setOpen(false);
+    setOpenTaskDrawer(false);
+    setOpenSubTask(false);
+    setEditableTaskInput(false);
+  };
 
   return (
     <>
@@ -27,7 +38,21 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                 </div>
               ) : (
                 <React.Fragment>
-                  <Drawer.Header title="Detalhes" onClose={handleClose} titleIcon={MdAddChart} className="mb-1 text-center" />
+                  <Drawer.Header title={data.credor || 'Sem título'} onClose={handleClose} titleIcon={CgDetailsMore} className="mb-1 border-b dark:border-form-strokedark" />
+                  <Drawer.Items>
+                  {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
+                    <LinkedTasks
+                      data={data}
+                      openTaskDrawer={openTaskDrawer}
+                      setOpenTaskDrawer={setOpenTaskDrawer}
+                      openSubTask={openSubTask}
+                      setOpenSubTask={setOpenSubTask}
+                      editableTaskInput={editableTaskInput}
+                      setEditableTaskInput={setEditableTaskInput}
+                    />
+                  )}
+
+                  </Drawer.Items>
                   <Drawer.Items>
                     <div className="overflow-x-auto">
                       <Table className="min-w-full table-auto border-collapse">
@@ -41,17 +66,17 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                         </tr>
                         {
                           data.recalc_flag === "after_12_2021" ? (
-                            <tr className="bg-gray dark:bg-black/10">
+                            <tr className="bg-gray dark:bg-boxdark-2/80">
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Regra de Cálculo</td>
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">Após 12/2021</td>
                             </tr>
                           ) : data.recalc_flag === "before_12_2021" ? (
-                            <tr className="bg-gray dark:bg-black/10">
+                            <tr className="bg-gray dark:bg-boxdark-2/80">
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Regra de Cálculo</td>
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">Antes 12/2021</td>
                             </tr>
                           ) : (
-                            <tr className="bg-gray dark:bg-black/10">
+                            <tr className="bg-gray dark:bg-boxdark-2/80">
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Regra de Cálculo</td>
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">Tributário</td>
                             </tr>
@@ -61,7 +86,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                           data.npu === "00000000000000000000" || !data.link_cvld ? (
                             null
                           ) : (
-                            <tr className="bg-gray dark:bg-black/10">
+                            <tr className="bg-gray dark:bg-boxdark-2/80">
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">NPU</td>
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{data.npu}</td>
                             </tr>
@@ -69,7 +94,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                         }
                         {
                           data.nome_credor && (
-                            <tr className="bg-gray dark:bg-black/10">
+                            <tr className="bg-gray dark:bg-boxdark-2/80">
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Nome do credor</td>
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{data.nome_credor}</td>
                             </tr>
@@ -77,50 +102,50 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                         }
                         {
                           data.cpf_cnpj_credor && (
-                            <tr className="bg-gray dark:bg-black/10">
+                            <tr className="bg-gray dark:bg-boxdark-2/80">
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">CPF/CNPJ do credor</td>
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{data.cpf_cnpj_credor}</td>
                             </tr>
                           )
                         }
-                        <tr className="bg-gray dark:bg-black/10">
+                        <tr className="bg-gray dark:bg-boxdark-2/80">
                           <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Valor Principal</td>
                           <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(data.valor_principal)}</td>
                         </tr>
                         {
                           data.valor_juros ? (
-                            <tr className="bg-gray dark:bg-black/10">
+                            <tr className="bg-gray dark:bg-boxdark-2/80">
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Valor Juros</td>
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(data.valor_juros)}</td>
                             </tr>
                           ) : (
-                            <tr className="bg-gray dark:bg-black/10">
+                            <tr className="bg-gray dark:bg-boxdark-2/80">
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Valor Juros</td>
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">Não Informado</td>
                             </tr>
                           )
                         }
-                        <tr className="bg-gray dark:bg-black/10">
+                        <tr className="bg-gray dark:bg-boxdark-2/80">
                           <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Valor Inscrito</td>
                           <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(data.valor_inscrito)}</td>
                         </tr>
                         {
                           data.valor_pss !== 0 && data.valor_pss && (
-                            <tr className="bg-gray dark:bg-black/10">
+                            <tr className="bg-gray dark:bg-boxdark-2/80">
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Valor PSS</td>
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(data.valor_pss)}</td>
                             </tr>
                           )
                         }
-                        <tr className="bg-gray dark:bg-black/10">
+                        <tr className="bg-gray dark:bg-boxdark-2/80">
                           <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Data Base</td>
                           <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{dateFormater(data.data_base)}</td>
                         </tr>
-                        <tr className="bg-gray dark:bg-black/10">
+                        <tr className="bg-gray dark:bg-boxdark-2/80">
                           <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Data Requisição</td>
                           <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{dateFormater(data?.data_requisicao)}</td>
                         </tr>
-                        <tr className="bg-gray dark:bg-black/10">
+                        <tr className="bg-gray dark:bg-boxdark-2/80">
                           <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Atualizado até</td>
                           <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{dateFormater(data.data_limite_de_atualizacao)}</td>
                         </tr>
@@ -135,7 +160,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                                   &nbsp;
                                 </td>
                               </tr>
-                              <tr className="bg-gray dark:bg-black/10">
+                              <tr className="bg-gray dark:bg-boxdark-2/80">
                                 <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Fator IPCA-E até 12/2021</td>
                                 <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{factorFormater(data.fator_correcao_ipca_e)}</td>
                               </tr>
@@ -145,11 +170,11 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                         {
                           data.recalc_flag === "before_12_2021" && (
                             <>
-                              <tr className="bg-gray dark:bg-black/10">
+                              <tr className="bg-gray dark:bg-boxdark-2/80">
                                 <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Principal Atualizado até 12/2021</td>
                                 <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(data.valor_atualizado_principal)}</td>
                               </tr>
-                              <tr className="bg-gray dark:bg-black/10">
+                              <tr className="bg-gray dark:bg-boxdark-2/80">
                                 <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Juros Atualizado até 12/2021</td>
                                 <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(data.valor_atualizado_juros)}</td>
                               </tr>
@@ -166,7 +191,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                         </tr>
                         {
                           data.recalc_flag && (
-                            <tr className="bg-gray dark:bg-black/10">
+                            <tr className="bg-gray dark:bg-boxdark-2/80">
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Fator SELIC</td>
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{factorFormater(data.fator_correcao_selic)}</td>
                             </tr>
@@ -174,7 +199,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                         }
                         {
                           data.principal_atualizado_requisicao && (
-                            <tr className="bg-gray dark:bg-black/10">
+                            <tr className="bg-gray dark:bg-boxdark-2/80">
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Principal Atualizado até a Requisição</td>
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(data.principal_atualizado_requisicao)}</td>
                             </tr>
@@ -182,7 +207,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                         }
                         {
                           String(data.juros_atualizados_requisicao) && (
-                            <tr className="bg-gray dark:bg-black/10">
+                            <tr className="bg-gray dark:bg-boxdark-2/80">
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Juros Atualizados até a Requisição</td>
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(data.juros_atualizados_requisicao)}</td>
                             </tr>
@@ -198,7 +223,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                         </tr>
                         {
                           data.fator_periodo_graca_ipca_e && (
-                            <tr className="bg-gray dark:bg-black/10">
+                            <tr className="bg-gray dark:bg-boxdark-2/80">
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Fator Período de Graça IPCA-E</td>
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{factorFormater(data.fator_periodo_graca_ipca_e)}</td>
                             </tr>
@@ -206,7 +231,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                         }
                         {
                           data.recalc_flag === "before_12_2021" && (
-                            <tr className="bg-gray dark:bg-black/10">
+                            <tr className="bg-gray dark:bg-boxdark-2/80">
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark text-left">Valor Principal Atualizado Final</td>
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(data.valor_principal_ipca_e)}</td>
                             </tr>
@@ -214,7 +239,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                         }
                         {
                           data.recalc_flag === "before_12_2021" && (
-                            <tr className="bg-gray dark:bg-black/10">
+                            <tr className="bg-gray dark:bg-boxdark-2/80">
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark text-left">Valor Juros Atualizado Final</td>
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(data.valor_juros_ipca_e)}</td>
                             </tr>
@@ -222,7 +247,7 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                         }
                         {
                           data.valor_bruto_atualizado_final && (
-                            <tr className="bg-gray dark:bg-black/10">
+                            <tr className="bg-gray dark:bg-boxdark-2/80">
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark text-left">Valor Bruto Atualizado Final</td>
                               <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(data.valor_bruto_atualizado_final)}</td>
                             </tr>

@@ -10,16 +10,15 @@ import { APP_ROUTES } from "@/constants/app-routes";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
 import UseMySwal from "@/hooks/useMySwal";
 import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
-import { Button } from "flowbite-react";
 
 import { HiOutlineArrowRight } from "react-icons/hi"
 
 import { BiLockAlt, BiUser } from "react-icons/bi";
-import { FcGoogle } from "react-icons/fc";
 import { AiOutlineLoading } from "react-icons/ai";
 import ForgotPassword from "@/components/Modals/ForgotPassword";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import usePassword from "@/hooks/usePassword";
+import { Button } from "@/components/ui/button";
 
 
 // export const metadata: Metadata = {
@@ -155,7 +154,7 @@ const SignIn: React.FC = () => {
                     />
                   </div>
                 </Link>
-                <p className="2xl:px-10 text-xl font-medium">
+                <p className="2xl:px-10 text-lg font-medium">
                   Atualização inteligente dos valores de precatórios com base na legislação vigente
                 </p>
               </div>
@@ -279,19 +278,27 @@ const SignIn: React.FC = () => {
                     </div>
                   </div>
 
-                  <p onClick={() => setOpenModal(true)} className="text-primary max-w-fit text-sm font-medium mb-6 cursor-pointer dark:text-blue-400">
+                  <p onClick={() => setOpenModal(true)} className="text-blue-700 hover:text-blue-800 max-w-fit text-sm font-medium mb-6 cursor-pointer dark:text-blue-400 dark:hover:text-blue-500">
                     Esqueci a senha
                   </p>
 
                   <div className="mb-5">
-                    <button type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-6 text-white bg-blue-700 hover:bg-blue-800 transition-all duration-200'>
+                    <Button className="w-full py-8 flex items-center justify-center transition-all duration-200">
                       <span className="text-[16px] font-medium" aria-disabled={loading}>
                         {loading ? "Fazendo login..." : "Acessar"}
                       </span>
                       {
                         !loading ? (<HiOutlineArrowRight className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
                       }
-                    </button>
+                    </Button>
+                    {/* <button type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-6 text-white bg-blue-700 hover:bg-blue-800 transition-all duration-200'>
+                      <span className="text-[16px] font-medium" aria-disabled={loading}>
+                        {loading ? "Fazendo login..." : "Acessar"}
+                      </span>
+                      {
+                        !loading ? (<HiOutlineArrowRight className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
+                      }
+                    </button> */}
                   </div>
 
                   {/* <button data-tooltip-target="tooltip-default" disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50 disabled:cursor-not-allowed disabled:opacity-50">
@@ -304,7 +311,7 @@ const SignIn: React.FC = () => {
                   <div className="mt-6 text-center">
                     <p>
                       Ainda não possui uma conta?{" "}
-                      <Link aria-disabled href="/auth/signup" className="text-primary font-medium dark:text-blue-400">
+                      <Link aria-disabled href="/auth/signup" className="text-blue-700 hover:text-blue-800 font-medium dark:text-blue-400 dark:hover:text-blue-500">
                         Cadastre-se
                       </Link>
                     </p>

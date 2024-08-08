@@ -1,9 +1,10 @@
+import { PaginatedResponse } from '@/components/TaskElements';
 import statusOficio from '@/enums/statusOficio.enum';
 import tipoOficio from '@/enums/tipoOficio.enum';
 import { CVLDResultProps } from '@/interfaces/IResultCVLD';
 import api from '@/utils/api';
 
-const useUpdateOficio = (data:any, setData: React.Dispatch<React.SetStateAction<any[]>>) => {
+const useUpdateOficio = (data: PaginatedResponse<CVLDResultProps> , setData: React.Dispatch<React.SetStateAction<PaginatedResponse<CVLDResultProps>>>) => {
 
     const updateOficioStatus = async (id: string, status: statusOficio) => {
         try {
@@ -11,7 +12,7 @@ const useUpdateOficio = (data:any, setData: React.Dispatch<React.SetStateAction<
                 status
             });
 
-            const updatedData = data.map((item: CVLDResultProps) => {
+            const updatedData = data?.results.map((item: CVLDResultProps) => {
                 if (item.id === id) {
                     return {
                         ...item,
@@ -22,7 +23,10 @@ const useUpdateOficio = (data:any, setData: React.Dispatch<React.SetStateAction<
                 return item;
             });
 
-            setData(updatedData);
+            setData({
+                ...data,
+                results: updatedData
+            });
         } catch (error) {
             console.error(error);
         }
@@ -34,7 +38,7 @@ const useUpdateOficio = (data:any, setData: React.Dispatch<React.SetStateAction<
                 tipo_do_oficio: tipo
             });
 
-            const updatedData = data.map((item: CVLDResultProps) => {
+            const updatedData = data?.results.map((item: CVLDResultProps) => {
                 if (item.id === id) {
                     return {
                         ...item,
@@ -45,7 +49,10 @@ const useUpdateOficio = (data:any, setData: React.Dispatch<React.SetStateAction<
                 return item;
             });
 
-            setData(updatedData);
+            setData({
+                ...data,
+                results: updatedData
+            });
         } catch (error) {
             console.error(error);
         }

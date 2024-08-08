@@ -185,7 +185,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
   }
 
   return (
-    <div ref={CVLDResultRef} className="scroll-m-20 scroll-smooth col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-5">
+    <div ref={CVLDResultRef} className="scroll-m-20 min-w-100 scroll-smooth col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-2">
       <div className="mb-4 justify-between gap-4 sm:flex flex-col">
         {
           filledData ? (
@@ -221,9 +221,9 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                       )
                     }
                     {
-                      item.nome_credor && (
+                      item.credor && (
                         <li className="text-sm ">
-                          <span className="font-bold">Nome do credor:</span> {item.nome_credor}
+                          <span className="font-bold">Nome do credor:</span> {item.credor}
                         </li>
                       )
                     }
@@ -456,7 +456,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
           series={state.series}
           type="area"
           height={350}
-          width={"100%"}
+          width={'100%'}
 
         />
       </div>
@@ -489,7 +489,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                     </li>
                     {
                       item.link_cvld && (
-                        <li className="text-sm flex  w-full py-1">
+                        <li className="text-sm flex w-full py-1">
                           <a href={linkAdapter(item.link_cvld)} className="w-full text-center p-4 flex items-center justify-center text-sm font-semibold text-white rounded-md bg-blue-700 hover:bg-blue-800">
                             <span className="text-[16px] font-medium">
                               Baixar CVLD

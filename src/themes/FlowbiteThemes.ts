@@ -3,8 +3,8 @@ import { CustomFlowbiteTheme } from "flowbite-react";
 export const customFlowBiteTheme: CustomFlowbiteTheme = {
     drawer: {
         "root": {
-            "base": "fixed z-40 overflow-y-auto bg-white p-4 transition-transform bg-snow dark:bg-boxdark",
-            "backdrop": "fixed inset-0 z-30 bg-gray-900/50 dark:bg-gray-900/80",
+            "base": "fixed z-40 overflow-y-auto bg-white p-4 transition-transform duration-500 bg-snow dark:bg-boxdark",
+            "backdrop": "fixed inset-0 z-30 bg-gray-900/50 dark:bg-gray-900/80 backdrop-blur-[2px] transition-opacity duration-500",
             "edge": "bottom-16",
             "position": {
                 "top": {
@@ -20,8 +20,8 @@ export const customFlowBiteTheme: CustomFlowbiteTheme = {
                     "off": "bottom-0 left-0 right-0 w-full translate-y-full"
                 },
                 "left": {
-                    "on": "left-0 top-0 h-screen w-80 transform-none",
-                    "off": "left-0 top-0 h-screen w-80 -translate-x-full"
+                    "on": "left-0 top-0 h-screen transition-transform duration-500 w-80 transform-none",
+                    "off": "left-0 top-0 h-screen transition-transform duration-500 w-80 -translate-x-full"
                 }
             }
         },
@@ -29,8 +29,8 @@ export const customFlowBiteTheme: CustomFlowbiteTheme = {
             "inner": {
                 "closeButton": "absolute end-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 dark:text-gray-100 dark:hover:text-black hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-white/30 transition-all duration-200",
                 "closeIcon": "h-4 w-4",
-                "titleIcon": "me-2.5 h-4 w-4 text-gray-700 dark:text-white",
-                "titleText": "mb-4 inline-flex items-center text-base font-semibold dark:text-white"
+                "titleIcon": "me-2.5 text-2xl",
+                "titleText": "mb-4 inline-flex items-center text-2xl font-semibold dark:text-white"
             },
             "collapsed": {
                 "on": "hidden",
