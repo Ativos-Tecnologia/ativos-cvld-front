@@ -1510,7 +1510,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                             {...register("notion_db_id", {
                               required: "Campo obrigatório",
                             })}
-                            defaultValue={"notion_prec_fed_db_id"}>
+                            >
                             {data.role === "ativos" && (
                               <>
                                 <option value="notion_prec_fed_db_id">PRECATÓRIOS FEDERAIS - BASE PRÓPRIA</option>
@@ -1521,7 +1521,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                             )}
 
                             {
-                              data.role === "judit" || data.role === "ativos" && (
+                             (data.role === "judit" || data.role === "ativos") && (
                                 <>
                                   <option value="notion_prec_fed_judit_db_id">PRECATÓRIOS FEDERAIS - JUDIT</option>
                                   <option value="notion_prec_reg_com_judit_db_id">PRECATÓRIOS REGIME COMUM - JUDIT</option>
