@@ -208,7 +208,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
     }
 
     if (!data.status) {
-      data.status = 'ENCARTEIRADO';
+      data.status = 'Realizar Primeiro Contato';
     }
 
     if (!data.natureza) {
