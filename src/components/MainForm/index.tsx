@@ -498,7 +498,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
             <div className="flex flex-col gap-2">
               <div className="relative flex flex-col justify-between mb-6">
                 <label htmlFor="data_requisicao" className="text-xs text-meta-5 font-semibold font-nexa uppercase mb-1">
-                  Data de Requisição
+                  Data de Requisição / Recebimento
                 </label>
                 <input
                   type="date"
@@ -688,6 +688,8 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2"></div>
 
                       <div className="flex gap-2 w-full sm:col-span-2 justify-end mb-4">
+                        <span className="text-md font-semibold self-center w-full">Dados do Principal</span>
+                      {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
                         <div className='flex flex-col'>
                           <div className='flex justify-end'>
                             <div className="flex -space-x-1 self-end">
@@ -715,8 +717,8 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                                 <div className="flex items-center justify-center">
                                   <svg
                                     className="fill-black dark:fill-gray-300"
-                                    width="16"
-                                    height="16"
+                                    width="14"
+                                    height="14"
                                     viewBox="0 0 16 16"
                                     xmlns="http://www.w3.org/2000/svg"
                                   >
@@ -746,11 +748,13 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                                   readOnly
                                 />
                               </div>
-                            ) : (<span className='text-xs font-semibold self-end'>Vincular ou criar nova conta</span>)
+                            ) : (<span className='text-xs font-semibold self-end w-[158px]'>Vincular ou criar nova conta</span>)
                           }
                         </div>
 
+)}
                       </div>
+
 
                       <div className="flex flex-col gap-2">
                         <label htmlFor="credor" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
@@ -783,8 +787,11 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
 
 
 
+
                       </div>
-                      <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2 my-4">
+                      <span className="text-md font-semibold self-center w-full">Dados do Processo</span>
+                      <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2 mb-4">
+
 
                         <div className="flex flex-col gap-2 w-full sm:col-span-1">
                           <label htmlFor="npu" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
@@ -921,7 +928,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                         </div>
 
                       </div>
-                      <span className="text-lg font-semibold text-primary mt-8">Contato</span>
+                      <span className="text-lg font-semibold mt-8">Contato</span>
                       <div className="flex flex-row gap-4 justify-between w-full sm:col-span-2">
 
                         <div className="flex flex-col gap-2 w-full sm:col-span-1">
