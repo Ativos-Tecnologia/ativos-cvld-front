@@ -307,7 +307,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                         </TableCell>
                                         <TableCell className="text-center items-center ">
                                             <Badge color="teal" size="sm" className="text-center text-[12px]">
-                                                <select className="text-[12px] w-44 text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
+                                                <select className="text-[12px] w-44 text-ellipsis uppercase overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
                                                     {item.status && (
                                                         <option value={item.status} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                             {item.status}
