@@ -933,7 +933,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
 
                       </div>
                       <span className="text-lg font-semibold mt-8">Contato</span>
-                      <div className="relative flex flex-row gap-4 justify-between w-full sm:col-span-2">
+                      {/* <div className="relative flex flex-row gap-4 justify-between w-full sm:col-span-2">
                         <div className="flex flex-col gap-2 w-full sm:col-span-1">
                           <label htmlFor="email_contato" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                             Email de Contato
@@ -973,13 +973,6 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                             )}
                           />
 
-                          {/* <input
-                            type="tel"
-                            id="telefone_contato"
-                            placeholder='(00) 00000-0000'
-                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                            {...register("telefone_contato", {})}
-                          /> */}
                         </div>
                         {contatoNumberCount === 1 && (
                           <div
@@ -989,9 +982,9 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                             <BiPlus />
                           </div>
                         )}
-                      </div>
+                      </div> */}
                       {/* copy */}
-                      {contatoNumberCount > 1 && (
+                      {/* {contatoNumberCount > 1 && (
                         <div className="grid grid-cols-2 gap-4 mt-6 justify-between w-full sm:col-span-1">
                           <div className="relative flex flex-col gap-2 w-full sm:col-span-1">
                             <label htmlFor="telefone_contato_2" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
@@ -1019,13 +1012,6 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                               )}
                             />
 
-                            {/* <input
-                              type="tel"
-                              id="telefone_contato"
-                              placeholder='(00) 00000-0000'
-                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                              {...register("telefone_contato_2", {})}
-                            /> */}
                             {contatoNumberCount === 2 && (
                               <>
                                 <div
@@ -1070,13 +1056,6 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                                 )}
                               />
 
-                              {/* <input
-                                type="tel"
-                                id="telefone_contato"
-                                placeholder='(00) 00000-0000'
-                                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                {...register("telefone_contato_3", {})}
-                              /> */}
                               {contatoNumberCount === 3 && (
                                 <div
                                   title='Remover telefone de contato'
@@ -1089,7 +1068,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                             </div>
                           )}
                         </div>
-                      )}
+                      )} */}
                       {/* <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4">
                           <span className="text-lg font-semibold text-primary mt-8">Dados do Colaborador</span>
                           &nbsp;
