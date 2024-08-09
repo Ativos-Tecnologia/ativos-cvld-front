@@ -104,8 +104,8 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
 
               return {
                 ...item,
-                nameRef: targetTag.title,
-                goalName: targetTag.title
+                nameRef: value,
+                goalName: value
               }
 
             }
@@ -164,6 +164,10 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
           results: updatedData
         });
 
+        if (selected.nameRef === targetTag.nameRef) {
+          setSelected(updatedData[0])
+        }
+
       })
     } else if (targetTag.statusName) {
       api.delete(`/api/task/status/delete/${targetTag.id}/`).then(res => {
@@ -174,6 +178,10 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
           ...data,
           results: updatedData
         });
+
+        if (selected.nameRef === targetTag.nameRef) {
+          setSelected(updatedData[0])
+        }
 
       })
     }
@@ -194,7 +202,7 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
         <p className="pl-3 w-full overflow-hidden text-ellipsis whitespace-nowrap">{selected?.nameRef || selected.title}</p>{" "}
         {
           selected?.nameRef && selected.title !== label ? (
-            <BiX className="w-4 h-4 mr-2 text-red-500" onClick={() => {
+            <BiX className="w-4 h-4 mr-2" onClick={() => {
               setSelected({ id: "", title: label })
               onChange("");
             }} />
@@ -223,7 +231,6 @@ const MarvelousSelect = forwardRef<HTMLDivElement, TaskDrawerProps>(({
                   defaultValue={tag.nameRef}
                   disabled={labelReleatedEditId === tag.id ? false : true}
                   className={`${labelReleatedEditId === tag.id && 'text-black'} px-2 w-full text-ellipsis overflow-hidden whitespace-nowrap rounded-md text-xs font-medium border-none border-b border-black bg-blue-100 dark:focus:text-black  disabled:bg-transparent disabled:cursor-pointer transition-all duration-200`}
-                  // onChange={(e) => { handleChangeValue(e.target.value, tag) }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();

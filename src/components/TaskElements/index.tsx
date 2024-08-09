@@ -81,7 +81,7 @@ export function TaskDrawer({ id, extratoTasks, setExtratosTasks }: { id: string,
         count: extratoTasks.results.length,
         next: '',
         previous: '',
-        results: [data, ...extratoTasks.results] 
+        results: [data, ...extratoTasks.results]
       });
 
       reset();
