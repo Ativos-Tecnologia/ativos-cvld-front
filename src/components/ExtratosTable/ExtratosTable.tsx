@@ -9,11 +9,12 @@ import CardView from "./CardView";
 import { PaginatedResponse, TaskDrawer } from "../TaskElements";
 import { PiGridFour, PiTable } from "react-icons/pi";
 import statusOficio from "@/enums/statusOficio.enum";
-import Filters from "../Filters";
+import Filters, { ActiveState } from "../Filters";
 import { useFilter } from "@/hooks/useFilter";
 import DeleteExtractAlert from "../Modals/DeleteExtract";
 import { toast } from "sonner";
 import { MiniMenu } from "./MiniMenu";
+import { TableTabs } from "../TableTabs";
 
 export type LocalShowOptionsProps = {
   key: string;
@@ -37,6 +38,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   const [auxData, setAuxData] = useState<PaginatedResponse<CVLDResultProps>>({ results: [], count: 0, next: "", previous: "" });
   const [statusSelectValue, setStatusSelectValue] = useState<statusOficio | null>(null);
   const [oficioSelectValue, setOficioSelectValue] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState<ActiveState>('ALL');
   const [item, setItem] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [viewOption, setViewOption] = useState<LocalExtractViewProps>({
@@ -56,7 +58,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     items: []
   });
   const { filterData, resetFilters } = useFilter(data, setData, setStatusSelectValue, setOficioSelectValue, auxData, statusSelectValue, oficioSelectValue);
-  console.log(checkedList)
+  console.log(auxData)
 
   // refs
   const viewModeRef = useRef<HTMLSelectElement | null>(null);
@@ -66,6 +68,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     setLoading(true);
     const response = await api.get(`api/extratos/${query}`);
     setData(response.data);
+    setAuxData(response.data);
     setLoading(false);
   }
 
@@ -330,7 +333,6 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     fetchStateFromLocalStorage();
   }, []);
 
-
   useEffect(() => {
     if (localShowOptions.length <= 0) return;
 
@@ -374,8 +376,23 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
       {window.innerWidth >= 435 ? (
         <>
           {/* desktop view */}
-          <div className="py-7 px-5 bg-white rounded-sm dark:bg-boxdark">
+          <div className="p-5 bg-white rounded-sm dark:bg-boxdark">
             <div className="flex flex-col">
+
+              {/* tabs */}
+              <TableTabs
+                data={data}
+                auxData={auxData}
+                setData={setData}
+                fetchData={fetchData}
+                setStatusSelectValue={setStatusSelectValue}
+                setOficioSelectValue={setOficioSelectValue}
+                statusSelectValue={statusSelectValue}
+                oficioSelectValue={oficioSelectValue}
+                setActiveFilter={setActiveFilter}
+              />
+              {/* end tabs */}
+
               <div className="flex w-full h-full items-center justify-between">
 
                 {/* filters */}
@@ -386,7 +403,8 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                   oficioSelectValue={oficioSelectValue}
                   setStatusSelectValue={setStatusSelectValue}
                   setOficioSelectValue={setOficioSelectValue}
-                  fetchData={fetchData}
+                  activeFilter={activeFilter}
+                  setActiveFilter={setActiveFilter}
                 />
                 {/* end filters */}
 
@@ -478,9 +496,73 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
       ) : (
         /* mobile view */
         <div className="py-7 px-5 bg-white rounded-sm dark:bg-boxdark">
-          <h3 className="text-center text-2xl font-bold dark:text-white pb-1 mb-6 border-b border-stroke dark:border-strokedark">
-            EXTRATOS
-          </h3>
+
+          <div className="flex flex-col">
+
+            {/* tabs */}
+            <TableTabs
+              data={data}
+              auxData={auxData}
+              setData={setData}
+              fetchData={fetchData}
+              setStatusSelectValue={setStatusSelectValue}
+              setOficioSelectValue={setOficioSelectValue}
+              statusSelectValue={statusSelectValue}
+              oficioSelectValue={oficioSelectValue}
+              setActiveFilter={setActiveFilter}
+            />
+            {/* end tabs */}
+
+            <div className="flex w-full h-full items-center justify-between">
+
+              {/* filters */}
+              <Filters
+                resetFilters={resetFilters}
+                filterData={filterData}
+                statusSelectValue={statusSelectValue}
+                oficioSelectValue={oficioSelectValue}
+                setStatusSelectValue={setStatusSelectValue}
+                setOficioSelectValue={setOficioSelectValue}
+                activeFilter={activeFilter}
+                setActiveFilter={setActiveFilter}
+              />
+              {/* end filters */}
+
+              {/* alternate between view extract mode */}
+              <div className="flex items-center gap-1">
+                <div
+                  title="Mudar para visualização tabela"
+                  onClick={() => setExtractListView("table")}
+                  className={`flex w-7 h-7 items-center justify-center rounded-full ${viewOption.type === "table" && "bg-slate-200 dark:bg-slate-600"} hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer group`}>
+                  <PiTable className="text-xl group-hover:text-black-2 dark:group-hover:text-white" />
+                </div>
+
+                {/* separator */}
+                <div className="w-px mx-1 h-5 bg-zinc-300 dark:bg-form-strokedark"></div>
+                {/* separator */}
+
+                <div
+                  title="Mudar para visualização cards"
+                  onClick={() => setExtractListView("cards")}
+                  className={`flex w-7 h-7 items-center justify-center rounded-full ${viewOption.type === "cards" && "bg-slate-200 dark:bg-slate-600"} hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer group`}>
+                  <PiGridFour className="text-xl group-hover:text-black-2 dark:group-hover:text-white" />
+                </div>
+              </div>
+              {/* end alternate between view extract mode */}
+            </div>
+
+            <MiniMenu
+              checkedList={checkedList}
+              setCheckedList={setCheckedList}
+              count={data.count}
+              currentPage={currentPage}
+              handleDeleteExtrato={handleDeleteExtrato}
+              handleSelectAllRows={handleSelectAllRows}
+              handleArchieveExtrato={handleArchieveExtrato}
+            />
+
+          </div>
+
           <CardView
             className="grid gap-4"
             data={data}
