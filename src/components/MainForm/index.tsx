@@ -811,7 +811,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                                 className="w-full rounded-md border border-stroke bg-white px-3 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2 h-[34.5px]"
                                 options={{
                                   blocks: [7, 2, 4, 1, 2, 4],
-                                  delimiters: ['.', '-', '.', '.', '.'],
+                                  delimiters: ['-', '.', '.', '.', '.'],
                                   numericOnly: true
                                 }}
                               />
@@ -932,9 +932,9 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                         </div>
 
                       </div>
-                      <span className="text-lg font-semibold mt-8">Contato</span>
+                      {/* <span className="text-lg font-semibold mt-8">Contato</span> */}
                       <div className="relative flex flex-row gap-4 justify-between w-full sm:col-span-2">
-                        <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                        {/* <div className="flex flex-col gap-2 w-full sm:col-span-1">
                           <label htmlFor="email_contato" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                             Email de Contato
                           </label>
@@ -972,6 +972,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                               />
                             )}
                           />
+</div> */}
 
                           {/* <input
                             type="tel"
@@ -980,116 +981,16 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                             className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                             {...register("telefone_contato", {})}
                           /> */}
-                        </div>
-                        {contatoNumberCount === 1 && (
+                        {/* {contatoNumberCount === 1 && (
                           <div
                             title='Adicionar telefone de contato'
                             onClick={() => setContatoNumberCount(2)}
                             className='absolute right-2 top-0 w-4 h-4 rounded-sm flex items-center justify-center bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 cursor-pointer'>
                             <BiPlus />
                           </div>
-                        )}
+                        )} */}
                       </div>
-                      {/* copy */}
-                      {contatoNumberCount > 1 && (
-                        <div className="grid grid-cols-2 gap-4 mt-6 justify-between w-full sm:col-span-1">
-                          <div className="relative flex flex-col gap-2 w-full sm:col-span-1">
-                            <label htmlFor="telefone_contato_2" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                              Telefone de Contato (2)
-                            </label>
 
-                            <Controller
-                              name="telefone_contato_2"
-                              control={control}
-                              defaultValue=""
-                              rules={{
-                                pattern: {
-                                  value: /^(?:\d{2})\d{8,9}$/,
-                                  message: "Número de telefone inválido"
-                                }
-                              }}
-                              render={({ field }) => (
-                                <InputMask
-                                  {...field}
-                                  mask="(99) 99999-9999"
-                                  maskChar={null}
-                                  placeholder="(00) 00000-0000"
-                                  className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                                />
-                              )}
-                            />
-
-                            {/* <input
-                              type="tel"
-                              id="telefone_contato"
-                              placeholder='(00) 00000-0000'
-                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                              {...register("telefone_contato_2", {})}
-                            /> */}
-                            {contatoNumberCount === 2 && (
-                              <>
-                                <div
-                                  title='Adicionar telefone de contato'
-                                  onClick={() => setContatoNumberCount(3)}
-                                  className='absolute right-7 top-0 w-4 h-4 rounded-sm flex items-center justify-center bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 cursor-pointer'>
-                                  <BiPlus />
-                                </div>
-                                <div
-                                  title='Remover telefone de contato'
-                                  onClick={() => setContatoNumberCount(1)}
-                                  className='absolute right-2 top-0 w-4 h-4 rounded-sm flex items-center justify-center bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 cursor-pointer'>
-                                  <BiMinus />
-                                </div>
-                              </>
-                            )}
-                          </div>
-                          {contatoNumberCount > 2 && (
-                            <div className="relative flex flex-col gap-2 w-full sm:col-span-1">
-                              <label htmlFor="telefone_contato_3" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                                Telefone de Contato (3)
-                              </label>
-
-                              <Controller
-                                name="telefone_contato_3"
-                                control={control}
-                                defaultValue=""
-                                rules={{
-                                  pattern: {
-                                    value: /^(?:\d{2})\d{8,9}$/,
-                                    message: "Número de telefone inválido"
-                                  }
-                                }}
-                                render={({ field }) => (
-                                  <InputMask
-                                    {...field}
-                                    mask="(99) 99999-9999"
-                                    maskChar={null}
-                                    placeholder="(00) 00000-0000"
-                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                                  />
-                                )}
-                              />
-
-                              {/* <input
-                                type="tel"
-                                id="telefone_contato"
-                                placeholder='(00) 00000-0000'
-                                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                {...register("telefone_contato_3", {})}
-                              /> */}
-                              {contatoNumberCount === 3 && (
-                                <div
-                                  title='Remover telefone de contato'
-                                  onClick={() => setContatoNumberCount(2)}
-                                  className='absolute right-2 top-0 w-4 h-4 rounded-sm flex items-center justify-center bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 cursor-pointer'>
-                                  <BiMinus />
-                                </div>
-                              )
-                              }
-                            </div>
-                          )}
-                        </div>
-                      )}
                       {/* <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4">
                           <span className="text-lg font-semibold text-primary mt-8">Dados do Colaborador</span>
                           &nbsp;
@@ -1510,7 +1411,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                             {...register("notion_db_id", {
                               required: "Campo obrigatório",
                             })}
-                            defaultValue={"notion_prec_fed_db_id"}>
+                            >
                             {data.role === "ativos" && (
                               <>
                                 <option value="notion_prec_fed_db_id">PRECATÓRIOS FEDERAIS - BASE PRÓPRIA</option>
@@ -1521,7 +1422,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                             )}
 
                             {
-                              data.role === "judit" || data.role === "ativos" && (
+                             (data.role === "judit" || data.role === "ativos") && (
                                 <>
                                   <option value="notion_prec_fed_judit_db_id">PRECATÓRIOS FEDERAIS - JUDIT</option>
                                   <option value="notion_prec_reg_com_judit_db_id">PRECATÓRIOS REGIME COMUM - JUDIT</option>
