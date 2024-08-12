@@ -45,11 +45,9 @@ const customTheme: CustomFlowbiteTheme = {
     }
 }
 
-const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop, checkedList, setCheckedList, handleDeleteExtrato, handleSelectRow, handleSelectAllRows }: ExtractTableProps) => {
+const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop, checkedList, setCheckedList, handleDeleteExtrato, handleSelectRow, handleSelectAllRows, editableLabel, setEditableLabel }: ExtractTableProps) => {
 
     const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
-    const [editableLabel, setEditableLabel] = useState<string | null>(null);
-    const [editLabelState, setEditLabelState] = useState<string>('');
 
     // refs
     const inputRefs = useRef<HTMLInputElement[] | null>([]);
@@ -78,18 +76,22 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
         }
     }
 
-    const handleChangeCreditorName = async (index: number, id: string, value: string) => {
+    const handleChangeCreditorName = async (id: string, value: string, index?: number, ref?: HTMLInputElement) => {
 
-        setEditableLabel(null);
-        setEditLabelState('');
-        inputRefs.current![index].blur();
+        setEditableLabel!(null);
+
+        if (index) {
+            inputRefs.current![index].blur();
+        } 
+        if (ref) {
+            ref.blur();
+        }
 
         await api.patch(`/api/extrato/update/credor/${id}/`, {
             credor: value
         }).then(response => {
 
             if (response.status === 200) {
-                setEditLabelState('success');
                 const newResults = data.results.map((item: CVLDResultProps) => {
                     if (item.id === id) {
                         return {
@@ -220,17 +222,17 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                         </TableCell>
                                         <TableCell title={item?.credor || ''}
                                             className="relative h-full  flex items-center gap-2 font-semibold text-[12px]"
-                                            >
+                                        >
                                             <input
                                                 type="text"
                                                 ref={(input) => { if (input) inputRefs.current![index] = input; }}
                                                 defaultValue={item?.credor || ''}
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                        handleChangeCreditorName(index, item.id, e.currentTarget.value)
+                                                        handleChangeCreditorName(item.id, e.currentTarget.value, index)
                                                     }
                                                 }}
-                                                onBlur={(e) => handleChangeCreditorName(index, item.id, e.currentTarget.value)}
+                                                onBlur={(e) => handleChangeCreditorName(item.id, e.currentTarget.value, index)}
                                                 className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                             />
 
@@ -267,7 +269,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                         <React.Fragment>
                                                             <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200'
                                                                 onClick={() => {
-                                                                    setEditableLabel(item.id)
+                                                                    setEditableLabel!(item.id)
                                                                     handleEditInput(index);
                                                                 }}>
                                                                 {item?.credor?.length === 0 && (
