@@ -4,17 +4,32 @@ import linkAdapter from "@/functions/formaters/linkFormater";
 import numberFormat from "@/functions/formaters/numberFormat";
 import { customFlowBiteTheme } from "@/themes/FlowbiteThemes";
 import { Button, Drawer, Flowbite, Table } from "flowbite-react";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
-import { BiDownload, BiPlus } from "react-icons/bi";
+import { BiDownload, BiPlus, BiX } from "react-icons/bi";
 import { CgDetailsMore } from "react-icons/cg";
 import { LinkedTasks } from "../TaskElements/LinkedTasks";
+import api from "@/utils/api";
+import { CVLDResultProps } from "@/interfaces/IResultCVLD";
+import { toast } from "sonner";
 
-export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data: any, loading: boolean, setData: any, open: boolean, setOpen: any }) {
+interface IDrawerProps {
+  data: any,
+  loading: boolean,
+  setData: any,
+  open: boolean,
+  setOpen: any,
+  editableLabel: string | null,
+  setEditableLabel?: React.Dispatch<React.SetStateAction<string | null>>;
+}
+
+export function AwesomeDrawer({ data, loading, setData, open, setOpen, editableLabel, setEditableLabel }: IDrawerProps) {
 
   const [openTaskDrawer, setOpenTaskDrawer] = useState<boolean>(false);
   const [openSubTask, setOpenSubTask] = useState<boolean>(false);
   const [editableTaskInput, setEditableTaskInput] = useState<boolean>(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  console.log(data)
 
   const handleClose = () => {
     setOpen(false);
@@ -22,6 +37,51 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
     setOpenSubTask(false);
     setEditableTaskInput(false);
   };
+
+  const handleChangeCreditorName = async (id: string, value: string, ref: HTMLInputElement | null) => {
+
+    setEditableLabel!(null);
+
+    if (ref) {
+      ref.blur();
+    }
+
+    await api.patch(`/api/extrato/update/credor/${id}/`, {
+      credor: value
+    }).then(response => {
+
+      if (response.status === 200) {
+        // const newResults = data.results.map((item: CVLDResultProps) => {
+        //   if (item.id === id) {
+        //     return {
+        //       ...item,
+        //       credor: value
+        //     }
+        //   }
+        //   return item;
+        // })
+        setData({
+          ...data,
+          credor: value
+        });
+      } else {
+        toast(`houve um erro inesperado ao salvar os dados. Erro ${response.status}`, {
+          classNames: {
+            toast: "dark:bg-form-strokedark",
+            title: "dark:text-snow",
+            description: "dark:text-snow",
+            actionButton: "!bg-slate-100 dark:bg-form-strokedark"
+          },
+          action: {
+            label: "Fechar",
+            onClick: () => console.log('done')
+          }
+        })
+      }
+
+    });
+
+  }
 
   return (
     <>
@@ -38,19 +98,47 @@ export function AwesomeDrawer({ data, loading, setData, open, setOpen }: { data:
                 </div>
               ) : (
                 <React.Fragment>
-                  <Drawer.Header title={data.credor || 'Sem título'} onClose={handleClose} titleIcon={CgDetailsMore} className="mb-1 border-b dark:border-form-strokedark" />
+                  {/* <Drawer.Header title={data.credor || 'Sem título'} onClose={handleClose} titleIcon={CgDetailsMore} className="mb-1 border-b dark:border-form-strokedark" /> */}
+                  <div className="mb-1 border-b dark:border-form-strokedark">
+                    <div className="flex items-center mb-4 gap-3 text-2xl font-semibold">
+                      <CgDetailsMore />
+                      <div className="relative flex-1">
+                        <input
+                          ref={inputRef}
+                          type="text"
+                          defaultValue={data.credor || 'Sem título'}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                              handleChangeCreditorName(data.id, e.currentTarget.value, inputRef?.current)
+                            }
+                          }}
+                          onBlur={(e) => handleChangeCreditorName(data.id, e.currentTarget.value, inputRef?.current)}
+                          className={`${editableLabel === data.id && '!border-1 !border-blue-700'} w-full text-2xl pl-1 focus-within:ring-0 border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                        />
+                        {editableLabel === data.id && (
+                          <div
+                            onClick={() => setEditableLabel!(data.id)}
+                            className="absolute inset-0"
+                          ></div>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-slate-300 dark:hover:bg-form-strokedark text-lg cursor-pointer transition-all duration-200">
+                        <BiX onClick={handleClose} />
+                      </div>
+                    </div>
+                  </div>
                   <Drawer.Items>
-                  {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
-                    <LinkedTasks
-                      data={data}
-                      openTaskDrawer={openTaskDrawer}
-                      setOpenTaskDrawer={setOpenTaskDrawer}
-                      openSubTask={openSubTask}
-                      setOpenSubTask={setOpenSubTask}
-                      editableTaskInput={editableTaskInput}
-                      setEditableTaskInput={setEditableTaskInput}
-                    />
-                  )}
+                    {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
+                      <LinkedTasks
+                        data={data}
+                        openTaskDrawer={openTaskDrawer}
+                        setOpenTaskDrawer={setOpenTaskDrawer}
+                        openSubTask={openSubTask}
+                        setOpenSubTask={setOpenSubTask}
+                        editableTaskInput={editableTaskInput}
+                        setEditableTaskInput={setEditableTaskInput}
+                      />
+                    )}
 
                   </Drawer.Items>
                   <Drawer.Items>
