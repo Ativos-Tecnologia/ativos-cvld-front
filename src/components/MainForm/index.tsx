@@ -567,7 +567,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
               ) : null
             }
             {
-              watch("incidencia_rra_ir") === true && watch("ir_incidente_rra") === false ? (
+              watch("incidencia_rra_ir") === true && watch("ir_incidente_rra") === false && watch("natureza") !== "TRIBUTÁRIA" ? (
                 <div className="sm:flex items-center 2xsm:hidden 2xsm:col-span-2 sm:col-span-1">
                   &nbsp;
                 </div>
@@ -617,9 +617,13 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                   />
                 </div>
               ) : (
-                <div className="sm:flex items-center 2xsm:hidden 2xsm:col-span-2 sm:col-span-1">
-                  &nbsp;
-                </div>
+                <>
+                  {watch("natureza") !== "TRIBUTÁRIA" && (
+                    <div className="sm:flex items-center 2xsm:hidden 2xsm:col-span-2 sm:col-span-1">
+                      &nbsp;
+                    </div>
+                  )}
+                </>
               )
             }
             <div className="flex gap-2 2xsm:col-span-2 sm:col-span-1">
@@ -663,9 +667,13 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                 </div>
 
               ) : (
-                <div className="sm:flex items-center 2xsm:hidden 2xsm:col-span-2 sm:col-span-1">
-                  &nbsp;
-                </div>
+                <>
+                  {watch("natureza") !== "TRIBUTÁRIA" && (
+                    <div className="sm:flex items-center 2xsm:hidden 2xsm:col-span-2 sm:col-span-1">
+                      &nbsp;
+                    </div>
+                  )}
+                </>
               )
 
             }
