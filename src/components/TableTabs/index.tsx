@@ -6,6 +6,7 @@ import { CVLDResultProps } from '@/interfaces/IResultCVLD';
 import statusOficio from '@/enums/statusOficio.enum';
 import { useFilter } from '@/hooks/useFilter';
 import { ActiveState } from '../Filters';
+import { Tabs } from '../ExtratosTable/ExtratosTable';
 
 interface ITableTabsProps {
     fetchData: (query: string) => Promise<void>,
@@ -17,9 +18,9 @@ interface ITableTabsProps {
     statusSelectValue: statusOficio | null,
     oficioSelectValue: string | null
     setActiveFilter: React.Dispatch<React.SetStateAction<ActiveState>>;
+    activedTab: Tabs;
+    setActivedTab: React.Dispatch<React.SetStateAction<Tabs>>;
 }
-
-type Tabs = 'GERAL' | 'ARQUIVADOS';
 
 export const TableTabs = ({
     fetchData,
@@ -30,11 +31,12 @@ export const TableTabs = ({
     auxData,
     statusSelectValue,
     oficioSelectValue,
-    setActiveFilter
+    setActiveFilter,
+    activedTab,
+    setActivedTab
 }: ITableTabsProps) => {
 
     const { resetFilters } = useFilter(data, setData, setStatusSelectValue, setOficioSelectValue, auxData, statusSelectValue, oficioSelectValue);
-    const [activedTab, setActivedTab] = React.useState<Tabs>('GERAL');
 
     function handleChangeTab(tab: Tabs, query: string) {
         resetFilters();
