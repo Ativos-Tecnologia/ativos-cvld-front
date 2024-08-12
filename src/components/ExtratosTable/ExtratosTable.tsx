@@ -392,9 +392,9 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   });
 
   return (
-    <div
-      ref={mainRef}
-      className="overflow-x-auto">
+    <div ref={mainRef}
+    className="overflow-hidden"
+    >
       {window.innerWidth >= 435 ? (
         <>
           {/* desktop view */}

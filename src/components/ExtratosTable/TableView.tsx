@@ -21,7 +21,7 @@ import { MiniMenu } from './MiniMenu';
 const customTheme: CustomFlowbiteTheme = {
     table: {
         root: {
-            base: "w-full text-left text-sm",
+            base: "relative w-full text-left text-sm",
             shadow: "absolute left-0 top-0 -z-10 h-full w-full rounded-sm bg-white drop-shadow-md dark:bg-black",
             wrapper: "relative"
         },
@@ -32,7 +32,7 @@ const customTheme: CustomFlowbiteTheme = {
             }
         },
         head: {
-            base: "group/head text-xs uppercase text-gray-700 dark:text-gray-400",
+            base: "group/head sticky top-0 z-10 text-xs uppercase text-gray-700",
             cell: {
                 base: "bg-zinc-200 text-black px-4 py-3 group-first/head:first:rounded-tl-sm group-first/head:last:rounded-tr-sm dark:bg-meta-4 dark:text-white"
             }
@@ -138,7 +138,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
     // });
 
     return (
-        <><div className='relative'>
+        <><div className='relative overflow-scroll max-h-100'>
 
             <Flowbite theme={{ theme: customTheme }}>
                 <Table>
