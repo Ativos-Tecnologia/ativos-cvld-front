@@ -183,7 +183,7 @@ export const LinkedTasks = ({ data, openTaskDrawer, setOpenTaskDrawer, openSubTa
         )}
       </ul>
 
-      <div className={`w-full px-px overflow-hidden ${openTaskDrawer ? 'max-h-[900px] my-5 border-y-6 border-double border-stroke dark:border-form-strokedark' : 'max-h-0'} transition-ease-in-out`}>
+      <div className={`w-full px-px overflow-hidden ${openTaskDrawer ? 'max-h-[900px] my-5 border-t border-stroke dark:border-form-strokedark' : 'max-h-0'} transition-ease-in-out`}>
         <TaskDrawer id={data.id} extratoTasks={extratoTasks} setExtratosTasks={setExtratoTasks} />
       </div>
 
