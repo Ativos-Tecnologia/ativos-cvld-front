@@ -29,6 +29,8 @@ type ExtratosTableProps = {
   newItem: CVLDResultProps[];
 }
 
+export type Tabs = 'GERAL' | 'ARQUIVADOS';
+
 export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
   const mySwal = UseMySwal();
@@ -39,6 +41,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   const [statusSelectValue, setStatusSelectValue] = useState<statusOficio | null>(null);
   const [oficioSelectValue, setOficioSelectValue] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<ActiveState>('ALL');
+  const [activedTab, setActivedTab] = useState<Tabs>('GERAL');
   const [item, setItem] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [viewOption, setViewOption] = useState<LocalExtractViewProps>({
@@ -58,7 +61,6 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     items: []
   });
   const { filterData, resetFilters } = useFilter(data, setData, setStatusSelectValue, setOficioSelectValue, auxData, statusSelectValue, oficioSelectValue);
-  console.log(auxData)
 
   // refs
   const viewModeRef = useRef<HTMLSelectElement | null>(null);
@@ -157,7 +159,27 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
       return;
     }
 
-    fetchData('');
+    if (activedTab === "GERAL") {
+      fetchData('');
+    } else {
+
+      toast(`${checkedList.length > 1 ? 'Extratos desarquivados!' : 'Extrato desarquivado!'}`, {
+        classNames: {
+          toast: "dark:bg-form-strokedark",
+          title: "dark:text-snow",
+          description: "dark:text-snow",
+          actionButton: "!bg-slate-100 dark:bg-form-strokedark"
+        },
+        description: `${checkedList.length > 1 ? 'Os extratos retornaram para a aba GERAL.' : 'O extrato retornou para a aba GERAL.'}`,
+        action: {
+          label: "Desfazer",
+          onClick: () => handleUnarchiveExtrato()
+        }
+      })
+
+      fetchData('?showMode=archived');
+    }
+    setCheckedList([]);
   }
 
   const fetchDataById = async (id: string) => {
@@ -390,6 +412,8 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                 statusSelectValue={statusSelectValue}
                 oficioSelectValue={oficioSelectValue}
                 setActiveFilter={setActiveFilter}
+                activedTab={activedTab}
+                setActivedTab={setActivedTab}
               />
               {/* end tabs */}
 
@@ -439,6 +463,8 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                 handleDeleteExtrato={handleDeleteExtrato}
                 handleSelectAllRows={handleSelectAllRows}
                 handleArchieveExtrato={handleArchieveExtrato}
+                handleUnarchiveExtrato={handleUnarchiveExtrato}
+                activedTab={activedTab}
               />
 
             </div>
@@ -510,6 +536,8 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
               statusSelectValue={statusSelectValue}
               oficioSelectValue={oficioSelectValue}
               setActiveFilter={setActiveFilter}
+              activedTab={activedTab}
+              setActivedTab={setActivedTab}
             />
             {/* end tabs */}
 
@@ -559,6 +587,8 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
               handleDeleteExtrato={handleDeleteExtrato}
               handleSelectAllRows={handleSelectAllRows}
               handleArchieveExtrato={handleArchieveExtrato}
+              handleUnarchiveExtrato={handleUnarchiveExtrato}
+              activedTab={activedTab}
             />
 
           </div>
