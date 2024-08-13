@@ -5,8 +5,6 @@ import { ImTable } from 'react-icons/im'
 import statusOficio from '@/enums/statusOficio.enum';
 import StatusFilter from './StatusFilter';
 import { MdOutlineFilterAltOff } from 'react-icons/md';
-import { BiArchive } from 'react-icons/bi';
-import { PiWarningCircleLight } from 'react-icons/pi';
 
 export interface IFilterProps {
     resetFilters?: () => void;
@@ -15,29 +13,16 @@ export interface IFilterProps {
     oficioSelectValue?: string | null;
     setStatusSelectValue: React.Dispatch<React.SetStateAction<statusOficio | null>>;
     setOficioSelectValue?: React.Dispatch<React.SetStateAction<string | null>>;
-    fetchData?: (query: string) => Promise<void>;
+    activeFilter?: ActiveState;
+    setActiveFilter?: React.Dispatch<React.SetStateAction<ActiveState>>;
 }
 
-type ActiveState = "ALL" | "PRECATÓRIO" | "R.P.V" | "CREDITÓRIO";
-type ActiveFilterState = "NONE" | "ARQUIVADOS";
+export type ActiveState = "ALL" | "PRECATÓRIO" | "R.P.V" | "CREDITÓRIO";
 
-const Filters: React.FC<IFilterProps> = ({ resetFilters, filterData, statusSelectValue, oficioSelectValue, setStatusSelectValue, setOficioSelectValue, fetchData }) => {
-
-    const [active, setActive] = useState<ActiveState>('ALL');
-    const [tableFilter, setTableFilter] = useState<ActiveFilterState>('NONE');
-
-    const handleFilterTable = () => {
-        if (tableFilter === "ARQUIVADOS") {
-            setTableFilter("NONE");
-            fetchData!('');
-        } else {
-            setTableFilter("ARQUIVADOS");
-            fetchData!('?showMode=archived');
-        }
-    }
+const Filters: React.FC<IFilterProps> = ({ resetFilters, filterData, statusSelectValue, oficioSelectValue, setStatusSelectValue, setOficioSelectValue, activeFilter, setActiveFilter }) => {
 
     const handleOficioStatus = (oficio: string) => {
-        setActive(oficio as ActiveState)
+        setActiveFilter!(oficio as ActiveState)
         setOficioSelectValue!(oficio);
     }
 
@@ -65,9 +50,9 @@ const Filters: React.FC<IFilterProps> = ({ resetFilters, filterData, statusSelec
             <div
                 onClick={() => {
                     resetFilters!();
-                    setActive('ALL');
+                    setActiveFilter!('ALL');
                 }}
-                className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${active === "ALL" && 'bg-slate-100 dark:bg-form-strokedark'}`}>
+                className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${activeFilter === "ALL" && 'bg-slate-100 dark:bg-form-strokedark'}`}>
                 <ImTable />
                 <span>todos</span>
             </div>
@@ -76,7 +61,7 @@ const Filters: React.FC<IFilterProps> = ({ resetFilters, filterData, statusSelec
                     <div
                         key={oficio}
                         onClick={() => handleOficioStatus(oficio)}
-                        className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${active === oficio && 'bg-slate-100 dark:bg-form-strokedark'}`}>
+                        className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${activeFilter === oficio && 'bg-slate-100 dark:bg-form-strokedark'}`}>
                         <ImTable />
                         <span>{oficio}</span>
                     </div>
@@ -99,21 +84,6 @@ const Filters: React.FC<IFilterProps> = ({ resetFilters, filterData, statusSelec
                         <MdOutlineFilterAltOff />
                     </div>
                 )}
-            </div>
-
-            {/* separator */}
-            <div className="w-px mx-1 h-5 bg-zinc-300 dark:bg-form-strokedark"></div>
-            {/* separator */}
-
-            <div
-                title='Clique uma vez para filtrar. Clique novamente para retirar o filtro.'
-                onClick={handleFilterTable}
-                className={`relative flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs uppercase border-b border-transparent hover:border-slate-300 dark:hover:border-slate-700 transition-colors duration-200 cursor-pointer ${tableFilter === "ARQUIVADOS" && '!border-slate-300 dark:!border-slate-700'}`}>
-                <BiArchive className='text-sm' />
-                <span>ARQUIVADOS</span>
-                <PiWarningCircleLight title='Esta feature está em desenvolvimento e pode apresentar problemas.'
-                    className='absolute -right-2 top-0'
-                />
             </div>
 
         </div>

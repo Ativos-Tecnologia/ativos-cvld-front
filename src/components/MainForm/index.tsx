@@ -194,12 +194,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
   }, [oficioForm, setValue]);
 
   useEffect(() => {
-    console.log("====================================");
-    console.log(watch("especie"));
-    console.log("====================================");
-  }, [watch("especie")]);
-
-  useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       const [accountList] = await Promise.all([api.get("/api/conta/list/")]);
@@ -766,7 +760,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
             ) : null}
 
             {/* CVLD */}
-            <div className="flex flex-col gap-2 sm:col-span-2">
+            <div className="flex flex-col gap-2 col-span-2">
               <div className="flex gap-2 ">
                 <input
                   type="checkbox"
@@ -1154,40 +1148,37 @@ const MainForm: React.FC<CVLDFormProps> = ({
                             Email de Contato
                           </label>
 
-                          <input
-                            type="email"
-                            id="email_contato"
-                            placeholder='ada@lovelace.com'
-                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                            {...register("email_contato", {})}
-                          />
-                        </div>
-                        <div className="flex flex-col gap-2 w-full sm:col-span-1">
-                          <label htmlFor="telefone_contato" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                            Telefone de Contato
-                          </label>
+                      <div className="flex flex-col gap-2 w-full col-span-1">
+                        <label htmlFor="juizo_vara" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                          Juízo/Vara
+                        </label>
+                        <input
+                          type="text"
+                          id="juizo_vara"
+                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2 h-[34.5px]"
+                          {...register("juizo_vara", {})} />
+                      </div>
+                      <div className="flex flex-col gap-2 w-full col-span-1">
+                        <label htmlFor="tribunal" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                          Tribunal
+                        </label>
+                        <ShadSelect
+                          name="tribunal"
+                          control={control}
+                          defaultValue={tribunais[0].nome}
+                        >
+                          {
+                            tribunais.map((tribunal) => (
+                              <SelectItem key={tribunal.id} value={tribunal.id}>{tribunal.nome}</SelectItem>
+                            ))
+                          }
+                        </ShadSelect>
+                      </div>
 
-                          <Controller
-                            name="telefone_contato"
-                            control={control}
-                            defaultValue=""
-                            rules={{
-                              pattern: {
-                                value: /^(?:\d{2})\d{8,9}$/,
-                                message: "Número de telefone inválido"
-                              }
-                            }}
-                            render={({ field }) => (
-                              <InputMask
-                                {...field}
-                                mask="(99) 99999-9999"
-                                maskChar={null}
-                                placeholder="(00) 00000-0000"
-                                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                              />
-                            )}
-                          />
-</div> */}
+                      <div className="flex flex-col gap-2 w-full 2xsm:col-span-2 sm:col-span-1">
+                        <label htmlFor="tipo" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                          Tipo
+                        </label>
 
                       {/* <input
                             type="tel"
@@ -1633,7 +1624,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                             {...register("notion_db_id", {
                               required: "Campo obrigatório",
                             })}
-                            >
+                          >
                             {data.role === "ativos" && (
                               <>
                                 <option value="notion_prec_fed_db_id">PRECATÓRIOS FEDERAIS - BASE PRÓPRIA</option>
@@ -1644,7 +1635,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                             )}
 
                             {
-                             (data.role === "judit" || data.role === "ativos") && (
+                              (data.role === "judit" || data.role === "ativos") && (
                                 <>
                                   <option value="notion_prec_fed_judit_db_id">PRECATÓRIOS FEDERAIS - JUDIT</option>
                                   <option value="notion_prec_reg_com_judit_db_id">PRECATÓRIOS REGIME COMUM - JUDIT</option>

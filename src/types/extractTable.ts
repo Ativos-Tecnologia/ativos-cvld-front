@@ -1,6 +1,6 @@
 import { PaginatedResponse } from "@/components/TaskElements";
 import { CVLDResultProps } from "@/interfaces/IResultCVLD";
-import { Dispatch } from "react";
+import React, { Dispatch } from "react";
 
 export type ExtractTableProps = {
     className?: string;
@@ -27,4 +27,6 @@ export type ExtractTableProps = {
     handleSelectRow: (item: CVLDResultProps) => void;
     handleSelectAllRows: () => void;
     handleDeleteExtrato: () => void;
+    editableLabel?: string | null;
+    setEditableLabel?: React.Dispatch<React.SetStateAction<string | null>>;
 }

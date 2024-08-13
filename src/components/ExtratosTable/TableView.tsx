@@ -21,7 +21,7 @@ import { MiniMenu } from './MiniMenu';
 const customTheme: CustomFlowbiteTheme = {
     table: {
         root: {
-            base: "w-full text-left text-sm",
+            base: "relative w-full text-left text-sm",
             shadow: "absolute left-0 top-0 -z-10 h-full w-full rounded-sm bg-white drop-shadow-md dark:bg-black",
             wrapper: "relative"
         },
@@ -32,7 +32,7 @@ const customTheme: CustomFlowbiteTheme = {
             }
         },
         head: {
-            base: "group/head text-xs uppercase text-gray-700 dark:text-gray-400",
+            base: "group/head sticky top-0 z-10 text-xs uppercase text-gray-700",
             cell: {
                 base: "bg-zinc-200 text-black px-4 py-3 group-first/head:first:rounded-tl-sm group-first/head:last:rounded-tr-sm dark:bg-meta-4 dark:text-white"
             }
@@ -45,11 +45,9 @@ const customTheme: CustomFlowbiteTheme = {
     }
 }
 
-const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop, checkedList, setCheckedList, handleDeleteExtrato, handleSelectRow, handleSelectAllRows }: ExtractTableProps) => {
+const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop, checkedList, setCheckedList, handleDeleteExtrato, handleSelectRow, handleSelectAllRows, editableLabel, setEditableLabel }: ExtractTableProps) => {
 
     const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
-    const [editableLabel, setEditableLabel] = useState<string | null>(null);
-    const [editLabelState, setEditLabelState] = useState<string>('');
 
     // refs
     const inputRefs = useRef<HTMLInputElement[] | null>([]);
@@ -78,18 +76,22 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
         }
     }
 
-    const handleChangeCreditorName = async (index: number, id: string, value: string) => {
+    const handleChangeCreditorName = async (id: string, value: string, index?: number, ref?: HTMLInputElement) => {
 
-        setEditableLabel(null);
-        setEditLabelState('');
-        inputRefs.current![index].blur();
+        setEditableLabel!(null);
+
+        if (index) {
+            inputRefs.current![index].blur();
+        } 
+        if (ref) {
+            ref.blur();
+        }
 
         await api.patch(`/api/extrato/update/credor/${id}/`, {
             credor: value
         }).then(response => {
 
             if (response.status === 200) {
-                setEditLabelState('success');
                 const newResults = data.results.map((item: CVLDResultProps) => {
                     if (item.id === id) {
                         return {
@@ -138,7 +140,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
     // });
 
     return (
-        <><div className='relative'>
+        <><div className='relative overflow-scroll max-h-100'>
 
             <Flowbite theme={{ theme: customTheme }}>
                 <Table>
@@ -220,17 +222,17 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                         </TableCell>
                                         <TableCell title={item?.credor || ''}
                                             className="relative h-full  flex items-center gap-2 font-semibold text-[12px]"
-                                            >
+                                        >
                                             <input
                                                 type="text"
                                                 ref={(input) => { if (input) inputRefs.current![index] = input; }}
                                                 defaultValue={item?.credor || ''}
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                        handleChangeCreditorName(index, item.id, e.currentTarget.value)
+                                                        handleChangeCreditorName(item.id, e.currentTarget.value, index)
                                                     }
                                                 }}
-                                                onBlur={(e) => handleChangeCreditorName(index, item.id, e.currentTarget.value)}
+                                                onBlur={(e) => handleChangeCreditorName(item.id, e.currentTarget.value, index)}
                                                 className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                             />
 
@@ -267,7 +269,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                         <React.Fragment>
                                                             <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200'
                                                                 onClick={() => {
-                                                                    setEditableLabel(item.id)
+                                                                    setEditableLabel!(item.id)
                                                                     handleEditInput(index);
                                                                 }}>
                                                                 {item?.credor?.length === 0 && (
