@@ -42,6 +42,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   const [oficioSelectValue, setOficioSelectValue] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<ActiveState>('ALL');
   const [activedTab, setActivedTab] = useState<Tabs>('GERAL');
+  const [editableLabel, setEditableLabel] = useState<string | null>(null);
   const [item, setItem] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [viewOption, setViewOption] = useState<LocalExtractViewProps>({
@@ -392,9 +393,9 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   });
 
   return (
-    <div
-      ref={mainRef}
-      className="overflow-x-auto">
+    <div ref={mainRef}
+      className="overflow-hidden"
+    >
       {window.innerWidth >= 435 ? (
         <>
           {/* desktop view */}
@@ -490,6 +491,8 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                 handleDeleteExtrato={handleDeleteExtrato}
                 handleSelectRow={handleSelectRow}
                 handleSelectAllRows={handleSelectAllRows}
+                editableLabel={editableLabel}
+                setEditableLabel={setEditableLabel}
               />
             }
             {viewOption.type === "cards" &&
@@ -620,7 +623,14 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
         /* end mobile view */
       )}
       <Suspense fallback={<Loader />}>
-        <AwesomeDrawer data={item} loading={loading} setData={setItem} open={openDetailsDrawer} setOpen={setOpenDetailsDrawer} />
+        <AwesomeDrawer data={item}
+          loading={loading}
+          setData={setItem}
+          open={openDetailsDrawer}
+          setOpen={setOpenDetailsDrawer}
+          editableLabel={editableLabel}
+          setEditableLabel={setEditableLabel}
+        />
         {/* <TaskDrawer id={extratoId} open={openTaskDrawer} setOpen={setOpenTaskDrawer} /> */}
       </Suspense>
       {showModalMessage && (
