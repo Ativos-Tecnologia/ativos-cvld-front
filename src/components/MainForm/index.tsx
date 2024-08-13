@@ -240,6 +240,10 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
       data.numero_de_meses = 0;
     }
 
+    if (data.upload_notion) {
+      data.notion_db_id = "notion_central_de_prec_db_id"
+    }
+
     setLoading(true);
 
     try {
@@ -1428,7 +1432,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                           Fazer upload para o Notion
                         </label>
                       </div>
-                      {watch("upload_notion") === true ? (
+                      {/* {watch("upload_notion") === true ? (
                         <div className="flex flex-col gap-2">
                           <label htmlFor="notion_db_id" className="text-sm font-medium text-meta-5 flex flex-row align-self-baseline">
                             <BiLogoUpwork className="h-4 w-4 mt-0.5 mr-2" /> Selecione o Workspace
@@ -1458,7 +1462,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                             }
                           </select>
                         </div>
-                      ) : null}
+                      ) : null} */}
                     </div>
                   </div>
                   </>
