@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useRef, useState } from "react";
 import api from "@/utils/api";
 import { PaginatedResponse } from "@/components/TaskElements";
 import { CVLDResultProps } from "@/interfaces/IResultCVLD";
@@ -64,6 +64,9 @@ export interface IExtratosTable {
     modalOptions: ModalOptionsProps
     setModalOptions: React.Dispatch<React.SetStateAction<ModalOptionsProps>>;
 
+    /* ====> refs <==== */
+    mainRef: any;
+
     /*  ====> functions <===== */
     fetchData: (query: string) => Promise<void>;
     fetchDelete: (ids: string[]) => Promise<void>;
@@ -71,7 +74,7 @@ export interface IExtratosTable {
     onPageChange: (page: number) => Promise<void>;
     handleRestoreData: () => Promise<void>;
     handleUnarchiveExtrato: () => Promise<void>;
-    handleArchiveExtrato: (ids: string[]) => Promise<void>;
+    handleArchiveExtrato: () => Promise<void>;
     handleSelectAllRows: () => void;
     handleDeleteExtrato: () => void;
     handleSelectRow: (item: CVLDResultProps) => void;
@@ -122,6 +125,8 @@ export const ExtratosTableContext = createContext<IExtratosTable>({
     },
     setModalOptions: () => { },
 
+    mainRef: null,
+
     /*  ====> functions <===== */
     fetchData: async () => { },
     fetchDelete: async () => { },
@@ -163,6 +168,9 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
         open: false,
         items: []
     });
+
+    /* ====> refs <==== */
+    const mainRef = useRef<any>(null);
 
     /* ====> functions <==== */
 
@@ -317,14 +325,14 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
     }
 
     /* função que realiza o arquivamento do(s) extrato(s) */
-    const handleArchiveExtrato = async (ids: string[]) => {
+    const handleArchiveExtrato = async () => {
         try {
 
             const response = await api.post('api/extrato/bulk-action/?action=archive', {
-                ids: ids
+                ids: checkedList.map(item => item.id)
             });
 
-            toast(`${ids.length > 1 ? 'Extratos movidos para guia arquivados!' : 'Extrato movido para guia arquivados!'}`, {
+            toast(`${checkedList.length > 1 ? 'Extratos movidos para guia arquivados!' : 'Extrato movido para guia arquivados!'}`, {
                 classNames: {
                     toast: "dark:bg-form-strokedark",
                     title: "dark:text-snow",
@@ -450,6 +458,49 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
         }
     }
 
+    /* ====> useEffects <===== */
+
+    /* sempre que o componente for montado, puxa os dados do back e do
+    localStorage */
+    useEffect(() => {
+        fetchData('');
+        fetchStateFromLocalStorage();
+    }, []);
+
+    /* altera o estado no localStorage do modal de alerta para
+    exclusão/arquivamento */
+    useEffect(() => {
+        if (localShowOptions.length <= 0) return;
+
+        localShowOptions.forEach(element => {
+            if (element.key === "show_delete_extract_alert") {
+                setShowModalMessage(!element.active)
+            }
+        });
+    }, [localShowOptions]);
+
+    /* altera o auxData se ele for vazio (sempre que o componente é remontado) */
+    useEffect(() => {
+        if (auxData.results.length === 0 && data.results.length > 0) {
+            setAuxData(data)
+        }
+    }, [data]);
+
+    /* verifica se o usuário pressionou a tecla DELETE
+    para deletar um ou mais extratos selecionados */
+    useEffect(() => {
+        const keyHandler = ({ keyCode }: KeyboardEvent) => {
+            if (keyCode !== 46) return;
+
+            if (checkedList.length >= 1) {
+                fetchDelete(checkedList.map(item => item.id))
+            }
+
+        };
+        document.addEventListener("keydown", keyHandler);
+        return () => document.removeEventListener("keydown", keyHandler);
+    });
+
     return (
         <ExtratosTableContext.Provider value={{
             /*  ====> states <===== */
@@ -459,7 +510,7 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
             oficioSelectValue, setOficioSelectValue,
             activeFilter, setActiveFilter,
             activedTab, setActivedTab,
-            editableLabel,setEditableLabel,
+            editableLabel, setEditableLabel,
             item, setItem,
             loading, setLoading,
             viewOption, setViewOption,
@@ -470,6 +521,9 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
             openDetailsDrawer, setOpenDetailsDrawer,
             currentPage, setCurrentPage,
             modalOptions, setModalOptions,
+
+            /* ====> refs <==== */
+            mainRef,
 
             /* ====> functions <==== */
             fetchData,

@@ -1,8 +1,7 @@
 import { Badge, CustomFlowbiteTheme, Flowbite, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from 'flowbite-react';
 import numberFormat from "@/functions/formaters/numberFormat";
-import { ExtractTableProps } from '@/types/extractTable';
-import React, { useEffect, useRef, useState } from 'react';
-import { BiArchiveIn, BiCheck, BiLoader, BiMinus, BiSolidDockLeft, BiTask, BiTrash, BiX } from 'react-icons/bi';
+import React, { useContext, useRef } from 'react';
+import { BiLoader, BiSolidDockLeft } from 'react-icons/bi';
 import { LiaCoinsSolid } from "react-icons/lia";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { PiCursorClick } from "react-icons/pi";
@@ -12,11 +11,11 @@ import tipoOficio from '@/enums/tipoOficio.enum';
 import useUpdateOficio from '@/hooks/useUpdateOficio';
 import MarvelousPagination from '../MarvelousPagination';
 import api from '@/utils/api';
-import { ImCopy, ImSpinner2 } from 'react-icons/im';
+import { ImCopy } from 'react-icons/im';
 import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants';
 import { AiOutlineUser } from 'react-icons/ai';
 import { toast } from 'sonner';
-import { MiniMenu } from './MiniMenu';
+import { ExtratosTableContext } from '@/context/ExtratosTableContext';
 
 const customTheme: CustomFlowbiteTheme = {
     table: {
@@ -32,7 +31,7 @@ const customTheme: CustomFlowbiteTheme = {
             }
         },
         head: {
-            base: "group/head sticky top-0 z-10 text-xs uppercase text-gray-700",
+            base: "group/head text-xs uppercase text-gray-700",
             cell: {
                 base: "bg-zinc-200 text-black px-4 py-3 group-first/head:first:rounded-tl-sm group-first/head:last:rounded-tr-sm dark:bg-meta-4 dark:text-white"
             }
@@ -45,7 +44,15 @@ const customTheme: CustomFlowbiteTheme = {
     }
 }
 
-const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop, checkedList, setCheckedList, handleDeleteExtrato, handleSelectRow, handleSelectAllRows, editableLabel, setEditableLabel }: ExtractTableProps) => {
+const TableView = ({ count }: { count: number }) => {
+
+    const {
+        data, setData, setItem,
+        loading, setOpenDetailsDrawer,
+        onPageChange, currentPage, setCurrentPage,
+        callScrollTop, editableLabel, setEditableLabel,
+        handleSelectRow, checkedList
+    } = useContext(ExtratosTableContext);
 
     const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
 
@@ -82,7 +89,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
 
         if (index) {
             inputRefs.current![index].blur();
-        } 
+        }
         if (ref) {
             ref.blur();
         }
@@ -140,7 +147,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
     // });
 
     return (
-        <><div className='relative overflow-scroll max-h-100'>
+        <><div className='relative'>
 
             <Flowbite theme={{ theme: customTheme }}>
                 <Table>
@@ -285,7 +292,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                                 className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
                                                                 onClick={() => {
                                                                     setOpenDetailsDrawer(true);
-                                                                    fetchDataById(item.id);
+                                                                    setItem(item);
                                                                 }}>
                                                                 <BiSolidDockLeft className='text-lg'
                                                                 />
