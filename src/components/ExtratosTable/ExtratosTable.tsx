@@ -1,5 +1,5 @@
 import api from "@/utils/api";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useContext, useEffect, useRef, useState } from "react";
 import UseMySwal from "@/hooks/useMySwal";
 import { AwesomeDrawer } from "../Drawer/Drawer";
 import { CVLDResultProps } from "@/interfaces/IResultCVLD";
@@ -16,11 +16,13 @@ import { toast } from "sonner";
 import { MiniMenu } from "./MiniMenu";
 import { TableTabs } from "../TableTabs";
 
+// já está sendo exportado no contexto.
 export type LocalShowOptionsProps = {
   key: string;
   active: boolean;
 }
 
+// já está sendo exportado no contexto.
 export type LocalExtractViewProps = {
   type: string;
 }
@@ -29,6 +31,7 @@ type ExtratosTableProps = {
   newItem: CVLDResultProps[];
 }
 
+// já está sendo exportado no contexto.
 export type Tabs = 'GERAL' | 'ARQUIVADOS';
 
 export function ExtratosTable({ newItem }: ExtratosTableProps) {
@@ -36,6 +39,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
   const mySwal = UseMySwal();
 
   // states
+  
   const [data, setData] = useState<PaginatedResponse<CVLDResultProps>>({ results: [], count: 0, next: "", previous: "" });
   const [auxData, setAuxData] = useState<PaginatedResponse<CVLDResultProps>>({ results: [], count: 0, next: "", previous: "" });
   const [statusSelectValue, setStatusSelectValue] = useState<statusOficio | null>(null);
@@ -61,6 +65,8 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     open: false,
     items: []
   });
+
+  // hook vai continuar no componente principal
   const { filterData, resetFilters } = useFilter(data, setData, setStatusSelectValue, setOficioSelectValue, auxData, statusSelectValue, oficioSelectValue);
 
   // refs
@@ -183,6 +189,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     setCheckedList([]);
   }
 
+  // considerar possibilidade de não usar no contexto *******
   const fetchDataById = async (id: string) => {
     setLoading(true);
     setItem((await api.get(`api/extrato/${id}/`)).data);
@@ -337,17 +344,6 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     } else {
       setCheckedList([...checkedList, item]);
     }
-
-    // checkedList.forEach(target => {
-
-    //   console.log(target.id, item.id)
-
-    //   if (target.id === item.id) {
-    //     setCheckedList(checkedList.filter(target => target.id !== item.id));
-    //   } else {
-    //     setCheckedList([...checkedList, item]);
-    //   }
-    // })
 
   }
 

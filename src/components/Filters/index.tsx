@@ -17,6 +17,7 @@ export interface IFilterProps {
     setActiveFilter?: React.Dispatch<React.SetStateAction<ActiveState>>;
 }
 
+// já está sendo exportado pelo contexto.
 export type ActiveState = "ALL" | "PRECATÓRIO" | "R.P.V" | "CREDITÓRIO";
 
 const Filters: React.FC<IFilterProps> = ({ resetFilters, filterData, statusSelectValue, oficioSelectValue, setStatusSelectValue, setOficioSelectValue, activeFilter, setActiveFilter }) => {
