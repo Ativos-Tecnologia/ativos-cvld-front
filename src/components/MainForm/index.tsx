@@ -1,31 +1,44 @@
-import { ACCESS_TOKEN } from '@/constants/constants';
-import { UserInfoAPIContext, UserInfoContextType } from '@/context/UserInfoContext';
-import statusOficio from '@/enums/statusOficio.enum';
-import tipoOficio from '@/enums/tipoOficio.enum';
-import numberFormat from '@/functions/formaters/numberFormat';
-import UseMySwal from '@/hooks/useMySwal';
-import { JWTToken } from '@/types/jwtToken';
-import api from '@/utils/api';
-import Cleave from 'cleave.js/react';
-import { jwtDecode } from 'jwt-decode';
-import { Slash } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import ReactInputMask from 'react-input-mask';
-import React, { useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { AiOutlineLoading } from 'react-icons/ai';
-import { BiChevronRight, BiLineChart, BiLogoUpwork, BiMinus, BiPlus } from 'react-icons/bi';
+import { ACCESS_TOKEN } from "@/constants/constants";
+import {
+  UserInfoAPIContext,
+  UserInfoContextType,
+} from "@/context/UserInfoContext";
+import statusOficio from "@/enums/statusOficio.enum";
+import tipoOficio from "@/enums/tipoOficio.enum";
+import numberFormat from "@/functions/formaters/numberFormat";
+import UseMySwal from "@/hooks/useMySwal";
+import { JWTToken } from "@/types/jwtToken";
+import api from "@/utils/api";
+import Cleave from "cleave.js/react";
+import { jwtDecode } from "jwt-decode";
+import { Slash } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import InputMask from "react-input-mask";
+import React, {
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
+import { Controller, useForm } from "react-hook-form";
+import { AiOutlineLoading } from "react-icons/ai";
+import {
+  BiChevronRight,
+  BiLineChart,
+  BiLogoUpwork,
+  BiMinus,
+  BiPlus,
+} from "react-icons/bi";
 
-import { UpdatePrecatorioButton } from '../Button/UpdatePrecatorioButton';
-import { DrawerConta } from '../Drawer/DrawerConta';
-import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
-import { ShadSelect } from '../ShadSelect';
-import { SelectItem } from '../ui/select';
-import { PaginatedResponse } from '../TaskElements';
-import { Avatar } from 'flowbite-react';
-
-
+import { UpdatePrecatorioButton } from "../Button/UpdatePrecatorioButton";
+import { DrawerConta } from "../Drawer/DrawerConta";
+import { ErrorMessage } from "../ErrorMessage/ErrorMessage";
+import { ShadSelect } from "../ShadSelect";
+import { SelectItem } from "../ui/select";
+import { PaginatedResponse } from "../TaskElements";
+import { Avatar } from "flowbite-react";
 
 interface ChartTwoState {
   series: {
@@ -46,7 +59,11 @@ type CVLDFormProps = {
 //   numericOnly: boolean;
 // }
 
-const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataToAppend }) => {
+const MainForm: React.FC<CVLDFormProps> = ({
+  dataCallback,
+  setCalcStep,
+  setDataToAppend,
+}) => {
   const {
     register,
     control,
@@ -87,7 +104,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
     { id: "SP", nome: "São Paulo" },
     { id: "SE", nome: "Sergipe" },
     { id: "TO", nome: "Tocantins" },
-  ]
+  ];
 
   const tribunais = [
     { id: "TRF1", nome: "Tribunal Regional Federal - 1ª Região" },
@@ -96,22 +113,24 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
     { id: "TRF4", nome: "Tribunal Regional Federal - 4ª Região" },
     { id: "TRF5", nome: "Tribunal Regional Federal - 5ª Região" },
     { id: "TRF6", nome: "Tribunal Regional Federal - 6ª Região" },
-  ]
+  ];
 
-
-  const { setCredits, credits, data } = useContext<UserInfoContextType>(UserInfoAPIContext);
+  const { setCredits, credits, data } =
+    useContext<UserInfoContextType>(UserInfoAPIContext);
 
   const [oficioForm, setOficioForm] = useState<any>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
   const [toggleNovaConta, setToggleNovaConta] = useState<boolean>(false);
-  const [accountList, setAccountList] = useState<PaginatedResponse<any> | null>(null);
+  const [accountList, setAccountList] = useState<PaginatedResponse<any> | null>(
+    null,
+  );
   const [selectedAccount, setSelectedAccount] = useState<{
     id: string;
     nome_razao_social: string;
   }>({
-    id: '',
-    nome_razao_social: '',
+    id: "",
+    nome_razao_social: "",
   });
 
   const [contatoNumberCount, setContatoNumberCount] = useState<number>(1);
@@ -133,17 +152,28 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
 
   useEffect(() => {
     if (oficioForm) {
-
       setValue("natureza", oficioForm.result[0].natureza);
-      setValue("valor_principal", numberFormat(oficioForm.result[0].valor_principal).replace("R$", ""));
-      setValue("valor_juros", numberFormat(oficioForm.result[0].valor_juros).replace("R$", ""));
-      setValue("data_base", oficioForm.result[0].data_base.split("/").reverse().join("-"));
+      setValue(
+        "valor_principal",
+        numberFormat(oficioForm.result[0].valor_principal).replace("R$", ""),
+      );
+      setValue(
+        "valor_juros",
+        numberFormat(oficioForm.result[0].valor_juros).replace("R$", ""),
+      );
+      setValue(
+        "data_base",
+        oficioForm.result[0].data_base.split("/").reverse().join("-"),
+      );
 
       if (oficioForm.result[0].data_base < "2021-12-01") {
         setValue("incidencia_juros_moratorios", true);
       }
 
-      setValue("data_requisicao", oficioForm.result[0].data_requisicao.split("/").reverse().join("-"));
+      setValue(
+        "data_requisicao",
+        oficioForm.result[0].data_requisicao.split("/").reverse().join("-"),
+      );
       setValue("ir_incidente_rra", oficioForm.result[0].incidencia_rra_ir);
 
       if (oficioForm.result[0].incidencia_juros_moratorios) {
@@ -152,12 +182,16 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
         setValue("incidencia_juros_moratorios", false);
       }
       setValue("numero_de_meses", oficioForm.result[0].numero_de_meses);
-      setValue("incidencia_pss", oficioForm.result[0].valor_pss > 0 ? true : false);
-      setValue("valor_pss", numberFormat(oficioForm.result[0].valor_pss).replace("R$", ""));
+      setValue(
+        "incidencia_pss",
+        oficioForm.result[0].valor_pss > 0 ? true : false,
+      );
+      setValue(
+        "valor_pss",
+        numberFormat(oficioForm.result[0].valor_pss).replace("R$", ""),
+      );
     }
-
   }, [oficioForm, setValue]);
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -179,42 +213,38 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
     }
   }, [selectedAccount, setValue]);
 
-  const handleContatoNumber = () => {
-
-  }
+  const handleContatoNumber = () => {};
 
   const isUserAdmin = () => {
     const token = localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`);
     const decoded: JWTToken = jwtDecode(token!);
     return decoded.is_staff;
-  }
+  };
 
   function backendNumberFormat(value: string) {
     if (!value?.replace) {
       return "0.00";
     }
 
-    return value.replace("R$ ", "").replaceAll(".", "").replaceAll(",", ".") || "0.00";
+    return (
+      value.replace("R$ ", "").replaceAll(".", "").replaceAll(",", ".") ||
+      "0.00"
+    );
   }
 
-
   const onSubmit = async (data: any) => {
-
-    console.log(data)
-
     data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
     data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
     data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
-
-
 
     if (!data.data_limite_de_atualizacao_check) {
       data.data_limite_de_atualizacao = new Date().toISOString().split("T")[0];
     }
 
     if (!data.status) {
-      data.status = 'Realizar Primeiro Contato';
+      data.status = "Realizar Primeiro Contato";
     }
+
 
     if (!data.natureza) {
       data.natureza = "NÃO TRIBUTÁRIA";
@@ -241,7 +271,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
     }
 
     if (data.upload_notion) {
-      data.notion_db_id = "notion_central_de_prec_db_id"
+      data.notion_db_id = "notion_central_de_prec_db_id";
     }
 
     setLoading(true);
@@ -249,69 +279,107 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
     try {
       setCalcStep("calculating");
 
-      const response = data.gerar_cvld ? await api.post("/api/extrato/create/", data) : await api.post("/api/extrato/query/", data);
-
+      const response = data.gerar_cvld
+        ? await api.post("/api/extrato/create/", data)
+        : await api.post("/api/extrato/query/", data);
 
       if (response.status === 201 || response.status === 200) {
         setCredits({
           ...credits,
-          available_credits: credits.available_credits - response.data.result[0].price,
+          available_credits:
+            credits.available_credits - response.data.result[0].price,
         });
 
-        response.status === 200 ? dataCallback(response.data) : (
-          setDataToAppend(response.data),
-          dataCallback(response.data)
-        )
+        response.status === 200
+          ? dataCallback(response.data)
+          : (setDataToAppend(response.data), dataCallback(response.data));
 
-        setCalcStep('done');
+        setCalcStep("done");
 
         const formatedPrincipal = parseFloat(data.valor_principal).toFixed(2);
-        const formatedUpdatedPrincipal = parseFloat(response.data.result[0].principal_atualizado_requisicao).toFixed(2);
+        const formatedUpdatedPrincipal = parseFloat(
+          response.data.result[0].principal_atualizado_requisicao,
+        ).toFixed(2);
 
         if (data.natureza === "TRIBUTÁRIA") {
-
           const series = [
             {
               name: "Valor Principal",
-              data: [Number(parseFloat(formatedPrincipal)), Number(parseFloat(formatedPrincipal))],
+              data: [
+                Number(parseFloat(formatedPrincipal)),
+                Number(parseFloat(formatedPrincipal)),
+              ],
             },
             {
               name: "Valor Juros",
-              data: [Number(parseFloat(data.valor_juros).toFixed(2)), Number(parseFloat(response.data.result[0].juros_atualizado).toFixed(2))],
+              data: [
+                Number(parseFloat(data.valor_juros).toFixed(2)),
+                Number(
+                  parseFloat(response.data.result[0].juros_atualizado).toFixed(
+                    2,
+                  ),
+                ),
+              ],
             },
             {
               name: "Total",
-              data: [Number(parseFloat(response.data.result[0].valor_inscrito).toFixed(2)), Number(parseFloat(response.data.result[0].valor_liquido_disponivel).toFixed(2))],
+              data: [
+                Number(
+                  parseFloat(response.data.result[0].valor_inscrito).toFixed(2),
+                ),
+                Number(
+                  parseFloat(
+                    response.data.result[0].valor_liquido_disponivel,
+                  ).toFixed(2),
+                ),
+              ],
             },
-          ]
+          ];
 
           setState({ series });
         } else {
           const series = [
             {
               name: "Valor Principal",
-              data: [Number(parseFloat(formatedPrincipal)), Number(parseFloat(formatedUpdatedPrincipal))],
+              data: [
+                Number(parseFloat(formatedPrincipal)),
+                Number(parseFloat(formatedUpdatedPrincipal)),
+              ],
             },
             {
               name: "Valor Juros",
-              data: [Number(parseFloat(data.valor_juros).toFixed(2)), Number(parseFloat(response.data.result[0].juros_atualizados_requisicao).toFixed(2))],
+              data: [
+                Number(parseFloat(data.valor_juros).toFixed(2)),
+                Number(
+                  parseFloat(
+                    response.data.result[0].juros_atualizados_requisicao,
+                  ).toFixed(2),
+                ),
+              ],
             },
             {
               name: "Total",
-              data: [Number(parseFloat(response.data.result[0].valor_inscrito).toFixed(2)), Number(parseFloat(response.data.result[0].valor_liquido_disponivel).toFixed(2))],
+              data: [
+                Number(
+                  parseFloat(response.data.result[0].valor_inscrito).toFixed(2),
+                ),
+                Number(
+                  parseFloat(
+                    response.data.result[0].valor_liquido_disponivel,
+                  ).toFixed(2),
+                ),
+              ],
             },
           ];
           setState({ series });
         }
-
-
-
       }
       setLoading(false);
-    }
-
-    catch (error: any) {
-      if (error.response.status === 401 && error.response.data.code === "token_not_valid") {
+    } catch (error: any) {
+      if (
+        error.response.status === 401 &&
+        error.response.data.code === "token_not_valid"
+      ) {
         mySwal.fire({
           icon: "error",
           title: "Erro",
@@ -319,29 +387,41 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
         });
         localStorage.clear();
         window.location.href = "auth/signin";
-      } else if (error.response.status === 400 && (error.response.data.subject == "NO_CASH" || error.response.data.subject == "INSUFFICIENT_CASH")) {
+      } else if (
+        error.response.status === 400 &&
+        (error.response.data.subject == "NO_CASH" ||
+          error.response.data.subject == "INSUFFICIENT_CASH")
+      ) {
         mySwal.fire({
           icon: "warning",
           title: "Saldo insuficiente",
           showConfirmButton: false,
           showCloseButton: true,
           html: (
-            <div className="flex flex-col border border-stroke rounded-md dark:border-strokedark dark:bg-boxdark">
-              <div className="flex items-center justify-center my-2">
-                <p className="text-md font-semibold dark:text-white">Escolha uma das opções de recarga e continue utilizando a plataforma</p>
+            <div className="flex flex-col rounded-md border border-stroke dark:border-strokedark dark:bg-boxdark">
+              <div className="my-2 flex items-center justify-center">
+                <p className="text-md font-semibold dark:text-white">
+                  Escolha uma das opções de recarga e continue utilizando a
+                  plataforma
+                </p>
               </div>
-              <div className="flex flex-col mt-2 border border-stroke p-4 rounded-md dark:border-strokedark dark:bg-boxdark">
-                <Link href='#' className="flex flex-row items-center justify-center group text-primary text-md font-semibold dark:text-white">
+              <div className="mt-2 flex flex-col rounded-md border border-stroke p-4 dark:border-strokedark dark:bg-boxdark">
+                <Link
+                  href="#"
+                  className="text-md group flex flex-row items-center justify-center font-semibold text-primary dark:text-white"
+                >
                   Adquirir Créditos
-
-                  <BiChevronRight style={{
-                    width: "22px",
-                    height: "22px",
-                  }} className="inline-block ml-1 transition-all duration-300 group-hover:translate-x-1" />
+                  <BiChevronRight
+                    style={{
+                      width: "22px",
+                      height: "22px",
+                    }}
+                    className="ml-1 inline-block transition-all duration-300 group-hover:translate-x-1"
+                  />
                 </Link>
               </div>
             </div>
-          )
+          ),
         });
       } else if (error.response.status === 403) {
         mySwal.fire({
@@ -355,69 +435,78 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
           title: "Erro",
           text: error.response.data.detail,
         });
-
       }
       setLoading(false);
     }
-  }
-
+  };
 
   return (
     <div className="col-span-12 rounded-md border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
-      <div className="flex-col flex-wrap items-start justify-between gap-3 sm:flex-nowrap pb-0">
-        <div className="w-full flex justify-center align-middle">
-          <h2 className='font-nexa text-3xl mt-1.5 font-normal antialiased text-primary flex flex-col justify-center select-none'>
+      <div className="flex-col flex-wrap items-start justify-between gap-3 pb-0 sm:flex-nowrap">
+        <div className="flex w-full justify-center align-middle">
+          <h2 className="mt-1.5 flex select-none flex-col justify-center font-nexa text-3xl font-normal text-primary antialiased">
             Celer
           </h2>
-          <p className='text-xs font-semibold text-primary flex flex-col justify-center'>
-            <Slash className='w-5 h-5 text-gray-200 -rotate-45 mt-1 -mr-3' />
+          <p className="flex flex-col justify-center text-xs font-semibold text-primary">
+            <Slash className="-mr-3 mt-1 h-5 w-5 -rotate-45 text-gray-200" />
           </p>
-          <Image src="/images/logo/celer-ia-only-logo.svg" alt="Celler IA Engine" width={56} height={50} className='mt-[6.1px] select-none antialiased' aria-selected={false}
-            draggable={false} />
+          <Image
+            src="/images/logo/celer-ia-only-logo.svg"
+            alt="Celler IA Engine"
+            width={56}
+            height={50}
+            className="mt-[6.1px] select-none antialiased"
+            aria-selected={false}
+            draggable={false}
+          />
         </div>
-        <p className="text-sm font-normal text-center apexcharts-legend-text mt-0">
+        <p className="apexcharts-legend-text mt-0 text-center text-sm font-normal">
           Nosso modelo de atualização de valores de precatórios e RPVs
         </p>
       </div>
-      <div className="flex flex-col items-center w-full">
+      <div className="flex w-full flex-col items-center">
         <UpdatePrecatorioButton setStateFunction={setOficioForm} />
-
       </div>
       {
         <form className="mt-8 space-y-5" onSubmit={handleSubmit(onSubmit)}>
           <input type="hidden" {...register("conta")} />
           <div className="grid grid-cols-2 gap-5 sm:grid-cols-2">
-
-            <div className="flex flex-col gap-2 w-full 2xsm:col-span-2 sm:col-span-1">
-              <label htmlFor="natureza" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+            <div className="flex w-full flex-col gap-2 sm:col-span-1">
+              <label
+                htmlFor="natureza"
+                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+              >
                 Natureza
               </label>
 
               <ShadSelect
-                name='natureza'
+                name="natureza"
                 control={control}
                 defaultValue={"NÃO TRIBUTÁRIA"}
 
-              // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
-
+                // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
               >
-                <SelectItem defaultValue="NÃO TRIBUTÁRIA" value="NÃO TRIBUTÁRIA">Não Tributária</SelectItem>
+                <SelectItem
+                  defaultValue="NÃO TRIBUTÁRIA"
+                  value="NÃO TRIBUTÁRIA"
+                >
+                  Não Tributária
+                </SelectItem>
                 <SelectItem value="TRIBUTÁRIA">Tributária</SelectItem>
               </ShadSelect>
             </div>
-            <div className="sm:flex flex-col gap-2 w-full sm:col-span-1 sm:invisible 2xsm:hidden">
+            <div className="invisible flex w-full flex-col gap-2 sm:col-span-1 "></div>
 
-            </div>
-
-            <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-              <label htmlFor="valor_principal" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+            <div className="flex flex-col gap-2">
+              <label
+                htmlFor="valor_principal"
+                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+              >
                 Valor Principal
               </label>
               <Controller
                 name="valor_principal"
-                control={
-                  control
-                }
+                control={control}
                 defaultValue={0}
                 render={({ field }) => (
                   <Cleave
@@ -435,10 +524,12 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                   />
                 )}
               />
-
             </div>
-            <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-              <label htmlFor="valor_juros" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+            <div className="flex flex-col gap-2">
+              <label
+                htmlFor="valor_juros"
+                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+              >
                 Juros
               </label>
               <Controller
@@ -464,223 +555,209 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
               />
             </div>
 
-            <div className="flex flex-col min-h-17.5 2xsm:col-span-2 sm:col-span-1">
-              <div className="relative flex flex-col justify-between mb-6 gap-2">
-                <label htmlFor="data_base" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+            <div className="flex min-h-17.5 flex-col gap-2">
+              <div className="relative mb-6 flex flex-col justify-between">
+                <label
+                  htmlFor="data_base"
+                  className="mb-1 font-nexa text-xs font-semibold uppercase text-meta-5"
+                >
                   Data Base
                 </label>
                 <input
                   type="date"
                   id="data_base"
-                  className={`${errors.data_base && '!border-rose-400 !ring-0'} w-full rounded-md border bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
-                  {
-                  ...register("data_base", {
+                  className={`${errors.data_base && "!border-rose-400 !ring-0"} w-full rounded-md border bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
+                  {...register("data_base", {
                     required: "Campo obrigatório",
-                  })
-                  }
+                  })}
                   aria-invalid={errors.data_base ? "true" : "false"}
                 />
                 <ErrorMessage errors={errors} field="data_base" />
               </div>
-              <div className={`flex items-center gap-2 ${watch("data_base") < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}>
+              <div
+                className={`flex items-center gap-2 ${watch("data_base") < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
+              >
                 <input
                   type="checkbox"
                   id="incidencia_juros_moratorios"
-                  className={`w-[15px] h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
+                  className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                   defaultChecked
-                  {
-                  ...register("incidencia_juros_moratorios")
-                  }
+                  {...register("incidencia_juros_moratorios")}
                 />
-                <label htmlFor="incidencia_juros_moratorios" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                <label
+                  htmlFor="incidencia_juros_moratorios"
+                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                >
                   Juros de Mora fixados em sentença
                 </label>
               </div>
             </div>
 
-            <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-              <div className="relative flex flex-col gap-2 justify-between mb-6">
-                <label htmlFor="data_requisicao" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+            <div className="flex flex-col gap-2">
+              <div className="relative mb-6 flex flex-col justify-between">
+                <label
+                  htmlFor="data_requisicao"
+                  className="mb-1 font-nexa text-xs font-semibold uppercase text-meta-5"
+                >
                   Data de Requisição / Recebimento
                 </label>
                 <input
                   type="date"
                   id="data_requisicao"
-                  className={`${errors.data_requisicao && '!border-rose-400 !ring-0'} w-full rounded-md border bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
-                  {
-                  ...register("data_requisicao", {
+                  className={`${errors.data_requisicao && "!border-rose-400 !ring-0"} w-full rounded-md border bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
+                  {...register("data_requisicao", {
                     required: "Campo obrigatório",
-                  })
-                  }
+                  })}
                 />
                 <ErrorMessage errors={errors} field="data_requisicao" />
               </div>
             </div>
-            <div className="flex gap-2 items-center col-span-2">
-              <input type="checkbox"
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
                 id="incidencia_rra_ir"
-                className={`w-[15px] h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
+                className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                 defaultChecked
-                {
-                ...register("incidencia_rra_ir")
-                }
+                {...register("incidencia_rra_ir")}
               />
-              <label htmlFor="incidencia_rra_ir" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+              <label
+                htmlFor="incidencia_rra_ir"
+                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+              >
                 Incidência de IR
               </label>
             </div>
-            {
-              watch("natureza") === "TRIBUTÁRIA" || watch("incidencia_rra_ir") === false ? (
-                null
-              ) : (
-                <div className="flex gap-2 items-center 2xsm:col-span-2 sm:col-span-1">
-                  <input type="checkbox"
-                    id="ir_incidente_rra"
-                    className={`w-[15px] h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
-                    {
-                    ...register("ir_incidente_rra")
-                    }
-                  />
-                  <label htmlFor="ir_incidente_rra" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                    IR incidente sobre RRA?
-                  </label>
-                </div>
-              )
-            }
-            {
-              watch("ir_incidente_rra") === true && watch("natureza") !== "TRIBUTÁRIA" ? (
-                <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                  <label htmlFor="numero_de_meses" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                    Número de meses
-                  </label>
-                  <input
-                    type="number"
-                    id="numero_de_meses"
-                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                    min={0}
-                    {
-                    ...register("numero_de_meses", {
-                      required: "Campo obrigatório",
-                      setValueAs: (value) => {
-                        return parseInt(value);
-                      }
-                    })
-                    }
-                  />
-                </div>
-              ) : null
-            }
-            {
-              watch("incidencia_rra_ir") === true && watch("ir_incidente_rra") === false && watch("natureza") !== "TRIBUTÁRIA" ? (
-                <div className="sm:flex items-center 2xsm:hidden 2xsm:col-span-2 sm:col-span-1">
-                  &nbsp;
-                </div>
-              ) : null
-            }
-            {
-              watch("natureza") !== "TRIBUTÁRIA" ? (
-                <div className="flex gap-2 items-center 2xsm:col-span-2 sm:col-span-1">
-                  <input type="checkbox"
-                    id="incidencia_pss"
-                    className={`w-[15px] h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
-                    {
-                    ...register("incidencia_pss")
-                    }
-                  />
-                  <label htmlFor="incidencia_pss" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                    Incide PSS?
-                  </label>
-                </div>
-              ) : null
-            }
-            {
-              watch("incidencia_pss") && watch("natureza") !== "TRIBUTÁRIA" ? (
-                <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                  <label htmlFor="valor_pss" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                    PSS
-                  </label>
-                  <Controller
-                    name="valor_pss"
-                    control={control}
-                    defaultValue={0}
-                    render={({ field }) => (
-                      <Cleave
-                        {...field}
-                        className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                        options={{
-                          numeral: true,
-                          numeralThousandsGroupStyle: "thousand",
-                          numeralDecimalScale: 2,
-                          numeralDecimalMark: ",",
-                          delimiter: ".",
-                          prefix: "R$ ",
-                          rawValueTrimPrefix: true,
-                        }}
-                      />
-                    )}
-                  />
-                </div>
-              ) : (
-                <>
-                  {watch("natureza") !== "TRIBUTÁRIA" && (
-                    <div className="sm:flex items-center 2xsm:hidden 2xsm:col-span-2 sm:col-span-1">
-                      &nbsp;
-                    </div>
+            {watch("natureza") === "TRIBUTÁRIA" ||
+            watch("incidencia_rra_ir") === false ? null : (
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="ir_incidente_rra"
+                  className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
+                  {...register("ir_incidente_rra")}
+                />
+                <label
+                  htmlFor="ir_incidente_rra"
+                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                >
+                  IR incidente sobre RRA?
+                </label>
+              </div>
+            )}
+            {watch("ir_incidente_rra") === true &&
+            watch("natureza") !== "TRIBUTÁRIA" ? (
+              <div className="flex flex-col gap-2">
+                <label
+                  htmlFor="numero_de_meses"
+                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                >
+                  Número de meses
+                </label>
+                <input
+                  type="number"
+                  id="numero_de_meses"
+                  className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                  min={0}
+                  {...register("numero_de_meses", {
+                    required: "Campo obrigatório",
+                    setValueAs: (value) => {
+                      return parseInt(value);
+                    },
+                  })}
+                />
+              </div>
+            ) : null}
+            {watch("natureza") !== "TRIBUTÁRIA" ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="incidencia_pss"
+                  className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
+                  {...register("incidencia_pss")}
+                />
+                <label
+                  htmlFor="incidencia_pss"
+                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                >
+                  Incide PSS?
+                </label>
+              </div>
+            ) : null}
+            {watch("incidencia_pss") && watch("natureza") !== "TRIBUTÁRIA" ? (
+              <div className="flex flex-col gap-2">
+                <label
+                  htmlFor="valor_pss"
+                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                >
+                  PSS
+                </label>
+                <Controller
+                  name="valor_pss"
+                  control={control}
+                  defaultValue={0}
+                  render={({ field }) => (
+                    <Cleave
+                      {...field}
+                      className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                      options={{
+                        numeral: true,
+                        numeralThousandsGroupStyle: "thousand",
+                        numeralDecimalScale: 2,
+                        numeralDecimalMark: ",",
+                        delimiter: ".",
+                        prefix: "R$ ",
+                        rawValueTrimPrefix: true,
+                      }}
+                    />
                   )}
-                </>
-              )
-            }
-            <div className="flex gap-2 2xsm:col-span-2 sm:col-span-1">
-              <input
-                type="checkbox"
-                id="data_limite_de_atualizacao_check"
-                className={`w-[15px] h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
-                {
-                ...register("data_limite_de_atualizacao_check")
-                }
-              />
-              <label htmlFor="data_limite_de_atualizacao_check" className="text-xs text-meta-5 font-semibold font-nexa uppercase mb-1">
-                Atualizar para data passada?
-              </label>
+                />
+              </div>
+            ) : (
+              <div className="flex items-center">&nbsp;</div>
+            )}
+            <div className="flex flex-col items-start gap-2">
+              <div className="flex gap-2">
+                <input
+                  type="checkbox"
+                  id="data_limite_de_atualizacao_check"
+                  className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
+                  {...register("data_limite_de_atualizacao_check")}
+                />
+                <label
+                  htmlFor="data_limite_de_atualizacao_check"
+                  className="mb-1 font-nexa text-xs font-semibold uppercase text-meta-5"
+                >
+                  Atualizar para data passada?
+                </label>
+              </div>
             </div>
-            {
-              watch("data_limite_de_atualizacao_check") ? (
-                <div className="flex flex-col gap-2 justify-between 2xsm:col-span-2 sm:col-span-1">
-                  <label htmlFor="data_limite_de_atualizacao" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                    Atualizado até:
-                  </label>
-                  <input
-                    type="date"
-                    id="data_limite_de_atualizacao"
-                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                    {
-                    ...register("data_limite_de_atualizacao", {
-                    })
-                    } min={watch("data_requisicao")}
-                    max={new Date().toISOString().split("T")[0]}
-
-
-                  />
-                  {
-                    watch("data_limite_de_atualizacao") < watch("data_requisicao") ? (
-                      <span role="alert" className="absolute right-4 top-4 text-red-500 text-sm">
-                        Data de atualização deve ser maior que a data de requisição
-                      </span>
-                    ) : null
-                  }
-                </div>
-
-              ) : (
-                <>
-                  {watch("natureza") !== "TRIBUTÁRIA" && (
-                    <div className="sm:flex items-center 2xsm:hidden 2xsm:col-span-2 sm:col-span-1">
-                      &nbsp;
-                    </div>
-                  )}
-                </>
-              )
-
-            }
+            {watch("data_limite_de_atualizacao_check") ? (
+              <div className="flex flex-col justify-between">
+                <label
+                  htmlFor="data_limite_de_atualizacao"
+                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                >
+                  Atualizado até:
+                </label>
+                <input
+                  type="date"
+                  id="data_limite_de_atualizacao"
+                  className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                  {...register("data_limite_de_atualizacao", {})}
+                  min={watch("data_requisicao")}
+                  max={new Date().toISOString().split("T")[0]}
+                />
+                {watch("data_limite_de_atualizacao") <
+                watch("data_requisicao") ? (
+                  <span
+                    role="alert"
+                    className="absolute right-4 top-4 text-sm text-red-500"
+                  >
+                    Data de atualização deve ser maior que a data de requisição
+                  </span>
+                ) : null}
+              </div>
+            ) : null}
 
             {/* CVLD */}
             <div className="flex flex-col gap-2 col-span-2">
@@ -688,117 +765,222 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                 <input
                   type="checkbox"
                   id="gerar_cvld"
-                  className={`w-[15px] h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
+                  className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                   {...register("gerar_cvld")}
                 />
                 {/* <label htmlFor="gerar_cvld" className="text-sm font-medium text-meta-5">
                     Emitir Certidão de Valor Líquido Disponível (CVLD)?
                   </label> */}
-                <label htmlFor="gerar_cvld" className="text-xs font-nexa font-semibold text-meta-5 uppercase">
+                <label
+                  htmlFor="gerar_cvld"
+                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                >
                   Salvar informações de ofício e recálculo?
                 </label>
               </div>
-              <div className="grid grid-cols-2 gap-5 mt-4">
-                {
-                  watch("gerar_cvld") ? (
-                    <>
-                      {/* <span className="text-lg font-semibold text-black dark:text-white">Dados do Principal</span> */}
-                      {/* <div className="grid grid-cols-1 gap-5 sm:grid-cols-2"></div> */}
+              <div className="mt-8 flex flex-col gap-2">
+                {watch("gerar_cvld") ? (
+                  <>
+                    {/* <span className="text-lg font-semibold text-black dark:text-white">Dados do Principal</span> */}
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2"></div>
 
-                      <div className="flex 2xsm:flex-col 2xsm:gap-4 sm:gap-2 w-full sm:col-span-2 justify-end mb-4">
-                        <span className="text-md font-semibold self-center w-full">Dados do Principal</span>
-                        {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
-                          <div className='flex flex-col 2xsm:'>
-                            <div className='flex 2xsm:justify-start sm:justify-end'>
-                              <div className="flex -space-x-1 self-end">
+                    <div className="mb-4 flex w-full justify-end gap-2 sm:col-span-2">
+                      <span className="text-md w-full self-center font-semibold">
+                        Dados de Identificação
+                      </span>
+                      {!window.location.href.includes(
+                        "https://ativoscvld.vercel.app/",
+                      ) && (
+                        <div className="flex flex-col">
+                          <div className="flex justify-end">
+                            <div className="flex -space-x-1 self-end">
+                              {accountList?.results.map((account) => (
+                                <Avatar
+                                  onClick={() => {
+                                    setSelectedAccount({
+                                      id: account.id,
+                                      nome_razao_social:
+                                        account.nome_razao_social,
+                                    });
 
-                                {
-                                  accountList?.results.map((account) => (
-                                    <Avatar onClick={() => {
-                                      setSelectedAccount({
-                                        id: account.id,
-                                        nome_razao_social: account.nome_razao_social,
-                                      })
+                                    console.log(selectedAccount);
+                                  }}
+                                  key={account.id}
+                                  rounded
+                                  placeholderInitials={
+                                    account.nome_razao_social.split(" ")
+                                      .length > 1
+                                      ? account.nome_razao_social
+                                          .split(" ")[0]
+                                          .charAt(0) +
+                                        account.nome_razao_social
+                                          .split(" ")[1]
+                                          .charAt(0)
+                                      : account.nome_razao_social.charAt(0)
+                                  }
+                                  alt={account.nome_razao_social}
+                                  className="[&>div>div>span]:text-xs [&>div>div>span]:text-white [&>div>div]:border [&>div>div]:border-whiter [&>div>div]:bg-[#4f5e77]"
+                                  size="sm"
+                                />
+                              ))}
 
-                                      console.log(selectedAccount);
-
-
-                                    }} key={account.id} rounded placeholderInitials={account.nome_razao_social.split(" ").length > 1 ? account.nome_razao_social.split(" ")[0].charAt(0) + account.nome_razao_social.split(" ")[1].charAt(0) : account.nome_razao_social.charAt(0)} alt={account.nome_razao_social} className='[&>div>div]:bg-[#4f5e77] [&>div>div>span]:text-white [&>div>div>span]:text-xs [&>div>div]:border [&>div>div]:border-whiter' size='sm' />
-                                  ))
+                              <button
+                                type="button"
+                                className="group relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-stroke bg-gray-200 text-primary transition-all duration-300 ease-in-out hover:w-32 dark:border-strokedark dark:bg-[#4f5e77] dark:text-white"
+                                onClick={() =>
+                                  setToggleNovaConta(!toggleNovaConta)
                                 }
-
-                                <button
-                                  type="button"
-                                  className="relative group flex h-8 w-8 items-center justify-center rounded-full border border-stroke bg-gray-200 text-primary dark:border-strokedark dark:bg-[#4f5e77] dark:text-white transition-all duration-300 ease-in-out hover:w-32 overflow-hidden"
-                                  onClick={() => setToggleNovaConta(!toggleNovaConta)}
-                                >
-                                  <div className="flex items-center justify-center">
-                                    <svg
-                                      className="fill-black dark:fill-gray-300"
-                                      width="14"
-                                      height="14"
-                                      viewBox="0 0 16 16"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M15 7H9V1C9 0.4 8.6 0 8 0C7.4 0 7 0.4 7 1V7H1C0.4 7 0 7.4 0 8C0 8.6 0.4 9 1 9H7V15C7 15.6 7.4 16 8 16C8.6 16 9 15.6 9 15V9H15C15.6 9 16 8.6 16 8C16 7.4 15.6 7 15 7Z"
-                                        fill=""
-                                      />
-                                    </svg>
-                                    <span className="-ml-20 opacity-0 font-satoshi font-normal transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:ml-2 whitespace-nowrap">
-                                      Nova conta
-                                    </span>
-                                  </div>
-                                </button>
-                              </div>
-                            </div>
-                            {
-                              selectedAccount.nome_razao_social ? (
-                                <div className="flex flex-col gap-2 w-full sm:col-span-2">
-                                  <label htmlFor="conta" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                                    Conta
-                                  </label>
-                                  <input
-                                    type="text"
-                                    id="conta"
-                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                    value={selectedAccount.nome_razao_social}
-                                    readOnly
-                                  />
+                              >
+                                <div className="flex items-center justify-center">
+                                  <svg
+                                    className="fill-black dark:fill-gray-300"
+                                    width="14"
+                                    height="14"
+                                    viewBox="0 0 16 16"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path
+                                      d="M15 7H9V1C9 0.4 8.6 0 8 0C7.4 0 7 0.4 7 1V7H1C0.4 7 0 7.4 0 8C0 8.6 0.4 9 1 9H7V15C7 15.6 7.4 16 8 16C8.6 16 9 15.6 9 15V9H15C15.6 9 16 8.6 16 8C16 7.4 15.6 7 15 7Z"
+                                      fill=""
+                                    />
+                                  </svg>
+                                  <span className="-ml-20 whitespace-nowrap font-satoshi font-normal opacity-0 transition-all duration-300 ease-in-out group-hover:ml-2 group-hover:opacity-100">
+                                    Nova conta
+                                  </span>
                                 </div>
-                              ) : (<span className='text-xs font-semibold 2sxm:self-start sm:self-end w-[158px]'>Vincular ou criar nova conta</span>)
-                            }
+                              </button>
+                            </div>
                           </div>
+                          {selectedAccount.nome_razao_social ? (
+                            <div className="flex w-full flex-col gap-2 sm:col-span-2">
+                              <label
+                                htmlFor="conta"
+                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                              >
+                                Conta
+                              </label>
+                              <input
+                                type="text"
+                                id="conta"
+                                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                value={selectedAccount.nome_razao_social}
+                                readOnly
+                              />
+                            </div>
+                          ) : (
+                            <span className="w-[158px] self-end text-xs font-semibold">
+                              Vincular ou criar nova conta
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
 
-                        )}
-                      </div>
-
-
-                      <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                        <label htmlFor="credor" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                          Nome/Razão Social do Credor Principal
-                        </label>
-                        <input
-                          type="text"
-                          id="credor"
-                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                          {...register("credor", {})} />
-                      </div>
-                      <div className="flex flex-col gap-2 w-full 2xsm:col-span-2 sm:col-span-1">
-                        <label htmlFor="cpf_cnpj" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                    <div className="flex flex-col gap-2">
+                      <label
+                        htmlFor="credor"
+                        className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                      >
+                        Nome/Razão Social
+                      </label>
+                      <input
+                        type="text"
+                        id="credor"
+                        className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                        {...register("credor", {})}
+                      />
+                    </div>
+                    <div className="my-4 flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                      <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                        <label
+                          htmlFor="cpf_cnpj"
+                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                        >
                           CPF/CNPJ
                         </label>
                         <input
                           type="text"
                           id="cpf_cnpj"
-                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                          {...register("cpf_cnpj", {})} />
+                          className="h-[34.5px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                          {...register("cpf_cnpj", {})}
+                        />
                       </div>
+                      <div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                        <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                          <label
+                            htmlFor="especie"
+                            className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                          >
+                            Espécie
+                          </label>
+                          <ShadSelect
+                            name="especie"
+                            control={control}
+                            defaultValue="PRINCIPAL"
+                          >
+                            <SelectItem value="PRINCIPAL">PRINCIPAL</SelectItem>
+                            <SelectItem value="HONORARIOS_CONTRATUAIS">
+                              HONORÁRIOS CONTRATUAIS
+                            </SelectItem>
+                            <SelectItem value="HONORARIOS_SUCUMBENCIAs">
+                              HONORÁRIOS SUCUMBENCIAIS
+                            </SelectItem>
+                          </ShadSelect>
+                        </div>
+                      </div>
+                      {/* <div className="invisible flex w-full flex-col gap-2 sm:col-span-1 "></div> */}
+                    </div>
+                    {(watch("especie") === "PRINCIPAL" ||
+                      watch("especie") === undefined) && (
+                      <div className="my-4 flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                      <div className="flex flex-row items-start w-full gap-2 sm:col-span-1">
+                      <input
+                            type="checkbox"
+                            id="ja_possui_destacamento"
+                            defaultChecked
+                            className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
+                            {...register("ja_possui_destacamento")}
+                          />
+                          <label
+                            htmlFor="possui"
+                            className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                          >
+                            Já possui destacamento de honorários?
+                          </label>
+                      </div>
+                      {watch('ja_possui_destacamento') && (<div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                        <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                          <label
+                            htmlFor="especie"
+                            className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                          >
+                            Percentual
+                          </label>
+                          <input
+                            type="number"
+                            id="percentual"
+                            className="h-[34.5px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                            {...register("percentual", {})}
+                          />
+                        </div>
+                      </div>)}
 
-                      <span className="text-md font-semibold self-center w-full col-span-2 mb-5 mt-4">Dados do Processo</span>
 
-                      <div className="flex flex-col gap-2 w-full 2xsm:col-span-2 sm:col-span-1">
-                        <label htmlFor="npu" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+
+
+
+              </div>
+                      )}
+
+                    <span className="text-md w-full self-center font-semibold">
+                      Dados do Processo
+                    </span>
+                    <div className="mb-4 flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                      <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                        <label
+                          htmlFor="npu"
+                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                        >
                           Processo de Execução - NPU
                         </label>
                         <Controller
@@ -808,58 +990,163 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                           render={({ field }) => (
                             <Cleave
                               {...field}
-                              className="w-full rounded-md border border-stroke bg-white px-3 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2 h-[34.5px]"
+                              className="h-[34.5px] w-full rounded-md border border-stroke bg-white px-3 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                               options={{
                                 blocks: [7, 2, 4, 1, 2, 4],
-                                delimiters: ['-', '.', '.', '.', '.'],
-                                numericOnly: true
+                                delimiters: ["-", ".", ".", ".", "."],
+                                numericOnly: true,
                               }}
                             />
                           )}
                         />
                       </div>
 
-                      <div className="flex flex-col gap-2 w-full col-span-1">
-                        <label htmlFor="natureza" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                      <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                        <label
+                          htmlFor="esfera"
+                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                        >
                           Esfera
                         </label>
-                        <ShadSelect
-                          name='esfera'
-                          control={control}
-                        >
+                        <ShadSelect name="esfera" control={control}>
                           <SelectItem value="FEDERAL">Federal</SelectItem>
                           <SelectItem value="ESTADUAL">Estadual</SelectItem>
                           <SelectItem value="MUNICIPAL">Municipal</SelectItem>
                         </ShadSelect>
                       </div>
+                      <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                        <label
+                          htmlFor="natureza"
+                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                        >
+                          Regime
+                        </label>
+                        <ShadSelect name="regime" control={control} defaultValue="GERAL">
+                          <SelectItem value="GERAL">GERAL</SelectItem>
+                          <SelectItem value="ESPECIAL">ESPECIAL</SelectItem>
+                        </ShadSelect>
+                      </div>
+                    </div>
 
-                      <div className="flex flex-col gap-2 w-full sm:col-span-1">
-                        <label htmlFor="ente_devedor" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                    <div className="my-4 flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                      <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                        <label
+                          htmlFor="ente_devedor"
+                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                        >
                           Ente Devedor
                         </label>
                         <input
                           type="text"
                           id="ente_devedor"
-                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2 h-[34.5px] 2xsm:h-[37px]"
-                          {...register("ente_devedor", {})} />
-
+                          className="h-[34.5px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                          {...register("ente_devedor", {})}
+                        />
                       </div>
 
-                      <div className="flex flex-col gap-2 w-full 2xsm:col-span-2 sm:col-span-1">
-                        <label htmlFor="estado_ente_devedor" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                      <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                        <label
+                          htmlFor="estado_ente_devedor"
+                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                        >
                           Estado do Ente Devedor
                         </label>
                         <ShadSelect
-                          name='estado_ente_devedor'
+                          name="estado_ente_devedor"
                           control={control}
                         >
-                          {
-                            estados.map((estado) => (
-                              <SelectItem key={estado.id} value={estado.id}>{estado.nome}</SelectItem>
-                            ))
-                          }
+                          {estados.map((estado) => (
+                            <SelectItem key={estado.id} value={estado.id}>
+                              {estado.nome}
+                            </SelectItem>
+                          ))}
                         </ShadSelect>
                       </div>
+                    </div>
+
+                    <div className="my-4 flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                      <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                        <label
+                          htmlFor="juizo_vara"
+                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                        >
+                          Juízo/Vara
+                        </label>
+                        <input
+                          type="text"
+                          id="juizo_vara"
+                          className="h-[34.5px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                          {...register("juizo_vara", {})}
+                        />
+                      </div>
+                      <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                        <label
+                          htmlFor="tribunal"
+                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                        >
+                          Tribunal
+                        </label>
+                        <ShadSelect
+                          name="tribunal"
+                          control={control}
+                          defaultValue={tribunais[0].nome}
+                        >
+                          {tribunais.map((tribunal) => (
+                            <SelectItem key={tribunal.id} value={tribunal.id}>
+                              {tribunal.nome}
+                            </SelectItem>
+                          ))}
+                        </ShadSelect>
+                      </div>
+                    </div>
+
+                    <div className="flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                      <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                        <label
+                          htmlFor="tipo"
+                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                        >
+                          Tipo
+                        </label>
+
+                        <ShadSelect
+                          name="tipo_do_oficio"
+                          control={control}
+                          defaultValue={enumTipoOficiosList[0]}
+                        >
+                          {enumTipoOficiosList.map((status) => (
+                            <SelectItem key={status} value={status}>
+                              {status}
+                            </SelectItem>
+                          ))}
+                        </ShadSelect>
+                      </div>
+                      <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                        <label
+                          htmlFor="status"
+                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                        >
+                          Status
+                        </label>
+                        <ShadSelect
+                          name="status"
+                          control={control}
+                          defaultValue={enumOficiosList[0]}
+                        >
+                          {enumOficiosList.map((status) => (
+                            <SelectItem key={status} value={status}>
+                              {status}
+                            </SelectItem>
+                          ))}
+                        </ShadSelect>
+                      </div>
+                    </div>
+                    {/* <span className="text-lg font-semibold mt-8">Contato</span> */}
+                    <div className="relative flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                      {/* <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                          <label htmlFor="email_contato" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                            Email de Contato
+                          </label>
 
                       <div className="flex flex-col gap-2 w-full col-span-1">
                         <label htmlFor="juizo_vara" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
@@ -893,135 +1180,24 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                           Tipo
                         </label>
 
-                        <ShadSelect
-                          name="tipo_do_oficio"
-                          control={control}
-                          defaultValue={enumTipoOficiosList[0]}
-                        >
-                          {
-                            enumTipoOficiosList.map((status) => (
-                              <SelectItem key={status} value={status}>{status}</SelectItem>
-                            ))
-                          }
-                        </ShadSelect>
-                      </div>
-
-                      <div className="flex flex-col gap-2 w-full 2xsm:col-span-2 sm:col-span-1">
-                        <label htmlFor="status" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                          Status
-                        </label>
-                        <ShadSelect
-                          name="status"
-                          control={control}
-                          defaultValue={enumOficiosList[0]}
-                        >
-                          {
-                            enumOficiosList.map((status) => (
-                              <SelectItem key={status} value={status}>{status}</SelectItem>
-                            ))
-                          }
-                        </ShadSelect>
-                      </div>
-
-                      <span className="text-lg font-semibold mt-8 mb-4 col-span-2">Contato</span>
-
-
-                      <div className="flex flex-col gap-2 w-full 2xsm:col-span-2 sm:col-span-1">
-                        <label htmlFor="email_contato" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                          Email de Contato
-                        </label>
-
-                        <input
-                          type="email"
-                          id="email_contato"
-                          placeholder='ada@lovelace.com'
-                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                          {...register("email_contato", {})}
-                        />
-                      </div>
-                      <div className="relative flex flex-col gap-2 w-full 2xsm:col-span-2 sm:col-span-1">
-                        <label htmlFor="telefone_contato" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                          Telefone de Contato
-                        </label>
-                        <input
-                          type="text"
-                          maxLength={11}
-                          id="telefone_contato"
-                          placeholder='(99) 99999-9999'
-                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                          {...register("telefone_contato", {})}
-                        />
-                        {contatoNumberCount === 1 && (
+                      {/* <input
+                            type="tel"
+                            id="telefone_contato"
+                            placeholder='(00) 00000-0000'
+                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                            {...register("telefone_contato", {})}
+                          /> */}
+                      {/* {contatoNumberCount === 1 && (
                           <div
                             title='Adicionar telefone de contato'
                             onClick={() => setContatoNumberCount(2)}
                             className='absolute right-2 top-0 w-4 h-4 rounded-sm flex items-center justify-center bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 cursor-pointer'>
                             <BiPlus />
                           </div>
-                        )}
-                      </div>
+                        )} */}
+                    </div>
 
-                      {contatoNumberCount > 1 && (
-                        <div className="grid grid-cols-2 gap-4 justify-between w-full col-span-2">
-                          <div className="relative flex flex-col gap-2 w-full 2xsm:col-span-2 sm:col-span-1">
-                            <label htmlFor="telefone_contato_2" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                              Telefone de Contato (2)
-                            </label>
-
-                            <input
-                              type="tel"
-                              maxLength={11}
-                              id="telefone_contato_2"
-                              placeholder='(00) 00000-0000'
-                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                              {...register("telefone_contato_2", {})}
-                            />
-                            {contatoNumberCount === 2 && (
-                              <>
-                                <div
-                                  title='Adicionar telefone de contato'
-                                  onClick={() => setContatoNumberCount(3)}
-                                  className='absolute right-7 top-0 w-4 h-4 rounded-sm flex items-center justify-center bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 cursor-pointer'>
-                                  <BiPlus />
-                                </div>
-                                <div
-                                  title='Remover telefone de contato'
-                                  onClick={() => setContatoNumberCount(1)}
-                                  className='absolute right-2 top-0 w-4 h-4 rounded-sm flex items-center justify-center bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 cursor-pointer'>
-                                  <BiMinus />
-                                </div>
-                              </>
-                            )}
-                          </div>
-                          {contatoNumberCount > 2 && (
-                            <div className="relative flex flex-col gap-2 w-full 2xsm:col-span-2 sm:col-span-1">
-                              <label htmlFor="telefone_contato_3" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
-                                Telefone de Contato (3)
-                              </label>
-
-                              <input
-                                type="tel"
-                                maxLength={11}
-                                id="telefone_contato_3"
-                                placeholder='(00) 00000-0000'
-                                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                {...register("telefone_contato_3", {})}
-                              />
-                              {contatoNumberCount === 3 && (
-                                <div
-                                  title='Remover telefone de contato'
-                                  onClick={() => setContatoNumberCount(2)}
-                                  className='absolute right-2 top-0 w-4 h-4 rounded-sm flex items-center justify-center bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 cursor-pointer'>
-                                  <BiMinus />
-                                </div>
-                              )
-                              }
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {/* <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4">
+                    {/* <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4">
                           <span className="text-lg font-semibold text-primary mt-8">Dados do Colaborador</span>
                           &nbsp;
                           <div className="flex flex-col gap-2">
@@ -1353,7 +1529,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                               {...register("n_precatorio", {})} />
                           </div>
                         </div> */}
-                      {/* <div className="grid grid-cols-1 gap-5 sm:grid-cols-2"> */}
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                       {/* <div className="flex flex-col gap-2">
                         <label htmlFor="valor_penhora" className="text-sm font-medium text-meta-5">
                           Penhora/Arresto <span className="text-xs text-meta-4">(se houver)</span>
@@ -1412,23 +1588,29 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                           className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark disabled:opacity-50 cursor-not-allowed"
                           {...register("outras_deducoes", {})} />
                       </div> */}
-                      {/* </div> */}
-                    </>
-                  ) : null
-                }
+                    </div>
+                  </>
+                ) : null}
               </div>
-              {
-                (data.role === "ativos" || data.role === "judit") && watch("gerar_cvld") ? (
-                  <><hr className="border border-stroke dark:border-strokedark my-8 col-span-2" /><div className="flex flex-col gap-2">
+              {(data.role === "ativos" || data.role === "judit") &&
+              watch("gerar_cvld") ? (
+                <>
+                  <hr className="col-span-2 my-8 border border-stroke dark:border-strokedark" />
+                  <div className="flex flex-col gap-2">
                     {/* <span className="text-lg font-semibold text-primary mb-4">Opções de Administrador 🛡️</span> */}
                     <div className="flex flex-col gap-2 sm:col-span-2">
                       <div className="flex gap-2">
-                        <input type="checkbox"
+                        <input
+                          type="checkbox"
                           id="upload_notion"
                           defaultChecked={false}
                           className="rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                          {...register("upload_notion")} />
-                        <label htmlFor="upload_notion" className="text-sm font-medium text-meta-5">
+                          {...register("upload_notion")}
+                        />
+                        <label
+                          htmlFor="upload_notion"
+                          className="text-sm font-medium text-meta-5"
+                        >
                           Fazer upload para o Notion
                         </label>
                       </div>
@@ -1465,26 +1647,32 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                       ) : null} */}
                     </div>
                   </div>
-                  </>
-                ) : null
-              }
+                </>
+              ) : null}
             </div>
-
-
           </div>
-          <div className="flex justify-center my-8">
-            <button type='submit' className='flex items-center justify-center cursor-pointer rounded-lg px-5 py-3 my-8 focus:z-0 text-sm text-white bg-blue-700 hover:bg-blue-800 transition-all duration-200'>
+          <div className="my-8 flex justify-center">
+            <button
+              type="submit"
+              className="my-8 flex cursor-pointer items-center justify-center rounded-lg bg-blue-700 px-5 py-3 text-sm text-white transition-all duration-200 hover:bg-blue-800 focus:z-0"
+            >
               <span className="text-[16px] font-medium" aria-disabled={loading}>
                 {loading ? "Fazendo cálculo..." : "Calcular"}
               </span>
-              {
-                !loading ? (<BiLineChart className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
-              }
+              {!loading ? (
+                <BiLineChart className="ml-2 mt-[0.2rem] h-4 w-4" />
+              ) : (
+                <AiOutlineLoading className="ml-2 mt-[0.2rem] h-4 w-4 animate-spin" />
+              )}
             </button>
           </div>
         </form>
       }
-      <DrawerConta open={toggleNovaConta} setOpen={setToggleNovaConta} loading={loading} />
+      <DrawerConta
+        open={toggleNovaConta}
+        setOpen={setToggleNovaConta}
+        loading={loading}
+      />
     </div>
   );
 };
