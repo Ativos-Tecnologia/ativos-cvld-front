@@ -241,6 +241,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
 
     if (data.upload_notion) {
       data.notion_db_id = "notion_central_de_prec_db_id"
+    }
 
     setLoading(true);
 
