@@ -38,7 +38,6 @@ export const LinkedTasks = ({ data, openTaskDrawer, setOpenTaskDrawer, openSubTa
     previous: "",
     results: []
   })
-  console.log(extratoTasks.results)
   const [subtasks, setSubtasks] = useState<string[]>([
     "Subtarefa 1: Assinar um documento"
   ]);

@@ -1,8 +1,8 @@
-import { useEffect, useImperativeHandle, useState } from "react";
+import { ExtratosTableContext } from "@/context/ExtratosTableContext";
+import { useContext, useState } from "react";
 import {
   BiArrowFromLeft,
   BiArrowFromRight,
-  BiArrowToRight,
   BiChevronLeft,
   BiChevronRight,
 } from "react-icons/bi";
@@ -13,7 +13,7 @@ export interface MarvelousPaginationProps {
   currentPage: number;
   onPageChange: (page: number) => void;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
-  callScrollTop: () => void;
+  callScrollTop: (ref: HTMLDivElement | null) => void;
   loading?: boolean;
 }
 
@@ -22,6 +22,7 @@ const PageHelper: React.FC<PageProps> = ({
   page_size,
   currentPage,
 }) => {
+
   return (
     <div className="mt-2 flex flex-1 justify-center">
       <p className="text-xs text-gray-700 dark:text-gray-300">
@@ -47,7 +48,7 @@ interface PageProps
   counter: number;
   page_size: number;
   currentPage: number;
-  callScrollTop: () => void;
+  callScrollTop: (ref: HTMLDivElement | null) => void;
 }
 
 
@@ -64,6 +65,8 @@ export default function MarvelousPagination({
   const [selectedPage, setSelectedPage] = useState(1);
   const pageNum = Math.ceil(counter / page_size);
 
+  const { mainRef } = useContext(ExtratosTableContext);
+
   if (page_size > counter) {
     page_size = counter;
   }
@@ -75,7 +78,7 @@ export default function MarvelousPagination({
       setCurrentPage(page);
       setSelectedPage(page);
       setTimeout(() => {
-        callScrollTop();
+        callScrollTop(mainRef.current);
       }, 1000);
     }
   };

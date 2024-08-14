@@ -1,9 +1,7 @@
 import numberFormat from "@/functions/formaters/numberFormat";
-import { ExtractTableProps } from '@/types/extractTable';
-import React, { useRef, useState } from 'react';
-import { BiCheck, BiEditAlt, BiListUl, BiLoader, BiTask, BiX } from 'react-icons/bi';
+import React, { useContext, useRef, useState } from 'react';
+import { BiCheck, BiEditAlt, BiListUl, BiLoader, BiX } from 'react-icons/bi';
 import { CVLDResultProps } from '@/interfaces/IResultCVLD';
-import { BsFillTrashFill } from 'react-icons/bs';
 import { Badge } from "flowbite-react";
 import statusOficio from "@/enums/statusOficio.enum";
 import tipoOficio from "@/enums/tipoOficio.enum";
@@ -11,26 +9,26 @@ import useUpdateOficio from "@/hooks/useUpdateOficio";
 import MarvelousPagination from "../MarvelousPagination";
 import api from "@/utils/api";
 import { ImSpinner2 } from "react-icons/im";
-import { MiniMenu } from "./MiniMenu";
+import { ExtratosTableContext } from "@/context/ExtratosTableContext";
 
-const CardView = ({ className, data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop, checkedList, setCheckedList, handleDeleteExtrato, handleSelectRow, handleSelectAllRows }: ExtractTableProps) => {
+const CardView = ({ count }: { count: number }) => {
+
+    const {
+        data, setData, loading, setLoading,
+        editableLabel, setEditableLabel,
+        setItem, setOpenDetailsDrawer, onPageChange,
+        currentPage, setCurrentPage, callScrollTop,
+        handleSelectRow, checkedList
+    } = useContext(ExtratosTableContext);
 
     const enumOficiosList = Object.values(statusOficio);
     const enumTipoOficiosList = Object.values(tipoOficio);
-    const [editableLabel, setEditableLabel] = useState<string | null>(null);
-    const [newLabelValue, setNewLabelValue] = useState<string>('');
     const [editLabelState, setEditLabelState] = useState<string>('');
-    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     // page refs
     const inputRefs = useRef<HTMLTextAreaElement[] | null>([]);
 
     const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
-
-    const handleTask = (id: string) => {
-        setOpenTaskDrawer(true);
-        setExtractId(id);
-    }
 
     const handleEditInput = (index: number) => {
         if (inputRefs.current) {
@@ -40,7 +38,7 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
 
     const handleChangeCreditorName = async (index: number, id: string, value: string) => {
 
-        setIsLoading(true);
+        setLoading(true);
         await api.patch(`/api/extrato/update/credor/${id}/`, {
             credor: value
         }).then(response => {
@@ -75,7 +73,7 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
             }
 
         });
-        setIsLoading(false);
+        setLoading(false);
     }
 
     return (
@@ -107,7 +105,7 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
                                                 className={`${editableLabel === item.id ? 'opacity-0 invisible duration-500' : 'opacity-100 visible duration-1000'} absolute top-0 mt-1.5 z-2 text-xl hover:opacity-80 dark:hover:text-white cursor-pointer transition-all `}
                                             />
 
-                                            {isLoading ? <ImSpinner2 className={`${editableLabel === item.id ? 'opacity-100 visible animate-spin' : 'opacity-0 invisible'} text-2xl`} /> :
+                                            {loading ? <ImSpinner2 className={`${editableLabel === item.id ? 'opacity-100 visible animate-spin' : 'opacity-0 invisible'} text-2xl`} /> :
                                                 <BiCheck
                                                     title="Confirmar Edição"
                                                     onClick={(e) => {
@@ -128,22 +126,13 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
                                         </div>
                                     </div>
                                     <div className="relative w-55 h-22">
-                                        {/* <h4
-                                            title={item?.credor || newLabelValue || "NOME NÃO INFORMADO"}
-                                            ref={(input) => { if (input) inputRefs.current![index] = input }}
-                                            contentEditable={editableLabel === item.id}
-                                            className={`${editableLabel === item.id && '!border-black dark:!border-white'} border-2 border-transparent p-1 rounded-md max-w-55 max-h-22 text-xl overflow-hidden text-ellipsis dark:text-snow font-semibold mb-2`}>
-                                            {item?.credor.slice(0, 45) || newLabelValue.trim() && newLabelValue.slice(0, 45) || "NOME NÃO INFORMADO"}
-                                            
-                                            {item?.credor.length >= 45 && ' ...'}
-                                        </h4> */}
 
                                         {editableLabel !== item.id && <div
-                                            title={item?.credor || newLabelValue || "NOME NÃO INFORMADO"}
+                                            title={item?.credor || "NOME NÃO INFORMADO"}
                                             className="absolute inset-0 bg-transparent"></div>}
 
                                         <textarea
-                                            title={item?.credor || newLabelValue || "NOME NÃO INFORMADO"}
+                                            title={item?.credor || "NOME NÃO INFORMADO"}
                                             ref={(input) => { if (input) inputRefs.current![index] = input }}
                                             defaultValue={
                                                 item?.credor?.length >= 45 ? item?.credor?.slice(0, 45) + ' ...' : item?.credor || "NOME NÃO INFORMADO"}
@@ -178,12 +167,12 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
                                         <Badge color="teal" size="sm" className="max-w-max text-center text-[10px]">
                                             <select className="text-[10px] w-full bg-transparent border-none py-0 !pl-2 !pr-8" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
                                                 {item.status && (
-                                                    <option value={item.status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                    <option value={item.status} className="text-[12px] bg-transparent border-none font-bold uppercase">
                                                         {item.status}
                                                     </option>
                                                 )}
                                                 {enumOficiosList.filter((status) => status !== item.status).map((status) => (
-                                                    <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                    <option key={status} value={status} className="text-[12px] bg-transparent border-none font-bold">
                                                         {status}
                                                     </option>
                                                 ))}
@@ -193,15 +182,10 @@ const CardView = ({ className, data, showModalMessage, loading, setData, setModa
                                     </div>
                                 </div>
                                 <div className="flex w-full gap-4 justify-center">
-                                    <button onClick={() => handleTask(item.id)} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md dark:border-snow dark:text-snow hover:bg-blue-800 hover:!border-blue-800 hover:text-snow hover:-translate-y-1 transition- duration-300">
-                                        <span className="text-sm font-medium">TAREFA</span>
-                                        <BiTask className="w-4 h-4" />
-                                    </button>
-
                                     <button onClick={() => {
                                         setOpenDetailsDrawer(true);
-                                        fetchDataById(item.id);
-                                    }} className="flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-800 hover:!border-blue-800 dark:border-snow dark:text-snow hover:text-snow hover:-translate-y-1 transition- duration-300">
+                                        setItem(item);
+                                    }} className="w-full flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-800 hover:!border-blue-800 dark:border-snow dark:text-snow hover:text-snow hover:-translate-y-1 transition- duration-300">
                                         <span className="text-sm font-medium">DETALHES</span>
                                         <BiListUl className="w-4 h-4" />
                                     </button>

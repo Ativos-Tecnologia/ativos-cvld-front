@@ -1,42 +1,16 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { BiArchive } from 'react-icons/bi'
-import { PiClipboardText } from 'react-icons/pi'
-import { PaginatedResponse } from '@/components/TaskElements';
-import { CVLDResultProps } from '@/interfaces/IResultCVLD';
-import statusOficio from '@/enums/statusOficio.enum';
-import { useFilter } from '@/hooks/useFilter';
-import { ActiveState } from '../Filters';
-import { Tabs } from '../ExtratosTable/ExtratosTable';
+import { PiClipboardText } from 'react-icons/pi';
+import { ExtratosTableContext, Tabs } from '@/context/ExtratosTableContext';
 
-interface ITableTabsProps {
-    fetchData: (query: string) => Promise<void>,
-    data: PaginatedResponse<CVLDResultProps>,
-    setData: React.Dispatch<React.SetStateAction<PaginatedResponse<CVLDResultProps>>>,
-    setStatusSelectValue: React.Dispatch<React.SetStateAction<statusOficio | null>>,
-    setOficioSelectValue: React.Dispatch<React.SetStateAction<string | null>>,
-    auxData: PaginatedResponse<CVLDResultProps>,
-    statusSelectValue: statusOficio | null,
-    oficioSelectValue: string | null
-    setActiveFilter: React.Dispatch<React.SetStateAction<ActiveState>>;
-    activedTab: Tabs;
-    setActivedTab: React.Dispatch<React.SetStateAction<Tabs>>;
-}
+export const TableTabs = ({ resetFilters }: { resetFilters: () => void }) => {
 
-export const TableTabs = ({
-    fetchData,
-    data,
-    setData,
-    setStatusSelectValue,
-    setOficioSelectValue,
-    auxData,
-    statusSelectValue,
-    oficioSelectValue,
-    setActiveFilter,
-    activedTab,
-    setActivedTab
-}: ITableTabsProps) => {
+    const {
+        setActiveFilter,
+        activedTab, setActivedTab,
+        fetchData
+    } = useContext(ExtratosTableContext);
 
-    const { resetFilters } = useFilter(data, setData, setStatusSelectValue, setOficioSelectValue, auxData, statusSelectValue, oficioSelectValue);
 
     function handleChangeTab(tab: Tabs, query: string) {
         resetFilters();

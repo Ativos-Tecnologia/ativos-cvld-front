@@ -1,12 +1,10 @@
 "use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import { use, useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
-import { Avatar } from "flowbite-react";
-import { LocalShowOptionsProps } from "@/components/ExtratosTable/ExtratosTable";
 import { BiChevronRight } from "react-icons/bi";
-import { BsExclamationTriangleFill } from "react-icons/bs";
+import { LocalShowOptionsProps } from "@/context/ExtratosTableContext";
 
 const defaultOptions: LocalShowOptionsProps[] = [
   {
