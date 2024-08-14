@@ -6,6 +6,7 @@ import { CVLDResultProps } from "@/interfaces/IResultCVLD";
 import statusOficio from "@/enums/statusOficio.enum";
 import tipoOficio from "@/enums/tipoOficio.enum";
 import { toast } from "sonner";
+import { AxiosResponse } from "axios";
 
 // types
 export type ActiveState = "ALL" | "PRECATÓRIO" | "R.P.V" | "CREDITÓRIO";
@@ -43,8 +44,8 @@ export interface IExtratosTable {
     setActivedTab: React.Dispatch<React.SetStateAction<Tabs>>;
     editableLabel: string | null;
     setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
-    item: CVLDResultProps | {};
-    setItem: React.Dispatch<React.SetStateAction<CVLDResultProps | {}>>;
+    item: any;
+    setItem: React.Dispatch<React.SetStateAction<any>>;
     loading: boolean;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
     viewOption: LocalExtractViewProps;
@@ -70,6 +71,7 @@ export interface IExtratosTable {
     /*  ====> functions <===== */
     fetchData: (query: string) => Promise<void>;
     fetchDelete: (ids: string[]) => Promise<void>;
+    fetchDataById: (id: string) => Promise<void>;
     fetchStateFromLocalStorage: () => void;
     onPageChange: (page: number) => Promise<void>;
     handleRestoreData: () => Promise<void>;
@@ -78,6 +80,7 @@ export interface IExtratosTable {
     handleSelectAllRows: () => void;
     handleDeleteExtrato: () => void;
     handleSelectRow: (item: CVLDResultProps) => void;
+    updateCreditorName: (id: string, value: string) => Promise<void>;
     setDontShowAgainDeleteExtractAlert: (key: string) => void;
     setExtractListView: (type: string) => void;
     callScrollTop: (ref: HTMLDivElement | null) => void;
@@ -130,6 +133,7 @@ export const ExtratosTableContext = createContext<IExtratosTable>({
     /*  ====> functions <===== */
     fetchData: async () => { },
     fetchDelete: async () => { },
+    fetchDataById: async () => { },
     fetchStateFromLocalStorage: () => { },
     onPageChange: async () => { },
     handleRestoreData: async () => { },
@@ -138,6 +142,7 @@ export const ExtratosTableContext = createContext<IExtratosTable>({
     handleSelectAllRows: () => { },
     handleDeleteExtrato: () => { },
     handleSelectRow: () => { },
+    updateCreditorName: async () => { },
     setDontShowAgainDeleteExtractAlert: () => { },
     setExtractListView: () => { },
     callScrollTop: () => { },
@@ -180,6 +185,13 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
         const response = await api.get(`api/extratos/${query}`);
         setData(response.data);
         setAuxData(response.data);
+        setLoading(false);
+    }
+
+    /* função que busca um extrato único para drawer de detalhes */
+    const fetchDataById = async (id: string) => {
+        setLoading(true);
+        setItem((await api.get(`api/extrato/${id}/`)).data);
         setLoading(false);
     }
 
@@ -248,14 +260,11 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
         }
 
         // fetching the view mode configs
-        // const viewMode = localStorage.getItem("extract_list_view_mode");
-        // if (viewMode !== null) {
-        //     const parsedValue = JSON.parse(viewMode);
-        //     setViewOption(parsedValue);
-        //     if (viewModeRef.current) {
-        //         viewModeRef.current.value = parsedValue.type;
-        //     }
-        // }
+        const viewMode = localStorage.getItem("extract_list_view_mode");
+        if (viewMode !== null) {
+            const parsedValue = JSON.parse(viewMode);
+            setViewOption(parsedValue);
+        }
     }
 
     /* função que faz a mudança de página no componente de pagination */
@@ -388,6 +397,47 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
             setCheckedList(checkedList.filter(target => target.id !== item.id));
         } else {
             setCheckedList([...checkedList, item]);
+        }
+
+    }
+
+    /* função que manipula a troca de nome do credor em todas as views */
+    const updateCreditorName = async (id: string, value: string) => {
+
+        setEditableLabel(null);
+
+        const res = await api.patch(`/api/extrato/update/credor/${id}/`, {
+            credor: value
+        })
+
+        if (res.status === 200) {
+            const newResults = data.results.map((item: CVLDResultProps) => {
+                if (item.id === id) {
+                    return {
+                        ...item,
+                        credor: value
+                    }
+                }
+                return item;
+            })
+
+            setData({
+                ...data,
+                results: newResults
+            });
+        } else {
+            toast(`houve um erro inesperado ao salvar os dados. Erro ${res.status}`, {
+                classNames: {
+                    toast: "dark:bg-form-strokedark",
+                    title: "dark:text-snow",
+                    description: "dark:text-snow",
+                    actionButton: "!bg-slate-100 dark:bg-form-strokedark"
+                },
+                action: {
+                    label: "Fechar",
+                    onClick: () => console.log('done')
+                }
+            })
         }
 
     }
@@ -528,6 +578,7 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
             /* ====> functions <==== */
             fetchData,
             fetchDelete,
+            fetchDataById,
             fetchStateFromLocalStorage,
             onPageChange,
             handleRestoreData,
@@ -536,6 +587,7 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
             handleSelectAllRows,
             handleDeleteExtrato,
             handleSelectRow,
+            updateCreditorName,
             setDontShowAgainDeleteExtractAlert,
             setExtractListView,
             callScrollTop

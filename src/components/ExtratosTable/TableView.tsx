@@ -10,7 +10,6 @@ import statusOficio from '@/enums/statusOficio.enum';
 import tipoOficio from '@/enums/tipoOficio.enum';
 import useUpdateOficio from '@/hooks/useUpdateOficio';
 import MarvelousPagination from '../MarvelousPagination';
-import api from '@/utils/api';
 import { ImCopy } from 'react-icons/im';
 import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants';
 import { AiOutlineUser } from 'react-icons/ai';
@@ -47,11 +46,11 @@ const customTheme: CustomFlowbiteTheme = {
 const TableView = ({ count }: { count: number }) => {
 
     const {
-        data, setData, setItem,
+        data, setData, fetchDataById,
         loading, setOpenDetailsDrawer,
         onPageChange, currentPage, setCurrentPage,
         callScrollTop, editableLabel, setEditableLabel,
-        handleSelectRow, checkedList
+        handleSelectRow, checkedList, updateCreditorName
     } = useContext(ExtratosTableContext);
 
     const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
@@ -83,68 +82,12 @@ const TableView = ({ count }: { count: number }) => {
         }
     }
 
-    const handleChangeCreditorName = async (id: string, value: string, index?: number, ref?: HTMLInputElement) => {
+    const handleChangeCreditorName = async (id: string, value: string, index: number) => {
 
-        setEditableLabel!(null);
-
-        if (index) {
-            inputRefs.current![index].blur();
-        }
-        if (ref) {
-            ref.blur();
-        }
-
-        await api.patch(`/api/extrato/update/credor/${id}/`, {
-            credor: value
-        }).then(response => {
-
-            if (response.status === 200) {
-                const newResults = data.results.map((item: CVLDResultProps) => {
-                    if (item.id === id) {
-                        return {
-                            ...item,
-                            credor: value
-                        }
-                    }
-                    return item;
-                })
-                setData({
-                    ...data,
-                    results: newResults
-                });
-            } else {
-                toast(`houve um erro inesperado ao salvar os dados. Erro ${response.status}`, {
-                    classNames: {
-                        toast: "dark:bg-form-strokedark",
-                        title: "dark:text-snow",
-                        description: "dark:text-snow",
-                        actionButton: "!bg-slate-100 dark:bg-form-strokedark"
-                    },
-                    action: {
-                        label: "Fechar",
-                        onClick: () => console.log('done')
-                    }
-                })
-            }
-
-        });
+        inputRefs.current![index].blur();
+        await updateCreditorName(id, value);
 
     }
-
-    // useEffect(() => {
-    //     const keyHandler = ({ keyCode }: KeyboardEvent) => {
-    //         if (keyCode !== 27) return;
-
-    //         data.results.forEach((item: CVLDResultProps, index: number) => {
-    //             if (editableLabel === item.id) {
-    //                 setEditableLabel(null);
-    //                 inputRefs.current![index].blur();
-    //             }
-    //         })
-    //     };
-    //     document.addEventListener("keydown", keyHandler);
-    //     return () => document.removeEventListener("keydown", keyHandler);
-    // });
 
     return (
         <><div className='relative'>
@@ -292,7 +235,7 @@ const TableView = ({ count }: { count: number }) => {
                                                                 className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
                                                                 onClick={() => {
                                                                     setOpenDetailsDrawer(true);
-                                                                    setItem(item);
+                                                                    fetchDataById(item.id);
                                                                 }}>
                                                                 <BiSolidDockLeft className='text-lg'
                                                                 />

@@ -16,9 +16,9 @@ const CardView = ({ count }: { count: number }) => {
     const {
         data, setData, loading, setLoading,
         editableLabel, setEditableLabel,
-        setItem, setOpenDetailsDrawer, onPageChange,
+        fetchDataById, setOpenDetailsDrawer, onPageChange,
         currentPage, setCurrentPage, callScrollTop,
-        handleSelectRow, checkedList
+        handleSelectRow, checkedList, updateCreditorName
     } = useContext(ExtratosTableContext);
 
     const enumOficiosList = Object.values(statusOficio);
@@ -39,52 +39,20 @@ const CardView = ({ count }: { count: number }) => {
     const handleChangeCreditorName = async (index: number, id: string, value: string) => {
 
         setLoading(true);
-        await api.patch(`/api/extrato/update/credor/${id}/`, {
-            credor: value
-        }).then(response => {
-
-            if (response.status === 200) {
-                setEditLabelState('success');
-                const newResults = data.results.map((item: CVLDResultProps) => {
-                    if (item.id === id) {
-                        return {
-                            ...item,
-                            credor: value
-                        }
-                    }
-                    return item;
-                })
-                setData({
-                    ...data,
-                    results: newResults
-                });
-                setTimeout(() => {
-                    setEditableLabel(null);
-                    setEditLabelState('');
-                    inputRefs.current![index].blur();
-                }, 1500);
-            } else {
-                setEditLabelState('error');
-                setTimeout(() => {
-                    setEditableLabel(null);
-                    setEditLabelState('');
-                    inputRefs.current![index].blur();
-                }, 1500);
-            }
-
-        });
+        await updateCreditorName(id, value);
+        inputRefs.current![index].blur();
         setLoading(false);
     }
 
     return (
         <><div>
             <div
-                className="flex gap-4 flex-wrap">
+                className="grid grid-cols-3 gap-4">
 
                 {data.results?.length > 0 ? (
                     <>
                         {data.results.map((item: CVLDResultProps, index: number) => (
-                            <div id={item.id} key={item.id} className={`${checkedList!.some(target => target.id === item.id) && '!border-blue-400'} relative flex-1 flex flex-col justify-between xsm:w-full sm:max-w-[375px] bg-white border border-stroke shadow-3 gap-5 p-4 rounded-md dark:bg-black/20 dark:border-slate-600`}>
+                            <div id={item.id} key={item.id} className={`${checkedList!.some(target => target.id === item.id) && '!border-blue-400'} relative flex flex-col justify-between xsm:col-span-3 md:col-span-2 xl:col-span-1 bg-white border border-stroke shadow-3 gap-5 p-4 rounded-md dark:bg-black/20 dark:border-slate-600`}>
                                 <div className="relative h-29">
                                     <div className="absolute flex flex-col items-center top-2 right-0">
                                         <input
@@ -165,9 +133,9 @@ const CardView = ({ count }: { count: number }) => {
                                     <div>
                                         <p className="text-[10px]">STATUS</p>
                                         <Badge color="teal" size="sm" className="max-w-max text-center text-[10px]">
-                                            <select className="text-[10px] w-full bg-transparent border-none py-0 !pl-2 !pr-8" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
+                                            <select className="text-[10px] w-full bg-transparent border-none py-0 !pl-2 !pr-8 uppercase" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
                                                 {item.status && (
-                                                    <option value={item.status} className="text-[12px] bg-transparent border-none font-bold uppercase">
+                                                    <option value={item.status} className="text-[12px] bg-transparent border-none font-bold">
                                                         {item.status}
                                                     </option>
                                                 )}
@@ -184,7 +152,7 @@ const CardView = ({ count }: { count: number }) => {
                                 <div className="flex w-full gap-4 justify-center">
                                     <button onClick={() => {
                                         setOpenDetailsDrawer(true);
-                                        setItem(item);
+                                        fetchDataById(item.id)
                                     }} className="w-full flex flex-1 gap-2 max-h-9 items-center justify-center py-2 px-6 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-800 hover:!border-blue-800 dark:border-snow dark:text-snow hover:text-snow hover:-translate-y-1 transition- duration-300">
                                         <span className="text-sm font-medium">DETALHES</span>
                                         <BiListUl className="w-4 h-4" />
