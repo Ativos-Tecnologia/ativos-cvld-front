@@ -7,6 +7,7 @@ import statusOficio from "@/enums/statusOficio.enum";
 import tipoOficio from "@/enums/tipoOficio.enum";
 import { toast } from "sonner";
 import { AxiosResponse } from "axios";
+import useUpdateOficio from "@/hooks/useUpdateOficio";
 
 // types
 export type ActiveState = "ALL" | "PRECATÓRIO" | "R.P.V" | "CREDITÓRIO";
@@ -69,6 +70,8 @@ export interface IExtratosTable {
     mainRef: any;
 
     /*  ====> functions <===== */
+    handleOficio: (id: string, tipo: tipoOficio) => void,
+    handleStatus: (id: string, status: statusOficio) => void,
     fetchData: (query: string) => Promise<void>;
     fetchDelete: (ids: string[]) => Promise<void>;
     fetchDataById: (id: string) => Promise<void>;
@@ -131,6 +134,8 @@ export const ExtratosTableContext = createContext<IExtratosTable>({
     mainRef: null,
 
     /*  ====> functions <===== */
+    handleOficio: () => { },
+    handleStatus: () => { },
     fetchData: async () => { },
     fetchDelete: async () => { },
     fetchDataById: async () => { },
@@ -173,6 +178,8 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
         open: false,
         items: []
     });
+
+    const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
 
     /* ====> refs <==== */
     const mainRef = useRef<any>(null);
@@ -401,6 +408,32 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
 
     }
 
+    const handleOficio = (id: string, tipo: tipoOficio) => {
+
+        updateOficioTipo(id, tipo);
+        const newAuxData = auxData.results.map(item => {
+            if (item.id === id) {
+                item.tipo_do_oficio = tipo;
+            }
+            return item;
+        });
+        setAuxData({ ...auxData, results: newAuxData });
+
+    }
+
+    const handleStatus = (id: string, status: statusOficio) => {
+
+        updateOficioStatus(id, status);
+        const newAuxData = auxData.results.map(item => {
+            if (item.id === id) {
+                item.status = status;
+            }
+            return item;
+        });
+        setAuxData({ ...auxData, results: newAuxData });
+
+    }
+
     /* função que manipula a troca de nome do credor em todas as views */
     const updateCreditorName = async (id: string, value: string) => {
 
@@ -587,6 +620,8 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
             handleSelectAllRows,
             handleDeleteExtrato,
             handleSelectRow,
+            handleOficio,
+            handleStatus,
             updateCreditorName,
             setDontShowAgainDeleteExtractAlert,
             setExtractListView,

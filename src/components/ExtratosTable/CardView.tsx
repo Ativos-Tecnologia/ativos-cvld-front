@@ -14,8 +14,9 @@ import { ExtratosTableContext } from "@/context/ExtratosTableContext";
 const CardView = ({ count }: { count: number }) => {
 
     const {
-        data, setData, loading, setLoading,
+        data, loading, setLoading,
         editableLabel, setEditableLabel,
+        handleOficio, handleStatus,
         fetchDataById, setOpenDetailsDrawer, onPageChange,
         currentPage, setCurrentPage, callScrollTop,
         handleSelectRow, checkedList, updateCreditorName
@@ -27,8 +28,6 @@ const CardView = ({ count }: { count: number }) => {
 
     // page refs
     const inputRefs = useRef<HTMLTextAreaElement[] | null>([]);
-
-    const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
 
     const handleEditInput = (index: number) => {
         if (inputRefs.current) {
@@ -116,7 +115,7 @@ const CardView = ({ count }: { count: number }) => {
                                     <div>
                                         <p className="text-[10px]">TIPO</p>
                                         <Badge color="indigo" size="sm" className="w-fit text-[10px]">
-                                            <select className="text-[10px] w-full bg-transparent border-none py-0 !pl-2 !pr-8" onChange={(e) => updateOficioTipo(item.id, e.target.value as tipoOficio)}>
+                                            <select className="text-[10px] w-full bg-transparent border-none py-0 !pl-2 !pr-8" onChange={(e) => handleOficio(item.id, e.target.value as tipoOficio)}>
                                                 {item.tipo_do_oficio && (
                                                     <option value={item.tipo_do_oficio} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                         {item.tipo_do_oficio}
@@ -133,7 +132,7 @@ const CardView = ({ count }: { count: number }) => {
                                     <div>
                                         <p className="text-[10px]">STATUS</p>
                                         <Badge color="teal" size="sm" className="max-w-max text-center text-[10px]">
-                                            <select className="text-[10px] w-full bg-transparent border-none py-0 !pl-2 !pr-8 uppercase" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
+                                            <select className="text-[10px] w-full bg-transparent border-none py-0 !pl-2 !pr-8 uppercase" onChange={(e) => handleStatus(item.id, e.target.value as statusOficio)}>
                                                 {item.status && (
                                                     <option value={item.status} className="text-[12px] bg-transparent border-none font-bold">
                                                         {item.status}

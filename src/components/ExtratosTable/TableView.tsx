@@ -48,12 +48,11 @@ const TableView = ({ count }: { count: number }) => {
     const {
         data, setData, fetchDataById,
         loading, setOpenDetailsDrawer,
+        handleOficio, handleStatus,
         onPageChange, currentPage, setCurrentPage,
         callScrollTop, editableLabel, setEditableLabel,
-        handleSelectRow, checkedList, updateCreditorName
+        handleSelectRow, checkedList, updateCreditorName,
     } = useContext(ExtratosTableContext);
-
-    const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
 
     // refs
     const inputRefs = useRef<HTMLInputElement[] | null>([]);
@@ -155,7 +154,7 @@ const TableView = ({ count }: { count: number }) => {
                                                     onChange={() => handleSelectRow(item)}
                                                 />
                                                 <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
-                                                    <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => updateOficioTipo(item.id, e.target.value as tipoOficio)}>
+                                                    <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleOficio(item.id, e.target.value as tipoOficio)}>
                                                         {item.tipo_do_oficio && (
                                                             <option value={item.tipo_do_oficio} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                                 {item.tipo_do_oficio}
@@ -259,7 +258,7 @@ const TableView = ({ count }: { count: number }) => {
                                         </TableCell>
                                         <TableCell className="text-center items-center ">
                                             <Badge color="teal" size="sm" className="text-center text-[12px]">
-                                                <select className="text-[12px] w-44 text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
+                                                <select className="text-[12px] w-44 text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => handleStatus(item.id, e.target.value as statusOficio)}>
                                                     {item.status && (
                                                         <option value={item.status} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                             {item.status}
