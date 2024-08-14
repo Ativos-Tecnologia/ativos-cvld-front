@@ -951,16 +951,16 @@ const MainForm: React.FC<CVLDFormProps> = ({
                       {watch('ja_possui_destacamento') === false && (<div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
                         <div className="flex w-full flex-col gap-2 sm:col-span-1">
                           <label
-                            htmlFor="especie"
+                            htmlFor="percentual_de_honorarios"
                             className="font-nexa text-xs font-semibold uppercase text-meta-5"
                           >
-                            Percentual
+                            Percentual <span className="text-xs text-meta-5">(%)</span><span className="text-[7px] text-meta-8">&nbsp; Dedução feita no Notion</span>
                           </label>
                           <input
                             type="number"
-                            id="percentual"
+                            id="percentual_de_honorarios"
                             className="h-[34.5px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                            {...register("percentual", {})}
+                            {...register("percentual_de_honorarios", {})}
                           />
                         </div>
                       </div>)}
