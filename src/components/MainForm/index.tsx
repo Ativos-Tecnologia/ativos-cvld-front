@@ -133,6 +133,8 @@ const MainForm: React.FC<CVLDFormProps> = ({
     nome_razao_social: "",
   });
 
+  const [usersList, setUsersList] = useState<any[]>([]);
+
   const [contatoNumberCount, setContatoNumberCount] = useState<number>(1);
 
   const mySwal = UseMySwal();
@@ -200,6 +202,12 @@ const MainForm: React.FC<CVLDFormProps> = ({
       if (accountList.status === 200) {
         setAccountList(accountList.data);
       }
+      if (data.role === "ativos") {
+        const [usersList] = await Promise.all([api.get("/api/user/list/")]);
+        if (usersList.status === 200) {
+          setUsersList(usersList.data.results);
+        }
+    };
       setLoading(false);
     };
 
@@ -272,6 +280,10 @@ const MainForm: React.FC<CVLDFormProps> = ({
 
     if (data.upload_notion) {
       data.notion_db_id = "notion_central_de_prec_db_id";
+    }
+
+    if (!data.vincular_usuario) {
+      data.username = undefined;
     }
 
     setLoading(true);
@@ -1614,37 +1626,30 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           Fazer upload para o Notion
                         </label>
                       </div>
-                      {/* {watch("upload_notion") === true ? (
-                        <div className="flex flex-col gap-2">
-                          <label htmlFor="notion_db_id" className="text-sm font-medium text-meta-5 flex flex-row align-self-baseline">
-                            <BiLogoUpwork className="h-4 w-4 mt-0.5 mr-2" /> Selecione o Workspace
-                          </label>
-                          <select id="notion_db_id" className="flex uppercase font-semibold font-satoshi text-xs w-full items-center justify-between rounded-md border border-input bg-background px-2 py-2  ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 dark:bg-boxdark-2"
+                      {watch("upload_notion") === true ? (
+                        <>
+                        <div className="flex gap-2">
+                            <input type="checkbox" id="vincular_usuario" className="rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark" {...register("vincular_usuario")} />
+                            <label htmlFor="vincular_usuario" className="text-sm font-medium text-meta-5 flex flex-row align-self-baseline">
+                              <BiLogoUpwork className="h-4 w-4 mt-0.5 mr-2" /> Vincular a outro usuário?
+                            </label>
+                          </div>
+                          {watch("vincular_usuario") === true ? (
+                          <div className="flex gap-2">
+                              <select id="username" className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark" {...register("username")}>
+                                <option value="">Selecione o usuário</option>
+                                {
+                                  usersList.map((user) => (
+                                    <option key={user.id} value={user.username}>{user.username}</option>
+                                  ))
+                                }
+                              </select>
 
-                            {...register("notion_db_id", {
-                              required: "Campo obrigatório",
-                            })}
-                          >
-                            {data.role === "ativos" && (
-                              <>
-                                <option value="notion_prec_fed_db_id">PRECATÓRIOS FEDERAIS - BASE PRÓPRIA</option>
-                                <option value="notion_prec_reg_com_db_id">PRECATÓRIOS REGIME COMUM - BASE PRÓPRIA</option>
-                                <option value="notion_prec_fed_partners_db_id">PRECATÓRIOS FEDERAIS - PARCEIROS</option>
-                                <option value="notion_prec_reg_com_partners_db_id">PRECATÓRIOS REGIME COMUM - PARCEIROS</option>
-                                <option value="notion_prec_prospect_dev_db_id">Dev</option></>
-                            )}
+                            </div>
+                            ) : null}
+                            </>
 
-                            {
-                              (data.role === "judit" || data.role === "ativos") && (
-                                <>
-                                  <option value="notion_prec_fed_judit_db_id">PRECATÓRIOS FEDERAIS - JUDIT</option>
-                                  <option value="notion_prec_reg_com_judit_db_id">PRECATÓRIOS REGIME COMUM - JUDIT</option>
-                                </>
-                              )
-                            }
-                          </select>
-                        </div>
-                      ) : null} */}
+                      ) : null}
                     </div>
                   </div>
                 </>
