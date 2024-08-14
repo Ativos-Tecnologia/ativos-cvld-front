@@ -942,13 +942,13 @@ const MainForm: React.FC<CVLDFormProps> = ({
                             {...register("ja_possui_destacamento")}
                           />
                           <label
-                            htmlFor="possui"
+                            htmlFor="ja_possui_destacamento"
                             className="font-nexa text-xs font-semibold uppercase text-meta-5"
                           >
                             Já possui destacamento de honorários?
                           </label>
                       </div>
-                      {watch('ja_possui_destacamento') && (<div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                      {watch('ja_possui_destacamento') === false && (<div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
                         <div className="flex w-full flex-col gap-2 sm:col-span-1">
                           <label
                             htmlFor="especie"
