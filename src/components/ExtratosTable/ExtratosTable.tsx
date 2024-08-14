@@ -24,12 +24,9 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     data, setData,
     auxData,
     statusSelectValue, setStatusSelectValue,
-    oficioSelectValue, setOficioSelectValue,
-    editableLabel, setEditableLabel,
-    item, setItem, loading, viewOption,
+    oficioSelectValue, setOficioSelectValue, viewOption,
     responseStatus, setResponseStatus,
     setCheckedList, showModalMessage,
-    openDetailsDrawer, setOpenDetailsDrawer,
     modalOptions, setModalOptions,
 
     mainRef,
@@ -159,14 +156,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
         /* end mobile view */
       )}
       <Suspense fallback={<Loader />}>
-        <AwesomeDrawer data={item}
-          loading={loading}
-          setData={setItem}
-          open={openDetailsDrawer}
-          setOpen={setOpenDetailsDrawer}
-          editableLabel={editableLabel}
-          setEditableLabel={setEditableLabel}
-        />
+        <AwesomeDrawer />
         {/* <TaskDrawer id={extratoId} open={openTaskDrawer} setOpen={setOpenTaskDrawer} /> */}
       </Suspense>
       {showModalMessage && (
