@@ -5,6 +5,7 @@ import CVLDResult, { ApiResponse } from "../ResultCVLD";
 import { ExtratosTable } from "../ExtratosTable/ExtratosTable";
 import ResultCVLDSkeleton from "../Skeletons/ResultCVLDSkeleton";
 import MapOne from "../Maps/MapOne";
+import { ExtratosTableProvider } from "@/context/ExtratosTableContext";
 
 const ECommerce: React.FC = () => {
   const [data, setData] = useState<ApiResponse>({ result: [], setData: () => { } });
@@ -104,13 +105,15 @@ const ECommerce: React.FC = () => {
       <div className="w-full mt-0 grid grid-cols-12 gap-4 md:gap-6 2xl:gap-7.5">
         <MainForm dataCallback={setData} setCalcStep={setCalcStep} setDataToAppend={setDataToAppend} />
         {calcStep === 'calculating' ? (
-            <ResultCVLDSkeleton />
+          <ResultCVLDSkeleton />
         ) : <CVLDResult result={data.result} setData={setData} />}
         {/* <ChartThree /> */}
         {/* <MapOne /> */}
         {/* <div className="col-span-12 xl:col-span-8"> */}
         <div className="col-span-12">
-          <ExtratosTable newItem={dataToAppend.result} />
+          <ExtratosTableProvider>
+            <ExtratosTable newItem={dataToAppend.result} />
+          </ExtratosTableProvider>
         </div>
         {/*
         <ChatCard /> */}

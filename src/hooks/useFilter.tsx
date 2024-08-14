@@ -18,6 +18,7 @@
 'use client';
 import { PaginatedResponse } from '@/components/TaskElements';
 import statusOficio from '@/enums/statusOficio.enum';
+import tipoOficio from '@/enums/tipoOficio.enum';
 import { CVLDResultProps } from '@/interfaces/IResultCVLD';
 import React from 'react';
 
@@ -29,7 +30,7 @@ export function useFilter(
   data: PaginatedResponse<CVLDResultProps>,
   setData: React.Dispatch<React.SetStateAction<PaginatedResponse<CVLDResultProps>>>,
   setStatusSelectValue: React.Dispatch<React.SetStateAction<statusOficio | null>>,
-  setOficioSelectValue: React.Dispatch<React.SetStateAction<string | null>>,
+  setOficioSelectValue: React.Dispatch<React.SetStateAction<tipoOficio | null>>,
   auxData: PaginatedResponse<CVLDResultProps>,
   statusSelectValue: statusOficio | null,
   oficioSelectValue: string | null
