@@ -1,35 +1,30 @@
 "use client";
 import { ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { ImTable } from 'react-icons/im'
-import statusOficio from '@/enums/statusOficio.enum';
 import StatusFilter from './StatusFilter';
 import { MdOutlineFilterAltOff } from 'react-icons/md';
+import { ActiveState, ExtratosTableContext } from '@/context/ExtratosTableContext';
+import tipoOficio from '@/enums/tipoOficio.enum';
 
-export interface IFilterProps {
-    resetFilters?: () => void;
-    filterData: () => void;
-    statusSelectValue: statusOficio | null;
-    oficioSelectValue?: string | null;
-    setStatusSelectValue: React.Dispatch<React.SetStateAction<statusOficio | null>>;
-    setOficioSelectValue?: React.Dispatch<React.SetStateAction<string | null>>;
-    activeFilter?: ActiveState;
-    setActiveFilter?: React.Dispatch<React.SetStateAction<ActiveState>>;
-}
 
-export type ActiveState = "ALL" | "PRECATÓRIO" | "R.P.V" | "CREDITÓRIO";
+const Filters = ({ filterData, resetFilters }: { filterData: () => void, resetFilters: () => void }) => {
 
-const Filters: React.FC<IFilterProps> = ({ resetFilters, filterData, statusSelectValue, oficioSelectValue, setStatusSelectValue, setOficioSelectValue, activeFilter, setActiveFilter }) => {
+    const {
+        statusSelectValue, setStatusSelectValue,
+        oficioSelectValue, setOficioSelectValue,
+        activeFilter, setActiveFilter
+    } = useContext(ExtratosTableContext);
 
-    const handleOficioStatus = (oficio: string) => {
-        setActiveFilter!(oficio as ActiveState)
-        setOficioSelectValue!(oficio);
+    const handleOficioStatus = (oficio: tipoOficio) => {
+        setActiveFilter(oficio as ActiveState)
+        setOficioSelectValue(oficio);
     }
 
     const handleCleanStatusFilter = () => {
         setStatusSelectValue(null);
         if (oficioSelectValue === null || oficioSelectValue === undefined) {
-            resetFilters!();
+            resetFilters();
         }
     }
 
@@ -49,8 +44,8 @@ const Filters: React.FC<IFilterProps> = ({ resetFilters, filterData, statusSelec
         <div className="flex gap-3 flex-1 items-center max-w-230">
             <div
                 onClick={() => {
-                    resetFilters!();
-                    setActiveFilter!('ALL');
+                    resetFilters();
+                    setActiveFilter('ALL');
                 }}
                 className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${activeFilter === "ALL" && 'bg-slate-100 dark:bg-form-strokedark'}`}>
                 <ImTable />

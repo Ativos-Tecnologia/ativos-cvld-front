@@ -1,8 +1,7 @@
 import { Badge, CustomFlowbiteTheme, Flowbite, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from 'flowbite-react';
 import numberFormat from "@/functions/formaters/numberFormat";
-import { ExtractTableProps } from '@/types/extractTable';
-import React, { useEffect, useRef, useState } from 'react';
-import { BiArchiveIn, BiCheck, BiLoader, BiMinus, BiSolidDockLeft, BiTask, BiTrash, BiX } from 'react-icons/bi';
+import React, { useContext, useRef } from 'react';
+import { BiLoader, BiSolidDockLeft } from 'react-icons/bi';
 import { LiaCoinsSolid } from "react-icons/lia";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { PiCursorClick } from "react-icons/pi";
@@ -11,12 +10,11 @@ import statusOficio from '@/enums/statusOficio.enum';
 import tipoOficio from '@/enums/tipoOficio.enum';
 import useUpdateOficio from '@/hooks/useUpdateOficio';
 import MarvelousPagination from '../MarvelousPagination';
-import api from '@/utils/api';
-import { ImCopy, ImSpinner2 } from 'react-icons/im';
+import { ImCopy } from 'react-icons/im';
 import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants';
 import { AiOutlineUser } from 'react-icons/ai';
 import { toast } from 'sonner';
-import { MiniMenu } from './MiniMenu';
+import { ExtratosTableContext } from '@/context/ExtratosTableContext';
 
 const customTheme: CustomFlowbiteTheme = {
     table: {
@@ -32,7 +30,7 @@ const customTheme: CustomFlowbiteTheme = {
             }
         },
         head: {
-            base: "group/head sticky top-0 z-10 text-xs uppercase text-gray-700",
+            base: "group/head text-xs uppercase text-gray-700",
             cell: {
                 base: "bg-zinc-200 text-black px-4 py-3 group-first/head:first:rounded-tl-sm group-first/head:last:rounded-tr-sm dark:bg-meta-4 dark:text-white"
             }
@@ -45,9 +43,16 @@ const customTheme: CustomFlowbiteTheme = {
     }
 }
 
-const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, fetchDelete, setOpenDetailsDrawer, setOpenTaskDrawer, setExtractId, fetchDataById, count, onPageChange, currentPage, setCurrentPage, callScrollTop, checkedList, setCheckedList, handleDeleteExtrato, handleSelectRow, handleSelectAllRows, editableLabel, setEditableLabel }: ExtractTableProps) => {
+const TableView = ({ count }: { count: number }) => {
 
-    const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
+    const {
+        data, setData, fetchDataById,
+        loading, setOpenDetailsDrawer,
+        handleOficio, handleStatus,
+        onPageChange, currentPage, setCurrentPage,
+        callScrollTop, editableLabel, setEditableLabel,
+        handleSelectRow, checkedList, updateCreditorName,
+    } = useContext(ExtratosTableContext);
 
     // refs
     const inputRefs = useRef<HTMLInputElement[] | null>([]);
@@ -76,71 +81,15 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
         }
     }
 
-    const handleChangeCreditorName = async (id: string, value: string, index?: number, ref?: HTMLInputElement) => {
+    const handleChangeCreditorName = async (id: string, value: string, index: number) => {
 
-        setEditableLabel!(null);
-
-        if (index) {
-            inputRefs.current![index].blur();
-        } 
-        if (ref) {
-            ref.blur();
-        }
-
-        await api.patch(`/api/extrato/update/credor/${id}/`, {
-            credor: value
-        }).then(response => {
-
-            if (response.status === 200) {
-                const newResults = data.results.map((item: CVLDResultProps) => {
-                    if (item.id === id) {
-                        return {
-                            ...item,
-                            credor: value
-                        }
-                    }
-                    return item;
-                })
-                setData({
-                    ...data,
-                    results: newResults
-                });
-            } else {
-                toast(`houve um erro inesperado ao salvar os dados. Erro ${response.status}`, {
-                    classNames: {
-                        toast: "dark:bg-form-strokedark",
-                        title: "dark:text-snow",
-                        description: "dark:text-snow",
-                        actionButton: "!bg-slate-100 dark:bg-form-strokedark"
-                    },
-                    action: {
-                        label: "Fechar",
-                        onClick: () => console.log('done')
-                    }
-                })
-            }
-
-        });
+        inputRefs.current![index].blur();
+        await updateCreditorName(id, value);
 
     }
 
-    // useEffect(() => {
-    //     const keyHandler = ({ keyCode }: KeyboardEvent) => {
-    //         if (keyCode !== 27) return;
-
-    //         data.results.forEach((item: CVLDResultProps, index: number) => {
-    //             if (editableLabel === item.id) {
-    //                 setEditableLabel(null);
-    //                 inputRefs.current![index].blur();
-    //             }
-    //         })
-    //     };
-    //     document.addEventListener("keydown", keyHandler);
-    //     return () => document.removeEventListener("keydown", keyHandler);
-    // });
-
     return (
-        <><div className='relative overflow-scroll max-h-100'>
+        <><div className='relative'>
 
             <Flowbite theme={{ theme: customTheme }}>
                 <Table>
@@ -205,7 +154,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                                     onChange={() => handleSelectRow(item)}
                                                 />
                                                 <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
-                                                    <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => updateOficioTipo(item.id, e.target.value as tipoOficio)}>
+                                                    <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleOficio(item.id, e.target.value as tipoOficio)}>
                                                         {item.tipo_do_oficio && (
                                                             <option value={item.tipo_do_oficio} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                                 {item.tipo_do_oficio}
@@ -309,7 +258,7 @@ const TableView = ({ data, showModalMessage, loading, setData, setModalOptions, 
                                         </TableCell>
                                         <TableCell className="text-center items-center ">
                                             <Badge color="teal" size="sm" className="text-center text-[12px]">
-                                                <select className="text-[12px] w-44 text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => updateOficioStatus(item.id, e.target.value as statusOficio)}>
+                                                <select className="text-[12px] w-44 text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => handleStatus(item.id, e.target.value as statusOficio)}>
                                                     {item.status && (
                                                         <option value={item.status} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                             {item.status}

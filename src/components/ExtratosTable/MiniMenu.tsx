@@ -1,22 +1,17 @@
-import { CVLDResultProps } from '@/interfaces/IResultCVLD';
-import React from 'react'
+import React, { useContext } from 'react'
 import { BiMinus, BiTrash } from 'react-icons/bi';
 import { MdOutlineArchive, MdOutlineUnarchive } from 'react-icons/md';
-import { Tabs } from './ExtratosTable';
+import { ExtratosTableContext } from '@/context/ExtratosTableContext';
 
-interface ITableMenuProps {
-    checkedList: CVLDResultProps[] | undefined;
-    setCheckedList: React.Dispatch<React.SetStateAction<CVLDResultProps[] | never[]>> | undefined;
-    count: number;
-    currentPage: number;
-    handleSelectAllRows: () => void;
-    handleDeleteExtrato: () => void;
-    handleArchieveExtrato: (ids: string[]) => void;
-    handleUnarchiveExtrato: (ids: string[]) => void;
-    activedTab: Tabs;
-}
+export const MiniMenu = ({ count }: { count: number }) => {
 
-export const MiniMenu = ({ checkedList, setCheckedList, count, currentPage, handleSelectAllRows, handleDeleteExtrato, handleArchieveExtrato, handleUnarchiveExtrato, activedTab }: ITableMenuProps) => {
+    const {
+        checkedList, setCheckedList,
+        currentPage, handleSelectAllRows,
+        handleDeleteExtrato, handleArchiveExtrato,
+        handleUnarchiveExtrato, activedTab
+    } = useContext(ExtratosTableContext);
+
     return (
         <div className="flex max-h-6 items-center justify-between my-3">
             <div className='flex items-center'>
@@ -66,7 +61,7 @@ export const MiniMenu = ({ checkedList, setCheckedList, count, currentPage, hand
                         <div
                             title='Arquivar selecionado(s)'
                             className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer"
-                            onClick={() => handleArchieveExtrato(checkedList!.map(item => item.id))}
+                            onClick={() => handleArchiveExtrato()}
                         >
                             <MdOutlineArchive className='text-lg' />
                         </div>
@@ -74,7 +69,7 @@ export const MiniMenu = ({ checkedList, setCheckedList, count, currentPage, hand
                         <div
                             title='Desarquivar selecionado(s)'
                             className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer"
-                            onClick={() => handleUnarchiveExtrato(checkedList!.map(item => item.id))}
+                            onClick={() => handleUnarchiveExtrato()}
                         >
                             <MdOutlineUnarchive className='text-lg' />
                         </div>
