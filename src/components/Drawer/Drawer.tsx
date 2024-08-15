@@ -21,7 +21,7 @@ export function AwesomeDrawer() {
   } = useContext(ExtratosTableContext);
 
   const [openTaskDrawer, setOpenTaskDrawer] = useState<boolean>(false);
-  const [openSubTask, setOpenSubTask] = useState<boolean>(false);
+  const [openSubTask, setOpenSubTask] = useState<string | null>(null);
   const [editableTaskInput, setEditableTaskInput] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   console.log(item)
@@ -29,7 +29,7 @@ export function AwesomeDrawer() {
   const handleClose = () => {
     setOpenDetailsDrawer(false);
     setOpenTaskDrawer(false);
-    setOpenSubTask(false);
+    setOpenSubTask(null);
     setEditableTaskInput(false);
   };
 
