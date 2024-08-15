@@ -202,17 +202,17 @@ const MainForm: React.FC<CVLDFormProps> = ({
       if (accountList.status === 200) {
         setAccountList(accountList.data);
       }
-      // if (data.role === "ativos") {
+      if (data.role === "ativos") {
         const [usersList] = await Promise.all([api.get("/api/user/list/")]);
         if (usersList.status === 200) {
           setUsersList(usersList.data.results);
-        // }
+        }
     };
       setLoading(false);
     };
 
     fetchData();
-  }, []);
+  }, [data.role]);
 
   useEffect(() => {
     // Atualiza o valor do campo hidden quando selectedAccount mudar
