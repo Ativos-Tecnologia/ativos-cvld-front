@@ -1,16 +1,74 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import TaskHeader from "@/components/TaskHeader";
 import DropdownDefault from "@/components/Dropdowns/DropdownDefault";
 import Drag from "@/js/drag";
 
 import Image from "next/image";
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { PaginatedResponse } from "../TaskElements";
+import api from "@/utils/api";
+import { LinkedTaskProps } from "../TaskElements/LinkedTasks";
+import { TaskColumn } from "./TaskColumn";
+
+/* ----> types <---- */
+export type TaskColumnProps = {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  name: string;
+  description: string;
+  color: string;
+  position: number;
+  user: number;
+}
+
 
 const TaskKanban: React.FC = () => {
+
+  /* ----> states <----- */
+  const [taskColumnsList, setTaskColumnsList] = useState<TaskColumnProps[]>([]);
+  const [tasks, setTasks] = useState<LinkedTaskProps[]>([])
+  const [subtasks, setSubtasks] = useState<string[]>([
+    "Subtarefa 1: Assinar um documento gigantesco para comprar algo na rua",
+    "Subtarefa 2: Fazer alguma coisa",
+    "Subtarefa 3: Fazer alguma coisa",
+  ]);
+  console.log(taskColumnsList, tasks)
+
+  /* ----> functions <---- */
+  const moveColumn = (fromIndex: number, toIndex: number) => {
+    const updatedColumns = [...taskColumnsList];
+    const [movedColumn] = updatedColumns.splice(fromIndex, 1);
+    updatedColumns.splice(toIndex, 0, movedColumn);
+    setTaskColumnsList(updatedColumns);
+  }
+
+  /* ----> effects <---- */
+  /* ativa o efeito de drag'n'drop */
+  // useEffect(() => {
+  //   Drag();
+  // });
+
+  /* faz fetch na API para preencher as colunas de tarefas
+  e as tarefas */
   useEffect(() => {
-    Drag();
-  });
+    const getTaskColumns = async () => {
+      const response = await api.get('/api/task/column/list/');
+      const columns: TaskColumnProps[] = response.data.results;
+      setTaskColumnsList(columns.sort(
+        (a, b) => a.position - b.position
+      ));
+    }
+    const getTasks = async () => {
+      const response = await api.get('/api/task/list/');
+      setTasks(response.data.results);
+    }
+    getTaskColumns();
+    getTasks();
+  }, [])
 
   return (
     <>
@@ -21,10 +79,19 @@ const TaskKanban: React.FC = () => {
         <TaskHeader />
         {/* <!-- Task Header End --> */}
 
-        {/* <!-- Task List Wrapper Start --> */}
-        <div className="mt-9 grid grid-cols-1 gap-7.5 sm:grid-cols-2 xl:grid-cols-3">
-          {/* <!-- Todo list --> */}
-          <div className="swim-lane flex flex-col gap-5.5">
+        <DndProvider backend={HTML5Backend}>
+          {/* <!-- Task List Wrapper Start --> */}
+          <div className="mt-9 grid grid-cols-1 gap-7.5 sm:grid-cols-2 xl:grid-cols-3">
+            {/* <!-- Todo list --> */}
+            {taskColumnsList.map((column: TaskColumnProps, index: number) => {
+
+              const tasksRelated = tasks.filter(task => task.related_table_id === column.id);
+
+              return (
+                <TaskColumn id={column.id} index={index} column={column} tasksRelated={tasksRelated} subtasks={subtasks} moveColumn={moveColumn} />
+              )
+            })}
+            {/* <div className="flex flex-col gap-5.5">
             <h4 className="text-xl font-semibold text-black dark:text-white">
               To Do&apos;s (03)
             </h4>
@@ -261,10 +328,10 @@ const TaskKanban: React.FC = () => {
                 <DropdownDefault />
               </div>
             </div>
-          </div>
+          </div> */}
 
-          {/* <!-- Progress list --> */}
-          <div className="swim-lane flex flex-col gap-5.5">
+            {/* <!-- Progress list --> */}
+            {/* <div className="swim-lane flex flex-col gap-5.5">
             <h4 className="text-xl font-semibold text-black dark:text-white">
               In Progress (01)
             </h4>
@@ -325,10 +392,10 @@ const TaskKanban: React.FC = () => {
                 <DropdownDefault />
               </div>
             </div>
-          </div>
+          </div> */}
 
-          {/* <!-- Completed list --> */}
-          <div className="swim-lane flex flex-col gap-5.5">
+            {/* <!-- Completed list --> */}
+            {/* <div className="swim-lane flex flex-col gap-5.5">
             <h4 className="text-xl font-semibold text-black dark:text-white">
               Completed (01)
             </h4>
@@ -411,9 +478,10 @@ const TaskKanban: React.FC = () => {
                 <DropdownDefault />
               </div>
             </div>
+          </div> */}
           </div>
-        </div>
-        {/* <!-- Task List Wrapper End --> */}
+          {/* <!-- Task List Wrapper End --> */}
+        </DndProvider>
       </div>
     </>
   );

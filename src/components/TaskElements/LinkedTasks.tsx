@@ -28,6 +28,8 @@ export type LinkedTaskProps = {
   title: string;
   updated_at: string;
   user: number;
+  related_table_id: string | null;
+  position: number;
 }
 
 export const LinkedTasks = ({ data, openTaskDrawer, setOpenTaskDrawer, openSubTask, setOpenSubTask, editableTaskInput, setEditableTaskInput }: ILinkedTasksProps) => {
