@@ -483,7 +483,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
         <form className="mt-8 space-y-5" onSubmit={handleSubmit(onSubmit)}>
           <input type="hidden" {...register("conta")} />
           <div className="grid grid-cols-2 gap-5 sm:grid-cols-2">
-            <div className="flex w-full flex-col gap-2 sm:col-span-1">
+            <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
               <label
                 htmlFor="natureza"
                 className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -507,9 +507,9 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 <SelectItem value="TRIBUTÁRIA">Tributária</SelectItem>
               </ShadSelect>
             </div>
-            <div className="invisible flex w-full flex-col gap-2 sm:col-span-1 "></div>
+            <div className="invisible 2xsm:hidden sm:flex w-full flex-col gap-2 sm:col-span-1 "></div>
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
               <label
                 htmlFor="valor_principal"
                 className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -537,7 +537,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 )}
               />
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
               <label
                 htmlFor="valor_juros"
                 className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -567,7 +567,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
               />
             </div>
 
-            <div className="flex min-h-17.5 flex-col gap-2">
+            <div className="flex min-h-17.5 flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
               <div className="relative mb-6 flex flex-col justify-between">
                 <label
                   htmlFor="data_base"
@@ -605,7 +605,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </div>
             </div>
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 2xsm:col-span-2 2xsm:mt-3 sm:col-span-1 sm:mt-0">
               <div className="relative mb-6 flex flex-col justify-between">
                 <label
                   htmlFor="data_requisicao"
@@ -642,12 +642,12 @@ const MainForm: React.FC<CVLDFormProps> = ({
             {watch("natureza") === "TRIBUTÁRIA" ||
               watch("incidencia_rra_ir") === false ? (
               <>
-                {watch("natureza") === "TRIBUTÁRIA" ? null : (
+                {/* {watch("natureza") === "TRIBUTÁRIA" && watch("incidencia_rra_ir") === false ? null : (
                   <div className="flex items-center col-span-1">&nbsp;</div>
-                )}
+                )} */}
               </>
             ) : (
-              <div className={`flex gap-2 ${watch("ir_incidente_rra") ? 'items-start' : 'items-center'}`}>
+              <div className={`flex gap-2 ${watch("ir_incidente_rra") ? 'items-start' : 'items-center'} 2xsm:col-span-2 sm:col-span-1`}>
                 <input
                   type="checkbox"
                   id="ir_incidente_rra"
@@ -664,7 +664,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
             )}
             {watch("ir_incidente_rra") === true &&
               watch("natureza") !== "TRIBUTÁRIA" ? (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                 <label
                   htmlFor="numero_de_meses"
                   className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -686,13 +686,13 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </div>
             ) : (
               <>
-                {watch('natureza') === 'TRIBUTÁRIA' ? null : (
-                  <div className="flex items-center">&nbsp;</div>
+                {watch('natureza') === 'TRIBUTÁRIA' || watch('incidencia_rra_ir') === false ? null : (
+                  <div className="flex items-center col-span-1">&nbsp;</div>
                 )}
               </>
             )}
             {watch("natureza") !== "TRIBUTÁRIA" ? (
-              <div className={`flex gap-2 ${watch('incidencia_pss') ? 'items-start' : 'items-center'}`}>
+              <div className={`flex gap-2 ${watch('incidencia_pss') ? 'items-start' : 'items-center'} 2xsm:col-span-2 sm:col-span-1`}>
                 <input
                   type="checkbox"
                   id="incidencia_pss"
@@ -708,7 +708,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </div>
             ) : null}
             {watch("incidencia_pss") && watch("natureza") !== "TRIBUTÁRIA" ? (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                 <label
                   htmlFor="valor_pss"
                   className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -743,22 +743,22 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 )}
               </>
             )}
-            <div className={`flex gap-2 ${watch("data_limite_de_atualizacao_check") ? "items-start" : "items-center"}`}>
-                <input
-                  type="checkbox"
-                  id="data_limite_de_atualizacao_check"
-                  className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
-                  {...register("data_limite_de_atualizacao_check")}
-                />
-                <label
-                  htmlFor="data_limite_de_atualizacao_check"
-                  className="mb-1 font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Atualizar para data passada?
-                </label>
+            <div className={`flex gap-2 ${watch("data_limite_de_atualizacao_check") ? "items-start" : "items-center"} 2xsm:col-span-2 sm:col-span-1`}>
+              <input
+                type="checkbox"
+                id="data_limite_de_atualizacao_check"
+                className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
+                {...register("data_limite_de_atualizacao_check")}
+              />
+              <label
+                htmlFor="data_limite_de_atualizacao_check"
+                className="mb-1 font-nexa text-xs font-semibold uppercase text-meta-5"
+              >
+                Atualizar para data passada?
+              </label>
             </div>
             {watch("data_limite_de_atualizacao_check") ? (
-              <div className="flex flex-col justify-between">
+              <div className="flex flex-col gap-2 justify-between 2xsm:col-span-2 sm:col-span-1">
                 <label
                   htmlFor="data_limite_de_atualizacao"
                   className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -810,7 +810,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                     {/* <span className="text-lg font-semibold text-black dark:text-white">Dados do Principal</span> */}
                     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2"></div>
 
-                    <div className="mb-4 flex w-full justify-end gap-2 sm:col-span-2">
+                    <div className="mb-4 flex w-full justify-end gap-2 2xsm:flex-col sm:flex-row sm:col-span-2">
                       <span className="text-md w-full self-center font-semibold">
                         Dados de Identificação
                       </span>
@@ -927,7 +927,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <input
                           type="text"
                           id="cpf_cnpj"
-                          className="h-[34.5px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                          className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                           {...register("cpf_cnpj", {})}
                         />
                       </div>
@@ -985,7 +985,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                               <input
                                 type="number"
                                 id="percentual_de_honorarios"
-                                className="h-[34.5px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                                 {...register("percentual_de_honorarios", {})}
                               />
                             </div>
@@ -1001,8 +1001,8 @@ const MainForm: React.FC<CVLDFormProps> = ({
                     <span className="text-md w-full self-center font-semibold">
                       Dados do Processo
                     </span>
-                    <div className="mb-4 flex w-full flex-row justify-between gap-4 sm:col-span-2">
-                      <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                    <div className="mb-4 grid grid-cols-4 w-full justify-between gap-4 sm:col-span-2">
+                      <div className="flex w-full flex-col gap-2 2xsm:col-span-4 sm:col-span-1">
                         <label
                           htmlFor="npu"
                           className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -1016,7 +1016,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           render={({ field }) => (
                             <Cleave
                               {...field}
-                              className="h-[34.5px] w-full rounded-md border border-stroke bg-white px-3 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                              className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                               options={{
                                 blocks: [7, 2, 4, 1, 2, 4],
                                 delimiters: ["-", ".", ".", ".", "."],
@@ -1027,7 +1027,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         />
                       </div>
 
-                      <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                      <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                         <label
                           htmlFor="esfera"
                           className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -1040,7 +1040,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           <SelectItem value="MUNICIPAL">Municipal</SelectItem>
                         </ShadSelect>
                       </div>
-                      <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                      <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                         <label
                           htmlFor="natureza"
                           className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -1054,8 +1054,8 @@ const MainForm: React.FC<CVLDFormProps> = ({
                       </div>
                     </div>
 
-                    <div className="my-4 flex w-full flex-row justify-between gap-4 sm:col-span-2">
-                      <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                    <div className="my-4 grid grid-cols-2 w-full justify-between gap-4 sm:col-span-2">
+                      <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                         <label
                           htmlFor="ente_devedor"
                           className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -1065,12 +1065,12 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <input
                           type="text"
                           id="ente_devedor"
-                          className="h-[34.5px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                          className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                           {...register("ente_devedor", {})}
                         />
                       </div>
 
-                      <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                      <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                         <label
                           htmlFor="estado_ente_devedor"
                           className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -1101,7 +1101,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <input
                           type="text"
                           id="juizo_vara"
-                          className="h-[34.5px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                          className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                           {...register("juizo_vara", {})}
                         />
                       </div>
@@ -1167,6 +1167,103 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         </ShadSelect>
                       </div>
                     </div>
+                    {/* campos de e-mail/telefones */}
+                    <span className="text-lg font-semibold mt-8">Contato</span>
+                    <div className="grid grid-cols-2 gap-4 justify-between w-full sm:col-span-2">
+                      <div className="flex flex-col gap-2 w-full 2xsm:col-span-2 sm:col-span-1">
+                        <label htmlFor="email_contato" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                          Email de Contato
+                        </label>
+
+                        <input
+                          type="email"
+                          id="email_contato"
+                          placeholder='ada@lovelace.com'
+                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                          {...register("email_contato", {})}
+                        />
+                      </div>
+                      <div className="relative flex flex-col gap-2 w-full 2xsm:col-span-2 sm:col-span-1">
+                        <label htmlFor="telefone_contato" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                          Telefone de Contato
+                        </label>
+
+                        <input
+                          type="tel"
+                          id="telefone_contato"
+                          placeholder='(00) 00000-0000'
+                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                          {...register("telefone_contato", {})}
+                        />
+                        {contatoNumberCount === 1 && (
+                          <div
+                            title='Adicionar telefone de contato'
+                            onClick={() => setContatoNumberCount(2)}
+                            className='absolute right-2 top-0 w-4 h-4 rounded-sm flex items-center justify-center bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 cursor-pointer'>
+                            <BiPlus />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    {/* copy */}
+                    {contatoNumberCount > 1 && (
+                      <div className="grid grid-cols-2 gap-4 mt-6 justify-between w-full sm:col-span-1">
+                        <div className="relative flex flex-col gap-2 w-full 2xsm:col-span-2 sm:col-span-1">
+                          <label htmlFor="telefone_contato_2" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                            Telefone de Contato (2)
+                          </label>
+
+                          <input
+                            type="tel"
+                            id="telefone_contato"
+                            placeholder='(00) 00000-0000'
+                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                            {...register("telefone_contato_2", {})}
+                          />
+                          {contatoNumberCount === 2 && (
+                            <>
+                              <div
+                                title='Adicionar telefone de contato'
+                                onClick={() => setContatoNumberCount(3)}
+                                className='absolute right-7 top-0 w-4 h-4 rounded-sm flex items-center justify-center bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 cursor-pointer'>
+                                <BiPlus />
+                              </div>
+                              <div
+                                title='Remover telefone de contato'
+                                onClick={() => setContatoNumberCount(1)}
+                                className='absolute right-2 top-0 w-4 h-4 rounded-sm flex items-center justify-center bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 cursor-pointer'>
+                                <BiMinus />
+                              </div>
+                            </>
+                          )}
+                        </div>
+                        {contatoNumberCount > 2 && (
+                          <div className="relative flex flex-col gap-2 w-full 2xsm:col-span-2 sm:col-span-1">
+                            <label htmlFor="telefone_contato_3" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                              Telefone de Contato (3)
+                            </label>
+
+                            <input
+                              type="tel"
+                              id="telefone_contato"
+                              placeholder='(00) 00000-0000'
+                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              {...register("telefone_contato_3", {})}
+                            />
+                            {contatoNumberCount === 3 && (
+                              <div
+                                title='Remover telefone de contato'
+                                onClick={() => setContatoNumberCount(2)}
+                                className='absolute right-2 top-0 w-4 h-4 rounded-sm flex items-center justify-center bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 cursor-pointer'>
+                                <BiMinus />
+                              </div>
+                            )
+                            }
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {/* end campos de e-mail/telefones */}
                     {/* <span className="text-lg font-semibold mt-8">Contato</span> */}
                     <div className="relative flex w-full flex-row justify-between gap-4 sm:col-span-2">
                       {/* <div className="flex flex-col gap-2 w-full sm:col-span-1">
@@ -1181,7 +1278,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <input
                           type="text"
                           id="juizo_vara"
-                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2 h-[34.5px]"
+                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2 h-[37px]"
                           {...register("juizo_vara", {})} />
                       </div>
                       <div className="flex flex-col gap-2 w-full col-span-1">
@@ -1630,7 +1727,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           type="checkbox"
                           id="upload_notion"
                           defaultChecked={false}
-                          className="rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                          className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                           {...register("upload_notion")}
                         />
                         <label
@@ -1643,7 +1740,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                       {watch("upload_notion") === true ? (
                         <>
                           <div className="flex gap-2">
-                            <input type="checkbox" id="vincular_usuario" className="rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark" {...register("vincular_usuario")} />
+                            <input type="checkbox" id="vincular_usuario" className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`} {...register("vincular_usuario")} />
                             <label htmlFor="vincular_usuario" className="text-sm font-medium text-meta-5 flex flex-row align-self-baseline">
                               <BiLogoUpwork className="h-4 w-4 mt-0.5 mr-2" /> Vincular a outro usuário?
                             </label>

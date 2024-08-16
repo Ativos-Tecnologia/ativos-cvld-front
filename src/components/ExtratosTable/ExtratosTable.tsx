@@ -12,12 +12,24 @@ import DeleteExtractAlert from "../Modals/DeleteExtract";
 import { MiniMenu } from "./MiniMenu";
 import { TableTabs } from "../TableTabs";
 import { ExtratosTableContext } from "@/context/ExtratosTableContext";
+import WebPageEmbed from "../WebPageEmbed/WebPageEmbed";
+import { UserInfoAPIContext } from "@/context/UserInfoContext";
+import NotionTableView from "./NotionTableView";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 type ExtratosTableProps = {
   newItem: CVLDResultProps[];
 }
 
-export function ExtratosTable({ newItem }: ExtratosTableProps) { 
+export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
   // states
   const {
@@ -28,15 +40,18 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     responseStatus, setResponseStatus,
     setCheckedList, showModalMessage,
     modalOptions, setModalOptions,
-
+    activedTab,
     mainRef,
-
     fetchDelete,
     handleRestoreData,
     setDontShowAgainDeleteExtractAlert,
     setExtractListView
 
   } = useContext(ExtratosTableContext);
+
+  const { data : {
+    role
+  } } = useContext(UserInfoAPIContext)
 
   const { filterData, resetFilters } = useFilter(data, setData, setStatusSelectValue, setOficioSelectValue, auxData, statusSelectValue, oficioSelectValue);
 
@@ -51,6 +66,16 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     <div ref={mainRef}
       className="overflow-hidden"
     >
+
+      {
+        role === 'ativos' ? (
+
+          <div className="p-5 bg-white rounded-sm dark:bg-boxdark">
+            </div>
+        ) : (<div className="p-5 bg-white rounded-sm dark:bg-boxdark">
+            </div>)
+      }
+
       {window.innerWidth >= 435 ? (
         <>
           {/* desktop view */}
@@ -61,13 +86,14 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
               <TableTabs resetFilters={resetFilters} />
               {/* end tabs */}
 
-              <div className="flex w-full h-full items-center justify-between">
+
+              { activedTab !== "WORKSPACE NOTION" &&
+                (<><div className="flex w-full h-full items-center justify-between">
 
                 {/* filters */}
                 <Filters
                   resetFilters={resetFilters}
-                  filterData={filterData}
-                />
+                  filterData={filterData} />
                 {/* end filters */}
 
                 {/* alternate between view extract mode */}
@@ -91,15 +117,21 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                   </div>
                 </div>
                 {/* end alternate between view extract mode */}
-              </div>
-
-              <MiniMenu count={data.count} />
+              </div><MiniMenu count={data.count} />
+              </>)
+}
 
             </div>
-            {viewOption.type === "table" &&
+            {
+              activedTab === "WORKSPACE NOTION" &&
+              <QueryClientProvider client={queryClient}>
+                <NotionTableView count={data.count} />
+              </QueryClientProvider>
+            }
+            {(activedTab !== 'WORKSPACE NOTION' && viewOption.type === "table") &&
               <TableView count={data.count} />
             }
-            {viewOption.type === "cards" &&
+            {(activedTab !== 'WORKSPACE NOTION' && viewOption.type === "cards") &&
               <CardView count={data.count} />
             }
           </div>

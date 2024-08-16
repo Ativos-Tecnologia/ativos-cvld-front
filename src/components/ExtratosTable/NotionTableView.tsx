@@ -3,7 +3,7 @@ import numberFormat from "@/functions/formaters/numberFormat";
 import React, { useContext, useRef } from 'react';
 import { BiLoader, BiSolidDockLeft } from 'react-icons/bi';
 import { LiaCoinsSolid } from "react-icons/lia";
-import { IoDocumentTextOutline } from "react-icons/io5";
+import { IoDocumentTextOutline, IoReload } from "react-icons/io5";
 import { PiCursorClick } from "react-icons/pi";
 import { CVLDResultProps } from '@/interfaces/IResultCVLD';
 import statusOficio from '@/enums/statusOficio.enum';
@@ -15,6 +15,10 @@ import { AiOutlineUser } from 'react-icons/ai';
 import { toast } from 'sonner';
 import { ExtratosTableContext } from '@/context/ExtratosTableContext';
 import { RiNotionFill } from 'react-icons/ri';
+import { NotionPage, NotionProperties } from '@/interfaces/INotion';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { UserInfoAPIContext } from '@/context/UserInfoContext';
+import api from '@/utils/api';
 
 const customTheme: CustomFlowbiteTheme = {
     table: {
@@ -43,22 +47,115 @@ const customTheme: CustomFlowbiteTheme = {
     }
 }
 
-const TableView = ({ count }: { count: number }) => {
+const updateStatusAtNotion = async (page_id: string, status: statusOficio) => {
+
+    const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
+        "Status": {
+            "status": {
+                "name": `${status}`
+            }
+        }
+    });
+    if (resNotion.status !== 202) {
+        console.log('houve um erro ao salvar os dados no notion');
+    }
+}
+
+const updateTipoAtNotion = async (page_id: string, tipo: tipoOficio) => {
+    const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
+        "Tipo": {
+            "select": {
+                "name": `${tipo}`
+            }
+        },
+    }
+);
+
+    if (resNotion.status !== 202) {
+        console.log('houve um erro ao salvar os dados no notion');
+    }
+}
+
+const updateNotionCreditorName = async (page_id: string, value: string) => {
+    const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
+        "Credor": {
+            "id": "title",
+            "type": "title",
+            "title": [
+                {
+                    "type": "text",
+                    "text": {
+                        "content": `${value}`
+                    },
+                    "plain_text": `${value}`
+                }
+            ]
+        }
+    });
+    if (resNotion.status !== 202) {
+        console.log('houve um erro ao salvar os dados no notion');
+    }
+}
+
+
+
+const NotionTableView = ({ count }: { count: number }) => {
+    const [changeStatusLoading, setChangeStatusLoading] = React.useState<boolean>(true);
+    const [selectedStatusValue, setSelectedStatusValue] = React.useState<statusOficio | null>(null);
+    const [checkedList, setCheckedList] = React.useState<NotionPage[]>([]);
+    const handleSelectRow = (item: NotionPage) => {
+
+        if (checkedList.length === 0) {
+            setCheckedList([item]);
+            return;
+        }
+
+        const alreadySelected = checkedList.some(target => target.id === item.id);
+
+        if (alreadySelected) {
+            setCheckedList(checkedList.filter(target => target.id !== item.id));
+        } else {
+            setCheckedList([...checkedList, item]);
+        }
+
+    }
     const {
-        data, fetchDataById,
-        loading, setOpenDetailsDrawer,
-        handleOficio, handleStatus,
+        setOpenDetailsDrawer,
         onPageChange, currentPage, setCurrentPage,
         callScrollTop, editableLabel, setEditableLabel,
-        handleSelectRow, checkedList, updateCreditorName,
+        notionWorkspaceData, setNotionWorkspaceData
     } = useContext(ExtratosTableContext);
+    const { data : { user } } = useContext(UserInfoAPIContext);
+
+    const queryClient = useQueryClient()
+    const { isPending, data, error, isFetching, refetch } = useQuery({ queryKey: ['notion_list'],
+        staleTime: 1000 * 5 * 1,
+        refetchOnWindowFocus: true, // Refaz o fetch ao focar na janela
+        refetchOnReconnect: true, // Refaz o fetch ao reconectar
+        refetchInterval: 1000 * 4 * 1,
+
+        queryFn: async () => {
+        const t = await api.post(`api/notion-api/list/`, user && {
+            "or": [
+                {
+                    "property": "Usuário",
+                    "multi_select": {
+                        "contains": user
+                    }
+                }
+            ]
+        })
+        return t.data
+    },
+ })
 
     // refs
+    setNotionWorkspaceData(data)
     const inputRefs = useRef<HTMLInputElement[] | null>([]);
 
     const handleCopyValue = (index: number) => {
 
-        navigator.clipboard.writeText(numberFormat(data.results[index].valor_liquido_disponivel));
+        navigator.clipboard.writeText(numberFormat(data.results[index].properties['Valor Líquido'].formula?.number || 0));
 
         toast("Valor copiado para área de transferência.", {
             classNames: {
@@ -80,10 +177,13 @@ const TableView = ({ count }: { count: number }) => {
         }
     }
 
-    const handleChangeCreditorName = async (id: string, value: string, index: number, page_id?: string) => {
+    const handleChangeCreditorName = async (value: string, index: number, page_id: string) => {
+        console.log('====================================');
+        console.log(index);
+        console.log('====================================');
 
         inputRefs.current![index].blur();
-        await updateCreditorName(id, value, page_id);
+        await updateNotionCreditorName(page_id, value, );
 
     }
 
@@ -92,6 +192,7 @@ const TableView = ({ count }: { count: number }) => {
 
             <Flowbite theme={{ theme: customTheme }}>
                 <Table>
+            <button onClick={() => refetch()} className='absolute top-1 right-1 bg-form-strokedark text-white dark:text-white px-2 py-1 rounded-md'><IoReload className='text-lg' /></button>
                     <TableHead>
                         {/* <TableHeadCell className="text-center w-10 px-1">
                             <span className="sr-only text-center ">Checkbox</span>
@@ -129,9 +230,9 @@ const TableView = ({ count }: { count: number }) => {
                     </TableHead>
                     <TableBody className=''>
 
-                        {data.results?.length > 0 && (
+                        {notionWorkspaceData?.results?.length > 0 && (
                             <>
-                                {data.results.map((item: CVLDResultProps, index: number) => (
+                                {notionWorkspaceData.results.map((item: NotionPage, index: number) => (
 
                                     <TableRow key={item.id} className={`${checkedList!.some(target => target.id === item.id) && 'bg-blue-50 dark:bg-form-strokedark'} hover:shadow-3 dark:hover:shadow-body group`}>
 
@@ -153,13 +254,13 @@ const TableView = ({ count }: { count: number }) => {
                                                     onChange={() => handleSelectRow(item)}
                                                 />
                                                 <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
-                                                    <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleOficio(item.id, e.target.value as tipoOficio, item.notion_link?.slice(-32))}>
-                                                        {item.tipo_do_oficio && (
-                                                            <option value={item.tipo_do_oficio} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                                {item.tipo_do_oficio}
+                                                    <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => updateTipoAtNotion(item.id, e.target.value as tipoOficio)}>
+                                                        {item.properties.Tipo.select?.name && (
+                                                            <option value={item.properties.Tipo.select?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                                {item.properties.Tipo.select?.name}
                                                             </option>
                                                         )}
-                                                        {ENUM_TIPO_OFICIOS_LIST.filter((status) => status !== item.tipo_do_oficio).map((status) => (
+                                                        {ENUM_TIPO_OFICIOS_LIST.filter((status) => status !== item.properties.Tipo.select?.name).map((status) => (
                                                             <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                                 {status}
                                                             </option>
@@ -168,19 +269,20 @@ const TableView = ({ count }: { count: number }) => {
                                                 </Badge>
                                             </div>
                                         </TableCell>
-                                        <TableCell title={item?.credor || ''}
+                                        <TableCell title={item.properties.Credor?.title[0].text.content || ''}
                                             className="relative h-full  flex items-center gap-2 font-semibold text-[12px]"
                                         >
                                             <input
                                                 type="text"
                                                 ref={(input) => { if (input) inputRefs.current![index] = input; }}
-                                                defaultValue={item?.credor || ''}
+
+                                                defaultValue={item.properties.Credor?.title[0].text.content || ''}
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                        handleChangeCreditorName(item.id, e.currentTarget.value, index, item.notion_link?.slice(-32))
+                                                        handleChangeCreditorName(e.currentTarget.value, index, item.id)
                                                     }
                                                 }}
-                                                onBlur={(e) => handleChangeCreditorName(item.id, e.currentTarget.value, index, item.notion_link?.slice(-32))}
+                                                onBlur={(e) => handleChangeCreditorName(e.currentTarget.value, index, item.id)}
                                                 className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                             />
 
@@ -220,7 +322,7 @@ const TableView = ({ count }: { count: number }) => {
                                                                     setEditableLabel!(item.id)
                                                                     handleEditInput(index);
                                                                 }}>
-                                                                {item?.credor?.length === 0 && (
+                                                                {item.properties.Credor?.title[0].plain_text?.length === 0 && (
                                                                     <div className='flex gap-1 pl-4 text-slate-400'>
                                                                         <PiCursorClick className='text-base' />
                                                                         <span>Clique para adicionar nome</span>
@@ -233,14 +335,13 @@ const TableView = ({ count }: { count: number }) => {
                                                                 className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
                                                                 onClick={() => {
                                                                     setOpenDetailsDrawer(true);
-                                                                    fetchDataById(item.id);
                                                                 }}>
                                                                 <BiSolidDockLeft className='text-lg'
                                                                 />
                                                                 <span className='text-xs'>Abrir</span>
                                                             </div>
-                                                            {item.notion_link && (
-                                                            <a  href={item.notion_link} target='_blank' rel='referrer'
+                                                            {item.url && (
+                                                            <a  href={item.url} target='_blank' rel='referrer'
                                                                 title='Abrir no Notion'
                                                                 className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
                                                                 >
@@ -257,7 +358,7 @@ const TableView = ({ count }: { count: number }) => {
                                         </TableCell>
                                         <TableCell className=" font-semibold text-[14px]">
                                             <div className="relative">
-                                                {numberFormat(item.valor_liquido_disponivel)}
+                                                {numberFormat(item.properties['Valor Líquido'].formula?.number || 0)}
                                                 <ImCopy
                                                     title='Copiar valor'
                                                     onClick={() => handleCopyValue(index)}
@@ -267,13 +368,16 @@ const TableView = ({ count }: { count: number }) => {
                                         </TableCell>
                                         <TableCell className="text-center items-center ">
                                             <Badge color="teal" size="sm" className="text-center text-[12px]">
-                                                <select className="text-[12px] w-44 text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => handleStatus(item.id, e.target.value as statusOficio, item.notion_link?.slice(-32))}>
-                                                    {item.status && (
-                                                        <option value={item.status} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                            {item.status}
+                                                <select className="text-[12px] w-44 text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => {
+                                                    updateStatusAtNotion(item.id, e.target.value as statusOficio)
+                                                    }}>
+
+                                                    {item.properties.Status.status?.name && (
+                                                        <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                                { selectedStatusValue || item.properties.Status.status?.name}
                                                         </option>
                                                     )}
-                                                    {ENUM_OFICIOS_LIST.filter((status) => status !== item.status).map((status) => (
+                                                    {ENUM_OFICIOS_LIST.filter((status) => status !== item.properties.Status.status?.name).map((status) => (
                                                         <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                             {status}
                                                         </option>
@@ -332,11 +436,11 @@ const TableView = ({ count }: { count: number }) => {
                 </Table>
             </Flowbite>
             {/* <TaskDrawer open={openTaskDrawer} setOpen={setOpenTaskDrawer} id={extratoId} /> */}
-            {data.results?.length === 0 && (
+            {/* {data.results?.length === 0 && (
                 <p className="text-center py-5 bg-white dark:bg-boxdark rounded-b-sm">
                     Não há registros para exibir
                 </p>
-            )}
+            )} */}
         </div><div className="flex overflow-x-auto sm:justify-center">
                 {/* <Pagination
       layout="pagination"
@@ -353,7 +457,7 @@ const TableView = ({ count }: { count: number }) => {
                 <div className='w-full flex-col justify-center items-center'>
                     {
                         <div className='w-full mt-4 h-4 flex justify-center items-center'>
-                            <div className={`${loading ? "opacity-100 visible" : "opacity-0 invisible"} text-center flex justify-center items-center transition-all duration-300`}>
+                            <div className={`${isPending ? "opacity-100 visible" : "opacity-0 invisible"} text-center flex justify-center items-center transition-all duration-300`}>
                                 <span className='text-sm mr-2 text-meta-4'>
                                     Buscando informações
                                 </span>
@@ -362,10 +466,10 @@ const TableView = ({ count }: { count: number }) => {
                         </div>
                     }
 
-                    <MarvelousPagination counter={count} page_size={20} currentPage={currentPage} onPageChange={onPageChange} setCurrentPage={setCurrentPage} callScrollTop={callScrollTop} loading={loading} />
+                    {/* <MarvelousPagination counter={count} page_size={20} currentPage={currentPage} onPageChange={onPageChange} setCurrentPage={setCurrentPage} callScrollTop={callScrollTop} loading={isPending} /> */}
                 </div>
             </div></>
     )
 }
 
-export default TableView
+export default NotionTableView

@@ -4,13 +4,27 @@ import tipoOficio from '@/enums/tipoOficio.enum';
 import { CVLDResultProps } from '@/interfaces/IResultCVLD';
 import api from '@/utils/api';
 
-const useUpdateOficio = (data: PaginatedResponse<CVLDResultProps> , setData: React.Dispatch<React.SetStateAction<PaginatedResponse<CVLDResultProps>>>) => {
+const useUpdateOficio = (data: PaginatedResponse<CVLDResultProps>, setData: React.Dispatch<React.SetStateAction<PaginatedResponse<CVLDResultProps>>>) => {
 
-    const updateOficioStatus = async (id: string, status: statusOficio) => {
+    const updateOficioStatus = async (id: string, status: statusOficio, page_id?: string) => {
         try {
             const response = await api.put(`/api/extrato/update/status/${id}/`, {
                 status
             });
+
+            if (page_id) {
+
+                const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
+                    "Status": {
+                        "status": {
+                            "name": `${status}`
+                        }
+                    }
+                });
+                if (resNotion.status !== 202) {
+                    console.log('houve um erro ao salvar os dados no notion');
+                }
+            }
 
             const updatedData = data?.results.map((item: CVLDResultProps) => {
                 if (item.id === id) {
@@ -32,11 +46,13 @@ const useUpdateOficio = (data: PaginatedResponse<CVLDResultProps> , setData: Rea
         }
     }
 
-    const updateOficioTipo = async (id: string, tipo: tipoOficio) => {
+    const updateOficioTipo = async (id: string, tipo: tipoOficio, page_id?: string) => {
         try {
             const response = await api.put(`/api/extrato/update/tipo/${id}/`, {
                 tipo_do_oficio: tipo
             });
+
+
 
             const updatedData = data?.results.map((item: CVLDResultProps) => {
                 if (item.id === id) {
@@ -53,6 +69,19 @@ const useUpdateOficio = (data: PaginatedResponse<CVLDResultProps> , setData: Rea
                 ...data,
                 results: updatedData
             });
+
+            const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
+                "Tipo": {
+                    "select": {
+                        "name": `${tipo}`
+                    }
+                },
+            }
+        );
+
+            if (resNotion.status !== 202) {
+                console.log('houve um erro ao salvar os dados no notion');
+            }
         } catch (error) {
             console.error(error);
         }
