@@ -12,19 +12,19 @@ const useUpdateOficio = (data: PaginatedResponse<CVLDResultProps>, setData: Reac
                 status
             });
 
-            if (page_id) {
+            // if (page_id) {
 
-                const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-                    "Status": {
-                        "status": {
-                            "name": `${status}`
-                        }
-                    }
-                });
-                if (resNotion.status !== 202) {
-                    console.log('houve um erro ao salvar os dados no notion');
-                }
-            }
+            //     const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
+            //         "Status": {
+            //             "status": {
+            //                 "name": `${status}`
+            //             }
+            //         }
+            //     });
+            //     if (resNotion.status !== 202) {
+            //         console.log('houve um erro ao salvar os dados no notion');
+            //     }
+            // }
 
             const updatedData = data?.results.map((item: CVLDResultProps) => {
                 if (item.id === id) {
@@ -70,18 +70,17 @@ const useUpdateOficio = (data: PaginatedResponse<CVLDResultProps>, setData: Reac
                 results: updatedData
             });
 
-            const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-                "Tipo": {
-                    "select": {
-                        "name": `${tipo}`
-                    }
-                },
-            }
-        );
+            // const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
+            //     "Tipo": {
+            //         "select": {
+            //             "name": `${tipo}`
+            //         }
+            //     },
+            // });
 
-            if (resNotion.status !== 202) {
-                console.log('houve um erro ao salvar os dados no notion');
-            }
+            // if (resNotion.status !== 202) {
+            //     console.log('houve um erro ao salvar os dados no notion');
+            // }
         } catch (error) {
             console.error(error);
         }

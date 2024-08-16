@@ -181,8 +181,8 @@ const NotionTableView = ({ count }: { count: number }) => {
         console.log('====================================');
         console.log(index);
         console.log('====================================');
-
         inputRefs.current![index].blur();
+        setEditableLabel(null);
         await updateNotionCreditorName(page_id, value, );
 
     }
