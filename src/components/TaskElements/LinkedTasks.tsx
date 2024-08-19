@@ -6,14 +6,16 @@ import { PaginatedResponse, TaskDrawer } from '.'
 import { CVLDResultProps } from '@/interfaces/IResultCVLD'
 import api from '@/utils/api'
 
-interface ILinkedTasksProps {
+export interface ILinkedTasksProps {
   data: any;
+  index: number;
   openTaskDrawer: boolean;
   setOpenTaskDrawer: React.Dispatch<React.SetStateAction<boolean>>;
   openSubTask: string | null;
   setOpenSubTask: React.Dispatch<React.SetStateAction<string | null>>;
   editableTaskInput: boolean;
   setEditableTaskInput: React.Dispatch<React.SetStateAction<boolean>>;
+  type?: string;
 }
 
 export type LinkedTaskProps = {
@@ -32,7 +34,7 @@ export type LinkedTaskProps = {
   position: number;
 }
 
-export const LinkedTasks = ({ data, openTaskDrawer, setOpenTaskDrawer, openSubTask, setOpenSubTask, editableTaskInput, setEditableTaskInput }: ILinkedTasksProps) => {
+export const LinkedTasks = ({ data, openTaskDrawer, setOpenTaskDrawer, openSubTask, setOpenSubTask, editableTaskInput, setEditableTaskInput, type }: ILinkedTasksProps) => {
 
   const [extratoTasks, setExtratoTasks] = useState<PaginatedResponse<LinkedTaskProps>>({
     count: 0,
