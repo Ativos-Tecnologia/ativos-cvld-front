@@ -1,4 +1,4 @@
-import { Suspense, useContext, useEffect, useRef } from "react";
+import { Suspense, useContext, useEffect, useRef, useState } from "react";
 import UseMySwal from "@/hooks/useMySwal";
 import { AwesomeDrawer } from "../Drawer/Drawer";
 import { CVLDResultProps } from "@/interfaces/IResultCVLD";
@@ -22,6 +22,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query';
+import NotionTableFilters from "../Filters/NotionTableFilter";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,11 @@ type ExtratosTableProps = {
 export function ExtratosTable({ newItem }: ExtratosTableProps) {
 
   // states
+  const [queryTanstack] = useState<any>(queryClient);
+  const [tanstackRefatch, setQueryTanstackRefatch] = useState<any>()
+  // end states
+
+
   const {
     data, setData,
     auxData,
@@ -45,11 +51,13 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     fetchDelete,
     handleRestoreData,
     setDontShowAgainDeleteExtractAlert,
-    setExtractListView
+    setExtractListView,
+    notionWorkspaceData,
+    setNotionWorkspaceData
 
   } = useContext(ExtratosTableContext);
 
-  const { data : {
+  const { data: {
     role
   } } = useContext(UserInfoAPIContext)
 
@@ -71,72 +79,88 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
         role === 'ativos' ? (
 
           <div className="p-5 bg-white rounded-sm dark:bg-boxdark">
-            </div>
+          </div>
         ) : (<div className="p-5 bg-white rounded-sm dark:bg-boxdark">
-            </div>)
+        </div>)
       }
 
       {window.innerWidth >= 435 ? (
-        <>
-          {/* desktop view */}
-          <div className="p-5 bg-white rounded-sm dark:bg-boxdark">
-            <div className="flex flex-col">
+        <QueryClientProvider client={queryClient}>
+          <>
 
-              {/* tabs */}
-              <TableTabs resetFilters={resetFilters} />
-              {/* end tabs */}
+            {/* desktop view */}
+            <div className="p-5 bg-white rounded-sm dark:bg-boxdark">
+              <div className="flex flex-col">
+
+                {/* tabs */}
+                <TableTabs resetFilters={resetFilters} />
+                {/* end tabs */}
 
 
-              { activedTab !== "WORKSPACE NOTION" &&
-                (<><div className="flex w-full h-full items-center justify-between">
+                {(activedTab !== "WORKSPACE NOTION") ?
+                  (<>
+                    <div className="flex w-full h-full items-center justify-between">
 
-                {/* filters */}
-                <Filters
-                  resetFilters={resetFilters}
-                  filterData={filterData} />
-                {/* end filters */}
+                      {/* filters */}
+                      {
+                        <Filters
+                          resetFilters={resetFilters}
+                          filterData={filterData} />
+                      }
+                      {/* end filters */}
 
-                {/* alternate between view extract mode */}
-                <div className="flex items-center gap-1">
-                  <div
-                    title="Mudar para visualização tabela"
-                    onClick={() => setExtractListView("table")}
-                    className={`flex w-7 h-7 items-center justify-center rounded-full ${viewOption.type === "table" && "bg-slate-200 dark:bg-slate-600"} hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer group`}>
-                    <PiTable className="text-xl group-hover:text-black-2 dark:group-hover:text-white" />
-                  </div>
+                      {/* alternate between view extract mode */}
+                      <div className="flex items-center gap-1">
+                        <div
+                          title="Mudar para visualização tabela"
+                          onClick={() => setExtractListView("table")}
+                          className={`flex w-7 h-7 items-center justify-center rounded-full ${viewOption.type === "table" && "bg-slate-200 dark:bg-slate-600"} hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer group`}>
+                          <PiTable className="text-xl group-hover:text-black-2 dark:group-hover:text-white" />
+                        </div>
 
-                  {/* separator */}
-                  <div className="w-px mx-1 h-5 bg-zinc-300 dark:bg-form-strokedark"></div>
-                  {/* separator */}
+                        {/* separator */}
+                        <div className="w-px mx-1 h-5 bg-zinc-300 dark:bg-form-strokedark"></div>
+                        {/* separator */}
 
-                  <div
-                    title="Mudar para visualização cards"
-                    onClick={() => setExtractListView("cards")}
-                    className={`flex w-7 h-7 items-center justify-center rounded-full ${viewOption.type === "cards" && "bg-slate-200 dark:bg-slate-600"} hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer group`}>
-                    <PiGridFour className="text-xl group-hover:text-black-2 dark:group-hover:text-white" />
-                  </div>
-                </div>
-                {/* end alternate between view extract mode */}
-              </div><MiniMenu count={data.count} />
-              </>)
-}
+                        <div
+                          title="Mudar para visualização cards"
+                          onClick={() => setExtractListView("cards")}
+                          className={`flex w-7 h-7 items-center justify-center rounded-full ${viewOption.type === "cards" && "bg-slate-200 dark:bg-slate-600"} hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer group`}>
+                          <PiGridFour className="text-xl group-hover:text-black-2 dark:group-hover:text-white" />
+                        </div>
+                      </div>
+                      {/* end alternate between view extract mode */}
+                    </div><MiniMenu count={data.count} />
+                  </>) : (
+                    <><div className="flex w-full h-full items-center justify-between">
 
+                      {/* filters */}
+                      {/* {<NotionTableFilters queryClient={queryTanstack} />
+                      } */}
+                      {/* end filters */}
+
+                    </div>
+                    {/* <MiniMenu count={notionWorkspaceData?.results.length || 0} /> */}
+
+                    </>
+                  )
+                }
+
+              </div>
+              {
+                activedTab === "WORKSPACE NOTION" &&
+                <NotionTableView count={notionWorkspaceData?.results.length} />
+              }
+              {(activedTab !== 'WORKSPACE NOTION' && viewOption.type === "table") &&
+                <TableView count={data.count} />
+              }
+              {(activedTab !== 'WORKSPACE NOTION' && viewOption.type === "cards") &&
+                <CardView count={data.count} />
+              }
             </div>
-            {
-              activedTab === "WORKSPACE NOTION" &&
-              <QueryClientProvider client={queryClient}>
-                <NotionTableView count={data.count} />
-              </QueryClientProvider>
-            }
-            {(activedTab !== 'WORKSPACE NOTION' && viewOption.type === "table") &&
-              <TableView count={data.count} />
-            }
-            {(activedTab !== 'WORKSPACE NOTION' && viewOption.type === "cards") &&
-              <CardView count={data.count} />
-            }
-          </div>
-          {/* end desktop view */}
-        </>
+            {/* end desktop view */}
+          </>
+        </QueryClientProvider>
       ) : (
         /* mobile view */
         <div className="py-7 px-5 bg-white rounded-sm dark:bg-boxdark">

@@ -1,6 +1,6 @@
 import { Badge, CustomFlowbiteTheme, Flowbite, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from 'flowbite-react';
 import numberFormat from "@/functions/formaters/numberFormat";
-import React, { useContext, useRef } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { BiLoader, BiSolidDockLeft } from 'react-icons/bi';
 import { LiaCoinsSolid } from "react-icons/lia";
 import { IoDocumentTextOutline, IoReload } from "react-icons/io5";
@@ -9,16 +9,19 @@ import { CVLDResultProps } from '@/interfaces/IResultCVLD';
 import statusOficio from '@/enums/statusOficio.enum';
 import tipoOficio from '@/enums/tipoOficio.enum';
 import MarvelousPagination from '../MarvelousPagination';
-import { ImCopy } from 'react-icons/im';
+import { ImCopy, ImTable } from 'react-icons/im';
 import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants';
 import { AiOutlineUser } from 'react-icons/ai';
 import { toast } from 'sonner';
-import { ExtratosTableContext } from '@/context/ExtratosTableContext';
+import { ActiveState, ExtratosTableContext } from '@/context/ExtratosTableContext';
 import { RiNotionFill } from 'react-icons/ri';
-import { NotionPage, NotionProperties } from '@/interfaces/INotion';
+import { NotionPage } from '@/interfaces/INotion';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import api from '@/utils/api';
+import StatusFilter from '../Filters/StatusFilter';
+import { MdOutlineFilterAltOff } from 'react-icons/md';
+import { MiniMenu } from './MiniMenu';
 
 const customTheme: CustomFlowbiteTheme = {
     table: {
@@ -47,34 +50,9 @@ const customTheme: CustomFlowbiteTheme = {
     }
 }
 
-const updateStatusAtNotion = async (page_id: string, status: statusOficio) => {
 
-    const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-        "Status": {
-            "status": {
-                "name": `${status}`
-            }
-        }
-    });
-    if (resNotion.status !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
-    }
-}
 
-const updateTipoAtNotion = async (page_id: string, tipo: tipoOficio) => {
-    const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-        "Tipo": {
-            "select": {
-                "name": `${tipo}`
-            }
-        },
-    }
-);
 
-    if (resNotion.status !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
-    }
-}
 
 const updateNotionCreditorName = async (page_id: string, value: string) => {
     const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
@@ -100,9 +78,9 @@ const updateNotionCreditorName = async (page_id: string, value: string) => {
 
 
 const NotionTableView = ({ count }: { count: number }) => {
-    const [changeStatusLoading, setChangeStatusLoading] = React.useState<boolean>(true);
-    const [selectedStatusValue, setSelectedStatusValue] = React.useState<statusOficio | null>(null);
+    const [selectedStatusValue] = React.useState<statusOficio | null>(null);
     const [checkedList, setCheckedList] = React.useState<NotionPage[]>([]);
+
     const handleSelectRow = (item: NotionPage) => {
 
         if (checkedList.length === 0) {
@@ -123,34 +101,62 @@ const NotionTableView = ({ count }: { count: number }) => {
         setOpenDetailsDrawer,
         onPageChange, currentPage, setCurrentPage,
         callScrollTop, editableLabel, setEditableLabel,
-        notionWorkspaceData, setNotionWorkspaceData
+        notionWorkspaceData, setNotionWorkspaceData,
+        listQuery, setListQuery, fetchNotionData, setTanstackRefatch
     } = useContext(ExtratosTableContext);
     const { data : { user } } = useContext(UserInfoAPIContext);
 
+
+
+
     const queryClient = useQueryClient()
-    const { isPending, data, error, isFetching, refetch } = useQuery({ queryKey: ['notion_list'],
-        staleTime: 1000 * 5 * 1,
+    const { isPending, data, error, isFetching, refetch } = useQuery(
+        { queryKey: ['notion_list'],
+        // staleTime: 1000 * 5 * 1,
         refetchOnWindowFocus: true, // Refaz o fetch ao focar na janela
         refetchOnReconnect: true, // Refaz o fetch ao reconectar
-        refetchInterval: 1000 * 4 * 1,
+        refetchInterval: 1000 * 3 * 1,
+        queryFn: fetchNotionData
+    });
 
-        queryFn: async () => {
-        const t = await api.post(`api/notion-api/list/`, user && {
-            "or": [
-                {
-                    "property": "Usuário",
-                    "multi_select": {
-                        "contains": user
-                    }
-                }
-            ]
-        })
-        return t.data
-    },
- })
+    setNotionWorkspaceData(data);
+
+
+ const updateStatusAtNotion = async (page_id: string, status: statusOficio) => {
+
+
+     queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+     const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
+        "Status": {
+            "status": {
+                "name": `${status}`
+            }
+        }
+    });
+    if (resNotion.status !== 202) {
+        console.log('houve um erro ao salvar os dados no notion');
+    }
+}
+
+const updateTipoAtNotion = async (page_id: string, tipo: tipoOficio) => {
+
+    queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+    const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
+        "Tipo": {
+            "select": {
+                "name": `${tipo}`
+            }
+        },
+    }
+);
+
+    if (resNotion.status !== 202) {
+        console.log('houve um erro ao salvar os dados no notion');
+    }
+}
 
     // refs
-    setNotionWorkspaceData(data)
+    // setNotionWorkspaceData(data)
     const inputRefs = useRef<HTMLInputElement[] | null>([]);
 
     const handleCopyValue = (index: number) => {
@@ -166,8 +172,9 @@ const NotionTableView = ({ count }: { count: number }) => {
             },
             action: {
                 label: "Fechar",
-                onClick: () => console.log('done')
-            }
+                onClick: () => {
+                    toast.dismiss();
+                }}
         })
     }
 
@@ -178,21 +185,138 @@ const NotionTableView = ({ count }: { count: number }) => {
     }
 
     const handleChangeCreditorName = async (value: string, index: number, page_id: string) => {
-        console.log('====================================');
-        console.log(index);
-        console.log('====================================');
         inputRefs.current![index].blur();
         setEditableLabel(null);
-        await updateNotionCreditorName(page_id, value, );
+        await updateNotionCreditorName(page_id, value);
+        queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+    }
 
+    const {
+        statusSelectValue, setStatusSelectValue,
+        oficioSelectValue, setOficioSelectValue,
+        activeFilter, setActiveFilter,
+    } = useContext(ExtratosTableContext);
+
+    const [currentQuery, setCurrentQuery] = useState({});
+
+    const buildQuery = () => {
+        return {
+            "and": [
+                {
+                    "property": "Usuário",
+                    "multi_select": {
+                        "contains": user
+                    }
+                },
+                {
+                    "property": "Status",
+                    "status": {
+                        "equals": statusSelectValue || ''
+                    }
+                },
+                {
+                    "property": "Tipo",
+                    "select": {
+                        "equals": oficioSelectValue || ''
+                    }
+                }
+            ]
+        };
+    };
+
+    useEffect(() => {
+        const updatedQuery = buildQuery();
+        setCurrentQuery(updatedQuery);
+    }, [user, statusSelectValue, oficioSelectValue]);
+
+    useEffect(() => {
+        if (Object.keys(currentQuery).length > 0) {
+            setListQuery(currentQuery);
+            // queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+        }
+    }, [currentQuery]); // Depende do estado atualizado da query
+
+    const handleOficioStatus = (oficio: tipoOficio) => {
+        setOficioSelectValue(oficio);
+        setActiveFilter(oficio as ActiveState);
+    }
+
+    const handleCleanStatusFilter = () => {
+        setStatusSelectValue(null);
+        setOficioSelectValue(null);
     }
 
     return (
-        <><div className='relative'>
+        <>
+         <div className="flex gap-3 flex-1 items-center max-w-230">
+            <div
+                onClick={() => {
+
+                    setStatusSelectValue(null);
+                    setOficioSelectValue(null);
+                    setActiveFilter('ALL');
+                    // queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+                }}
+                className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${activeFilter === "ALL" && 'bg-slate-100 dark:bg-form-strokedark'}`}>
+                <ImTable />
+                <span>todos</span>
+            </div>
+            {
+                ENUM_TIPO_OFICIOS_LIST.map((oficio) => (
+                    <div
+                        key={oficio}
+                        onClick={() => handleOficioStatus(oficio)}
+                        className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${activeFilter === oficio && 'bg-slate-100 dark:bg-form-strokedark'}`}>
+                        <ImTable />
+                        <span>{oficio}</span>
+                    </div>
+                ))
+            }
+
+            {/* separator */}
+            <div className="w-px mx-1 h-5 bg-zinc-300 dark:bg-form-strokedark"></div>
+            {/* separator */}
+
+            <div className='flex items-center justify-center gap-1'>
+                <StatusFilter filterData={() => {
+
+
+                    }}
+                    statusSelectValue={statusSelectValue}
+                    setStatusSelectValue={setStatusSelectValue} />
+
+                {statusSelectValue && (
+                    <div
+                        title='limpar filtro de status'
+                        className={`${statusSelectValue ? 'opacity-100 visible translate-x-0' : 'opacity-0 invisible translate-y-5'} relative w-6 h-6 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md transition-all duration-500 cursor-pointer`}
+                    onClick={handleCleanStatusFilter}
+                    >
+                        <MdOutlineFilterAltOff />
+                    </div>
+                )}
+            </div>
+        </div>
+
+        <MiniMenu count={notionWorkspaceData?.results.length || 0} />
+
+        <div className='w-full flex justify-end items-right'>
+                    {
+                        <div className='w-full mb-2 h-4 flex justify-end items-center'>
+                            <div className={`${isFetching ? "opacity-100 visible" : "opacity-0 invisible"} text-center flex justify-center items-center transition-all duration-300`}>
+                                <span className='text-xs mr-2 text-meta-4'>
+                                    Buscando informações
+                                </span>
+                                <BiLoader className="animate-spin h-5 w-5" />
+                            </div>
+                        </div>
+                    }
+
+                    {/* <MarvelousPagination counter={count} page_size={20} currentPage={currentPage} onPageChange={onPageChange} setCurrentPage={setCurrentPage} callScrollTop={callScrollTop} loading={isPending} /> */}
+                </div>
+        <div className='relative'>
 
             <Flowbite theme={{ theme: customTheme }}>
                 <Table>
-            <button onClick={() => refetch()} className='absolute top-1 right-1 bg-form-strokedark text-white dark:text-white px-2 py-1 rounded-md'><IoReload className='text-lg' /></button>
                     <TableHead>
                         {/* <TableHeadCell className="text-center w-10 px-1">
                             <span className="sr-only text-center ">Checkbox</span>
@@ -230,9 +354,9 @@ const NotionTableView = ({ count }: { count: number }) => {
                     </TableHead>
                     <TableBody className=''>
 
-                        {notionWorkspaceData?.results?.length > 0 && (
+                        {data?.results?.length > 0 && (
                             <>
-                                {notionWorkspaceData.results.map((item: NotionPage, index: number) => (
+                                {data?.results.map((item: NotionPage, index: number) => (
 
                                     <TableRow key={item.id} className={`${checkedList!.some(target => target.id === item.id) && 'bg-blue-50 dark:bg-form-strokedark'} hover:shadow-3 dark:hover:shadow-body group`}>
 
@@ -454,20 +578,7 @@ const NotionTableView = ({ count }: { count: number }) => {
       nextLabel="Go forward"
       showIcons
     /> */}
-                <div className='w-full flex-col justify-center items-center'>
-                    {
-                        <div className='w-full mt-4 h-4 flex justify-center items-center'>
-                            <div className={`${isPending ? "opacity-100 visible" : "opacity-0 invisible"} text-center flex justify-center items-center transition-all duration-300`}>
-                                <span className='text-sm mr-2 text-meta-4'>
-                                    Buscando informações
-                                </span>
-                                <BiLoader className="animate-spin h-5 w-5" />
-                            </div>
-                        </div>
-                    }
 
-                    {/* <MarvelousPagination counter={count} page_size={20} currentPage={currentPage} onPageChange={onPageChange} setCurrentPage={setCurrentPage} callScrollTop={callScrollTop} loading={isPending} /> */}
-                </div>
             </div></>
     )
 }

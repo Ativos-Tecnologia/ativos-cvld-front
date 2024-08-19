@@ -10,6 +10,7 @@ import { AxiosResponse } from "axios";
 import useUpdateOficio from "@/hooks/useUpdateOficio";
 import { NotionResponse } from "@/interfaces/INotion";
 import { UserInfoAPIContext } from "./UserInfoContext";
+import { QueryClient } from "@tanstack/react-query";
 
 // types
 export type ActiveState = "ALL" | "PRECATÓRIO" | "R.P.V" | "CREDITÓRIO";
@@ -69,7 +70,11 @@ export interface IExtratosTable {
     setModalOptions: React.Dispatch<React.SetStateAction<ModalOptionsProps>>;
     notionWorkspaceData: NotionResponse;
     setNotionWorkspaceData: React.Dispatch<React.SetStateAction<NotionResponse>>;
-    fetchNotionWorkspaceData : (username: string | undefined) => Promise<any>;
+    fetchNotionData : () => Promise<any>;
+    listQuery: {};
+    setListQuery: React.Dispatch<React.SetStateAction<{}>>;
+    tanstackRefatch: any
+    setTanstackRefatch: React.Dispatch<React.SetStateAction<any>>;
 
 
 
@@ -142,7 +147,12 @@ export const ExtratosTableContext = createContext<IExtratosTable>({
         results: []
     },
     setNotionWorkspaceData: () => { },
-    fetchNotionWorkspaceData: (): Promise<any> => { return new Promise(() => { }) },
+    fetchNotionData: (): Promise<any> => { return new Promise(() => { }) },
+    listQuery: {},
+    setListQuery: () => { },
+    tanstackRefatch: () => { },
+    setTanstackRefatch: () => { },
+
 
 
     mainRef: null,
@@ -179,7 +189,7 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
     const [statusSelectValue, setStatusSelectValue] = useState<statusOficio | null>(null);
     const [oficioSelectValue, setOficioSelectValue] = useState<tipoOficio | null>(null);
     const [activeFilter, setActiveFilter] = useState<ActiveState>('ALL');
-    const [activedTab, setActivedTab] = useState<Tabs>('GERAL');
+    const [activedTab, setActivedTab] = useState<Tabs>('WORKSPACE NOTION');
     const [editableLabel, setEditableLabel] = useState<string | null>(null);
     const [item, setItem] = useState<CVLDResultProps | {}>({});
     const [loading, setLoading] = useState<boolean>(false);
@@ -200,6 +210,9 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
         object: "list",
         results: []
     });
+    const [listQuery, setListQuery] = useState<object>({});
+    const [tanstackRefatch, setTanstackRefatch] = useState<any>();
+
 
 
 
@@ -220,10 +233,10 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
         setLoading(false);
     }
 
-
-    const fetchNotionWorkspaceData = async (username: string | undefined) => {
-
-        // return setNotionWorkspaceData(resNotion.data);
+    const fetchNotionData =
+        async () => {
+            const t = await api.post(`api/notion-api/list/`, user && listQuery)
+            return t.data
     }
 
     /* função que busca um extrato único para drawer de detalhes */
@@ -665,7 +678,11 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
             currentPage, setCurrentPage,
             modalOptions, setModalOptions,
             notionWorkspaceData, setNotionWorkspaceData,
-            fetchNotionWorkspaceData,
+            fetchNotionData,
+            setListQuery,
+            listQuery,
+            tanstackRefatch,
+            setTanstackRefatch,
 
             /* ====> refs <==== */
             mainRef,

@@ -24,7 +24,6 @@ export function AwesomeDrawer() {
   const [openSubTask, setOpenSubTask] = useState<boolean>(false);
   const [editableTaskInput, setEditableTaskInput] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  console.log(item)
 
   const handleClose = () => {
     setOpenDetailsDrawer(false);

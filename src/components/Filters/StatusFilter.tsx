@@ -5,7 +5,7 @@ import { LucideChevronsUpDown } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { AiOutlineSearch } from 'react-icons/ai';
 
-const StatusFilter = ({ filterData, statusSelectValue, setStatusSelectValue } : { filterData: () => void, statusSelectValue: statusOficio | null, setStatusSelectValue: React.Dispatch<React.SetStateAction<statusOficio | null>> }) => {
+const StatusFilter = ({ filterData, statusSelectValue, setStatusSelectValue } : { filterData?: () => void, statusSelectValue: statusOficio | null, setStatusSelectValue: React.Dispatch<React.SetStateAction<statusOficio | null>> }) => {
 
     const [open, setOpen] = useState<boolean>(false);
     const [filteredValues, setFilteredValues] = useState<statusOficio[]>(ENUM_OFICIOS_LIST);
@@ -53,7 +53,7 @@ const StatusFilter = ({ filterData, statusSelectValue, setStatusSelectValue } : 
     useEffect(() => {
 
         if (statusSelectValue !== null) {
-            filterData();
+            filterData!();
         }
 
     }, [statusSelectValue])
