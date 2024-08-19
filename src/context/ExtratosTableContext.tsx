@@ -210,7 +210,17 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
         object: "list",
         results: []
     });
-    const [listQuery, setListQuery] = useState<object>({});
+    const [listQuery, setListQuery] = useState<object>({
+        "and": [
+            {
+                "property": "Usuário",
+                "multi_select": {
+                    "contains": user
+                }
+            },
+        ]
+    });
+
     const [tanstackRefatch, setTanstackRefatch] = useState<any>();
 
 

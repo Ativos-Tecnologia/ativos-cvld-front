@@ -50,7 +50,12 @@ const customTheme: CustomFlowbiteTheme = {
     }
 }
 
-
+const notionViews: string[] = [
+    'Realizar 1º Contato',
+    'Juntar Ofício/Valor Líquido',
+    'Enviar Proposta/Negociação',
+    'Proposta Aceita'
+]
 
 
 
@@ -104,56 +109,56 @@ const NotionTableView = ({ count }: { count: number }) => {
         notionWorkspaceData, setNotionWorkspaceData,
         listQuery, setListQuery, fetchNotionData, setTanstackRefatch
     } = useContext(ExtratosTableContext);
-    const { data : { user } } = useContext(UserInfoAPIContext);
+    const { data: { user } } = useContext(UserInfoAPIContext);
 
 
 
 
     const queryClient = useQueryClient()
     const { isPending, data, error, isFetching, refetch } = useQuery(
-        { queryKey: ['notion_list'],
-        // staleTime: 1000 * 5 * 1,
-        refetchOnWindowFocus: true, // Refaz o fetch ao focar na janela
-        refetchOnReconnect: true, // Refaz o fetch ao reconectar
-        refetchInterval: 1000 * 3 * 1,
-        queryFn: fetchNotionData
-    });
-
-    setNotionWorkspaceData(data);
-
-
- const updateStatusAtNotion = async (page_id: string, status: statusOficio) => {
-
-
-     queryClient.invalidateQueries({ queryKey: ['notion_list'] });
-     const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-        "Status": {
-            "status": {
-                "name": `${status}`
-            }
+        {
+            queryKey: ['notion_list'],
+            // staleTime: 1000 * 5 * 1,
+            refetchOnWindowFocus: true, // Refaz o fetch ao focar na janela
+            refetchOnReconnect: true, // Refaz o fetch ao reconectar
+            refetchInterval: 1000 * 3 * 1,
+            queryFn: fetchNotionData
         }
-    });
-    if (resNotion.status !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
-    }
-}
+    );
 
-const updateTipoAtNotion = async (page_id: string, tipo: tipoOficio) => {
 
-    queryClient.invalidateQueries({ queryKey: ['notion_list'] });
-    const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-        "Tipo": {
-            "select": {
-                "name": `${tipo}`
+
+    const updateStatusAtNotion = async (page_id: string, status: statusOficio) => {
+
+
+        queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+        const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
+            "Status": {
+                "status": {
+                    "name": `${status}`
+                }
             }
-        },
+        });
+        if (resNotion.status !== 202) {
+            console.log('houve um erro ao salvar os dados no notion');
+        }
     }
-);
 
-    if (resNotion.status !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
+    const updateTipoAtNotion = async (page_id: string, tipo: tipoOficio) => {
+
+        queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+        const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
+            "Tipo": {
+                "select": {
+                    "name": `${tipo}`
+                }
+            },
+        });
+
+        if (resNotion.status !== 202) {
+            console.log('houve um erro ao salvar os dados no notion');
+        }
     }
-}
 
     // refs
     // setNotionWorkspaceData(data)
@@ -174,7 +179,8 @@ const updateTipoAtNotion = async (page_id: string, tipo: tipoOficio) => {
                 label: "Fechar",
                 onClick: () => {
                     toast.dismiss();
-                }}
+                }
+            }
         })
     }
 
@@ -248,119 +254,118 @@ const updateTipoAtNotion = async (page_id: string, tipo: tipoOficio) => {
 
     return (
         <>
-         <div className="flex gap-3 flex-1 items-center max-w-230">
-            <div
-                onClick={() => {
+            <div className="flex gap-3 flex-1 items-center">
+                <div
+                    onClick={() => {
 
-                    setStatusSelectValue(null);
-                    setOficioSelectValue(null);
-                    setActiveFilter('ALL');
-                    // queryClient.invalidateQueries({ queryKey: ['notion_list'] });
-                }}
-                className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${activeFilter === "ALL" && 'bg-slate-100 dark:bg-form-strokedark'}`}>
-                <ImTable />
-                <span>todos</span>
-            </div>
-            {
-                ENUM_TIPO_OFICIOS_LIST.map((oficio) => (
-                    <div
-                        key={oficio}
-                        onClick={() => handleOficioStatus(oficio)}
-                        className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${activeFilter === oficio && 'bg-slate-100 dark:bg-form-strokedark'}`}>
-                        <ImTable />
-                        <span>{oficio}</span>
-                    </div>
-                ))
-            }
-
-            {/* separator */}
-            <div className="w-px mx-1 h-5 bg-zinc-300 dark:bg-form-strokedark"></div>
-            {/* separator */}
-
-            <div className='flex items-center justify-center gap-1'>
-                <StatusFilter filterData={() => {
-
-
+                        setStatusSelectValue(null);
+                        setOficioSelectValue(null);
+                        setActiveFilter('ALL');
+                        // queryClient.invalidateQueries({ queryKey: ['notion_list'] });
                     }}
-                    statusSelectValue={statusSelectValue}
-                    setStatusSelectValue={setStatusSelectValue} />
-
-                {statusSelectValue && (
-                    <div
-                        title='limpar filtro de status'
-                        className={`${statusSelectValue ? 'opacity-100 visible translate-x-0' : 'opacity-0 invisible translate-y-5'} relative w-6 h-6 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md transition-all duration-500 cursor-pointer`}
-                    onClick={handleCleanStatusFilter}
-                    >
-                        <MdOutlineFilterAltOff />
-                    </div>
-                )}
-            </div>
-        </div>
-
-        <MiniMenu count={notionWorkspaceData?.results.length || 0} />
-
-        <div className='w-full flex justify-end items-right'>
-                    {
-                        <div className='w-full mb-2 h-4 flex justify-end items-center'>
-                            <div className={`${isFetching ? "opacity-100 visible" : "opacity-0 invisible"} text-center flex justify-center items-center transition-all duration-300`}>
-                                <span className='text-xs mr-2 text-meta-4'>
-                                    Buscando informações
-                                </span>
-                                <BiLoader className="animate-spin h-5 w-5" />
-                            </div>
-                        </div>
-                    }
-
-                    {/* <MarvelousPagination counter={count} page_size={20} currentPage={currentPage} onPageChange={onPageChange} setCurrentPage={setCurrentPage} callScrollTop={callScrollTop} loading={isPending} /> */}
+                    className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${activeFilter === "ALL" && 'bg-slate-100 dark:bg-form-strokedark'}`}>
+                    <ImTable />
+                    <span>todos</span>
                 </div>
-        <div className='relative'>
+                {
+                    notionViews.map((view) => (
+                        <div
+                            key={view}
+                            // onClick={() => handleOficioStatus(view)}
+                            className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${activeFilter === view && 'bg-slate-100 dark:bg-form-strokedark'}`}>
+                            <ImTable />
+                            <span>{view}</span>
+                        </div>
+                    ))
+                }
 
-            <Flowbite theme={{ theme: customTheme }}>
-                <Table>
-                    <TableHead>
-                        {/* <TableHeadCell className="text-center w-10 px-1">
+                {/* separator */}
+                <div className="w-px mx-1 h-5 bg-zinc-300 dark:bg-form-strokedark"></div>
+                {/* separator */}
+
+                <div className='flex items-center justify-center gap-1'>
+                    <StatusFilter filterData={() => {
+                        
+                    }}
+                        statusSelectValue={statusSelectValue}
+                        setStatusSelectValue={setStatusSelectValue} />
+
+                    {statusSelectValue && (
+                        <div
+                            title='limpar filtro de status'
+                            className={`${statusSelectValue ? 'opacity-100 visible translate-x-0' : 'opacity-0 invisible translate-y-5'} relative w-6 h-6 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md transition-all duration-500 cursor-pointer`}
+                            onClick={handleCleanStatusFilter}
+                        >
+                            <MdOutlineFilterAltOff />
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            <MiniMenu count={data?.results.length || 0} />
+
+            <div className='w-full flex justify-end items-right'>
+                {
+                    <div className='w-full mb-2 h-4 flex justify-end items-center'>
+                        <div className={`${isFetching ? "opacity-100 visible" : "opacity-0 invisible"} text-center flex justify-center items-center transition-all duration-300`}>
+                            <span className='text-xs mr-2 text-meta-4'>
+                                Buscando informações
+                            </span>
+                            <BiLoader className="animate-spin h-5 w-5" />
+                        </div>
+                    </div>
+                }
+
+                {/* <MarvelousPagination counter={count} page_size={20} currentPage={currentPage} onPageChange={onPageChange} setCurrentPage={setCurrentPage} callScrollTop={callScrollTop} loading={isPending} /> */}
+            </div>
+            <div className='relative'>
+
+                <Flowbite theme={{ theme: customTheme }}>
+                    <Table>
+                        <TableHead>
+                            {/* <TableHeadCell className="text-center w-10 px-1">
                             <span className="sr-only text-center ">Checkbox</span>
                         </TableHeadCell> */}
-                        <TableHeadCell className="w-[120px]">
-                            <div className='flex gap-2 items-center'>
-                                <IoDocumentTextOutline className='text-base' />
-                                Oficio
-                            </div>
-                        </TableHeadCell>
-                        <TableHeadCell>
-                            <div className='flex gap-2 items-center'>
-                                <AiOutlineUser className='text-base' />
-                                Nome do Credor
-                            </div>
-                        </TableHeadCell>
-                        <TableHeadCell className="w-[180px]">
-                            <div className="flex gap-2 items-center">
-                                <LiaCoinsSolid className='text-base' />
-                                Valor Líquido
-                            </div>
-                        </TableHeadCell>
-                        <TableHeadCell className="w-[0px]">
-                            <div className="flex gap-2 items-center">
-                                <BiLoader className='text-base' />
-                                Status
-                            </div>
-                        </TableHeadCell>
-                        {/* <TableHeadCell className="text-center w-[120px]">
+                            <TableHeadCell className="w-[120px]">
+                                <div className='flex gap-2 items-center'>
+                                    <IoDocumentTextOutline className='text-base' />
+                                    Oficio
+                                </div>
+                            </TableHeadCell>
+                            <TableHeadCell>
+                                <div className='flex gap-2 items-center'>
+                                    <AiOutlineUser className='text-base' />
+                                    Nome do Credor
+                                </div>
+                            </TableHeadCell>
+                            <TableHeadCell className="w-[180px]">
+                                <div className="flex gap-2 items-center">
+                                    <LiaCoinsSolid className='text-base' />
+                                    Valor Líquido
+                                </div>
+                            </TableHeadCell>
+                            <TableHeadCell className="w-[0px]">
+                                <div className="flex gap-2 items-center">
+                                    <BiLoader className='text-base' />
+                                    Status
+                                </div>
+                            </TableHeadCell>
+                            {/* <TableHeadCell className="text-center w-[120px]">
                             <span className="sr-only text-center">Tarefas</span>
                         </TableHeadCell> */}
-                        {/* <TableHeadCell className="text-center w-[40px]">
+                            {/* <TableHeadCell className="text-center w-[40px]">
                             <span className="sr-only text-center">Detalhes</span>
                         </TableHeadCell> */}
-                    </TableHead>
-                    <TableBody className=''>
+                        </TableHead>
+                        <TableBody className=''>
 
-                        {data?.results?.length > 0 && (
-                            <>
-                                {data?.results.map((item: NotionPage, index: number) => (
+                            {data?.results?.length > 0 && (
+                                <>
+                                    {data?.results.map((item: NotionPage, index: number) => (
 
-                                    <TableRow key={item.id} className={`${checkedList!.some(target => target.id === item.id) && 'bg-blue-50 dark:bg-form-strokedark'} hover:shadow-3 dark:hover:shadow-body group`}>
+                                        <TableRow key={item.id} className={`${checkedList!.some(target => target.id === item.id) && 'bg-blue-50 dark:bg-form-strokedark'} hover:shadow-3 dark:hover:shadow-body group`}>
 
-                                        {/* <TableCell className="px-1 text-center ">
+                                            {/* <TableCell className="px-1 text-center ">
                                             <input
                                                 type="checkbox"
                                                 checked={checkedList!.includes(item.id)}
@@ -369,50 +374,50 @@ const updateTipoAtNotion = async (page_id: string, tipo: tipoOficio) => {
                                             />
                                         </TableCell> */}
 
-                                        <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                            <div className='flex items-center justify-center gap-3'>
+                                            <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                                                <div className='flex items-center justify-center gap-3'>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={checkedList!.some(target => target.id === item.id)}
+                                                        className={`opacity-50 w-[15px] group-hover:opacity-100 ${checkedList!.some(target => target.id === item.id) && '!opacity-100'} h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
+                                                        onChange={() => handleSelectRow(item)}
+                                                    />
+                                                    <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
+                                                        <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => updateTipoAtNotion(item.id, e.target.value as tipoOficio)}>
+                                                            {item.properties.Tipo.select?.name && (
+                                                                <option value={item.properties.Tipo.select?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                                    {item.properties.Tipo.select?.name}
+                                                                </option>
+                                                            )}
+                                                            {ENUM_TIPO_OFICIOS_LIST.filter((status) => status !== item.properties.Tipo.select?.name).map((status) => (
+                                                                <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                                    {status}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                    </Badge>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell title={item.properties.Credor?.title[0].text.content || ''}
+                                                className="relative h-full  flex items-center gap-2 font-semibold text-[12px]"
+                                            >
                                                 <input
-                                                    type="checkbox"
-                                                    checked={checkedList!.some(target => target.id === item.id)}
-                                                    className={`opacity-50 w-[15px] group-hover:opacity-100 ${checkedList!.some(target => target.id === item.id) && '!opacity-100'} h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
-                                                    onChange={() => handleSelectRow(item)}
+                                                    type="text"
+                                                    ref={(input) => { if (input) inputRefs.current![index] = input; }}
+
+                                                    defaultValue={item.properties.Credor?.title[0].text.content || ''}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                            handleChangeCreditorName(e.currentTarget.value, index, item.id)
+                                                        }
+                                                    }}
+                                                    onBlur={(e) => handleChangeCreditorName(e.currentTarget.value, index, item.id)}
+                                                    className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                 />
-                                                <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
-                                                    <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => updateTipoAtNotion(item.id, e.target.value as tipoOficio)}>
-                                                        {item.properties.Tipo.select?.name && (
-                                                            <option value={item.properties.Tipo.select?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                                {item.properties.Tipo.select?.name}
-                                                            </option>
-                                                        )}
-                                                        {ENUM_TIPO_OFICIOS_LIST.filter((status) => status !== item.properties.Tipo.select?.name).map((status) => (
-                                                            <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                                {status}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </Badge>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell title={item.properties.Credor?.title[0].text.content || ''}
-                                            className="relative h-full  flex items-center gap-2 font-semibold text-[12px]"
-                                        >
-                                            <input
-                                                type="text"
-                                                ref={(input) => { if (input) inputRefs.current![index] = input; }}
 
-                                                defaultValue={item.properties.Credor?.title[0].text.content || ''}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                        handleChangeCreditorName(e.currentTarget.value, index, item.id)
-                                                    }
-                                                }}
-                                                onBlur={(e) => handleChangeCreditorName(e.currentTarget.value, index, item.id)}
-                                                className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                                            />
+                                                {/* =====> confirm edition old button <===== */}
 
-                                            {/* =====> confirm edition old button <===== */}
-
-                                            {/* <div title='Confirmar Edição' className={`${editableLabel === item.id ? 'opacity-100 visible' : 'opacity-0 invisible'} ${editLabelState === 'success' && 'animate-jump !bg-green-500 !text-white'} ${editLabelState === 'error' && 'animate-jump !bg-meta-1 !text-white'} w-6 h-6 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 transition-all duration-500 cursor-pointer group`}>
+                                                {/* <div title='Confirmar Edição' className={`${editableLabel === item.id ? 'opacity-100 visible' : 'opacity-0 invisible'} ${editLabelState === 'success' && 'animate-jump !bg-green-500 !text-white'} ${editLabelState === 'error' && 'animate-jump !bg-meta-1 !text-white'} w-6 h-6 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 transition-all duration-500 cursor-pointer group`}>
                                                 {isLoading ?
                                                     <ImSpinner2 className={`${editableLabel === item.id ? 'opacity-100 visible animate-spin' : 'opacity-0 invisible'} text-2xl`}
                                                     /> :
@@ -432,85 +437,85 @@ const updateTipoAtNotion = async (page_id: string, tipo: tipoOficio) => {
                                                     </>
                                                 }
                                             </div> */}
-                                            {/* ====> end confirm old button <==== */}
+                                                {/* ====> end confirm old button <==== */}
 
 
-                                            {/* absolute div that covers the entire cell */}
-                                            {editableLabel !== item.id && (
-                                                <div className='absolute inset-0 rounded-md flex items-center transition-all duration-200'>
+                                                {/* absolute div that covers the entire cell */}
+                                                {editableLabel !== item.id && (
+                                                    <div className='absolute inset-0 rounded-md flex items-center transition-all duration-200'>
 
-                                                    {editableLabel === null && (
-                                                        <React.Fragment>
-                                                            <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200'
-                                                                onClick={() => {
-                                                                    setEditableLabel!(item.id)
-                                                                    handleEditInput(index);
-                                                                }}>
-                                                                {item.properties.Credor?.title[0].plain_text?.length === 0 && (
-                                                                    <div className='flex gap-1 pl-4 text-slate-400'>
-                                                                        <PiCursorClick className='text-base' />
-                                                                        <span>Clique para adicionar nome</span>
-                                                                    </div>
-                                                                )}
-                                                            </div>
+                                                        {editableLabel === null && (
+                                                            <React.Fragment>
+                                                                <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200'
+                                                                    onClick={() => {
+                                                                        setEditableLabel!(item.id)
+                                                                        handleEditInput(index);
+                                                                    }}>
+                                                                    {item.properties.Credor?.title[0].plain_text?.length === 0 && (
+                                                                        <div className='flex gap-1 pl-4 text-slate-400'>
+                                                                            <PiCursorClick className='text-base' />
+                                                                            <span>Clique para adicionar nome</span>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
 
-                                                            <div
-                                                                title='Abrir'
-                                                                className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
-                                                                onClick={() => {
-                                                                    setOpenDetailsDrawer(true);
-                                                                }}>
-                                                                <BiSolidDockLeft className='text-lg'
-                                                                />
-                                                                <span className='text-xs'>Abrir</span>
-                                                            </div>
-                                                            {item.url && (
-                                                            <a  href={item.url} target='_blank' rel='referrer'
-                                                                title='Abrir no Notion'
-                                                                className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
-                                                                >
-                                                                <RiNotionFill className='text-lg'
-                                                                />
-                                                                <span className='text-xs'>Notion</span>
-                                                            </a>)}
+                                                                <div
+                                                                    title='Abrir'
+                                                                    className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                                                                    onClick={() => {
+                                                                        setOpenDetailsDrawer(true);
+                                                                    }}>
+                                                                    <BiSolidDockLeft className='text-lg'
+                                                                    />
+                                                                    <span className='text-xs'>Abrir</span>
+                                                                </div>
+                                                                {item.url && (
+                                                                    <a href={item.url} target='_blank' rel='referrer'
+                                                                        title='Abrir no Notion'
+                                                                        className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                                                                    >
+                                                                        <RiNotionFill className='text-lg'
+                                                                        />
+                                                                        <span className='text-xs'>Notion</span>
+                                                                    </a>)}
 
-                                                        </React.Fragment>
-                                                    )}
+                                                            </React.Fragment>
+                                                        )}
+                                                    </div>
+                                                )}
+
+                                            </TableCell>
+                                            <TableCell className=" font-semibold text-[14px]">
+                                                <div className="relative">
+                                                    {numberFormat(item.properties['Valor Líquido'].formula?.number || 0)}
+                                                    <ImCopy
+                                                        title='Copiar valor'
+                                                        onClick={() => handleCopyValue(index)}
+                                                        className='absolute top-1/2 -translate-y-1/2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                                                    />
                                                 </div>
-                                            )}
-
-                                        </TableCell>
-                                        <TableCell className=" font-semibold text-[14px]">
-                                            <div className="relative">
-                                                {numberFormat(item.properties['Valor Líquido'].formula?.number || 0)}
-                                                <ImCopy
-                                                    title='Copiar valor'
-                                                    onClick={() => handleCopyValue(index)}
-                                                    className='absolute top-1/2 -translate-y-1/2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
-                                                />
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="text-center items-center ">
-                                            <Badge color="teal" size="sm" className="text-center text-[12px]">
-                                                <select className="text-[12px] w-44 text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => {
-                                                    updateStatusAtNotion(item.id, e.target.value as statusOficio)
+                                            </TableCell>
+                                            <TableCell className="text-center items-center ">
+                                                <Badge color="teal" size="sm" className="text-center text-[12px]">
+                                                    <select className="text-[12px] w-44 text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => {
+                                                        updateStatusAtNotion(item.id, e.target.value as statusOficio)
                                                     }}>
 
-                                                    {item.properties.Status.status?.name && (
-                                                        <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                                { selectedStatusValue || item.properties.Status.status?.name}
-                                                        </option>
-                                                    )}
-                                                    {ENUM_OFICIOS_LIST.filter((status) => status !== item.properties.Status.status?.name).map((status) => (
-                                                        <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                            {status}
-                                                        </option>
-                                                    ))}
+                                                        {item.properties.Status.status?.name && (
+                                                            <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                                {selectedStatusValue || item.properties.Status.status?.name}
+                                                            </option>
+                                                        )}
+                                                        {ENUM_OFICIOS_LIST.filter((status) => status !== item.properties.Status.status?.name).map((status) => (
+                                                            <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                                {status}
+                                                            </option>
+                                                        ))}
 
-                                                </select>
-                                            </Badge>
-                                        </TableCell>
-                                        {/* <TableCell className="text-center">
+                                                    </select>
+                                                </Badge>
+                                            </TableCell>
+                                            {/* <TableCell className="text-center">
                                             <Badge onClick={() => handleTask(item.id)} size="sm" color="yellow" className="hover:bg-yellow-200 dark:hover:bg-yellow-300 transition-all duration-300 justify-center px-2 py-1 cursor-pointer">
                                                 <div className="flex flex-row w-full justify-between align-middle gap-2">
                                                     <span className="text-[12px] font-bold transition-all duration-200">
@@ -521,7 +526,7 @@ const updateTipoAtNotion = async (page_id: string, tipo: tipoOficio) => {
                                             </Badge>
 
                                         </TableCell> */}
-                                        {/* <TableCell className="text-center">
+                                            {/* <TableCell className="text-center">
                                             <Badge color="blue" size="sm" style={{
                                                 cursor: loading ? 'wait' : 'pointer'
                                             }} onClick={() => {
@@ -537,7 +542,7 @@ const updateTipoAtNotion = async (page_id: string, tipo: tipoOficio) => {
                                             </Badge>
                                         </TableCell> */}
 
-                                        {/* <TableCell className="text-center ">
+                                            {/* <TableCell className="text-center ">
                                             {showModalMessage ? (
                                                 <button onClick={() => setModalOptions({
                                                     open: true,
@@ -552,20 +557,20 @@ const updateTipoAtNotion = async (page_id: string, tipo: tipoOficio) => {
                                             )}
                                         </TableCell> */}
 
-                                    </TableRow>
-                                ))}
-                            </>
-                        )}
-                    </TableBody>
-                </Table>
-            </Flowbite>
-            {/* <TaskDrawer open={openTaskDrawer} setOpen={setOpenTaskDrawer} id={extratoId} /> */}
-            {/* {data.results?.length === 0 && (
+                                        </TableRow>
+                                    ))}
+                                </>
+                            )}
+                        </TableBody>
+                    </Table>
+                </Flowbite>
+                {/* <TaskDrawer open={openTaskDrawer} setOpen={setOpenTaskDrawer} id={extratoId} /> */}
+                {/* {data.results?.length === 0 && (
                 <p className="text-center py-5 bg-white dark:bg-boxdark rounded-b-sm">
                     Não há registros para exibir
                 </p>
             )} */}
-        </div><div className="flex overflow-x-auto sm:justify-center">
+            </div><div className="flex overflow-x-auto sm:justify-center">
                 {/* <Pagination
       layout="pagination"
       currentPage={currentPage}
