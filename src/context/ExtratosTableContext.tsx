@@ -204,6 +204,7 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
         object: "list",
         results: []
     });
+
     const [tanstackRefatch, setTanstackRefatch] = useState<any>();
 
 

@@ -64,7 +64,7 @@ const StatusFilter = ({ statusSelectValue, setStatusSelectValue, setListQuery } 
             <div className='flex items-center justify-center'>
                 <div
                     onClick={() => setOpen(!open)}
-                    className={`min-w-48 flex items-center justify-between gap-1 border border-stroke dark:border-strokedark text-xs font-semibold py-1 px-2 hover:bg-slate-100 uppercase dark:hover:bg-slate-700 ${open && 'bg-slate-100 dark:bg-slate-700'} rounded-md transition-colors duration-200 cursor-pointer`}>
+                    className={`min-w-25 text-ellipsis overflow-hidden whitespace-nowrap flex items-center gap-2 justify-between border border-stroke dark:border-strokedark text-xs font-semibold py-1 px-2 hover:bg-slate-100 uppercase dark:hover:bg-slate-700 ${open && 'bg-slate-100 dark:bg-slate-700'} rounded-md transition-colors duration-200 cursor-pointer`}>
                     <span>
                         {statusSelectValue || 'Status'}
                     </span>
@@ -92,7 +92,7 @@ const StatusFilter = ({ statusSelectValue, setStatusSelectValue, setListQuery } 
                         {filteredValues.map((status) => (
                             <span
                                 key={status}
-                                className='cursor-pointer text-sm p-1 rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700'
+                                className='cursor-pointer text-xs font-semibold p-1 rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700'
                                 onClick={() => handleSelectStatus(status)}>
                                 {status}
                             </span>
