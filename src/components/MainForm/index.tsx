@@ -258,6 +258,14 @@ const MainForm: React.FC<CVLDFormProps> = ({
       data.natureza = "NÃO TRIBUTÁRIA";
     }
 
+    if (!data.esfera) {
+      data.esfera = "FEDERAL";
+    }
+
+    if (!data.regime) {
+      data.regime = "COMUM";
+    }
+
     if (!data.ir_incidente_rra) {
       data.numero_de_meses = undefined;
     }
@@ -1034,13 +1042,14 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         >
                           Esfera
                         </label>
-                        <ShadSelect name="esfera" control={control}>
+                        <ShadSelect defaultValue="FEDERAL" name="esfera" control={control}>
                           <SelectItem value="FEDERAL">Federal</SelectItem>
                           <SelectItem value="ESTADUAL">Estadual</SelectItem>
                           <SelectItem value="MUNICIPAL">Municipal</SelectItem>
                         </ShadSelect>
                       </div>
-                      <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                     { watch("esfera") !== "FEDERAL" || watch("esfera") === undefined &&
+                      (<div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                         <label
                           htmlFor="natureza"
                           className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -1051,7 +1060,8 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           <SelectItem value="GERAL">GERAL</SelectItem>
                           <SelectItem value="ESPECIAL">ESPECIAL</SelectItem>
                         </ShadSelect>
-                      </div>
+                      </div>)
+                      }
                     </div>
 
                     <div className="my-4 grid grid-cols-2 w-full justify-between gap-4 sm:col-span-2">
