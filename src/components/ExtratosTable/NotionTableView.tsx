@@ -454,7 +454,7 @@ const NotionTableView = ({ count }: { count: number }) => {
             </div>
         </div>
 
-        <MiniMenu count={data?.results.length || 0} />
+        <MiniMenu count={data?.results?.length || 0} />
 
         <div className='w-full flex justify-end items-right'>
                     {

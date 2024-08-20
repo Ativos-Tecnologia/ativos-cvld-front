@@ -39,6 +39,7 @@ import { ShadSelect } from "../ShadSelect";
 import { SelectItem } from "../ui/select";
 import { PaginatedResponse } from "../TaskElements";
 import { Avatar } from "flowbite-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface ChartTwoState {
   series: {
@@ -72,9 +73,12 @@ const MainForm: React.FC<CVLDFormProps> = ({
     setValue,
     formState: { errors },
   } = useForm();
-
+  const queryClient = useQueryClient();
   const enumOficiosList = Object.values(statusOficio);
   const enumTipoOficiosList = Object.values(tipoOficio);
+
+
+
 
   const estados = [
     { id: "AC", nome: "Acre" },
@@ -240,6 +244,20 @@ const MainForm: React.FC<CVLDFormProps> = ({
     );
   }
 
+
+  const postNotionData = async (data: any) => {
+    const response = await api.post("/api/extrato/create/", data)
+    // TODO: REFATORAR PARA USAR USEMUTATION O MAIS RÁPIDO POSSÍVEL
+    queryClient.invalidateQueries({queryKey: ["notion_list"]}); // Pior opção possível, mas a única que funcionou nos momentos anteriores ao V1
+    return response;
+  }
+
+  const mutation = useMutation({
+    mutationFn: postNotionData,
+    onSuccess: (data) => {
+      console.log(data);
+    },
+    });
   const onSubmit = async (data: any) => {
     data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
     data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
@@ -263,7 +281,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
     }
 
     if (!data.regime) {
-      data.regime = "COMUM";
+      data.regime = "GERAL";
     }
 
     if (!data.ir_incidente_rra) {
@@ -300,8 +318,12 @@ const MainForm: React.FC<CVLDFormProps> = ({
       setCalcStep("calculating");
 
       const response = data.gerar_cvld
-        ? await api.post("/api/extrato/create/", data)
+        ? await postNotionData(data)
         : await api.post("/api/extrato/query/", data);
+
+
+
+
 
       if (response.status === 201 || response.status === 200) {
         setCredits({
