@@ -1048,7 +1048,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           <SelectItem value="MUNICIPAL">Municipal</SelectItem>
                         </ShadSelect>
                       </div>
-                     { watch("esfera") !== "FEDERAL" || watch("esfera") === undefined &&
+                     { watch("esfera") !== "FEDERAL" && watch("esfera") !== undefined &&
                       (<div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                         <label
                           htmlFor="natureza"
@@ -1663,64 +1663,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           </div>
                         </div> */}
                     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                      {/* <div className="flex flex-col gap-2">
-                        <label htmlFor="valor_penhora" className="text-sm font-medium text-meta-5">
-                          Penhora/Arresto <span className="text-xs text-meta-4">(se houver)</span>
-                        </label>
-                        <input
-                          type="text"
-                          id="valor_penhora"
-                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark disabled:opacity-50 cursor-not-allowed"
-                          disabled
-                          {...register("valor_penhora", {})} />
-                      </div>
 
-                      <div className="flex flex-col gap-2">
-                        <label htmlFor="valor_fgts" className="text-sm font-medium text-meta-5">
-                          Valor de FGTS <span className="text-xs text-meta-4">(se houver)</span>
-                        </label>
-                        <input
-                          type="text"
-                          id="valor_fgts"
-                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark disabled:opacity-50 cursor-not-allowed"
-                          disabled
-                          {...register("valor_fgts", {})} />
-                      </div>
-
-                      <div className="flex flex-col gap-2">
-                        <label htmlFor="valor_fgts" className="text-sm font-medium text-meta-5 disabled:opacity-50 cursor-not-allowed">
-                          Parcela paga
-                        </label>
-                        <input
-                          type="text"
-                          id="valor_fgts"
-                          disabled
-                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark disabled:opacity-50 cursor-not-allowed"
-                          {...register("valor_fgts", {})} />
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <label htmlFor="valor_fgts" className="text-sm font-medium text-meta-5 disabled:opacity-50 cursor-not-allowed">
-                          Crédito utilizado
-                        </label>
-                        <input
-                          type="text"
-                          id="valor_fgts"
-                          disabled
-                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark disabled:opacity-50 cursor-not-allowed"
-                          {...register("valor_fgts", {})} />
-                      </div>
-
-                      <div className="flex flex-col gap-2">
-                        <label htmlFor="outras_deducoes" className="text-sm font-medium text-meta-5 disabled:opacity-50 cursor-not-allowed">
-                          Outras deduções <span className="text-xs text-meta-4">(identificar)</span>
-                        </label>
-                        <input
-                          type="text"
-                          id="outras_deducoes"
-                          disabled
-                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark disabled:opacity-50 cursor-not-allowed"
-                          {...register("outras_deducoes", {})} />
-                      </div> */}
                     </div>
                   </>
                 ) : null}
@@ -1736,18 +1679,20 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <input
                           type="checkbox"
                           id="upload_notion"
-                          defaultChecked={false}
-                          className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
+                          disabled={watch("regime") === "ESPECIAL" ? true : false}
+                          defaultChecked={true}
+                          className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark disabled:opacity-50 disabled:cursor-not-allowed`}
                           {...register("upload_notion")}
                         />
                         <label
                           htmlFor="upload_notion"
-                          className="text-sm font-medium text-meta-5"
+                          aria-disabled={watch("regime") === "ESPECIAL" ? true : false}
+                          className="text-sm font-medium text-meta-5 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          Fazer upload para o Notion
+                          Fazer upload para o Notion <span className="text-meta-7 text-xs">{ watch("regime") === "ESPECIAL" ? " - não negociamos ofícios do regime especial" : null}</span>
                         </label>
                       </div>
-                      {watch("upload_notion") === true ? (
+                      {watch("upload_notion") === true && data.role === "ativos" && watch("regime") !== "ESPECIAL" ? (
                         <>
                           <div className="flex gap-2">
                             <input type="checkbox" id="vincular_usuario" className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`} {...register("vincular_usuario")} />
