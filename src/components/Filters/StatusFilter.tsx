@@ -5,7 +5,7 @@ import { LucideChevronsUpDown } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { AiOutlineSearch } from 'react-icons/ai';
 
-const StatusFilter = ({ filterData, statusSelectValue, setStatusSelectValue } : { filterData?: () => void, statusSelectValue: statusOficio | null, setStatusSelectValue: React.Dispatch<React.SetStateAction<statusOficio | null>> }) => {
+const StatusFilter = ({ statusSelectValue, setStatusSelectValue, setListQuery } : { setListQuery?: React.Dispatch<React.SetStateAction<any | null>>, statusSelectValue: statusOficio | null, setStatusSelectValue: React.Dispatch<React.SetStateAction<statusOficio | null>> }) => {
 
     const [open, setOpen] = useState<boolean>(false);
     const [filteredValues, setFilteredValues] = useState<statusOficio[]>(ENUM_OFICIOS_LIST);
@@ -27,6 +27,7 @@ const StatusFilter = ({ filterData, statusSelectValue, setStatusSelectValue } : 
         setFilteredValues(ENUM_OFICIOS_LIST);
         setStatusSelectValue(status);
         searchRef.current!.value = '';
+
     }
 
     // close on click outside
@@ -50,13 +51,13 @@ const StatusFilter = ({ filterData, statusSelectValue, setStatusSelectValue } : 
         return () => document.removeEventListener("keydown", keyHandler);
     });
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        if (statusSelectValue !== null) {
-            filterData!();
-        }
+    //     if (statusSelectValue !== null) {
+    //         filterData!();
+    //     }
 
-    }, [statusSelectValue])
+    // }, [statusSelectValue])
 
     return (
         <div className='relative'>

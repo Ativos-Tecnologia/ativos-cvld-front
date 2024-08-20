@@ -70,9 +70,6 @@ export interface IExtratosTable {
     setModalOptions: React.Dispatch<React.SetStateAction<ModalOptionsProps>>;
     notionWorkspaceData: NotionResponse;
     setNotionWorkspaceData: React.Dispatch<React.SetStateAction<NotionResponse>>;
-    fetchNotionData : () => Promise<any>;
-    listQuery: {};
-    setListQuery: React.Dispatch<React.SetStateAction<{}>>;
     tanstackRefatch: any
     setTanstackRefatch: React.Dispatch<React.SetStateAction<any>>;
 
@@ -147,9 +144,6 @@ export const ExtratosTableContext = createContext<IExtratosTable>({
         results: []
     },
     setNotionWorkspaceData: () => { },
-    fetchNotionData: (): Promise<any> => { return new Promise(() => { }) },
-    listQuery: {},
-    setListQuery: () => { },
     tanstackRefatch: () => { },
     setTanstackRefatch: () => { },
 
@@ -210,7 +204,6 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
         object: "list",
         results: []
     });
-    const [listQuery, setListQuery] = useState<object>({});
     const [tanstackRefatch, setTanstackRefatch] = useState<any>();
 
 
@@ -233,11 +226,6 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
         setLoading(false);
     }
 
-    const fetchNotionData =
-        async () => {
-            const t = await api.post(`api/notion-api/list/`, user && listQuery)
-            return t.data
-    }
 
     /* função que busca um extrato único para drawer de detalhes */
     const fetchDataById = async (id: string) => {
@@ -678,9 +666,6 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
             currentPage, setCurrentPage,
             modalOptions, setModalOptions,
             notionWorkspaceData, setNotionWorkspaceData,
-            fetchNotionData,
-            setListQuery,
-            listQuery,
             tanstackRefatch,
             setTanstackRefatch,
 
