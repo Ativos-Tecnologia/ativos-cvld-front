@@ -139,6 +139,7 @@ const NotionTableView = ({ count }: { count: number }) => {
     const { isPending, data, error, isFetching, refetch } = useQuery(
         { queryKey: ['notion_list'],
         refetchOnReconnect: true, // Refaz o fetch ao reconectar
+        refetchOnWindowFocus: true,
         queryFn: fetchNotionData,
         },
     );
@@ -249,10 +250,6 @@ const NotionTableView = ({ count }: { count: number }) => {
         setListQuery(updatedQuery);
 
         if (Object.keys(updatedQuery).length > 0) {
-            console.log('====================================');
-            console.log('Triggering refetch with updatedQuery');
-            console.log(updatedQuery);
-
             refetch();
         }
     }, [user, statusSelectValue, oficioSelectValue, buildQuery, refetch]);
@@ -464,7 +461,13 @@ const NotionTableView = ({ count }: { count: number }) => {
                         <div className='w-full mb-2 h-4 flex justify-end items-center'>
                             <div className={`${isFetching ? "opacity-100 visible" : "opacity-0 invisible"} text-center flex justify-center items-center transition-all duration-300`}>
                                 <span className='text-xs mr-2 text-meta-4'>
-                                    Buscando informações
+                                    {
+                                        isFetching ? {
+                                            0: 'Carregando...',
+                                            1: 'Sincronizando bases de dados...',
+                                            2: 'Atualizando...'
+                                        }[Math.floor(Math.random() * 3)] : ''
+                                    }
                                 </span>
                                 <BiLoader className="animate-spin h-5 w-5" />
                             </div>
