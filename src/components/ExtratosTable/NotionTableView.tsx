@@ -25,6 +25,7 @@ import { MiniMenu } from './MiniMenu';
 import { LucideChevronsUpDown } from 'lucide-react';
 import { customFlowBiteTheme } from '@/themes/FlowbiteThemes';
 import MakeFirstContact from '../TablesNotion/MakeFirstContact';
+import { OfficeTypeAndValue } from '../TablesNotion/OfficeTypeAndValue';
 
 
 const notionViews: string[] = [
@@ -76,7 +77,7 @@ const updateNotionEmail = async (page_id: string, value: string) => {
 
 const NotionTableView = ({ count }: { count: number }) => {
 
-    const [notionView, setNotionView] = useState<string>('GERAL');
+    const [notionView, setNotionView] = useState<string>('JUNTAR_OFICIO_VALOR_LIQUIDO');
     const [selectedStatusValue] = React.useState<statusOficio | null>(null);
     const [checkedList, setCheckedList] = React.useState<NotionPage[]>([]);
     const [openStatusPopover, setOpenStatusPopover] = useState<boolean>(false);
@@ -738,7 +739,7 @@ const NotionTableView = ({ count }: { count: number }) => {
                                                         )}
 
                                                     </TableCell>
-                                                    <TableCell className=" font-semibold text-[14px]">
+                                                    <TableCell className="font-semibold text-[14px]">
                                                         <div className="relative">
                                                             {numberFormat(item.properties['Valor Líquido'].formula?.number || 0)}
                                                             <ImCopy
@@ -794,6 +795,25 @@ const NotionTableView = ({ count }: { count: number }) => {
                     handleChangePhoneNumber={handleChangePhoneNumber}
                     handleChangeEmail={handleChangeEmail}
                     updateStatusAtNotion={updateStatusAtNotion}
+                />
+            }
+
+            {notionView === 'JUNTAR_OFICIO_VALOR_LIQUIDO' &&
+                <OfficeTypeAndValue
+                    isFetching={isFetching}
+                    data={data}
+                    checkedList={checkedList}
+                    editableLabel={editableLabel}
+                    setEditableLabel={setEditableLabel}
+                    statusSelectValue={statusSelectValue}
+                    oficioSelectValue={oficioSelectValue}
+                    numberFormat={numberFormat}
+                    handleSelectRow={handleSelectRow}
+                    handleChangeCreditorName={handleChangeCreditorName}
+                    handleEditInput={handleEditInput}
+                    updateStatusAtNotion={updateStatusAtNotion}
+                    updateTipoAtNotion={updateTipoAtNotion}
+                    handleCopyValue={handleCopyValue}
                 />
             }
 
