@@ -207,9 +207,9 @@ const MainForm: React.FC<CVLDFormProps> = ({
         setAccountList(accountList.data);
       }
       if (data.role === "ativos") {
-        const [usersList] = await Promise.all([api.get("/api/user/list/")]);
+        const [usersList] = await Promise.all([api.get("/api/notion-api/list/users/")]);
         if (usersList.status === 200) {
-          setUsersList(usersList.data.results);
+          setUsersList(usersList.data);
         }
     };
       setLoading(false);
@@ -1714,7 +1714,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           Fazer upload para o Notion <span className="text-meta-7 text-xs">{ watch("regime") === "ESPECIAL" ? " - não negociamos ofícios do regime especial" : null}</span>
                         </label>
                       </div>
-                      {watch("upload_notion") === true && data.role === "ativos" && watch("regime") !== "ESPECIAL" ? (
+                      {watch("upload_notion") === true && data.role === "ativos" && watch("regime") !== "ESPECIAL" || watch('regime') === undefined ? (
                         <>
                           <div className="flex gap-2">
                             <input type="checkbox" id="vincular_usuario" className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`} {...register("vincular_usuario")} />
@@ -1723,16 +1723,25 @@ const MainForm: React.FC<CVLDFormProps> = ({
                             </label>
                           </div>
                           {watch("vincular_usuario") === true ? (
-                            <div className="flex gap-2">
-                              <select id="username" className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark" {...register("username")}>
+                            <div className="flex flex-col gap-2">
+                              {watch("novo_usuario") === false && <select id="username" className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark" {...register("username")}>
                                 <option value="">Selecione o usuário</option>
                                 {
                                   usersList.map((user) => (
-                                    <option key={user.id} value={user.username}>{user.username}</option>
+                                    <option key={user} value={user}>{user}</option>
                                   ))
                                 }
-                              </select>
-
+                              </select>}
+                              <div className="flex flex-col gap-2">
+                                <div>
+                                <label htmlFor="username" className="text-sm font-medium text-meta-5">
+                                  O nome não está na lista? Crie um novo usuário! <span className="text-meta-7 text-xs">👤</span> <input type="checkbox" id="novo_usuario" className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`} {...register("novo_usuario")} />
+                                </label>
+                                </div>
+                                { watch('novo_usuario') === true &&
+                                  <input type="text" id="username" className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark" {...register("username")} />
+                                  }
+                                </div>
                             </div>
                           ) : null}
                         </>
