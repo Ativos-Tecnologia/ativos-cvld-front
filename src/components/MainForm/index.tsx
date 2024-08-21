@@ -1709,16 +1709,16 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <label
                           htmlFor="upload_notion"
                           aria-disabled={watch("regime") === "ESPECIAL" ? true : false}
-                          className="text-sm font-medium text-meta-5 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="text-sm font-medium text-meta-5 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         >
                           Fazer upload para o Notion <span className="text-meta-7 text-xs">{ watch("regime") === "ESPECIAL" ? " - não negociamos ofícios do regime especial" : null}</span>
                         </label>
                       </div>
                       {watch("upload_notion") === true && data.role === "ativos" && watch("regime") !== "ESPECIAL" || watch('regime') === undefined ? (
                         <>
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 ">
                             <input type="checkbox" id="vincular_usuario" className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`} {...register("vincular_usuario")} />
-                            <label htmlFor="vincular_usuario" className="text-sm font-medium text-meta-5 flex flex-row align-self-baseline">
+                            <label htmlFor="vincular_usuario" className="text-sm font-medium text-meta-5 flex flex-row align-self-baseline cursor-pointer">
                               <BiLogoUpwork className="h-4 w-4 mt-0.5 mr-2" /> Vincular a outro usuário?
                             </label>
                           </div>
@@ -1734,7 +1734,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                               </select>}
                               <div className="flex flex-col gap-2">
                                 <div>
-                                <label htmlFor="username" className="text-sm font-medium text-meta-5">
+                                <label htmlFor="novo_usuario" className="text-sm font-medium text-meta-5 cursor-pointer">
                                   O nome não está na lista? Crie um novo usuário! <span className="text-meta-7 text-xs">👤</span> <input type="checkbox" id="novo_usuario" className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`} {...register("novo_usuario")} />
                                 </label>
                                 </div>
