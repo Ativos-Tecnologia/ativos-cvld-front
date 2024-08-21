@@ -365,13 +365,13 @@ const NotionTableView = ({ count }: { count: number }) => {
     const handleChangeViews = (view: string) => {
 
         switch (view) {
-            case "Geral":
+            case "geral":
                 displayViewDefault()
                 break;
-            case "Realizar 1º Contato":
+            case "realizar 1º contato":
                 displayViewFirstContact();
                 break;
-            case "Juntar Ofício/Valor Líquido":
+            case "juntar ofício/valor líquido":
                 displayViewOfficeType();
                 break;
 
