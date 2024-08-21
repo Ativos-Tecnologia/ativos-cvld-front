@@ -275,7 +275,7 @@ const NotionTableView = ({ count }: { count: number }) => {
         const updatedQuery = buildQuery();
         setCurrentQuery(updatedQuery);
         // notionView !== "GERAL" && setListQuery(updatedQuery);
-        if (notionView !== "GERAL") {
+        if (notionView !== "geral") {
             setListQuery(updatedQuery);
         }
 
@@ -446,8 +446,8 @@ const NotionTableView = ({ count }: { count: number }) => {
         setNotionView("juntar ofício/valor líquido");
         setListQuery(
             {
-	
-                "and": 
+
+                "and":
                 [
                         {
                             "property": "Usuário",
