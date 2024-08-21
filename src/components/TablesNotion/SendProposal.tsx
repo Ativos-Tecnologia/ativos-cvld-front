@@ -1,93 +1,120 @@
-'use client'
-import { ENUM_OFICIOS_LIST } from '@/constants/constants';
-import statusOficio from '@/enums/statusOficio.enum';
-import { NotionPage } from '@/interfaces/INotion';
 import React, { useRef } from 'react'
-import { AiOutlinePhone, AiOutlineUser } from 'react-icons/ai';
-import { BiLoader, BiSolidDockLeft } from 'react-icons/bi';
-import { PiCursorClick } from 'react-icons/pi';
-import { RiNotionFill } from 'react-icons/ri';
-import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from '../Tables/TableDefault';
-import { Badge } from 'flowbite-react';
-import { MdOutlineAlternateEmail } from 'react-icons/md';
+import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from '../Tables/TableDefault'
+import { AiOutlineUser } from 'react-icons/ai'
+import { BiLoader, BiPencil, BiSolidDockLeft } from 'react-icons/bi'
+import { IoArrowDownCircle, IoArrowUpCircle, IoDocumentTextOutline } from 'react-icons/io5'
+import { LiaCoinsSolid } from 'react-icons/lia'
+import { LuSigma } from "react-icons/lu";
+import { NotionPage } from '@/interfaces/INotion'
+import { PiCursorClick } from 'react-icons/pi'
+import { RiNotionFill } from 'react-icons/ri'
+import statusOficio from '@/enums/statusOficio.enum'
+import { Badge } from 'flowbite-react'
+import tipoOficio from '@/enums/tipoOficio.enum'
+import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants'
+import { ImCopy } from 'react-icons/im'
+import numberFormat from '@/functions/formaters/numberFormat'
+import { BsCalendar3 } from 'react-icons/bs'
 
-const MakeFirstContact = ({ isFetching, data, checkedList, editableLabel, setEditableLabel, selectStatusValue, setStatusSelectValue, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, updateStatusAtNotion }:
+export const OfficeTypeAndValue = ({ isFetching, data, checkedList, editableLabel, setEditableLabel, statusSelectValue, oficioSelectValue, handleSelectRow,
+    handleChangeCreditorName, handleEditInput,updateStatusAtNotion, updateTipoAtNotion, handleCopyValue
+ }:
     {
         isFetching: boolean,
         data: any,
         checkedList: NotionPage[],
         editableLabel: string | null;
         setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
-        selectStatusValue: statusOficio | null;
-        setStatusSelectValue: React.Dispatch<React.SetStateAction<statusOficio | null>>;
+        statusSelectValue: statusOficio | null;
+        oficioSelectValue: tipoOficio | null;
+        numberFormat: (number: number) => string;
         handleSelectRow: (item: NotionPage) => void;
         handleChangeCreditorName: (value: string, index: number, page_id: string, refList: HTMLInputElement[] | null) => Promise<void>;
         handleEditInput: (index: number, refList: HTMLInputElement[] | null) => void;
-        handleChangePhoneNumber: (page_id: string, type: string, value: string, index: number, refList: HTMLInputElement[] | null) => Promise<void>;
-        handleChangeEmail: (page_id: string, value: string, index: number, refList: HTMLInputElement[] | null) => Promise<void>;
         updateStatusAtNotion: (page_id: string, status: statusOficio) => Promise<void>;
+        updateTipoAtNotion: (page_id: string, status: tipoOficio) => Promise<void>;
+        handleCopyValue: (index: number) => void;
     }
 ) => {
 
     /* ----> refs <----- */
     const inputCredorRefs = useRef<HTMLInputElement[] | null>([]);
-    const inputPhoneOneRefs = useRef<HTMLInputElement[] | null>([]);
-    const inputPhoneTwoRefs = useRef<HTMLInputElement[] | null>([]);
-    const inputPhoneThreeRefs = useRef<HTMLInputElement[] | null>([]);
-    const inputEmailRefs = useRef<HTMLInputElement[] | null>([]);
 
     return (
-        <div 
-        style={{
-            boxShadow: "inset -4px 0 6px rgba(0 0 0 / 0.1)"
-        }}
-        className='max-w-full overflow-x-scroll pb-5'>
+        <div className='max-w-full overflow-x-scroll pb-5'>
             <Table>
                 <TableHead>
-                    <TableHeadCell className="min-w-[400px]">
+                    <TableHeadCell className='w-[400px]'>
                         <div className='flex gap-2 items-center'>
                             <AiOutlineUser className='text-base' />
                             Nome do Credor
                         </div>
                     </TableHeadCell>
-                    <TableHeadCell className="min-w-[216px]">
+                    <TableHeadCell className="w-[216px]">
                         <div className="flex gap-2 items-center">
                             <BiLoader className='text-base' />
                             Status
                         </div>
                     </TableHeadCell>
-                    <TableHeadCell className="min-w-[150px]">
-                        <div className="flex gap-2 items-center">
-                            <AiOutlinePhone className='text-base' />
-                            Contato
+                    <TableHeadCell className="w-[150px]">
+                        <div className='flex gap-2 items-center'>
+                            <BiPencil className='text-base' />
+                            Preço Proposto
                         </div>
                     </TableHeadCell>
-                    <TableHeadCell className="min-w-[150px]">
+                    <TableHeadCell className="min-w-[180px]">
                         <div className="flex gap-2 items-center">
-                            <AiOutlinePhone className='text-base' />
-                            Contato 2
+                            <LuSigma className='text-base' />
+                            Comissão
                         </div>
                     </TableHeadCell>
-                    <TableHeadCell className="min-w-[150px]">
+                    <TableHeadCell className="min-w-[180px]">
                         <div className="flex gap-2 items-center">
-                            <AiOutlinePhone className='text-base' />
-                            Contato 3
+                            <IoArrowDownCircle className='text-base' />
+                            (R$) Proposta Mínima
                         </div>
                     </TableHeadCell>
-                    <TableHeadCell className="min-w-[200px]">
+                    <TableHeadCell className="min-w-[180px]">
                         <div className="flex gap-2 items-center">
-                            <MdOutlineAlternateEmail className='text-base' />
-                            Contato de E-mail
+                            <IoArrowUpCircle className='text-base' />
+                            (R$) Proposta Máxima
+                        </div>
+                    </TableHeadCell>
+                    <TableHeadCell className="min-w-[180px]">
+                        <div className="flex gap-2 items-center">
+                            <BsCalendar3  className='text-base' />
+                            1ª FUP
+                        </div>
+                    </TableHeadCell>
+                    <TableHeadCell className="min-w-[180px]">
+                        <div className="flex gap-2 items-center">
+                            <BsCalendar3  className='text-base' />
+                            2ª FUP
+                        </div>
+                    </TableHeadCell>
+                    <TableHeadCell className="min-w-[180px]">
+                        <div className="flex gap-2 items-center">
+                            <BsCalendar3  className='text-base' />
+                            3ª FUP
+                        </div>
+                    </TableHeadCell>
+                    <TableHeadCell className="min-w-[180px]">
+                        <div className="flex gap-2 items-center">
+                            <BsCalendar3  className='text-base' />
+                            4ª FUP
+                        </div>
+                    </TableHeadCell>
+                    <TableHeadCell className="min-w-[180px]">
+                        <div className="flex gap-2 items-center">
+                            <BsCalendar3  className='text-base' />
+                            5ª FUP
                         </div>
                     </TableHeadCell>
                 </TableHead>
 
                 <TableBody>
-                    {isFetching ? (
-                        null
-                    ) : (
+                    {isFetching ? null : (
                         <React.Fragment>
-
                             {data?.results?.length > 0 && (
                                 <>
                                     {data?.results.map((item: NotionPage, index: number) => (
@@ -166,14 +193,14 @@ const MakeFirstContact = ({ isFetching, data, checkedList, editableLabel, setEdi
                                             </TableCell>
 
                                             {/* status select */}
-                                            <TableCell className="text-center items-center w-full">
-                                                <Badge color="teal" size="sm" className="text-center text-[12px]">
+                                            <TableCell className="text-center items-center">
+                                                <Badge color="teal" size="sm" className="text-center text-[12px] w-full">
                                                     <select className="text-[12px] w-full text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => {
                                                         updateStatusAtNotion(item.id, e.target.value as statusOficio)
                                                     }}>
                                                         {item.properties.Status.status?.name && (
                                                             <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                                {selectStatusValue || item.properties.Status.status?.name}
+                                                                {statusSelectValue || item.properties.Status.status?.name}
                                                             </option>
                                                         )}
                                                         {ENUM_OFICIOS_LIST.filter((status) => status !== item.properties.Status.status?.name).map((status) => (
@@ -185,68 +212,15 @@ const MakeFirstContact = ({ isFetching, data, checkedList, editableLabel, setEdi
                                                 </Badge>
                                             </TableCell>
 
-                                            {/* phone 1 */}
-                                            <TableCell className="text-center items-center ">
-                                                <input
-                                                    type="text"
-                                                    ref={(input) => { if (input) inputPhoneOneRefs.current![index] = input; }}
-                                                    defaultValue={item.properties['Contato Telefônico'].phone_number || ''}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangePhoneNumber(item.id, "Contato Telefônico", e.currentTarget.value, index, inputPhoneOneRefs.current)
-                                                        }
-                                                    }}
-                                                    onBlur={(e) => handleChangePhoneNumber(item.id, "Contato Telefônico", e.currentTarget.value, index, inputPhoneOneRefs.current)}
-                                                    className={`w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                                                />
-                                            </TableCell>
-
-                                            {/* phone 2 */}
-                                            <TableCell className="text-center items-center ">
-                                                <input
-                                                    type="text"
-                                                    ref={(input) => { if (input) inputPhoneTwoRefs.current![index] = input; }}
-                                                    defaultValue={item.properties['Contato Telefônico 2'].phone_number || ''}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangePhoneNumber(item.id, "Contato Telefônico 2", e.currentTarget.value, index, inputPhoneTwoRefs.current)
-                                                        }
-                                                    }}
-                                                    onBlur={(e) => handleChangePhoneNumber(item.id, "Contato Telefônico 2", e.currentTarget.value, index, inputPhoneTwoRefs.current)}
-                                                    className={`w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                                                />
-                                            </TableCell>
-
-                                            {/* phone 3 */}
-                                            <TableCell className="text-center items-center ">
-                                                <input
-                                                    type="text"
-                                                    ref={(input) => { if (input) inputPhoneThreeRefs.current![index] = input; }}
-                                                    defaultValue={item.properties['Contato Telefônico 3'].phone_number || ''}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangePhoneNumber(item.id, "Contato Telefônico 3", e.currentTarget.value, index, inputPhoneThreeRefs.current)
-                                                        }
-                                                    }}
-                                                    onBlur={(e) => handleChangePhoneNumber(item.id, "Contato Telefônico 3", e.currentTarget.value, index, inputPhoneThreeRefs.current)}
-                                                    className={`w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                                                />
-                                            </TableCell>
-
-                                            {/* e-mail */}
-                                            <TableCell className="text-center items-center ">
-                                                <input
-                                                    type="text"
-                                                    ref={(input) => { if (input) inputEmailRefs.current![index] = input; }}
-                                                    defaultValue={item.properties['Contato de E-mail'].email || ''}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangeEmail(item.id, e.currentTarget.value, index, inputEmailRefs.current)
-                                                        }
-                                                    }}
-                                                    onBlur={(e) => handleChangeEmail(item.id, e.currentTarget.value, index, inputEmailRefs.current)}
-                                                    className={`w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                                                />
+                                            <TableCell className="font-semibold text-[14px]">
+                                                <div className="relative">
+                                                    {numberFormat(item.properties['Valor Líquido (Com Reserva dos Honorários)'].formula?.number || 0)}
+                                                    <ImCopy
+                                                        title='Copiar valor'
+                                                        onClick={() => handleCopyValue(index)}
+                                                        className='absolute top-1/2 -translate-y-1/2 left-28 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                                                    />
+                                                </div>
                                             </TableCell>
 
                                         </TableRow>
@@ -257,10 +231,7 @@ const MakeFirstContact = ({ isFetching, data, checkedList, editableLabel, setEdi
                         </React.Fragment>
                     )}
                 </TableBody>
-
             </Table>
         </div>
     )
 }
-
-export default MakeFirstContact
