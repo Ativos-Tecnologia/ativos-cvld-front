@@ -24,19 +24,13 @@ import {
 } from '@tanstack/react-query';
 import NotionTableFilters from "../Filters/NotionTableFilter";
 
-const queryClient = new QueryClient();
+// const queryClient = new QueryClient();
 
 type ExtratosTableProps = {
   newItem: CVLDResultProps[];
 }
 
 export function ExtratosTable({ newItem }: ExtratosTableProps) {
-
-  // states
-  const [queryTanstack] = useState<any>(queryClient);
-  const [tanstackRefatch, setQueryTanstackRefatch] = useState<any>()
-  // end states
-
 
   const {
     data, setData,
@@ -85,7 +79,6 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
       }
 
       {window.innerWidth >= 435 ? (
-        <QueryClientProvider client={queryClient}>
           <>
 
             {/* desktop view */}
@@ -160,7 +153,6 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
             </div>
             {/* end desktop view */}
           </>
-        </QueryClientProvider>
       ) : (
         /* mobile view */
         <div className="py-7 px-5 bg-white rounded-sm dark:bg-boxdark">

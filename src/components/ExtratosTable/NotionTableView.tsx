@@ -35,43 +35,55 @@ const notionViews: string[] = [
     'Proposta Aceita'
 ]
 
+
 const updateNotionCreditorName = async (page_id: string, value: string) => {
-    const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-        "Credor": {
-            "title": [
-                {
-                    "text": {
-                        "content": `${value}`
-                    },
-                    "plain_text": `${value}`
-                }
-            ]
+    try {
+        const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
+            "Credor": {
+                "title": [
+                    {
+                        "text": {
+                            "content": value
+                        }
+                    }
+                ]
+            }
+        });
+        if (resNotion.status !== 202) {
+            console.log('houve um erro ao salvar os dados no notion');
         }
-    });
-    if (resNotion.status !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
+    } catch (error) {
+        console.log(error);
     }
 }
 
 const updateNotionPhoneNumber = async (page_id: string, type: string, value: string) => {
-    const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-        [type]: {
-            "phone_number": value
+    try {
+        const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
+            [type]: {
+                "phone_number": value
+            }
+        });
+        if (resNotion.status !== 202) {
+            console.log('houve um erro ao salvar os dados no notion');
         }
-    });
-    if (resNotion.status !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
+    } catch (error) {
+        console.log(error);
     }
 }
 
 const updateNotionEmail = async (page_id: string, value: string) => {
-    const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-        "Contato de E-mail": {
-            "email": value
+    try {
+        const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
+            "Contato de E-mail": {
+                "email": value
+            }
+        });
+        if (resNotion.status !== 202) {
+            console.log('houve um erro ao salvar os dados no notion');
         }
-    });
-    if (resNotion.status !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
+    } catch (error) {
+        console.log(error);
     }
 }
 
@@ -647,7 +659,7 @@ const NotionTableView = ({ count }: { count: number }) => {
 
                         </TableHead>
                         <TableBody className=''>
-                            {isFetching ? (
+                            {isPending ? (
                                 null
                             ) : (
                                 <React.Fragment>

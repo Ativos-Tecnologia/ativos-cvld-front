@@ -83,6 +83,7 @@ export interface ApiResponse {
 
 const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
 
+
   const [filledData, setFilledData] = useState<boolean>(false);
   const [auxData, setAuxData] = useState<ApiResponse>({ result: [], setData: () => { } });
   const CVLDResultRef = React.useRef<HTMLDivElement>(null);
@@ -90,7 +91,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
   // lógica para limpar a tela de cálculos
   const clearData = () => {
     setFilledData(false);
-    setAuxData({ result: [], setData: () => { } });
+    setAuxData({ result: [][0], setData: () => { } });
   }
 
   useEffect(() => {
@@ -120,8 +121,6 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
         const formatedPrincipal = result.result[0].valor_principal.toFixed(2);
 
         const formatedUpdatedPrincipal = result.result[0]?.principal_atualizado_requisicao?.toFixed(2);
-
-
 
 
         if (result.result[0].recalc_flag === "tributario") {
@@ -173,8 +172,11 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
   }
 
   const dateFormater = (date: string) => {
-    return new Intl.DateTimeFormat("pt-BR").format(new Date(date));
+
+    if (date) {
+      return new Intl.DateTimeFormat("pt-BR").format(new Date(date));
   }
+}
 
   const factorFormater = (value: number) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -194,7 +196,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                 Resultado dos Valores Atualizados
               </h4>
               <div className="flex flex-col items-center mt-2">
-                {auxData && auxData.result && auxData.result.map((item: CVLDResultProps) => (
+                {auxData && auxData.result[0] && auxData.result.map((item: CVLDResultProps) => (
                   <ul key={item.npu + item.valor_inscrito} className="w-full flex flex-col gap-2">
                     {
                       item.recalc_flag === "after_12_2021" ? (
