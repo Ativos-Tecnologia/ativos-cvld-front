@@ -143,27 +143,30 @@ const NotionTableView = ({ count }: { count: number }) => {
     const { isPending, data, error, isFetching, refetch } = useQuery(
         {
             queryKey: ['notion_list'],
-            refetchOnReconnect: true, // Refaz o fetch ao reconectar
+            refetchOnReconnect: true,
             refetchOnWindowFocus: true,
             queryFn: fetchNotionData,
         },
     );
 
-    console.log(data)
-
     const updateStatusAtNotion = async (page_id: string, status: statusOficio) => {
 
 
-        queryClient.invalidateQueries({ queryKey: ['notion_list'] });
-        const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-            "Status": {
-                "status": {
-                    "name": `${status}`
+        try {
+            const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
+                "Status": {
+                    "status": {
+                        "name": `${status}`
+                    }
                 }
+            });
+            if (resNotion.status !== 202) {
+                console.log('houve um erro ao salvar os dados no notion');
             }
-        });
-        if (resNotion.status !== 202) {
-            console.log('houve um erro ao salvar os dados no notion');
+        } catch (error) {
+            console.log(error);
+        } finally {
+        // queryClient.invalidateQueries({ queryKey: ['notion_list'] });
         }
     }
 
@@ -214,15 +217,27 @@ const NotionTableView = ({ count }: { count: number }) => {
     }
 
     const handleChangeCreditorName = async (value: string, index: number, page_id: string, refList: HTMLInputElement[] | null) => {
-        refList![index].blur();
-        setEditableLabel(null);
-        await updateNotionCreditorName(page_id, value);
-        queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+        try {
+            refList![index].blur();
+            setEditableLabel(null);
+            await updateNotionCreditorName(page_id, value);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            // queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+        }
     }
 
     const handleChangePhoneNumber = async (page_id: string, type: string, value: string, index: number, refList: HTMLInputElement[] | null) => {
-        refList![index].blur();
-        await updateNotionPhoneNumber(page_id, type, value);
+        try {
+            refList![index].blur();
+            await updateNotionPhoneNumber(page_id, type, value);
+        } catch (error) {
+            console.log(error);
+
+        } finally {
+            // queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+        }
     }
 
     const handleChangeEmail = async (page_id: string, value: string, index: number, refList: HTMLInputElement[] | null) => {
@@ -258,12 +273,15 @@ const NotionTableView = ({ count }: { count: number }) => {
     useEffect(() => {
         const updatedQuery = buildQuery();
         setCurrentQuery(updatedQuery);
-        setListQuery(updatedQuery);
+        // notionView !== "GERAL" && setListQuery(updatedQuery);
+        if (notionView !== "GERAL") {
+            setListQuery(updatedQuery);
+        }
 
         if (Object.keys(updatedQuery).length > 0) {
             refetch();
         }
-    }, [user, statusSelectValue, oficioSelectValue, buildQuery, refetch]);
+    }, [user, statusSelectValue, oficioSelectValue, buildQuery, refetch, notionView]);
 
     const handleFilterByTipoOficio = (oficio: tipoOficio) => {
         setOficioSelectValue(oficio);
