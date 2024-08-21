@@ -12,7 +12,8 @@ const customTableStyles = {
         base: "group/head bg-zinc-200 text-xs uppercase text-black dark:bg-meta-4 dark:text-white",
         cell: "px-4 py-3 group-first/head:first:rounded-tl-sm group-first/head:last:rounded-tr-sm"
     },
-    data: "px-4 py-2"
+    row: "border-b border-slate-200 dark:border-slate-600",
+    data: "px-4 py-1 border-r border-slate-200 dark:border-slate-600 last:border-none"
 };
 /* =====> termina estilos dos elementos da tabela <===== */
 
@@ -42,7 +43,7 @@ export const TableBody = ({children, className}: React.HTMLAttributes<HTMLTableS
 
 export const TableRow = ({children, className}: React.HTMLAttributes<HTMLTableRowElement>) => {
     return (
-        <tr className={className}>
+        <tr className={cn(customTableStyles.row,className)}>
             {children}
         </tr>
     )
