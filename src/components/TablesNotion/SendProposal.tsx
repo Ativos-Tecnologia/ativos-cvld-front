@@ -16,9 +16,9 @@ import { ImCopy } from 'react-icons/im'
 import numberFormat from '@/functions/formaters/numberFormat'
 import { BsCalendar3 } from 'react-icons/bs'
 
-export const OfficeTypeAndValue = ({ isFetching, data, checkedList, editableLabel, setEditableLabel, statusSelectValue, oficioSelectValue, handleSelectRow,
-    handleChangeCreditorName, handleEditInput,updateStatusAtNotion, updateTipoAtNotion, handleCopyValue
- }:
+export const SendProposal = ({ isFetching, data, checkedList, editableLabel, setEditableLabel, statusSelectValue, handleSelectRow,
+    handleChangeCreditorName, handleEditInput, updateStatusAtNotion, handleCopyValue, handleChangeProposalPrice
+}:
     {
         isFetching: boolean,
         data: any,
@@ -32,13 +32,28 @@ export const OfficeTypeAndValue = ({ isFetching, data, checkedList, editableLabe
         handleChangeCreditorName: (value: string, index: number, page_id: string, refList: HTMLInputElement[] | null) => Promise<void>;
         handleEditInput: (index: number, refList: HTMLInputElement[] | null) => void;
         updateStatusAtNotion: (page_id: string, status: statusOficio) => Promise<void>;
-        updateTipoAtNotion: (page_id: string, status: tipoOficio) => Promise<void>;
+        handleChangeProposalPrice: (page_id: string, value: string, index: number, refList: HTMLInputElement[] | null) => Promise<void>;
         handleCopyValue: (index: number) => void;
     }
 ) => {
 
     /* ----> refs <----- */
     const inputCredorRefs = useRef<HTMLInputElement[] | null>([]);
+    const inputProposalPriceRefs = useRef<HTMLInputElement[] | null>([]);
+
+    /* ----> functions <---- */
+    function formatComissionString(comission: string | undefined): string {
+
+        let str: string = ''
+
+        if (/[0-9]/.test(comission!)) {
+            str = `R$ ${comission}`;
+        } else {
+            str = comission!;
+        }
+
+        return str;
+    }
 
     return (
         <div className='max-w-full overflow-x-scroll pb-5'>
@@ -82,31 +97,31 @@ export const OfficeTypeAndValue = ({ isFetching, data, checkedList, editableLabe
                     </TableHeadCell>
                     <TableHeadCell className="min-w-[180px]">
                         <div className="flex gap-2 items-center">
-                            <BsCalendar3  className='text-base' />
+                            <BsCalendar3 className='text-base' />
                             1ª FUP
                         </div>
                     </TableHeadCell>
                     <TableHeadCell className="min-w-[180px]">
                         <div className="flex gap-2 items-center">
-                            <BsCalendar3  className='text-base' />
+                            <BsCalendar3 className='text-base' />
                             2ª FUP
                         </div>
                     </TableHeadCell>
                     <TableHeadCell className="min-w-[180px]">
                         <div className="flex gap-2 items-center">
-                            <BsCalendar3  className='text-base' />
+                            <BsCalendar3 className='text-base' />
                             3ª FUP
                         </div>
                     </TableHeadCell>
                     <TableHeadCell className="min-w-[180px]">
                         <div className="flex gap-2 items-center">
-                            <BsCalendar3  className='text-base' />
+                            <BsCalendar3 className='text-base' />
                             4ª FUP
                         </div>
                     </TableHeadCell>
                     <TableHeadCell className="min-w-[180px]">
                         <div className="flex gap-2 items-center">
-                            <BsCalendar3  className='text-base' />
+                            <BsCalendar3 className='text-base' />
                             5ª FUP
                         </div>
                     </TableHeadCell>
@@ -212,15 +227,46 @@ export const OfficeTypeAndValue = ({ isFetching, data, checkedList, editableLabe
                                                 </Badge>
                                             </TableCell>
 
+                                            {/* preço proposto */}
+                                            <TableCell className="relative font-semibold text-[14px]">
+                                                <input
+                                                    type="text"
+                                                    ref={(input) => { if (input) inputProposalPriceRefs.current![index] = input; }}
+                                                    defaultValue={numberFormat(item.properties['Preço Proposto']?.number || 0)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                            handleChangeProposalPrice(item.id, e.currentTarget.value, index, inputProposalPriceRefs.current)
+                                                        }
+                                                    }}
+                                                    onBlur={(e) => handleChangeProposalPrice(item.id, e.currentTarget.value, index, inputProposalPriceRefs.current)}
+                                                    className={`w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                />
+                                                <ImCopy
+                                                    title='Copiar valor'
+                                                    onClick={() => handleCopyValue(index)}
+                                                    className='absolute top-1/2 -translate-y-1/2 right-0 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                                                />
+                                            </TableCell>
+
+                                            {/* comissão */}
                                             <TableCell className="font-semibold text-[14px]">
-                                                <div className="relative">
-                                                    {numberFormat(item.properties['Valor Líquido (Com Reserva dos Honorários)'].formula?.number || 0)}
-                                                    <ImCopy
-                                                        title='Copiar valor'
-                                                        onClick={() => handleCopyValue(index)}
-                                                        className='absolute top-1/2 -translate-y-1/2 left-28 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
-                                                    />
-                                                </div>
+                                                {
+                                                    formatComissionString(item.properties['Comissão'].formula?.string)
+                                                }
+                                            </TableCell>
+
+                                            {/* proposta mínima */}
+                                            <TableCell className="font-semibold text-[14px]">
+                                                {
+                                                    numberFormat(item.properties['(R$) Proposta Mínima '].formula?.number || 0)
+                                                }
+                                            </TableCell>
+
+                                            {/* proposta máxima */}
+                                            <TableCell className="font-semibold text-[14px] text-right">
+                                                {
+                                                    numberFormat(item.properties['(R$) Proposta Máxima'].formula?.number || 0)
+                                                }
                                             </TableCell>
 
                                         </TableRow>

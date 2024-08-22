@@ -25,6 +25,8 @@ import { MiniMenu } from './MiniMenu';
 import { LucideChevronsUpDown } from 'lucide-react';
 import { customFlowBiteTheme } from '@/themes/FlowbiteThemes';
 import MakeFirstContact from '../TablesNotion/MakeFirstContact';
+import { OfficeTypeAndValue } from '../TablesNotion/OfficeTypeAndValue';
+import { SendProposal } from '../TablesNotion/SendProposal';
 
 
 const notionViews: string[] = [
@@ -92,9 +94,25 @@ type NotionTableViewProps = {
     setNotionDrawer: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+
+const updateNotionProposalPrice = async (page_id: string, value: number) => {
+    try {
+        const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
+            "Preço Proposto": {
+                "number": value
+            }
+        });
+        if (resNotion.status !== 202) {
+            console.log('houve um erro ao salvar os dados no notion');
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotionDrawer }: NotionTableViewProps) => {
 
-    const [notionView, setNotionView] = useState<string>('GERAL');
+    const [notionView, setNotionView] = useState<string>('geral');
     const [selectedStatusValue] = React.useState<statusOficio | null>(null);
     const [checkedList, setCheckedList] = React.useState<NotionPage[]>([]);
     const [openStatusPopover, setOpenStatusPopover] = useState<boolean>(false);
@@ -254,6 +272,13 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const handleChangeEmail = async (page_id: string, value: string, index: number, refList: HTMLInputElement[] | null) => {
         refList![index].blur();
         await updateNotionEmail(page_id, value);
+    }
+
+    const handleChangeProposalPrice = async (page_id: string, value: string, index: number, refList: HTMLInputElement[] | null) => {
+        refList![index].blur();
+        const formatedValue = value.replace(/[^0-9,]/g, '');
+        const valueToNumber = parseFloat(formatedValue);
+        await updateNotionProposalPrice(page_id, valueToNumber);
     }
 
     const buildQuery = useCallback(() => {
@@ -447,6 +472,41 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             }
         );
     }
+
+    const displayViewOfficeType = async () => {
+        setNotionView("juntar ofício/valor líquido");
+        setListQuery(
+            {
+
+                "and":
+                    [
+                        {
+                            "property": "Usuário",
+                            "multi_select": {
+                                "contains": user
+                            }
+                        },
+                        {
+                            "or":
+                                [
+                                    {
+                                        "property": "Status",
+                                        "status": {
+                                            "equals": "Juntar Ofício ou Memória de Cálculo"
+                                        }
+                                    },
+                                    {
+                                        "property": "Status",
+                                        "status": {
+                                            "equals": "Calcular Valor Líquido"
+                                        }
+                                    }
+                                ]
+                        }
+                    ]
+            }
+        )
+    };
 
     useEffect(() => {
         if (Object.keys(listQuery).length > 0) {
@@ -831,6 +891,44 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     handleChangePhoneNumber={handleChangePhoneNumber}
                     handleChangeEmail={handleChangeEmail}
                     updateStatusAtNotion={updateStatusAtNotion}
+                />
+            }
+
+            {notionView === 'juntar ofício/valor líquido' &&
+                <OfficeTypeAndValue
+                    isFetching={isFetching}
+                    data={data}
+                    checkedList={checkedList}
+                    editableLabel={editableLabel}
+                    setEditableLabel={setEditableLabel}
+                    statusSelectValue={statusSelectValue}
+                    oficioSelectValue={oficioSelectValue}
+                    numberFormat={numberFormat}
+                    handleSelectRow={handleSelectRow}
+                    handleChangeCreditorName={handleChangeCreditorName}
+                    handleEditInput={handleEditInput}
+                    updateStatusAtNotion={updateStatusAtNotion}
+                    updateTipoAtNotion={updateTipoAtNotion}
+                    handleCopyValue={handleCopyValue}
+                />
+            }
+
+            {notionView === 'enviar proposta/negociação' &&
+                <SendProposal
+                    isFetching={isFetching}
+                    data={data}
+                    checkedList={checkedList}
+                    editableLabel={editableLabel}
+                    setEditableLabel={setEditableLabel}
+                    statusSelectValue={statusSelectValue}
+                    oficioSelectValue={oficioSelectValue}
+                    numberFormat={numberFormat}
+                    handleSelectRow={handleSelectRow}
+                    handleChangeCreditorName={handleChangeCreditorName}
+                    handleEditInput={handleEditInput}
+                    updateStatusAtNotion={updateStatusAtNotion}
+                    handleChangeProposalPrice={handleChangeProposalPrice}
+                    handleCopyValue={handleCopyValue}
                 />
             }
 
