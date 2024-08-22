@@ -63,7 +63,7 @@ export const OfficeTypeAndValue = ({ isFetching, data, checkedList, editableLabe
                     <TableHeadCell className="min-w-[180px]">
                         <div className="flex gap-2 items-center">
                             <LiaCoinsSolid className='text-base' />
-                            Valor Líquido
+                            Valor Líquido (Com reserva dos honorários)
                         </div>
                     </TableHeadCell>
                 </TableHead>
@@ -186,6 +186,7 @@ export const OfficeTypeAndValue = ({ isFetching, data, checkedList, editableLabe
                                                 </Badge>
                                             </TableCell>
 
+                                            {/* Valor líquido com reserva dos honorários */}
                                             <TableCell className="font-semibold text-[14px]">
                                                 <div className="relative">
                                                     {numberFormat(item.properties['Valor Líquido (Com Reserva dos Honorários)'].formula?.number || 0)}
