@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useEffect, useRef, useState } from "react";
+import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import api from "@/utils/api";
 import { PaginatedResponse } from "@/components/TaskElements";
 import { CVLDResultProps } from "@/interfaces/IResultCVLD";
@@ -8,11 +8,14 @@ import tipoOficio from "@/enums/tipoOficio.enum";
 import { toast } from "sonner";
 import { AxiosResponse } from "axios";
 import useUpdateOficio from "@/hooks/useUpdateOficio";
+import { NotionResponse } from "@/interfaces/INotion";
+import { UserInfoAPIContext } from "./UserInfoContext";
+import { QueryClient } from "@tanstack/react-query";
 
 // types
 export type ActiveState = "ALL" | "PRECATÓRIO" | "R.P.V" | "CREDITÓRIO";
 
-export type Tabs = 'GERAL' | 'ARQUIVADOS';
+export type Tabs = 'GERAL' | 'ARQUIVADOS' | 'WORKSPACE NOTION';
 
 export type LocalExtractViewProps = {
     type: string;
@@ -65,14 +68,20 @@ export interface IExtratosTable {
     setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
     modalOptions: ModalOptionsProps
     setModalOptions: React.Dispatch<React.SetStateAction<ModalOptionsProps>>;
+    notionWorkspaceData: NotionResponse;
+    setNotionWorkspaceData: React.Dispatch<React.SetStateAction<NotionResponse>>;
+    tanstackRefatch: any
+    setTanstackRefatch: React.Dispatch<React.SetStateAction<any>>;
+
+
 
     /* ====> refs <==== */
     mainRef: any;
 
     /*  ====> functions <===== */
-    handleOficio: (id: string, tipo: tipoOficio) => void,
-    handleStatus: (id: string, status: statusOficio) => void,
-    fetchData: (query: string) => Promise<void>;
+    handleOficio: (id: string, tipo: tipoOficio, page_id?: string) => void,
+    handleStatus: (id: string, status: statusOficio, page_id?: string) => void,
+    fetchData: (query: string, username?: string) => Promise<void>;
     fetchDelete: (ids: string[]) => Promise<void>;
     fetchDataById: (id: string) => Promise<void>;
     fetchStateFromLocalStorage: () => void;
@@ -83,7 +92,7 @@ export interface IExtratosTable {
     handleSelectAllRows: () => void;
     handleDeleteExtrato: () => void;
     handleSelectRow: (item: CVLDResultProps) => void;
-    updateCreditorName: (id: string, value: string) => Promise<void>;
+    updateCreditorName: (id: string, value: string, page_id?: string) => Promise<void>;
     setDontShowAgainDeleteExtractAlert: (key: string) => void;
     setExtractListView: (type: string) => void;
     callScrollTop: (ref: HTMLDivElement | null) => void;
@@ -130,6 +139,15 @@ export const ExtratosTableContext = createContext<IExtratosTable>({
         items: []
     },
     setModalOptions: () => { },
+    notionWorkspaceData: {
+        object: "list",
+        results: []
+    },
+    setNotionWorkspaceData: () => { },
+    tanstackRefatch: () => { },
+    setTanstackRefatch: () => { },
+
+
 
     mainRef: null,
 
@@ -155,13 +173,17 @@ export const ExtratosTableContext = createContext<IExtratosTable>({
 
 export const ExtratosTableProvider = ({ children }: { children: React.ReactNode }) => {
 
+    const {
+        data: { user }
+    } = useContext(UserInfoAPIContext);
+
     /*  ====> states <===== */
     const [data, setData] = useState<PaginatedResponse<CVLDResultProps>>({ results: [], count: 0, next: "", previous: "" });
     const [auxData, setAuxData] = useState<PaginatedResponse<CVLDResultProps>>({ results: [], count: 0, next: "", previous: "" });
     const [statusSelectValue, setStatusSelectValue] = useState<statusOficio | null>(null);
     const [oficioSelectValue, setOficioSelectValue] = useState<tipoOficio | null>(null);
     const [activeFilter, setActiveFilter] = useState<ActiveState>('ALL');
-    const [activedTab, setActivedTab] = useState<Tabs>('GERAL');
+    const [activedTab, setActivedTab] = useState<Tabs>('WORKSPACE NOTION');
     const [editableLabel, setEditableLabel] = useState<string | null>(null);
     const [item, setItem] = useState<CVLDResultProps | {}>({});
     const [loading, setLoading] = useState<boolean>(false);
@@ -178,6 +200,16 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
         open: false,
         items: []
     });
+    const [notionWorkspaceData, setNotionWorkspaceData] = useState<NotionResponse>({
+        object: "list",
+        results: []
+    });
+
+    const [tanstackRefatch, setTanstackRefatch] = useState<any>();
+
+
+
+
 
     const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
 
@@ -187,7 +219,7 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
     /* ====> functions <==== */
 
     /* função que capta todos os extratos do backend e os coloca em um estado (data e auxData) */
-    const fetchData = async (query: string) => {
+    const fetchData = async (query: string, username?: string) => {
         setLoading(true);
         const response = await api.get(`api/extratos/${query}`);
         setData(response.data);
@@ -195,12 +227,14 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
         setLoading(false);
     }
 
+
     /* função que busca um extrato único para drawer de detalhes */
     const fetchDataById = async (id: string) => {
         setLoading(true);
         setItem((await api.get(`api/extrato/${id}/`)).data);
         setLoading(false);
     }
+
 
     /* função que deleta uma lista (ou item único) da tabela de extratos */
     const fetchDelete = async (ids: string[]) => {
@@ -408,9 +442,9 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
 
     }
 
-    const handleOficio = (id: string, tipo: tipoOficio) => {
+    const handleOficio = (id: string, tipo: tipoOficio, page_id?: string) => {
 
-        updateOficioTipo(id, tipo);
+        updateOficioTipo(id, tipo, page_id);
         const newAuxData = auxData.results.map(item => {
             if (item.id === id) {
                 item.tipo_do_oficio = tipo;
@@ -421,9 +455,12 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
 
     }
 
-    const handleStatus = (id: string, status: statusOficio) => {
+    const handleStatus = async (id: string, status: statusOficio, page_id?: string) => {
 
-        updateOficioStatus(id, status);
+        updateOficioStatus(id, status, page_id);
+
+
+
         const newAuxData = auxData.results.map(item => {
             if (item.id === id) {
                 item.status = status;
@@ -435,13 +472,38 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
     }
 
     /* função que manipula a troca de nome do credor em todas as views */
-    const updateCreditorName = async (id: string, value: string) => {
+    const updateCreditorName = async (id: string, value: string, page_id?: string) => {
 
         setEditableLabel(null);
+
+
+        // if (page_id) {
+        //     const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
+        //         "Credor": {
+        //             "id": "title",
+        //             "type": "title",
+        //             "title": [
+        //                 {
+        //                     "type": "text",
+        //                     "text": {
+        //                         "content": `${value}`
+        //                     },
+        //                     "plain_text": `${value}`
+        //                 }
+        //             ]
+        //         }
+        //     });
+        //     if (resNotion.status !== 202) {
+        //         console.log('houve um erro ao salvar os dados no notion');
+        //     }
+
+        // }
 
         const res = await api.patch(`/api/extrato/update/credor/${id}/`, {
             credor: value
         })
+
+
 
         if (res.status === 200) {
             const newResults = data.results.map((item: CVLDResultProps) => {
@@ -546,7 +608,7 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
     /* sempre que o componente for montado, puxa os dados do back e do
     localStorage */
     useEffect(() => {
-        fetchData('');
+        fetchData('', user);
         fetchStateFromLocalStorage();
     }, []);
 
@@ -604,6 +666,9 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
             openDetailsDrawer, setOpenDetailsDrawer,
             currentPage, setCurrentPage,
             modalOptions, setModalOptions,
+            notionWorkspaceData, setNotionWorkspaceData,
+            tanstackRefatch,
+            setTanstackRefatch,
 
             /* ====> refs <==== */
             mainRef,

@@ -8,13 +8,13 @@ import { PiCursorClick } from "react-icons/pi";
 import { CVLDResultProps } from '@/interfaces/IResultCVLD';
 import statusOficio from '@/enums/statusOficio.enum';
 import tipoOficio from '@/enums/tipoOficio.enum';
-import useUpdateOficio from '@/hooks/useUpdateOficio';
 import MarvelousPagination from '../MarvelousPagination';
 import { ImCopy } from 'react-icons/im';
 import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants';
 import { AiOutlineUser } from 'react-icons/ai';
 import { toast } from 'sonner';
 import { ExtratosTableContext } from '@/context/ExtratosTableContext';
+import { RiNotionFill } from 'react-icons/ri';
 
 const customTheme: CustomFlowbiteTheme = {
     table: {
@@ -44,9 +44,8 @@ const customTheme: CustomFlowbiteTheme = {
 }
 
 const TableView = ({ count }: { count: number }) => {
-
     const {
-        data, setData, fetchDataById,
+        data, fetchDataById,
         loading, setOpenDetailsDrawer,
         handleOficio, handleStatus,
         onPageChange, currentPage, setCurrentPage,
@@ -81,10 +80,10 @@ const TableView = ({ count }: { count: number }) => {
         }
     }
 
-    const handleChangeCreditorName = async (id: string, value: string, index: number) => {
+    const handleChangeCreditorName = async (id: string, value: string, index: number, page_id?: string) => {
 
         inputRefs.current![index].blur();
-        await updateCreditorName(id, value);
+        await updateCreditorName(id, value, page_id);
 
     }
 
@@ -154,7 +153,7 @@ const TableView = ({ count }: { count: number }) => {
                                                     onChange={() => handleSelectRow(item)}
                                                 />
                                                 <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
-                                                    <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleOficio(item.id, e.target.value as tipoOficio)}>
+                                                    <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleOficio(item.id, e.target.value as tipoOficio, item.notion_link?.slice(-32))}>
                                                         {item.tipo_do_oficio && (
                                                             <option value={item.tipo_do_oficio} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                                 {item.tipo_do_oficio}
@@ -178,10 +177,10 @@ const TableView = ({ count }: { count: number }) => {
                                                 defaultValue={item?.credor || ''}
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                        handleChangeCreditorName(item.id, e.currentTarget.value, index)
+                                                        handleChangeCreditorName(item.id, e.currentTarget.value, index, item.notion_link?.slice(-32))
                                                     }
                                                 }}
-                                                onBlur={(e) => handleChangeCreditorName(item.id, e.currentTarget.value, index)}
+                                                onBlur={(e) => handleChangeCreditorName(item.id, e.currentTarget.value, index, item.notion_link?.slice(-32))}
                                                 className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                             />
 
@@ -240,6 +239,16 @@ const TableView = ({ count }: { count: number }) => {
                                                                 />
                                                                 <span className='text-xs'>Abrir</span>
                                                             </div>
+                                                            {item.notion_link && (
+                                                            <a  href={item.notion_link} target='_blank' rel='referrer'
+                                                                title='Abrir no Notion'
+                                                                className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                                                                >
+                                                                <RiNotionFill className='text-lg'
+                                                                />
+                                                                <span className='text-xs'>Notion</span>
+                                                            </a>)}
+
                                                         </React.Fragment>
                                                     )}
                                                 </div>
@@ -258,7 +267,7 @@ const TableView = ({ count }: { count: number }) => {
                                         </TableCell>
                                         <TableCell className="text-center items-center ">
                                             <Badge color="teal" size="sm" className="text-center text-[12px]">
-                                                <select className="text-[12px] w-44 text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => handleStatus(item.id, e.target.value as statusOficio)}>
+                                                <select className="text-[12px] w-44 text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => handleStatus(item.id, e.target.value as statusOficio, item.notion_link?.slice(-32))}>
                                                     {item.status && (
                                                         <option value={item.status} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                             {item.status}

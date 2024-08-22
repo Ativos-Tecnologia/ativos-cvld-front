@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -111,6 +111,19 @@ const SignUp: React.FC = () => {
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+
+    const localAccess = localStorage.getItem('ATIVOS_access');
+    const localRefresh = localStorage.getItem('ATIVOS_refresh');
+
+    if (localAccess === 'undefined' || localRefresh === 'undefined') {
+      localStorage.removeItem('ATIVOS_access');
+      localStorage.removeItem('ATIVOS_refresh');
+    }
+
+  }, [])
+
   return (
     <UnloggedLayout>
       <div className="p-4">

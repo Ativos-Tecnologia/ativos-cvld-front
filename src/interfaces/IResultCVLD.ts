@@ -36,4 +36,5 @@ export interface CVLDResultProps {
     natureza?: string;
     juros_atualizado: number;
     checked?: boolean
+    notion_link?: string;
   }

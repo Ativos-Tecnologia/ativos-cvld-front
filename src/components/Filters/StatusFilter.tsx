@@ -5,7 +5,7 @@ import { LucideChevronsUpDown } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { AiOutlineSearch } from 'react-icons/ai';
 
-const StatusFilter = ({ filterData, statusSelectValue, setStatusSelectValue } : { filterData: () => void, statusSelectValue: statusOficio | null, setStatusSelectValue: React.Dispatch<React.SetStateAction<statusOficio | null>> }) => {
+const StatusFilter = ({ statusSelectValue, setStatusSelectValue, setListQuery } : { setListQuery?: React.Dispatch<React.SetStateAction<any | null>>, statusSelectValue: statusOficio | null, setStatusSelectValue: React.Dispatch<React.SetStateAction<statusOficio | null>> }) => {
 
     const [open, setOpen] = useState<boolean>(false);
     const [filteredValues, setFilteredValues] = useState<statusOficio[]>(ENUM_OFICIOS_LIST);
@@ -27,6 +27,7 @@ const StatusFilter = ({ filterData, statusSelectValue, setStatusSelectValue } : 
         setFilteredValues(ENUM_OFICIOS_LIST);
         setStatusSelectValue(status);
         searchRef.current!.value = '';
+
     }
 
     // close on click outside
@@ -50,20 +51,20 @@ const StatusFilter = ({ filterData, statusSelectValue, setStatusSelectValue } : 
         return () => document.removeEventListener("keydown", keyHandler);
     });
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        if (statusSelectValue !== null) {
-            filterData();
-        }
+    //     if (statusSelectValue !== null) {
+    //         filterData!();
+    //     }
 
-    }, [statusSelectValue])
+    // }, [statusSelectValue])
 
     return (
         <div className='relative'>
             <div className='flex items-center justify-center'>
                 <div
                     onClick={() => setOpen(!open)}
-                    className={`min-w-48 flex items-center justify-between gap-1 border border-stroke dark:border-strokedark text-xs font-semibold py-1 px-2 hover:bg-slate-100 uppercase dark:hover:bg-slate-700 ${open && 'bg-slate-100 dark:bg-slate-700'} rounded-md transition-colors duration-200 cursor-pointer`}>
+                    className={`min-w-25 text-ellipsis overflow-hidden whitespace-nowrap flex items-center gap-2 justify-between border border-stroke dark:border-strokedark text-xs font-semibold py-1 px-2 hover:bg-slate-100 uppercase dark:hover:bg-slate-700 ${open && 'bg-slate-100 dark:bg-slate-700'} rounded-md transition-colors duration-200 cursor-pointer`}>
                     <span>
                         {statusSelectValue || 'Status'}
                     </span>
@@ -91,7 +92,7 @@ const StatusFilter = ({ filterData, statusSelectValue, setStatusSelectValue } : 
                         {filteredValues.map((status) => (
                             <span
                                 key={status}
-                                className='cursor-pointer text-sm p-1 rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700'
+                                className='cursor-pointer text-xs font-semibold p-1 rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700'
                                 onClick={() => handleSelectStatus(status)}>
                                 {status}
                             </span>

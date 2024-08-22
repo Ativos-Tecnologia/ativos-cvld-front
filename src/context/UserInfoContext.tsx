@@ -15,6 +15,7 @@ export interface UserInfo {
         cpf_cnpj?: string | null | undefined;
         email: string;
         bio: string;
+        workspace?: string | null | undefined;
 
 }
 
