@@ -22,7 +22,6 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query';
-import NotionTableFilters from "../Filters/NotionTableFilter";
 import { NotionDrawer } from "../Drawer/NotionDrawer";
 
 // const queryClient = new QueryClient();
