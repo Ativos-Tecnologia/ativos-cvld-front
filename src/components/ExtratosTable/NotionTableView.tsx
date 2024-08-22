@@ -36,7 +36,13 @@ const notionViews: string[] = [
     'proposta aceita'
 ]
 
-const NotionTableView = ({ count }: { count: number }) => {
+type NotionTableViewProps = {
+    count?: number;
+    setExtratosTableToNotionDrawersetId: React.Dispatch<React.SetStateAction<string>>;
+    setNotionDrawer: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotionDrawer }: NotionTableViewProps) => {
 
     const [notionView, setNotionView] = useState<string>('geral');
     const [selectedStatusValue] = React.useState<statusOficio | null>(null);
@@ -48,6 +54,12 @@ const NotionTableView = ({ count }: { count: number }) => {
     const searchRef = useRef<HTMLInputElement | null>(null);
     const selectStatusRef = useRef<any>(null);
     const selectTipoOficioRef = useRef<any>(null);
+
+
+    const handleNotionDrawer = (id: string) => {
+        setExtratosTableToNotionDrawersetId(id)
+        setNotionDrawer(true);
+    }
 
 
     const handleSelectRow = (item: NotionPage) => {
@@ -94,13 +106,11 @@ const NotionTableView = ({ count }: { count: number }) => {
     const { isPending, data, error, isFetching, refetch } = useQuery(
         {
             queryKey: ['notion_list'],
-            refetchOnReconnect: true, // Refaz o fetch ao reconectar
+            refetchOnReconnect: true,
             refetchOnWindowFocus: true,
             queryFn: fetchNotionData,
         },
     );
-
-    console.log(data)
 
     const updateStatusAtNotion = async (page_id: string, status: statusOficio) => {
 
@@ -287,15 +297,27 @@ const NotionTableView = ({ count }: { count: number }) => {
 
 
     const handleChangeCreditorName = async (value: string, index: number, page_id: string, refList: HTMLInputElement[] | null) => {
-        refList![index].blur();
-        setEditableLabel(null);
-        await updateNotionCreditorName(page_id, value);
-        queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+        try {
+            refList![index].blur();
+            setEditableLabel(null);
+            await updateNotionCreditorName(page_id, value);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            // queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+        }
     }
 
     const handleChangePhoneNumber = async (page_id: string, type: string, value: string, index: number, refList: HTMLInputElement[] | null) => {
-        refList![index].blur();
-        await updateNotionPhoneNumber(page_id, type, value);
+        try {
+            refList![index].blur();
+            await updateNotionPhoneNumber(page_id, type, value);
+        } catch (error) {
+            console.log(error);
+
+        } finally {
+            // queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+        }
     }
 
     const handleChangeEmail = async (page_id: string, value: string, index: number, refList: HTMLInputElement[] | null) => {
@@ -360,7 +382,6 @@ const NotionTableView = ({ count }: { count: number }) => {
 
     const handleFilterByTipoOficio = (oficio: tipoOficio) => {
         setOficioSelectValue(oficio);
-        // setActiveFilter(oficio as ActiveState);
         setOpenTipoOficioPopover(false);
         setListQuery({
             "and": [
@@ -473,7 +494,7 @@ const NotionTableView = ({ count }: { count: number }) => {
     }
 
     const displayViewFirstContact = async () => {
-        setNotionView("realizar 1º contato");
+        setNotionView('realizar 1º contato');
         setListQuery(
             {
 
@@ -887,7 +908,7 @@ const NotionTableView = ({ count }: { count: number }) => {
                                                                             title='Abrir'
                                                                             className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
                                                                             onClick={() => {
-                                                                                setOpenDetailsDrawer(true);
+                                                                                handleNotionDrawer(item.id)
                                                                             }}>
                                                                             <BiSolidDockLeft className='text-lg'
                                                                             />
@@ -908,7 +929,7 @@ const NotionTableView = ({ count }: { count: number }) => {
                                                         )}
 
                                                     </TableCell>
-                                                    <TableCell className="font-semibold text-[14px]">
+                                                    <TableCell className=" font-semibold text-[14px]">
                                                         <div className="relative">
                                                             {numberFormat(item.properties['Valor Líquido'].formula?.number || 0)}
                                                             <ImCopy

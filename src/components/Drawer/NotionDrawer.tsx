@@ -4,33 +4,80 @@ import linkAdapter from "@/functions/formaters/linkFormater";
 import numberFormat from "@/functions/formaters/numberFormat";
 import { customFlowBiteTheme } from "@/themes/FlowbiteThemes";
 import { Button, Drawer, Flowbite, Table } from "flowbite-react";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
 import { BiDownload, BiX } from "react-icons/bi";
 import { CgDetailsMore } from "react-icons/cg";
 import { LinkedTasks } from "../TaskElements/LinkedTasks";
 import { ExtratosTableContext } from "@/context/ExtratosTableContext";
+import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
+import api from "@/utils/api";
+import { NotionPage } from "@/interfaces/INotion";
 
-export function AwesomeDrawer() {
+type NotionDrawerProps = {
+  pageId: string;
+  setNotionDrawer: React.Dispatch<React.SetStateAction<boolean>>;
+  openDetailsDrawer: boolean;
+};
+
+export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: NotionDrawerProps) {
+
+
+  const [pageData, setPageData] = useState<NotionPage>({
+    id: "",
+    properties: {}
+  });
+  // const [isFetching, setIsFetching] = useState<boolean>(false);
+
+    const fetchNotionPageData = async (): Promise<NotionPage> => {
+      const { data } = await api.get(`api/notion-api/list/page/${pageId}/`);
+      return data;
+    }
+  // useEffect(() => {
+  //   if (!pageId) return;
+  //   const fetchNotionPageData = async (): Promise<NotionPage> => {
+  //     setIsFetching(true);
+  //     const { data } = await api.get(`api/notion-api/list/page/${pageId}/`);
+  //     setIsFetching(false);
+  //     return data;
+  //   }
+
+  //   fetchNotionPageData().then(data => setPageData(data));
+  // }, [pageId]);
+
+
 
   const {
     item, setItem, loading,
-    openDetailsDrawer, setOpenDetailsDrawer,
     editableLabel, setEditableLabel,
     updateCreditorName
   } = useContext(ExtratosTableContext);
 
+
+const queryClient = useQueryClient()
+const { isPending, data, error, isFetching, refetch } = useQuery(
+    {
+        queryKey: ['notion_page_data'],
+        refetchOnReconnect: true,
+        refetchOnWindowFocus: true,
+        queryFn: fetchNotionPageData,
+    },
+);
+
+
+
   const [openTaskDrawer, setOpenTaskDrawer] = useState<boolean>(false);
-  const [openSubTask, setOpenSubTask] = useState<string | null>(null);
+  const [openSubTask, setOpenSubTask] = useState<boolean>(false);
   const [editableTaskInput, setEditableTaskInput] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleClose = () => {
-    setOpenDetailsDrawer(false);
+    setNotionDrawer(false);
     setOpenTaskDrawer(false);
-    setOpenSubTask(null);
+    setOpenSubTask(false);
     setEditableTaskInput(false);
   };
+
 
   const handleChangeCreditorName = async (id: string, value: string) => {
 
@@ -46,12 +93,11 @@ export function AwesomeDrawer() {
   return (
     <>
       {
-        item["valor_principal"] && (
-          <Flowbite theme={{ theme: customFlowBiteTheme }}>
+         pageData.properties && (<Flowbite theme={{ theme: customFlowBiteTheme }}>
             <Drawer open={openDetailsDrawer} onClose={handleClose} style={{
               boxShadow: "2px 0 2px 0 rgba(0, 0, 0, 0.1)"
             }} className="min-w-48 sm:w-115 flex flex-col" backdrop={true}>
-              {loading ? (
+              {isFetching ? (
                 <div className="flex flex-col w-fit mx-auto h-full gap-8 items-center justify-center">
                   <AiOutlineLoading className="w-10 h-10 animate-spin fill-blue-700" />
                   <p className="text-sm text-center">Carregando dados do extrato<span className="typewriter">...</span></p>
@@ -66,10 +112,10 @@ export function AwesomeDrawer() {
                         <input
                           ref={inputRef}
                           type="text"
-                          defaultValue={item.credor || 'Sem título'}
+                          defaultValue={data!.properties?.Credor?.title[0].text.content || 'Sem título'}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                              handleChangeCreditorName(item.id, e.currentTarget.value)
+                              handleChangeCreditorName(data!.id, e.currentTarget.value)
                             }
                           }}
                           onBlur={(e) => handleChangeCreditorName(item.id, e.currentTarget.value)}
@@ -87,7 +133,7 @@ export function AwesomeDrawer() {
                       </div>
                     </div>
                   </div>
-                  <Drawer.Items>
+                  {/* <Drawer.Items>
                     {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
                       <LinkedTasks
                         data={item}
@@ -100,7 +146,7 @@ export function AwesomeDrawer() {
                       />
                     )}
 
-                  </Drawer.Items>
+                  </Drawer.Items> */}
                   <Drawer.Items>
                     <div className="overflow-x-auto">
                       <Table className="min-w-full table-auto border-collapse">
@@ -113,92 +159,82 @@ export function AwesomeDrawer() {
                               &nbsp;
                             </td>
                           </tr>
-                          {
-                            item.recalc_flag === "after_12_2021" ? (
+                          {/* {
+
                               <tr className="bg-gray dark:bg-boxdark-2/80">
                                 <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Regra de Cálculo</td>
                                 <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">Após 12/2021</td>
                               </tr>
-                            ) : item.recalc_flag === "before_12_2021" ? (
-                              <tr className="bg-gray dark:bg-boxdark-2/80">
-                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Regra de Cálculo</td>
-                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">Antes 12/2021</td>
-                              </tr>
-                            ) : (
-                              <tr className="bg-gray dark:bg-boxdark-2/80">
-                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Regra de Cálculo</td>
-                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">Tributário</td>
-                              </tr>
-                            )
-                          }
+                          } */}
                           {
-                            item.npu === "00000000000000000000" || !item.link_cvld ? (
-                              null
-                            ) : (
+                            // item.npu === "00000000000000000000" || !item.link_cvld ? (
+                            //   null
+                            // ) : (
                               <tr className="bg-gray dark:bg-boxdark-2/80">
                                 <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">NPU</td>
-                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{item.npu}</td>
+                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{data?.properties["NPU (Precatório)"]?.rich_text![0].text.content}</td>
                               </tr>
-                            )
+                            // )
                           }
-                          {
+                          {/* {
                             item.nome_credor && (
                               <tr className="bg-gray dark:bg-boxdark-2/80">
                                 <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Nome do credor</td>
                                 <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{item.nome_credor}</td>
                               </tr>
                             )
-                          }
+                          } */}
                           {
-                            item.cpf_cnpj_credor && (
+                            // item.cpf_cnpj_credor && (
                               <tr className="bg-gray dark:bg-boxdark-2/80">
                                 <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">CPF/CNPJ do credor</td>
-                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{item.cpf_cnpj_credor}</td>
+                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{data?.properties["CPF/CNPJ"]?.rich_text![0].plain_text}</td>
                               </tr>
-                            )
+                            // )
                           }
+
                           <tr className="bg-gray dark:bg-boxdark-2/80">
                             <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Valor Principal</td>
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(item.valor_principal)}</td>
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(data?.properties["Valor Principal"]?.number || 0)}</td>
                           </tr>
                           {
-                            item.valor_juros ? (
+                            // item.valor_juros ? (
                               <tr className="bg-gray dark:bg-boxdark-2/80">
                                 <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Valor Juros</td>
-                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(item.valor_juros)}</td>
+                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(data?.properties["Valor Juros"]?.number || 0)}</td>
                               </tr>
-                            ) : (
-                              <tr className="bg-gray dark:bg-boxdark-2/80">
-                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Valor Juros</td>
-                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">Não Informado</td>
-                              </tr>
-                            )
+                            // ) : (
+                            //   <tr className="bg-gray dark:bg-boxdark-2/80">
+                            //     <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Valor Juros</td>
+                            //     <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">Não Informado</td>
+                            //   </tr>
+                            // )
                           }
                           <tr className="bg-gray dark:bg-boxdark-2/80">
                             <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Valor Inscrito</td>
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(item.valor_inscrito)}</td>
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(data?.properties["Valor Total Inscrito"]?.formula?.number || 0)}</td>
                           </tr>
                           {
-                            item.valor_pss !== 0 && item.valor_pss && (
+                            // item.valor_pss !== 0 && item.valor_pss && (
                               <tr className="bg-gray dark:bg-boxdark-2/80">
                                 <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Valor PSS</td>
-                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(item.valor_pss)}</td>
+                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(data?.properties["Valor Total Inscrito"]?.formula?.number || 0)}</td>
                               </tr>
-                            )
+                            // )
                           }
                           <tr className="bg-gray dark:bg-boxdark-2/80">
                             <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Data Base</td>
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{dateFormater(item?.data_base)}</td>
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{dateFormater(data?.properties["Data Base"]?.date?.start || "2024-05-04")}</td>
                           </tr>
                           <tr className="bg-gray dark:bg-boxdark-2/80">
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Data Requisição</td>
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{dateFormater(item?.data_requisicao)}</td>
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Data do Recebimento</td>
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{dateFormater(data?.properties["Data do Recebimento"]?.date?.start || "2024-05-04")}</td>
                           </tr>
-                          <tr className="bg-gray dark:bg-boxdark-2/80">
+                          {/* <tr className="bg-gray dark:bg-boxdark-2/80">
                             <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Atualizado até</td>
                             <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{dateFormater(item?.data_limite_de_atualizacao)}</td>
-                          </tr>
-                          {
+                          </tr> */}
+                          {/* {
                             item.fator_correcao_ipca_e && (
                               <>
                                 <tr className="bg-blue-700">
@@ -261,7 +297,7 @@ export function AwesomeDrawer() {
                                 <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(item.juros_atualizados_requisicao)}</td>
                               </tr>
                             )
-                          }
+                          } */}
                           <tr className="bg-blue-700">
                             <td className="text-white px-4 py-2">
                               Período de Graça IPCA-E
@@ -303,7 +339,7 @@ export function AwesomeDrawer() {
                             )
                           }
 
-                          <tr className="bg-blue-700">
+                          {/* <tr className="bg-blue-700">
                             <td className="text-white px-4 py-2">
                               Deduções
                             </td>
@@ -342,10 +378,10 @@ export function AwesomeDrawer() {
                           <tr className="bg-green-300 text-boxdark">
                             <td className="border border-stroke px-4 py-2 text-left font-semibold">Valor Líquido Disponível</td>
                             <td className="border border-stroke px-4 py-2 text-boxdark font-semibold">{numberFormat(item.valor_liquido_disponivel)}</td>
-                          </tr>
+                          </tr> */}
                         </tbody>
                       </Table>
-                      <ul>
+                      {/* <ul>
                         <hr className="border border-stroke dark:border-strokedark my-4" />
                         <li className="text-sm flex text-gray dark:text-gray-400 w-full py-1">
                           <a href={linkAdapter(item.link_memoria_de_calculo_simples)} className="w-full text-center py-3 flex items-center justify-center text-sm font-semibold text-white rounded-md bg-blue-700 hover:bg-blue-800">
@@ -388,15 +424,14 @@ export function AwesomeDrawer() {
                             </li>
                           )
                         }
-                      </ul>
+                      </ul> */}
 
                     </div>
                   </Drawer.Items>
                 </React.Fragment>
               )}
             </Drawer>
-          </Flowbite>
-        )
+          </Flowbite>)
       }
     </>
   );

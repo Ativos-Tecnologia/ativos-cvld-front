@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { BiMinus, BiPlus } from 'react-icons/bi'
+import { BiChevronDown, BiMinus, BiPencil, BiPlus } from 'react-icons/bi'
 import { HiDocument } from 'react-icons/hi'
 import { VscChevronDown, VscEdit } from 'react-icons/vsc'
 import { PaginatedResponse, TaskDrawer } from '.'
@@ -10,8 +10,8 @@ interface ILinkedTasksProps {
   data: any;
   openTaskDrawer: boolean;
   setOpenTaskDrawer: React.Dispatch<React.SetStateAction<boolean>>;
-  openSubTask: boolean;
-  setOpenSubTask: React.Dispatch<React.SetStateAction<boolean>>;
+  openSubTask: string | null;
+  setOpenSubTask: React.Dispatch<React.SetStateAction<string | null>>;
   editableTaskInput: boolean;
   setEditableTaskInput: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -39,18 +39,25 @@ export const LinkedTasks = ({ data, openTaskDrawer, setOpenTaskDrawer, openSubTa
     results: []
   })
   const [subtasks, setSubtasks] = useState<string[]>([
-    "Subtarefa 1: Assinar um documento"
+    "Subtarefa 1: Assinar um documento",
+    "Subtarefa 2: Fazer alguma coisa",
+    "Subtarefa 3: Fazer alguma coisa",
   ]);
-  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  /* ====> refs <==== */
+  const headInputRefs = useRef<HTMLInputElement[] | null>([]);
+  const subInputRefs = useRef<HTMLInputElement[] | null>([]);
+  /* ====> end refs <==== */
+
 
   function handleEditTask(index: number) {
     setEditableTaskInput(true);
   }
 
-  function handleAddSubtask() {
-    if (inputRef.current && inputRef.current.value.trim()) {
-      setSubtasks([...subtasks, inputRef.current.value]);
-      inputRef.current.value = '';
+  function handleAddSubtask(index: number) {
+    if (subInputRefs.current![index].value.trim()) {
+      setSubtasks([...subtasks, subInputRefs.current![index].value]);
+      subInputRefs.current![index].value = '';
     }
   }
 
@@ -92,23 +99,23 @@ export const LinkedTasks = ({ data, openTaskDrawer, setOpenTaskDrawer, openSubTa
         {extratoTasks.results.length > 0 ? (
           <React.Fragment>
             {
-              extratoTasks.results.map(task => (
+              extratoTasks.results.map((task, index) => (
                 <li key={task.id} className="rounded-md p-1 hover:shadow-3 dark:hover:shadow-body transition-all duration-200 group">
                   <div className="relative flex flex-col px-1">
                     {/* ===== absolute div that covers the task name if no editable ===== */}
                     {!editableTaskInput && (
-                      <div className="absolute w-full h-7 overflow-hidden cursor-default flex items-center justify-end gap-1">
+                      <div className="absolute w-full h-7 overflow-hidden cursor-default flex items-center justify-end">
                         <div
                           title="Editar Tarefa"
                           onClick={() => handleEditTask(0)}
-                          className='py-1 px-2 mr-1 flex items-center justify-center rounded-full bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 translate-x-9 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'>
-                          <VscEdit className="text-sm text-black-2 dark:text-white" />
+                          className='py-1 px-2 mr-1 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 translate-x-9 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'>
+                          <BiPencil  className="dark:text-white" />
                         </div>
                         <div
                           title="Expandir Tarefa"
-                          onClick={() => setOpenSubTask(!openSubTask)}
-                          className='py-1 px-2 mr-3 flex items-center justify-center rounded-full bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 translate-x-9 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'>
-                          <VscChevronDown className={`text-sm text-black-2 dark:text-white ${openSubTask && 'rotate-180'} transition-all duration-300`} />
+                          onClick={() => setOpenSubTask(openSubTask === task.id ? null : task.id)}
+                          className='py-1 px-2 mr-3 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 translate-x-9 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'>
+                          <BiChevronDown className={`text-lg dark:text-white ${openSubTask && 'rotate-180'} transition-all duration-300`} />
                         </div>
                       </div>
                     )}
@@ -116,7 +123,9 @@ export const LinkedTasks = ({ data, openTaskDrawer, setOpenTaskDrawer, openSubTa
 
                     {/* ===== principal content ===== */}
                     <div className="flex items-center">
-                      <HiDocument className="text-xl" />
+                      <div className={`relative bg-snow dark:bg-boxdark z-2 flex items-center justify-center rounded-full w-7 h-7 ${openSubTask === task.id ? 'border border-slate-300 dark:border-bodydark duration-1000 delay-200' : 'duration-200 delay-0'} transition-[border]`}>
+                        <HiDocument className="text-xl" />
+                      </div>
                       {/* <span className="text-sm text-ellipsis overflow-hidden whitespace-nowrap">Task 1: Mandar documentação para Tribunal de Justiça para assinatura</span> */}
                       <input
                         type="text"
@@ -131,23 +140,26 @@ export const LinkedTasks = ({ data, openTaskDrawer, setOpenTaskDrawer, openSubTa
                     {/* ===== end principal content ===== */}
                   </div>
                   {/* ===== task steps content */}
-                  <div className={` overflow-hidden ${openSubTask ? 'max-h-[900px] my-2 animate-in fade-in-0 zoom-in-95' : 'max-h-0 animate-out fade-out-0 zoom-out-95'} transition-all duration-300`}>
+                  <div className={`${openSubTask === task.id ? 'max-h-[900px] my-2 animate-in fade-in-0 zoom-in-95' : 'overflow-hidden max-h-0 animate-out fade-out-0 zoom-out-95'} transition-all duration-300`}>
                     {subtasks.length > 0 &&
                       <ul
-                        className={`ml-6 flex flex-col gap-2`}>
+                        className={`ml-7 flex flex-col gap-2`}>
                         {subtasks.map(subtask => (
                           <li key={subtask} className="flex items-center justify-between gap-2 peer">
-                            <label htmlFor={subtask} className="flex items-center gap-2 cursor-pointer">
+                            <label htmlFor={subtask} className="relative flex items-center gap-2 cursor-pointer">
+                              <div className={`${openSubTask === task.id ? 'opacity-100 visible' : 'opacity-0 invisible'} absolute -left-3 -top-[18px] w-3 h-8 border-l border-b border-slate-300 dark:border-bodydark self-start transition-all duration-1000 delay-200`}></div>
                               <input
                                 id={subtask}
                                 type="checkbox"
                                 className="w-3 h-3 bg-transparent focus-within:ring-0 selection:ring-0 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer"
                               />
+                              <span className='max-w-[330px] text-ellipsis overflow-hidden whitespace-nowrap'>
                               {subtask}
+                              </span>
                             </label>
                             <button
                               title='Deletar'
-                              className="flex items-center justify-center self-center w-8 h-5 hover:bg-slate-300 dark:hover:bg-slate-700 rounded-md transition-all duration-200"
+                              className="flex items-center justify-center self-center w-8 h-5 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-md transition-all duration-200"
                               onClick={() => handleDeleteSubtask(subtask)}
                             >
                               <BiMinus />
@@ -158,15 +170,19 @@ export const LinkedTasks = ({ data, openTaskDrawer, setOpenTaskDrawer, openSubTa
                     }
                     <div className='relative flex items-center gap-2 px-3 my-2'>
                       <input
-                        ref={inputRef}
+                        ref={(input) => { if (input) subInputRefs.current![index] = input; }}
                         type="text"
-                        placeholder='adicionar nova subtarefa'
-                        className="w-full py-1 px-2 h-8 bg-transparent border-slate-200 dark:border-slate-600 rounded-md text-ellipsis overflow-hidden dark:bg-boxdark-2 whitespace-nowrap"
+                        placeholder='adicionar subtarefa'
+                        // style={{
+                        //   border: 'none',
+                        //   borderBottom: '1px solid #ddd'
+                        // }}
+                        className="w-full py-1 px-2 h-8 border-l-0 border-t-0 border-r-0 border-b border-b-stroke dark:border-b-form-strokedark bg-transparent focus-within:ring-0 text-ellipsis overflow-hidden whitespace-nowrap placeholder:italic placeholder:text-gray-500 dark:placeholder:text-slate-500"
                       />
                       <button
                         title='Adicionar'
-                        className="absolute right-[13px] flex items-center justify-center self-center border bg-slate-200 w-13 h-[31px] hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 rounded-md transition-all duration-200"
-                        onClick={handleAddSubtask}
+                        className="absolute right-[13px] flex items-center justify-center self-center w-7 h-7 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-all duration-200"
+                        onClick={() => handleAddSubtask(index)}
                       >
                         <BiPlus className='text-xl transition-all duration-300' />
                       </button>

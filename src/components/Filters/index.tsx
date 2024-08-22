@@ -68,7 +68,7 @@ const Filters = ({ filterData, resetFilters }: { filterData: () => void, resetFi
             {/* separator */}
 
             <div className='flex items-center justify-center gap-1'>
-                <StatusFilter filterData={filterData} statusSelectValue={statusSelectValue} setStatusSelectValue={setStatusSelectValue} />
+                <StatusFilter statusSelectValue={statusSelectValue} setStatusSelectValue={setStatusSelectValue} />
 
                 {statusSelectValue && (
                     <div

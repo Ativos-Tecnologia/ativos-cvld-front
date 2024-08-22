@@ -81,29 +81,29 @@ export interface NotionProperties {
 }
 
 export interface NotionPage {
-  object: NotionObject;
+  object?: NotionObject;
   id: string;
-  created_time: string;
-  last_edited_time: string;
-  created_by: {
+  created_time?: string;
+  last_edited_time?: string;
+  created_by?: {
     object: NotionObject;
     id: string;
   };
-  last_edited_by: {
+  last_edited_by?: {
     object: NotionObject;
     id: string;
   };
-  cover: any | null;
-  icon: any | null;
-  parent: {
+  cover?: any | null;
+  icon?: any | null;
+  parent?: {
     type: string;
     database_id: string;
   };
-  archived: boolean;
-  in_trash: boolean;
+  archived?: boolean;
+  in_trash?: boolean;
   properties: NotionProperties;
-  url: string;
-  public_url: string | null;
+  url?: string;
+  public_url?: string | null;
 }
 
 export interface NotionResponse {
