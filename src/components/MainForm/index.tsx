@@ -137,6 +137,9 @@ const MainForm: React.FC<CVLDFormProps> = ({
     nome_razao_social: "",
   });
 
+  console.log(watch("novo_usuario"));
+
+
   const [usersList, setUsersList] = useState<any[]>([]);
 
   const [contatoNumberCount, setContatoNumberCount] = useState<number>(1);
@@ -1724,14 +1727,20 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           </div>
                           {watch("vincular_usuario") === true ? (
                             <div className="flex flex-col gap-2">
-                              {watch("novo_usuario") === false && <select id="username" className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark" {...register("username")}>
-                                <option value="">Selecione o usuário</option>
+                              {
+                              (watch("novo_usuario") === false || watch("novo_usuario") === undefined) && watch("vincular_usuario") === true && (
+
+                              <select id="username" className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark" {...register("username")}>
+                                <option value={data.user}>{
+                                  data.user
+                                  }</option>
                                 {
-                                  usersList.map((user) => (
+                                  usersList.filter(user => user !== data.user).map((user) => (
                                     <option key={user} value={user}>{user}</option>
                                   ))
                                 }
-                              </select>}
+                              </select>
+                              )}
                               <div className="flex flex-col gap-2">
                                 <div>
                                 <label htmlFor="novo_usuario" className="text-sm font-medium text-meta-5 cursor-pointer">

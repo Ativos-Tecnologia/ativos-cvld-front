@@ -25,14 +25,13 @@ import { MiniMenu } from './MiniMenu';
 import { LucideChevronsUpDown } from 'lucide-react';
 import { customFlowBiteTheme } from '@/themes/FlowbiteThemes';
 import MakeFirstContact from '../TablesNotion/MakeFirstContact';
-import { OfficeTypeAndValue } from '../TablesNotion/OfficeTypeAndValue';
 
 
 const notionViews: string[] = [
-    'realizar 1º contato',
-    'juntar ofício/valor líquido',
-    'enviar proposta/negociação',
-    'proposta aceita'
+    'Realizar 1º Contato',
+    'Juntar Ofício/Valor Líquido',
+    'Enviar Proposta/Negociação',
+    'Proposta Aceita'
 ]
 
 
@@ -87,9 +86,15 @@ const updateNotionEmail = async (page_id: string, value: string) => {
     }
 }
 
-const NotionTableView = ({ count }: { count: number }) => {
+type NotionTableViewProps = {
+    count?: number;
+    setExtratosTableToNotionDrawersetId: React.Dispatch<React.SetStateAction<string>>;
+    setNotionDrawer: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-    const [notionView, setNotionView] = useState<string>('geral');
+const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotionDrawer }: NotionTableViewProps) => {
+
+    const [notionView, setNotionView] = useState<string>('GERAL');
     const [selectedStatusValue] = React.useState<statusOficio | null>(null);
     const [checkedList, setCheckedList] = React.useState<NotionPage[]>([]);
     const [openStatusPopover, setOpenStatusPopover] = useState<boolean>(false);
@@ -98,6 +103,12 @@ const NotionTableView = ({ count }: { count: number }) => {
     const searchRef = useRef<HTMLInputElement | null>(null);
     const selectStatusRef = useRef<any>(null);
     const selectTipoOficioRef = useRef<any>(null);
+
+
+    const handleNotionDrawer = (id: string) => {
+        setExtratosTableToNotionDrawersetId(id)
+        setNotionDrawer(true);
+    }
 
 
     const handleSelectRow = (item: NotionPage) => {
@@ -152,7 +163,6 @@ const NotionTableView = ({ count }: { count: number }) => {
 
     const updateStatusAtNotion = async (page_id: string, status: statusOficio) => {
 
-
         try {
             const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
                 "Status": {
@@ -164,10 +174,10 @@ const NotionTableView = ({ count }: { count: number }) => {
             if (resNotion.status !== 202) {
                 console.log('houve um erro ao salvar os dados no notion');
             }
+
+            queryClient.invalidateQueries({ queryKey: ['notion_list'] });
         } catch (error) {
             console.log(error);
-        } finally {
-        // queryClient.invalidateQueries({ queryKey: ['notion_list'] });
         }
     }
 
@@ -274,19 +284,15 @@ const NotionTableView = ({ count }: { count: number }) => {
     useEffect(() => {
         const updatedQuery = buildQuery();
         setCurrentQuery(updatedQuery);
-        // notionView !== "GERAL" && setListQuery(updatedQuery);
-        if (notionView !== "geral") {
-            setListQuery(updatedQuery);
-        }
+        setListQuery(updatedQuery);
 
         if (Object.keys(updatedQuery).length > 0) {
             refetch();
         }
-    }, [user, statusSelectValue, oficioSelectValue, buildQuery, refetch, notionView]);
+    }, [user, statusSelectValue, oficioSelectValue, buildQuery, refetch]);
 
     const handleFilterByTipoOficio = (oficio: tipoOficio) => {
         setOficioSelectValue(oficio);
-        // setActiveFilter(oficio as ActiveState);
         setOpenTipoOficioPopover(false);
         setListQuery({
             "and": [
@@ -364,15 +370,15 @@ const NotionTableView = ({ count }: { count: number }) => {
 
     const handleChangeViews = (view: string) => {
 
+        console.log(view);
+
         switch (view) {
-            case "geral":
-                displayViewDefault()
-                break;
-            case "realizar 1º contato":
+            case "Realizar 1º Contato":
                 displayViewFirstContact();
                 break;
-            case "juntar ofício/valor líquido":
-                displayViewOfficeType();
+
+            case "Geral":
+                displayViewDefault()
                 break;
 
             default:
@@ -384,7 +390,7 @@ const NotionTableView = ({ count }: { count: number }) => {
     const displayViewDefault = () => {
         setStatusSelectValue(null);
         setOficioSelectValue(null);
-        setNotionView("geral");
+        setNotionView("GERAL");
         setListQuery(
             {
                 "property": "Usuário",
@@ -396,7 +402,7 @@ const NotionTableView = ({ count }: { count: number }) => {
     }
 
     const displayViewFirstContact = async () => {
-        setNotionView("realizar 1º contato");
+        setNotionView("REALIZAR 1º CONTATO");
         setListQuery(
             {
 
@@ -442,41 +448,6 @@ const NotionTableView = ({ count }: { count: number }) => {
         );
     }
 
-    const displayViewOfficeType = async () => {
-        setNotionView("juntar ofício/valor líquido");
-        setListQuery(
-            {
-
-                "and":
-                [
-                        {
-                            "property": "Usuário",
-                            "multi_select": {
-                                    "contains": user
-                            }
-                        },
-                        {
-                        "or":
-                            [
-                                {
-                                        "property": "Status",
-                                        "status": {
-                                                "equals": "Juntar Ofício ou Memória de Cálculo"
-                                            }
-                                },
-                                {
-                                    "property": "Status",
-                                    "status": {
-                                            "equals": "Calcular Valor Líquido"
-                                        }
-                                }
-                            ]
-                        }
-                ]
-            }
-        )
-    };
-
     useEffect(() => {
         if (Object.keys(listQuery).length > 0) {
             refetch();
@@ -514,8 +485,8 @@ const NotionTableView = ({ count }: { count: number }) => {
         <>
             <div className="flex gap-3 flex-1 items-center">
                 <div
-                    onClick={() => handleChangeViews('geral')}
-                    className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${notionView === "geral" && 'bg-slate-100 dark:bg-form-strokedark'}`}>
+                    onClick={() => handleChangeViews('Geral')}
+                    className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${notionView === "GERAL" && 'bg-slate-100 dark:bg-form-strokedark'}`}>
                     <ImTable />
                     <span>todos</span>
                 </div>
@@ -680,7 +651,7 @@ const NotionTableView = ({ count }: { count: number }) => {
                 }
             </div>
 
-            {notionView === 'geral' && (
+            {notionView === 'GERAL' && (
                 <Flowbite theme={{ theme: customFlowBiteTheme }}>
                     <Table>
                         <TableHead>
@@ -783,7 +754,7 @@ const NotionTableView = ({ count }: { count: number }) => {
                                                                             title='Abrir'
                                                                             className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
                                                                             onClick={() => {
-                                                                                setOpenDetailsDrawer(true);
+                                                                                handleNotionDrawer(item.id)
                                                                             }}>
                                                                             <BiSolidDockLeft className='text-lg'
                                                                             />
@@ -804,7 +775,7 @@ const NotionTableView = ({ count }: { count: number }) => {
                                                         )}
 
                                                     </TableCell>
-                                                    <TableCell className="font-semibold text-[14px]">
+                                                    <TableCell className=" font-semibold text-[14px]">
                                                         <div className="relative">
                                                             {numberFormat(item.properties['Valor Líquido'].formula?.number || 0)}
                                                             <ImCopy
@@ -845,7 +816,7 @@ const NotionTableView = ({ count }: { count: number }) => {
             )}
 
 
-            {notionView === 'realizar 1º contato' &&
+            {notionView === 'REALIZAR 1º CONTATO' &&
                 <MakeFirstContact
                     isFetching={isFetching}
                     data={data}
@@ -860,25 +831,6 @@ const NotionTableView = ({ count }: { count: number }) => {
                     handleChangePhoneNumber={handleChangePhoneNumber}
                     handleChangeEmail={handleChangeEmail}
                     updateStatusAtNotion={updateStatusAtNotion}
-                />
-            }
-
-            {notionView === 'juntar ofício/valor líquido' &&
-                <OfficeTypeAndValue
-                    isFetching={isFetching}
-                    data={data}
-                    checkedList={checkedList}
-                    editableLabel={editableLabel}
-                    setEditableLabel={setEditableLabel}
-                    statusSelectValue={statusSelectValue}
-                    oficioSelectValue={oficioSelectValue}
-                    numberFormat={numberFormat}
-                    handleSelectRow={handleSelectRow}
-                    handleChangeCreditorName={handleChangeCreditorName}
-                    handleEditInput={handleEditInput}
-                    updateStatusAtNotion={updateStatusAtNotion}
-                    updateTipoAtNotion={updateTipoAtNotion}
-                    handleCopyValue={handleCopyValue}
                 />
             }
 

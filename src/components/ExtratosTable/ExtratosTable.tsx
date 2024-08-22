@@ -23,6 +23,7 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query';
 import NotionTableFilters from "../Filters/NotionTableFilter";
+import { NotionDrawer } from "../Drawer/NotionDrawer";
 
 // const queryClient = new QueryClient();
 
@@ -50,6 +51,9 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
     setNotionWorkspaceData
 
   } = useContext(ExtratosTableContext);
+
+  const [extratosTableToNotionDrawersetId, setExtratosTableToNotionDrawersetId] = useState<string>("");
+  const [notionDrawer, setNotionDrawer] = useState<boolean>(false);
 
   const { data: {
     role
@@ -142,7 +146,10 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
               </div>
               {
                 activedTab === "WORKSPACE NOTION" &&
-                <NotionTableView count={notionWorkspaceData?.results.length} />
+                <NotionTableView count={notionWorkspaceData?.results.length}
+                  setExtratosTableToNotionDrawersetId={setExtratosTableToNotionDrawersetId}
+                  setNotionDrawer={setNotionDrawer}
+                />
               }
               {(activedTab !== 'WORKSPACE NOTION' && viewOption.type === "table") &&
                 <TableView count={data.count} />
@@ -204,8 +211,16 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
         /* end mobile view */
       )}
       <Suspense fallback={<Loader />}>
-        <AwesomeDrawer />
+        {/* <AwesomeDrawer /> */}
         {/* <TaskDrawer id={extratoId} open={openTaskDrawer} setOpen={setOpenTaskDrawer} /> */}
+        {
+          notionDrawer &&
+          <NotionDrawer
+            pageId={extratosTableToNotionDrawersetId}
+            setNotionDrawer={setNotionDrawer}
+            openDetailsDrawer={notionDrawer}
+          />
+        }
       </Suspense>
       {showModalMessage && (
         <DeleteExtractAlert
