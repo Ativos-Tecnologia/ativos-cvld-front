@@ -30,10 +30,10 @@ import { SendProposal } from '../TablesNotion/SendProposal';
 
 
 const notionViews: string[] = [
-    'Realizar 1º Contato',
-    'Juntar Ofício/Valor Líquido',
-    'Enviar Proposta/Negociação',
-    'Proposta Aceita'
+    'realizar 1º contato',
+    'juntar ofício/valor líquido',
+    'enviar proposta/negociação',
+    'proposta aceita'
 ]
 
 
@@ -395,15 +395,17 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
     const handleChangeViews = (view: string) => {
 
-        console.log(view);
-
         switch (view) {
-            case "Realizar 1º Contato":
+            case "geral":
+                displayViewDefault()
+                break;
+
+            case 'realizar 1º contato':
                 displayViewFirstContact();
                 break;
 
-            case "Geral":
-                displayViewDefault()
+            case notionViews[1]:
+                displayViewOfficeType();
                 break;
 
             default:
@@ -415,7 +417,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const displayViewDefault = () => {
         setStatusSelectValue(null);
         setOficioSelectValue(null);
-        setNotionView("GERAL");
+        setNotionView("geral");
         setListQuery(
             {
                 "property": "Usuário",
@@ -427,7 +429,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     }
 
     const displayViewFirstContact = async () => {
-        setNotionView("REALIZAR 1º CONTATO");
+        setNotionView('realizar 1º contato');
         setListQuery(
             {
 
@@ -545,8 +547,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         <>
             <div className="flex gap-3 flex-1 items-center">
                 <div
-                    onClick={() => handleChangeViews('Geral')}
-                    className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${notionView === "GERAL" && 'bg-slate-100 dark:bg-form-strokedark'}`}>
+                    onClick={() => handleChangeViews('geral')}
+                    className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${notionView === "geral" && 'bg-slate-100 dark:bg-form-strokedark'}`}>
                     <ImTable />
                     <span>todos</span>
                 </div>
@@ -566,7 +568,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                         <div
                             key={view}
                             onClick={() => handleChangeViews(view)}
-                            className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${notionView === view.toUpperCase() && 'bg-slate-100 dark:bg-form-strokedark'}`}>
+                            className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${notionView === view && 'bg-slate-100 dark:bg-form-strokedark'}`}>
                             <ImTable />
                             <span>{view}</span>
                         </div>
@@ -711,7 +713,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                 }
             </div>
 
-            {notionView === 'GERAL' && (
+            {notionView === 'geral' && (
                 <Flowbite theme={{ theme: customFlowBiteTheme }}>
                     <Table>
                         <TableHead>
@@ -876,7 +878,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             )}
 
 
-            {notionView === 'REALIZAR 1º CONTATO' &&
+            {notionView === 'realizar 1º contato' &&
                 <MakeFirstContact
                     isFetching={isFetching}
                     data={data}
