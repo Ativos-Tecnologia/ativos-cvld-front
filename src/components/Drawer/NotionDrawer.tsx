@@ -19,6 +19,7 @@ import percentageFormater from "@/functions/formaters/percentFormater";
 import { MdOutlineFollowTheSigns } from "react-icons/md";
 import notionColorResolver from "@/functions/formaters/notionColorResolver";
 import { FaMoneyBillTransfer } from "react-icons/fa6";
+import { UserInfoAPIContext } from "@/context/UserInfoContext";
 
 type NotionDrawerProps = {
   pageId: string;
@@ -33,34 +34,22 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
     id: "",
     properties: {}
   });
-  // const [isFetching, setIsFetching] = useState<boolean>(false);
 
   const fetchNotionPageData = async (): Promise<NotionPage> => {
     const { data } = await api.get(`api/notion-api/list/page/${pageId}/`);
     return data;
   }
-  // useEffect(() => {
-  //   if (!pageId) return;
-  //   const fetchNotionPageData = async (): Promise<NotionPage> => {
-  //     setIsFetching(true);
-  //     const { data } = await api.get(`api/notion-api/list/page/${pageId}/`);
-  //     setIsFetching(false);
-  //     return data;
-  //   }
-
-  //   fetchNotionPageData().then(data => setPageData(data));
-  // }, [pageId]);
-
-
 
   const {
-    item, setItem, loading,
+    item, setItem,
     editableLabel, setEditableLabel,
     updateCreditorName
   } = useContext(ExtratosTableContext);
 
+  const {data: {role}} = useContext(UserInfoAPIContext)
 
-  const queryClient = useQueryClient()
+
+  // const queryClient = useQueryClient()
   const { isPending, data, error, isFetching, refetch } = useQuery(
     {
       queryKey: ['notion_page_data'],
@@ -69,7 +58,6 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       queryFn: fetchNotionPageData,
     },
   );
-
 
 
   const [openTaskDrawer, setOpenTaskDrawer] = useState<boolean>(false);
@@ -139,14 +127,14 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                     </div>
                   </div>
                   <div className="flex items-center gap-2 justify-end mb-2">
-                    <a href={item.url} target='_blank' rel='referrer'
+                    { role === "ativos" && (<a href={item.url} target='_blank' rel='referrer'
                       title='Abrir no Notion'
                       className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-100 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
                     >
                       <RiNotionFill className='text-lg'
                       />
                       <span className='text-xs'>Notion</span>
-                    </a>
+                    </a>)}
                     <button className="py-1 px-2 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-100 group-hover:opacity-100 transition-all duration-200 cursor-pointer" onClick={() => refetch()}>
 
                       <AiOutlineReload />
