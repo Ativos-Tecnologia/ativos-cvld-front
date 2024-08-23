@@ -19,7 +19,7 @@ const notionColorResolver = (color: string) => {
     case "red":
       return "#F08078";
     default:
-      return "#000000";
+      return "#333";
   }
 }
 

@@ -17,3 +17,17 @@
     border-radius: 5px;
     /* border: 1px solid #f1f1f1; */
 }
+
+/* 
+    styles for custom scrollbar
+*/
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+    height: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #4a5568;
+    border-radius: 5px;
+}
