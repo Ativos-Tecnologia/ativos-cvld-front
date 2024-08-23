@@ -136,26 +136,11 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                       <span className='text-xs'>Notion</span>
                     </a>)}
                     <button className="py-1 px-2 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-100 group-hover:opacity-100 transition-all duration-200 cursor-pointer" onClick={() => refetch()}>
-
                       <AiOutlineReload />
                       <span className="text-xs">Atualizar</span>
                     </button>
                   </div>
                 </div>
-                {/* <Drawer.Items>
-                    {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
-                      <LinkedTasks
-                        data={item}
-                        openTaskDrawer={openTaskDrawer}
-                        setOpenTaskDrawer={setOpenTaskDrawer}
-                        openSubTask={openSubTask}
-                        setOpenSubTask={setOpenSubTask}
-                        editableTaskInput={editableTaskInput}
-                        setEditableTaskInput={setEditableTaskInput}
-                      />
-                    )}
-
-                  </Drawer.Items> */}
                 <Drawer.Items>
                   <div className="overflow-x-auto">
                     <Table className="min-w-full table-auto border-collapse">
