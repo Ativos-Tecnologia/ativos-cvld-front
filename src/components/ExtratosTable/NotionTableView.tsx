@@ -50,46 +50,46 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const selectTipoOficioRef = useRef<any>(null);
 
     const secondaryDefaultFilterObject = useMemo(() => {
-    return {
-        "and":
-            [
-                {
+        return {
+            "and":
+                [
+                    {
                         "property": "Status",
                         "status": {
-                                "does_not_equal": "Já vendido"
+                            "does_not_equal": "Já vendido"
                         }
-                },
-                {
+                    },
+                    {
                         "property": "Status",
                         "status": {
-                                "does_not_equal": "Considerou Preço Baixo"
-                            }
-                },
-                {
+                            "does_not_equal": "Considerou Preço Baixo"
+                        }
+                    },
+                    {
                         "property": "Status",
                         "status": {
-                                "does_not_equal": "Contato inexiste"
-                            }
-                },
-                {
+                            "does_not_equal": "Contato inexiste"
+                        }
+                    },
+                    {
                         "property": "Status",
                         "status": {
-                                "does_not_equal": "Ausência de resposta"
-                            }
-                },
-                {
+                            "does_not_equal": "Ausência de resposta"
+                        }
+                    },
+                    {
                         "property": "Status",
                         "status": {
-                                "does_not_equal": "Transação Concluída"
-                            }
-                },
-                {
+                            "does_not_equal": "Transação Concluída"
+                        }
+                    },
+                    {
                         "property": "Status",
                         "status": {
-                                "does_not_equal": "Ausência de resposta"
-                            }
-                }
-            ]
+                            "does_not_equal": "Ausência de resposta"
+                        }
+                    }
+                ]
         }
     }, []);
 
@@ -124,15 +124,15 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
     const defaultFilterObject = {
         "and":
-        [
+            [
                 {
                     "property": "Usuário",
                     "multi_select": {
-                            "contains": user
+                        "contains": user
                     }
                 },
                 secondaryDefaultFilterObject
-        ]
+            ]
     }
 
     const [currentQuery, setCurrentQuery] = useState({});
@@ -156,11 +156,13 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             queryKey: ['notion_list'],
             refetchOnReconnect: true,
             refetchOnWindowFocus: true,
-            refetchInterval: 1000 * 15 , // 15 seconds
+            refetchInterval: 1000 * 15, // 15 seconds
             staleTime: 1000 * 5, // 5 seconds
             queryFn: fetchNotionData,
         },
     );
+
+    console.log(data)
 
     const archiveNotionPage = async (page_id: string, choice = true) => { // choice = true to archive, false to unarchive
         try {
@@ -571,55 +573,55 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             {
 
                 "and":
-                [
+                    [
                         {
                             "property": "Usuário",
                             "multi_select": {
-                                    "contains": selectedUser || user
+                                "contains": selectedUser || user
                             }
                         },
                         {
-                        "and":
-                            [
-                                {
+                            "and":
+                                [
+                                    {
                                         "property": "Status",
                                         "status": {
-                                                "does_not_equal": "Já vendido"
+                                            "does_not_equal": "Já vendido"
                                         }
-                                },
-                                {
+                                    },
+                                    {
                                         "property": "Status",
                                         "status": {
-                                                "does_not_equal": "Considerou Preço Baixo"
-                                            }
-                                },
-                                {
+                                            "does_not_equal": "Considerou Preço Baixo"
+                                        }
+                                    },
+                                    {
                                         "property": "Status",
                                         "status": {
-                                                "does_not_equal": "Contato inexiste"
-                                            }
-                                },
-                                {
+                                            "does_not_equal": "Contato inexiste"
+                                        }
+                                    },
+                                    {
                                         "property": "Status",
                                         "status": {
-                                                "does_not_equal": "Ausência de resposta"
-                                            }
-                                },
-                                {
+                                            "does_not_equal": "Ausência de resposta"
+                                        }
+                                    },
+                                    {
                                         "property": "Status",
                                         "status": {
-                                                "does_not_equal": "Transação Concluída"
-                                            }
-                                },
-                                {
+                                            "does_not_equal": "Transação Concluída"
+                                        }
+                                    },
+                                    {
                                         "property": "Status",
                                         "status": {
-                                                "does_not_equal": "Ausência de resposta"
-                                            }
-                                }
-                            ]
+                                            "does_not_equal": "Ausência de resposta"
+                                        }
+                                    }
+                                ]
                         }
-                ]
+                    ]
             }
         )
     }
@@ -711,7 +713,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         setListQuery({
 
             "and":
-            [
+                [
                     {
                         "property": "Usuário",
                         "multi_select": {
@@ -891,31 +893,33 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     </div>
                     {/* ====== select de statusOficio ====== */}
 
-                    {/* separator */}
-                    <div className="w-px mx-1 h-5 bg-zinc-300 dark:bg-form-strokedark"></div>
-                    {/* separator */}
-
                     {/* ====== select de tipoOficio ====== */}
-                    <div className='flex items-center justify-center gap-1'>
-                        <div className='relative'>
-                            <div className='flex items-center justify-center'>
-                                <div
-                                    onClick={() => setOpenTipoOficioPopover(!openTipoOficioPopover)}
-                                    className={`min-w-48 flex items-center justify-between gap-1 border border-stroke dark:border-strokedark text-xs font-semibold py-1 px-2 hover:bg-slate-100 uppercase dark:hover:bg-slate-700 ${openTipoOficioPopover && 'bg-slate-100 dark:bg-slate-700'} rounded-md transition-colors duration-200 cursor-pointer`}>
-                                    <span>
-                                        {oficioSelectValue || 'Tipo do Ofício'}
-                                    </span>
-                                    <LucideChevronsUpDown className='w-4 h-4' />
-                                </div>
-                            </div>
-                            {/* ==== popover ==== */}
+                    {(notionView === 'geral' || notionView === notionViews[1]) && (
+                        <>
+                            {/* separator */}
+                            <div className="w-px mx-1 h-5 bg-zinc-300 dark:bg-form-strokedark"></div>
+                            {/* separator */}
 
-                            {openTipoOficioPopover && (
+                            <div className='flex items-center justify-center gap-1'>
+                                <div className='relative'>
+                                    <div className='flex items-center justify-center'>
+                                        <div
+                                            onClick={() => setOpenTipoOficioPopover(!openTipoOficioPopover)}
+                                            className={`min-w-48 flex items-center justify-between gap-1 border border-stroke dark:border-strokedark text-xs font-semibold py-1 px-2 hover:bg-slate-100 uppercase dark:hover:bg-slate-700 ${openTipoOficioPopover && 'bg-slate-100 dark:bg-slate-700'} rounded-md transition-colors duration-200 cursor-pointer`}>
+                                            <span>
+                                                {oficioSelectValue || 'Tipo do Ofício'}
+                                            </span>
+                                            <LucideChevronsUpDown className='w-4 h-4' />
+                                        </div>
+                                    </div>
+                                    {/* ==== popover ==== */}
 
-                                <div
-                                    ref={selectTipoOficioRef}
-                                    className={`absolute mt-3 w-[230px] z-20 p-3 rounded-md bg-white dark:bg-form-strokedark shadow-1 border border-stroke dark:border-strokedark ${openTipoOficioPopover ? 'opacity-100 visible animate-in fade-in-0 zoom-in-95' : ' animate-out fade-out-0 zoom-out-95 invisible opacity-0'} transition-opacity duration-500`}>
-                                    {/* <div className='flex gap-1 items-center justify-center border-b border-stroke dark:border-bodydark2'>
+                                    {openTipoOficioPopover && (
+
+                                        <div
+                                            ref={selectTipoOficioRef}
+                                            className={`absolute mt-3 w-[230px] z-20 p-3 rounded-md bg-white dark:bg-form-strokedark shadow-1 border border-stroke dark:border-strokedark ${openTipoOficioPopover ? 'opacity-100 visible animate-in fade-in-0 zoom-in-95' : ' animate-out fade-out-0 zoom-out-95 invisible opacity-0'} transition-opacity duration-500`}>
+                                            {/* <div className='flex gap-1 items-center justify-center border-b border-stroke dark:border-bodydark2'>
                                     <AiOutlineSearch className='text-lg' />
                                     <input
                                         ref={searchRef}
@@ -925,24 +929,26 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                                         onKeyUp={(e) => searchStatus(e.currentTarget.value)}
                                     />
                                 </div> */}
-                                    <div className='flex flex-col max-h-49 overflow-y-scroll gap-1'>
-                                        {ENUM_TIPO_OFICIOS_LIST.map((tipoOficio) => (
-                                            <span
-                                                key={tipoOficio}
-                                                className='cursor-pointer text-sm p-1 rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700'
-                                                onClick={() => handleFilterByTipoOficio(tipoOficio)}>
-                                                {tipoOficio}
-                                            </span>
-                                        ))}
-                                    </div>
+                                            <div className='flex flex-col max-h-49 overflow-y-scroll gap-1'>
+                                                {ENUM_TIPO_OFICIOS_LIST.map((tipoOficio) => (
+                                                    <span
+                                                        key={tipoOficio}
+                                                        className='cursor-pointer text-sm p-1 rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700'
+                                                        onClick={() => handleFilterByTipoOficio(tipoOficio)}>
+                                                        {tipoOficio}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {/* ==== end popover ==== */}
                                 </div>
-                            )}
-                            {/* ==== end popover ==== */}
-                        </div>
-                    </div>
+                            </div>
+                        </>
+                    )}
                     {/* ====== finaliza select de tipoOficio ====== */}
 
-                    {role === 'ativos' && (
+                    {(role === 'ativos' && notionView === 'geral') && (
                         <React.Fragment>
                             {/* separator */}
                             <div className="w-px mx-1 h-5 bg-zinc-300 dark:bg-form-strokedark"></div>
