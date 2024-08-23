@@ -52,7 +52,7 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
 
     /* ----> functions <---- */
 
-    function FupDateConveter(date: string): string {
+    function fupDateConveter(date: string): string {
         const convertedDate = date.split("-").reverse().join("/");
         return convertedDate;
     }
@@ -60,7 +60,7 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
     return (
         <div
             style={{
-                boxShadow: "inset -4px 0 6px rgba(0 0 0 / 0.1)"
+                boxShadow: "inset -4px 0 4px rgba(0 0 0 / 0.1)"
             }}
             className='max-w-full overflow-x-scroll pb-5'>
             <Table>
@@ -306,7 +306,7 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
 
                                                 <Cleave
                                                     type="text"
-                                                    placeholder={FupDateConveter(item.properties['1ª FUP'].date?.start || '')}
+                                                    placeholder={fupDateConveter(item.properties['1ª FUP'].date?.start || '')}
                                                     options={{
                                                         date: true,
                                                         datePattern: ['d', 'm', 'Y'],
@@ -327,7 +327,7 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
 
                                                 <Cleave
                                                     type="text"
-                                                    placeholder={FupDateConveter(item.properties['2ª FUP '].date?.start || '')}
+                                                    placeholder={fupDateConveter(item.properties['2ª FUP '].date?.start || '')}
                                                     options={{
                                                         date: true,
                                                         datePattern: ['d', 'm', 'Y'],
@@ -348,7 +348,7 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
 
                                                 <Cleave
                                                     type="text"
-                                                    placeholder={FupDateConveter(item.properties['3ª FUP'].date?.start || '')}
+                                                    placeholder={fupDateConveter(item.properties['3ª FUP'].date?.start || '')}
                                                     options={{
                                                         date: true,
                                                         datePattern: ['d', 'm', 'Y'],
@@ -369,7 +369,7 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
 
                                                 <Cleave
                                                     type="text"
-                                                    placeholder={FupDateConveter(item.properties['4ª FUP'].date?.start || '')}
+                                                    placeholder={fupDateConveter(item.properties['4ª FUP'].date?.start || '')}
                                                     options={{
                                                         date: true,
                                                         datePattern: ['d', 'm', 'Y'],
@@ -390,7 +390,7 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
 
                                                 <Cleave
                                                     type="text"
-                                                    placeholder={FupDateConveter(item.properties['5ª FUP '].date?.start || '')}
+                                                    placeholder={fupDateConveter(item.properties['5ª FUP '].date?.start || '')}
                                                     options={{
                                                         date: true,
                                                         datePattern: ['d', 'm', 'Y'],
