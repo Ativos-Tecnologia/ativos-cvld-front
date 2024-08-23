@@ -185,6 +185,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                                         className='flex items-center gap-1 overflow-x-scroll custom-scrollbar pb-0.5'>
                                                         {item.properties["Usuário"].multi_select?.map((user: any) => (
                                                             <span
+                                                                key={user.id}
                                                                 style={{
                                                                     backgroundColor: notionColorResolver(user.color)
                                                                 }}
