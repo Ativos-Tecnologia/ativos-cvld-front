@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useContext, useRef } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from '../Tables/TableDefault';
 import { IoDocumentTextOutline } from 'react-icons/io5';
 import { AiOutlineUser } from 'react-icons/ai';
@@ -8,11 +8,13 @@ import { NotionPage } from '@/interfaces/INotion';
 import { Badge } from 'flowbite-react';
 import tipoOficio from '@/enums/tipoOficio.enum';
 import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants';
-import { PiCursorClick } from 'react-icons/pi';
+import { PiCursorClick, PiListBulletsBold } from 'react-icons/pi';
 import { RiNotionFill } from 'react-icons/ri';
 import { ImCopy } from 'react-icons/im';
 import numberFormat from '@/functions/formaters/numberFormat';
 import statusOficio from '@/enums/statusOficio.enum';
+import { UserInfoAPIContext } from '@/context/UserInfoContext';
+import notionColorResolver from '@/functions/formaters/notionColorResolver';
 
 const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelectRow, handleEditTipoOficio, handleChangeCreditorName, editableLabel, setEditableLabel, handleEditInput, handleNotionDrawer, handleCopyValue, handleEditStatus, statusSelectValue }:
     {
@@ -34,6 +36,9 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
 ) => {
 
     const inputRefs = useRef<HTMLInputElement[] | null>([]);
+    const usersListRef = useRef<HTMLDivElement[] | null>([]);
+
+    const { data: { role } } = useContext(UserInfoAPIContext);
 
     return (
         <div className='max-w-full overflow-x-scroll pb-5'>
@@ -52,7 +57,15 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                             Nome do Credor
                         </div>
                     </TableHeadCell>
-                    <TableHeadCell className="w-[180px]">
+                    {role === 'ativos' && (
+                        <TableHeadCell className="min-w-[180px] max-w-[180px]">
+                            <div className="flex gap-2 items-center">
+                                <PiListBulletsBold className='text-base' />
+                                Usuários
+                            </div>
+                        </TableHeadCell>
+                    )}
+                    <TableHeadCell className="min-w-[150px]">
                         <div className="flex gap-2 items-center">
                             <LiaCoinsSolid className='text-base' />
                             Valor Líquido
@@ -86,7 +99,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                                         className={`opacity-50 w-[15px] group-hover:opacity-100 ${checkedList!.some(target => target.id === item.id) && '!opacity-100'} h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
                                                         onChange={() => handleSelectRow(item)}
                                                     />
-                                                    <Badge color="indigo" size="sm" className="w-[139px] h-7 text-[12px]">
+                                                    <Badge color="indigo" size="sm" className={`w-[139px] h-7 text-[12px]`}>
                                                         {fetchingValue === item.id ? (
                                                             <span className='w-[139px] pl-3 uppercase'>
                                                                 Atualizando ...
@@ -109,7 +122,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                                 </div>
                                             </TableCell>
                                             <TableCell title={item.properties.Credor?.title[0].text.content || ''}
-                                                className="relative h-full  flex items-center gap-2 font-semibold text-[12px]"
+                                                className="relative h-full min-w-100 flex items-center gap-2 font-semibold text-[12px]"
                                             >
                                                 <input
                                                     type="text"
@@ -150,7 +163,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                                                     />
                                                                     <span className='text-xs'>Abrir</span>
                                                                 </div>
-                                                                {item.url && (
+                                                                {(item.url && role === 'ativos') && (
                                                                     <a href={item.url} target='_blank' rel='referrer'
                                                                         title='Abrir no Notion'
                                                                         className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
@@ -165,13 +178,31 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                                 )}
 
                                             </TableCell>
-                                            <TableCell className=" font-semibold text-[14px]">
+                                            {role === 'ativos' && (
+                                                <TableCell className=" font-semibold text-[14px] min-w-[180px] max-w-[180px] overflow-hidden">
+                                                    <div
+                                                        ref={(input) => { if (input) usersListRef.current![index] = input; }}
+                                                        className='flex items-center gap-1 overflow-x-scroll custom-scrollbar pb-0.5'>
+                                                        {item.properties["Usuário"].multi_select?.map((user: any) => (
+                                                            <span
+                                                                key={user.id}
+                                                                style={{
+                                                                    backgroundColor: notionColorResolver(user.color)
+                                                                }}
+                                                                className='px-2 py-0 text-white rounded'>
+                                                                {user.name}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </TableCell>
+                                            )}
+                                            <TableCell className=" font-semibold text-[14px] text-right">
                                                 <div className="relative">
                                                     {numberFormat(item.properties['Valor Líquido'].formula?.number || 0)}
                                                     <ImCopy
                                                         title='Copiar valor'
                                                         onClick={() => handleCopyValue(index)}
-                                                        className='absolute top-1/2 -translate-y-1/2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                                                        className='absolute top-1/2 -translate-y-1/2 left-2 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
                                                     />
                                                 </div>
                                             </TableCell>

@@ -137,9 +137,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
     nome_razao_social: "",
   });
 
-  console.log(watch("novo_usuario"));
-
-
   const [usersList, setUsersList] = useState<any[]>([]);
 
   const [contatoNumberCount, setContatoNumberCount] = useState<number>(1);

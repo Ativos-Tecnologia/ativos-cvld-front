@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useContext, useRef } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from '../Tables/TableDefault'
 import { AiOutlineUser } from 'react-icons/ai'
 import { BiLoader, BiSolidDockLeft } from 'react-icons/bi'
@@ -13,8 +13,9 @@ import tipoOficio from '@/enums/tipoOficio.enum'
 import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants'
 import { ImCopy } from 'react-icons/im'
 import numberFormat from '@/functions/formaters/numberFormat'
+import { UserInfoAPIContext } from '@/context/UserInfoContext'
 
-export const OfficeTypeAndValue = ({ isPending, data, checkedList, editableLabel, setEditableLabel, statusSelectValue, oficioSelectValue, handleSelectRow,
+export const OfficeTypeAndValue = ({ isPending, data, checkedList, editableLabel, setEditableLabel, statusSelectValue, oficioSelectValue, handleSelectRow, handleNotionDrawer,
     handleChangeCreditorName, handleEditInput,updateStatusAtNotion, updateTipoAtNotion, handleCopyValue
  }:
     {
@@ -25,6 +26,7 @@ export const OfficeTypeAndValue = ({ isPending, data, checkedList, editableLabel
         setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
         statusSelectValue: statusOficio | null;
         oficioSelectValue: tipoOficio | null;
+        handleNotionDrawer: (id: string) => void;
         numberFormat: (number: number) => string;
         handleSelectRow: (item: NotionPage) => void;
         handleChangeCreditorName: (value: string, index: number, page_id: string, refList: HTMLInputElement[] | null) => Promise<void>;
@@ -37,6 +39,8 @@ export const OfficeTypeAndValue = ({ isPending, data, checkedList, editableLabel
 
     /* ----> refs <----- */
     const inputCredorRefs = useRef<HTMLInputElement[] | null>([]);
+
+    const { data: { role } } = useContext(UserInfoAPIContext);
 
     return (
         <div className='max-w-full overflow-x-scroll pb-5'>
@@ -124,13 +128,13 @@ export const OfficeTypeAndValue = ({ isPending, data, checkedList, editableLabel
                                                                             title='Abrir'
                                                                             className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
                                                                             onClick={() => {
-                                                                                // setOpenDetailsDrawer(true);
+                                                                                handleNotionDrawer(item.id);
                                                                             }}>
                                                                             <BiSolidDockLeft className='text-lg'
                                                                             />
                                                                             <span className='text-xs'>Abrir</span>
                                                                         </div>
-                                                                        {item.url && (
+                                                                        {(item.url && role === 'ativos') && (
                                                                             <a href={item.url} target='_blank' rel='referrer'
                                                                                 title='Abrir no Notion'
                                                                                 className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
