@@ -50,46 +50,46 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const selectTipoOficioRef = useRef<any>(null);
 
     const secondaryDefaultFilterObject = useMemo(() => {
-    return {
-        "and":
-            [
-                {
+        return {
+            "and":
+                [
+                    {
                         "property": "Status",
                         "status": {
-                                "does_not_equal": "Já vendido"
+                            "does_not_equal": "Já vendido"
                         }
-                },
-                {
+                    },
+                    {
                         "property": "Status",
                         "status": {
-                                "does_not_equal": "Considerou Preço Baixo"
-                            }
-                },
-                {
+                            "does_not_equal": "Considerou Preço Baixo"
+                        }
+                    },
+                    {
                         "property": "Status",
                         "status": {
-                                "does_not_equal": "Contato inexiste"
-                            }
-                },
-                {
+                            "does_not_equal": "Contato inexiste"
+                        }
+                    },
+                    {
                         "property": "Status",
                         "status": {
-                                "does_not_equal": "Ausência de resposta"
-                            }
-                },
-                {
+                            "does_not_equal": "Ausência de resposta"
+                        }
+                    },
+                    {
                         "property": "Status",
                         "status": {
-                                "does_not_equal": "Transação Concluída"
-                            }
-                },
-                {
+                            "does_not_equal": "Transação Concluída"
+                        }
+                    },
+                    {
                         "property": "Status",
                         "status": {
-                                "does_not_equal": "Ausência de resposta"
-                            }
-                }
-            ]
+                            "does_not_equal": "Ausência de resposta"
+                        }
+                    }
+                ]
         }
     }, []);
 
@@ -124,15 +124,15 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
     const defaultFilterObject = {
         "and":
-        [
+            [
                 {
                     "property": "Usuário",
                     "multi_select": {
-                            "contains": user
+                        "contains": user
                     }
                 },
                 secondaryDefaultFilterObject
-        ]
+            ]
     }
 
     const [currentQuery, setCurrentQuery] = useState({});
@@ -156,7 +156,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             queryKey: ['notion_list'],
             refetchOnReconnect: true,
             refetchOnWindowFocus: true,
-            refetchInterval: 1000 * 15 , // 15 seconds
+            refetchInterval: 1000 * 15, // 15 seconds
             staleTime: 1000 * 5, // 5 seconds
             queryFn: fetchNotionData,
         },
@@ -571,55 +571,55 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             {
 
                 "and":
-                [
+                    [
                         {
                             "property": "Usuário",
                             "multi_select": {
-                                    "contains": selectedUser || user
+                                "contains": selectedUser || user
                             }
                         },
                         {
-                        "and":
-                            [
-                                {
+                            "and":
+                                [
+                                    {
                                         "property": "Status",
                                         "status": {
-                                                "does_not_equal": "Já vendido"
+                                            "does_not_equal": "Já vendido"
                                         }
-                                },
-                                {
+                                    },
+                                    {
                                         "property": "Status",
                                         "status": {
-                                                "does_not_equal": "Considerou Preço Baixo"
-                                            }
-                                },
-                                {
+                                            "does_not_equal": "Considerou Preço Baixo"
+                                        }
+                                    },
+                                    {
                                         "property": "Status",
                                         "status": {
-                                                "does_not_equal": "Contato inexiste"
-                                            }
-                                },
-                                {
+                                            "does_not_equal": "Contato inexiste"
+                                        }
+                                    },
+                                    {
                                         "property": "Status",
                                         "status": {
-                                                "does_not_equal": "Ausência de resposta"
-                                            }
-                                },
-                                {
+                                            "does_not_equal": "Ausência de resposta"
+                                        }
+                                    },
+                                    {
                                         "property": "Status",
                                         "status": {
-                                                "does_not_equal": "Transação Concluída"
-                                            }
-                                },
-                                {
+                                            "does_not_equal": "Transação Concluída"
+                                        }
+                                    },
+                                    {
                                         "property": "Status",
                                         "status": {
-                                                "does_not_equal": "Ausência de resposta"
-                                            }
-                                }
-                            ]
+                                            "does_not_equal": "Ausência de resposta"
+                                        }
+                                    }
+                                ]
                         }
-                ]
+                    ]
             }
         )
     }
@@ -711,7 +711,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         setListQuery({
 
             "and":
-            [
+                [
                     {
                         "property": "Usuário",
                         "multi_select": {
