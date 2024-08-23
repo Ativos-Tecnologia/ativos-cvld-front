@@ -1,6 +1,6 @@
 import { Badge, CustomFlowbiteTheme, Flowbite, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from 'flowbite-react';
 import numberFormat from "@/functions/formaters/numberFormat";
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { BiLoader, BiSolidDockLeft } from 'react-icons/bi';
 import { LiaCoinsSolid } from "react-icons/lia";
 import { IoDocumentTextOutline, IoReload } from "react-icons/io5";
@@ -38,6 +38,8 @@ const notionViews: string[] = [
     'proposta aceita'
 ]
 
+
+
 type NotionTableViewProps = {
     count?: number;
     setExtratosTableToNotionDrawersetId: React.Dispatch<React.SetStateAction<string>>;
@@ -56,6 +58,50 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const searchRef = useRef<HTMLInputElement | null>(null);
     const selectStatusRef = useRef<any>(null);
     const selectTipoOficioRef = useRef<any>(null);
+
+    const secondaryDefaultFilterObject = useMemo(() => {
+    return {
+        "and":
+            [
+                {
+                        "property": "Status",
+                        "status": {
+                                "does_not_equal": "Já vendido"
+                        }
+                },
+                {
+                        "property": "Status",
+                        "status": {
+                                "does_not_equal": "Considerou Preço Baixo"
+                            }
+                },
+                {
+                        "property": "Status",
+                        "status": {
+                                "does_not_equal": "Contato inexiste"
+                            }
+                },
+                {
+                        "property": "Status",
+                        "status": {
+                                "does_not_equal": "Ausência de resposta"
+                            }
+                },
+                {
+                        "property": "Status",
+                        "status": {
+                                "does_not_equal": "Transação Concluída"
+                            }
+                },
+                {
+                        "property": "Status",
+                        "status": {
+                                "does_not_equal": "Ausência de resposta"
+                            }
+                }
+            ]
+        }
+    }, []);
 
 
     const handleNotionDrawer = (id: string) => {
@@ -93,11 +139,17 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const [activeFilter, setActiveFilter] = useState<ActiveState>('ALL');
     const [usersList, setUsersList] = useState<string[]>([])
     const [listQuery, setListQuery] = useState<object>({
-        "property": "Usuário",
-        "multi_select": {
-            "contains": user
-        }
-    },);
+        "and":
+        [
+                {
+                    "property": "Usuário",
+                    "multi_select": {
+                            "contains": user
+                    }
+                },
+                secondaryDefaultFilterObject
+        ]
+    });
 
 
     const fetchNotionData = async () => {
@@ -111,11 +163,24 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             queryKey: ['notion_list'],
             refetchOnReconnect: true,
             refetchOnWindowFocus: true,
+            refetchInterval: 1000 * 15 , // 15 seconds
+            staleTime: 1000 * 5, // 5 seconds
             queryFn: fetchNotionData,
         },
     );
 
-    console.log(data)
+    const archiveNotionPage = async (page_id: string, choice = true) => { // choice = true to archive, false to unarchive
+        try {
+            const resNotion = await api.patch(`notion-api/archive/<str:page_id>/${page_id}/`, {
+                "archived": choice
+            });
+            if (resNotion.status !== 202) {
+                console.log('houve um erro ao salvar os dados no notion');
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const updateStatusAtNotion = async (page_id: string, status: statusOficio) => {
 
@@ -381,10 +446,11 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     "select": {
                         "equals": oficioSelectValue || ''
                     }
-                }
+                },
+                secondaryDefaultFilterObject
             ]
         };
-    }, [user, statusSelectValue, oficioSelectValue, selectedUser]);
+    }, [user, statusSelectValue, oficioSelectValue, secondaryDefaultFilterObject, selectedUser]);
 
     useEffect(() => {
         const updatedQuery = buildQuery();
@@ -513,12 +579,67 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         setStatusSelectValue(null);
         setOficioSelectValue(null);
         setNotionView("geral");
+        // setListQuery(
+        //     {
+        //         "property": "Usuário",
+        //         "multi_select": {
+        //             "contains": user
+        //         }
+        //     }
+        // )
         setListQuery(
             {
-                "property": "Usuário",
-                "multi_select": {
-                    "contains": user
-                }
+
+                "and":
+                [
+                        {
+                            "property": "Usuário",
+                            "multi_select": {
+                                    "contains": user
+                            }
+                        },
+                        {
+                        "and":
+                            [
+                                {
+                                        "property": "Status",
+                                        "status": {
+                                                "does_not_equal": "Já vendido"
+                                        }
+                                },
+                                {
+                                        "property": "Status",
+                                        "status": {
+                                                "does_not_equal": "Considerou Preço Baixo"
+                                            }
+                                },
+                                {
+                                        "property": "Status",
+                                        "status": {
+                                                "does_not_equal": "Contato inexiste"
+                                            }
+                                },
+                                {
+                                        "property": "Status",
+                                        "status": {
+                                                "does_not_equal": "Ausência de resposta"
+                                            }
+                                },
+                                {
+                                        "property": "Status",
+                                        "status": {
+                                                "does_not_equal": "Transação Concluída"
+                                            }
+                                },
+                                {
+                                        "property": "Status",
+                                        "status": {
+                                                "does_not_equal": "Ausência de resposta"
+                                            }
+                                }
+                            ]
+                        }
+                ]
             }
         )
     }
@@ -610,7 +731,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         setListQuery({
 
             "and":
-                [
+            [
                     {
                         "property": "Usuário",
                         "multi_select": {
@@ -636,13 +757,12 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         setNotionView('proposta aceita');
         setListQuery(
             {
-
                 "and":
                     [
                         {
                             "property": "Usuário",
                             "multi_select": {
-                                "contains": "jarbas"
+                                "contains": selectedUser || user
                             }
                         },
                         {
@@ -1025,11 +1145,12 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     handleCopyValue={handleCopyValue}
                 />
             }
+            {isPending &&
+                <p className='text-center p-10 text-'>Carregando dados do Notion...</p>
 
-            {isFetching &&
-                <p className='text-center p-10 text-'>Carregando dados do notion...</p>
+            // {isFetching &&
+            //     <p className='text-center p-10 text-'>Carregando dados do notion...</p>
             }
-
         </>
 
     )
