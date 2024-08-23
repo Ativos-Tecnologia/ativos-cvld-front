@@ -1,6 +1,6 @@
 import { Badge, CustomFlowbiteTheme, Flowbite, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from 'flowbite-react';
 import numberFormat from "@/functions/formaters/numberFormat";
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { BiLoader, BiSolidDockLeft } from 'react-icons/bi';
 import { LiaCoinsSolid } from "react-icons/lia";
 import { IoDocumentTextOutline, IoReload } from "react-icons/io5";
@@ -36,69 +36,7 @@ const notionViews: string[] = [
     'proposta aceita'
 ]
 
-const archiveNotionPage = async (page_id: string, choice = true) => { // choice = true to archive, false to unarchive
-    try {
-        const resNotion = await api.patch(`notion-api/archive/<str:page_id>/${page_id}/`, {
-            "archived": choice
-        });
-        if (resNotion.status !== 202) {
-            console.log('houve um erro ao salvar os dados no notion');
-        }
-    } catch (error) {
-        console.log(error);
-    }
-}
 
-const updateNotionCreditorName = async (page_id: string, value: string) => {
-    try {
-        const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-            "Credor": {
-                "title": [
-                    {
-                        "text": {
-                            "content": value
-                        }
-                    }
-                ]
-            }
-        });
-        if (resNotion.status !== 202) {
-            console.log('houve um erro ao salvar os dados no notion');
-        }
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-const updateNotionPhoneNumber = async (page_id: string, type: string, value: string) => {
-    try {
-        const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-            [type]: {
-                "phone_number": value
-            }
-        });
-        if (resNotion.status !== 202) {
-            console.log('houve um erro ao salvar os dados no notion');
-        }
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-const updateNotionEmail = async (page_id: string, value: string) => {
-    try {
-        const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-            "Contato de E-mail": {
-                "email": value
-            }
-        });
-        if (resNotion.status !== 202) {
-            console.log('houve um erro ao salvar os dados no notion');
-        }
-    } catch (error) {
-        console.log(error);
-    }
-}
 
 type NotionTableViewProps = {
     count?: number;
@@ -118,6 +56,50 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const searchRef = useRef<HTMLInputElement | null>(null);
     const selectStatusRef = useRef<any>(null);
     const selectTipoOficioRef = useRef<any>(null);
+
+    const secondaryDefaultFilterObject = useMemo(() => {
+    return {
+        "and":
+            [
+                {
+                        "property": "Status",
+                        "status": {
+                                "does_not_equal": "Já vendido"
+                        }
+                },
+                {
+                        "property": "Status",
+                        "status": {
+                                "does_not_equal": "Considerou Preço Baixo"
+                            }
+                },
+                {
+                        "property": "Status",
+                        "status": {
+                                "does_not_equal": "Contato inexiste"
+                            }
+                },
+                {
+                        "property": "Status",
+                        "status": {
+                                "does_not_equal": "Ausência de resposta"
+                            }
+                },
+                {
+                        "property": "Status",
+                        "status": {
+                                "does_not_equal": "Transação Concluída"
+                            }
+                },
+                {
+                        "property": "Status",
+                        "status": {
+                                "does_not_equal": "Ausência de resposta"
+                            }
+                }
+            ]
+        }
+    }, []);
 
 
     const handleNotionDrawer = (id: string) => {
@@ -154,11 +136,17 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const [oficioSelectValue, setOficioSelectValue] = useState<tipoOficio | null>(null);
     const [activeFilter, setActiveFilter] = useState<ActiveState>('ALL');
     const [listQuery, setListQuery] = useState<object>({
-        "property": "Usuário",
-        "multi_select": {
-            "contains": user
-        }
-    },);
+        "and":
+        [
+                {
+                    "property": "Usuário",
+                    "multi_select": {
+                            "contains": user
+                    }
+                },
+                secondaryDefaultFilterObject
+        ]
+    });
 
 
     const fetchNotionData = async () => {
@@ -177,6 +165,19 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             queryFn: fetchNotionData,
         },
     );
+
+    const archiveNotionPage = async (page_id: string, choice = true) => { // choice = true to archive, false to unarchive
+        try {
+            const resNotion = await api.patch(`notion-api/archive/<str:page_id>/${page_id}/`, {
+                "archived": choice
+            });
+            if (resNotion.status !== 202) {
+                console.log('houve um erro ao salvar os dados no notion');
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const updateStatusAtNotion = async (page_id: string, status: statusOficio) => {
 
@@ -431,10 +432,11 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     "select": {
                         "equals": oficioSelectValue || ''
                     }
-                }
+                },
+                secondaryDefaultFilterObject
             ]
         };
-    }, [user, statusSelectValue, oficioSelectValue]);
+    }, [user, statusSelectValue, oficioSelectValue, secondaryDefaultFilterObject]);
 
     useEffect(() => {
         const updatedQuery = buildQuery();
@@ -549,12 +551,67 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         setStatusSelectValue(null);
         setOficioSelectValue(null);
         setNotionView("geral");
+        // setListQuery(
+        //     {
+        //         "property": "Usuário",
+        //         "multi_select": {
+        //             "contains": user
+        //         }
+        //     }
+        // )
         setListQuery(
             {
-                "property": "Usuário",
-                "multi_select": {
-                    "contains": user
-                }
+
+                "and":
+                [
+                        {
+                            "property": "Usuário",
+                            "multi_select": {
+                                    "contains": user
+                            }
+                        },
+                        {
+                        "and":
+                            [
+                                {
+                                        "property": "Status",
+                                        "status": {
+                                                "does_not_equal": "Já vendido"
+                                        }
+                                },
+                                {
+                                        "property": "Status",
+                                        "status": {
+                                                "does_not_equal": "Considerou Preço Baixo"
+                                            }
+                                },
+                                {
+                                        "property": "Status",
+                                        "status": {
+                                                "does_not_equal": "Contato inexiste"
+                                            }
+                                },
+                                {
+                                        "property": "Status",
+                                        "status": {
+                                                "does_not_equal": "Ausência de resposta"
+                                            }
+                                },
+                                {
+                                        "property": "Status",
+                                        "status": {
+                                                "does_not_equal": "Transação Concluída"
+                                            }
+                                },
+                                {
+                                        "property": "Status",
+                                        "status": {
+                                                "does_not_equal": "Ausência de resposta"
+                                            }
+                                }
+                            ]
+                        }
+                ]
             }
         )
     }
@@ -1094,9 +1151,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             }
 
             {isPending &&
-                <p className='text-center p-10 text-'>Carregando dados do notion...</p>
+                <p className='text-center p-10 text-'>Carregando dados do Notion...</p>
             }
-
         </>
 
     )
