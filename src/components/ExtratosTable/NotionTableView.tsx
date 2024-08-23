@@ -2,28 +2,20 @@ import { Badge, CustomFlowbiteTheme, Flowbite, Table, TableBody, TableCell, Tabl
 import numberFormat from "@/functions/formaters/numberFormat";
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { BiLoader, BiSolidDockLeft } from 'react-icons/bi';
-import { LiaCoinsSolid } from "react-icons/lia";
-import { IoDocumentTextOutline, IoReload } from "react-icons/io5";
-import { PiCursorClick } from "react-icons/pi";
-import { CVLDResultProps } from '@/interfaces/IResultCVLD';
 import statusOficio from '@/enums/statusOficio.enum';
 import tipoOficio from '@/enums/tipoOficio.enum';
-import MarvelousPagination from '../MarvelousPagination';
 import { ImCopy, ImTable } from 'react-icons/im';
 import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants';
 import { AiOutlineSearch, AiOutlineUser } from 'react-icons/ai';
 import { toast } from 'sonner';
 import { ActiveState, ExtratosTableContext } from '@/context/ExtratosTableContext';
-import { RiNotionFill } from 'react-icons/ri';
 import { NotionPage } from '@/interfaces/INotion';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import api from '@/utils/api';
-import StatusFilter from '../Filters/StatusFilter';
 import { MdOutlineFilterAltOff } from 'react-icons/md';
 import { MiniMenu } from './MiniMenu';
 import { LucideChevronsUpDown } from 'lucide-react';
-import { customFlowBiteTheme } from '@/themes/FlowbiteThemes';
 import MakeFirstContact from '../TablesNotion/MakeFirstContact';
 import { OfficeTypeAndValue } from '../TablesNotion/OfficeTypeAndValue';
 import { SendProposal } from '../TablesNotion/SendProposal';
@@ -37,8 +29,6 @@ const notionViews: string[] = [
     'enviar proposta/negociação',
     'proposta aceita'
 ]
-
-
 
 type NotionTableViewProps = {
     count?: number;
@@ -103,7 +93,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         }
     }, []);
 
-
     const handleNotionDrawer = (id: string) => {
         setExtratosTableToNotionDrawersetId(id)
         setNotionDrawer(true);
@@ -131,14 +120,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     } = useContext(ExtratosTableContext);
     const { data: { user, role } } = useContext(UserInfoAPIContext);
 
-    const [currentQuery, setCurrentQuery] = useState({});
-
-    const [statusSelectValue, setStatusSelectValue] = useState<statusOficio | null>(null);
-    const [oficioSelectValue, setOficioSelectValue] = useState<tipoOficio | null>(null);
-    const [selectedUser, setSelectedUser] = useState<string | null>(null)
-    const [activeFilter, setActiveFilter] = useState<ActiveState>('ALL');
-    const [usersList, setUsersList] = useState<string[]>([])
-    const [listQuery, setListQuery] = useState<object>({
+    const defaultFilterObject = {
         "and":
         [
                 {
@@ -149,7 +131,16 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                 },
                 secondaryDefaultFilterObject
         ]
-    });
+    }
+
+    const [currentQuery, setCurrentQuery] = useState({});
+
+    const [statusSelectValue, setStatusSelectValue] = useState<statusOficio | null>(null);
+    const [oficioSelectValue, setOficioSelectValue] = useState<tipoOficio | null>(null);
+    const [selectedUser, setSelectedUser] = useState<string | null>(null)
+    const [activeFilter, setActiveFilter] = useState<ActiveState>('ALL');
+    const [usersList, setUsersList] = useState<string[]>([])
+    const [listQuery, setListQuery] = useState<object>(defaultFilterObject);
 
 
     const fetchNotionData = async () => {
@@ -504,12 +495,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         setStatusSelectValue(null);
         setOficioSelectValue(null);
         setSelectedUser(null);
-        setListQuery({
-            "property": "Usuário",
-            "multi_select": {
-                "contains": user
-            }
-        });
+        setListQuery(defaultFilterObject);
     }
 
     const searchStatus = (value: string) => {
@@ -579,14 +565,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         setStatusSelectValue(null);
         setOficioSelectValue(null);
         setNotionView("geral");
-        // setListQuery(
-        //     {
-        //         "property": "Usuário",
-        //         "multi_select": {
-        //             "contains": user
-        //         }
-        //     }
-        // )
         setListQuery(
             {
 
@@ -595,7 +573,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                         {
                             "property": "Usuário",
                             "multi_select": {
-                                    "contains": user
+                                    "contains": selectedUser || user
                             }
                         },
                         {
@@ -654,7 +632,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                         {
                             "property": "Usuário",
                             "multi_select": {
-                                "contains": user
+                                "contains": selectedUser || user
                             }
                         },
                         {
@@ -701,7 +679,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                         {
                             "property": "Usuário",
                             "multi_select": {
-                                "contains": user
+                                "contains": selectedUser || user
                             }
                         },
                         {
@@ -735,7 +713,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     {
                         "property": "Usuário",
                         "multi_select": {
-                            "contains": "jarbas"
+                            "contains": selectedUser || user
                         }
                     },
                     {
@@ -1072,7 +1050,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
             {notionView === 'realizar 1º contato' &&
                 <MakeFirstContact
-                    isFetching={isFetching}
+                    isPending={isPending}
                     data={data}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
@@ -1090,7 +1068,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
             {notionView === 'juntar ofício/valor líquido' &&
                 <OfficeTypeAndValue
-                    isFetching={isFetching}
+                    isPending={isPending}
                     data={data}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
@@ -1145,12 +1123,9 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     handleCopyValue={handleCopyValue}
                 />
             }
-            {isPending &&
+            {/* {isPending &&
                 <p className='text-center p-10 text-'>Carregando dados do Notion...</p>
-
-            // {isFetching &&
-            //     <p className='text-center p-10 text-'>Carregando dados do notion...</p>
-            }
+            } */}
         </>
 
     )
