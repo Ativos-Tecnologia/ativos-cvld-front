@@ -93,6 +93,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         }
     }, []);
 
+
+
     const handleNotionDrawer = (id: string) => {
         setExtratosTableToNotionDrawersetId(id)
         setNotionDrawer(true);

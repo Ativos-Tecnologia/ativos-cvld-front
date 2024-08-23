@@ -6,7 +6,7 @@ import { customFlowBiteTheme } from "@/themes/FlowbiteThemes";
 import { Button, Drawer, Flowbite, Table } from "flowbite-react";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { AiOutlineLoading, AiOutlineReload, AiOutlineUser } from "react-icons/ai";
-import { BiDownload, BiX } from "react-icons/bi";
+import { BiDownload, BiTransfer, BiX } from "react-icons/bi";
 import { CgDetailsMore } from "react-icons/cg";
 import { LinkedTasks } from "../TaskElements/LinkedTasks";
 import { ExtratosTableContext } from "@/context/ExtratosTableContext";
@@ -17,6 +17,8 @@ import { IoDocumentTextOutline } from "react-icons/io5";
 import { RiNotionFill } from "react-icons/ri";
 import percentageFormater from "@/functions/formaters/percentFormater";
 import { MdOutlineFollowTheSigns } from "react-icons/md";
+import notionColorResolver from "@/functions/formaters/notionColorResolver";
+import { FaMoneyBillTransfer } from "react-icons/fa6";
 
 type NotionDrawerProps = {
   pageId: string;
@@ -101,7 +103,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
           <Drawer open={openDetailsDrawer} onClose={handleClose} style={{
             boxShadow: "2px 0 2px 0 rgba(0, 0, 0, 0.1)"
           }} className="min-w-48 sm:w-115 flex flex-col" backdrop={true}>
-            {isPending ? (
+            {isFetching ? (
               <div className="flex flex-col w-fit mx-auto h-full gap-8 items-center justify-center">
                 <AiOutlineLoading className="w-10 h-10 animate-spin fill-blue-700" />
                 <p className="text-sm text-center">Carregando dados do extrato<span className="typewriter">...</span></p>
@@ -137,20 +139,20 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                     </div>
                   </div>
                   <div className="flex items-center gap-2 justify-end mb-2">
-                  <a href={item.url} target='_blank' rel='referrer'
-                                                                                title='Abrir no Notion'
-                                                                                className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-100 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
-                                                                            >
-                                                                                <RiNotionFill className='text-lg'
-                                                                                />
-                                                                                <span className='text-xs'>Notion</span>
-                                                                            </a>
+                    <a href={item.url} target='_blank' rel='referrer'
+                      title='Abrir no Notion'
+                      className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-100 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                    >
+                      <RiNotionFill className='text-lg'
+                      />
+                      <span className='text-xs'>Notion</span>
+                    </a>
                     <button className="py-1 px-2 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-100 group-hover:opacity-100 transition-all duration-200 cursor-pointer" onClick={() => refetch()}>
 
                       <AiOutlineReload />
                       <span className="text-xs">Atualizar</span>
                     </button>
-                    </div>
+                  </div>
                 </div>
                 {/* <Drawer.Items>
                     {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
@@ -172,7 +174,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                       <tbody>
                         <tr className="bg-blue-700">
                           <td className="text-white px-4 py-2 font-semibold flex items-center">
-                          <AiOutlineUser className="mr-4" /> Informações do Credor
+                            <AiOutlineUser className="mr-4" /> Informações do Credor
                           </td>
                           <td className="text-boxdark px-4 py-2">
                             &nbsp;
@@ -207,113 +209,121 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         </tr>
                         <tr className="bg-blue-700">
                           <td className="text-white px-4 py-2 flex items-center font-semibold">
-                          <MdOutlineFollowTheSigns className="mr-4" /> Follow Up
+                            <MdOutlineFollowTheSigns className="mr-4" /> Follow Up
                           </td>
                           <td className="text-boxdark px-4 py-2">
                             &nbsp;
                           </td>
                         </tr>
                         {
-                            <tr className="bg-gray dark:bg-boxdark-2/80">
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Status</td>
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{data?.properties?.Status?.status?.name || ""}</td>
-                            </tr>
-                          }
+                          <tr className="bg-gray dark:bg-boxdark-2/80">
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Status</td>
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">
+                              <span className="p-1 rounded-md dark:text-boxdark" style={{
+                                backgroundColor: notionColorResolver(data!.properties!.Status!.status!.color),
+                              }}>{data?.properties?.Status?.status?.name || ""}</span>
+                            </td>
+                          </tr>
+                        }
                         {
-                            <tr className="bg-gray dark:bg-boxdark-2/80">
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Due do ativo</td>
+                          <tr className="bg-gray dark:bg-boxdark-2/80">
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Due do ativo</td>
                             <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{<input className="w-[15px] h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer" type="checkbox" checked={data?.properties["Due do Ativo"].checkbox} />}</td>
-                            </tr>
-                          }
+                          </tr>
+                        }
 
                         {
-                            <tr className="bg-gray dark:bg-boxdark-2/80">
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Certidões emitidas</td>
+                          <tr className="bg-gray dark:bg-boxdark-2/80">
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Certidões emitidas</td>
                             <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{<input className="w-[15px] h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer" type="checkbox" checked={data?.properties["Certidões emitidas"].checkbox} />} </td>
-                            </tr>
+                          </tr>
                         }
                         {
-                            <tr className="bg-gray dark:bg-boxdark-2/80">
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">CVLD Necessária?</td>
+                          <tr className="bg-gray dark:bg-boxdark-2/80">
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">CVLD Necessária?</td>
                             <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{<input className="w-[15px] h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer" type="checkbox" checked={data?.properties["CVLD necessária?"].checkbox} />} </td>
-                            </tr>
+                          </tr>
                         }
                         {
-                            <tr className="bg-gray dark:bg-boxdark-2/80">
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">1ª Follow Up</td>
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">
-                                {
-                                  dateFormater(data?.properties["1ª FUP"]?.date?.start)
-                                }
-                              </td>
-                            </tr>
+                          <tr className="bg-gray dark:bg-boxdark-2/80">
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">1ª Follow Up</td>
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">
+                              {
+                                dateFormater(data?.properties["1ª FUP"]?.date?.start)
+                              }
+                            </td>
+                          </tr>
                         }
                         {
-                            <tr className="bg-gray dark:bg-boxdark-2/80">
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">2ª Follow Up</td>
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">
-                                {
-                                  dateFormater(data?.properties["2ª FUP "]?.date?.start)
-                                }
-                              </td>
-                            </tr>
+                          <tr className="bg-gray dark:bg-boxdark-2/80">
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">2ª Follow Up</td>
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">
+                              {
+                                dateFormater(data?.properties["2ª FUP "]?.date?.start)
+                              }
+                            </td>
+                          </tr>
                         }
                         {
-                            <tr className="bg-gray dark:bg-boxdark-2/80">
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">3ª Follow Up</td>
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">
-                                {
-                                  dateFormater(data?.properties["3ª FUP"]?.date?.start)
-                                }
-                              </td>
-                            </tr>
+                          <tr className="bg-gray dark:bg-boxdark-2/80">
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">3ª Follow Up</td>
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">
+                              {
+                                dateFormater(data?.properties["3ª FUP"]?.date?.start)
+                              }
+                            </td>
+                          </tr>
                         }
                         {
-                            <tr className="bg-gray dark:bg-boxdark-2/80">
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">4ª Follow Up</td>
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">
-                                {
-                                  dateFormater(data?.properties["4ª FUP"]?.date?.start)
-                                }
-                              </td>
-                            </tr>
+                          <tr className="bg-gray dark:bg-boxdark-2/80">
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">4ª Follow Up</td>
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">
+                              {
+                                dateFormater(data?.properties["4ª FUP"]?.date?.start)
+                              }
+                            </td>
+                          </tr>
                         }
                         {
-                            <tr className="bg-gray dark:bg-boxdark-2/80">
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">5ª Follow Up</td>
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">
-                                {
-                                  dateFormater(data?.properties["5ª FUP "]?.date?.start)
-                                }
-                              </td>
-                            </tr>
+                          <tr className="bg-gray dark:bg-boxdark-2/80">
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">5ª Follow Up</td>
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">
+                              {
+                                dateFormater(data?.properties["5ª FUP "]?.date?.start)
+                              }
+                            </td>
+                          </tr>
                         }
                         <tr className="bg-blue-700">
                           <td className="text-white px-4 py-2 flex items-center font-semibold">
-                          <IoDocumentTextOutline className="mr-4" /> Processo
+                            <IoDocumentTextOutline className="mr-4" /> Processo
                           </td>
                           <td className="text-boxdark px-4 py-2">
                             &nbsp;
                           </td>
                         </tr>
-                          {
-                            <tr className="bg-gray dark:bg-boxdark-2/80">
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Tipo</td>
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{data?.properties?.Tipo?.select?.name || ""}</td>
-                            </tr>
-                          }
-                          {
-                            <tr className="bg-gray dark:bg-boxdark-2/80">
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">NPU Originário</td>
+                        {
+                          <tr className="bg-gray dark:bg-boxdark-2/80">
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Tipo</td>
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">
+                              <span className="p-1 rounded-md dark:text-boxdark" style={{
+                                backgroundColor: notionColorResolver(data!.properties!.Tipo!.select!.color),
+                              }}>{data?.properties?.Tipo?.select?.name || ""}</span>
+                            </td>
+                          </tr>
+                        }
+                        {
+                          <tr className="bg-gray dark:bg-boxdark-2/80">
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">NPU Originário</td>
                             <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{data?.properties["NPU (Originário)"]?.rich_text![0]?.text?.content || ""}</td>
-                            </tr>
-                          }
-                          {
-                            <tr className="bg-gray dark:bg-boxdark-2/80">
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">NPU Precatório</td>
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{data?.properties["NPU (Precatório)"]?.rich_text![0]?.text?.content || ""}</td>
-                            </tr>
-                          }
+                          </tr>
+                        }
+                        {
+                          <tr className="bg-gray dark:bg-boxdark-2/80">
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">NPU Precatório</td>
+                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{data?.properties["NPU (Precatório)"]?.rich_text![0]?.text?.content || ""}</td>
+                          </tr>
+                        }
                         <tr className="bg-gray dark:bg-boxdark-2/80">
                           <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Tribunal</td>
                           <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{data?.properties?.Tribunal?.select?.name || ""}</td>
@@ -468,53 +478,53 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         } */}
 
                         <tr className="bg-blue-700">
-                            <td className="text-white px-4 py-2">
-                              Deduções
-                            </td>
-                            <td className="text-boxdark px-4 py-2">
-                              &nbsp;
-                            </td>
-                          </tr>
-                          <tr className="bg-rose-300">
-                            <td className="border border-stroke px-4 py-2 text-boxdark text-left">Honorários já destacados?</td>
-                            <td className="border border-stroke px-4 py-2 text-boxdark">{data?.properties["Honorários já destacados?"].checkbox ? "Sim" : "Não"}</td>
-                          </tr>
-                          { data?.properties["Honorários já destacados?"].checkbox === false && (
-                            <>
-                            <tr className="bg-rose-300">
-                              <td className="border border-stroke px-4 py-2 text-boxdark text-left">Percentual de Honorários Não destacados</td>
-                              <td className="border border-stroke px-4 py-2 text-boxdark">{percentageFormater(data?.properties["Percentual de Honorários Não destacados"].number || 0)}</td>
-                            </tr><tr className="bg-rose-300">
-                                <td className="border border-stroke px-4 py-2 text-boxdark text-left">Honorários Não destacados</td>
-                                <td className="border border-stroke px-4 py-2 text-boxdark">{numberFormat(data?.properties["Honorários não destacados"]?.formula?.number || 0)}</td>
-                              </tr>
-                              </>
-
-                        )}
-                          <tr className="bg-rose-300">
-                            <td className="border border-stroke px-4 py-2 text-boxdark text-left">Imposto de Renda (3%)</td>
-                            <td className="border border-stroke px-4 py-2 text-boxdark">{data?.properties["Imposto de Renda Retido 3%"]?.number ? numberFormat(data?.properties["Imposto de Renda Retido 3%"].number || 0) : "Não Informado"}</td>
-                          </tr>
-
-                              <tr className="bg-rose-300">
-                                <td className="border border-stroke px-4 py-2 text-boxdark text-left">IR/RRA</td>
-                                <td className="border border-stroke px-4 py-2 text-boxdark">{data?.properties["RRA"]?.number ? numberFormat(data?.properties["RRA"].number || 0) : "Não Informado"}</td>
-                              </tr>
-
-                          <tr className="bg-rose-300">
-                            <td className="border border-stroke px-4 py-2 text-boxdark text-left">PSS</td>
-                            <td className="border border-stroke px-4 py-2 text-boxdark">{numberFormat(data?.properties?.PSS.number || 0)}</td>
-                          </tr>
-
-                          <tr className="bg-blue-700">
                           <td className="text-white px-4 py-2 flex items-center font-semibold">
-                          <IoDocumentTextOutline className="mr-4" /> Estimativas
+                            <BiTransfer className="mr-4" /> Deduções
                           </td>
                           <td className="text-boxdark px-4 py-2">
                             &nbsp;
                           </td>
                         </tr>
-                          {/* <tr className="">
+                        <tr className="bg-rose-300">
+                          <td className="border border-stroke px-4 py-2 text-boxdark text-left">Honorários já destacados?</td>
+                          <td className="border border-stroke px-4 py-2 text-boxdark">{data?.properties["Honorários já destacados?"].checkbox ? "Sim" : "Não"}</td>
+                        </tr>
+                        {data?.properties["Honorários já destacados?"].checkbox === false && (
+                          <>
+                            <tr className="bg-rose-300">
+                              <td className="border border-stroke px-4 py-2 text-boxdark text-left">Percentual de Honorários Não destacados</td>
+                              <td className="border border-stroke px-4 py-2 text-boxdark">{percentageFormater(data?.properties["Percentual de Honorários Não destacados"].number || 0)}</td>
+                            </tr><tr className="bg-rose-300">
+                              <td className="border border-stroke px-4 py-2 text-boxdark text-left">Honorários Não destacados</td>
+                              <td className="border border-stroke px-4 py-2 text-boxdark">{numberFormat(data?.properties["Honorários não destacados"]?.formula?.number || 0)}</td>
+                            </tr>
+                          </>
+
+                        )}
+                        <tr className="bg-rose-300">
+                          <td className="border border-stroke px-4 py-2 text-boxdark text-left">Imposto de Renda (3%)</td>
+                          <td className="border border-stroke px-4 py-2 text-boxdark">{data?.properties["Imposto de Renda Retido 3%"]?.number ? numberFormat(data?.properties["Imposto de Renda Retido 3%"].number || 0) : "Não Informado"}</td>
+                        </tr>
+
+                        <tr className="bg-rose-300">
+                          <td className="border border-stroke px-4 py-2 text-boxdark text-left">IR/RRA</td>
+                          <td className="border border-stroke px-4 py-2 text-boxdark">{data?.properties["RRA"]?.number ? numberFormat(data?.properties["RRA"].number || 0) : "Não Informado"}</td>
+                        </tr>
+
+                        <tr className="bg-rose-300">
+                          <td className="border border-stroke px-4 py-2 text-boxdark text-left">PSS</td>
+                          <td className="border border-stroke px-4 py-2 text-boxdark">{numberFormat(data?.properties?.PSS.number || 0)}</td>
+                        </tr>
+
+                        <tr className="bg-blue-700">
+                          <td className="text-white px-4 py-2 flex items-center font-semibold">
+                            <IoDocumentTextOutline className="mr-4" /> Estimativas
+                          </td>
+                          <td className="text-boxdark px-4 py-2">
+                            &nbsp;
+                          </td>
+                        </tr>
+                        {/* <tr className="">
                             <td className="text-boxdark px-1">
                               &nbsp;
                             </td>
@@ -522,40 +532,40 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                               &nbsp;
                             </td>
                           </tr> */}
-                          <tr className="bg-green-300 text-boxdark">
-                            <td className="border border-stroke px-4 py-2 text-left font-semibold">Valor Líquido Disponível</td>
-                            <td className="border border-stroke px-4 py-2 text-boxdark font-semibold">{
-                              data?.properties["Honorários já destacados?"].checkbox === false ? (
-                                numberFormat(data?.properties["Valor Líquido (Com Reserva dos Honorários)"]?.formula?.number || 0)
-                              ) : (
-                                numberFormat(data?.properties["Valor Líquido"]?.formula?.number || 0)
-                              )
-                              }</td>
-                          </tr>
-                          <tr className="bg-gray dark:bg-boxdark-2/80">
-                              <td className="border border-stroke px-4 py-2 text-boxdark text-left">Preço Proposto</td>
-                              <td className="border border-stroke px-4 py-2 text-boxdark">{numberFormat(data?.properties["Preço Proposto"]?.number || 0)}</td>
-                            </tr>
-                          <tr className="bg-gray dark:bg-boxdark-2/80">
-                              <td className="border border-stroke px-4 py-2 text-boxdark text-left">(R$) Proposta Mínima</td>
-                              <td className="border border-stroke px-4 py-2 text-boxdark">{numberFormat(data?.properties["(R$) Proposta Mínima "]?.formula?.number || 0)}</td>
-                            </tr>
-                          <tr className="bg-gray dark:bg-boxdark-2/80">
-                              <td className="border border-stroke px-4 py-2 text-boxdark text-left">(%) Proposta Mínima</td>
-                              <td className="border border-stroke px-4 py-2 text-boxdark">{percentageFormater(data?.properties["(%) Proposta Mínima "]?.formula?.string || 0)}</td>
-                            </tr>
-                          <tr className="bg-gray dark:bg-boxdark-2/80">
-                              <td className="border border-stroke px-4 py-2 text-boxdark text-left">(R$) Proposta Máxima
-                              </td>
-                              <td className="border border-stroke px-4 py-2 text-boxdark">{numberFormat(data?.properties["(R$) Proposta Máxima"]?.formula?.number || 0)}</td>
-                            </tr>
-                          <tr className="bg-gray dark:bg-boxdark-2/80">
-                              <td className="border border-stroke px-4 py-2 text-boxdark text-left">(%) Proposta Máxima
-                              </td>
-                              <td className="border border-stroke px-4 py-2 text-boxdark">{percentageFormater(data?.properties["(%) Proposta Máxima "]?.formula?.string || 0)}</td>
-                            </tr>
+                        <tr className="bg-green-300 text-boxdark">
+                          <td className="border border-stroke px-4 py-2 text-left font-semibold">Valor Líquido Disponível</td>
+                          <td className="border border-stroke px-4 py-2 text-boxdark font-semibold">{
+                            data?.properties["Honorários já destacados?"].checkbox === false ? (
+                              numberFormat(data?.properties["Valor Líquido (Com Reserva dos Honorários)"]?.formula?.number || 0)
+                            ) : (
+                              numberFormat(data?.properties["Valor Líquido"]?.formula?.number || 0)
+                            )
+                          }</td>
+                        </tr>
+                        <tr className="bg-gray dark:bg-boxdark-2/80">
+                          <td className="border border-stroke px-4 py-2 text-boxdark text-left">Preço Proposto</td>
+                          <td className="border border-stroke px-4 py-2 text-boxdark">{numberFormat(data?.properties["Preço Proposto"]?.number || 0)}</td>
+                        </tr>
+                        <tr className="bg-gray dark:bg-boxdark-2/80">
+                          <td className="border border-stroke px-4 py-2 text-boxdark text-left">(R$) Proposta Mínima</td>
+                          <td className="border border-stroke px-4 py-2 text-boxdark">{numberFormat(data?.properties["(R$) Proposta Mínima "]?.formula?.number || 0)}</td>
+                        </tr>
+                        <tr className="bg-gray dark:bg-boxdark-2/80">
+                          <td className="border border-stroke px-4 py-2 text-boxdark text-left">(%) Proposta Mínima</td>
+                          <td className="border border-stroke px-4 py-2 text-boxdark">{percentageFormater(data?.properties["(%) Proposta Mínima "]?.formula?.string || 0)}</td>
+                        </tr>
+                        <tr className="bg-gray dark:bg-boxdark-2/80">
+                          <td className="border border-stroke px-4 py-2 text-boxdark text-left">(R$) Proposta Máxima
+                          </td>
+                          <td className="border border-stroke px-4 py-2 text-boxdark">{numberFormat(data?.properties["(R$) Proposta Máxima"]?.formula?.number || 0)}</td>
+                        </tr>
+                        <tr className="bg-gray dark:bg-boxdark-2/80">
+                          <td className="border border-stroke px-4 py-2 text-boxdark text-left">(%) Proposta Máxima
+                          </td>
+                          <td className="border border-stroke px-4 py-2 text-boxdark">{percentageFormater(data?.properties["(%) Proposta Máxima "]?.formula?.string || 0)}</td>
+                        </tr>
 
-                          {/* numberFormat(data?.properties["Valor Líquido (Com Reserva dos Honorários)"]?.formula?.number || 0) */}
+                        {/* numberFormat(data?.properties["Valor Líquido (Com Reserva dos Honorários)"]?.formula?.number || 0) */}
                       </tbody>
                     </Table>
                     {/* <ul>
