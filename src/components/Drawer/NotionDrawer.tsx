@@ -127,14 +127,16 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                     </div>
                   </div>
                   <div className="flex items-center gap-2 justify-end mb-2">
-                    { role === "ativos" && (<a href={item.url} target='_blank' rel='referrer'
+                    { role === "ativos" && (
+                      <a href={data!.url} target='_blank' rel='referrer'
                       title='Abrir no Notion'
                       className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-100 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
                     >
                       <RiNotionFill className='text-lg'
                       />
                       <span className='text-xs'>Notion</span>
-                    </a>)}
+                    </a>)
+                    }
                     <button className="py-1 px-2 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-100 group-hover:opacity-100 transition-all duration-200 cursor-pointer" onClick={() => refetch()}>
                       <AiOutlineReload />
                       <span className="text-xs">Atualizar</span>
