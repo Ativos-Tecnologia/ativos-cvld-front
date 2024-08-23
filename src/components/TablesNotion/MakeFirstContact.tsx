@@ -11,9 +11,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from 
 import { Badge } from 'flowbite-react';
 import { MdOutlineAlternateEmail } from 'react-icons/md';
 
-const MakeFirstContact = ({ isFetching, data, checkedList, editableLabel, setEditableLabel, selectStatusValue, setStatusSelectValue, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, updateStatusAtNotion }:
+const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEditableLabel, selectStatusValue, setStatusSelectValue, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, updateStatusAtNotion }:
     {
-        isFetching: boolean,
+        isPending: boolean,
         data: any,
         checkedList: NotionPage[],
         editableLabel: string | null;
@@ -83,7 +83,7 @@ const MakeFirstContact = ({ isFetching, data, checkedList, editableLabel, setEdi
                 </TableHead>
 
                 <TableBody>
-                    {isFetching ? (
+                    {isPending ? (
                         null
                     ) : (
                         <React.Fragment>
