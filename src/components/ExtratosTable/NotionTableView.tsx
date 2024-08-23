@@ -50,6 +50,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const [checkedList, setCheckedList] = React.useState<NotionPage[]>([]);
     const [openStatusPopover, setOpenStatusPopover] = useState<boolean>(false);
     const [openTipoOficioPopover, setOpenTipoOficioPopover] = useState<boolean>(false);
+    const [openUsersPopover, setOpenUsersPopover] = useState<boolean>(false);
     const [filteredValues, setFilteredValues] = useState<statusOficio[]>(ENUM_OFICIOS_LIST);
     const [fetchingValue, setFetchingValue] = useState<string | null>(null);
     const searchRef = useRef<HTMLInputElement | null>(null);
@@ -82,13 +83,15 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         setOpenDetailsDrawer,
         editableLabel, setEditableLabel
     } = useContext(ExtratosTableContext);
-    const { data: { user } } = useContext(UserInfoAPIContext);
+    const { data: { user, role } } = useContext(UserInfoAPIContext);
 
     const [currentQuery, setCurrentQuery] = useState({});
 
     const [statusSelectValue, setStatusSelectValue] = useState<statusOficio | null>(null);
     const [oficioSelectValue, setOficioSelectValue] = useState<tipoOficio | null>(null);
+    const [selectedUser, setSelectedUser] = useState<string | null>(null)
     const [activeFilter, setActiveFilter] = useState<ActiveState>('ALL');
+    const [usersList, setUsersList] = useState<string[]>([])
     const [listQuery, setListQuery] = useState<object>({
         "property": "Usuário",
         "multi_select": {
@@ -146,7 +149,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     }
                 },
             });
-    
+
             if (resNotion.status !== 202) {
                 console.log('houve um erro ao salvar os dados no notion');
             }
@@ -155,7 +158,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         } finally {
             setFetchingValue(null);
         }
-        
+
     }
 
     const updateNotionCreditorName = async (page_id: string, value: string) => {
@@ -364,7 +367,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                 {
                     "property": "Usuário",
                     "multi_select": {
-                        "contains": user
+                        "contains": selectedUser || user
                     }
                 },
                 {
@@ -381,7 +384,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                 }
             ]
         };
-    }, [user, statusSelectValue, oficioSelectValue]);
+    }, [user, statusSelectValue, oficioSelectValue, selectedUser]);
 
     useEffect(() => {
         const updatedQuery = buildQuery();
@@ -391,7 +394,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         if (Object.keys(updatedQuery).length > 0) {
             refetch();
         }
-    }, [user, statusSelectValue, oficioSelectValue, buildQuery, refetch]);
+    }, [user, statusSelectValue, oficioSelectValue, selectedUser, buildQuery, refetch]);
 
     const handleFilterByTipoOficio = (oficio: tipoOficio) => {
         setOficioSelectValue(oficio);
@@ -420,10 +423,21 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         });
     }
 
-    const handleCleanStatusFilter = () => {
+    const handleFilterByUser = (user: string) => {
+        setOpenUsersPopover(false)
+        setSelectedUser(user);
+        setListQuery({
+            "property": "Usuário",
+            "multi_select": {
+                "contains": user
+            }
+        });
+    }
+
+    const handleCleanAllFilters = () => {
         setStatusSelectValue(null);
         setOficioSelectValue(null);
-        setActiveFilter('ALL');
+        setSelectedUser(null);
         setListQuery({
             "property": "Usuário",
             "multi_select": {
@@ -653,6 +667,20 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         }
     }, [notionView])
 
+    // seta a lista de usuários de a role do usuário for ativos
+    useEffect(() => {
+        const fetchData = async () => {
+            if (role === "ativos") {
+                const [usersList] = await Promise.all([api.get("/api/notion-api/list/users/")]);
+                if (usersList.status === 200) {
+                    setUsersList(usersList.data);
+                }
+            };
+        };
+
+        fetchData();
+    }, [role]);
+
     // close on click outside
     useEffect(() => {
         const clickHandler = ({ target }: MouseEvent) => {
@@ -716,13 +744,14 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             {/* Filtros estilo select */}
             <div className='flex items-center justify-between mt-3'>
                 <div className='flex items-center gap-2'>
+                    {/* ====== select de statusOficio ====== */}
                     <div className='flex items-center justify-center gap-1'>
                         <div className='relative'>
                             <div className='flex items-center justify-center'>
                                 <div
                                     onClick={() => setOpenStatusPopover(!openStatusPopover)}
-                                    className={`min-w-48 flex items-center justify-between gap-1 border border-stroke dark:border-strokedark text-xs font-semibold py-1 px-2 hover:bg-slate-100 uppercase dark:hover:bg-slate-700 ${openStatusPopover && 'bg-slate-100 dark:bg-slate-700'} rounded-md transition-colors duration-200 cursor-pointer`}>
-                                    <span>
+                                    className={`w-48 flex items-center justify-between gap-1 border border-stroke dark:border-strokedark text-xs font-semibold py-1 px-2 hover:bg-slate-100 uppercase dark:hover:bg-slate-700 ${openStatusPopover && 'bg-slate-100 dark:bg-slate-700'} rounded-md transition-colors duration-200 cursor-pointer`}>
+                                    <span className="w-full text-ellipsis overflow-hidden whitespace-nowrap">
                                         {statusSelectValue || 'Status'}
                                     </span>
                                     <LucideChevronsUpDown className='w-4 h-4' />
@@ -759,21 +788,14 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                             )}
                             {/* ==== end popover ==== */}
                         </div>
-                        {statusSelectValue && (
-                            <div
-                                title='limpar filtro de status'
-                                className={`${statusSelectValue ? 'opacity-100 visible translate-x-0' : 'opacity-0 invisible translate-y-5'} relative w-6 h-6 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md transition-all duration-500 cursor-pointer`}
-                                onClick={handleCleanStatusFilter}
-                            >
-                                <MdOutlineFilterAltOff />
-                            </div>
-                        )}
                     </div>
+                    {/* ====== select de statusOficio ====== */}
 
                     {/* separator */}
                     <div className="w-px mx-1 h-5 bg-zinc-300 dark:bg-form-strokedark"></div>
                     {/* separator */}
 
+                    {/* ====== select de tipoOficio ====== */}
                     <div className='flex items-center justify-center gap-1'>
                         <div className='relative'>
                             <div className='flex items-center justify-center'>
@@ -817,16 +839,73 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                             )}
                             {/* ==== end popover ==== */}
                         </div>
-                        {oficioSelectValue && (
-                            <div
-                                title='limpar filtro de status'
-                                className={`${oficioSelectValue ? 'opacity-100 visible translate-x-0' : 'opacity-0 invisible translate-y-5'} relative w-6 h-6 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md transition-all duration-500 cursor-pointer`}
-                                onClick={handleCleanStatusFilter}
-                            >
-                                <MdOutlineFilterAltOff />
-                            </div>
-                        )}
                     </div>
+                    {/* ====== finaliza select de tipoOficio ====== */}
+
+                    {role === 'ativos' && (
+                        <React.Fragment>
+                            {/* separator */}
+                            <div className="w-px mx-1 h-5 bg-zinc-300 dark:bg-form-strokedark"></div>
+                            {/* separator */}
+
+                            {/* ====== select de user ====== */}
+                            <div className='flex items-center justify-center gap-1'>
+                                <div className='relative'>
+                                    <div className='flex items-center justify-center'>
+                                        <div
+                                            onClick={() => setOpenUsersPopover(!openUsersPopover)}
+                                            className={`min-w-48 flex items-center justify-between gap-1 border border-stroke dark:border-strokedark text-xs font-semibold py-1 px-2 hover:bg-slate-100 uppercase dark:hover:bg-slate-700 ${openUsersPopover && 'bg-slate-100 dark:bg-slate-700'} rounded-md transition-colors duration-200 cursor-pointer`}>
+                                            <span>
+                                                {selectedUser || user}
+                                            </span>
+                                            <LucideChevronsUpDown className='w-4 h-4' />
+                                        </div>
+                                    </div>
+                                    {/* ==== popover ==== */}
+
+                                    {openUsersPopover && (
+
+                                        <div
+                                            ref={selectTipoOficioRef}
+                                            className={`absolute mt-3 w-[230px] z-20 p-3 rounded-md bg-white dark:bg-form-strokedark shadow-1 border border-stroke dark:border-strokedark ${openUsersPopover ? 'opacity-100 visible animate-in fade-in-0 zoom-in-95' : ' animate-out fade-out-0 zoom-out-95 invisible opacity-0'} transition-opacity duration-500`}>
+                                            {/* <div className='flex gap-1 items-center justify-center border-b border-stroke dark:border-bodydark2'>
+                                    <AiOutlineSearch className='text-lg' />
+                                    <input
+                                        ref={searchRef}
+                                        type="text"
+                                        placeholder='Pesquisar status...'
+                                        className='w-full border-none focus-within:ring-0 bg-transparent dark:placeholder:text-bodydark2'
+                                        onKeyUp={(e) => searchStatus(e.currentTarget.value)}
+                                    />
+                                </div> */}
+                                            <div className='flex flex-col max-h-49 overflow-y-scroll gap-1'>
+                                                {usersList.filter(user => user !== data.user).map((user) => (
+                                                    <span
+                                                        key={user}
+                                                        className='cursor-pointer text-sm p-1 rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700'
+                                                        onClick={() => handleFilterByUser(user)}>
+                                                        {user}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {/* ==== end popover ==== */}
+                                </div>
+                                {(statusSelectValue || oficioSelectValue || selectedUser) && (
+                                    <div
+                                        title='limpar filtro de status'
+                                        className={`${statusSelectValue || oficioSelectValue || selectedUser ? 'opacity-100 visible translate-x-0' : 'opacity-0 invisible translate-y-5'} relative w-6 h-6 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md transition-all duration-500 cursor-pointer`}
+                                        onClick={handleCleanAllFilters}
+                                    >
+                                        <MdOutlineFilterAltOff />
+                                    </div>
+                                )}
+                            </div>
+                            {/* ====== finaliza select de user ====== */}
+                        </React.Fragment>
+                    )}
+
                 </div>
                 <div className='w-full flex justify-end items-right'>
                     {
@@ -852,7 +931,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             <MiniMenu count={data?.results.length || 0} />
 
             {notionView === 'geral' && (
-                <GeneralView 
+                <GeneralView
                     isPending={isPending}
                     data={data}
                     checkedList={checkedList}
