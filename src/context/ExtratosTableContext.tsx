@@ -476,29 +476,6 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
 
         setEditableLabel(null);
 
-
-        // if (page_id) {
-        //     const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-        //         "Credor": {
-        //             "id": "title",
-        //             "type": "title",
-        //             "title": [
-        //                 {
-        //                     "type": "text",
-        //                     "text": {
-        //                         "content": `${value}`
-        //                     },
-        //                     "plain_text": `${value}`
-        //                 }
-        //             ]
-        //         }
-        //     });
-        //     if (resNotion.status !== 202) {
-        //         console.log('houve um erro ao salvar os dados no notion');
-        //     }
-
-        // }
-
         const res = await api.patch(`/api/extrato/update/credor/${id}/`, {
             credor: value
         })
@@ -608,7 +585,7 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
     /* sempre que o componente for montado, puxa os dados do back e do
     localStorage */
     useEffect(() => {
-        fetchData('', user);
+        // fetchData('', user);
         fetchStateFromLocalStorage();
     }, []);
 

@@ -36,6 +36,18 @@ const notionViews: string[] = [
     'proposta aceita'
 ]
 
+const archiveNotionPage = async (page_id: string, choice = true) => { // choice = true to archive, false to unarchive
+    try {
+        const resNotion = await api.patch(`notion-api/archive/<str:page_id>/${page_id}/`, {
+            "archived": choice
+        });
+        if (resNotion.status !== 202) {
+            console.log('houve um erro ao salvar os dados no notion');
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 const updateNotionCreditorName = async (page_id: string, value: string) => {
     try {
@@ -175,6 +187,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             queryKey: ['notion_list'],
             refetchOnReconnect: true,
             refetchOnWindowFocus: true,
+            refetchInterval: 1000 * 15 , // 15 seconds
+            staleTime: 1000 * 5, // 5 seconds
             queryFn: fetchNotionData,
         },
     );
@@ -934,7 +948,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                 />
             }
 
-            {isFetching &&
+            {isPending &&
                 <p className='text-center p-10 text-'>Carregando dados do notion...</p>
             }
 
