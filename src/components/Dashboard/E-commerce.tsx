@@ -6,6 +6,10 @@ import { ExtratosTable } from "../ExtratosTable/ExtratosTable";
 import ResultCVLDSkeleton from "../Skeletons/ResultCVLDSkeleton";
 import MapOne from "../Maps/MapOne";
 import { ExtratosTableProvider } from "@/context/ExtratosTableContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
+
 
 const ECommerce: React.FC = () => {
   const [data, setData] = useState<ApiResponse>({ result: [], setData: () => { } });
@@ -14,6 +18,8 @@ const ECommerce: React.FC = () => {
   const [calcStep, setCalcStep] = useState<string | null>(null);
 
   return (
+    <QueryClientProvider client={queryClient}>
+
     <>
       {/* <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
         <CardDataStats title="CVLD's emitidas" total="14" rate="0.43%" levelUp>
@@ -119,6 +125,7 @@ const ECommerce: React.FC = () => {
         <ChatCard /> */}
       </div>
     </>
+    </QueryClientProvider>
   );
 };
 

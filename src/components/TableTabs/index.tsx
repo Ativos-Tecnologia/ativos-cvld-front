@@ -1,7 +1,8 @@
 import React, { useContext } from 'react'
 import { BiArchive } from 'react-icons/bi'
-import { PiClipboardText } from 'react-icons/pi';
+import { PiClipboardText, PiNotionLogo } from 'react-icons/pi';
 import { ExtratosTableContext, Tabs } from '@/context/ExtratosTableContext';
+import { RiNotionFill } from 'react-icons/ri';
 
 export const TableTabs = ({ resetFilters }: { resetFilters: () => void }) => {
 
@@ -22,6 +23,13 @@ export const TableTabs = ({ resetFilters }: { resetFilters: () => void }) => {
     return (
         <div className='mb-3 flex gap-3 border-b border-zinc-300 dark:border-form-strokedark text-xs font-semibold'>
             <div
+                onClick={() => handleChangeTab('WORKSPACE NOTION', '')}
+                className={`py-1 px-2 min-w-30 flex items-center justify-start gap-2 border-b-2 border-transparent ${activedTab === 'WORKSPACE NOTION' && 'text-blue-700 dark:text-blue-500 !border-blue-700 dark:!border-blue-500'} cursor-pointer`}>
+                <RiNotionFill className='text-sm' />
+                <span>WORKSPACE NOTION</span>
+            </div>
+
+            {/* <div
                 onClick={() => handleChangeTab('GERAL', '')}
                 className={`py-1 px-2 min-w-30 flex items-center justify-start gap-2 border-b-2 border-transparent ${activedTab === 'GERAL' && 'text-blue-700 dark:text-blue-500 !border-blue-700 dark:!border-blue-500'} cursor-pointer`}>
                 <PiClipboardText className='text-sm' />
@@ -33,7 +41,7 @@ export const TableTabs = ({ resetFilters }: { resetFilters: () => void }) => {
                 className={`py-1 px-2 min-w-30 flex items-center gap-2 justify-start border-b-2 border-transparent ${activedTab === 'ARQUIVADOS' && 'text-blue-700 dark:text-blue-500 !border-blue-700 dark:!border-blue-500'} cursor-pointer`}>
                 <BiArchive className='text-sm' />
                 <span>ARQUIVADOS</span>
-            </div>
+            </div> */}
         </div>
     )
 }

@@ -1,0 +1,266 @@
+'use client'
+import { ENUM_OFICIOS_LIST } from '@/constants/constants';
+import statusOficio from '@/enums/statusOficio.enum';
+import { NotionPage } from '@/interfaces/INotion';
+import React, { useRef } from 'react'
+import { AiOutlinePhone, AiOutlineUser } from 'react-icons/ai';
+import { BiLoader, BiSolidDockLeft } from 'react-icons/bi';
+import { PiCursorClick } from 'react-icons/pi';
+import { RiNotionFill } from 'react-icons/ri';
+import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from '../Tables/TableDefault';
+import { Badge } from 'flowbite-react';
+import { MdOutlineAlternateEmail } from 'react-icons/md';
+
+const MakeFirstContact = ({ isFetching, data, checkedList, editableLabel, setEditableLabel, selectStatusValue, setStatusSelectValue, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, updateStatusAtNotion }:
+    {
+        isFetching: boolean,
+        data: any,
+        checkedList: NotionPage[],
+        editableLabel: string | null;
+        setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
+        selectStatusValue: statusOficio | null;
+        setStatusSelectValue: React.Dispatch<React.SetStateAction<statusOficio | null>>;
+        handleSelectRow: (item: NotionPage) => void;
+        handleChangeCreditorName: (value: string, index: number, page_id: string, refList: HTMLInputElement[] | null) => Promise<void>;
+        handleEditInput: (index: number, refList: HTMLInputElement[] | null) => void;
+        handleChangePhoneNumber: (page_id: string, type: string, value: string, index: number, refList: HTMLInputElement[] | null) => Promise<void>;
+        handleChangeEmail: (page_id: string, value: string, index: number, refList: HTMLInputElement[] | null) => Promise<void>;
+        updateStatusAtNotion: (page_id: string, status: statusOficio) => Promise<void>;
+    }
+) => {
+
+    /* ----> refs <----- */
+    const inputCredorRefs = useRef<HTMLInputElement[] | null>([]);
+    const inputPhoneOneRefs = useRef<HTMLInputElement[] | null>([]);
+    const inputPhoneTwoRefs = useRef<HTMLInputElement[] | null>([]);
+    const inputPhoneThreeRefs = useRef<HTMLInputElement[] | null>([]);
+    const inputEmailRefs = useRef<HTMLInputElement[] | null>([]);
+
+    return (
+        <div 
+        style={{
+            boxShadow: "inset -4px 0 4px rgba(0 0 0 / 0.1)"
+        }}
+        className='max-w-full overflow-x-scroll pb-5'>
+            <Table>
+                <TableHead>
+                    <TableHeadCell className="min-w-[400px]">
+                        <div className='flex gap-2 items-center'>
+                            <AiOutlineUser className='text-base' />
+                            Nome do Credor
+                        </div>
+                    </TableHeadCell>
+                    <TableHeadCell className="min-w-[216px]">
+                        <div className="flex gap-2 items-center">
+                            <BiLoader className='text-base' />
+                            Status
+                        </div>
+                    </TableHeadCell>
+                    <TableHeadCell className="min-w-[150px]">
+                        <div className="flex gap-2 items-center">
+                            <AiOutlinePhone className='text-base' />
+                            Contato
+                        </div>
+                    </TableHeadCell>
+                    <TableHeadCell className="min-w-[150px]">
+                        <div className="flex gap-2 items-center">
+                            <AiOutlinePhone className='text-base' />
+                            Contato 2
+                        </div>
+                    </TableHeadCell>
+                    <TableHeadCell className="min-w-[150px]">
+                        <div className="flex gap-2 items-center">
+                            <AiOutlinePhone className='text-base' />
+                            Contato 3
+                        </div>
+                    </TableHeadCell>
+                    <TableHeadCell className="min-w-[200px]">
+                        <div className="flex gap-2 items-center">
+                            <MdOutlineAlternateEmail className='text-base' />
+                            Contato de E-mail
+                        </div>
+                    </TableHeadCell>
+                </TableHead>
+
+                <TableBody>
+                    {isFetching ? (
+                        null
+                    ) : (
+                        <React.Fragment>
+
+                            {data?.results?.length > 0 && (
+                                <>
+                                    {data?.results.map((item: NotionPage, index: number) => (
+
+                                        <TableRow key={item.id} className={`${checkedList!.some(target => target.id === item.id) && 'bg-blue-50 dark:bg-form-strokedark'} hover:shadow-3 dark:hover:shadow-body group`}>
+
+                                            {/* credor info */}
+                                            <TableCell title={item.properties.Credor?.title[0].text.content || ''}
+                                                className="h-full flex items-center gap-2 font-semibold text-[12px]"
+                                            >
+                                                <div className='relative w-full flex items-center gap-3'>
+
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={checkedList!.some(target => target.id === item.id)}
+                                                        className={`opacity-50 w-[15px] group-hover:opacity-100 ${checkedList!.some(target => target.id === item.id) && '!opacity-100'} h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
+                                                        onChange={() => handleSelectRow(item)}
+                                                    />
+
+                                                    <div className="relative w-full">
+                                                        <input
+                                                            type="text"
+                                                            ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
+                                                            defaultValue={item.properties.Credor?.title[0].text.content || ''}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                                    handleChangeCreditorName(e.currentTarget.value, index, item.id, inputCredorRefs.current)
+                                                                }
+                                                            }}
+                                                            onBlur={(e) => handleChangeCreditorName(e.currentTarget.value, index, item.id, inputCredorRefs.current)}
+                                                            className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                        />
+                                                        {/* absolute div that covers the entire cell */}
+                                                        {editableLabel !== item.id && (
+                                                            <div className='absolute inset-0 rounded-md flex items-center transition-all duration-200'>
+                                                                {editableLabel === null && (
+                                                                    <React.Fragment>
+                                                                        <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200'
+                                                                            onClick={() => {
+                                                                                setEditableLabel!(item.id)
+                                                                                handleEditInput(index, inputCredorRefs.current);
+                                                                            }}>
+                                                                            {item.properties.Credor?.title[0].plain_text?.length === 0 && (
+                                                                                <div className='flex gap-1 pl-4 text-slate-400'>
+                                                                                    <PiCursorClick className='text-base' />
+                                                                                    <span>Clique para adicionar nome</span>
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                        <div
+                                                                            title='Abrir'
+                                                                            className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                                                                            onClick={() => {
+                                                                                // setOpenDetailsDrawer(true);
+                                                                            }}>
+                                                                            <BiSolidDockLeft className='text-lg'
+                                                                            />
+                                                                            <span className='text-xs'>Abrir</span>
+                                                                        </div>
+                                                                        {item.url && (
+                                                                            <a href={item.url} target='_blank' rel='referrer'
+                                                                                title='Abrir no Notion'
+                                                                                className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                                                                            >
+                                                                                <RiNotionFill className='text-lg'
+                                                                                />
+                                                                                <span className='text-xs'>Notion</span>
+                                                                            </a>)}
+                                                                    </React.Fragment>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                            </TableCell>
+
+                                            {/* status select */}
+                                            <TableCell className="text-center items-center w-full">
+                                                <Badge color="teal" size="sm" className="text-center text-[12px]">
+                                                    <select className="text-[12px] w-full text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => {
+                                                        updateStatusAtNotion(item.id, e.target.value as statusOficio)
+                                                    }}>
+                                                        {item.properties.Status.status?.name && (
+                                                            <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                                {selectStatusValue || item.properties.Status.status?.name}
+                                                            </option>
+                                                        )}
+                                                        {ENUM_OFICIOS_LIST.filter((status) => status !== item.properties.Status.status?.name).map((status) => (
+                                                            <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                                {status}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </Badge>
+                                            </TableCell>
+
+                                            {/* phone 1 */}
+                                            <TableCell className="text-center items-center ">
+                                                <input
+                                                    type="text"
+                                                    ref={(input) => { if (input) inputPhoneOneRefs.current![index] = input; }}
+                                                    defaultValue={item.properties['Contato Telefônico'].phone_number || ''}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                            handleChangePhoneNumber(item.id, "Contato Telefônico", e.currentTarget.value, index, inputPhoneOneRefs.current)
+                                                        }
+                                                    }}
+                                                    onBlur={(e) => handleChangePhoneNumber(item.id, "Contato Telefônico", e.currentTarget.value, index, inputPhoneOneRefs.current)}
+                                                    className={`w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                />
+                                            </TableCell>
+
+                                            {/* phone 2 */}
+                                            <TableCell className="text-center items-center ">
+                                                <input
+                                                    type="text"
+                                                    ref={(input) => { if (input) inputPhoneTwoRefs.current![index] = input; }}
+                                                    defaultValue={item.properties['Contato Telefônico 2'].phone_number || ''}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                            handleChangePhoneNumber(item.id, "Contato Telefônico 2", e.currentTarget.value, index, inputPhoneTwoRefs.current)
+                                                        }
+                                                    }}
+                                                    onBlur={(e) => handleChangePhoneNumber(item.id, "Contato Telefônico 2", e.currentTarget.value, index, inputPhoneTwoRefs.current)}
+                                                    className={`w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                />
+                                            </TableCell>
+
+                                            {/* phone 3 */}
+                                            <TableCell className="text-center items-center ">
+                                                <input
+                                                    type="text"
+                                                    ref={(input) => { if (input) inputPhoneThreeRefs.current![index] = input; }}
+                                                    defaultValue={item.properties['Contato Telefônico 3'].phone_number || ''}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                            handleChangePhoneNumber(item.id, "Contato Telefônico 3", e.currentTarget.value, index, inputPhoneThreeRefs.current)
+                                                        }
+                                                    }}
+                                                    onBlur={(e) => handleChangePhoneNumber(item.id, "Contato Telefônico 3", e.currentTarget.value, index, inputPhoneThreeRefs.current)}
+                                                    className={`w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                />
+                                            </TableCell>
+
+                                            {/* e-mail */}
+                                            <TableCell className="text-center items-center ">
+                                                <input
+                                                    type="text"
+                                                    ref={(input) => { if (input) inputEmailRefs.current![index] = input; }}
+                                                    defaultValue={item.properties['Contato de E-mail'].email || ''}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                            handleChangeEmail(item.id, e.currentTarget.value, index, inputEmailRefs.current)
+                                                        }
+                                                    }}
+                                                    onBlur={(e) => handleChangeEmail(item.id, e.currentTarget.value, index, inputEmailRefs.current)}
+                                                    className={`w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                />
+                                            </TableCell>
+
+                                        </TableRow>
+                                    ))}
+                                </>
+                            )
+                            }
+                        </React.Fragment>
+                    )}
+                </TableBody>
+
+            </Table>
+        </div>
+    )
+}
+
+export default MakeFirstContact
