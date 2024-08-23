@@ -48,6 +48,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const searchRef = useRef<HTMLInputElement | null>(null);
     const selectStatusRef = useRef<any>(null);
     const selectTipoOficioRef = useRef<any>(null);
+    const selectUserRef = useRef<any>(null);
 
     const secondaryDefaultFilterObject = useMemo(() => {
         return {
@@ -786,13 +787,15 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     // close on click outside
     useEffect(() => {
         const clickHandler = ({ target }: MouseEvent) => {
-            if (openStatusPopover || openTipoOficioPopover) {
+            if (openStatusPopover || openTipoOficioPopover || openUsersPopover) {
                 if (
                     selectStatusRef?.current?.contains(target) ||
-                    selectTipoOficioRef?.current?.contains(target)
+                    selectTipoOficioRef?.current?.contains(target) ||
+                    selectUserRef?.current?.contains(target)
                 ) return;
                 setOpenStatusPopover(false);
                 setOpenTipoOficioPopover(false);
+                setOpenUsersPopover(false);
             };
         };
         document.addEventListener("click", clickHandler);
@@ -972,7 +975,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                                     {openUsersPopover && (
 
                                         <div
-                                            ref={selectTipoOficioRef}
+                                            ref={selectUserRef}
                                             className={`absolute mt-3 w-[230px] z-20 p-3 rounded-md bg-white dark:bg-form-strokedark shadow-1 border border-stroke dark:border-strokedark ${openUsersPopover ? 'opacity-100 visible animate-in fade-in-0 zoom-in-95' : ' animate-out fade-out-0 zoom-out-95 invisible opacity-0'} transition-opacity duration-500`}>
                                             {/* <div className='flex gap-1 items-center justify-center border-b border-stroke dark:border-bodydark2'>
                                     <AiOutlineSearch className='text-lg' />
@@ -1064,7 +1067,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     editableLabel={editableLabel}
                     setEditableLabel={setEditableLabel}
                     selectStatusValue={statusSelectValue}
-                    setStatusSelectValue={setStatusSelectValue}
+                    handleNotionDrawer={handleNotionDrawer}
                     handleSelectRow={handleSelectRow}
                     handleChangeCreditorName={handleChangeCreditorName}
                     handleEditInput={handleEditInput}
@@ -1083,6 +1086,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     setEditableLabel={setEditableLabel}
                     statusSelectValue={statusSelectValue}
                     oficioSelectValue={oficioSelectValue}
+                    handleNotionDrawer={handleNotionDrawer}
                     numberFormat={numberFormat}
                     handleSelectRow={handleSelectRow}
                     handleChangeCreditorName={handleChangeCreditorName}
@@ -1102,7 +1106,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     setEditableLabel={setEditableLabel}
                     statusSelectValue={statusSelectValue}
                     fetchingValue={fetchingValue}
-                    setFetchingValue={setFetchingValue}
+                    handleNotionDrawer={handleNotionDrawer}
                     handleSelectRow={handleSelectRow}
                     handleChangeCreditorName={handleChangeCreditorName}
                     handleEditInput={handleEditInput}
@@ -1123,6 +1127,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     statusSelectValue={statusSelectValue}
                     fetchingValue={fetchingValue}
                     numberFormat={numberFormat}
+                    handleNotionDrawer={handleNotionDrawer}
                     handleSelectRow={handleSelectRow}
                     handleChangeCreditorName={handleChangeCreditorName}
                     handleEditInput={handleEditInput}

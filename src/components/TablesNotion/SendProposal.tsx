@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useContext, useRef, useState } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from '../Tables/TableDefault'
 import { AiOutlineUser } from 'react-icons/ai'
 import { BiLoader, BiPencil, BiSolidDockLeft } from 'react-icons/bi'
@@ -18,8 +18,9 @@ import { BsCalendar3 } from 'react-icons/bs'
 import dateFormater from '@/functions/formaters/dateFormater'
 import ReactInputMask from 'react-input-mask'
 import Cleave from 'cleave.js/react'
+import { UserInfoAPIContext } from '@/context/UserInfoContext'
 
-export const SendProposal = ({ isPending, data, checkedList, editableLabel, setEditableLabel, statusSelectValue, fetchingValue, setFetchingValue, handleSelectRow, handleChangeFupDate,
+export const SendProposal = ({ isPending, data, checkedList, editableLabel, setEditableLabel, statusSelectValue, fetchingValue, handleNotionDrawer, handleSelectRow, handleChangeFupDate,
     handleChangeCreditorName, handleEditInput, handleEditStatus, handleCopyValue, handleChangeProposalPrice
 }:
     {
@@ -30,7 +31,7 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
         setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
         statusSelectValue: statusOficio | null;
         fetchingValue: string | null;
-        setFetchingValue: React.Dispatch<React.SetStateAction<string | null>>;
+        handleNotionDrawer: (id: string) => void;
         handleSelectRow: (item: NotionPage) => void;
         handleChangeCreditorName: (value: string, index: number, page_id: string, refList: HTMLInputElement[] | null) => Promise<void>;
         handleEditInput: (index: number, refList: HTMLInputElement[] | null) => void;
@@ -49,6 +50,8 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
     const inputThirdFupDateRefs = useRef<HTMLInputElement[] | null>([]);
     const inputFourthFupDateRefs = useRef<HTMLInputElement[] | null>([]);
     const inputFifthFupDateRefs = useRef<HTMLInputElement[] | null>([]);
+
+    const { data: { role } } = useContext(UserInfoAPIContext);
 
     /* ----> functions <---- */
 
@@ -191,7 +194,7 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
                                                                             title='Abrir'
                                                                             className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
                                                                             onClick={() => {
-                                                                                // setOpenDetailsDrawer(true);
+                                                                                handleNotionDrawer(item.id);
                                                                             }}>
                                                                             <BiSolidDockLeft className='text-lg'
                                                                             />

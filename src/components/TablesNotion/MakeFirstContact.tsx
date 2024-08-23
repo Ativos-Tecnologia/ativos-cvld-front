@@ -2,7 +2,7 @@
 import { ENUM_OFICIOS_LIST } from '@/constants/constants';
 import statusOficio from '@/enums/statusOficio.enum';
 import { NotionPage } from '@/interfaces/INotion';
-import React, { useRef } from 'react'
+import React, { useContext, useRef } from 'react'
 import { AiOutlinePhone, AiOutlineUser } from 'react-icons/ai';
 import { BiLoader, BiSolidDockLeft } from 'react-icons/bi';
 import { PiCursorClick } from 'react-icons/pi';
@@ -10,8 +10,9 @@ import { RiNotionFill } from 'react-icons/ri';
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from '../Tables/TableDefault';
 import { Badge } from 'flowbite-react';
 import { MdOutlineAlternateEmail } from 'react-icons/md';
+import { UserInfoAPIContext } from '@/context/UserInfoContext';
 
-const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEditableLabel, selectStatusValue, setStatusSelectValue, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, updateStatusAtNotion }:
+const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEditableLabel, selectStatusValue, handleNotionDrawer, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, updateStatusAtNotion }:
     {
         isPending: boolean,
         data: any,
@@ -19,7 +20,7 @@ const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEdit
         editableLabel: string | null;
         setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
         selectStatusValue: statusOficio | null;
-        setStatusSelectValue: React.Dispatch<React.SetStateAction<statusOficio | null>>;
+        handleNotionDrawer: (id: string) => void;
         handleSelectRow: (item: NotionPage) => void;
         handleChangeCreditorName: (value: string, index: number, page_id: string, refList: HTMLInputElement[] | null) => Promise<void>;
         handleEditInput: (index: number, refList: HTMLInputElement[] | null) => void;
@@ -35,6 +36,8 @@ const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEdit
     const inputPhoneTwoRefs = useRef<HTMLInputElement[] | null>([]);
     const inputPhoneThreeRefs = useRef<HTMLInputElement[] | null>([]);
     const inputEmailRefs = useRef<HTMLInputElement[] | null>([]);
+
+    const { data: { role } } = useContext(UserInfoAPIContext);
 
     return (
         <div 
@@ -141,13 +144,13 @@ const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEdit
                                                                             title='Abrir'
                                                                             className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
                                                                             onClick={() => {
-                                                                                // setOpenDetailsDrawer(true);
+                                                                                handleNotionDrawer(item.id);
                                                                             }}>
                                                                             <BiSolidDockLeft className='text-lg'
                                                                             />
                                                                             <span className='text-xs'>Abrir</span>
                                                                         </div>
-                                                                        {item.url && (
+                                                                        {(item.url && role === 'ativos') && (
                                                                             <a href={item.url} target='_blank' rel='referrer'
                                                                                 title='Abrir no Notion'
                                                                                 className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
