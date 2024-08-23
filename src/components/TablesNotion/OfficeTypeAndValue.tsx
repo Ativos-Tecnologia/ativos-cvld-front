@@ -14,11 +14,11 @@ import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants
 import { ImCopy } from 'react-icons/im'
 import numberFormat from '@/functions/formaters/numberFormat'
 
-export const OfficeTypeAndValue = ({ isFetching, data, checkedList, editableLabel, setEditableLabel, statusSelectValue, oficioSelectValue, handleSelectRow,
+export const OfficeTypeAndValue = ({ isPending, data, checkedList, editableLabel, setEditableLabel, statusSelectValue, oficioSelectValue, handleSelectRow,
     handleChangeCreditorName, handleEditInput,updateStatusAtNotion, updateTipoAtNotion, handleCopyValue
  }:
     {
-        isFetching: boolean,
+        isPending: boolean,
         data: any,
         checkedList: NotionPage[],
         editableLabel: string | null;
@@ -69,7 +69,7 @@ export const OfficeTypeAndValue = ({ isFetching, data, checkedList, editableLabe
                 </TableHead>
 
                 <TableBody>
-                    {isFetching ? null : (
+                    {isPending ? null : (
                         <React.Fragment>
                             {data?.results?.length > 0 && (
                                 <>
