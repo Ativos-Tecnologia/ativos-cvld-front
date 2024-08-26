@@ -141,8 +141,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
 
   const [contatoNumberCount, setContatoNumberCount] = useState<number>(1);
 
-  const mySwal = UseMySwal();
-
   const [state, setState] = useState<ChartTwoState>({
     series: [
       {
@@ -219,7 +217,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
   }, [data.role]);
 
   useEffect(() => {
-    // Atualiza o valor do campo hidden quando selectedAccount mudar
     if (selectedAccount?.id) {
       setValue("conta", selectedAccount.id);
     }
@@ -246,8 +243,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
 
   const postNotionData = async (data: any) => {
     const response = await api.post("/api/extrato/create/", data)
-    // TODO: REFATORAR PARA USAR USEMUTATION O MAIS RÁPIDO POSSÍVEL
-    // queryClient.invalidateQueries({queryKey: ["notion_list"]}); // Pior opção possível, mas a única que funcionou nos momentos anteriores ao V1
     return response;
   }
   const mutation = useMutation({
@@ -255,10 +250,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
       return postNotionData(newData);
     },
     onSuccess: (data) => {
-
-      console.log(data.data.result[1]);
-
-
       queryClient.setQueryData(["notion_list"], (oldData: any) => {
         return { ...oldData, results: [data.data.result[1], ...oldData.results] };
       });

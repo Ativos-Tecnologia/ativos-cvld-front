@@ -157,7 +157,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             queryKey: ['notion_list'],
             refetchOnReconnect: true,
             refetchOnWindowFocus: true,
-            // refetchInterval: 1000 * 15, // 15 seconds
+            refetchInterval: 1000 * 15, // 15 seconds
             staleTime: 1000 * 5, // 5 seconds
             queryFn: fetchNotionData,
         },
