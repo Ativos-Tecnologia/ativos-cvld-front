@@ -126,7 +126,8 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                         </div>
                       </div>
                       {/* end alternate between view extract mode */}
-                    </div><MiniMenu count={data.count} />
+                    </div>
+                    {/* <MiniMenu count={data.count} /> */}
                   </>) : (
                     <><div className="flex w-full h-full items-center justify-between">
 
@@ -201,7 +202,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
               {/* end alternate between view extract mode */}
             </div>
 
-            <MiniMenu count={data.count} />
+            {/* <MiniMenu count={data.count} /> */}
 
           </div>
 
