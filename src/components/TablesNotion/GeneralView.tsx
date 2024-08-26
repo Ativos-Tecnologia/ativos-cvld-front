@@ -100,18 +100,18 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                                         onChange={() => handleSelectRow(item)}
                                                     />
                                                     <Badge color="indigo" size="sm" className={`w-[139px] h-7 text-[12px]`}>
-                                                        {fetchingValue === item.id ? (
+                                                        {fetchingValue === item?.id ? (
                                                             <span className='w-[139px] pl-3 uppercase'>
                                                                 Atualizando ...
                                                             </span>
                                                         ) : (
                                                             <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleEditTipoOficio(item.id, e.target.value as tipoOficio)}>
-                                                                {item.properties.Tipo.select?.name && (
+                                                                {item.properties?.Tipo.select?.name && (
                                                                     <option value={item.properties.Tipo.select?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                                         {item.properties.Tipo.select?.name}
                                                                     </option>
                                                                 )}
-                                                                {ENUM_TIPO_OFICIOS_LIST.filter((status) => status !== item.properties.Tipo.select?.name).map((status) => (
+                                                                {ENUM_TIPO_OFICIOS_LIST.filter((status) => status !== item.properties?.Tipo.select?.name).map((status) => (
                                                                     <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                                         {status}
                                                                     </option>

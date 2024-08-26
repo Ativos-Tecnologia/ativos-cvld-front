@@ -39,7 +39,7 @@ import { ShadSelect } from "../ShadSelect";
 import { SelectItem } from "../ui/select";
 import { PaginatedResponse } from "../TaskElements";
 import { Avatar } from "flowbite-react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface ChartTwoState {
   series: {
@@ -244,20 +244,31 @@ const MainForm: React.FC<CVLDFormProps> = ({
     );
   }
 
-
   const postNotionData = async (data: any) => {
     const response = await api.post("/api/extrato/create/", data)
     // TODO: REFATORAR PARA USAR USEMUTATION O MAIS RÁPIDO POSSÍVEL
-    queryClient.invalidateQueries({queryKey: ["notion_list"]}); // Pior opção possível, mas a única que funcionou nos momentos anteriores ao V1
+    // queryClient.invalidateQueries({queryKey: ["notion_list"]}); // Pior opção possível, mas a única que funcionou nos momentos anteriores ao V1
     return response;
   }
-
   const mutation = useMutation({
-    mutationFn: postNotionData,
-    onSuccess: (data) => {
-      console.log(data);
+    mutationFn: (newData) => {
+      return postNotionData(newData);
     },
-    });
+    onSuccess: (data) => {
+
+      console.log(data.data.result[1]);
+
+
+      queryClient.setQueryData(["notion_list"], (oldData: any) => {
+        return { ...oldData, results: [data.data.result[1], ...oldData.results] };
+      });
+    }
+  })
+
+
+
+
+
   const onSubmit = async (data: any) => {
     data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
     data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
@@ -314,27 +325,31 @@ const MainForm: React.FC<CVLDFormProps> = ({
 
     setLoading(true);
 
-    try {
+    // try {
       setCalcStep("calculating");
 
+      const mut = mutation.mutateAsync(data)
+
       const response = data.gerar_cvld
-        ? await postNotionData(data)
+        ? await mut
         : await api.post("/api/extrato/query/", data);
+
+      console.log(response.status)
+
 
 
 
 
 
       if (response.status === 201 || response.status === 200) {
-        setCredits({
-          ...credits,
-          available_credits:
-            credits.available_credits - response.data.result[0].price,
-        });
+        // setCredits({
+        //   ...credits,
+        //   available_credits:
+        //     credits.available_credits - response.data.result[0].price,
+        // });
 
-        response.status === 200
-          ? dataCallback(response.data)
-          : (setDataToAppend(response.data), dataCallback(response.data));
+        dataCallback(response.data)
+
 
         setCalcStep("done");
 
@@ -417,69 +432,69 @@ const MainForm: React.FC<CVLDFormProps> = ({
         }
       }
       setLoading(false);
-    } catch (error: any) {
-      if (
-        error.response.status === 401 &&
-        error.response.data.code === "token_not_valid"
-      ) {
-        mySwal.fire({
-          icon: "error",
-          title: "Erro",
-          text: "Sua sessão expirou. Faça login novamente.",
-        });
-        localStorage.clear();
-        window.location.href = "auth/signin";
-      } else if (
-        error.response.status === 400 &&
-        (error.response.data.subject == "NO_CASH" ||
-          error.response.data.subject == "INSUFFICIENT_CASH")
-      ) {
-        mySwal.fire({
-          icon: "warning",
-          title: "Saldo insuficiente",
-          showConfirmButton: false,
-          showCloseButton: true,
-          html: (
-            <div className="flex flex-col rounded-md border border-stroke dark:border-strokedark dark:bg-boxdark">
-              <div className="my-2 flex items-center justify-center">
-                <p className="text-md font-semibold dark:text-white">
-                  Escolha uma das opções de recarga e continue utilizando a
-                  plataforma
-                </p>
-              </div>
-              <div className="mt-2 flex flex-col rounded-md border border-stroke p-4 dark:border-strokedark dark:bg-boxdark">
-                <Link
-                  href="#"
-                  className="text-md group flex flex-row items-center justify-center font-semibold text-primary dark:text-white"
-                >
-                  Adquirir Créditos
-                  <BiChevronRight
-                    style={{
-                      width: "22px",
-                      height: "22px",
-                    }}
-                    className="ml-1 inline-block transition-all duration-300 group-hover:translate-x-1"
-                  />
-                </Link>
-              </div>
-            </div>
-          ),
-        });
-      } else if (error.response.status === 403) {
-        mySwal.fire({
-          icon: "warning",
-          title: "Erro",
-          text: "Alguns campos estão incorretos. Verifique e tente novamente.",
-        });
-      } else {
-        mySwal.fire({
-          icon: "error",
-          title: "Erro",
-          text: error.response.data.detail,
-        });
-      }
-      setLoading(false);
-    }
+    // } catch (error: any) {
+    //   if (
+    //     error.response?.status === 401 &&
+    //     error.response?.data.code === "token_not_valid"
+    //   ) {
+    //     mySwal.fire({
+    //       icon: "error",
+    //       title: "Erro",
+    //       text: "Sua sessão expirou. Faça login novamente.",
+    //     });
+    //     localStorage.clear();
+    //     window.location.href = "auth/signin";
+    //   } else if (
+    //     error.response?.status === 400 &&
+    //     (error.response.data.subject == "NO_CASH" ||
+    //       error.response.data.subject == "INSUFFICIENT_CASH")
+    //   ) {
+    //     mySwal.fire({
+    //       icon: "warning",
+    //       title: "Saldo insuficiente",
+    //       showConfirmButton: false,
+    //       showCloseButton: true,
+    //       html: (
+    //         <div className="flex flex-col rounded-md border border-stroke dark:border-strokedark dark:bg-boxdark">
+    //           <div className="my-2 flex items-center justify-center">
+    //             <p className="text-md font-semibold dark:text-white">
+    //               Escolha uma das opções de recarga e continue utilizando a
+    //               plataforma
+    //             </p>
+    //           </div>
+    //           <div className="mt-2 flex flex-col rounded-md border border-stroke p-4 dark:border-strokedark dark:bg-boxdark">
+    //             <Link
+    //               href="#"
+    //               className="text-md group flex flex-row items-center justify-center font-semibold text-primary dark:text-white"
+    //             >
+    //               Adquirir Créditos
+    //               <BiChevronRight
+    //                 style={{
+    //                   width: "22px",
+    //                   height: "22px",
+    //                 }}
+    //                 className="ml-1 inline-block transition-all duration-300 group-hover:translate-x-1"
+    //               />
+    //             </Link>
+    //           </div>
+    //         </div>
+    //       ),
+    //     });
+    //   } else if (error.response?.status === 403) {
+    //     mySwal.fire({
+    //       icon: "warning",
+    //       title: "Erro",
+    //       text: "Alguns campos estão incorretos. Verifique e tente novamente.",
+    //     });
+    //   } else {
+    //     mySwal.fire({
+    //       icon: "error",
+    //       title: "Erro",
+    //       text: error.response?.data.detail,
+    //     });
+    //   }
+    // }
+    // setLoading(false);
   };
 
   return (

@@ -157,13 +157,11 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             queryKey: ['notion_list'],
             refetchOnReconnect: true,
             refetchOnWindowFocus: true,
-            refetchInterval: 1000 * 15, // 15 seconds
+            // refetchInterval: 1000 * 15, // 15 seconds
             staleTime: 1000 * 5, // 5 seconds
             queryFn: fetchNotionData,
         },
     );
-
-    console.log(data)
 
     const archiveNotionPage = async (page_id: string, choice = true) => { // choice = true to archive, false to unarchive
         try {
