@@ -50,7 +50,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const selectStatusRef = useRef<any>(null);
     const selectTipoOficioRef = useRef<any>(null);
     const selectUserRef = useRef<any>(null);
-    console.log(checkedList)
 
     const secondaryDefaultFilterObject = useMemo(() => {
         return {
