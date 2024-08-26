@@ -45,10 +45,12 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const [openUsersPopover, setOpenUsersPopover] = useState<boolean>(false);
     const [filteredValues, setFilteredValues] = useState<statusOficio[]>(ENUM_OFICIOS_LIST);
     const [fetchingValue, setFetchingValue] = useState<string | null>(null);
+    const [archiveStatus, setArchiveStatus] = useState<boolean>(false);
     const searchRef = useRef<HTMLInputElement | null>(null);
     const selectStatusRef = useRef<any>(null);
     const selectTipoOficioRef = useRef<any>(null);
     const selectUserRef = useRef<any>(null);
+    console.log(checkedList)
 
     const secondaryDefaultFilterObject = useMemo(() => {
         return {
@@ -117,6 +119,78 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         }
     }
 
+    const handleSelectAllRows = () => {
+        setCheckedList(data.results.map((item: NotionPage) => item))
+    }
+
+    const handleArchiveExtrato = async () => {
+        try {
+            setArchiveStatus(true);
+            const response = await api.patch('api/notion-api/page/bulk-action/visibility/', {
+                page_ids: checkedList.map(notionPage => notionPage.id),
+                archived: true
+            });
+
+            if (response.status !== 202) {
+                console.log('Erro ao arquivar extratos');
+                return;
+            } else {
+                toast(`${checkedList.length > 1 ? `${checkedList.length} extratos arquivados!` : 'Extrato arquivado!'}`, {
+                    classNames: {
+                        toast: "dark:bg-form-strokedark",
+                        title: "dark:text-snow",
+                        description: "dark:text-snow",
+                        actionButton: "!bg-slate-100 dark:bg-form-strokedark"
+                    },
+                    action: {
+                        label: "Desfazer",
+                        onClick: () => {
+                            handleUnarchiveExtrato()
+                            toast.dismiss()
+                        }
+                    }
+                });
+                setCheckedList([]);
+                queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+            }
+
+
+        } catch (error) {
+            console.log('error');
+        } finally {
+            setArchiveStatus(false);
+        }
+    }
+
+    const handleUnarchiveExtrato = async () => {
+        const response = await api.patch(`api/notion-api/page/bulk-action/visibility/`, {
+            page_ids: checkedList.map(notionPage => notionPage.id),
+            archived: false
+        });
+
+        if (response.status !== 202) {
+            console.log('houve um erro ao tentar desarquivar os dados');
+            return;
+        } else {
+            toast(`${checkedList.length > 1 ? `${checkedList.length} extratos desarquivados!` : 'Extrato desarquivado!'}`, {
+                classNames: {
+                    toast: "dark:bg-form-strokedark",
+                    title: "dark:text-snow",
+                    description: "dark:text-snow",
+                    actionButton: "!bg-slate-100 dark:bg-form-strokedark"
+                },
+                action: {
+                    label: "Fechar",
+                    onClick: () => {
+                        toast.dismiss()
+                    }
+                }
+            })
+            queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+            setCheckedList([]);
+        }
+    }
+
     const {
         setOpenDetailsDrawer,
         editableLabel, setEditableLabel
@@ -162,8 +236,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             queryFn: fetchNotionData,
         },
     );
-
-    console.log(data)
 
     const archiveNotionPage = async (page_id: string, choice = true) => { // choice = true to archive, false to unarchive
         try {
@@ -764,6 +836,21 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         )
     }
 
+    /* verifica se o usuário pressionou a tecla DELETE
+    para deletar um ou mais extratos selecionados */
+    useEffect(() => {
+        const keyHandler = ({ keyCode }: KeyboardEvent) => {
+            if (keyCode !== 46) return;
+
+            if (checkedList.length >= 1) {
+                handleArchiveExtrato()
+            }
+
+        };
+        document.addEventListener("keydown", keyHandler);
+        return () => document.removeEventListener("keydown", keyHandler);
+    });
+
     useEffect(() => {
         if (Object.keys(listQuery).length > 0) {
             refetch();
@@ -1037,7 +1124,14 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             </div>
             {/* End Filtros estilo select */}
 
-            <MiniMenu count={data?.results.length || 0} />
+            <MiniMenu
+                archiveStatus={archiveStatus}
+                handleArchiveExtrato={handleArchiveExtrato}
+                handleSelectAllRows={handleSelectAllRows}
+                checkedList={checkedList}
+                setCheckedList={setCheckedList}
+                count={data?.results.length || 0}
+            />
 
             {notionView === 'geral' && (
                 <GeneralView
