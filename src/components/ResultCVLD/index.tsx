@@ -187,7 +187,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
   }
 
   return (
-    <div ref={CVLDResultRef} className="scroll-m-20 min-w-100 scroll-smooth col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-2">
+    <div ref={CVLDResultRef} className="scroll-m-20 scroll-smooth col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-4">
       <div className="mb-4 justify-between gap-4 sm:flex flex-col">
         {
           filledData ? (
@@ -525,8 +525,8 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                 Ainda sem resultados
               </h4>
               <Image
-                src="/images/no-results-anim.svg"
-                alt="homem ao lado de uma pasta vazia"
+                src="/images/search-results.svg"
+                alt="mulher procurando resultados"
                 width={200}
                 height={450}
                 aria-selected={false}
