@@ -40,13 +40,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
     return data;
   }
 
-  const {
-    item, setItem,
-    editableLabel, setEditableLabel,
-    updateCreditorName
-  } = useContext(ExtratosTableContext);
-
-  const {data: {role}} = useContext(UserInfoAPIContext)
+  const { data: { role } } = useContext(UserInfoAPIContext)
 
 
   // const queryClient = useQueryClient()
@@ -58,12 +52,13 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       queryFn: fetchNotionPageData,
     },
   );
+  console.log(data)
 
 
   const [openTaskDrawer, setOpenTaskDrawer] = useState<boolean>(false);
   const [openSubTask, setOpenSubTask] = useState<boolean>(false);
   const [editableTaskInput, setEditableTaskInput] = useState<boolean>(false);
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const inputCreditorRef = useRef<HTMLInputElement | null>(null);
 
   const handleClose = () => {
     setNotionDrawer(false);
@@ -72,16 +67,40 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
     setEditableTaskInput(false);
   };
 
+  /* ================> função copiada só para fins de entrega de feat <=================== */
+  const updateNotionCreditorName = async (page_id: string, value: string) => {
+    try {
+      const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
+        "Credor": {
+          "title": [
+            {
+              "text": {
+                "content": value
+              }
+            }
+          ]
+        }
+      });
+      if (resNotion.status !== 202) {
+        console.log('houve um erro ao salvar os dados no notion');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-  const handleChangeCreditorName = async (id: string, value: string) => {
-
-    inputRef.current?.blur();
-    await updateCreditorName(id, value);
-    setItem({
-      ...item,
-      credor: value
-    });
-
+  /* ================> função copiada só para fins de entrega de feat <=================== */
+  const handleChangeCreditorName = async (value: string,) => {
+    try {
+      inputCreditorRef.current!.blur();
+      if (data) {
+        await updateNotionCreditorName(pageId, value);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      // queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+    }
   }
 
   return (
@@ -104,38 +123,32 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                     <CgDetailsMore />
                     <div className="relative flex-1">
                       <input
-                        ref={inputRef}
+                        ref={inputCreditorRef}
                         type="text"
                         defaultValue={data?.properties?.Credor?.title[0].text.content || 'Sem título'}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                            handleChangeCreditorName(data!.id, e.currentTarget.value)
+                            handleChangeCreditorName(e.currentTarget.value)
                           }
                         }}
-                        onBlur={(e) => handleChangeCreditorName(item.id, e.currentTarget.value)}
-                        className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full text-2xl pl-1 focus-within:ring-0 border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                        onBlur={(e) => handleChangeCreditorName(e.currentTarget.value)}
+                        className={`w-full text-2xl pl-1 focus-within:ring-0 focus-within:border-transparent border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                       />
-                      {editableLabel === item.id && (
-                        <div
-                          onClick={() => setEditableLabel!(item.id)}
-                          className="absolute inset-0"
-                        ></div>
-                      )}
                     </div>
                     <div className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-slate-300 dark:hover:bg-form-strokedark text-lg cursor-pointer transition-all duration-200">
                       <BiX onClick={handleClose} />
                     </div>
                   </div>
                   <div className="flex items-center gap-2 justify-end mb-2">
-                    { role === "ativos" && (
+                    {role === "ativos" && (
                       <a href={data!.url} target='_blank' rel='referrer'
-                      title='Abrir no Notion'
-                      className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-100 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
-                    >
-                      <RiNotionFill className='text-lg'
-                      />
-                      <span className='text-xs'>Notion</span>
-                    </a>)
+                        title='Abrir no Notion'
+                        className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-100 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                      >
+                        <RiNotionFill className='text-lg'
+                        />
+                        <span className='text-xs'>Notion</span>
+                      </a>)
                     }
                     <button className="py-1 px-2 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-100 group-hover:opacity-100 transition-all duration-200 cursor-pointer" onClick={() => refetch()}>
                       <AiOutlineReload />
@@ -149,7 +162,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                       <tbody>
                         <tr className="bg-blue-700">
                           <td className="text-white px-4 py-2 font-semibold flex items-center">
-                            <AiOutlineUser className="mr-4" /> Informações do Credor
+                            <AiOutlineUser className="mr-4 text-lg" /> Informações do Credor
                           </td>
                           <td className="text-boxdark px-4 py-2">
                             &nbsp;
