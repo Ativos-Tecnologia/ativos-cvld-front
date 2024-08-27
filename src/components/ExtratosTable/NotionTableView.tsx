@@ -56,7 +56,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         setOpenDetailsDrawer,
         editableLabel, setEditableLabel
     } = useContext(ExtratosTableContext);
-    const { data: { user, role } } = useContext(UserInfoAPIContext);
+    // const { data: { user, role } } = useContext(UserInfoAPIContext);
+    const { data: { role } } = useContext(UserInfoAPIContext);
 
     const secondaryDefaultFilterObject = useMemo(() => {
         return {
@@ -197,6 +198,16 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         }
     }
 
+    const fetchUser = async () => {
+        const t = await api.get("/api/profile/")
+        return t.data.user
+    }
+
+    const { data: user } = useQuery({
+        queryKey: ['user'],
+        queryFn: fetchUser,
+      })
+
 
     const defaultFilterObject = {
         "and":
@@ -211,6 +222,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             ]
     }
 
+
     const [currentQuery, setCurrentQuery] = useState({});
 
     const [statusSelectValue, setStatusSelectValue] = useState<statusOficio | null>(null);
@@ -223,21 +235,16 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
 
     const fetchNotionData = async () => {
-        const t = await api.post(`api/notion-api/list/`, !!user && fetchCounter === 0 ? {
-            "and":
-                [
-                    {
-                        "property": "Usuário",
-                        "multi_select": {
-                            "contains": user
-                        }
-                    },
-                    secondaryDefaultFilterObject
-                ]
-        } : listQuery)
-        setFetchCounter(fetchCounter + 1);
+        //#TODO: Melhorar a lógica de fetch de dados e entender por que o user que vem da constante defaultFilterObject não é reconhecido na primeira chamada
+        const t = await api.post(`api/notion-api/list/`, !!user && listQuery)
+        // setFetchCounter(fetchCounter + 1);
         return t.data
     }
+
+
+
+
+
 
     const queryClient = useQueryClient()
     const { isPending, data, error, isFetching, refetch } = useQuery(
