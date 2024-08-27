@@ -45,7 +45,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
             data?.results.map((item: NotionPage, index: number) => {
                 const ref = inputCredorRefs.current![index];
                 if (ref) {
-                    ref.value = item.properties.Credor?.title[0].text.content || '';
+                    ref.value = item.properties.Credor?.title[0]?.text.content || '';
                 }
             })
         }
@@ -132,7 +132,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                                     </Badge>
                                                 </div>
                                             </TableCell>
-                                            <TableCell title={item?.properties.Credor?.title[0].text.content || ''}
+                                            <TableCell title={item?.properties.Credor?.title[0]?.text.content || ''}
                                                 className="relative h-full min-w-100 flex items-center gap-2 font-semibold text-[12px]"
                                             >
                                                 <input
@@ -151,7 +151,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                                     <div className='absolute inset-0 rounded-md flex items-center transition-all duration-200'>
 
                                                         <React.Fragment>
-                                                            {item.properties.Credor?.title[0].plain_text?.length === 0 ? (
+                                                            {item.properties.Credor?.title[0]?.plain_text?.length === 0 ? (
                                                                 <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-100 group-hover:opacity-100 transition-all duration-200'
                                                                     onClick={() => {
                                                                         setEditableLabel!(item.id)
@@ -170,7 +170,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                                                         handleEditInput(index, inputCredorRefs.current);
                                                                     }}>
                                                                     <span>
-                                                                        {item.properties.Credor?.title[0].text.content}
+                                                                        {item.properties.Credor?.title[0]?.text.content}
                                                                     </span>
                                                                 </div>
                                                             )}
