@@ -51,6 +51,13 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const selectTipoOficioRef = useRef<any>(null);
     const selectUserRef = useRef<any>(null);
 
+
+    const {
+        setOpenDetailsDrawer,
+        editableLabel, setEditableLabel
+    } = useContext(ExtratosTableContext);
+    const { data: { user, role } } = useContext(UserInfoAPIContext);
+
     const secondaryDefaultFilterObject = useMemo(() => {
         return {
             "and":
@@ -190,11 +197,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         }
     }
 
-    const {
-        setOpenDetailsDrawer,
-        editableLabel, setEditableLabel
-    } = useContext(ExtratosTableContext);
-    const { data: { user, role } } = useContext(UserInfoAPIContext);
 
     const defaultFilterObject = {
         "and":
@@ -216,11 +218,24 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const [selectedUser, setSelectedUser] = useState<string | null>(null)
     const [activeFilter, setActiveFilter] = useState<ActiveState>('ALL');
     const [usersList, setUsersList] = useState<string[]>([])
-    const [listQuery, setListQuery] = useState<object>(defaultFilterObject);
+    const [listQuery, setListQuery] = useState<object>({});
+    const [fetchCounter, setFetchCounter] = useState<number>(0);
 
 
     const fetchNotionData = async () => {
-        const t = await api.post(`api/notion-api/list/`, user && listQuery)
+        const t = await api.post(`api/notion-api/list/`, !!user && fetchCounter === 0 ? {
+            "and":
+                [
+                    {
+                        "property": "Usuário",
+                        "multi_select": {
+                            "contains": user
+                        }
+                    },
+                    secondaryDefaultFilterObject
+                ]
+        } : listQuery)
+        setFetchCounter(fetchCounter + 1);
         return t.data
     }
 
