@@ -121,13 +121,13 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                                     </Badge>
                                                 </div>
                                             </TableCell>
-                                            <TableCell title={item?.properties.Credor?.title[0].text.content || ''}
+                                            <TableCell title={item?.properties.Credor?.title[0]?.text.content || ''}
                                                 className="relative h-full min-w-100 flex items-center gap-2 font-semibold text-[12px]"
                                             >
                                                 <input
                                                     type="text"
                                                     ref={(input) => { if (input) inputRefs.current![index] = input; }}
-                                                    defaultValue={item.properties.Credor?.title[0].text.content || ''}
+                                                    defaultValue={item.properties.Credor?.title[0]?.text.content || ''}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
                                                             handleChangeCreditorName(e.currentTarget.value, index, item.id, inputRefs.current)
@@ -146,7 +146,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                                                         setEditableLabel!(item.id)
                                                                         handleEditInput(index, inputRefs.current);
                                                                     }}>
-                                                                    {item.properties.Credor?.title[0].plain_text?.length === 0 && (
+                                                                    {item.properties.Credor?.title[0]?.plain_text?.length === 0 && (
                                                                         <div className='flex gap-1 pl-4 text-slate-400'>
                                                                             <PiCursorClick className='text-base' />
                                                                             <span>Clique para adicionar nome</span>

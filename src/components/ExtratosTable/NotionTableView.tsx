@@ -50,7 +50,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const selectStatusRef = useRef<any>(null);
     const selectTipoOficioRef = useRef<any>(null);
     const selectUserRef = useRef<any>(null);
-    console.log(checkedList)
 
     const secondaryDefaultFilterObject = useMemo(() => {
         return {
@@ -232,8 +231,9 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             refetchOnReconnect: true,
             refetchOnWindowFocus: true,
             refetchInterval: 1000 * 15, // 15 seconds
-            staleTime: 1000 * 5, // 5 seconds
+            staleTime: 1000 * 10, // 5 seconds
             queryFn: fetchNotionData,
+            enabled: !!user // only fetch if user is defined after context is loaded
         },
     );
 
