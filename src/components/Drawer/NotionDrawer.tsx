@@ -194,9 +194,10 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           <tr className="bg-gray dark:bg-boxdark-2/80">
                             <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Status</td>
                             <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">
-                              <span className="p-1 rounded-md dark:text-boxdark" style={{
+                              { data!.properties!.Status!.status?.color ? <span className="p-1 rounded-md dark:text-boxdark" style={{
                                 backgroundColor: notionColorResolver(data!.properties!.Status!.status!.color),
-                              }}>{data?.properties?.Status?.status?.name || ""}</span>
+                              }}>{data?.properties?.Status?.status?.name || ""}</span> : <span>Status não definido</span>
+                              }
                             </td>
                           </tr>
                         }
@@ -281,9 +282,9 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           <tr className="bg-gray dark:bg-boxdark-2/80">
                             <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Tipo</td>
                             <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">
-                              <span className="p-1 rounded-md dark:text-boxdark" style={{
+                                { data!.properties!.Tipo!.select?.color ? <span className="p-1 rounded-md dark:text-boxdark" style={{
                                 backgroundColor: notionColorResolver(data!.properties!.Tipo!.select!.color),
-                              }}>{data?.properties?.Tipo?.select?.name || ""}</span>
+                              }}>{data?.properties?.Tipo?.select?.name || ""}</span> : <span>Tipo não definido</span>}
                             </td>
                           </tr>
                         }
