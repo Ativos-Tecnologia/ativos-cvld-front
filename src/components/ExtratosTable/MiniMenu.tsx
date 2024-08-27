@@ -2,14 +2,23 @@ import React, { useContext } from 'react'
 import { BiMinus, BiTrash } from 'react-icons/bi';
 import { MdOutlineArchive, MdOutlineUnarchive } from 'react-icons/md';
 import { ExtratosTableContext } from '@/context/ExtratosTableContext';
+import { NotionPage } from '@/interfaces/INotion';
+import { AiOutlineLoading } from 'react-icons/ai';
 
-export const MiniMenu = ({ count }: { count: number }) => {
+export const MiniMenu = ({ count, checkedList, setCheckedList, handleSelectAllRows, handleArchiveExtrato, archiveStatus }:
+    {
+        count: number,
+        checkedList: NotionPage[],
+        setCheckedList: React.Dispatch<React.SetStateAction<NotionPage[]>>,
+        handleSelectAllRows: () => void,
+        handleArchiveExtrato: () => Promise<void>,
+        archiveStatus: boolean
+    }
+) => {
 
     const {
-        checkedList, setCheckedList,
-        currentPage, handleSelectAllRows,
-        handleDeleteExtrato, handleArchiveExtrato,
-        handleUnarchiveExtrato, activedTab
+        currentPage,
+        handleDeleteExtrato
     } = useContext(ExtratosTableContext);
 
     return (
@@ -49,32 +58,25 @@ export const MiniMenu = ({ count }: { count: number }) => {
                         <span>{checkedList!.length} {checkedList!.length === 1 ? ' item selecionado' : '    itens selecionados'}</span>
                     </div>
 
-                    <div
+                    {/* <div
                         title='Excluir selecionado(s)'
                         className='w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer'
                         onClick={handleDeleteExtrato}
                     >
                         <BiTrash className='text-lg' />
-                    </div>
+                    </div> */}
 
-                    {activedTab === 'GERAL' ? (
-                        <div
-                            title='Arquivar selecionado(s)'
-                            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer"
-                            onClick={() => handleArchiveExtrato()}
-                        >
+                    <div
+                        title='Arquivar selecionado(s)'
+                        className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer"
+                        onClick={() => handleArchiveExtrato()}
+                    >
+                        {archiveStatus ? (
+                            <AiOutlineLoading className='animate-spin text-lg' />
+                        ): (
                             <MdOutlineArchive className='text-lg' />
-                        </div>
-                    ) : (
-                        <div
-                            title='Desarquivar selecionado(s)'
-                            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer"
-                            onClick={() => handleUnarchiveExtrato()}
-                        >
-                            <MdOutlineUnarchive className='text-lg' />
-                        </div>
-                    )}
-
+                        )}
+                    </div>
 
                 </div>
             </div>
