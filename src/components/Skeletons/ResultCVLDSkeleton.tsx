@@ -16,7 +16,7 @@ const ResultCVLDSkeleton = () => {
     }
 
     return (
-        <div className="p-[30px] flex flex-col gap-2 min-w-100 animate-pulse bg-white shadow-default dark:bg-boxdark">
+        <div className="p-[30px] flex flex-col rounded gap-2 col-span-12 xl:col-span-4 animate-pulse bg-white shadow-default dark:bg-boxdark">
             <div className="pb-4">
                 <div className="w-[250px] h-[22px] bg-slate-200 mb-2 rounded-md dark:bg-slate-300"></div>
                 <div className="w-[150px] h-[22px] bg-slate-200 rounded-md dark:bg-slate-300"></div>

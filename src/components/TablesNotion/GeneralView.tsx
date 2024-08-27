@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from '../Tables/TableDefault';
 import { IoDocumentTextOutline } from 'react-icons/io5';
 import { AiOutlineUser } from 'react-icons/ai';
@@ -35,10 +35,21 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
     }
 ) => {
 
-    const inputRefs = useRef<HTMLInputElement[] | null>([]);
+    const inputCredorRefs = useRef<HTMLInputElement[] | null>([]);
     const usersListRef = useRef<HTMLDivElement[] | null>([]);
 
     const { data: { role } } = useContext(UserInfoAPIContext);
+
+    useEffect(() => {
+        if (inputCredorRefs.current) {
+            data?.results.map((item: NotionPage, index: number) => {
+                const ref = inputCredorRefs.current![index];
+                if (ref) {
+                    ref.value = item.properties.Credor?.title[0].text.content || '';
+                }
+            })
+        }
+    }, [data])
 
     return (
         <div className='max-w-full overflow-x-scroll pb-5'>
@@ -100,18 +111,18 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                                         onChange={() => handleSelectRow(item)}
                                                     />
                                                     <Badge color="indigo" size="sm" className={`w-[139px] h-7 text-[12px]`}>
-                                                        {fetchingValue === item.id ? (
+                                                        {fetchingValue === item?.id ? (
                                                             <span className='w-[139px] pl-3 uppercase'>
                                                                 Atualizando ...
                                                             </span>
                                                         ) : (
                                                             <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleEditTipoOficio(item.id, e.target.value as tipoOficio)}>
-                                                                {item.properties.Tipo.select?.name && (
+                                                                {item?.properties?.Tipo.select?.name && (
                                                                     <option value={item.properties.Tipo.select?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                                         {item.properties.Tipo.select?.name}
                                                                     </option>
                                                                 )}
-                                                                {ENUM_TIPO_OFICIOS_LIST.filter((status) => status !== item.properties.Tipo.select?.name).map((status) => (
+                                                                {ENUM_TIPO_OFICIOS_LIST.filter((status) => status !== item.properties?.Tipo.select?.name).map((status) => (
                                                                     <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                                         {status}
                                                                     </option>
@@ -121,59 +132,69 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                                     </Badge>
                                                 </div>
                                             </TableCell>
-                                            <TableCell title={item.properties.Credor?.title[0].text.content || ''}
+                                            <TableCell title={item?.properties.Credor?.title[0].text.content || ''}
                                                 className="relative h-full min-w-100 flex items-center gap-2 font-semibold text-[12px]"
                                             >
                                                 <input
                                                     type="text"
-                                                    ref={(input) => { if (input) inputRefs.current![index] = input; }}
-                                                    defaultValue={item.properties.Credor?.title[0].text.content || ''}
+                                                    ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangeCreditorName(e.currentTarget.value, index, item.id, inputRefs.current)
+                                                            handleChangeCreditorName(e.currentTarget.value, index, item.id, inputCredorRefs.current)
                                                         }
                                                     }}
-                                                    onBlur={(e) => handleChangeCreditorName(e.currentTarget.value, index, item.id, inputRefs.current)}
+                                                    onBlur={(e) => handleChangeCreditorName(e.currentTarget.value, index, item.id, inputCredorRefs.current)}
                                                     className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                 />
                                                 {/* absolute div that covers the entire cell */}
                                                 {editableLabel !== item.id && (
                                                     <div className='absolute inset-0 rounded-md flex items-center transition-all duration-200'>
-                                                        {editableLabel === null && (
-                                                            <React.Fragment>
-                                                                <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200'
+
+                                                        <React.Fragment>
+                                                            {item.properties.Credor?.title[0].plain_text?.length === 0 ? (
+                                                                <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-100 group-hover:opacity-100 transition-all duration-200'
                                                                     onClick={() => {
                                                                         setEditableLabel!(item.id)
-                                                                        handleEditInput(index, inputRefs.current);
+                                                                        handleEditInput(index, inputCredorRefs.current);
                                                                     }}>
-                                                                    {item.properties.Credor?.title[0].plain_text?.length === 0 && (
-                                                                        <div className='flex gap-1 pl-4 text-slate-400'>
-                                                                            <PiCursorClick className='text-base' />
-                                                                            <span>Clique para adicionar nome</span>
-                                                                        </div>
-                                                                    )}
+                                                                    <div className='flex gap-1 pl-4 text-slate-400'>
+                                                                        <PiCursorClick className='text-base' />
+                                                                        <span>Clique para adicionar nome</span>
+                                                                    </div>
                                                                 </div>
-                                                                <div
-                                                                    title='Abrir'
-                                                                    className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                                                            ) : (
+                                                                <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 text-sm
+                                                                    font-semibold pl-[21px]'
                                                                     onClick={() => {
-                                                                        handleNotionDrawer(item.id)
+                                                                        setEditableLabel!(item.id)
+                                                                        handleEditInput(index, inputCredorRefs.current);
                                                                     }}>
-                                                                    <BiSolidDockLeft className='text-lg'
-                                                                    />
-                                                                    <span className='text-xs'>Abrir</span>
+                                                                    <span>
+                                                                        {item.properties.Credor?.title[0].text.content}
+                                                                    </span>
                                                                 </div>
-                                                                {(item.url && role === 'ativos') && (
-                                                                    <a href={item.url} target='_blank' rel='referrer'
-                                                                        title='Abrir no Notion'
-                                                                        className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
-                                                                    >
-                                                                        <RiNotionFill className='text-lg'
-                                                                        />
-                                                                        <span className='text-xs'>Notion</span>
-                                                                    </a>)}
-                                                            </React.Fragment>
-                                                        )}
+                                                            )}
+
+                                                            <div
+                                                                title='Abrir'
+                                                                className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                                                                onClick={() => {
+                                                                    handleNotionDrawer(item.id)
+                                                                }}>
+                                                                <BiSolidDockLeft className='text-lg'
+                                                                />
+                                                                <span className='text-xs'>Abrir</span>
+                                                            </div>
+                                                            {(item.url && role === 'ativos') && (
+                                                                <a href={item.url} target='_blank' rel='referrer'
+                                                                    title='Abrir no Notion'
+                                                                    className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                                                                >
+                                                                    <RiNotionFill className='text-lg'
+                                                                    />
+                                                                    <span className='text-xs'>Notion</span>
+                                                                </a>)}
+                                                        </React.Fragment>
                                                     </div>
                                                 )}
 

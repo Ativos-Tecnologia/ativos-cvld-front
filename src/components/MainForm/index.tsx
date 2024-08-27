@@ -23,7 +23,7 @@ import React, {
   useState,
 } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { AiOutlineLoading } from "react-icons/ai";
+import { AiOutlineLoading, AiOutlineReload, AiOutlineWarning } from "react-icons/ai";
 import {
   BiChevronRight,
   BiLineChart,
@@ -39,7 +39,7 @@ import { ShadSelect } from "../ShadSelect";
 import { SelectItem } from "../ui/select";
 import { PaginatedResponse } from "../TaskElements";
 import { Avatar } from "flowbite-react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface ChartTwoState {
   series: {
@@ -125,6 +125,8 @@ const MainForm: React.FC<CVLDFormProps> = ({
   const [oficioForm, setOficioForm] = useState<any>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
+  const [fetchingUsersList, setFetchingUsersList] = useState<boolean>(false);
+  const [fetchError, setFetchError] = useState<boolean>(false);
   const [toggleNovaConta, setToggleNovaConta] = useState<boolean>(false);
   const [accountList, setAccountList] = useState<PaginatedResponse<any> | null>(
     null,
@@ -141,8 +143,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
 
   const [contatoNumberCount, setContatoNumberCount] = useState<number>(1);
 
-  const mySwal = UseMySwal();
-
   const [state, setState] = useState<ChartTwoState>({
     series: [
       {
@@ -155,6 +155,16 @@ const MainForm: React.FC<CVLDFormProps> = ({
       },
     ],
   });
+
+  /* função que atualiza lista de usuários (somente na role ativos) */
+  const updateUsersList = async () => {
+    setFetchingUsersList(true);
+    const [usersList] = await Promise.all([api.get("/api/notion-api/list/users/")]);
+    if (usersList.status === 200) {
+      setUsersList(usersList.data);
+    }
+    setFetchingUsersList(false);
+  }
 
   useEffect(() => {
     if (oficioForm) {
@@ -201,7 +211,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
+      setFetchingUsersList(true);
       const [accountList] = await Promise.all([api.get("/api/conta/list/")]);
       if (accountList.status === 200) {
         setAccountList(accountList.data);
@@ -210,22 +220,22 @@ const MainForm: React.FC<CVLDFormProps> = ({
         const [usersList] = await Promise.all([api.get("/api/notion-api/list/users/")]);
         if (usersList.status === 200) {
           setUsersList(usersList.data);
+          setFetchError(false);
+        } else {
+          setFetchError(true);
         }
-    };
-      setLoading(false);
+      };
+      setFetchingUsersList(false);
     };
 
     fetchData();
   }, [data.role]);
 
   useEffect(() => {
-    // Atualiza o valor do campo hidden quando selectedAccount mudar
     if (selectedAccount?.id) {
       setValue("conta", selectedAccount.id);
     }
   }, [selectedAccount, setValue]);
-
-  const handleContatoNumber = () => { };
 
   const isUserAdmin = () => {
     const token = localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`);
@@ -244,20 +254,26 @@ const MainForm: React.FC<CVLDFormProps> = ({
     );
   }
 
-
   const postNotionData = async (data: any) => {
     const response = await api.post("/api/extrato/create/", data)
-    // TODO: REFATORAR PARA USAR USEMUTATION O MAIS RÁPIDO POSSÍVEL
-    queryClient.invalidateQueries({queryKey: ["notion_list"]}); // Pior opção possível, mas a única que funcionou nos momentos anteriores ao V1
     return response;
   }
 
   const mutation = useMutation({
-    mutationFn: postNotionData,
-    onSuccess: (data) => {
-      console.log(data);
+    mutationFn: (newData) => {
+      return postNotionData(newData);
     },
-    });
+    onSuccess: (data) => {
+      queryClient.setQueryData(["notion_list"], (oldData: any) => {
+        return { ...oldData, results: [data.data.result[1], ...oldData.results] };
+      });
+    }
+  })
+
+
+
+
+
   const onSubmit = async (data: any) => {
     data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
     data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
@@ -314,27 +330,30 @@ const MainForm: React.FC<CVLDFormProps> = ({
 
     setLoading(true);
 
+    const mySwal = UseMySwal();
+
     try {
       setCalcStep("calculating");
 
+
       const response = data.gerar_cvld
-        ? await postNotionData(data)
-        : await api.post("/api/extrato/query/", data);
-
-
-
-
-
-      if (response.status === 201 || response.status === 200) {
-        setCredits({
-          ...credits,
-          available_credits:
-            credits.available_credits - response.data.result[0].price,
-        });
+        ? await mutation.mutateAsync(data)
+        : await api.post("/api/extrato/query/", data)
 
         response.status === 200
           ? dataCallback(response.data)
           : (setDataToAppend(response.data), dataCallback(response.data));
+
+
+      if (response.status === 201 || response.status === 200) {
+        // setCredits({
+        //   ...credits,
+        //   available_credits:
+        //     credits.available_credits - response.data.result[0].price,
+        // });
+
+        dataCallback(response.data)
+
 
         setCalcStep("done");
 
@@ -419,8 +438,8 @@ const MainForm: React.FC<CVLDFormProps> = ({
       setLoading(false);
     } catch (error: any) {
       if (
-        error.response.status === 401 &&
-        error.response.data.code === "token_not_valid"
+        error.response?.status === 401 &&
+        error.response?.data.code === "token_not_valid"
       ) {
         mySwal.fire({
           icon: "error",
@@ -430,7 +449,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
         localStorage.clear();
         window.location.href = "auth/signin";
       } else if (
-        error.response.status === 400 &&
+        error.response?.status === 400 &&
         (error.response.data.subject == "NO_CASH" ||
           error.response.data.subject == "INSUFFICIENT_CASH")
       ) {
@@ -465,7 +484,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
             </div>
           ),
         });
-      } else if (error.response.status === 403) {
+      } else if (error.response?.status === 403) {
         mySwal.fire({
           icon: "warning",
           title: "Erro",
@@ -475,11 +494,11 @@ const MainForm: React.FC<CVLDFormProps> = ({
         mySwal.fire({
           icon: "error",
           title: "Erro",
-          text: error.response.data.detail,
+          text: error.response?.data.detail,
         });
       }
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   return (
@@ -1031,7 +1050,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                     <span className="text-md w-full self-center font-semibold">
                       Dados do Processo
                     </span>
-                    <div className="mb-4 grid grid-cols-4 w-full justify-between gap-4 sm:col-span-2">
+                    <div className="mb-4 grid grid-cols-2 w-full justify-between gap-4 sm:col-span-2">
                       <div className="flex w-full flex-col gap-2 2xsm:col-span-4 sm:col-span-1">
                         <label
                           htmlFor="npu"
@@ -1070,19 +1089,19 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           <SelectItem value="MUNICIPAL">Municipal</SelectItem>
                         </ShadSelect>
                       </div>
-                     { watch("esfera") !== "FEDERAL" && watch("esfera") !== undefined &&
-                      (<div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                        <label
-                          htmlFor="natureza"
-                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                        >
-                          Regime
-                        </label>
-                        <ShadSelect name="regime" control={control} defaultValue="GERAL">
-                          <SelectItem value="GERAL">GERAL</SelectItem>
-                          <SelectItem value="ESPECIAL">ESPECIAL</SelectItem>
-                        </ShadSelect>
-                      </div>)
+                      {watch("esfera") !== "FEDERAL" && watch("esfera") !== undefined &&
+                        (<div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                          <label
+                            htmlFor="natureza"
+                            className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                          >
+                            Regime
+                          </label>
+                          <ShadSelect name="regime" control={control} defaultValue="GERAL">
+                            <SelectItem value="GERAL">GERAL</SelectItem>
+                            <SelectItem value="ESPECIAL">ESPECIAL</SelectItem>
+                          </ShadSelect>
+                        </div>)
                       }
                     </div>
 
@@ -1224,7 +1243,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           type="tel"
                           id="telefone_contato"
                           placeholder='(00) 00000-0000'
-                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                           {...register("telefone_contato", {})}
                         />
                         {contatoNumberCount === 1 && (
@@ -1249,7 +1268,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                             type="tel"
                             id="telefone_contato"
                             placeholder='(00) 00000-0000'
-                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                             {...register("telefone_contato_2", {})}
                           />
                           {contatoNumberCount === 2 && (
@@ -1279,7 +1298,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                               type="tel"
                               id="telefone_contato"
                               placeholder='(00) 00000-0000'
-                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                               {...register("telefone_contato_3", {})}
                             />
                             {contatoNumberCount === 3 && (
@@ -1695,9 +1714,8 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 <>
                   <hr className="col-span-2 my-8 border border-stroke dark:border-strokedark" />
                   <div className="flex flex-col gap-2">
-                    {/* <span className="text-lg font-semibold text-primary mb-4">Opções de Administrador 🛡️</span> */}
                     <div className="flex flex-col gap-2 sm:col-span-2">
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 invisible">
                         <input
                           type="checkbox"
                           id="upload_notion"
@@ -1711,43 +1729,76 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           aria-disabled={watch("regime") === "ESPECIAL" ? true : false}
                           className="text-sm font-medium text-meta-5 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         >
-                          Fazer upload para o Notion <span className="text-meta-7 text-xs">{ watch("regime") === "ESPECIAL" ? " - não negociamos ofícios do regime especial" : null}</span>
+                          Fazer upload para o Notion <span className="text-meta-7 text-xs">{watch("regime") === "ESPECIAL" ? " - não negociamos ofícios do regime especial" : null}</span>
                         </label>
                       </div>
                       {watch("upload_notion") === true && data.role === "ativos" && watch("regime") !== "ESPECIAL" || watch('regime') === undefined ? (
                         <>
-                          <div className="flex gap-2 ">
-                            <input type="checkbox" id="vincular_usuario" className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`} {...register("vincular_usuario")} />
-                            <label htmlFor="vincular_usuario" className="text-sm font-medium text-meta-5 flex flex-row align-self-baseline cursor-pointer">
-                              <BiLogoUpwork className="h-4 w-4 mt-0.5 mr-2" /> Vincular a outro usuário?
-                            </label>
+                          <div className="flex justify-between">
+                            <div className="flex gap-2">
+                              <input type="checkbox" id="vincular_usuario" className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`} {...register("vincular_usuario")} />
+                              <label htmlFor="vincular_usuario" className="text-sm font-medium text-meta-5 flex flex-row align-self-baseline cursor-pointer">
+                                <BiLogoUpwork className="h-4 w-4 mt-0.5 mr-2" /> Vincular a outro usuário?
+                              </label>
+                            </div>
+                            {watch("vincular_usuario") === true && (
+                              <div className="flex gap-2 items-center">
+                                <button
+                                  type="button"
+                                  className="py-1 px-2 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-100 group-hover:opacity-100 transition-all duration-200 cursor-pointer"
+                                  onClick={updateUsersList}
+                                >
+                                  {fetchingUsersList ? (
+                                    <>
+                                      <AiOutlineReload className="animate-spin" />
+                                      <span className="text-xs">Atualizando...</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <AiOutlineReload />
+                                      <span className="text-xs">Atualizar</span>
+                                    </>
+                                  )}
+                                </button>
+                                {fetchError && (
+                                  <div className='relative group/warning'>
+                                    <AiOutlineWarning className="text-red-600 dark:text-red-400 cursor-pointer" />
+                                    <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 w-60 p-4 bg-white border border-stroke dark:bg-boxdark dark:border-form-strokedark text-sm rounded-md opacity-0 group-hover/warning:opacity-100 transition-opacity duration-300 pointer-events-none">
+                                      <span>
+                                        Erro ao atualizar os dados. Tente novamente mais tarde.
+                                      </span>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
                           {watch("vincular_usuario") === true ? (
                             <div className="flex flex-col gap-2">
                               {
-                              (watch("novo_usuario") === false || watch("novo_usuario") === undefined) && watch("vincular_usuario") === true && (
+                                (watch("novo_usuario") === false || watch("novo_usuario") === undefined) && watch("vincular_usuario") === true && (
 
-                              <select id="username" className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark" {...register("username")}>
-                                <option value={data.user}>{
-                                  data.user
-                                  }</option>
-                                {
-                                  usersList.filter(user => user !== data.user).map((user) => (
-                                    <option key={user} value={user}>{user}</option>
-                                  ))
-                                }
-                              </select>
-                              )}
+                                  <select id="username" className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark" {...register("username")}>
+                                    <option value={data.user}>{
+                                      data.user
+                                    }</option>
+                                    {
+                                      usersList.filter(user => user !== data.user).map((user) => (
+                                        <option key={user} value={user}>{user}</option>
+                                      ))
+                                    }
+                                  </select>
+                                )}
                               <div className="flex flex-col gap-2">
                                 <div>
-                                <label htmlFor="novo_usuario" className="text-sm font-medium text-meta-5 cursor-pointer">
-                                  O nome não está na lista? Crie um novo usuário! <span className="text-meta-7 text-xs">👤</span> <input type="checkbox" id="novo_usuario" className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`} {...register("novo_usuario")} />
-                                </label>
+                                  <label htmlFor="novo_usuario" className="text-sm font-medium text-meta-5 cursor-pointer">
+                                    O nome não está na lista? Crie um novo usuário! <span className="text-meta-7 text-xs">👤</span> <input type="checkbox" id="novo_usuario" className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`} {...register("novo_usuario")} />
+                                  </label>
                                 </div>
-                                { watch('novo_usuario') === true &&
+                                {watch('novo_usuario') === true &&
                                   <input type="text" id="username" className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark" {...register("username")} />
-                                  }
-                                </div>
+                                }
+                              </div>
                             </div>
                           ) : null}
                         </>
@@ -1781,7 +1832,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
         setOpen={setToggleNovaConta}
         loading={loading}
       />
-    </div>
+    </div >
   );
 };
 
