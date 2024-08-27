@@ -106,7 +106,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                                             </span>
                                                         ) : (
                                                             <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleEditTipoOficio(item.id, e.target.value as tipoOficio)}>
-                                                                {item.properties?.Tipo.select?.name && (
+                                                                {item?.properties?.Tipo.select?.name && (
                                                                     <option value={item.properties.Tipo.select?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                                         {item.properties.Tipo.select?.name}
                                                                     </option>
@@ -121,7 +121,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                                     </Badge>
                                                 </div>
                                             </TableCell>
-                                            <TableCell title={item.properties.Credor?.title[0].text.content || ''}
+                                            <TableCell title={item?.properties.Credor?.title[0].text.content || ''}
                                                 className="relative h-full min-w-100 flex items-center gap-2 font-semibold text-[12px]"
                                             >
                                                 <input

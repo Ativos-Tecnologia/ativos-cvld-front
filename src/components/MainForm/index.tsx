@@ -330,20 +330,19 @@ const MainForm: React.FC<CVLDFormProps> = ({
 
     setLoading(true);
 
-    // try {
+    const mySwal = UseMySwal();
+
+    try {
       setCalcStep("calculating");
 
-      const mut = mutation.mutateAsync(data)
 
       const response = data.gerar_cvld
-        ? await mut
-        : await api.post("/api/extrato/query/", data);
+        ? await mutation.mutateAsync(data)
+        : await api.post("/api/extrato/query/", data)
 
-      console.log(response.status)
-
-
-
-
+        response.status === 200
+          ? dataCallback(response.data)
+          : (setDataToAppend(response.data), dataCallback(response.data));
 
 
       if (response.status === 201 || response.status === 200) {
@@ -437,69 +436,69 @@ const MainForm: React.FC<CVLDFormProps> = ({
         }
       }
       setLoading(false);
-    // } catch (error: any) {
-    //   if (
-    //     error.response?.status === 401 &&
-    //     error.response?.data.code === "token_not_valid"
-    //   ) {
-    //     mySwal.fire({
-    //       icon: "error",
-    //       title: "Erro",
-    //       text: "Sua sessão expirou. Faça login novamente.",
-    //     });
-    //     localStorage.clear();
-    //     window.location.href = "auth/signin";
-    //   } else if (
-    //     error.response?.status === 400 &&
-    //     (error.response.data.subject == "NO_CASH" ||
-    //       error.response.data.subject == "INSUFFICIENT_CASH")
-    //   ) {
-    //     mySwal.fire({
-    //       icon: "warning",
-    //       title: "Saldo insuficiente",
-    //       showConfirmButton: false,
-    //       showCloseButton: true,
-    //       html: (
-    //         <div className="flex flex-col rounded-md border border-stroke dark:border-strokedark dark:bg-boxdark">
-    //           <div className="my-2 flex items-center justify-center">
-    //             <p className="text-md font-semibold dark:text-white">
-    //               Escolha uma das opções de recarga e continue utilizando a
-    //               plataforma
-    //             </p>
-    //           </div>
-    //           <div className="mt-2 flex flex-col rounded-md border border-stroke p-4 dark:border-strokedark dark:bg-boxdark">
-    //             <Link
-    //               href="#"
-    //               className="text-md group flex flex-row items-center justify-center font-semibold text-primary dark:text-white"
-    //             >
-    //               Adquirir Créditos
-    //               <BiChevronRight
-    //                 style={{
-    //                   width: "22px",
-    //                   height: "22px",
-    //                 }}
-    //                 className="ml-1 inline-block transition-all duration-300 group-hover:translate-x-1"
-    //               />
-    //             </Link>
-    //           </div>
-    //         </div>
-    //       ),
-    //     });
-    //   } else if (error.response?.status === 403) {
-    //     mySwal.fire({
-    //       icon: "warning",
-    //       title: "Erro",
-    //       text: "Alguns campos estão incorretos. Verifique e tente novamente.",
-    //     });
-    //   } else {
-    //     mySwal.fire({
-    //       icon: "error",
-    //       title: "Erro",
-    //       text: error.response?.data.detail,
-    //     });
-    //   }
-    // }
-    // setLoading(false);
+    } catch (error: any) {
+      if (
+        error.response?.status === 401 &&
+        error.response?.data.code === "token_not_valid"
+      ) {
+        mySwal.fire({
+          icon: "error",
+          title: "Erro",
+          text: "Sua sessão expirou. Faça login novamente.",
+        });
+        localStorage.clear();
+        window.location.href = "auth/signin";
+      } else if (
+        error.response?.status === 400 &&
+        (error.response.data.subject == "NO_CASH" ||
+          error.response.data.subject == "INSUFFICIENT_CASH")
+      ) {
+        mySwal.fire({
+          icon: "warning",
+          title: "Saldo insuficiente",
+          showConfirmButton: false,
+          showCloseButton: true,
+          html: (
+            <div className="flex flex-col rounded-md border border-stroke dark:border-strokedark dark:bg-boxdark">
+              <div className="my-2 flex items-center justify-center">
+                <p className="text-md font-semibold dark:text-white">
+                  Escolha uma das opções de recarga e continue utilizando a
+                  plataforma
+                </p>
+              </div>
+              <div className="mt-2 flex flex-col rounded-md border border-stroke p-4 dark:border-strokedark dark:bg-boxdark">
+                <Link
+                  href="#"
+                  className="text-md group flex flex-row items-center justify-center font-semibold text-primary dark:text-white"
+                >
+                  Adquirir Créditos
+                  <BiChevronRight
+                    style={{
+                      width: "22px",
+                      height: "22px",
+                    }}
+                    className="ml-1 inline-block transition-all duration-300 group-hover:translate-x-1"
+                  />
+                </Link>
+              </div>
+            </div>
+          ),
+        });
+      } else if (error.response?.status === 403) {
+        mySwal.fire({
+          icon: "warning",
+          title: "Erro",
+          text: "Alguns campos estão incorretos. Verifique e tente novamente.",
+        });
+      } else {
+        mySwal.fire({
+          icon: "error",
+          title: "Erro",
+          text: error.response?.data.detail,
+        });
+      }
+    }
+    setLoading(false);
   };
 
   return (
@@ -1715,9 +1714,8 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 <>
                   <hr className="col-span-2 my-8 border border-stroke dark:border-strokedark" />
                   <div className="flex flex-col gap-2">
-                    {/* <span className="text-lg font-semibold text-primary mb-4">Opções de Administrador 🛡️</span> */}
                     <div className="flex flex-col gap-2 sm:col-span-2">
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 invisible">
                         <input
                           type="checkbox"
                           id="upload_notion"
