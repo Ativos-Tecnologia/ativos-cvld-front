@@ -271,9 +271,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
   })
 
 
-
-
-
   const onSubmit = async (data: any) => {
     data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
     data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
