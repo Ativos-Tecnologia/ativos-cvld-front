@@ -149,7 +149,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
           const previousData = queryClient.getQueryData(['notion_list']);
 
           queryClient.setQueryData(['notion_list'], (old: any) => {
-
             return { ...old, results: old.results.filter((item: any) => !pageIds.includes(item.id)) };
           });
 
@@ -160,7 +159,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
           toast.error('Erro ao desarquivar os dados');
         },
         onSuccess: (data, pageIds) => {
-          toast(`${pageIds.length > 1 ? `${pageIds.length} extratos arquivados!` : 'Extrato desarquivado!'}`, {
+          toast(`${pageIds.length > 1 ? `${pageIds.length} extratos arquivados!` : 'Extrato arquivado!'}`, {
             classNames: {
               toast: "dark:bg-form-strokedark",
               title: "dark:text-snow",
@@ -188,6 +187,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         setArchiveStatus(false);
       };
 
+
+      //#TODO: Esse método deve ser refatorado para ser um mutation
     const handleUnarchiveExtrato = async () => {
         const response = await api.patch(`api/notion-api/page/bulk-action/visibility/`, {
             page_ids: checkedList.map(notionPage => notionPage.id),
