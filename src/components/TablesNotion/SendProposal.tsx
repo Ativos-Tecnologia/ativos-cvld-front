@@ -330,14 +330,10 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
                                             {/* 1ª FUP */}
                                             <TableCell className="font-semibold text-[14px] text-right">
 
-                                                <Cleave
+                                                <ReactInputMask
+                                                    mask='99/99/9999'
+                                                    defaultValue={fupDateConveter(item.properties["1ª FUP"]?.date?.start || '')}
                                                     type="text"
-                                                    placeholder={fupDateConveter(item.properties['1ª FUP'].date?.start || '')}
-                                                    options={{
-                                                        date: true,
-                                                        datePattern: ['d', 'm', 'Y'],
-                                                        delimiter: '/',
-                                                    }}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
                                                             handleChangeFupDate(item.id, e.currentTarget.value, '1ª FUP', index)
@@ -346,19 +342,16 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
                                                     onBlur={(e) => handleChangeFupDate(item.id, e.currentTarget.value, '1ª FUP', index)}
                                                     className={`w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                 />
+
                                             </TableCell>
 
                                             {/* 2ª FUP */}
                                             <TableCell className="font-semibold text-[14px] text-right">
 
-                                                <Cleave
+                                                <ReactInputMask
+                                                    mask='99/99/9999'
+                                                    defaultValue={fupDateConveter(item.properties["2ª FUP "]?.date?.start || '')}
                                                     type="text"
-                                                    placeholder={fupDateConveter(item.properties['2ª FUP '].date?.start || '')}
-                                                    options={{
-                                                        date: true,
-                                                        datePattern: ['d', 'm', 'Y'],
-                                                        delimiter: '/',
-                                                    }}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
                                                             handleChangeFupDate(item.id, e.currentTarget.value, '2ª FUP ', index)
@@ -367,19 +360,16 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
                                                     onBlur={(e) => handleChangeFupDate(item.id, e.currentTarget.value, '2ª FUP ', index)}
                                                     className={`w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                 />
+
                                             </TableCell>
 
                                             {/* 3ª FUP */}
                                             <TableCell className="font-semibold text-[14px] text-right">
 
-                                                <Cleave
+                                                <ReactInputMask
+                                                    mask='99/99/9999'
+                                                    defaultValue={fupDateConveter(item.properties["3ª FUP"]?.date?.start || '')}
                                                     type="text"
-                                                    placeholder={fupDateConveter(item.properties['3ª FUP'].date?.start || '')}
-                                                    options={{
-                                                        date: true,
-                                                        datePattern: ['d', 'm', 'Y'],
-                                                        delimiter: '/',
-                                                    }}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
                                                             handleChangeFupDate(item.id, e.currentTarget.value, '3ª FUP', index)
@@ -393,14 +383,10 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
                                             {/* 4ª FUP */}
                                             <TableCell className="font-semibold text-[14px] text-right">
 
-                                                <Cleave
+                                                <ReactInputMask
+                                                    mask='99/99/9999'
+                                                    defaultValue={fupDateConveter(item.properties["4ª FUP"]?.date?.start || '')}
                                                     type="text"
-                                                    placeholder={fupDateConveter(item.properties['4ª FUP'].date?.start || '')}
-                                                    options={{
-                                                        date: true,
-                                                        datePattern: ['d', 'm', 'Y'],
-                                                        delimiter: '/',
-                                                    }}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
                                                             handleChangeFupDate(item.id, e.currentTarget.value, '4ª FUP', index)
@@ -409,19 +395,16 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
                                                     onBlur={(e) => handleChangeFupDate(item.id, e.currentTarget.value, '4ª FUP', index)}
                                                     className={`w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                 />
+
                                             </TableCell>
 
                                             {/* 5ª FUP */}
                                             <TableCell className="font-semibold text-[14px] text-right">
 
-                                                <Cleave
+                                                <ReactInputMask
+                                                    mask='99/99/9999'
+                                                    defaultValue={fupDateConveter(item.properties["5ª FUP "]?.date?.start || '')}
                                                     type="text"
-                                                    placeholder={fupDateConveter(item.properties['5ª FUP '].date?.start || '')}
-                                                    options={{
-                                                        date: true,
-                                                        datePattern: ['d', 'm', 'Y'],
-                                                        delimiter: '/',
-                                                    }}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
                                                             handleChangeFupDate(item.id, e.currentTarget.value, '5ª FUP ', index)
