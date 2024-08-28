@@ -11,7 +11,7 @@ export const MiniMenu = ({ count, checkedList, setCheckedList, handleSelectAllRo
         checkedList: NotionPage[],
         setCheckedList: React.Dispatch<React.SetStateAction<NotionPage[]>>,
         handleSelectAllRows: () => void,
-        handleArchiveExtrato: () => Promise<void>,
+        handleArchiveExtrato: () => void,
         archiveStatus: boolean
     }
 ) => {

@@ -39,7 +39,7 @@ import { ShadSelect } from "../ShadSelect";
 import { SelectItem } from "../ui/select";
 import { PaginatedResponse } from "../TaskElements";
 import { Avatar } from "flowbite-react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface ChartTwoState {
   series: {
@@ -143,8 +143,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
 
   const [contatoNumberCount, setContatoNumberCount] = useState<number>(1);
 
-  const mySwal = UseMySwal();
-
   const [state, setState] = useState<ChartTwoState>({
     series: [
       {
@@ -234,7 +232,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
   }, [data.role]);
 
   useEffect(() => {
-    // Atualiza o valor do campo hidden quando selectedAccount mudar
     if (selectedAccount?.id) {
       setValue("conta", selectedAccount.id);
     }
@@ -257,20 +254,23 @@ const MainForm: React.FC<CVLDFormProps> = ({
     );
   }
 
-
   const postNotionData = async (data: any) => {
     const response = await api.post("/api/extrato/create/", data)
-    // TODO: REFATORAR PARA USAR USEMUTATION O MAIS RÁPIDO POSSÍVEL
-    queryClient.invalidateQueries({ queryKey: ["notion_list"] }); // Pior opção possível, mas a única que funcionou nos momentos anteriores ao V1
     return response;
   }
 
   const mutation = useMutation({
-    mutationFn: postNotionData,
-    onSuccess: (data) => {
-      console.log(data);
+    mutationFn: (newData) => {
+      return postNotionData(newData);
     },
-  });
+    onSuccess: (data) => {
+      queryClient.setQueryData(["notion_list"], (oldData: any) => {
+        return { ...oldData, results: [data.data.result[1], ...oldData.results] };
+      });
+    }
+  })
+
+
   const onSubmit = async (data: any) => {
     data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
     data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
@@ -327,27 +327,30 @@ const MainForm: React.FC<CVLDFormProps> = ({
 
     setLoading(true);
 
+    const mySwal = UseMySwal();
+
     try {
       setCalcStep("calculating");
 
+
       const response = data.gerar_cvld
-        ? await postNotionData(data)
-        : await api.post("/api/extrato/query/", data);
-
-
-
-
-
-      if (response.status === 201 || response.status === 200) {
-        setCredits({
-          ...credits,
-          available_credits:
-            credits.available_credits - response.data.result[0].price,
-        });
+        ? await mutation.mutateAsync(data)
+        : await api.post("/api/extrato/query/", data)
 
         response.status === 200
           ? dataCallback(response.data)
           : (setDataToAppend(response.data), dataCallback(response.data));
+
+
+      if (response.status === 201 || response.status === 200) {
+        // setCredits({
+        //   ...credits,
+        //   available_credits:
+        //     credits.available_credits - response.data.result[0].price,
+        // });
+
+        dataCallback(response.data)
+
 
         setCalcStep("done");
 
@@ -432,8 +435,8 @@ const MainForm: React.FC<CVLDFormProps> = ({
       setLoading(false);
     } catch (error: any) {
       if (
-        error.response.status === 401 &&
-        error.response.data.code === "token_not_valid"
+        error.response?.status === 401 &&
+        error.response?.data.code === "token_not_valid"
       ) {
         mySwal.fire({
           icon: "error",
@@ -443,7 +446,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
         localStorage.clear();
         window.location.href = "auth/signin";
       } else if (
-        error.response.status === 400 &&
+        error.response?.status === 400 &&
         (error.response.data.subject == "NO_CASH" ||
           error.response.data.subject == "INSUFFICIENT_CASH")
       ) {
@@ -478,7 +481,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
             </div>
           ),
         });
-      } else if (error.response.status === 403) {
+      } else if (error.response?.status === 403) {
         mySwal.fire({
           icon: "warning",
           title: "Erro",
@@ -488,11 +491,11 @@ const MainForm: React.FC<CVLDFormProps> = ({
         mySwal.fire({
           icon: "error",
           title: "Erro",
-          text: error.response.data.detail,
+          text: error.response?.data.detail,
         });
       }
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   return (
@@ -1708,9 +1711,8 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 <>
                   <hr className="col-span-2 my-8 border border-stroke dark:border-strokedark" />
                   <div className="flex flex-col gap-2">
-                    {/* <span className="text-lg font-semibold text-primary mb-4">Opções de Administrador 🛡️</span> */}
                     <div className="flex flex-col gap-2 sm:col-span-2">
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 invisible">
                         <input
                           type="checkbox"
                           id="upload_notion"

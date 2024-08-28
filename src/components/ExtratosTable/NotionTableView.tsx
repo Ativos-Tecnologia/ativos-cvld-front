@@ -10,7 +10,7 @@ import { AiOutlineSearch, AiOutlineUser } from 'react-icons/ai';
 import { toast } from 'sonner';
 import { ActiveState, ExtratosTableContext } from '@/context/ExtratosTableContext';
 import { NotionPage } from '@/interfaces/INotion';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import api from '@/utils/api';
 import { MdOutlineFilterAltOff } from 'react-icons/md';
@@ -50,6 +50,14 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const selectStatusRef = useRef<any>(null);
     const selectTipoOficioRef = useRef<any>(null);
     const selectUserRef = useRef<any>(null);
+
+
+    const {
+        setOpenDetailsDrawer,
+        editableLabel, setEditableLabel
+    } = useContext(ExtratosTableContext);
+
+    const { data: { role } } = useContext(UserInfoAPIContext);
 
     const secondaryDefaultFilterObject = useMemo(() => {
         return {
@@ -122,45 +130,65 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         setCheckedList(data.results.map((item: NotionPage) => item))
     }
 
-    const handleArchiveExtrato = async () => {
-        try {
-            setArchiveStatus(true);
-            const response = await api.patch('api/notion-api/page/bulk-action/visibility/', {
-                page_ids: checkedList.map(notionPage => notionPage.id),
-                archived: true
-            });
+    const deleteMutation = useMutation({
+        mutationFn: async (pageIds: string[]) => {
+          const response = await api.patch('api/notion-api/page/bulk-action/visibility/', {
+            page_ids: pageIds,
+            archived: true
+          });
 
-            if (response.status !== 202) {
-                console.log('Erro ao arquivar extratos');
-                return;
-            } else {
-                toast(`${checkedList.length > 1 ? `${checkedList.length} extratos arquivados!` : 'Extrato arquivado!'}`, {
-                    classNames: {
-                        toast: "dark:bg-form-strokedark",
-                        title: "dark:text-snow",
-                        description: "dark:text-snow",
-                        actionButton: "!bg-slate-100 dark:bg-form-strokedark"
-                    },
-                    action: {
-                        label: "Desfazer",
-                        onClick: () => {
-                            handleUnarchiveExtrato()
-                            toast.dismiss()
-                        }
-                    }
-                });
-                setCheckedList([]);
-                queryClient.invalidateQueries({ queryKey: ['notion_list'] });
-            }
+          if (response.status !== 202) {
+            throw new Error('Houve um erro ao tentar arquivar os dados');
+          }
+          return response.data;
+        },
+        onMutate: async (pageIds: string[]) => {
 
+          await queryClient.cancelQueries({ queryKey: ['notion_list'] });
 
-        } catch (error) {
-            console.log('error');
-        } finally {
-            setArchiveStatus(false);
+          const previousData = queryClient.getQueryData(['notion_list']);
+
+          queryClient.setQueryData(['notion_list'], (old: any) => {
+            return { ...old, results: old.results.filter((item: any) => !pageIds.includes(item.id)) };
+          });
+
+          return { previousData };
+        },
+        onError: (err, pageIds, context) => {
+          queryClient.setQueryData(['notion_list'], context?.previousData);
+          toast.error('Erro ao desarquivar os dados');
+        },
+        onSuccess: (data, pageIds) => {
+          toast(`${pageIds.length > 1 ? `${pageIds.length} extratos arquivados!` : 'Extrato arquivado!'}`, {
+            classNames: {
+              toast: "dark:bg-form-strokedark",
+              title: "dark:text-snow",
+              description: "dark:text-snow",
+              actionButton: "!bg-slate-100 dark:bg-form-strokedark"
+            },
+            action: {
+              label: "Desfazer",
+                onClick: () => {
+                    handleUnarchiveExtrato()
+                },
+            }});
         }
-    }
+        // onSettled: () => {
+        //   queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+        // },
+      });
 
+      const handleArchiveExtrato = async () => {
+        setArchiveStatus(true);
+        const pageIds = checkedList.map(notionPage => notionPage.id);
+        await deleteMutation.mutateAsync(pageIds, {
+          onSuccess: () => setCheckedList([])
+        });
+        setArchiveStatus(false);
+      };
+
+
+      //#TODO: Esse método deve ser refatorado para ser um mutation
     const handleUnarchiveExtrato = async () => {
         const response = await api.patch(`api/notion-api/page/bulk-action/visibility/`, {
             page_ids: checkedList.map(notionPage => notionPage.id),
@@ -190,11 +218,16 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         }
     }
 
-    const {
-        setOpenDetailsDrawer,
-        editableLabel, setEditableLabel
-    } = useContext(ExtratosTableContext);
-    const { data: { user, role } } = useContext(UserInfoAPIContext);
+    const fetchUser = async () => {
+        const t = await api.get("/api/profile/")
+        return t.data.user
+    }
+
+    const { data: user } = useQuery({
+        queryKey: ['user'],
+        queryFn: fetchUser,
+      })
+
 
     const defaultFilterObject = {
         "and":
@@ -209,6 +242,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             ]
     }
 
+
     const [currentQuery, setCurrentQuery] = useState({});
 
     const [statusSelectValue, setStatusSelectValue] = useState<statusOficio | null>(null);
@@ -216,11 +250,12 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const [selectedUser, setSelectedUser] = useState<string | null>(null)
     const [activeFilter, setActiveFilter] = useState<ActiveState>('ALL');
     const [usersList, setUsersList] = useState<string[]>([])
-    const [listQuery, setListQuery] = useState<object>(defaultFilterObject);
+    const [listQuery, setListQuery] = useState<object>({});
+    const [fetchCounter, setFetchCounter] = useState<number>(0);
 
 
     const fetchNotionData = async () => {
-        const t = await api.post(`api/notion-api/list/`, user && listQuery)
+        const t = await api.post(`api/notion-api/list/`, !!user && listQuery)
         return t.data
     }
 
@@ -231,8 +266,9 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             refetchOnReconnect: true,
             refetchOnWindowFocus: true,
             refetchInterval: 1000 * 15, // 15 seconds
-            staleTime: 1000 * 5, // 5 seconds
+            staleTime: 1000 * 10, // 5 seconds
             queryFn: fetchNotionData,
+            enabled: !!user // only fetch if user is defined after context is loaded
         },
     );
 
