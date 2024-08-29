@@ -22,6 +22,7 @@ import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST, ENUM_TRIBUNAIS_LIST } from "
 import ReactInputMask from "react-input-mask";
 import { TbGridDots } from "react-icons/tb";
 import { HiOutlineLockClosed } from "react-icons/hi";
+import { HiMiniCalendar } from "react-icons/hi2";
 import Title from "../CrmUi/Title";
 import CustomCheckbox from "../CrmUi/Checkbox";
 
@@ -401,16 +402,16 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                     {role === "ativos" && (
                       <a href={data!.url} target='_blank' rel='referrer'
                         title='Abrir no Notion'
-                        className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-100 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                        className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-100 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
                       >
                         <RiNotionFill className='text-lg'
                         />
-                        <span className='text-xs'>Notion</span>
+                        <span className='text-xs font-semibold'>Notion</span>
                       </a>)
                     }
-                    <button className="py-1 px-2 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-100 group-hover:opacity-100 transition-all duration-200 cursor-pointer" onClick={() => refetch()}>
+                    <button className="py-1 px-2 flex items-center justify-center gap-1 rounded-md bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-100 group-hover:opacity-100 transition-all duration-200 cursor-pointer" onClick={() => refetch()}>
                       <AiOutlineReload />
-                      <span className="text-xs">Atualizar</span>
+                      <span className="text-xs font-semibold">Atualizar</span>
                     </button>
                   </div>
                 </div>
@@ -429,14 +430,14 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         {/* {
 
                               <tr className="bg-gray dark:bg-boxdark-2">
-                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Regra de Cálculo</td>
-                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">Após 12/2021</td>
+                                <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left text-boxdark">Regra de Cálculo</td>
+                                <td className="border border-stroke dark:border-strokedark px-4 py-2 text-boxdark">Após 12/2021</td>
                               </tr>
                           } */}
                         {
                           <tr className="bg-gray dark:bg-boxdark-2">
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">CPF/CNPJ do credor</td>
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2">
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">CPF/CNPJ do credor</td>
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2">
                               <input
                                 type="text"
                                 defaultValue={applyMaskCpfCnpj(data?.properties["CPF/CNPJ"]?.rich_text?.length ? data?.properties["CPF/CNPJ"]?.rich_text![0]!.plain_text : "")}
@@ -453,8 +454,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </tr>
                         }
                         <tr className="bg-gray dark:bg-boxdark-2">
-                          <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">E-mail</td>
-                          <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2">
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">E-mail</td>
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2">
                             <input
                               type="text"
                               defaultValue={data?.properties['Contato de E-mail'].email || ''}
@@ -470,8 +471,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </td>
                         </tr>
                         <tr className="bg-gray dark:bg-boxdark-2">
-                          <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Contato</td>
-                          <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2">
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Contato</td>
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2">
                             <ReactInputMask
                               mask='(99) 99999-9999'
                               maskChar={null}
@@ -489,8 +490,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         </tr>
 
                         <tr className="bg-gray dark:bg-boxdark-2">
-                          <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Contato 2</td>
-                          <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2">
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Contato 2</td>
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2">
                             <ReactInputMask
                               mask='(99) 99999-9999'
                               maskChar={null}
@@ -508,8 +509,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         </tr>
 
                         <tr className="bg-gray dark:bg-boxdark-2">
-                          <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Contato 3</td>
-                          <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2">
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Contato 3</td>
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2">
                             <ReactInputMask
                               mask='(99) 99999-9999'
                               maskChar={null}
@@ -526,6 +527,29 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </td>
                         </tr>
 
+                        {role === 'ativos' && (
+                          <tr className="bg-gray dark:bg-boxdark-2">
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">
+                              Usuários vinculados
+                            </td>
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2">
+                              <div
+                                className='flex items-center gap-1 overflow-x-scroll custom-scrollbar pb-0.5 mt-1'>
+                                {data?.properties["Usuário"].multi_select?.map((user: any) => (
+                                  <p
+                                    key={user.id}
+                                    style={{
+                                      backgroundColor: notionColorResolver(user.color)
+                                    }}
+                                    className='px-2 pb-0.5 text-black-2 rounded'>
+                                    {user.name}
+                                  </p>
+                                ))}
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+
                         <tr className="bg-blue-700">
                           <td className="text-white px-4 py-2 flex items-center font-semibold">
                             <MdOutlineFollowTheSigns className="mr-4" /> Follow Up
@@ -537,10 +561,10 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
 
                         {
                           <tr className="bg-gray dark:bg-boxdark-2">
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Status</td>
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Status</td>
                             <td
                               onClick={() => setDynamicListId('status')}
-                              className="group/status relative border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 cursor-pointer">
+                              className="group/status relative border border-stroke dark:border-strokedark px-4 py-2 cursor-pointer">
 
                               <Title text={data?.properties?.Status?.status?.name.toUpperCase() || ""}>
                                 <div className="py-1 px-2 rounded-md max-w-[170px] text-black-2 text-xs text-ellipsis overflow-hidden whitespace-nowrap" style={{
@@ -564,8 +588,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         }
                         {
                           <tr className="bg-gray dark:bg-boxdark-2">
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Due do ativo</td>
-                            <td className="relative border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Due do ativo</td>
+                            <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                               <input
                                 className="w-[15px] h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer"
                                 type="checkbox"
@@ -580,8 +604,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
 
                         {
                           <tr className="bg-gray dark:bg-boxdark-2">
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Certidões emitidas</td>
-                            <td className="relative border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Certidões emitidas</td>
+                            <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                               <input
                                 className="w-[15px] h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer"
                                 type="checkbox"
@@ -595,8 +619,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         }
                         {
                           <tr className="bg-gray dark:bg-boxdark-2">
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">CVLD Necessária?</td>
-                            <td className="relative border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">CVLD Necessária?</td>
+                            <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                               <input
                                 className="w-[15px] h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer"
                                 type="checkbox"
@@ -610,8 +634,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         }
                         {
                           <tr className="bg-gray dark:bg-boxdark-2">
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">1ª Follow Up</td>
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2">
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">1ª Follow Up</td>
+                            <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
 
                               <ReactInputMask
                                 mask='99/99/9999'
@@ -626,13 +650,15 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                                 className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
                               />
 
+                              <HiMiniCalendar className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+
                             </td>
                           </tr>
                         }
                         {
                           <tr className="bg-gray dark:bg-boxdark-2">
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">2ª Follow Up</td>
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2">
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">2ª Follow Up</td>
+                            <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
 
                               <ReactInputMask
                                 mask='99/99/9999'
@@ -647,13 +673,15 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                                 className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
                               />
 
+                              <HiMiniCalendar className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+
                             </td>
                           </tr>
                         }
                         {
                           <tr className="bg-gray dark:bg-boxdark-2">
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">3ª Follow Up</td>
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2">
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">3ª Follow Up</td>
+                            <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
 
                               <ReactInputMask
                                 mask='99/99/9999'
@@ -668,13 +696,15 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                                 className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
                               />
 
+                              <HiMiniCalendar className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+
                             </td>
                           </tr>
                         }
                         {
                           <tr className="bg-gray dark:bg-boxdark-2">
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">4ª Follow Up</td>
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2">
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">4ª Follow Up</td>
+                            <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
 
                               <ReactInputMask
                                 mask='99/99/9999'
@@ -689,13 +719,15 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                                 className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
                               />
 
+                              <HiMiniCalendar className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+
                             </td>
                           </tr>
                         }
                         {
                           <tr className="bg-gray dark:bg-boxdark-2">
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">5ª Follow Up</td>
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2">
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">5ª Follow Up</td>
+                            <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
 
                               <ReactInputMask
                                 mask='99/99/9999'
@@ -710,6 +742,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                                 className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
                               />
 
+                              <HiMiniCalendar className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+
                             </td>
                           </tr>
                         }
@@ -723,10 +757,10 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         </tr>
                         {
                           <tr className="bg-gray dark:bg-boxdark-2">
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Tipo</td>
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Tipo</td>
                             <td
                               onClick={() => setDynamicListId('tipo')}
-                              className="group/oficio relative border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 cursor-pointer">
+                              className="group/oficio relative border border-stroke dark:border-strokedark px-4 py-2 cursor-pointer">
 
                               <Title text={data?.properties?.Tipo?.select?.name.toUpperCase() || ""}>
                                 <span className="p-1 rounded-md text-boxdark text-xs" style={{
@@ -752,8 +786,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         }
                         {
                           <tr className="bg-gray dark:bg-boxdark-2">
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">NPU Originário</td>
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2">
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">NPU Originário</td>
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2">
                               <ReactInputMask
                                 mask="9999999-99.9999.9.99.9999"
                                 type="text"
@@ -772,8 +806,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         }
                         {
                           <tr className="bg-gray dark:bg-boxdark-2">
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">NPU Precatório</td>
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2">
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">NPU Precatório</td>
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2">
                               <ReactInputMask
                                 mask="9999999-99.9999.9.99.9999"
                                 type="text"
@@ -791,14 +825,16 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </tr>
                         }
                         <tr className="bg-gray dark:bg-boxdark-2">
-                          <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Tribunal</td>
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Tribunal</td>
                           <td
                             onClick={() => setDynamicListId('tribunal')}
-                            className="group/tribunal relative border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 cursor-pointer">
+                            className="group/tribunal relative border border-stroke dark:border-strokedark px-4 py-2 cursor-pointer">
 
-                            <span className="py-1 px-2 rounded-md text-black-2 text-xs" style={{
-                              backgroundColor: notionColorResolver(data!.properties!.Tribunal!.select!.color),
-                            }}>{data?.properties?.Tribunal?.select?.name || ""}</span>
+                            <Title text={data?.properties?.Tribunal?.select?.name || ""}>
+                              <span className="py-1 px-2 rounded-md text-black-2 text-xs" style={{
+                                backgroundColor: notionColorResolver(data!.properties!.Tribunal!.select!.color),
+                              }}>{data?.properties?.Tribunal?.select?.name || ""}</span>
+                            </Title>
 
                             <TbGridDots className="absolute top-1/2 right-1 -translate-y-1/2 opacity-0 group-hover/tribunal:opacity-100 transition-opacity duration-200" />
 
@@ -814,8 +850,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </td>
                         </tr>
                         <tr className="bg-gray dark:bg-boxdark-2">
-                          <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Juízo</td>
-                          <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2">
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Juízo</td>
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2">
                             <Title text={data?.properties?.Juízo?.rich_text![0]?.plain_text || ""}>
                               <input
                                 type="text"
@@ -832,8 +868,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </td>
                         </tr>
                         <tr className="bg-gray dark:bg-boxdark-2">
-                          <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">L.O.A.</td>
-                          <td className="relative border border-stroke dark:border-strokedark dark:text-snow px-4 py-2">
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">L.O.A.</td>
+                          <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                             {data?.properties.LOA.number}
                             <Title text="Esta informação não é editável">
                               <HiOutlineLockClosed className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
@@ -841,8 +877,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </td>
                         </tr>
                         <tr className="bg-gray dark:bg-boxdark-2">
-                          <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Valor Principal</td>
-                          <td className="relative border border-stroke dark:border-strokedark dark:text-snow px-4 py-2">
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Valor Principal</td>
+                          <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                             {numberFormat(data?.properties["Valor Principal"]?.number || 0)}
                             <Title text="Esta informação não é editável">
                               <HiOutlineLockClosed className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
@@ -851,8 +887,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         </tr>
                         {
                           <tr className="bg-gray dark:bg-boxdark-2">
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Valor Juros</td>
-                            <td className="relative border border-stroke dark:border-strokedark dark:text-snow px-4 py-2">
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Valor Juros</td>
+                            <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                               {numberFormat(data?.properties["Valor Juros"]?.number || 0)}
                               <Title text="Esta informação não é editável">
                                 <HiOutlineLockClosed className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
@@ -861,8 +897,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </tr>
                         }
                         <tr className="bg-gray dark:bg-boxdark-2">
-                          <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Valor Inscrito</td>
-                          <td className="relative border border-stroke dark:border-strokedark dark:text-snow px-4 py-2">
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Valor Inscrito</td>
+                          <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                             {numberFormat(data?.properties["Valor Total Inscrito"]?.formula?.number || 0)}
                             <Title text="Esta informação não é editável">
                               <HiOutlineLockClosed className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
@@ -870,8 +906,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </td>
                         </tr>
                         <tr className="bg-gray dark:bg-boxdark-2">
-                          <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Valor Atualizado</td>
-                          <td className="relative border border-stroke dark:border-strokedark dark:text-snow px-4 py-2">
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Valor Atualizado</td>
+                          <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                             {numberFormat(data?.properties["Valor Atualizado"]?.number || 0)}
                             <Title text="Esta informação não é editável">
                               <HiOutlineLockClosed className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
@@ -880,13 +916,13 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         </tr>
                         {/* {
                           <tr className="bg-gray dark:bg-boxdark-2">
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Valor PSS</td>
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(data?.properties["Valor Total Inscrito"]?.formula?.number || 0)}</td>
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left text-boxdark">Valor PSS</td>
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2 text-boxdark">{numberFormat(data?.properties["Valor Total Inscrito"]?.formula?.number || 0)}</td>
                           </tr>
                         } */}
                         <tr className="bg-gray dark:bg-boxdark-2">
-                          <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Data Base</td>
-                          <td className="relative border border-stroke dark:border-strokedark dark:text-snow px-4 py-2">
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Data Base</td>
+                          <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                             {dateFormater(data?.properties["Data Base"]?.date?.start)}
                             <Title text="Esta informação não é editável">
                               <HiOutlineLockClosed className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
@@ -894,8 +930,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </td>
                         </tr>
                         <tr className="bg-gray dark:bg-boxdark-2">
-                          <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left">Data do Recebimento</td>
-                          <td className="relative border border-stroke dark:border-strokedark dark:text-snow px-4 py-2">
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Data do Recebimento</td>
+                          <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                             {dateFormater(data?.properties["Data do Recebimento"]?.date?.start || "2024-05-04")}
                             <Title text="Esta informação não é editável">
                               <HiOutlineLockClosed className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
@@ -903,8 +939,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </td>
                         </tr>
                         {/* <tr className="bg-gray dark:bg-boxdark-2">
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Atualizado até</td>
-                            <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{dateFormater(item?.data_limite_de_atualizacao)}</td>
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left text-boxdark">Atualizado até</td>
+                            <td className="border border-stroke dark:border-strokedark px-4 py-2 text-boxdark">{dateFormater(item?.data_limite_de_atualizacao)}</td>
                           </tr> */}
                         {/* {
                             item.fator_correcao_ipca_e && (
@@ -918,8 +954,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                                   </td>
                                 </tr>
                                 <tr className="bg-gray dark:bg-boxdark-2">
-                                  <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Fator IPCA-E até 12/2021</td>
-                                  <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{factorFormater(item.fator_correcao_ipca_e)}</td>
+                                  <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left text-boxdark">Fator IPCA-E até 12/2021</td>
+                                  <td className="border border-stroke dark:border-strokedark px-4 py-2 text-boxdark">{factorFormater(item.fator_correcao_ipca_e)}</td>
                                 </tr>
                               </>
                             )
@@ -928,12 +964,12 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                             item.recalc_flag === "before_12_2021" && (
                               <>
                                 <tr className="bg-gray dark:bg-boxdark-2">
-                                  <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Principal Atualizado até 12/2021</td>
-                                  <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(item.valor_atualizado_principal)}</td>
+                                  <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left text-boxdark">Principal Atualizado até 12/2021</td>
+                                  <td className="border border-stroke dark:border-strokedark px-4 py-2 text-boxdark">{numberFormat(item.valor_atualizado_principal)}</td>
                                 </tr>
                                 <tr className="bg-gray dark:bg-boxdark-2">
-                                  <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Juros Atualizado até 12/2021</td>
-                                  <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(item.valor_atualizado_juros)}</td>
+                                  <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left text-boxdark">Juros Atualizado até 12/2021</td>
+                                  <td className="border border-stroke dark:border-strokedark px-4 py-2 text-boxdark">{numberFormat(item.valor_atualizado_juros)}</td>
                                 </tr>
                               </>
                             )
@@ -949,24 +985,24 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           {
                             item.recalc_flag && (
                               <tr className="bg-gray dark:bg-boxdark-2">
-                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Fator SELIC</td>
-                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{factorFormater(item.fator_correcao_selic)}</td>
+                                <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left text-boxdark">Fator SELIC</td>
+                                <td className="border border-stroke dark:border-strokedark px-4 py-2 text-boxdark">{factorFormater(item.fator_correcao_selic)}</td>
                               </tr>
                             )
                           }
                           {
                             item.principal_atualizado_requisicao && (
                               <tr className="bg-gray dark:bg-boxdark-2">
-                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Principal Atualizado até a Requisição</td>
-                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(item.principal_atualizado_requisicao)}</td>
+                                <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left text-boxdark">Principal Atualizado até a Requisição</td>
+                                <td className="border border-stroke dark:border-strokedark px-4 py-2 text-boxdark">{numberFormat(item.principal_atualizado_requisicao)}</td>
                               </tr>
                             )
                           }
                           {
                             String(item.juros_atualizados_requisicao) && (
                               <tr className="bg-gray dark:bg-boxdark-2">
-                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Juros Atualizados até a Requisição</td>
-                                <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(item.juros_atualizados_requisicao)}</td>
+                                <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left text-boxdark">Juros Atualizados até a Requisição</td>
+                                <td className="border border-stroke dark:border-strokedark px-4 py-2 text-boxdark">{numberFormat(item.juros_atualizados_requisicao)}</td>
                               </tr>
                             )
                           } */}
@@ -981,32 +1017,32 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         {
                           item.fator_periodo_graca_ipca_e && (
                             <tr className="bg-gray dark:bg-boxdark-2">
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-left text-boxdark">Fator Período de Graça IPCA-E</td>
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{factorFormater(item.fator_periodo_graca_ipca_e)}</td>
+                              <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left text-boxdark">Fator Período de Graça IPCA-E</td>
+                              <td className="border border-stroke dark:border-strokedark px-4 py-2 text-boxdark">{factorFormater(item.fator_periodo_graca_ipca_e)}</td>
                             </tr>
                           )
                         }
                         {
                           item.recalc_flag === "before_12_2021" && (
                             <tr className="bg-gray dark:bg-boxdark-2">
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark text-left">Valor Principal Atualizado Final</td>
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(item.valor_principal_ipca_e)}</td>
+                              <td className="border border-stroke dark:border-strokedark px-4 py-2 text-boxdark text-left">Valor Principal Atualizado Final</td>
+                              <td className="border border-stroke dark:border-strokedark px-4 py-2 text-boxdark">{numberFormat(item.valor_principal_ipca_e)}</td>
                             </tr>
                           )
                         }
                         {
                           item.recalc_flag === "before_12_2021" && (
                             <tr className="bg-gray dark:bg-boxdark-2">
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark text-left">Valor Juros Atualizado Final</td>
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(item.valor_juros_ipca_e)}</td>
+                              <td className="border border-stroke dark:border-strokedark px-4 py-2 text-boxdark text-left">Valor Juros Atualizado Final</td>
+                              <td className="border border-stroke dark:border-strokedark px-4 py-2 text-boxdark">{numberFormat(item.valor_juros_ipca_e)}</td>
                             </tr>
                           )
                         }
                         {
                           item.valor_bruto_atualizado_final && (
                             <tr className="bg-gray dark:bg-boxdark-2">
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark text-left">Valor Bruto Atualizado Final</td>
-                              <td className="border border-stroke dark:border-strokedark dark:text-snow px-4 py-2 text-boxdark">{numberFormat(item.valor_bruto_atualizado_final)}</td>
+                              <td className="border border-stroke dark:border-strokedark px-4 py-2 text-boxdark text-left">Valor Bruto Atualizado Final</td>
+                              <td className="border border-stroke dark:border-strokedark px-4 py-2 text-boxdark">{numberFormat(item.valor_bruto_atualizado_final)}</td>
                             </tr>
                           )
                         } */}
@@ -1019,16 +1055,15 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                             &nbsp;
                           </td>
                         </tr>
-                        <tr className="bg-rose-300">
-                          <td className="border border-stroke px-4 py-2 text-boxdark text-left">Honorários já destacados?</td>
-                          <td className="border border-stroke px-4 py-2 text-boxdark">
+                        <tr className="bg-gray dark:bg-boxdark-2">
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Honorários já destacados?</td>
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2">
                             {checkMark === 'honorário' ? (
                               <div className="flex items-center justify-center w-6 h-6">
                                 <AiOutlineLoading className="animate-spin w-4.5 h-4.5" />
                               </div>
                             ) : (
                               <CustomCheckbox
-                                className="!border-gray-700"
                                 check={data?.properties["Honorários já destacados?"].checkbox}
                                 callbackFunction={() => updateFeesAtNotion(data!.id, data!.properties["Honorários já destacados?"]!.checkbox!)}
                               />
@@ -1038,29 +1073,29 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         </tr>
                         {data?.properties["Honorários já destacados?"].checkbox === false && (
                           <>
-                            <tr className="bg-rose-300">
-                              <td className="border border-stroke px-4 py-2 text-boxdark text-left">Percentual de Honorários Não destacados</td>
-                              <td className="border border-stroke px-4 py-2 text-boxdark">{percentageFormater(data?.properties["Percentual de Honorários Não destacados"].number || 0)}</td>
-                            </tr><tr className="bg-rose-300">
-                              <td className="border border-stroke px-4 py-2 text-boxdark text-left">Honorários Não destacados</td>
-                              <td className="border border-stroke px-4 py-2 text-boxdark">{numberFormat(data?.properties["Honorários não destacados"]?.formula?.number || 0)}</td>
+                            <tr className="bg-gray dark:bg-boxdark-2">
+                              <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Percentual de Honorários Não destacados</td>
+                              <td className="border border-stroke dark:border-strokedark px-4 py-2">{percentageFormater(data?.properties["Percentual de Honorários Não destacados"].number || 0)}</td>
+                            </tr><tr className="bg-gray dark:bg-boxdark-2">
+                              <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Honorários Não destacados</td>
+                              <td className="border border-stroke dark:border-strokedark px-4 py-2">{numberFormat(data?.properties["Honorários não destacados"]?.formula?.number || 0)}</td>
                             </tr>
                           </>
 
                         )}
-                        <tr className="bg-rose-300">
-                          <td className="border border-stroke px-4 py-2 text-boxdark text-left">Imposto de Renda (3%)</td>
-                          <td className="border border-stroke px-4 py-2 text-boxdark">{data?.properties["Imposto de Renda Retido 3%"]?.number ? numberFormat(data?.properties["Imposto de Renda Retido 3%"].number || 0) : "Não Informado"}</td>
+                        <tr className="bg-gray dark:bg-boxdark-2">
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Imposto de Renda (3%)</td>
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2">{data?.properties["Imposto de Renda Retido 3%"]?.number ? numberFormat(data?.properties["Imposto de Renda Retido 3%"].number || 0) : "Não Informado"}</td>
                         </tr>
 
-                        <tr className="bg-rose-300">
-                          <td className="border border-stroke px-4 py-2 text-boxdark text-left">IR/RRA</td>
-                          <td className="border border-stroke px-4 py-2 text-boxdark">{data?.properties["RRA"]?.number ? numberFormat(data?.properties["RRA"].number || 0) : "Não Informado"}</td>
+                        <tr className="bg-gray dark:bg-boxdark-2">
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">IR/RRA</td>
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2">{data?.properties["RRA"]?.number ? numberFormat(data?.properties["RRA"].number || 0) : "Não Informado"}</td>
                         </tr>
 
-                        <tr className="bg-rose-300">
-                          <td className="border border-stroke px-4 py-2 text-boxdark text-left">PSS</td>
-                          <td className="border border-stroke px-4 py-2 text-boxdark">{numberFormat(data?.properties?.PSS.number || 0)}</td>
+                        <tr className="bg-gray dark:bg-boxdark-2">
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">PSS</td>
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2">{numberFormat(data?.properties?.PSS.number || 0)}</td>
                         </tr>
 
                         <tr className="bg-blue-700">
