@@ -218,6 +218,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         }
     }
 
+    //TODO: mover essas funções de fetch para um hook
     const fetchUser = async () => {
         const t = await api.get("/api/profile/")
         return t.data.user
@@ -251,9 +252,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const [activeFilter, setActiveFilter] = useState<ActiveState>('ALL');
     const [usersList, setUsersList] = useState<string[]>([])
     const [listQuery, setListQuery] = useState<object>({});
-    const [fetchCounter, setFetchCounter] = useState<number>(0);
 
-
+    //TODO: mover essas funções de fetch para um hook
     const fetchNotionData = async () => {
         const t = await api.post(`api/notion-api/list/`, !!user && listQuery)
         return t.data
