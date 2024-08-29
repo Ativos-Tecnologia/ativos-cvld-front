@@ -622,7 +622,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 <input
                   type="date"
                   id="data_base"
-                  className={`${errors.data_base && "!border-rose-400 !ring-0"} w-full rounded-md border bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
+                  className={`${errors.data_base && "!border-rose-400 !ring-0"} w-full rounded-md border bg-white px-3 py-2 text-sm font-medium border-stroke dark:border-strokedark dark:bg-boxdark-2`}
                   {...register("data_base", {
                     required: "Campo obrigatório",
                   })}
@@ -668,7 +668,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 <input
                   type="date"
                   id="data_requisicao"
-                  className={`${errors.data_requisicao && "!border-rose-400 !ring-0"} w-full rounded-md border bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
+                  className={`${errors.data_requisicao && "!border-rose-400 !ring-0"} w-full rounded-md border bg-white px-3 py-2 text-sm font-medium border-stroke dark:border-strokedark dark:bg-boxdark-2`}
                   {...register("data_requisicao", {
                     required: "Campo obrigatório",
                   })}

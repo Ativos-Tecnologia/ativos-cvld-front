@@ -220,7 +220,7 @@ const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEdit
                                                         }
                                                     }}
                                                     onBlur={(e) => handleChangePhoneNumber(item.id, "Contato Telefônico", e.currentTarget.value, index, inputPhoneOneRefs.current)}
-                                                    className={`w-full p-0 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                    className={`w-full p-0 focus-within:ring-0 focus-within:border-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                 />
                                             </TableCell>
 
@@ -236,7 +236,7 @@ const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEdit
                                                         }
                                                     }}
                                                     onBlur={(e) => handleChangePhoneNumber(item.id, "Contato Telefônico 2", e.currentTarget.value, index, inputPhoneTwoRefs.current)}
-                                                    className={`w-full p-0 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                    className={`w-full p-0 focus-within:ring-0 focus-within:border-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                 />
                                             </TableCell>
 
@@ -252,7 +252,7 @@ const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEdit
                                                         }
                                                     }}
                                                     onBlur={(e) => handleChangePhoneNumber(item.id, "Contato Telefônico 3", e.currentTarget.value, index, inputPhoneThreeRefs.current)}
-                                                    className={`w-full p-0 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                    className={`w-full p-0 focus-within:ring-0 focus-within:border-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                 />
                                             </TableCell>
 
@@ -268,7 +268,7 @@ const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEdit
                                                         }
                                                     }}
                                                     onBlur={(e) => handleChangeEmail(item.id, e.currentTarget.value, index, inputEmailRefs.current)}
-                                                    className={`w-full p-0 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                    className={`w-full p-0 focus-within:ring-0 focus-within:border-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                 />
                                             </TableCell>
 
