@@ -24,6 +24,7 @@ import usePassword from "@/hooks/usePassword";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import Terms from "@/components/Modals/Terms_and_Conditions";
 import { Button } from "@/components/ui/button";
+import CustomCheckbox from "@/components/CrmUi/Checkbox";
 
 export type SignUpInputs = {
   username: string;
@@ -520,7 +521,17 @@ const SignUp: React.FC = () => {
                   </div>
 
                   <div className="mb-5 text-sm sm:col-span-2 flex gap-2 items-center">
-                    <input type="checkbox" name="terms" id="terms" style={{ width: '14px', height: '14px' }} onChange={() => setTermsAccepted(!termsAccepted)} />
+                    <CustomCheckbox
+                      check={termsAccepted}
+                      callbackFunction={() => setTermsAccepted(!termsAccepted)}
+                    />
+                    {/* <input
+                      type="checkbox"
+                      name="terms"
+                      id="terms"
+                      style={{ width: '14px', height: '14px' }}
+                      onChange={() => setTermsAccepted(!termsAccepted)}
+                    /> */}
                     <p>
                       Aceitar nossos <span onClick={() => setOpenModal(true)} className="text-blue-700 hover:underline cursor-pointer dark:text-blue-400">
                         termos e condições</span>

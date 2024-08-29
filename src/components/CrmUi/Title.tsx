@@ -26,7 +26,7 @@ const Title = ({ text, children }: {
             onMouseEnter={(e) => handleMouseEnter(e)}
             onMouseMove={(e) => handleMouseMove(e)}
             onMouseLeave={handleMouseLeave}
-            className='inline-block'
+            // className='inline-block'
         >
             {children}
 
@@ -36,7 +36,7 @@ const Title = ({ text, children }: {
                     top: position.y + 10, // Ajusta a posição vertical do tooltip
                     left: position.x + 10, // Ajusta a posição horizontal do tooltip
                 }}
-                className={`${visible ? 'opacity-100 transition-opacity duration-200 delay-200' : 'opacity-0 transition-opacity duration-200 delay-0'} fixed z-9999 bg-slate-200 dark:bg-slate-600 py-1 px-2 rounded-sm pointer-events-none whitespace-nowrap`}
+                className={`${visible ? 'opacity-100 transition-opacity duration-200 delay-200' : 'opacity-0 transition-opacity duration-200 delay-0'} fixed z-9999 bg-white border border-slate-600 dark:bg-slate-600 py-1 px-2 rounded-sm pointer-events-none whitespace-nowrap`}
             >
                 {text}
             </div>
