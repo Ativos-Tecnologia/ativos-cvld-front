@@ -141,6 +141,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         <AiOutlineDown className={`absolute right-4 top-1/2 -translate-y-1/2 transition-all duration-300 fill-current ${open && "rotate-180"}`} />
                       </Link>
 
+                      {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
                       <div
                         className={`translate transform overflow-hidden ${!open && "hidden"
                           }`}
@@ -168,6 +169,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           </li>
                         </ul>
                       </div>
+                      )}
 
                     </React.Fragment>
                   );
