@@ -157,6 +157,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               <span>Calculadora</span>
                             </Link>
                           </li>
+                          {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
+
                           <li>
                             <Link
                               href="/dashboard/wallet"
@@ -167,6 +169,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               Wallet
                             </Link>
                           </li>
+                          )}
                         </ul>
                       </div>
                       )}
@@ -176,6 +179,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 }}
               </SidebarLinkGroup>
 
+              {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
               <SidebarLinkGroup
                 activeCondition={
                   pathname === "/tasks" || pathname.includes("tasks")
@@ -203,7 +207,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           }`} />
                       </Link>
                       {/* <!-- Dropdown Menu Start --> */}
-                      {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
 
                         <div
                           className={`translate transform overflow-hidden ${!open && "hidden"
@@ -500,12 +503,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             </li>
                           </ul>
                         </div>
-                      )}
                       {/* <!-- Dropdown Menu End --> */}
                     </React.Fragment>
                   );
                 }}
               </SidebarLinkGroup>
+              )}
 
               {/* <!-- Menu Item Dashboard --> */}
 
