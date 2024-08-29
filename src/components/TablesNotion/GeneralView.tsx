@@ -15,6 +15,7 @@ import numberFormat from '@/functions/formaters/numberFormat';
 import statusOficio from '@/enums/statusOficio.enum';
 import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import notionColorResolver from '@/functions/formaters/notionColorResolver';
+import CustomCheckbox from '../CrmUi/Checkbox';
 
 const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelectRow, handleEditTipoOficio, handleChangeCreditorName, editableLabel, setEditableLabel, handleEditInput, handleNotionDrawer, handleCopyValue, handleEditStatus, statusSelectValue }:
     {
@@ -69,7 +70,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                         </div>
                     </TableHeadCell>
                     {role === 'ativos' && (
-                        <TableHeadCell className="min-w-[180px] max-w-[180px]">
+                        <TableHeadCell className="">
                             <div className="flex gap-2 items-center">
                                 <PiListBulletsBold className='text-base' />
                                 Usuários
@@ -82,7 +83,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                             Valor Líquido
                         </div>
                     </TableHeadCell>
-                    <TableHeadCell className="w-[0px]">
+                    <TableHeadCell className="">
                         <div className="flex gap-2 items-center">
                             <BiLoader className='text-base' />
                             Status
@@ -101,14 +102,11 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
 
                                         <TableRow key={item.id} className={`${checkedList!.some(target => target.id === item.id) && 'bg-blue-50 dark:bg-form-strokedark'} hover:shadow-3 dark:hover:shadow-body group`}>
 
-
                                             <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
                                                 <div className='flex items-center justify-center gap-3'>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={checkedList!.some(target => target.id === item.id)}
-                                                        className={`opacity-50 w-[15px] group-hover:opacity-100 ${checkedList!.some(target => target.id === item.id) && '!opacity-100'} h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
-                                                        onChange={() => handleSelectRow(item)}
+                                                    <CustomCheckbox
+                                                        check={checkedList!.some(target => target.id === item.id)}
+                                                        callbackFunction={() => handleSelectRow(item)}
                                                     />
                                                     <Badge color="indigo" size="sm" className={`w-[139px] h-7 text-[12px]`}>
                                                         {fetchingValue === item?.id ? (
@@ -200,7 +198,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
 
                                             </TableCell>
                                             {role === 'ativos' && (
-                                                <TableCell className=" font-semibold text-[14px] min-w-[180px] max-w-[180px] overflow-hidden">
+                                                <TableCell className=" font-semibold text-[14px] min-w-[170px] max-w-[170px] overflow-hidden">
                                                     <div
                                                         ref={(input) => { if (input) usersListRef.current![index] = input; }}
                                                         className='flex items-center gap-1 overflow-x-scroll custom-scrollbar pb-0.5'>

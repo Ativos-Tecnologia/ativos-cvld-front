@@ -15,6 +15,7 @@ import { ImCopy } from 'react-icons/im'
 import numberFormat from '@/functions/formaters/numberFormat'
 import { LuSigma } from 'react-icons/lu'
 import { UserInfoAPIContext } from '@/context/UserInfoContext'
+import CustomCheckbox from '../CrmUi/Checkbox'
 
 export const ProposalAccepted = ({ isPending, data, checkedList, editableLabel, setEditableLabel, statusSelectValue, fetchingValue, handleSelectRow, handleChangeCreditorName, handleEditInput, updateStatusAtNotion, handleCopyValue, handleNotionDrawer
 }:
@@ -100,11 +101,9 @@ export const ProposalAccepted = ({ isPending, data, checkedList, editableLabel, 
                                             >
                                                 <div className='relative w-full flex items-center gap-3'>
 
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={checkedList!.some(target => target.id === item.id)}
-                                                        className={`opacity-50 w-[15px] group-hover:opacity-100 ${checkedList!.some(target => target.id === item.id) && '!opacity-100'} h-[15px] bg-transparent focus-within:ring-0 selection:ring-0 duration-100 border-2 border-body dark:border-bodydark rounded-[3px] cursor-pointer`}
-                                                        onChange={() => handleSelectRow(item)}
+                                                    <CustomCheckbox
+                                                        check={checkedList!.some(target => target.id === item.id)}
+                                                        callbackFunction={() => handleSelectRow(item)}
                                                     />
 
                                                     <div className="relative w-full">
