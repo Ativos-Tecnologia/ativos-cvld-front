@@ -226,7 +226,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                                 </div>
                                             </TableCell>
                                             <TableCell className="text-center items-center ">
-                                                <Badge color="teal" size="sm" className="text-center h-7 text-[12px]">
+                                                <Badge color="teal" size="sm" className="text-center h-7 text-[12px] w-48">
                                                     {fetchingValue === item.id ? (
                                                         <span className='w-[192px] pl-3 pr-10 uppercase'>
                                                             Atualizando ...

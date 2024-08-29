@@ -82,9 +82,9 @@ export const MiniMenu = ({ count, checkedList, setCheckedList, handleSelectAllRo
             </div>
             <div className='text-sm font-medium'>
                 <span>
-                    {`${currentPage * 20 - 20 + 1}-${currentPage * 20 > count
+                    {`${currentPage * 100 - 100 + 1}-${currentPage * 100 > count
                         ? count
-                        : currentPage * 20} de ${count}`}
+                        : currentPage * 100} de ${count}`}
                 </span>
             </div>
         </div>
