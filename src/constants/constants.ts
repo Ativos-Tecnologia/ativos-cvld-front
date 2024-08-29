@@ -1,5 +1,6 @@
 import statusOficio from "@/enums/statusOficio.enum";
 import tipoOficio from "@/enums/tipoOficio.enum";
+import tribunalOficio from "@/enums/tribunalOficio.enum";
 
 export const ACCESS_TOKEN = "access";
 export const REFRESH_TOKEN = "refresh";
@@ -9,3 +10,4 @@ export const PRUSCIAN_BLUE = '#12263A'
 
 export const ENUM_OFICIOS_LIST = Object.values(statusOficio);
 export const ENUM_TIPO_OFICIOS_LIST = Object.values(tipoOficio);
+export const ENUM_TRIBUNAIS_LIST = Object.values(tribunalOficio);
