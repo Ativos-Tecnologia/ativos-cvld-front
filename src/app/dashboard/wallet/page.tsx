@@ -1,0 +1,20 @@
+import Wallet from "@/components/Dashboard/Wallet";
+
+import { Metadata } from "next";
+import DefaultLayout from "@/components/Layouts/DefaultLayout";
+
+export const metadata: Metadata = {
+  title: "CellerApp | Wallet",
+  description:
+    "Carteira de ativos digitais, com informações sobre o saldo, valorização e desvalorização dos ativos.",
+};
+
+const WalletPage = () => {
+  return (
+    <DefaultLayout>
+      <Wallet />
+    </DefaultLayout>
+  );
+};
+
+export default WalletPage;

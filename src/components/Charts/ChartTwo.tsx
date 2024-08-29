@@ -95,7 +95,7 @@ const ChartTwo: React.FC = () => {
       <div className="mb-4 justify-between gap-4 sm:flex">
         <div>
           <h4 className="text-xl font-semibold text-black dark:text-white">
-            O resultado
+            Profit this week
           </h4>
         </div>
         <div>
@@ -143,7 +143,6 @@ const ChartTwo: React.FC = () => {
             series={state.series}
             type="bar"
             height={350}
-            width={"100%"}
           />
         </div>
       </div>
