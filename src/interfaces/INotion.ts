@@ -107,6 +107,7 @@ export interface NotionPage {
 }
 
 export interface NotionResponse {
+  user: string;
   object: NotionObject;
   results: NotionPage[];
 }

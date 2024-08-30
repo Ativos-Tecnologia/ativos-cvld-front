@@ -6,10 +6,10 @@ import statusOficio from '@/enums/statusOficio.enum';
 import tipoOficio from '@/enums/tipoOficio.enum';
 import { ImCopy, ImTable } from 'react-icons/im';
 import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants';
-import { AiOutlineSearch, AiOutlineUser } from 'react-icons/ai';
+import { AiOutlineCopy, AiOutlineSearch, AiOutlineUser } from 'react-icons/ai';
 import { toast } from 'sonner';
 import { ActiveState, ExtratosTableContext } from '@/context/ExtratosTableContext';
-import { NotionPage } from '@/interfaces/INotion';
+import { NotionPage, NotionResponse } from '@/interfaces/INotion';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import api from '@/utils/api';
@@ -20,7 +20,9 @@ import MakeFirstContact from '../TablesNotion/MakeFirstContact';
 import { OfficeTypeAndValue } from '../TablesNotion/OfficeTypeAndValue';
 import { SendProposal } from '../TablesNotion/SendProposal';
 import { ProposalAccepted } from '../TablesNotion/ProposalAccepted';
-import GeneralView from '../TablesNotion/GeneralView';
+import GeneralView, { Item } from '../TablesNotion/GeneralView';
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
+import CustomCheckbox from '../CrmUi/Checkbox';
 
 
 const notionViews: string[] = [
@@ -110,7 +112,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         setNotionDrawer(true);
     }
 
-    const handleSelectRow = (item: NotionPage) => {
+    const handleSelectRow = (item: NotionPage): void => {
 
         if (checkedList.length === 0) {
             setCheckedList([item]);
@@ -127,7 +129,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     }
 
     const handleSelectAllRows = () => {
-        setCheckedList(data.results.map((item: NotionPage) => item))
+        setCheckedList(data!.results.map((item: NotionPage) => item))
     }
 
     const deleteMutation = useMutation({
@@ -257,7 +259,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     }
 
     const queryClient = useQueryClient()
-    const { isPending, data, error, isFetching, refetch } = useQuery(
+    const { isPending, data, error, isFetching, refetch } = useQuery<NotionResponse>(
         {
             queryKey: ['notion_list'],
             refetchOnReconnect: true,
@@ -268,6 +270,31 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             enabled: !!data2?.user // only fetch if user is defined after context is loaded
         },
     );
+
+    type PrecatorioData = {
+        id: string
+        credor: string
+        valor: number
+        dataRecebimento: string
+        status: string
+        tipo: string
+        esfera: string
+        tribunal: string
+      }
+
+      // Função para processar a resposta do Notion
+    //   function processNotionResponse(response: any): PrecatorioData {
+    //     return {
+    //       id: response.id,
+    //       credor: response.properties.Credor.title[0]?.plain_text || '',
+    //       valor: response.properties['Valor Atualizado'].number || 0,
+    //       dataRecebimento: response.properties['Data do Recebimento'].date?.start || '',
+    //       status: response.properties.Status.status?.name || '',
+    //       tipo: response.properties.Tipo.select?.name || '',
+    //       esfera: response.properties.Esfera.select?.name || '',
+    //       tribunal: response.properties.Tribunal.select?.name || '',
+    //     }
+    //   }
 
     const archiveNotionPage = async (page_id: string, choice = true) => { // choice = true to archive, false to unarchive
         try {
@@ -401,7 +428,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
             let responseStatus: number = 0;
 
-            if (data.results[index].properties[type].date === null) {
+            if (data!.results[index].properties[type].date === null) {
 
                 const dateObject = {
                     end: null,
@@ -442,7 +469,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
     const handleCopyValue = (index: number) => {
 
-        navigator.clipboard.writeText(numberFormat(data.results[index].properties['Valor Líquido'].formula?.number || 0));
+        navigator.clipboard.writeText(numberFormat(data!.results[index].properties['Valor Líquido'].formula?.number || 0));
 
         toast("Valor copiado para área de transferência.", {
             classNames: {
@@ -484,8 +511,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             await updateNotionCreditorName(page_id, value);
         } catch (error) {
             console.log(error);
-        } finally {
-            // queryClient.invalidateQueries({ queryKey: ['notion_list'] });
         }
     }
 
@@ -999,6 +1024,21 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         return () => document.removeEventListener("keydown", keyHandler);
     });
 
+    // type Item = {
+    //     id: string
+    //     properties: {
+    //       Tipo: { select: { name: string } }
+    //       Credor: { title: [{ text: { content: string } }] }
+    //       'Valor Líquido': { formula: { number: number } }
+    //       Status: { status: { name: string } }
+    //       Usuário: { multi_select: Array<{ id: string; name: string; color: string }> }
+    //     }
+    //     url?: string
+    //   }
+
+
+    // const data3 = data?.results.map(processNotionResponse) || []
+
     return (
         <>
             <div className="flex gap-3 flex-1 items-center">
@@ -1174,7 +1214,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                                     />
                                 </div> */}
                                             <div className='flex flex-col max-h-49 overflow-y-scroll gap-1'>
-                                                {usersList.filter(user => user !== data.user).map((user) => (
+                                                {usersList.filter(user => user !== data!.user).map((user) => (
                                                     <span
                                                         key={user}
                                                         className='cursor-pointer text-sm p-1 rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700'
@@ -1234,20 +1274,19 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
             {notionView === 'geral' && (
                 <GeneralView
-                    isPending={isPending}
-                    data={data}
-                    checkedList={checkedList}
-                    fetchingValue={fetchingValue}
+                    data={data?.results as unknown as NotionPage[] ?? []}
+                    role={role}
                     handleSelectRow={handleSelectRow}
-                    handleEditTipoOficio={handleEditTipoOficio}
-                    handleChangeCreditorName={handleChangeCreditorName}
+                    fetchingValue={fetchingValue}
                     editableLabel={editableLabel}
                     setEditableLabel={setEditableLabel}
-                    handleEditInput={handleEditInput}
                     handleNotionDrawer={handleNotionDrawer}
                     handleCopyValue={handleCopyValue}
+                    checkedList={checkedList as unknown as NotionPage[]}
                     handleEditStatus={handleEditStatus}
-                    statusSelectValue={statusSelectValue}
+                    handleChangeCreditorName={handleChangeCreditorName}
+                    handleEditInput={handleEditInput}
+                    handleEditTipoOficio={handleEditTipoOficio}
                 />
             )}
 
