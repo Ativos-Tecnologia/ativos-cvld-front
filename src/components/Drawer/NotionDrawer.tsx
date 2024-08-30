@@ -567,9 +567,15 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                               className="group/status relative border border-stroke dark:border-strokedark px-4 py-2 cursor-pointer">
 
                               <Title text={data?.properties?.Status?.status?.name.toUpperCase() || ""}>
-                                <div className="py-1 px-2 rounded-md max-w-[170px] text-black-2 text-xs text-ellipsis overflow-hidden whitespace-nowrap" style={{
-                                  backgroundColor: notionColorResolver(data!.properties!.Status!.status!.color),
-                                }}>{data?.properties?.Status?.status?.name.toUpperCase() || ""}</div>
+                                {data?.properties?.Status?.status ? (
+                                  <div className="py-1 px-2 rounded-md max-w-[170px] text-black-2 text-xs text-ellipsis overflow-hidden whitespace-nowrap" style={{
+                                    backgroundColor: notionColorResolver(data!.properties!.Status!.status!.color),
+                                  }}>
+                                    {data?.properties?.Status?.status?.name.toUpperCase() || ""}
+                                  </div>
+                                ) : (
+                                  <span>Não definido</span>
+                                )}
                               </Title>
 
                               <TbGridDots className="absolute top-1/2 right-1 -translate-y-1/2 opacity-0 group-hover/status:opacity-100 transition-opacity duration-200" />
@@ -763,11 +769,11 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                               className="group/oficio relative border border-stroke dark:border-strokedark px-4 py-2 cursor-pointer">
 
                               <Title text={data?.properties?.Tipo?.select?.name.toUpperCase() || ""}>
-                                <span className="p-1 rounded-md text-boxdark text-xs" style={{
+                                {data?.properties?.Tipo?.select?.name ? <span className="p-1 rounded-md text-boxdark text-xs" style={{
                                   backgroundColor: notionColorResolver(data!.properties!.Tipo!.select!.color),
                                 }}>
                                   {data?.properties?.Tipo?.select?.name.toUpperCase() || ""}
-                                </span>
+                                </span> : <span>Não definido</span>}
                               </Title>
 
                               <TbGridDots className="absolute top-1/2 right-1 -translate-y-1/2 opacity-0 group-hover/oficio:opacity-100 transition-opacity duration-200" />
@@ -831,9 +837,15 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                             className="group/tribunal relative border border-stroke dark:border-strokedark px-4 py-2 cursor-pointer">
 
                             <Title text={data?.properties?.Tribunal?.select?.name || ""}>
-                              <span className="py-1 px-2 rounded-md text-black-2 text-xs" style={{
-                                backgroundColor: notionColorResolver(data!.properties!.Tribunal!.select!.color),
-                              }}>{data?.properties?.Tribunal?.select?.name || ""}</span>
+                              {data?.properties?.Tribunal?.select ? (
+                                <span className="py-1 px-2 rounded-md text-black-2 text-xs" style={{
+                                  backgroundColor: notionColorResolver(data!.properties!.Tribunal!.select!.color),
+                                }}>
+                                  {data?.properties?.Tribunal?.select?.name || ""}
+                                </span>
+                              ) : (
+                                <span>Não definido</span>
+                              )}
                             </Title>
 
                             <TbGridDots className="absolute top-1/2 right-1 -translate-y-1/2 opacity-0 group-hover/tribunal:opacity-100 transition-opacity duration-200" />
