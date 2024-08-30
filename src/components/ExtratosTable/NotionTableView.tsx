@@ -262,7 +262,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             queryKey: ['notion_list'],
             refetchOnReconnect: true,
             refetchOnWindowFocus: true,
-            refetchInterval: 1000 * 15, // 15 seconds
+            // refetchInterval: 1000 * 15, // 15 seconds
             staleTime: 1000 * 13, // 13 seconds
             queryFn: fetchNotionData,
             enabled: !!data2?.user // only fetch if user is defined after context is loaded
@@ -531,12 +531,12 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const buildQuery = useCallback(() => {
         return {
             "and": [
-                {
-                    "property": selectedUser && data2?.sub_role  === 'coordenador' ? "Usuário" : "Coordenadores",
-                    "multi_select": {
-                    "contains": selectedUser && data2?.sub_role  === 'coordenador' ? selectedUser : ""
-                    }
-                },
+                // {
+                //     "property": selectedUser && data2?.sub_role  === 'coordenador' ? "Usuário" : "Coordenadores",
+                //     "multi_select": {
+                //     "contains": selectedUser && data2?.sub_role  === 'coordenador' ? selectedUser : ""
+                //     }
+                // },
                 data2?.sub_role === 'coordenador' ? {
                     "property": "Coordenadores",
                     "multi_select": {
@@ -579,34 +579,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         setOficioSelectValue(oficio);
         setOpenTipoOficioPopover(false);
         setListQuery(
-        //     {
-        //     "and": [
-        //         {
-        //             "property": "Usuário",
-        //             "multi_select": {
-        //                 "contains": data2?.user
-        //             }
-        //         },
-        //         {
-        //             "property": "Coordenadores",
-        //             "multi_select": {
-        //             "contains": data2.sub_role === 'coordenador' ? data2.user : ""
-        //             }
-        //         },
-        //         {
-        //             "property": "Tipo",
-        //             "select": {
-        //                 "equals": oficio
-        //             }
-        //         },
-        //         {
-        //             "property": "Status",
-        //             "status": {
-        //                 "equals": statusSelectValue || ''
-        //             }
-        //         }
-        //     ]
-        // }
         {
             "and": [
                 {
@@ -652,7 +624,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                 {
                     "property": selectedUser && data2?.sub_role  === 'coordenador' ? "Usuário" : "Coordenadores",
                     "multi_select": {
-                    "contains": selectedUser && data2?.sub_role  === 'coordenador' ? selectedUser : ""
+                    "contains": selectedUser && data2?.sub_role  === 'coordenador' ? user : ""
                     }
                 },
                 data2?.sub_role === 'coordenador' ? {
