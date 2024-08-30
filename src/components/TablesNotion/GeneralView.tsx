@@ -130,7 +130,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                                     </Badge>
                                                 </div>
                                             </TableCell>
-                                            <TableCell title={item?.properties.Credor?.title[0]?.text.content || ''}
+                                            <TableCell title={item?.properties?.Credor?.title[0]?.text.content || ''}
                                                 className="relative h-full min-w-100 flex items-center gap-2 font-semibold text-[12px]"
                                             >
                                                 <input

@@ -304,7 +304,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
     }
 
     if (!data.upload_notion) {
-      data.upload_notion = false;
+      data.upload_notion = true;
     }
 
     if (!data.npu) {
@@ -322,6 +322,11 @@ const MainForm: React.FC<CVLDFormProps> = ({
     if (!data.vincular_usuario) {
       data.username = undefined;
     }
+
+    if (data.ja_possui_destacamento) {
+      data.percentual_de_honorarios = 30;
+    }
+
 
     setLoading(true);
 
@@ -634,20 +639,20 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 className={`flex items-center gap-2 ${watch("data_base") < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
               >
 
-                <CustomCheckbox
+                {/* <CustomCheckbox
                   check={watch("incidencia_juros_moratorios")}
                   id={'incidencia_juros_moratorios'}
                   defaultChecked
                   register={register("incidencia_juros_moratorios")}
-                />
+                /> */}
 
-                {/* <input
+                <input
                   type="checkbox"
                   id="incidencia_juros_moratorios"
                   className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                   defaultChecked
                   {...register("incidencia_juros_moratorios")}
-                /> */}
+                />
                 <label
                   htmlFor="incidencia_juros_moratorios"
                   className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -677,19 +682,19 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </div>
             </div>
             <div className="flex items-center gap-2 col-span-2">
-              <CustomCheckbox
+              {/* <CustomCheckbox
                 check={watch("incidencia_rra_ir")}
                 id={'incidencia_rra_ir'}
                 defaultChecked
                 register={register("incidencia_rra_ir")}
-              />
-              {/* <input
+              /> */}
+              <input
                 type="checkbox"
                 id="incidencia_rra_ir"
                 className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                 defaultChecked
                 {...register("incidencia_rra_ir")}
-              /> */}
+              />
               <label
                 htmlFor="incidencia_rra_ir"
                 className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -706,17 +711,17 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </>
             ) : (
               <div className={`flex gap-2 ${watch("ir_incidente_rra") ? 'items-start' : 'items-center'} 2xsm:col-span-2 sm:col-span-1`}>
-                <CustomCheckbox
+                {/* <CustomCheckbox
                   check={watch("ir_incidente_rra")}
                   id={'ir_incidente_rra'}
                   register={register("ir_incidente_rra")}
-                />
-                {/* <input
+                /> */}
+                <input
                   type="checkbox"
                   id="ir_incidente_rra"
                   className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                   {...register("ir_incidente_rra")}
-                /> */}
+                />
                 <label
                   htmlFor="ir_incidente_rra"
                   className="mt-1 font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -756,17 +761,17 @@ const MainForm: React.FC<CVLDFormProps> = ({
             )}
             {watch("natureza") !== "TRIBUTÁRIA" ? (
               <div className={`flex gap-2 ${watch('incidencia_pss') ? 'items-start' : 'items-center'} 2xsm:col-span-2 sm:col-span-1`}>
-                <CustomCheckbox
+                {/* <CustomCheckbox
                   check={watch("incidencia_pss")}
                   id={'incidencia_pss'}
                   register={register("incidencia_pss")}
-                />
-                {/* <input
+                /> */}
+                <input
                   type="checkbox"
                   id="incidencia_pss"
                   className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                   {...register("incidencia_pss")}
-                /> */}
+                />
                 <label
                   htmlFor="incidencia_pss"
                   className="mt-1 font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -812,17 +817,17 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </>
             )}
             <div className={`flex gap-2 ${watch("data_limite_de_atualizacao_check") ? "items-start" : "items-center"} 2xsm:col-span-2 sm:col-span-1`}>
-              <CustomCheckbox
+              {/* <CustomCheckbox
                 check={watch("data_limite_de_atualizacao_check")}
                 id={'data_limite_de_atualizacao_check'}
                 register={register("data_limite_de_atualizacao_check")}
-              />
-              {/* <input
+              /> */}
+              <input
                 type="checkbox"
                 id="data_limite_de_atualizacao_check"
                 className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                 {...register("data_limite_de_atualizacao_check")}
-              /> */}
+              />
               <label
                 htmlFor="data_limite_de_atualizacao_check"
                 className="mt-1 font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -861,17 +866,17 @@ const MainForm: React.FC<CVLDFormProps> = ({
             {/* CVLD */}
             <div className="flex flex-col gap-2 col-span-2">
               <div className="flex gap-2 items-center ">
-                <CustomCheckbox
+                {/* <CustomCheckbox
                   check={watch("gerar_cvld")}
                   id={'gerar_cvld'}
                   register={register("gerar_cvld")}
-                />
-                {/* <input
+                /> */}
+                <input
                   type="checkbox"
                   id="gerar_cvld"
                   className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                   {...register("gerar_cvld")}
-                /> */}
+                />
                 {/* <label htmlFor="gerar_cvld" className="text-sm font-medium text-meta-5">
                     Emitir Certidão de Valor Líquido Disponível (CVLD)?
                   </label> */}
@@ -1750,19 +1755,19 @@ const MainForm: React.FC<CVLDFormProps> = ({
                   <div className="flex flex-col gap-2">
                     <div className="flex flex-col gap-2 sm:col-span-2">
                       <div className="flex gap-2 invisible">
-                        <CustomCheckbox
+                        {/* <CustomCheckbox
                           check={watch("upload-notion")}
                           id={'upload-notion'}
                           register={register("upload-notion")}
-                        />
-                        {/* <input
+                        /> */}
+                        <input
                           type="checkbox"
                           id="upload_notion"
                           disabled={watch("regime") === "ESPECIAL" ? true : false}
                           defaultChecked={true}
                           className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark disabled:opacity-50 disabled:cursor-not-allowed`}
                           {...register("upload_notion")}
-                        /> */}
+                        />
                         <label
                           htmlFor="upload_notion"
                           aria-disabled={watch("regime") === "ESPECIAL" ? true : false}
@@ -1775,17 +1780,17 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <>
                           <div className="flex justify-between">
                             <div className="flex gap-2 items-center">
-                              <CustomCheckbox
+                              {/* <CustomCheckbox
                                 check={watch("vincular_usuario")}
                                 id={'vincular_usuario'}
                                 register={register("vincular_usuario")}
-                              />
-                              {/* <input
+                              /> */}
+                              <input
                                 type="checkbox"
                                 id="vincular_usuario"
                                 className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                                 {...register("vincular_usuario")}
-                              /> */}
+                              />
                               <label htmlFor="vincular_usuario" className="text-sm font-medium text-meta-5 flex flex-row align-self-baseline cursor-pointer">
                                 <BiLogoUpwork className="h-4 w-4 mt-0.5 mr-2" /> Vincular a outro usuário?
                               </label>
@@ -1843,18 +1848,18 @@ const MainForm: React.FC<CVLDFormProps> = ({
                                 <div>
                                   <label htmlFor="novo_usuario" className="text-sm font-medium text-meta-5 cursor-pointer flex items-center gap-1">
                                     {/* <span className="text-meta-7 text-xs">👤</span> */}
-                                    <CustomCheckbox
+                                    {/* <CustomCheckbox
                                       check={watch("novo_usuario")}
                                       id={'novo_usuario'}
                                       register={register("novo_usuario")}
-                                    />
+                                    /> */}
                                     <span>O nome não está na lista? Crie um novo usuário!</span>
-                                    {/* <input
+                                    <input
                                       type="checkbox"
                                       id="novo_usuario"
                                       className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                                       {...register("novo_usuario")}
-                                    /> */}
+                                    />
                                   </label>
                                 </div>
                                 {watch('novo_usuario') === true &&
