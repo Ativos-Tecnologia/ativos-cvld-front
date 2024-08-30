@@ -5,7 +5,9 @@ import Header from "@/components/Header";
 import { UserInfoProvider } from "@/context/UserInfoContext";
 import { Alert } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+const queryClient = new QueryClient();
 
 export default function DefaultLayout({
   children,
@@ -32,7 +34,9 @@ export default function DefaultLayout({
           {/* <!-- ===== Main Content Start ===== --> */}
           <main className="w-full">
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-              {children}
+              <QueryClientProvider client={queryClient}>
+                {children}
+              </QueryClientProvider>
             </div>
           </main>
           {/* <!-- ===== Main Content End ===== --> */}

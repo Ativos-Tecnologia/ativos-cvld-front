@@ -16,6 +16,7 @@ import statusOficio from '@/enums/statusOficio.enum';
 import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import notionColorResolver from '@/functions/formaters/notionColorResolver';
 import CustomCheckbox from '../CrmUi/Checkbox';
+import { CellerChartBar } from '../ui/barChart';
 
 const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelectRow, handleEditTipoOficio, handleChangeCreditorName, editableLabel, setEditableLabel, handleEditInput, handleNotionDrawer, handleCopyValue, handleEditStatus, statusSelectValue }:
     {
@@ -54,6 +55,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
 
     return (
         <div className='max-w-full overflow-x-scroll pb-5'>
+            {/* <CellerChartBar /> */}
             <Table>
                 <TableHead>
 
