@@ -1043,18 +1043,19 @@ const MainForm: React.FC<CVLDFormProps> = ({
                       watch("especie") === undefined) && (
                         <div className="my-4 flex w-full flex-row justify-between gap-4 sm:col-span-2">
                           <div className={`flex flex-row ${watch('ja_possui_destacamento') ? 'items-center' : 'items-start'} w-full gap-2 sm:col-span-1`}>
-                            <CustomCheckbox
+                            {/* <CustomCheckbox
                               check={watch("ja_possui_destacamento")}
                               id={'ja_possui_destacamento'}
                               register={register("ja_possui_destacamento")}
-                            />
-                            {/* <input
+                              defaultChecked
+                            /> */}
+                            <input
                               type="checkbox"
                               id="ja_possui_destacamento"
                               defaultChecked
                               className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                               {...register("ja_possui_destacamento")}
-                            /> */}
+                            />
                             <label
                               htmlFor="ja_possui_destacamento"
                               className={`${!watch('ja_possui_destacamento') && 'mt-1'} font-nexa text-xs font-semibold uppercase text-meta-5`}
