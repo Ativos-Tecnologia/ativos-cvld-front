@@ -141,6 +141,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         <AiOutlineDown className={`absolute right-4 top-1/2 -translate-y-1/2 transition-all duration-300 fill-current ${open && "rotate-180"}`} />
                       </Link>
 
+                      {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
                       <div
                         className={`translate transform overflow-hidden ${!open && "hidden"
                           }`}
@@ -156,14 +157,29 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               <span>Calculadora</span>
                             </Link>
                           </li>
+                          {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
+
+                          <li>
+                            <Link
+                              href="/dashboard/wallet"
+                              className={`group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ${
+                                pathname === "/dashboard/wallet" && "text-white"
+                              }`}
+                            >
+                              Wallet
+                            </Link>
+                          </li>
+                          )}
                         </ul>
                       </div>
+                      )}
 
                     </React.Fragment>
                   );
                 }}
               </SidebarLinkGroup>
 
+              {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
               <SidebarLinkGroup
                 activeCondition={
                   pathname === "/tasks" || pathname.includes("tasks")
@@ -191,7 +207,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           }`} />
                       </Link>
                       {/* <!-- Dropdown Menu Start --> */}
-                      {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
 
                         <div
                           className={`translate transform overflow-hidden ${!open && "hidden"
@@ -488,12 +503,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             </li>
                           </ul>
                         </div>
-                      )}
                       {/* <!-- Dropdown Menu End --> */}
                     </React.Fragment>
                   );
                 }}
               </SidebarLinkGroup>
+              )}
 
               {/* <!-- Menu Item Dashboard --> */}
 

@@ -143,11 +143,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
           return response.data;
         },
         onMutate: async (pageIds: string[]) => {
-
           await queryClient.cancelQueries({ queryKey: ['notion_list'] });
-
           const previousData = queryClient.getQueryData(['notion_list']);
-
           queryClient.setQueryData(['notion_list'], (old: any) => {
             return { ...old, results: old.results.filter((item: any) => !pageIds.includes(item.id)) };
           });
@@ -156,7 +153,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         },
         onError: (err, pageIds, context) => {
           queryClient.setQueryData(['notion_list'], context?.previousData);
-          toast.error('Erro ao desarquivar os dados');
+          toast.error('Erro ao arquivar os dados');
         },
         onSuccess: (data, pageIds) => {
           toast(`${pageIds.length > 1 ? `${pageIds.length} extratos arquivados!` : 'Extrato arquivado!'}`, {
@@ -172,7 +169,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     handleUnarchiveExtrato()
                 },
             }});
-        }
+        },
         // onSettled: () => {
         //   queryClient.invalidateQueries({ queryKey: ['notion_list'] });
         // },
@@ -221,22 +218,22 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     //TODO: mover essas funções de fetch para um hook
     const fetchUser = async () => {
         const t = await api.get("/api/profile/")
-        return t.data.user
+
+        return t.data
     }
 
-    const { data: user } = useQuery({
+    const { data: data2 } = useQuery({
         queryKey: ['user'],
         queryFn: fetchUser,
       })
-
 
     const defaultFilterObject = {
         "and":
             [
                 {
-                    "property": "Usuário",
+                    "property": data2?.sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
                     "multi_select": {
-                        "contains": user
+                        "contains": data2?.user
                     }
                 },
                 secondaryDefaultFilterObject
@@ -255,7 +252,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
     //TODO: mover essas funções de fetch para um hook
     const fetchNotionData = async () => {
-        const t = await api.post(`api/notion-api/list/`, !!user && listQuery)
+        const t = await api.post(`api/notion-api/list/`, !!data2?.user && listQuery)
         return t.data
     }
 
@@ -266,9 +263,9 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             refetchOnReconnect: true,
             refetchOnWindowFocus: true,
             refetchInterval: 1000 * 15, // 15 seconds
-            staleTime: 1000 * 10, // 5 seconds
+            staleTime: 1000 * 13, // 13 seconds
             queryFn: fetchNotionData,
-            enabled: !!user // only fetch if user is defined after context is loaded
+            enabled: !!data2?.user // only fetch if user is defined after context is loaded
         },
     );
 
@@ -529,13 +526,26 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         }
     }
 
+
+
     const buildQuery = useCallback(() => {
         return {
             "and": [
-                {
+                // {
+                //     "property": selectedUser && data2?.sub_role  === 'coordenador' ? "Usuário" : "Coordenadores",
+                //     "multi_select": {
+                //     "contains": selectedUser && data2?.sub_role  === 'coordenador' ? selectedUser : ""
+                //     }
+                // },
+                data2?.sub_role === 'coordenador' ? {
+                    "property": "Coordenadores",
+                    "multi_select": {
+                        "contains": data2?.user
+                    }
+                } : {
                     "property": "Usuário",
                     "multi_select": {
-                        "contains": selectedUser || user
+                        "contains": selectedUser || data2?.user
                     }
                 },
                 {
@@ -553,7 +563,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                 secondaryDefaultFilterObject
             ]
         };
-    }, [user, statusSelectValue, oficioSelectValue, secondaryDefaultFilterObject, selectedUser]);
+    }, [data2?.sub_role, data2?.user, selectedUser, statusSelectValue, oficioSelectValue, secondaryDefaultFilterObject]);
 
     useEffect(() => {
         const updatedQuery = buildQuery();
@@ -563,17 +573,35 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         if (Object.keys(updatedQuery).length > 0) {
             refetch();
         }
-    }, [user, statusSelectValue, oficioSelectValue, selectedUser, buildQuery, refetch]);
+    }, [data2?.user, statusSelectValue, oficioSelectValue, selectedUser, buildQuery, refetch]);
 
     const handleFilterByTipoOficio = (oficio: tipoOficio) => {
         setOficioSelectValue(oficio);
         setOpenTipoOficioPopover(false);
-        setListQuery({
+        setListQuery(
+        {
             "and": [
                 {
+                    "property": selectedUser && data2?.sub_role  === 'coordenador' ? "Usuário" : "Coordenadores",
+                    "multi_select": {
+                    "contains": selectedUser && data2?.sub_role  === 'coordenador' ? selectedUser : ""
+                    }
+                },
+                data2?.sub_role === 'coordenador' ? {
+                    "property": "Coordenadores",
+                    "multi_select": {
+                        "contains": data2?.user
+                    }
+                } : {
                     "property": "Usuário",
                     "multi_select": {
-                        "contains": user
+                        "contains": selectedUser || data2?.user
+                    }
+                },
+                {
+                    "property": "Status",
+                    "status": {
+                        "equals": statusSelectValue || ''
                     }
                 },
                 {
@@ -582,24 +610,48 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                         "equals": oficio
                     }
                 },
-                {
-                    "property": "Status",
-                    "status": {
-                        "equals": statusSelectValue || ''
-                    }
-                }
+                secondaryDefaultFilterObject
             ]
-        });
+        }
+    );
     }
 
     const handleFilterByUser = (user: string) => {
         setOpenUsersPopover(false)
         setSelectedUser(user);
         setListQuery({
-            "property": "Usuário",
-            "multi_select": {
-                "contains": user
-            }
+            "and": [
+                {
+                    "property": selectedUser && data2?.sub_role  === 'coordenador' ? "Usuário" : "Coordenadores",
+                    "multi_select": {
+                    "contains": selectedUser && data2?.sub_role  === 'coordenador' ? user : ""
+                    }
+                },
+                data2?.sub_role === 'coordenador' ? {
+                    "property": "Coordenadores",
+                    "multi_select": {
+                        "contains": data2?.user
+                    }
+                } : {
+                    "property": "Usuário",
+                    "multi_select": {
+                        "contains": user
+                    }
+                },
+                {
+                    "property": "Status",
+                    "status": {
+                        "equals": statusSelectValue || ''
+                    }
+                },
+                {
+                    "property": "Tipo",
+                    "select": {
+                        "equals": oficioSelectValue || ''
+                    }
+                },
+                secondaryDefaultFilterObject
+            ]
         });
     }
 
@@ -626,9 +678,20 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         setListQuery({
             "and": [
                 {
+                    "property": selectedUser && data2?.sub_role  === 'coordenador' ? "Usuário" : "Coordenadores",
+                    "multi_select": {
+                    "contains": selectedUser && data2?.sub_role  === 'coordenador' ? selectedUser : ""
+                    }
+                },
+                data2?.sub_role === 'coordenador' ? {
+                    "property": "Coordenadores",
+                    "multi_select": {
+                        "contains": data2?.user
+                    }
+                } : {
                     "property": "Usuário",
                     "multi_select": {
-                        "contains": user
+                        "contains": selectedUser || data2?.user
                     }
                 },
                 {
@@ -642,7 +705,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     "select": {
                         "equals": oficioSelectValue || ''
                     }
-                }
+                },
+                secondaryDefaultFilterObject
             ]
         });
 
@@ -683,9 +747,9 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                 "and":
                     [
                         {
-                            "property": "Usuário",
+                            "property": data2?.sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
                             "multi_select": {
-                                "contains": selectedUser || user
+                                "contains": selectedUser || data2?.user
                             }
                         },
                         {
@@ -742,9 +806,9 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                 "and":
                     [
                         {
-                            "property": "Usuário",
+                            "property": data2?.sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
                             "multi_select": {
-                                "contains": selectedUser || user
+                                "contains": selectedUser || data2?.user
                             }
                         },
                         {
@@ -789,9 +853,9 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                 "and":
                     [
                         {
-                            "property": "Usuário",
+                            "property": data2?.sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
                             "multi_select": {
-                                "contains": selectedUser || user
+                                "contains": selectedUser || data2?.user
                             }
                         },
                         {
@@ -823,9 +887,9 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             "and":
                 [
                     {
-                        "property": "Usuário",
+                        "property": data2?.sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
                         "multi_select": {
-                            "contains": selectedUser || user
+                            "contains": selectedUser || data2?.user
                         }
                     },
                     {
@@ -850,9 +914,9 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                 "and":
                     [
                         {
-                            "property": "Usuário",
+                            "property": data2?.sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
                             "multi_select": {
-                                "contains": selectedUser || user
+                                "contains": selectedUser || data2?.user
                             }
                         },
                         {
@@ -1087,7 +1151,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                                             onClick={() => setOpenUsersPopover(!openUsersPopover)}
                                             className={`min-w-48 flex items-center justify-between gap-1 border border-stroke dark:border-strokedark text-xs font-semibold py-1 px-2 hover:bg-slate-100 uppercase dark:hover:bg-slate-700 ${openUsersPopover && 'bg-slate-100 dark:bg-slate-700'} rounded-md transition-colors duration-200 cursor-pointer`}>
                                             <span>
-                                                {selectedUser || user}
+                                                {selectedUser || data2?.user}
                                             </span>
                                             <LucideChevronsUpDown className='w-4 h-4' />
                                         </div>
