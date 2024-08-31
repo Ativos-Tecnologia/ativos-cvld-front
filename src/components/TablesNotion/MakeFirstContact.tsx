@@ -13,7 +13,7 @@ import { MdOutlineAlternateEmail } from 'react-icons/md';
 import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import CustomCheckbox from '../CrmUi/Checkbox';
 
-const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEditableLabel, selectStatusValue, handleNotionDrawer, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, updateStatusAtNotion }:
+const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEditableLabel, selectStatusValue, handleNotionDrawer, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, handleEditStatus }:
     {
         isPending: boolean,
         data: any,
@@ -27,7 +27,7 @@ const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEdit
         handleEditInput: (index: number, refList: HTMLInputElement[] | null) => void;
         handleChangePhoneNumber: (page_id: string, type: string, value: string, index: number, refList: HTMLInputElement[] | null) => Promise<void>;
         handleChangeEmail: (page_id: string, value: string, index: number, refList: HTMLInputElement[] | null) => Promise<void>;
-        updateStatusAtNotion: (page_id: string, status: statusOficio) => Promise<void>;
+        handleEditStatus: (page_id: string, status: statusOficio, currentValue: string) => Promise<void>;
     }
 ) => {
 
@@ -138,7 +138,7 @@ const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEdit
 
                                                                 <React.Fragment>
                                                                     {item.properties.Credor?.title[0].plain_text?.length === 0 ? (
-                                                                        <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-100 group-hover:opacity-100 transition-all duration-200'
+                                                                        <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200'
                                                                             onClick={() => {
                                                                                 setEditableLabel!(item.id)
                                                                                 handleEditInput(index, inputCredorRefs.current);
@@ -192,7 +192,7 @@ const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEdit
                                             <TableCell className="text-center items-center w-full">
                                                 <Badge color="teal" size="sm" className="text-center text-[12px]">
                                                     <select className="text-[12px] w-full text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => {
-                                                        updateStatusAtNotion(item.id, e.target.value as statusOficio)
+                                                        handleEditStatus(item.id, e.target.value as statusOficio, item.properties.Status.status!.name)
                                                     }}>
                                                         {item.properties.Status.status?.name && (
                                                             <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
