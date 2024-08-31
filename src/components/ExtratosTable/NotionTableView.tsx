@@ -9,7 +9,7 @@ import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants
 import { AiOutlineSearch, AiOutlineUser } from 'react-icons/ai';
 import { toast } from 'sonner';
 import { ActiveState, ExtratosTableContext } from '@/context/ExtratosTableContext';
-import { NotionPage } from '@/interfaces/INotion';
+import { NotionPage, NotionResponse } from '@/interfaces/INotion';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import api from '@/utils/api';
@@ -44,8 +44,10 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const [openTipoOficioPopover, setOpenTipoOficioPopover] = useState<boolean>(false);
     const [openUsersPopover, setOpenUsersPopover] = useState<boolean>(false);
     const [filteredValues, setFilteredValues] = useState<statusOficio[]>(ENUM_OFICIOS_LIST);
-    const [fetchingValue, setFetchingValue] = useState<string | null>(null);
+    const [fetchingValue, setFetchingValue] = useState<Record<string, any> | null>(null);
     const [archiveStatus, setArchiveStatus] = useState<boolean>(false);
+    const [archivedOficios, setArchivedOficios] = useState<NotionPage[]>([]);
+    console.log(archivedOficios)
     const searchRef = useRef<HTMLInputElement | null>(null);
     const selectStatusRef = useRef<any>(null);
     const selectTipoOficioRef = useRef<any>(null);
@@ -130,73 +132,34 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         setCheckedList(data.results.map((item: NotionPage) => item))
     }
 
+    //NOTA: Começo da Área de Mutations
     const deleteMutation = useMutation({
         mutationFn: async (pageIds: string[]) => {
-          const response = await api.patch('api/notion-api/page/bulk-action/visibility/', {
-            page_ids: pageIds,
-            archived: true
-          });
+            const response = await api.patch('api/notion-api/page/bulk-action/visibility/', {
+                page_ids: pageIds,
+                archived: true
+            });
 
-          if (response.status !== 202) {
-            throw new Error('Houve um erro ao tentar arquivar os dados');
-          }
-          return response.data;
+            if (response.status !== 202) {
+                throw new Error('Houve um erro ao tentar arquivar os dados');
+            }
+            return response.data;
         },
         onMutate: async (pageIds: string[]) => {
-          await queryClient.cancelQueries({ queryKey: ['notion_list'] });
-          const previousData = queryClient.getQueryData(['notion_list']);
-          queryClient.setQueryData(['notion_list'], (old: any) => {
-            return { ...old, results: old.results.filter((item: any) => !pageIds.includes(item.id)) };
-          });
-
-          return { previousData };
+            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
+            const previousData: any = queryClient.getQueryData(['notion_list']);
+            queryClient.setQueryData(['notion_list'], (old: any) => {
+                return { ...old, results: old.results.filter((item: any) => !pageIds.includes(item.id)) };
+            });
+            setArchivedOficios(previousData?.results.filter((item: any) => pageIds.includes(item.id)))
+            return { previousData };
         },
         onError: (err, pageIds, context) => {
-          queryClient.setQueryData(['notion_list'], context?.previousData);
-          toast.error('Erro ao arquivar os dados');
+            queryClient.setQueryData(['notion_list'], context?.previousData);
+            toast.error('Erro ao arquivar os dados');
         },
         onSuccess: (data, pageIds) => {
-          toast(`${pageIds.length > 1 ? `${pageIds.length} extratos arquivados!` : 'Extrato arquivado!'}`, {
-            classNames: {
-              toast: "dark:bg-form-strokedark",
-              title: "dark:text-snow",
-              description: "dark:text-snow",
-              actionButton: "!bg-slate-100 dark:bg-form-strokedark"
-            },
-            action: {
-              label: "Desfazer",
-                onClick: () => {
-                    handleUnarchiveExtrato()
-                },
-            }});
-        },
-        // onSettled: () => {
-        //   queryClient.invalidateQueries({ queryKey: ['notion_list'] });
-        // },
-      });
-
-      const handleArchiveExtrato = async () => {
-        setArchiveStatus(true);
-        const pageIds = checkedList.map(notionPage => notionPage.id);
-        await deleteMutation.mutateAsync(pageIds, {
-          onSuccess: () => setCheckedList([])
-        });
-        setArchiveStatus(false);
-      };
-
-
-      //#TODO: Esse método deve ser refatorado para ser um mutation
-    const handleUnarchiveExtrato = async () => {
-        const response = await api.patch(`api/notion-api/page/bulk-action/visibility/`, {
-            page_ids: checkedList.map(notionPage => notionPage.id),
-            archived: false
-        });
-
-        if (response.status !== 202) {
-            console.log('houve um erro ao tentar desarquivar os dados');
-            return;
-        } else {
-            toast(`${checkedList.length > 1 ? `${checkedList.length} extratos desarquivados!` : 'Extrato desarquivado!'}`, {
+            toast(`${pageIds.length > 1 ? `${pageIds.length} extratos arquivados!` : 'Extrato arquivado!'}`, {
                 classNames: {
                     toast: "dark:bg-form-strokedark",
                     title: "dark:text-snow",
@@ -204,16 +167,279 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     actionButton: "!bg-slate-100 dark:bg-form-strokedark"
                 },
                 action: {
-                    label: "Fechar",
+                    label: "Desfazer",
                     onClick: () => {
-                        toast.dismiss()
+                        handleUnarchiveExtrato()
+                    },
+                }
+            });
+        },
+        // onSettled: () => {
+        //   queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+        // },
+    });
+
+    const undeleteMutation = useMutation({
+        mutationFn: async (pageIds: string[]) => {
+            const response = await api.patch('api/notion-api/page/bulk-action/visibility/', {
+                page_ids: pageIds,
+                archived: false
+            });
+
+            if (response.status !== 202) {
+                throw new Error('Houve um erro ao tentar arquivar os dados');
+            }
+            return response.data;
+        },
+        onMutate: async (pageIds: string[]) => {
+            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
+            const previousData: any = queryClient.getQueryData(['notion_list']);
+            queryClient.setQueryData(['notion_list'], (old: any) => {
+                return { ...old, results: [...archivedOficios, ...old.results] }
+            })
+            return { previousData };
+        },
+        onError: (error, pageIds, context) => {
+            queryClient.setQueryData(['notion_list'], context?.previousData);
+            toast.error('Erro ao desarquivar os dados');
+        },
+        onSuccess: (data, pageIds) => {
+            toast(`${pageIds.length > 1 ? `${pageIds.length} extratos desarquivados!` : 'Extrato desarquivado!'}`, {
+                classNames: {
+                    toast: "dark:bg-form-strokedark",
+                    title: "dark:text-snow",
+                    description: "dark:text-snow",
+                    actionButton: "!bg-slate-100 dark:bg-form-strokedark"
+                },
+                action: {
+                    label: "Desfazer",
+                    onClick: () => {
+                        toast.dismiss();
+                    },
+                }
+            });
+        }
+    });
+
+    const statusMutation = useMutation({
+        mutationFn: async (paramsObj: { page_id: string, status: statusOficio }) => {
+            const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+                "Status": {
+                    "status": {
+                        "name": `${paramsObj.status}`
                     }
                 }
+            });
+            if (response.status !== 202) {
+                throw new Error('Houve um erro ao alterar o status');
+            }
+            return response.data
+        },
+        onMutate: async (paramsObj: { page_id: string, status: statusOficio }) => {
+            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
+            const previousData: any = queryClient.getQueryData(['notion_list']);
+            queryClient.setQueryData(['notion_list'], (old: any) => {
+                return {
+                    ...old, results: old.results.map((item: any) => {
+                        if (item.id === paramsObj.page_id) {
+                            item.properties.Status.status.name = paramsObj.status
+                        }
+                        return item
+                    })
+                }
             })
-            queryClient.invalidateQueries({ queryKey: ['notion_list'] });
-            setCheckedList([]);
+            return { previousData }
+        },
+        onError: (data, paramsObj, context) => {
+            queryClient.setQueryData(['notion_list'], context?.previousData)
+            toast.error('Erro ao alterar o status do ofício')
+        },
+    });
+
+    const tipoMutation = useMutation({
+        mutationFn: async (paramsObj: { page_id: string, oficio: tipoOficio }) => {
+            const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+                "Tipo": {
+                    "select": {
+                        "name": `${paramsObj.oficio}`
+                    }
+                },
+            });
+
+            if (response.status !== 202) {
+                throw new Error('houve um erro ao salvar os dados no notion');
+            }
+            return response.data;
+        },
+        onMutate: async (paramsObj: { page_id: string, oficio: tipoOficio }) => {
+            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
+            const previousData: any = queryClient.getQueryData(['notion_list']);
+            queryClient.setQueryData(['notion_list'], (old: any) => {
+                return {
+                    ...old, results: old.results.map((item: any) => {
+                        if (item.id === paramsObj.page_id) {
+                            item.properties.Tipo.select = {
+                                name: paramsObj.oficio
+                            }
+                        }
+                        return item
+                    })
+                }
+            })
+            return { previousData }
+        },
+        onError: (data, paramsObj, context) => {
+            queryClient.setQueryData(['notion_list'], context?.previousData);
+            toast.error('Erro ao alterar o tipo do ofício');
         }
-    }
+    });
+
+    const creditorNameMutation = useMutation({
+        mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+            const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+                "Credor": {
+                    "title": [
+                        {
+                            "text": {
+                                "content": paramsObj.value
+                            }
+                        }
+                    ]
+                }
+            });
+            if (response.status !== 202) {
+                throw new Error('houve um erro ao salvar os dados no notion');
+            }
+            return response.data
+        },
+        onMutate: async (paramsObj: any) => {
+            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
+            const previousData: any = queryClient.getQueryData(['notion_list']);
+            return { previousData }
+        },
+        onError: (data, paramsObj, context) => {
+            queryClient.setQueryData(['notion_list'], context?.previousData)
+            toast.error('Erro ao alterar o nome do credor')
+        }
+    });
+
+    const phoneNumberMutation = useMutation({
+        mutationFn: async (paramsObj: { page_id: string, type: string, value: string }) => {
+            const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+                [paramsObj.type]: {
+                    "phone_number": paramsObj.value
+                }
+            });
+            if (response.status !== 202) {
+                console.log('houve um erro ao salvar os dados no notion');
+            }
+            return response.data
+        },
+        onMutate: async (paramsObj: any) => {
+            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
+            const previousData: any = queryClient.getQueryData(['notion_list']);
+            return { previousData }
+        },
+        onError: (data, paramsObj, context) => {
+            queryClient.setQueryData(['notion_list'], context?.previousData);
+            toast.error('Erro ao alterar o contato');
+        }
+    });
+
+    const emailMutation = useMutation({
+        mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+            const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+                "Contato de E-mail": {
+                    "email": paramsObj.value
+                }
+            });
+            if (response.status !== 202) {
+                console.log('houve um erro ao salvar os dados no notion');
+            }
+            return response.data
+        },
+        onMutate: async (paramsObj: { page_id: string, value: string }) => {
+            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
+            const previousData: any = queryClient.getQueryData(['notion_list']);
+            return { previousData }
+        },
+        onError: (data, paramsObj, context) => {
+            queryClient.setQueryData(['notion_list'], context?.previousData);
+            toast.error('Erro ao alterar o email');
+        }
+    });
+
+    const proposalPriceMutation = useMutation({
+        mutationFn: async (paramsObj: { page_id: string, value: number }) => {
+            const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+                "Preço Proposto": {
+                    "number": paramsObj.value
+                }
+            });
+            if (response.status !== 202) {
+                throw new Error('houve um erro ao salvar os dados no notion');
+            }
+            return response.data
+        },
+        onMutate: async (paramsObj) => {
+            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
+            const previousData: any = queryClient.getQueryData(['notion_list']);
+            return { previousData }
+        },
+        onError: (data, paramsObj, context) => {
+            queryClient.setQueryData(['notion_list'], context?.previousData);
+            toast.error('Erro ao alterar o preço proposto');
+        }
+    });
+
+    const fupDateMutation = useMutation({
+        mutationFn: async (paramsObj: { page_id: string, value: string, type: string, index: number }) => {
+            let responseStatus: number = 0;
+
+            if (data.results[paramsObj.index].properties[paramsObj.type].date === null) {
+
+                const dateObject = {
+                    end: null,
+                    start: paramsObj.value,
+                    time_zone: null
+                }
+
+                const resNotion = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+                    [paramsObj.type]: {
+                        "date": dateObject
+                    }
+                });
+
+                responseStatus = resNotion.status;
+
+            } else {
+                const resNotion = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+                    [paramsObj.type]: {
+                        "date": {
+                            "start": paramsObj.value
+                        }
+                    }
+                });
+
+                responseStatus = resNotion.status;
+            }
+
+            if (responseStatus !== 202) {
+                console.log('houve um erro ao salvar os dados no notion');
+            }
+        },
+        onMutate: async (paramsObj: any) => {
+            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
+            const previousData: any = queryClient.getQueryData(['notion_list']);
+            return { previousData }
+        },
+        onError: (data, paramsObj, context) => {
+            queryClient.setQueryData(['notion_list'], context?.previousData);
+            toast.error('Erro ao alterar a data de follow up');
+        }
+    });
+
+    // fim da Área de mutations
 
     //TODO: mover essas funções de fetch para um hook
     const fetchUser = async () => {
@@ -225,7 +451,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const { data: data2 } = useQuery({
         queryKey: ['user'],
         queryFn: fetchUser,
-      })
+    })
 
     const defaultFilterObject = {
         "and":
@@ -269,6 +495,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         },
     );
 
+    console.log(data)
+
     const archiveNotionPage = async (page_id: string, choice = true) => { // choice = true to archive, false to unarchive
         try {
             const resNotion = await api.patch(`notion-api/archive/<str:page_id>/${page_id}/`, {
@@ -284,7 +512,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
     const updateStatusAtNotion = async (page_id: string, status: statusOficio) => {
 
-        setFetchingValue(page_id);
+        // setFetchingValue(page_id);
         try {
             const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
                 "Status": {
@@ -305,7 +533,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
     const updateTipoAtNotion = async (page_id: string, tipo: tipoOficio) => {
 
-        setFetchingValue(page_id);
+        // setFetchingValue(page_id);
         try {
             const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
                 "Tipo": {
@@ -378,7 +606,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     }
 
     const updateNotionProposalPrice = async (page_id: string, value: number) => {
-        setFetchingValue(page_id);
+        // setFetchingValue(page_id);
         try {
             const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
                 "Preço Proposto": {
@@ -440,6 +668,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     // refs
     // setNotionWorkspaceData(data)
 
+    //NOTA: Área das funções do tipo handle
     const handleCopyValue = (index: number) => {
 
         navigator.clipboard.writeText(numberFormat(data.results[index].properties['Valor Líquido'].formula?.number || 0));
@@ -466,52 +695,78 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         }
     }
 
-    const handleEditStatus = async (page_id: string, status: statusOficio) => {
-        await updateStatusAtNotion(page_id, status);
-        queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+    const handleArchiveExtrato = async () => {
+        setArchiveStatus(true);
+        const pageIds = checkedList.map(notionPage => notionPage.id);
+        await deleteMutation.mutateAsync(pageIds, {
+            onSuccess: () => setCheckedList([])
+        });
+        setArchiveStatus(false);
+    };
+
+    const handleUnarchiveExtrato = async () => {
+        const pageIds = archivedOficios.map(notionPage => notionPage.id);
+        await undeleteMutation.mutateAsync(pageIds, {
+            onSuccess: () => setArchivedOficios([])
+        });
     }
 
-    const handleEditTipoOficio = async (page_id: string, oficio: tipoOficio) => {
-        await updateTipoAtNotion(page_id, oficio);
-        queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+    const handleEditStatus = async (page_id: string, status: statusOficio, currentValue: string) => {
+        const paramsObj = {
+            page_id,
+            status,
+            currentValue
+        }
+        await statusMutation.mutateAsync(paramsObj)
     }
 
+    const handleEditTipoOficio = async (page_id: string, oficio: tipoOficio, currentValue: string | undefined) => {
+        const paramsObj = {
+            page_id,
+            oficio,
+            currentValue
+        }
+        await tipoMutation.mutateAsync(paramsObj);
+    }
 
     const handleChangeCreditorName = async (value: string, index: number, page_id: string, refList: HTMLInputElement[] | null) => {
-        try {
-            refList![index].blur();
-            setEditableLabel(null);
-            await updateNotionCreditorName(page_id, value);
-        } catch (error) {
-            console.log(error);
-        } finally {
-            // queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+        refList![index].blur();
+        setEditableLabel(null);
+        const paramsObj = {
+            page_id,
+            value
         }
+        await creditorNameMutation.mutateAsync(paramsObj)
     }
 
     const handleChangePhoneNumber = async (page_id: string, type: string, value: string, index: number, refList: HTMLInputElement[] | null) => {
-        try {
-            refList![index].blur();
-            await updateNotionPhoneNumber(page_id, type, value);
-        } catch (error) {
-            console.log(error);
-
-        } finally {
-            // queryClient.invalidateQueries({ queryKey: ['notion_list'] });
-        }
+        refList![index].blur();
+        const paramsObj = {
+            page_id,
+            type,
+            value
+        };
+        await phoneNumberMutation.mutateAsync(paramsObj);
     }
 
     const handleChangeEmail = async (page_id: string, value: string, index: number, refList: HTMLInputElement[] | null) => {
         refList![index].blur();
-        await updateNotionEmail(page_id, value);
+        const paramsObj = {
+            page_id,
+            value
+        };
+        await emailMutation.mutateAsync(paramsObj);
     }
 
     const handleChangeProposalPrice = async (page_id: string, value: string, index: number, refList: HTMLInputElement[] | null) => {
         refList![index].blur();
         const formatedValue = value.replace(/[^0-9,]/g, '');
         const valueToNumber = parseFloat(formatedValue);
-        await updateNotionProposalPrice(page_id, valueToNumber);
-        queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+        const paramsObj = {
+            page_id,
+            value: valueToNumber
+        };
+        await proposalPriceMutation.mutateAsync(paramsObj);
     }
 
     const handleChangeFupDate = async (page_id: string, value: string, type: string, index: number) => {
@@ -519,14 +774,19 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         if (/^[0-9/]{10}$/.test(value)) {
 
             const parsedValue = value.split('/').reverse().join('-');
-            await updateNotionFupDate(page_id, parsedValue, type, index);
+            const paramsObj = {
+                page_id,
+                value: parsedValue,
+                type,
+                index
+            }
+            await fupDateMutation.mutateAsync(paramsObj)
+            // await updateNotionFupDate(page_id, parsedValue, type, index);
 
         } else {
             console.log('um campo de data precisa de 8 caracteres');
         }
     }
-
-
 
     const buildQuery = useCallback(() => {
         return {
@@ -579,41 +839,41 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         setOficioSelectValue(oficio);
         setOpenTipoOficioPopover(false);
         setListQuery(
-        {
-            "and": [
-                {
-                    "property": selectedUser && data2?.sub_role  === 'coordenador' ? "Usuário" : "Coordenadores",
-                    "multi_select": {
-                    "contains": selectedUser && data2?.sub_role  === 'coordenador' ? selectedUser : ""
-                    }
-                },
-                data2?.sub_role === 'coordenador' ? {
-                    "property": "Coordenadores",
-                    "multi_select": {
-                        "contains": data2?.user
-                    }
-                } : {
-                    "property": "Usuário",
-                    "multi_select": {
-                        "contains": selectedUser || data2?.user
-                    }
-                },
-                {
-                    "property": "Status",
-                    "status": {
-                        "equals": statusSelectValue || ''
-                    }
-                },
-                {
-                    "property": "Tipo",
-                    "select": {
-                        "equals": oficio
-                    }
-                },
-                secondaryDefaultFilterObject
-            ]
-        }
-    );
+            {
+                "and": [
+                    {
+                        "property": selectedUser && data2?.sub_role === 'coordenador' ? "Usuário" : "Coordenadores",
+                        "multi_select": {
+                            "contains": selectedUser && data2?.sub_role === 'coordenador' ? selectedUser : ""
+                        }
+                    },
+                    data2?.sub_role === 'coordenador' ? {
+                        "property": "Coordenadores",
+                        "multi_select": {
+                            "contains": data2?.user
+                        }
+                    } : {
+                        "property": "Usuário",
+                        "multi_select": {
+                            "contains": selectedUser || data2?.user
+                        }
+                    },
+                    {
+                        "property": "Status",
+                        "status": {
+                            "equals": statusSelectValue || ''
+                        }
+                    },
+                    {
+                        "property": "Tipo",
+                        "select": {
+                            "equals": oficio
+                        }
+                    },
+                    secondaryDefaultFilterObject
+                ]
+            }
+        );
     }
 
     const handleFilterByUser = (user: string) => {
@@ -622,9 +882,9 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         setListQuery({
             "and": [
                 {
-                    "property": selectedUser && data2?.sub_role  === 'coordenador' ? "Usuário" : "Coordenadores",
+                    "property": selectedUser && data2?.sub_role === 'coordenador' ? "Usuário" : "Coordenadores",
                     "multi_select": {
-                    "contains": selectedUser && data2?.sub_role  === 'coordenador' ? user : ""
+                        "contains": selectedUser && data2?.sub_role === 'coordenador' ? user : ""
                     }
                 },
                 data2?.sub_role === 'coordenador' ? {
@@ -678,9 +938,9 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         setListQuery({
             "and": [
                 {
-                    "property": selectedUser && data2?.sub_role  === 'coordenador' ? "Usuário" : "Coordenadores",
+                    "property": selectedUser && data2?.sub_role === 'coordenador' ? "Usuário" : "Coordenadores",
                     "multi_select": {
-                    "contains": selectedUser && data2?.sub_role  === 'coordenador' ? selectedUser : ""
+                        "contains": selectedUser && data2?.sub_role === 'coordenador' ? selectedUser : ""
                     }
                 },
                 data2?.sub_role === 'coordenador' ? {
@@ -1266,7 +1526,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     handleEditInput={handleEditInput}
                     handleChangePhoneNumber={handleChangePhoneNumber}
                     handleChangeEmail={handleChangeEmail}
-                    updateStatusAtNotion={updateStatusAtNotion}
+                    handleEditStatus={handleEditStatus}
                 />
             }
 
@@ -1284,8 +1544,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     handleSelectRow={handleSelectRow}
                     handleChangeCreditorName={handleChangeCreditorName}
                     handleEditInput={handleEditInput}
-                    updateStatusAtNotion={updateStatusAtNotion}
-                    updateTipoAtNotion={updateTipoAtNotion}
+                    handleEditStatus={handleEditStatus}
+                    handleEditTipoOficio={handleEditTipoOficio}
                     handleCopyValue={handleCopyValue}
                 />
             }
@@ -1324,8 +1584,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     handleSelectRow={handleSelectRow}
                     handleChangeCreditorName={handleChangeCreditorName}
                     handleEditInput={handleEditInput}
-                    updateStatusAtNotion={updateStatusAtNotion}
-                    updateTipoAtNotion={updateTipoAtNotion}
+                    handleEditStatus={handleEditStatus}
                     handleCopyValue={handleCopyValue}
                 />
             }

@@ -22,16 +22,16 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
         isPending: boolean,
         data: any,
         checkedList: NotionPage[],
-        fetchingValue: string | null,
+        fetchingValue: Record<string, any> | null,
         handleSelectRow: (item: NotionPage) => void,
-        handleEditTipoOficio: (page_id: string, oficio: tipoOficio) => Promise<void>,
+        handleEditTipoOficio: (page_id: string, oficio: tipoOficio, currentValue: string |undefined) => Promise<void>,
         handleChangeCreditorName: (value: string, index: number, page_id: string, refList: HTMLInputElement[] | null) => Promise<void>,
         editableLabel: string | null;
         setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
         handleEditInput: (index: number, refList: HTMLInputElement[] | null) => void;
         handleNotionDrawer: (id: string) => void;
         handleCopyValue: (index: number) => void;
-        handleEditStatus: (page_id: string, status: statusOficio) => Promise<void>;
+        handleEditStatus: (page_id: string, status: statusOficio, currentValue: string) => Promise<void>;
         statusSelectValue: statusOficio | null;
     }
 ) => {
@@ -109,12 +109,12 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                                         callbackFunction={() => handleSelectRow(item)}
                                                     />
                                                     <Badge color="indigo" size="sm" className={`w-[139px] h-7 text-[12px]`}>
-                                                        {fetchingValue === item?.id ? (
+                                                        {(fetchingValue?.page_id === item?.id && fetchingValue.tipo === 'tipo_oficio') ? (
                                                             <span className='w-[139px] pl-3 uppercase'>
                                                                 Atualizando ...
                                                             </span>
                                                         ) : (
-                                                            <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleEditTipoOficio(item.id, e.target.value as tipoOficio)}>
+                                                            <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleEditTipoOficio(item.id, e.target.value as tipoOficio, (item.properties.Tipo.select?.name))}>
                                                                 {item?.properties?.Tipo.select?.name && (
                                                                     <option value={item.properties.Tipo.select?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                                         {item.properties.Tipo.select?.name}
@@ -150,7 +150,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
 
                                                         <React.Fragment>
                                                             {item.properties.Credor?.title[0]?.plain_text?.length === 0 ? (
-                                                                <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-100 group-hover:opacity-100 transition-all duration-200'
+                                                                <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200'
                                                                     onClick={() => {
                                                                         setEditableLabel!(item.id)
                                                                         handleEditInput(index, inputCredorRefs.current);
@@ -215,8 +215,8 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                                     </div>
                                                 </TableCell>
                                             )}
-                                            <TableCell className=" font-semibold text-[14px] text-right">
-                                                <div className="relative">
+                                            <TableCell className="relative font-semibold text-[14px] text-right">
+                                                <div>
                                                     {numberFormat(item.properties['Valor Líquido'].formula?.number || 0)}
                                                     <ImCopy
                                                         title='Copiar valor'
@@ -227,13 +227,13 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                             </TableCell>
                                             <TableCell className="text-center items-center ">
                                                 <Badge color="teal" size="sm" className="text-center h-7 text-[12px] w-48">
-                                                    {fetchingValue === item.id ? (
+                                                    {(fetchingValue?.page_id === item?.id && fetchingValue.tipo === 'status_oficio') ? (
                                                         <span className='w-[192px] pl-3 pr-10 uppercase'>
                                                             Atualizando ...
                                                         </span>
                                                     ) : (
                                                         <select className="text-[12px] w-44 text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => {
-                                                            handleEditStatus(item.id, e.target.value as statusOficio)
+                                                            handleEditStatus(item.id, e.target.value as statusOficio, item.properties.Status.status!.name)
                                                         }}>
                                                             {item.properties.Status.status?.name && (
                                                                 <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
