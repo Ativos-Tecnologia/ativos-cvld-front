@@ -47,7 +47,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const [fetchingValue, setFetchingValue] = useState<Record<string, any> | null>(null);
     const [archiveStatus, setArchiveStatus] = useState<boolean>(false);
     const [archivedOficios, setArchivedOficios] = useState<NotionPage[]>([]);
-    console.log(archivedOficios)
     const searchRef = useRef<HTMLInputElement | null>(null);
     const selectStatusRef = useRef<any>(null);
     const selectTipoOficioRef = useRef<any>(null);
@@ -315,6 +314,17 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         onMutate: async (paramsObj: any) => {
             await queryClient.cancelQueries({ queryKey: ['notion_list'] });
             const previousData: any = queryClient.getQueryData(['notion_list']);
+            queryClient.setQueryData(['notion_list'], (old: any) => {
+                return {
+                    ...old, results: old.results.map((item: any) => {
+                        if (item.id === paramsObj.page_id) {
+                            item.properties.Credor.title[0].text.content = paramsObj.value
+                        }
+                        return item
+                    })
+                }
+            }
+            )
             return { previousData }
         },
         onError: (data, paramsObj, context) => {
@@ -488,8 +498,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             queryKey: ['notion_list'],
             refetchOnReconnect: true,
             refetchOnWindowFocus: true,
-            refetchInterval: 1000 * 15, // 15 seconds
-            staleTime: 1000 * 13, // 13 seconds
+            refetchInterval: 15000,
+            staleTime: 13000,
             queryFn: fetchNotionData,
             enabled: !!data2?.user // only fetch if user is defined after context is loaded
         },
@@ -1489,7 +1499,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                 handleSelectAllRows={handleSelectAllRows}
                 checkedList={checkedList}
                 setCheckedList={setCheckedList}
-                count={data?.results.length || 0}
+                count={data?.results?.length || 0}
             />
 
             {notionView === 'geral' && (
