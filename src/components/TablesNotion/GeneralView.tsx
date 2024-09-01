@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react'
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from '../Tables/TableDefault';
 import { IoDocumentTextOutline } from 'react-icons/io5';
 import { AiOutlineUser } from 'react-icons/ai';
@@ -16,6 +16,7 @@ import statusOficio from '@/enums/statusOficio.enum';
 import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import notionColorResolver from '@/functions/formaters/notionColorResolver';
 import CustomCheckbox from '../CrmUi/Checkbox';
+import { useQueryClient } from '@tanstack/react-query';
 
 const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelectRow, handleEditTipoOficio, handleChangeCreditorName, editableLabel, setEditableLabel, handleEditInput, handleNotionDrawer, handleCopyValue, handleEditStatus, statusSelectValue }:
     {
@@ -36,24 +37,68 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
     }
 ) => {
 
+    const queryClient = useQueryClient();
+
     const inputCredorRefs = useRef<HTMLInputElement[] | null>([]);
     const usersListRef = useRef<HTMLDivElement[] | null>([]);
 
     const { data: { role } } = useContext(UserInfoAPIContext);
+    const [filters, setFilters] = useState({ credor: ''});
+
+    const filteredData = data?.results?.filter((item: NotionPage) =>
+        item.properties.Credor?.title[0]?.text.content.toLowerCase().includes(filters.credor.toLowerCase())
+      );
 
     useEffect(() => {
         if (inputCredorRefs.current) {
-            data?.results.map((item: NotionPage, index: number) => {
+            filteredData?.map((item: NotionPage, index: number) => {
                 const ref = inputCredorRefs.current![index];
                 if (ref) {
                     ref.value = item.properties.Credor?.title[0]?.text.content || '';
                 }
             })
         }
-    }, [data])
+    }, [filteredData])
+
+
+
+
+      const handleFilterChange = useCallback((field: any, value: any) => {
+        setFilters((prev) => ({
+          ...prev,
+          [field]: value,
+        }));
+      }, []);
+
+      useEffect(() => {
+        // Pausa o refetch quando o usuário está digitando em qualquer filtro
+        if (filters.credor) {
+          queryClient.cancelQueries({ queryKey: ['notion_list'] });
+        }
+
+        // Timer para resumir o refetch após o usuário parar de digitar
+        const timer = setTimeout(() => {
+          if (filters.credor) {
+            queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+          }
+        }, 5000); // 5 segundos após o último input
+
+        return () => clearTimeout(timer);
+      }, [filters, queryClient]);
+
 
     return (
         <div className='max-w-full overflow-x-scroll pb-5'>
+            <div className="flex space-x-4">
+        <input
+          type="text"
+          placeholder="Filtrar por nome"
+          value={filters.credor}
+          onChange={(e) => handleFilterChange('credor', e.target.value)}
+          className="max-w-sm"
+        />
+
+      </div>
             <Table>
                 <TableHead>
 
@@ -98,7 +143,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                         <React.Fragment>
                             {data?.results?.length > 0 && (
                                 <>
-                                    {data?.results.map((item: NotionPage, index: number) => (
+                                    {filteredData?.map((item: NotionPage, index: number) => (
 
                                         <TableRow key={item.id} className={`${checkedList!.some(target => target.id === item.id) && 'bg-blue-50 dark:bg-form-strokedark'} hover:shadow-3 dark:hover:shadow-body group`}>
 
