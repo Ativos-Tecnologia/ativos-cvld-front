@@ -71,17 +71,15 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
       }, []);
 
       useEffect(() => {
-        // Pausa o refetch quando o usuário está digitando em qualquer filtro
         if (filters.credor) {
           queryClient.cancelQueries({ queryKey: ['notion_list'] });
         }
 
-        // Timer para resumir o refetch após o usuário parar de digitar
         const timer = setTimeout(() => {
           if (filters.credor) {
             queryClient.invalidateQueries({ queryKey: ['notion_list'] });
           }
-        }, 5000); // 5 segundos após o último input
+        }, 5000);
 
         return () => clearTimeout(timer);
       }, [filters, queryClient]);
