@@ -78,45 +78,39 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
 
   /* COMEÇA ÁREA DAS FUNÇÕES HANDLE */
   const handleChangeCreditorName = async (value: string, page_id: string) => {
-    const paramsObj = {
+    await creditorNameMutation.mutateAsync({
       page_id,
       value
-    }
-    await creditorNameMutation.mutateAsync(paramsObj);
+    });
   }
 
   const handleChangeIdentification = async (page_id: string, value: string) => {
-    const paramsObj = {
+    await identificationMutation.mutateAsync({
       page_id,
       value
-    }
-    await identificationMutation.mutateAsync(paramsObj);
+    });
   }
 
   const handleChangeEmail = async (page_id: string, value: string) => {
-    const paramsObj = {
+    await emailMutation.mutateAsync({
       page_id,
       value
-    }
-    await emailMutation.mutateAsync(paramsObj);
+    });
   }
 
   const handleChangePhoneNumber = async (page_id: string, type: string, value: string) => {
-    const paramsObj = {
+    await phoneNumberMutation.mutateAsync({
       page_id,
       type,
       value
-    };
-    await phoneNumberMutation.mutateAsync(paramsObj);
+    });
   }
 
-  const handleChangeStatus = async (page_id: string, status: statusOficio, currentValue: string) => {
-    const paramsObj = {
+  const handleChangeStatus = async (page_id: string, status: statusOficio) => {
+    await statusMutation.mutateAsync({
       page_id,
-      status,
-      currentValue
-    }
-    await statusMutation.mutateAsync(paramsObj);
+      status
+    });
   }
 
   const handleChangeFupDate = async (page_id: string, value: string, type: string) => {
@@ -124,12 +118,11 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
     if (/^[0-9/]{10}$/.test(value)) {
 
       const parsedValue = value.split('/').reverse().join('-');
-      const paramsObj = {
+      await fupDateMutation.mutateAsync({
         page_id,
         value: parsedValue,
         type
-      }
-      await fupDateMutation.mutateAsync(paramsObj)
+      })
 
     } else {
       console.log('um campo de data precisa de 8 caracteres');
@@ -137,44 +130,39 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
   }
 
   const handleChangeTipo = async (page_id: string, oficio: tipoOficio) => {
-    const paramsObj = {
+    await tipoMutation.mutateAsync({
       page_id,
       oficio
-    }
-    await tipoMutation.mutateAsync(paramsObj);
+    });
   }
 
   const handleChangeNpu = async (page_id: string, type: string, value: string) => {
-    const paramsObj = {
+    await npuMutation.mutateAsync({
       page_id,
       type,
       value
-    }
-    await npuMutation.mutateAsync(paramsObj);
+    });
   }
 
   const handleChangeTribunal = async (page_id: string, tribunal: string) => {
-    const paramsObj = {
+    await tribunalMutation.mutateAsync({
       page_id,
       tribunal
-    }
-    await tribunalMutation.mutateAsync(paramsObj)
+    })
   }
 
   const handleChangeJuizo = async (page_id: string, value: string) => {
-    const paramsObj = {
+    await juizoMutation.mutateAsync({
       page_id,
       value
-    }
-    await juizoMutation.mutateAsync(paramsObj);
+    });
   }
 
   const handleChangeHonorarioState = async (page_id: string, value: boolean) => {
-    const paramsObj = {
+    await honorarioStateMutation.mutateAsync({
       page_id,
       value
-    }
-    await honorarioStateMutation.mutateAsync(paramsObj);
+    });
   }
 
   const handleChangeProposalPrice = async (page_id: string, value: string) => {
@@ -187,26 +175,6 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
   }
 
   /* TERMINA ÁREA DAS FUNÇÕES HANDLE */
-
-  /* ==================> função nova que deverá ir para o contexto <===================== */
-  const updateFeesAtNotion = async (page_id: string, value: boolean) => {
-    setCheckMark('honorário');
-    try {
-      const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-        "Honorários já destacados?": {
-          "checkbox": !value
-        }
-      });
-      if (resNotion.status !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
-      }
-      queryClient.invalidateQueries({ queryKey: ['notion_page_data'] });
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setCheckMark(null);
-    }
-  }
 
   /* COMEÇA A ÁREA DAS MUTATIONS */
 
