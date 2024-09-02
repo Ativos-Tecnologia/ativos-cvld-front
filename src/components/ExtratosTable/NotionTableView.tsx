@@ -505,8 +505,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         },
     );
 
-    console.log(data)
-
     const archiveNotionPage = async (page_id: string, choice = true) => { // choice = true to archive, false to unarchive
         try {
             const resNotion = await api.patch(`notion-api/archive/<str:page_id>/${page_id}/`, {
