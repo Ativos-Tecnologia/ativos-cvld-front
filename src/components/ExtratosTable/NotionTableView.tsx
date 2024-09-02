@@ -555,6 +555,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     }
 
     const updateNotionCreditorName = async (page_id: string, value: string) => {
+        console.log("Atualizando o nome do credor");
         try {
             const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
                 "Credor": {
@@ -736,7 +737,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             page_id,
             value
         }
-        await creditorNameMutation.mutateAsync(paramsObj)
+        await creditorNameMutation.mutateAsync(paramsObj);
     }
 
     const handleChangePhoneNumber = async (page_id: string, type: string, value: string, index: number, refList: HTMLInputElement[] | null) => {
