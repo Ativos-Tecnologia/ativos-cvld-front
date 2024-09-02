@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react'
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from '../Tables/TableDefault';
 import { IoDocumentTextOutline } from 'react-icons/io5';
 import { AiOutlineUser } from 'react-icons/ai';
@@ -16,6 +16,9 @@ import statusOficio from '@/enums/statusOficio.enum';
 import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import notionColorResolver from '@/functions/formaters/notionColorResolver';
 import CustomCheckbox from '../CrmUi/Checkbox';
+import { useQueryClient } from '@tanstack/react-query';
+import { Button } from '../ui/button';
+import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 
 const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelectRow, handleEditTipoOficio, handleChangeCreditorName, editableLabel, setEditableLabel, handleEditInput, handleNotionDrawer, handleCopyValue, handleEditStatus, statusSelectValue }:
     {
@@ -36,24 +39,90 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
     }
 ) => {
 
+    const queryClient = useQueryClient();
+
     const inputCredorRefs = useRef<HTMLInputElement[] | null>([]);
     const usersListRef = useRef<HTMLDivElement[] | null>([]);
 
     const { data: { role } } = useContext(UserInfoAPIContext);
 
-    useEffect(() => {
-        if (inputCredorRefs.current) {
-            data?.results.map((item: NotionPage, index: number) => {
-                const ref = inputCredorRefs.current![index];
-                if (ref) {
-                    ref.value = item.properties.Credor?.title[0]?.text.content || '';
-                }
-            })
+    const [filters, setFilters] = useState({ credor: ''});
+    const [sort, setSort] = useState({ field: null, direction: 'asc' });
+
+    const processedData = React.useMemo(() => {
+        let result = data?.results?.filter((item: NotionPage) =>
+          item.properties.Credor?.title[0]?.text.content.toLowerCase().includes(filters.credor.toLowerCase())
+        );
+
+        if (sort.field) {
+            if (sort.field === 'Credor') {
+                result = result?.sort((a: any, b: any) => {
+                    if (sort.direction === 'asc') {
+                        return a.properties.Credor?.title[0]?.text.content.localeCompare(b.properties.Credor?.title[0]?.text.content);
+                    } else {
+                        return b.properties.Credor?.title[0]?.text.content.localeCompare(a.properties.Credor?.title[0]?.text.content);
+                    }
+                });
+            }
+          }
+        return result;
+      }, [data, filters, sort]);
+
+
+      const handleSort = (field: any) => {
+        setSort(prev => ({
+          field,
+          direction: prev.field === field && prev.direction === 'asc' ? 'desc' : 'asc'
+        }));
+      };
+
+        useEffect(() => {
+            if (inputCredorRefs.current) {
+                processedData?.map((item: NotionPage, index: number) => {
+                    const ref = inputCredorRefs.current![index];
+                    if (ref) {
+                        ref.value = item.properties.Credor?.title[0]?.text.content || '';
+                    }
+                })
+            }
+        }, [processedData])
+
+      const handleFilterChange = useCallback((field: any, value: any) => {
+        setFilters((prev) => ({
+          ...prev,
+          [field]: value,
+        }));
+      }, []);
+
+
+
+      useEffect(() => {
+        if (filters.credor) {
+          queryClient.cancelQueries({ queryKey: ['notion_list'] });
         }
-    }, [data])
+
+        const timer = setTimeout(() => {
+          if (filters.credor) {
+            queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+          }
+        }, 5000);
+
+        return () => clearTimeout(timer);
+      }, [filters, queryClient]);
+
 
     return (
         <div className='max-w-full overflow-x-scroll pb-5'>
+            <div className="flex mb-4">
+        <input
+          type="text"
+          placeholder="Filtrar por nome"
+          value={filters.credor}
+          onChange={(e) => handleFilterChange('credor', e.target.value)}
+          className="max-w-md rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+        />
+
+      </div>
             <Table>
                 <TableHead>
 
@@ -64,11 +133,18 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                         </div>
                     </TableHeadCell>
                     <TableHeadCell>
-                        <div className='flex gap-2 items-center'>
-                            <AiOutlineUser className='text-base' />
-                            Nome do Credor
-                        </div>
-                    </TableHeadCell>
+                    <div className='flex gap-2 items-center'>
+
+                    <Button className='flex gap-2 items-center' variant="ghost" onClick={() => handleSort('Credor')}>
+                    <AiOutlineUser className='text-base' /> Nome do Credor
+                        {sort.field === 'Credor' ? (
+                        sort.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
+                        ) : (
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                        )}
+                    </Button>
+                    </div>
+            </TableHeadCell>
                     {role === 'ativos' && (
                         <TableHeadCell className="">
                             <div className="flex gap-2 items-center">
@@ -98,7 +174,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                         <React.Fragment>
                             {data?.results?.length > 0 && (
                                 <>
-                                    {data?.results.map((item: NotionPage, index: number) => (
+                                    {processedData?.map((item: NotionPage, index: number) => (
 
                                         <TableRow key={item.id} className={`${checkedList!.some(target => target.id === item.id) && 'bg-blue-50 dark:bg-form-strokedark'} hover:shadow-3 dark:hover:shadow-body group`}>
 
