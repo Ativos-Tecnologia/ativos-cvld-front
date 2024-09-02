@@ -125,7 +125,6 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
       </div>
             <Table>
                 <TableHead>
-
                     <TableHeadCell className="w-[120px]">
                         <div className='flex gap-2 items-center'>
                             <IoDocumentTextOutline className='text-base' />
