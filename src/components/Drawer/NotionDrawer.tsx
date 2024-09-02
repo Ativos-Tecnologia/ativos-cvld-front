@@ -348,8 +348,10 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
   }
 
   const applyMaskCpfCnpj = (str: string) => {
-
+    
     if (!str) return;
+
+    if (/^(?=.*\.)(?=.*-).+$/.test(str)) return str;
 
     let maskedStr;
 
