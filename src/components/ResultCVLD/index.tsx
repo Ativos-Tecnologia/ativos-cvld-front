@@ -7,20 +7,29 @@ import { CVLDResultProps } from "@/interfaces/IResultCVLD";
 import { BsEraser } from "react-icons/bs";
 import linkAdapter from "@/functions/formaters/linkFormater";
 import ReactApexChart from "react-apexcharts";
+import numberFormat from "@/functions/formaters/numberFormat";
 
 const options: ApexOptions = {
-  colors: ["#3C50E0", "#80CAEE"],
+  colors: ["#3C50E0", "#80CAEE", "#FFB946"],
   chart: {
     fontFamily: "Satoshi, sans-serif",
     type: "bar",
     height: 335,
     stacked: true,
     toolbar: {
-      show: false,
+      show: true,
     },
     zoom: {
       enabled: false,
     },
+
+  },
+  tooltip: {
+    y: {
+      formatter: function (val: number) {
+        return numberFormat(val);
+      },
+    }
   },
 
   responsive: [
@@ -46,18 +55,57 @@ const options: ApexOptions = {
     },
   },
   dataLabels: {
-    enabled: false,
+    enabled: true,
+    textAnchor: "start",
+    style: {
+      fontSize: "8px",
+    },
+    formatter: function (val: number) {
+      return numberFormat(val);
+    },
   },
 
   xaxis: {
-    categories: ["M", "T", "W", "T", "F", "S", "S"],
+    offsetX: 10,
+    categories: ["Data Base", "Data Requisição"],
+    labels: {
+      style: {
+        fontSize: "10px",
+
+      },
+      trim: false,
+
+    },
+    title: {
+      text: "Movimentação",
+    },
+    position: "bottom",
+    axisBorder: {
+      show: false,
+    },
+    axisTicks: {
+      show: false,
+    },
+  },
+  yaxis: {
+    show: false,
+    title: {
+      text: "Valores",
+    },
+    labels: {
+      style: {
+        fontSize: "10px",
+      },
+    },
+
   },
   legend: {
+    show: false,
     position: "top",
     horizontalAlign: "left",
     fontFamily: "Satoshi",
-    fontWeight: 500,
-    fontSize: "14px",
+    fontWeight: 400,
+    fontSize: "6px",
 
     markers: {
       radius: 99,
@@ -359,102 +407,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                     </li>
                     <div id="chartOne" className="mt-8">
         <ReactApexChart
-          options={{
-            colors: ["#3C50E0", "#80CAEE", "#FFB946"],
-            chart: {
-              fontFamily: "Satoshi, sans-serif",
-              type: "bar",
-              height: 335,
-              stacked: true,
-              toolbar: {
-                show: true,
-              },
-              zoom: {
-                enabled: false,
-              },
-
-            },
-
-            responsive: [
-              {
-                breakpoint: 1536,
-                options: {
-                  plotOptions: {
-                    bar: {
-                      borderRadius: 0,
-                      columnWidth: "25%",
-                    },
-                  },
-                },
-              },
-            ],
-            plotOptions: {
-              bar: {
-                horizontal: false,
-                borderRadius: 0,
-                columnWidth: "25%",
-                borderRadiusApplication: "end",
-                borderRadiusWhenStacked: "last",
-              },
-            },
-            dataLabels: {
-              enabled: true,
-              textAnchor: "start",
-              style: {
-                fontSize: "8px",
-              },
-            },
-
-            xaxis: {
-              offsetX: 10,
-              categories: ["Data Base", "Data Requisição"],
-              labels: {
-                style: {
-                  fontSize: "10px",
-
-                },
-                trim: false,
-
-              },
-              title: {
-                text: "Movimentação",
-              },
-              position: "bottom",
-              axisBorder: {
-                show: false,
-              },
-              axisTicks: {
-                show: false,
-              },
-            },
-            yaxis: {
-              show: false,
-              title: {
-                text: "Valores",
-              },
-              labels: {
-                style: {
-                  fontSize: "10px",
-                },
-              },
-
-            },
-            legend: {
-              show: false,
-              position: "top",
-              horizontalAlign: "left",
-              fontFamily: "Satoshi",
-              fontWeight: 400,
-              fontSize: "6px",
-
-              markers: {
-                radius: 99,
-              },
-            },
-            fill: {
-              opacity: 1,
-            },
-          }}
+          options={options}
           series={state.series}
           type="area"
           height={350}
