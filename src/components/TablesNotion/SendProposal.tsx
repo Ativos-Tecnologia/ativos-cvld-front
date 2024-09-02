@@ -181,7 +181,6 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
                                                                     handleChangeCreditorName(e.currentTarget.value, index, item.id, inputCredorRefs.current)
                                                                 }
                                                             }}
-                                                            // onBlur={(e) => handleChangeCreditorName(e.currentTarget.value, index, item.id, inputCredorRefs.current)}
                                                             className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                         />
                                                         {/* absolute div that covers the entire cell */}
@@ -274,9 +273,6 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
                                                             handleChangeProposalPrice(item.id, e.currentTarget.value, index, inputProposalPriceRefs.current)
                                                         }
                                                     }}
-                                                    onBlur={(e) =>
-                                                        handleChangeProposalPrice(item.id, e.currentTarget.value, index, inputProposalPriceRefs.current)
-                                                    }
                                                     className={`text-right w-full px-0 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                 />
                                                 <ImCopy
@@ -326,7 +322,6 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
                                                             handleChangeFupDate(item.id, e.currentTarget.value, '1ª FUP', index)
                                                         }
                                                     }}
-                                                    onBlur={(e) => handleChangeFupDate(item.id, e.currentTarget.value, '1ª FUP', index)}
                                                     className={`w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                 />
 
@@ -344,7 +339,6 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
                                                             handleChangeFupDate(item.id, e.currentTarget.value, '2ª FUP ', index)
                                                         }
                                                     }}
-                                                    onBlur={(e) => handleChangeFupDate(item.id, e.currentTarget.value, '2ª FUP ', index)}
                                                     className={`w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                 />
 
@@ -362,7 +356,6 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
                                                             handleChangeFupDate(item.id, e.currentTarget.value, '3ª FUP', index)
                                                         }
                                                     }}
-                                                    onBlur={(e) => handleChangeFupDate(item.id, e.currentTarget.value, '3ª FUP', index)}
                                                     className={`w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                 />
                                             </TableCell>
@@ -379,7 +372,6 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
                                                             handleChangeFupDate(item.id, e.currentTarget.value, '4ª FUP', index)
                                                         }
                                                     }}
-                                                    onBlur={(e) => handleChangeFupDate(item.id, e.currentTarget.value, '4ª FUP', index)}
                                                     className={`w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                 />
 
@@ -397,7 +389,6 @@ export const SendProposal = ({ isPending, data, checkedList, editableLabel, setE
                                                             handleChangeFupDate(item.id, e.currentTarget.value, '5ª FUP ', index)
                                                         }
                                                     }}
-                                                    onBlur={(e) => handleChangeFupDate(item.id, e.currentTarget.value, '5ª FUP ', index)}
                                                     className={`w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                 />
                                             </TableCell>

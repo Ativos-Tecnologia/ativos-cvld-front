@@ -1,8 +1,5 @@
 const percentageFormater = (value: number | string) => {
 
-    console.log(value);
-
-
     if (value === "0%") {
         value = "0";
     }
