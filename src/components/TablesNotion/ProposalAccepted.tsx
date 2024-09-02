@@ -114,7 +114,6 @@ export const ProposalAccepted = ({ isPending, data, checkedList, editableLabel, 
                                                                     handleChangeCreditorName(e.currentTarget.value, index, item.id, inputCredorRefs.current)
                                                                 }
                                                             }}
-                                                            // onBlur={(e) => handleChangeCreditorName(e.currentTarget.value, index, item.id, inputCredorRefs.current)}
                                                             className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                         />
                                                         {/* absolute div that covers the entire cell */}

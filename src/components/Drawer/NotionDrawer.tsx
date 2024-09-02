@@ -6,7 +6,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { AiOutlineLoading, AiOutlineReload, AiOutlineUser } from "react-icons/ai";
 import { BiDownload, BiTransfer, BiX } from "react-icons/bi";
 import { CgDetailsMore } from "react-icons/cg";
-import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
+import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/utils/api";
 import { NotionPage } from "@/interfaces/INotion";
 import { IoDocumentTextOutline } from "react-icons/io5";
@@ -25,6 +25,7 @@ import { HiOutlineLockClosed } from "react-icons/hi";
 import { HiMiniCalendar } from "react-icons/hi2";
 import Title from "../CrmUi/Title";
 import CustomCheckbox from "../CrmUi/Checkbox";
+import { toast } from "sonner";
 
 type NotionDrawerProps = {
   pageId: string;
@@ -75,244 +76,117 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
     return convertedDate;
   }
 
-  /* ================> função copiada só para fins de entrega de feat <=================== */
-  const updateStatusAtNotion = async (page_id: string, status: statusOficio) => {
-    try {
-      const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-        "Status": {
-          "status": {
-            "name": `${status}`
-          }
-        }
-      });
-      if (resNotion.status !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
+  /* COMEÇA ÁREA DAS FUNÇÕES HANDLE */
+  const handleChangeCreditorName = async (value: string, page_id: string) => {
+    const paramsObj = {
+      page_id,
+      value
+    }
+    await creditorNameMutation.mutateAsync(paramsObj);
+  }
+
+  const handleChangeIdentification = async (page_id: string, value: string) => {
+    const paramsObj = {
+      page_id,
+      value
+    }
+    await identificationMutation.mutateAsync(paramsObj);
+  }
+
+  const handleChangeEmail = async (page_id: string, value: string) => {
+    const paramsObj = {
+      page_id,
+      value
+    }
+    await emailMutation.mutateAsync(paramsObj);
+  }
+
+  const handleChangePhoneNumber = async (page_id: string, type: string, value: string) => {
+    const paramsObj = {
+      page_id,
+      type,
+      value
+    };
+    await phoneNumberMutation.mutateAsync(paramsObj);
+  }
+
+  const handleChangeStatus = async (page_id: string, status: statusOficio, currentValue: string) => {
+    const paramsObj = {
+      page_id,
+      status,
+      currentValue
+    }
+    await statusMutation.mutateAsync(paramsObj);
+  }
+
+  const handleChangeFupDate = async (page_id: string, value: string, type: string) => {
+
+    if (/^[0-9/]{10}$/.test(value)) {
+
+      const parsedValue = value.split('/').reverse().join('-');
+      const paramsObj = {
+        page_id,
+        value: parsedValue,
+        type
       }
-      refetch();
-      queryClient.invalidateQueries({ queryKey: ['notion_page_data'] });
-    } catch (error) {
-      console.log(error)
+      await fupDateMutation.mutateAsync(paramsObj)
+
+    } else {
+      console.log('um campo de data precisa de 8 caracteres');
     }
   }
 
-  /* ================> função copiada só para fins de entrega de feat <=================== */
-  const updateTipoAtNotion = async (page_id: string, tipo: tipoOficio) => {
-
-    try {
-      const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-        "Tipo": {
-          "select": {
-            "name": `${tipo}`
-          }
-        },
-      });
-
-      if (resNotion.status !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
-      }
-      refetch()
-    } catch (error) {
-      console.log(error)
+  const handleChangeTipo = async (page_id: string, oficio: tipoOficio) => {
+    const paramsObj = {
+      page_id,
+      oficio
     }
-
+    await tipoMutation.mutateAsync(paramsObj);
   }
 
-  /* ================> função copiada só para fins de entrega de feat <=================== */
-  const updateNotionCreditorName = async (page_id: string, value: string) => {
-    try {
-      const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-        "Credor": {
-          "title": [
-            {
-              "text": {
-                "content": value
-              }
-            }
-          ]
-        }
-      });
-      if (resNotion.status !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
-      }
-    } catch (error) {
-      console.log(error);
+  const handleChangeNpu = async (page_id: string, type: string, value: string) => {
+    const paramsObj = {
+      page_id,
+      type,
+      value
     }
+    await npuMutation.mutateAsync(paramsObj);
   }
 
-  /* ================> função copiada só para fins de entrega de feat <=================== */
-  const handleChangeCreditorName = async (value: string,) => {
-    try {
-      inputCreditorRef.current!.blur();
-      if (data) {
-        await updateNotionCreditorName(pageId, value);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      // queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+  const handleChangeTribunal = async (page_id: string, tribunal: string) => {
+    const paramsObj = {
+      page_id,
+      tribunal
     }
+    await tribunalMutation.mutateAsync(paramsObj)
   }
 
-  /* ================> função copiada só para fins de entrega de feat <=================== */
-  const updateNotionFupDate = async (page_id: string, value: string, type: string) => {
-
-    try {
-
-      let responseStatus: number = 0;
-
-      if (data?.properties[type].date === null) {
-
-        const dateObject = {
-          end: null,
-          start: value,
-          time_zone: null
-        }
-
-        const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-          [type]: {
-            "date": dateObject
-          }
-        });
-
-        responseStatus = resNotion.status;
-
-      } else {
-        const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-          [type]: {
-            "date": {
-              "start": value
-            }
-          }
-        });
-
-        responseStatus = resNotion.status;
-      }
-
-      if (responseStatus !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
-      }
-    } catch (error) {
-      console.log(error);
+  const handleChangeJuizo = async (page_id: string, value: string) => {
+    const paramsObj = {
+      page_id,
+      value
     }
+    await juizoMutation.mutateAsync(paramsObj);
   }
 
-  /* ================> função copiada só para fins de entrega de feat <=================== */
-  const updateNotionEmail = async (page_id: string, value: string) => {
-    try {
-      const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-        "Contato de E-mail": {
-          "email": value
-        }
-      });
-      if (resNotion.status !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
-      }
-    } catch (error) {
-      console.log(error);
+  const handleChangeHonorarioState = async (page_id: string, value: boolean) => {
+    const paramsObj = {
+      page_id,
+      value
     }
+    await honorarioStateMutation.mutateAsync(paramsObj);
   }
 
-  /* ================> função copiada só para fins de entrega de feat <=================== */
-  const updateNotionPhoneNumber = async (page_id: string, type: string, value: string) => {
-    try {
-      const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-        [type]: {
-          "phone_number": value
-        }
-      });
-      if (resNotion.status !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
-      }
-    } catch (error) {
-      console.log(error);
-    }
+  const handleChangeProposalPrice = async (page_id: string, value: string) => {
+    const formatedValue = value.replace(/[^0-9,]/g, '');
+    const valueToNumber = parseFloat(formatedValue);
+    await proposalPriceMutation.mutateAsync({
+      page_id,
+      value: valueToNumber
+    })
   }
 
-  /* ==================> função nova que deverá ir para o contexto <===================== */
-  const updateNotionNpu = async (page_id: string, type: string, value: string) => {
-    try {
-      const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-        [type]: {
-          "rich_text": [
-            {
-              "text": {
-                "content": value
-              }
-            }
-          ]
-        }
-      });
-      if (resNotion.status !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  /* ==================> função nova que deverá ir para o contexto <===================== */
-  const updateTribunalAtNotion = async (page_id: string, value: string) => {
-    try {
-      const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-        "Tribunal": {
-          "select":
-          {
-            "name": value
-          }
-        }
-      });
-      if (resNotion.status !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
-      }
-      refetch();
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  /* ==================> função nova que deverá ir para o contexto <===================== */
-  const updateJuizoAtNotion = async (page_id: string, value: string) => {
-    try {
-      const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-        "Juízo": {
-          "rich_text": [
-            {
-              "text": {
-                "content": value
-              }
-            }
-          ]
-        }
-      });
-      if (resNotion.status !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  /* ==================> função nova que deverá ir para o contexto <===================== */
-  const updateIdentificationAtNotion = async (page_id: string, value: string) => {
-    try {
-      const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-        "CPF/CNPJ": {
-          "rich_text": [
-            {
-              "text": {
-                "content": value
-              }
-            }
-          ]
-        }
-      });
-      if (resNotion.status !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  /* TERMINA ÁREA DAS FUNÇÕES HANDLE */
 
   /* ==================> função nova que deverá ir para o contexto <===================== */
   const updateFeesAtNotion = async (page_id: string, value: boolean) => {
@@ -334,21 +208,400 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
     }
   }
 
-  /* ================> função copiada só para fins de entrega de feat <=================== */
-  const handleChangeFupDate = async (page_id: string, value: string, type: string) => {
+  /* COMEÇA A ÁREA DAS MUTATIONS */
 
-    if (/^[0-9/]{10}$/.test(value)) {
-
-      const parsedValue = value.split('/').reverse().join('-');
-      await updateNotionFupDate(page_id, parsedValue, type);
-
-    } else {
-      console.log('um campo de data precisa de 8 caracteres');
+  const creditorNameMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Credor": {
+          "title": [
+            {
+              "text": {
+                "content": paramsObj.value
+              }
+            }
+          ]
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async (paramsObj: any) => {
+      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      const previousData = queryClient.getQueryData(['notion_page_data']);
+      return { previousData }
+    },
+    onError: (data, paramsObj, context) => {
+      queryClient.setQueryData(['notion_page_data'], context?.previousData);
+      toast.error('Não foi possível alterar o nome do credor');
     }
-  }
+  });
+
+  const identificationMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "CPF/CNPJ": {
+          "rich_text": [
+            {
+              "text": {
+                "content": paramsObj.value
+              }
+            }
+          ]
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data;
+    },
+    onMutate: async (paramsObj: any) => {
+      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      const previousData: any = queryClient.getQueryData(['notion_page_data']);
+      return { previousData }
+    },
+    onError: (data, paramsObj, context) => {
+      queryClient.setQueryData(['notion_page_data'], context?.previousData)
+    }
+  });
+
+  const emailMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Contato de E-mail": {
+          "email": paramsObj.value
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async (paramsObj: { page_id: string, value: string }) => {
+      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      const previousData: any = queryClient.getQueryData(['notion_page_data']);
+      return { previousData }
+    },
+    onError: (data, paramsObj, context) => {
+      queryClient.setQueryData(['notion_page_data'], context?.previousData);
+      toast.error('Erro ao alterar o email');
+    }
+  });
+
+  const phoneNumberMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, type: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        [paramsObj.type]: {
+          "phone_number": paramsObj.value
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async (paramsObj: any) => {
+      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      const previousData: any = queryClient.getQueryData(['notion_page_data']);
+      return { previousData }
+    },
+    onError: (data, paramsObj, context) => {
+      queryClient.setQueryData(['notion_page_data'], context?.previousData);
+      toast.error('Erro ao alterar o contato');
+    }
+  });
+
+  const statusMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, status: statusOficio }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Status": {
+          "status": {
+            "name": `${paramsObj.status}`
+          }
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('Houve um erro ao alterar o status');
+      }
+      return response.data
+    },
+    onMutate: async (paramsObj: { page_id: string, status: statusOficio }) => {
+      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      const previousData: NotionPage | undefined = queryClient.getQueryData(['notion_page_data']);
+      queryClient.setQueryData(['notion_page_data'], (old: NotionPage) => {
+        return {
+          ...old, properties: {
+            ...old.properties,
+            Status: {
+              ...old.properties.Status,
+              status: {
+                ...old.properties.Status.status,
+                name: paramsObj.status
+              }
+            }
+          }
+        }
+      })
+      return { previousData }
+    },
+    onError: (data, paramsObj, context) => {
+      queryClient.setQueryData(['notion_page_data'], context?.previousData)
+      toast.error('Erro ao alterar o status do ofício')
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notion_page_data'] })
+    }
+  });
+
+  const fupDateMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string, type: string }) => {
+      let responseStatus: number = 0;
+
+      if (data?.properties[paramsObj.type].date === null) {
+
+        const dateObject = {
+          end: null,
+          start: paramsObj.value,
+          time_zone: null
+        }
+
+        const resNotion = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+          [paramsObj.type]: {
+            "date": dateObject
+          }
+        });
+
+        responseStatus = resNotion.status;
+
+      } else {
+        const resNotion = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+          [paramsObj.type]: {
+            "date": {
+              "start": paramsObj.value
+            }
+          }
+        });
+
+        responseStatus = resNotion.status;
+      }
+
+      if (responseStatus !== 202) {
+        console.log('houve um erro ao salvar os dados no notion');
+      }
+    },
+    onMutate: async (paramsObj: any) => {
+      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      const previousData: any = queryClient.getQueryData(['notion_page_data']);
+      return { previousData }
+    },
+    onError: (data, paramsObj, context) => {
+      queryClient.setQueryData(['notion_page_data'], context?.previousData);
+      toast.error('Erro ao alterar a data de follow up');
+    }
+  });
+
+  const tipoMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, oficio: tipoOficio }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Tipo": {
+          "select": {
+            "name": `${paramsObj.oficio}`
+          }
+        },
+      });
+
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data;
+    },
+    onMutate: async (paramsObj: { page_id: string, oficio: tipoOficio }) => {
+      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      const previousData: NotionPage | undefined = queryClient.getQueryData(['notion_page_data']);
+      queryClient.setQueryData(['notion_page_data'], (old: NotionPage) => {
+        return {
+          ...old, properties: {
+            ...old.properties,
+            Tipo: {
+              ...old.properties.Tipo,
+              select: {
+                ...old.properties.Tipo.select,
+                name: paramsObj.oficio
+              }
+            }
+          }
+        }
+      })
+      return { previousData }
+    },
+    onError: (data, paramsObj, context) => {
+      queryClient.setQueryData(['notion_page_data'], context?.previousData);
+      toast.error('Erro ao alterar o tipo do ofício');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notion_page_data'] });
+    }
+  });
+
+  const npuMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, type: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        [paramsObj.type]: {
+          "rich_text": [
+            {
+              "text": {
+                "content": paramsObj.value
+              }
+            }
+          ]
+        }
+      });
+      if (response.status !== 202) {
+        console.log('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async (paramsObj: any) => {
+      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      const previousData: any = queryClient.getQueryData(['notion_page_data']);
+      return { previousData }
+    },
+    onError: (data, paramsObj, context) => {
+      queryClient.setQueryData(['notion_page_data'], context?.previousData);
+      toast.error('não foi possível atualizar o campo')
+    }
+  });
+
+  const tribunalMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, tribunal: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Tribunal": {
+          "select":
+          {
+            "name": paramsObj.tribunal
+          }
+        }
+      });
+      if (response.status !== 202) {
+        console.log('houve um erro ao salvar os dados no notion');
+      }
+      return response.data;
+    },
+    onMutate: async (paramsObj: { page_id: string, tribunal: string }) => {
+      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      const previousData: NotionPage | undefined = queryClient.getQueryData(['notion_page_data']);
+      queryClient.setQueryData(['notion_page_data'], (old: NotionPage) => {
+        return {
+          ...old, properties: {
+            ...old.properties,
+            Tribunal: {
+              ...old.properties.Tribunal,
+              select: {
+                ...old.properties.Tribunal.select,
+                name: paramsObj.tribunal
+              }
+            }
+          }
+        }
+      })
+      return { previousData }
+    },
+    onError: (data, paramsObj, context) => {
+      queryClient.setQueryData(['notion_page_data'], context?.previousData);
+      toast.error('Erro ao alterar o tipo do ofício');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notion_page_data'] });
+    }
+  });
+
+  const juizoMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Juízo": {
+          "rich_text": [
+            {
+              "text": {
+                "content": paramsObj.value
+              }
+            }
+          ]
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async (paramsObj: any) => {
+      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      const previousData: any = queryClient.getQueryData(['notion_page_data']);
+      return { previousData }
+    },
+    onError: (data, paramsObj, context) => {
+      queryClient.setQueryData(['notion_page_data'], context?.previousData)
+      toast.error('não foi possível atualizar o campo Juízo');
+    }
+  });
+
+  const honorarioStateMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: boolean }) => {
+      const resNotion = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Honorários já destacados?": {
+          "checkbox": !paramsObj.value
+        }
+      });
+      if (resNotion.status !== 202) {
+        console.log('houve um erro ao salvar os dados no notion');
+      }
+      queryClient.invalidateQueries({ queryKey: ['notion_page_data'] });
+    },
+    onMutate: async (paramsObj: any) => {
+      setCheckMark('honorário');
+      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      const previousData: any = queryClient.getQueryData(['notion_page_data']);
+      return { previousData }
+    },
+    onError: (data, paramsObj, context) => {
+      queryClient.setQueryData(['notion_page_data'], context?.previousData);
+      toast.error('não foi possível atualizar o campo honorário')
+    },
+    onSettled: () => {
+      setCheckMark(null)
+    }
+  });
+
+  const proposalPriceMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: number }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Preço Proposto": {
+          "number": paramsObj.value
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async (paramsObj) => {
+      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      const previousData: any = queryClient.getQueryData(['notion_page_data']);
+      return { previousData }
+    },
+    onError: (data, paramsObj, context) => {
+      queryClient.setQueryData(['notion_page_data'], context?.previousData);
+      toast.error('Erro ao alterar o preço proposto');
+    }
+  });
+
+  console.log(data)
+
+  /* TERMINA A ÁREA DAS MUTATIONS */
 
   const applyMaskCpfCnpj = (str: string) => {
-    
+
     if (!str) return;
 
     if (/^(?=.*\.)(?=.*-).+$/.test(str)) return str;
@@ -389,10 +642,9 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         defaultValue={data?.properties?.Credor?.title[0].text.content || 'Sem título'}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                            handleChangeCreditorName(e.currentTarget.value)
+                            handleChangeCreditorName(e.currentTarget.value, data!.id)
                           }
                         }}
-                        onBlur={(e) => handleChangeCreditorName(e.currentTarget.value)}
                         className={`w-full text-2xl pl-1 focus-within:ring-0 focus-within:border-transparent border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                       />
                     </div>
@@ -445,10 +697,9 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                                 defaultValue={applyMaskCpfCnpj(data?.properties["CPF/CNPJ"]?.rich_text?.length ? data?.properties["CPF/CNPJ"]?.rich_text![0]!.plain_text : "")}
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                    updateIdentificationAtNotion(data!.id, e.currentTarget.value)
+                                    handleChangeIdentification(data!.id, e.currentTarget.value)
                                   }
                                 }}
-                                onBlur={(e) => updateIdentificationAtNotion(data!.id, e.currentTarget.value)}
                                 className={`w-full p-0 focus-within:ring-0 focus-within:border-transparent text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                               />
                               {/* {data?.properties["CPF/CNPJ"]?.rich_text?.length ? data?.properties["CPF/CNPJ"]?.rich_text![0]!.plain_text : ""} */}
@@ -463,10 +714,9 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                               defaultValue={data?.properties['Contato de E-mail'].email || ''}
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                  updateNotionEmail(data!.id, e.currentTarget.value)
+                                  handleChangeEmail(data!.id, e.currentTarget.value)
                                 }
                               }}
-                              onBlur={(e) => updateNotionEmail(data!.id, e.currentTarget.value)}
                               className={`w-full p-0 focus-within:ring-0 focus-within:border-transparent text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                             />
                             {/* {data?.properties["Contato de E-mail"].email || ""} */}
@@ -482,10 +732,9 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                               type="text"
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                  updateNotionPhoneNumber(data!.id, 'Contato Telefônico', e.currentTarget.value)
+                                  handleChangePhoneNumber(data!.id, 'Contato Telefônico', e.currentTarget.value)
                                 }
                               }}
-                              onBlur={(e) => updateNotionPhoneNumber(data!.id, 'Contato Telefônico', e.currentTarget.value)}
                               className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
                             />
                           </td>
@@ -501,10 +750,9 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                               type="text"
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                  updateNotionPhoneNumber(data!.id, 'Contato Telefônico 2', e.currentTarget.value)
+                                  handleChangePhoneNumber(data!.id, 'Contato Telefônico 2', e.currentTarget.value)
                                 }
                               }}
-                              onBlur={(e) => updateNotionPhoneNumber(data!.id, 'Contato Telefônico 2', e.currentTarget.value)}
                               className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
                             />
                           </td>
@@ -520,10 +768,9 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                               type="text"
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                  updateNotionPhoneNumber(data!.id, 'Contato Telefônico 3', e.currentTarget.value)
+                                  handleChangePhoneNumber(data!.id, 'Contato Telefônico 3', e.currentTarget.value)
                                 }
                               }}
-                              onBlur={(e) => updateNotionPhoneNumber(data!.id, 'Contato Telefônico 3', e.currentTarget.value)}
                               className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
                             />
                           </td>
@@ -570,7 +817,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
 
                               <Title text={data?.properties?.Status?.status?.name.toUpperCase() || ""}>
                                 {data?.properties?.Status?.status ? (
-                                  <div className="py-1 px-2 rounded-md max-w-[170px] text-black-2 text-xs text-ellipsis overflow-hidden whitespace-nowrap" style={{
+                                  <div className="py-1 px-2 rounded-md w-fit max-w-[170px] text-black-2 text-xs text-ellipsis overflow-hidden whitespace-nowrap" style={{
                                     backgroundColor: notionColorResolver(data!.properties!.Status!.status!.color),
                                   }}>
                                     {data?.properties?.Status?.status?.name.toUpperCase() || ""}
@@ -589,7 +836,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                                 data={data}
                                 open={dynamicListId === 'status'}
                                 setOpen={setDynamicListId}
-                                callback={updateStatusAtNotion}
+                                callback={handleChangeStatus}
                               />
                             </td>
                           </tr>
@@ -654,7 +901,6 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                                     handleChangeFupDate(data!.id, e.currentTarget.value, '1ª FUP')
                                   }
                                 }}
-                                onBlur={(e) => handleChangeFupDate(data!.id, e.currentTarget.value, '1ª FUP')}
                                 className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
                               />
 
@@ -677,7 +923,6 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                                     handleChangeFupDate(data!.id, e.currentTarget.value, '2ª FUP ')
                                   }
                                 }}
-                                onBlur={(e) => handleChangeFupDate(data!.id, e.currentTarget.value, '2ª FUP ')}
                                 className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
                               />
 
@@ -700,7 +945,6 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                                     handleChangeFupDate(data!.id, e.currentTarget.value, '3ª FUP')
                                   }
                                 }}
-                                onBlur={(e) => handleChangeFupDate(data!.id, e.currentTarget.value, '3ª FUP')}
                                 className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
                               />
 
@@ -723,7 +967,6 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                                     handleChangeFupDate(data!.id, e.currentTarget.value, '4ª FUP')
                                   }
                                 }}
-                                onBlur={(e) => handleChangeFupDate(data!.id, e.currentTarget.value, '4ª FUP')}
                                 className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
                               />
 
@@ -746,7 +989,6 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                                     handleChangeFupDate(data!.id, e.currentTarget.value, '5ª FUP ')
                                   }
                                 }}
-                                onBlur={(e) => handleChangeFupDate(data!.id, e.currentTarget.value, '5ª FUP ')}
                                 className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
                               />
 
@@ -787,7 +1029,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                                 data={data}
                                 open={dynamicListId === 'tipo'}
                                 setOpen={setDynamicListId}
-                                callback={updateTipoAtNotion}
+                                callback={handleChangeTipo}
                               />
                             </td>
                           </tr>
@@ -802,10 +1044,9 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                                 defaultValue={data?.properties["NPU (Originário)"]?.rich_text![0]?.text?.content || ""}
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                    updateNotionNpu(data!.id, "NPU (Originário)", e.currentTarget.value)
+                                    handleChangeNpu(data!.id, "NPU (Originário)", e.currentTarget.value)
                                   }
                                 }}
-                                onBlur={(e) => updateNotionNpu(data!.id, "NPU (Originário)", e.currentTarget.value)}
                                 className={`w-full p-0 focus-within:ring-0 focus-within:border-transparent text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                               />
                               {/* {data?.properties["NPU (Originário)"]?.rich_text![0]?.text?.content || ""} */}
@@ -822,10 +1063,9 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                                 defaultValue={data?.properties["NPU (Precatório)"]?.rich_text![0]?.text?.content || ""}
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                    updateNotionNpu(data!.id, "NPU (Precatório)", e.currentTarget.value)
+                                    handleChangeNpu(data!.id, "NPU (Precatório)", e.currentTarget.value)
                                   }
                                 }}
-                                onBlur={(e) => updateNotionNpu(data!.id, "NPU (Precatório)", e.currentTarget.value)}
                                 className={`w-full p-0 focus-within:ring-0 focus-within:border-transparent text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                               />
                               {/* {data?.properties["NPU (Precatório)"]?.rich_text![0]?.text?.content || ""} */}
@@ -859,7 +1099,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                               data={data}
                               open={dynamicListId === 'tribunal'}
                               setOpen={setDynamicListId}
-                              callback={updateTribunalAtNotion}
+                              callback={handleChangeTribunal}
                             />
                           </td>
                         </tr>
@@ -872,10 +1112,9 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                                 defaultValue={data?.properties?.Juízo?.rich_text![0]?.plain_text || ""}
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                    updateJuizoAtNotion(data!.id, e.currentTarget.value)
+                                    handleChangeJuizo(data!.id, e.currentTarget.value)
                                   }
                                 }}
-                                onBlur={(e) => updateJuizoAtNotion(data!.id, e.currentTarget.value)}
                                 className={`w-full p-0 focus-within:ring-0 focus-within:border-transparent text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                               />
                             </Title>
@@ -1073,14 +1312,27 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Honorários já destacados?</td>
                           <td className="border border-stroke dark:border-strokedark px-4 py-2">
                             {checkMark === 'honorário' ? (
-                              <div className="flex items-center justify-center w-6 h-6">
+                              <div className="flex items-center justify-center gap-3 h-6">
                                 <AiOutlineLoading className="animate-spin w-4.5 h-4.5" />
+                                <span>Atualizando opção</span>
                               </div>
                             ) : (
-                              <CustomCheckbox
-                                check={data?.properties["Honorários já destacados?"].checkbox}
-                                callbackFunction={() => updateFeesAtNotion(data!.id, data!.properties["Honorários já destacados?"]!.checkbox!)}
-                              />
+                              <div className='flex gap-5 items-center justify-center'>
+                                <div className='flex gap-2 items-center'>
+                                  <CustomCheckbox
+                                    check={data?.properties["Honorários já destacados?"].checkbox}
+                                    callbackFunction={() => handleChangeHonorarioState(data!.id, data!.properties["Honorários já destacados?"]!.checkbox!)}
+                                  />
+                                  <span>Sim</span>
+                                </div>
+                                <div className='flex gap-2 items-center'>
+                                  <CustomCheckbox
+                                    check={!data?.properties["Honorários já destacados?"].checkbox}
+                                    callbackFunction={() => handleChangeHonorarioState(data!.id, data!.properties["Honorários já destacados?"]!.checkbox!)}
+                                  />
+                                  <span>Não</span>
+                                </div>
+                              </div>
                             )}
                             {/* {data?.properties["Honorários já destacados?"].checkbox ? "Sim" : "Não"} */}
                           </td>
@@ -1089,27 +1341,53 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           <>
                             <tr className="bg-gray dark:bg-boxdark-2">
                               <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Percentual de Honorários Não destacados</td>
-                              <td className="border border-stroke dark:border-strokedark px-4 py-2">{percentageFormater(data?.properties["Percentual de Honorários Não destacados"].number || 0)}</td>
-                            </tr><tr className="bg-gray dark:bg-boxdark-2">
+                              <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
+                                {percentageFormater(data?.properties["Percentual de Honorários Não destacados"].number || 0)}
+                                <Title text="Esta informação não é editável">
+                                  <HiOutlineLockClosed className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+                                </Title>
+                              </td>
+                            </tr>
+                            <tr className="bg-gray dark:bg-boxdark-2">
                               <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Honorários Não destacados</td>
-                              <td className="border border-stroke dark:border-strokedark px-4 py-2">{numberFormat(data?.properties["Honorários não destacados"]?.formula?.number || 0)}</td>
+                              <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
+                                {numberFormat(data?.properties["Honorários não destacados"]?.formula?.number || 0)}
+                                <Title text="Esta informação não é editável">
+                                  <HiOutlineLockClosed className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+                                </Title>
+                              </td>
                             </tr>
                           </>
 
                         )}
                         <tr className="bg-gray dark:bg-boxdark-2">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Imposto de Renda (3%)</td>
-                          <td className="border border-stroke dark:border-strokedark px-4 py-2">{data?.properties["Imposto de Renda Retido 3%"]?.number ? numberFormat(data?.properties["Imposto de Renda Retido 3%"].number || 0) : "Não Informado"}</td>
+                          <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
+                            {data?.properties["Imposto de Renda Retido 3%"]?.number ? numberFormat(data?.properties["Imposto de Renda Retido 3%"].number || 0) : "Não Informado"}
+                            <Title text="Esta informação não é editável">
+                              <HiOutlineLockClosed className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+                            </Title>
+                          </td>
                         </tr>
 
                         <tr className="bg-gray dark:bg-boxdark-2">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">IR/RRA</td>
-                          <td className="border border-stroke dark:border-strokedark px-4 py-2">{data?.properties["RRA"]?.number ? numberFormat(data?.properties["RRA"].number || 0) : "Não Informado"}</td>
+                          <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
+                            {data?.properties["RRA"]?.number ? numberFormat(data?.properties["RRA"].number || 0) : "Não Informado"}
+                            <Title text="Esta informação não é editável">
+                              <HiOutlineLockClosed className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+                            </Title>
+                          </td>
                         </tr>
 
                         <tr className="bg-gray dark:bg-boxdark-2">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">PSS</td>
-                          <td className="border border-stroke dark:border-strokedark px-4 py-2">{numberFormat(data?.properties?.PSS.number || 0)}</td>
+                          <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
+                            {numberFormat(data?.properties?.PSS.number || 0)}
+                            <Title text="Esta informação não é editável">
+                              <HiOutlineLockClosed className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+                            </Title>
+                          </td>
                         </tr>
 
                         <tr className="bg-blue-700">
@@ -1131,29 +1409,72 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
 
                         <tr className="bg-gray dark:bg-boxdark-2">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Preço Proposto</td>
-                          <td className="border border-stroke dark:border-strokedark px-4 py-2">{numberFormat(data?.properties["Preço Proposto"]?.number || 0)}</td>
+                          <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
+                            <input
+                              title={numberFormat(data?.properties['Preço Proposto']?.number || 0)}
+                              type="text"
+                              defaultValue={numberFormat(data?.properties['Preço Proposto']?.number || 0)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                  handleChangeProposalPrice(data!.id, e.currentTarget.value)
+                                }
+                              }}
+                              className={`w-full p-0 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                            />
+                          </td>
                         </tr>
                         <tr className="bg-gray dark:bg-boxdark-2">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">(R$) Proposta Mínima</td>
-                          <td className="border border-stroke dark:border-strokedark px-4 py-2">{numberFormat(data?.properties["(R$) Proposta Mínima "]?.formula?.number || 0)}</td>
+                          <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
+                            {numberFormat(data?.properties["(R$) Proposta Mínima "]?.formula?.number || 0)}
+                            <Title text="Esta informação não é editável">
+                              <HiOutlineLockClosed className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+                            </Title>
+                          </td>
                         </tr>
                         <tr className="bg-gray dark:bg-boxdark-2">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">(%) Proposta Mínima</td>
-                          <td className="border border-stroke dark:border-strokedark px-4 py-2">{percentageFormater(data?.properties["(%) Proposta Mínima "]?.formula?.string || 0)}</td>
+                          <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
+                            {percentageFormater(data?.properties["(%) Proposta Mínima "]?.formula?.string || 0)}
+                            <Title text="Esta informação não é editável">
+                              <HiOutlineLockClosed className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+                            </Title>
+                          </td>
                         </tr>
                         <tr className="bg-gray dark:bg-boxdark-2">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">(R$) Proposta Máxima
                           </td>
-                          <td className="border border-stroke dark:border-strokedark px-4 py-2">{numberFormat(data?.properties["(R$) Proposta Máxima"]?.formula?.number || 0)}</td>
+                          <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
+                            {numberFormat(data?.properties["(R$) Proposta Máxima"]?.formula?.number || 0)}
+                            <Title text="Esta informação não é editável">
+                              <HiOutlineLockClosed className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+                            </Title>
+                          </td>
                         </tr>
                         <tr className="bg-gray dark:bg-boxdark-2">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">(%) Proposta Máxima
                           </td>
-                          <td className="border border-stroke dark:border-strokedark px-4 py-2">{percentageFormater(data?.properties["(%) Proposta Máxima "]?.formula?.string || 0)}</td>
+                          <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
+                            {percentageFormater(data?.properties["(%) Proposta Máxima "]?.formula?.string || 0)}
+                            <Title text="Esta informação não é editável">
+                              <HiOutlineLockClosed className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+                            </Title>
+                          </td>
+                        </tr>
+                        <tr className="bg-gray dark:bg-boxdark-2">
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">
+                            Comissão
+                          </td>
+                          <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
+                            {numberFormat(data?.properties['Comissão'].formula?.number || 0)}
+                            <Title text="Esta informação não é editável">
+                              <HiOutlineLockClosed className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+                            </Title>
+                          </td>
                         </tr>
                         <tr className="bg-green-300">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left text-boxdark font-semibold">Valor Líquido Disponível</td>
-                          <td className="border border-stroke dark:border-strokedark px-4 py-2 text-boxdark font-semibold">{
+                          <td className="relative border border-stroke dark:border-strokedark px-4 py-2 text-boxdark font-semibold">{
                             data?.properties["Honorários já destacados?"].checkbox === false ? (
                               numberFormat(data?.properties["Valor Líquido (Com Reserva dos Honorários)"]?.formula?.number || 0)
                             ) : (

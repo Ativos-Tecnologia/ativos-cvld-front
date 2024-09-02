@@ -47,7 +47,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const [fetchingValue, setFetchingValue] = useState<Record<string, any> | null>(null);
     const [archiveStatus, setArchiveStatus] = useState<boolean>(false);
     const [archivedOficios, setArchivedOficios] = useState<NotionPage[]>([]);
-    console.log(archivedOficios)
     const searchRef = useRef<HTMLInputElement | null>(null);
     const selectStatusRef = useRef<any>(null);
     const selectTipoOficioRef = useRef<any>(null);
@@ -494,8 +493,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             enabled: !!data2?.user // only fetch if user is defined after context is loaded
         },
     );
-
-    console.log(data)
 
     const archiveNotionPage = async (page_id: string, choice = true) => { // choice = true to archive, false to unarchive
         try {

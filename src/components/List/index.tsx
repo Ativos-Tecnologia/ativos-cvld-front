@@ -42,7 +42,7 @@ export const DynamicList = ({ label, listType, data, open, setOpen, callback }:
                             <div className='w-full py-2 px-2 bg-[#f5f5f5] grid place-items-center dark:bg-graydark rounded-se-md rounded-ss-md border-b border-gray-300 dark:border-form-strokedark'>
                                 <span className=" px-2 py-1 rounded-md text-black-2" style={{
                                     backgroundColor: notionColorResolver(label?.color || 'default'),
-                                }}>{label?.name || ""}</span>
+                                }}>{label?.name.toUpperCase() || ""}</span>
                             </div>
                         )}
 
