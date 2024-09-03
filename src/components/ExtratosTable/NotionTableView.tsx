@@ -24,6 +24,7 @@ import GeneralView from '../TablesNotion/GeneralView';
 
 
 const notionViews: string[] = [
+    'geral',
     'realizar 1º contato',
     'juntar ofício/valor líquido',
     'enviar proposta/negociação',
@@ -505,178 +506,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         },
     );
 
-    const archiveNotionPage = async (page_id: string, choice = true) => { // choice = true to archive, false to unarchive
-        try {
-            const resNotion = await api.patch(`notion-api/archive/<str:page_id>/${page_id}/`, {
-                "archived": choice
-            });
-            if (resNotion.status !== 202) {
-                console.log('houve um erro ao salvar os dados no notion');
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    const updateStatusAtNotion = async (page_id: string, status: statusOficio) => {
-
-        // setFetchingValue(page_id);
-        try {
-            const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-                "Status": {
-                    "status": {
-                        "name": `${status}`
-                    }
-                }
-            });
-            if (resNotion.status !== 202) {
-                console.log('houve um erro ao salvar os dados no notion');
-            }
-        } catch (error) {
-            console.log(error)
-        } finally {
-            setFetchingValue(null);
-        }
-    }
-
-    const updateTipoAtNotion = async (page_id: string, tipo: tipoOficio) => {
-
-        // setFetchingValue(page_id);
-        try {
-            const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-                "Tipo": {
-                    "select": {
-                        "name": `${tipo}`
-                    }
-                },
-            });
-
-            if (resNotion.status !== 202) {
-                console.log('houve um erro ao salvar os dados no notion');
-            }
-        } catch (error) {
-            console.log(error)
-        } finally {
-            setFetchingValue(null);
-        }
-
-    }
-
-    const updateNotionCreditorName = async (page_id: string, value: string) => {
-        console.log("Atualizando o nome do credor");
-        try {
-            const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-                "Credor": {
-                    "title": [
-                        {
-                            "text": {
-                                "content": value
-                            }
-                        }
-                    ]
-                }
-            });
-            if (resNotion.status !== 202) {
-                console.log('houve um erro ao salvar os dados no notion');
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    const updateNotionPhoneNumber = async (page_id: string, type: string, value: string) => {
-        try {
-            const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-                [type]: {
-                    "phone_number": value
-                }
-            });
-            if (resNotion.status !== 202) {
-                console.log('houve um erro ao salvar os dados no notion');
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    const updateNotionEmail = async (page_id: string, value: string) => {
-        try {
-            const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-                "Contato de E-mail": {
-                    "email": value
-                }
-            });
-            if (resNotion.status !== 202) {
-                console.log('houve um erro ao salvar os dados no notion');
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    const updateNotionProposalPrice = async (page_id: string, value: number) => {
-        // setFetchingValue(page_id);
-        try {
-            const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-                "Preço Proposto": {
-                    "number": value
-                }
-            });
-            if (resNotion.status !== 202) {
-                console.log('houve um erro ao salvar os dados no notion');
-            }
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setFetchingValue(null);
-        }
-    }
-
-    const updateNotionFupDate = async (page_id: string, value: string, type: string, index: number) => {
-
-        try {
-
-            let responseStatus: number = 0;
-
-            if (data.results[index].properties[type].date === null) {
-
-                const dateObject = {
-                    end: null,
-                    start: value,
-                    time_zone: null
-                }
-
-                const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-                    [type]: {
-                        "date": dateObject
-                    }
-                });
-
-                responseStatus = resNotion.status;
-
-            } else {
-                const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
-                    [type]: {
-                        "date": {
-                            "start": value
-                        }
-                    }
-                });
-
-                responseStatus = resNotion.status;
-            }
-
-            if (responseStatus !== 202) {
-                console.log('houve um erro ao salvar os dados no notion');
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    // refs
-    // setNotionWorkspaceData(data)
-
     //NOTA: Área das funções do tipo handle
     const handleCopyValue = (index: number) => {
 
@@ -721,61 +550,53 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     }
 
     const handleEditStatus = async (page_id: string, status: statusOficio, currentValue: string) => {
-        const paramsObj = {
+        await statusMutation.mutateAsync({
             page_id,
-            status,
-            currentValue
-        }
-        await statusMutation.mutateAsync(paramsObj)
+            status
+        })
     }
 
     const handleEditTipoOficio = async (page_id: string, oficio: tipoOficio, currentValue: string | undefined) => {
-        const paramsObj = {
+        await tipoMutation.mutateAsync({
             page_id,
-            oficio,
-            currentValue
-        }
-        await tipoMutation.mutateAsync(paramsObj);
+            oficio
+        });
     }
 
     const handleChangeCreditorName = async (value: string, index: number, page_id: string, refList: HTMLInputElement[] | null) => {
         refList![index].blur();
         setEditableLabel(null);
-        const paramsObj = {
+        await creditorNameMutation.mutateAsync({
             page_id,
             value
-        }
-        await creditorNameMutation.mutateAsync(paramsObj);
+        });
     }
 
     const handleChangePhoneNumber = async (page_id: string, type: string, value: string, index: number, refList: HTMLInputElement[] | null) => {
         refList![index].blur();
-        const paramsObj = {
+        await phoneNumberMutation.mutateAsync({
             page_id,
             type,
             value
-        };
-        await phoneNumberMutation.mutateAsync(paramsObj);
+        });
     }
 
     const handleChangeEmail = async (page_id: string, value: string, index: number, refList: HTMLInputElement[] | null) => {
         refList![index].blur();
-        const paramsObj = {
+        await emailMutation.mutateAsync({
             page_id,
             value
-        };
-        await emailMutation.mutateAsync(paramsObj);
+        });
     }
 
     const handleChangeProposalPrice = async (page_id: string, value: string, index: number, refList: HTMLInputElement[] | null) => {
         refList![index].blur();
         const formatedValue = value.replace(/[^0-9,]/g, '');
         const valueToNumber = parseFloat(formatedValue);
-        const paramsObj = {
+        await proposalPriceMutation.mutateAsync({
             page_id,
             value: valueToNumber
-        };
-        await proposalPriceMutation.mutateAsync(paramsObj);
+        });
     }
 
     const handleChangeFupDate = async (page_id: string, value: string, type: string, index: number) => {
@@ -783,14 +604,12 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         if (/^[0-9/]{10}$/.test(value)) {
 
             const parsedValue = value.split('/').reverse().join('-');
-            const paramsObj = {
+            await fupDateMutation.mutateAsync({
                 page_id,
                 value: parsedValue,
                 type,
                 index
-            }
-            await fupDateMutation.mutateAsync(paramsObj)
-            // await updateNotionFupDate(page_id, parsedValue, type, index);
+            })
 
         } else {
             console.log('um campo de data precisa de 8 caracteres');
@@ -1271,29 +1090,12 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     return (
         <>
             <div className="flex gap-3 flex-1 items-center">
-                <div
-                    onClick={() => handleChangeViews('geral')}
-                    className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${notionView === "geral" && 'bg-slate-100 dark:bg-form-strokedark'}`}>
-                    <ImTable />
-                    <span>todos</span>
-                </div>
-                {/* {
-                ENUM_TIPO_OFICIOS_LIST.map((oficio) => (
-                    <div
-                        key={oficio}
-                        onClick={() => handleOficioStatus(oficio)}
-                        className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${activeFilter === oficio && 'bg-slate-100 dark:bg-form-strokedark'}`}>
-                        <ImTable />
-                        <span>{oficio}</span>
-                    </div>
-                ))
-            } */}
                 {
                     notionViews.map((view) => (
                         <div
                             key={view}
                             onClick={() => handleChangeViews(view)}
-                            className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${notionView === view && 'bg-slate-100 dark:bg-form-strokedark'}`}>
+                            className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${notionView === view && 'bg-slate-100 dark:bg-form-strokedark'} ${isFetching && 'pointer-events-none !cursor-not-allowed'}`}>
                             <ImTable />
                             <span>{view}</span>
                         </div>
@@ -1302,7 +1104,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             </div>
 
             {/* Filtros estilo select */}
-            <div className='flex items-center justify-between mt-3'>
+            <div className={`flex items-center justify-between mt-3 ${isFetching && 'pointer-events-none'}`}>
                 <div className='flex items-center gap-2'>
                     {/* ====== select de statusOficio ====== */}
                     <div className='flex items-center justify-center gap-1'>
