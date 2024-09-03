@@ -28,7 +28,7 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
         checkedList: NotionPage[],
         fetchingValue: Record<string, any> | null,
         handleSelectRow: (item: NotionPage) => void,
-        handleEditTipoOficio: (page_id: string, oficio: tipoOficio, currentValue: string |undefined) => Promise<void>,
+        handleEditTipoOficio: (page_id: string, oficio: tipoOficio, currentValue: string | undefined) => Promise<void>,
         handleChangeCreditorName: (value: string, index: number, page_id: string, refList: HTMLInputElement[] | null) => Promise<void>,
         editableLabel: string | null;
         setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
@@ -288,7 +288,7 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
                 </div>
                 )}
 
-      </div>
+            </div>
             <Table>
 
                 <TableHead>
@@ -300,18 +300,19 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
                         </div>
                     </TableHeadCell>
                     <TableHeadCell>
-                    <div className='flex gap-2 items-center'>
-
-                    <Button className='flex gap-2 items-center' variant="ghost" onClick={() => handleSort('Credor')}>
-                    <AiOutlineUser className='text-base' /> Nome do Credor
-                        {sort.field === 'Credor' ? (
-                        sort.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
-                        ) : (
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
-                        )}
-                    </Button>
-                    </div>
-            </TableHeadCell>
+                        <div className='flex gap-2 items-center'>
+                            <button
+                                className='flex gap-2 items-center uppercase'
+                                onClick={() => handleSort('Credor')}>
+                                <AiOutlineUser className='text-base' /> Nome do Credor
+                                {sort.field === 'Credor' ? (
+                                    sort.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
+                                ) : (
+                                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                                )}
+                            </button>
+                        </div>
+                    </TableHeadCell>
                     {role === 'ativos' && (
                         <TableHeadCell className="">
                             <div className="flex gap-2 items-center">
