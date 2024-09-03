@@ -27,7 +27,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
         checkedList: NotionPage[],
         fetchingValue: Record<string, any> | null,
         handleSelectRow: (item: NotionPage) => void,
-        handleEditTipoOficio: (page_id: string, oficio: tipoOficio, currentValue: string |undefined) => Promise<void>,
+        handleEditTipoOficio: (page_id: string, oficio: tipoOficio, currentValue: string | undefined) => Promise<void>,
         handleChangeCreditorName: (value: string, index: number, page_id: string, refList: HTMLInputElement[] | null) => Promise<void>,
         editableLabel: string | null;
         setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
@@ -46,12 +46,12 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
 
     const { data: { role } } = useContext(UserInfoAPIContext);
 
-    const [filters, setFilters] = useState({ credor: ''});
+    const [filters, setFilters] = useState({ credor: '' });
     const [sort, setSort] = useState({ field: null, direction: 'asc' });
 
     const processedData = React.useMemo(() => {
         let result = data?.results?.filter((item: NotionPage) =>
-          item.properties.Credor?.title[0]?.text.content.toLowerCase().includes(filters.credor.toLowerCase())
+            item.properties.Credor?.title[0]?.text.content.toLowerCase().includes(filters.credor.toLowerCase())
         );
 
         if (sort.field) {
@@ -64,65 +64,65 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                     }
                 });
             }
-          }
+        }
         return result;
-      }, [data, filters, sort]);
+    }, [data, filters, sort]);
 
 
-      const handleSort = (field: any) => {
+    const handleSort = (field: any) => {
         setSort(prev => ({
-          field,
-          direction: prev.field === field && prev.direction === 'asc' ? 'desc' : 'asc'
+            field,
+            direction: prev.field === field && prev.direction === 'asc' ? 'desc' : 'asc'
         }));
-      };
+    };
 
-        useEffect(() => {
-            if (inputCredorRefs.current) {
-                processedData?.map((item: NotionPage, index: number) => {
-                    const ref = inputCredorRefs.current![index];
-                    if (ref) {
-                        ref.value = item.properties.Credor?.title[0]?.text.content || '';
-                    }
-                })
-            }
-        }, [processedData])
+    useEffect(() => {
+        if (inputCredorRefs.current) {
+            processedData?.map((item: NotionPage, index: number) => {
+                const ref = inputCredorRefs.current![index];
+                if (ref) {
+                    ref.value = item.properties.Credor?.title[0]?.text.content || '';
+                }
+            })
+        }
+    }, [processedData])
 
-      const handleFilterChange = useCallback((field: any, value: any) => {
+    const handleFilterChange = useCallback((field: any, value: any) => {
         setFilters((prev) => ({
-          ...prev,
-          [field]: value,
+            ...prev,
+            [field]: value,
         }));
-      }, []);
+    }, []);
 
 
 
-      useEffect(() => {
+    useEffect(() => {
         if (filters.credor) {
-          queryClient.cancelQueries({ queryKey: ['notion_list'] });
+            queryClient.cancelQueries({ queryKey: ['notion_list'] });
         }
 
         const timer = setTimeout(() => {
-          if (filters.credor) {
-            queryClient.invalidateQueries({ queryKey: ['notion_list'] });
-          }
+            if (filters.credor) {
+                queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+            }
         }, 5000);
 
         return () => clearTimeout(timer);
-      }, [filters, queryClient]);
+    }, [filters, queryClient]);
 
 
     return (
         <div className='max-w-full overflow-x-scroll pb-5'>
             <div className="flex mb-4">
-        <input
-          type="text"
-          placeholder="Filtrar por nome"
-          value={filters.credor}
-          onChange={(e) => handleFilterChange('credor', e.target.value)}
-          className="max-w-md rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-        />
+                <input
+                    type="text"
+                    placeholder="Filtrar por nome"
+                    value={filters.credor}
+                    onChange={(e) => handleFilterChange('credor', e.target.value)}
+                    className="max-w-md rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                />
 
-      </div>
+            </div>
             <Table>
                 <TableHead>
 
@@ -133,18 +133,19 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                         </div>
                     </TableHeadCell>
                     <TableHeadCell>
-                    <div className='flex gap-2 items-center'>
-
-                    <Button className='flex gap-2 items-center' variant="ghost" onClick={() => handleSort('Credor')}>
-                    <AiOutlineUser className='text-base' /> Nome do Credor
-                        {sort.field === 'Credor' ? (
-                        sort.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
-                        ) : (
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
-                        )}
-                    </Button>
-                    </div>
-            </TableHeadCell>
+                        <div className='flex gap-2 items-center'>
+                            <button
+                                className='flex gap-2 items-center uppercase'
+                                onClick={() => handleSort('Credor')}>
+                                <AiOutlineUser className='text-base' /> Nome do Credor
+                                {sort.field === 'Credor' ? (
+                                    sort.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
+                                ) : (
+                                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                                )}
+                            </button>
+                        </div>
+                    </TableHeadCell>
                     {role === 'ativos' && (
                         <TableHeadCell className="">
                             <div className="flex gap-2 items-center">

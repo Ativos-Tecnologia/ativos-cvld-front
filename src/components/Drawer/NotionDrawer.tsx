@@ -60,8 +60,6 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
     },
   );
 
-  console.log(data)
-
   /* -----> refs <----- */
   const inputCreditorRef = useRef<HTMLInputElement | null>(null);
 
@@ -176,6 +174,8 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
 
   /* TERMINA ÁREA DAS FUNÇÕES HANDLE */
 
+  /* ========================================== */
+
   /* COMEÇA A ÁREA DAS MUTATIONS */
 
   const creditorNameMutation = useMutation({
@@ -197,13 +197,16 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       return response.data
     },
     onMutate: async (paramsObj: any) => {
-      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      await queryClient.cancelQueries({ queryKey: ['notion_list'] });
       const previousData = queryClient.getQueryData(['notion_page_data']);
       return { previousData }
     },
     onError: (data, paramsObj, context) => {
       queryClient.setQueryData(['notion_page_data'], context?.previousData);
       toast.error('Não foi possível alterar o nome do credor');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notion_list'] })
     }
   });
 
@@ -226,12 +229,15 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       return response.data;
     },
     onMutate: async (paramsObj: any) => {
-      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      await queryClient.cancelQueries({ queryKey: ['notion_list'] });
       const previousData: any = queryClient.getQueryData(['notion_page_data']);
       return { previousData }
     },
     onError: (data, paramsObj, context) => {
       queryClient.setQueryData(['notion_page_data'], context?.previousData)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notion_list'] })
     }
   });
 
@@ -248,13 +254,16 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       return response.data
     },
     onMutate: async (paramsObj: { page_id: string, value: string }) => {
-      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      await queryClient.cancelQueries({ queryKey: ['notion_list'] });
       const previousData: any = queryClient.getQueryData(['notion_page_data']);
       return { previousData }
     },
     onError: (data, paramsObj, context) => {
       queryClient.setQueryData(['notion_page_data'], context?.previousData);
       toast.error('Erro ao alterar o email');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notion_list'] })
     }
   });
 
@@ -271,13 +280,16 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       return response.data
     },
     onMutate: async (paramsObj: any) => {
-      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      await queryClient.cancelQueries({ queryKey: ['notion_list'] });
       const previousData: any = queryClient.getQueryData(['notion_page_data']);
       return { previousData }
     },
     onError: (data, paramsObj, context) => {
       queryClient.setQueryData(['notion_page_data'], context?.previousData);
       toast.error('Erro ao alterar o contato');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notion_list'] })
     }
   });
 
@@ -296,7 +308,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       return response.data
     },
     onMutate: async (paramsObj: { page_id: string, status: statusOficio }) => {
-      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      await queryClient.cancelQueries({ queryKey: ['notion_list'] });
       const previousData: NotionPage | undefined = queryClient.getQueryData(['notion_page_data']);
       queryClient.setQueryData(['notion_page_data'], (old: NotionPage) => {
         return {
@@ -320,6 +332,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notion_page_data'] })
+      queryClient.invalidateQueries({ queryKey: ['notion_list'] })
     }
   });
 
@@ -360,13 +373,16 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       }
     },
     onMutate: async (paramsObj: any) => {
-      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      await queryClient.cancelQueries({ queryKey: ['notion_list'] });
       const previousData: any = queryClient.getQueryData(['notion_page_data']);
       return { previousData }
     },
     onError: (data, paramsObj, context) => {
       queryClient.setQueryData(['notion_page_data'], context?.previousData);
       toast.error('Erro ao alterar a data de follow up');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notion_list'] })
     }
   });
 
@@ -386,7 +402,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       return response.data;
     },
     onMutate: async (paramsObj: { page_id: string, oficio: tipoOficio }) => {
-      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      await queryClient.cancelQueries({ queryKey: ['notion_list'] });
       const previousData: NotionPage | undefined = queryClient.getQueryData(['notion_page_data']);
       queryClient.setQueryData(['notion_page_data'], (old: NotionPage) => {
         return {
@@ -410,6 +426,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notion_page_data'] });
+      queryClient.invalidateQueries({ queryKey: ['notion_list'] });
     }
   });
 
@@ -432,13 +449,16 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       return response.data
     },
     onMutate: async (paramsObj: any) => {
-      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      await queryClient.cancelQueries({ queryKey: ['notion_list'] });
       const previousData: any = queryClient.getQueryData(['notion_page_data']);
       return { previousData }
     },
     onError: (data, paramsObj, context) => {
       queryClient.setQueryData(['notion_page_data'], context?.previousData);
       toast.error('não foi possível atualizar o campo')
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notion_list'] });
     }
   });
 
@@ -458,7 +478,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       return response.data;
     },
     onMutate: async (paramsObj: { page_id: string, tribunal: string }) => {
-      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      await queryClient.cancelQueries({ queryKey: ['notion_list'] });
       const previousData: NotionPage | undefined = queryClient.getQueryData(['notion_page_data']);
       queryClient.setQueryData(['notion_page_data'], (old: NotionPage) => {
         return {
@@ -482,6 +502,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notion_page_data'] });
+      queryClient.invalidateQueries({ queryKey: ['notion_list'] });
     }
   });
 
@@ -504,13 +525,16 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       return response.data
     },
     onMutate: async (paramsObj: any) => {
-      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      await queryClient.cancelQueries({ queryKey: ['notion_list'] });
       const previousData: any = queryClient.getQueryData(['notion_page_data']);
       return { previousData }
     },
     onError: (data, paramsObj, context) => {
       queryClient.setQueryData(['notion_page_data'], context?.previousData)
       toast.error('não foi possível atualizar o campo Juízo');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notion_list'] })
     }
   });
 
@@ -528,13 +552,16 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
     },
     onMutate: async (paramsObj: any) => {
       setCheckMark('honorário');
-      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      await queryClient.cancelQueries({ queryKey: ['notion_list'] });
       const previousData: any = queryClient.getQueryData(['notion_page_data']);
       return { previousData }
     },
     onError: (data, paramsObj, context) => {
       queryClient.setQueryData(['notion_page_data'], context?.previousData);
       toast.error('não foi possível atualizar o campo honorário')
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notion_list'] })
     },
     onSettled: () => {
       setCheckMark(null)
@@ -554,17 +581,18 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       return response.data
     },
     onMutate: async (paramsObj) => {
-      await queryClient.cancelQueries({ queryKey: ['notion_page_data'] });
+      await queryClient.cancelQueries({ queryKey: ['notion_list'] });
       const previousData: any = queryClient.getQueryData(['notion_page_data']);
       return { previousData }
     },
     onError: (data, paramsObj, context) => {
       queryClient.setQueryData(['notion_page_data'], context?.previousData);
       toast.error('Erro ao alterar o preço proposto');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notion_list'] })
     }
   });
-
-  console.log(data)
 
   /* TERMINA A ÁREA DAS MUTATIONS */
 
