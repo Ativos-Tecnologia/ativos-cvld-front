@@ -24,6 +24,7 @@ import GeneralView from '../TablesNotion/GeneralView';
 
 
 const notionViews: string[] = [
+    'geral',
     'realizar 1º contato',
     'juntar ofício/valor líquido',
     'enviar proposta/negociação',
@@ -1089,29 +1090,12 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     return (
         <>
             <div className="flex gap-3 flex-1 items-center">
-                <div
-                    onClick={() => handleChangeViews('geral')}
-                    className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${notionView === "geral" && 'bg-slate-100 dark:bg-form-strokedark'}`}>
-                    <ImTable />
-                    <span>todos</span>
-                </div>
-                {/* {
-                ENUM_TIPO_OFICIOS_LIST.map((oficio) => (
-                    <div
-                        key={oficio}
-                        onClick={() => handleOficioStatus(oficio)}
-                        className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${activeFilter === oficio && 'bg-slate-100 dark:bg-form-strokedark'}`}>
-                        <ImTable />
-                        <span>{oficio}</span>
-                    </div>
-                ))
-            } */}
                 {
                     notionViews.map((view) => (
                         <div
                             key={view}
                             onClick={() => handleChangeViews(view)}
-                            className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${notionView === view && 'bg-slate-100 dark:bg-form-strokedark'}`}>
+                            className={`flex items-center justify-center gap-2 py-1 font-semibold px-2 text-xs hover:bg-slate-100 uppercase dark:hover:bg-form-strokedark rounded-md transition-colors duration-200 cursor-pointer ${notionView === view && 'bg-slate-100 dark:bg-form-strokedark'} ${isFetching && 'pointer-events-none !cursor-not-allowed'}`}>
                             <ImTable />
                             <span>{view}</span>
                         </div>
@@ -1120,7 +1104,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             </div>
 
             {/* Filtros estilo select */}
-            <div className='flex items-center justify-between mt-3'>
+            <div className={`flex items-center justify-between mt-3 ${isFetching && 'pointer-events-none'}`}>
                 <div className='flex items-center gap-2'>
                     {/* ====== select de statusOficio ====== */}
                     <div className='flex items-center justify-center gap-1'>
