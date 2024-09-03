@@ -1294,19 +1294,18 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             </div>
             {/* End Filtros estilo select */}
 
-            <MiniMenu
+            {/* <MiniMenu
                 archiveStatus={archiveStatus}
                 handleArchiveExtrato={handleArchiveExtrato}
                 handleSelectAllRows={handleSelectAllRows}
                 checkedList={checkedList}
                 setCheckedList={setCheckedList}
                 count={data?.results?.length || 0}
-            />
+            /> */}
 
             {notionView === 'geral' && (
                 <GeneralView
                     isPending={isPending}
-                    data={data}
                     checkedList={checkedList}
                     fetchingValue={fetchingValue}
                     handleSelectRow={handleSelectRow}
@@ -1319,6 +1318,10 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     handleCopyValue={handleCopyValue}
                     handleEditStatus={handleEditStatus}
                     statusSelectValue={statusSelectValue}
+                    archiveStatus={archiveStatus}
+                    handleArchiveExtrato={handleArchiveExtrato}
+                    handleSelectAllRows={handleSelectAllRows}
+                    setCheckedList={setCheckedList}
                 />
             )}
 
