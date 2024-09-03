@@ -1,14 +1,14 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from '../Tables/TableDefault';
 import { IoDocumentTextOutline } from 'react-icons/io5';
-import { AiOutlineUser } from 'react-icons/ai';
+import { AiOutlineLoading, AiOutlineUser } from 'react-icons/ai';
 import { LiaCoinsSolid } from 'react-icons/lia';
 import { BiLoader, BiSolidDockLeft } from 'react-icons/bi';
 import { NotionPage } from '@/interfaces/INotion';
 import { Badge } from 'flowbite-react';
 import tipoOficio from '@/enums/tipoOficio.enum';
 import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants';
-import { PiCursorClick, PiListBulletsBold } from 'react-icons/pi';
+import { PiCursorClick, PiListBulletsBold, PiNotionLogo } from 'react-icons/pi';
 import { RiNotionFill } from 'react-icons/ri';
 import { ImCopy } from 'react-icons/im';
 import numberFormat from '@/functions/formaters/numberFormat';
@@ -16,9 +16,11 @@ import statusOficio from '@/enums/statusOficio.enum';
 import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import notionColorResolver from '@/functions/formaters/notionColorResolver';
 import CustomCheckbox from '../CrmUi/Checkbox';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '../ui/button';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
+import api from '@/utils/api';
+import { data } from 'tailwindcss/defaultTheme';
 
 const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelectRow, handleEditTipoOficio, handleChangeCreditorName, editableLabel, setEditableLabel, handleEditInput, handleNotionDrawer, handleCopyValue, handleEditStatus, statusSelectValue }:
     {
@@ -44,37 +46,99 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
     const inputCredorRefs = useRef<HTMLInputElement[] | null>([]);
     const usersListRef = useRef<HTMLDivElement[] | null>([]);
 
-    const { data: { role } } = useContext(UserInfoAPIContext);
+    const { data: { role, user } } = useContext(UserInfoAPIContext);
 
     const [filters, setFilters] = useState({ credor: ''});
     const [sort, setSort] = useState({ field: null, direction: 'asc' });
+    const [backendResults, setBackendResults] = useState<NotionPage[]>([]);
+    const [nextCursor, setNextCursor] = useState<string | null>(data?.next_cursor || null);
+    const [hasMore, setHasMore] = useState(data?.has_more || false);
+    const [shouldFetchExternally, setShouldFetchExternally] = useState(false);
+
+
+    useEffect(() => {
+        setHasMore(data?.has_more || false);
+        setNextCursor(data?.next_cursor || null);
+    }, [data?.results, backendResults, filters.credor, sort.field, sort.direction, data?.has_more, data?.next_cursor]);
+
+    const fetchByName = async (name: string) => {
+        const response = await api.post("/api/notion-api/list/search/", {
+            "username": user,
+            "creditor_name": name
+        });
+
+        setBackendResults(response.data.results);
+    };
+
+    const fetchNextCursor = async () => {
+        if (!hasMore) return;
+
+        const response = await api.get(`/api/notion-api/list/database/next-cursor/${nextCursor}/`);
+
+        setNextCursor(response.data.next_cursor);
+        setHasMore(response.data.has_more);
+        setBackendResults(prevResults => [...prevResults, ...response.data.results]);
+    };
+
+
+
+    const { refetch: refetchByName, isFetching: isFetchingByName } = useQuery({
+        queryKey: ['notion_list_creditor_name', filters.credor],
+        queryFn: () => fetchByName(filters.credor),
+        enabled: false,
+      });
+
+      const { refetch: refetchNextCursor, isFetching: isFetchingNextCursor } = useQuery({
+        queryKey: ['notion_list_next_cursor', nextCursor],
+        queryFn: fetchNextCursor,
+        enabled: false,
+    });
+
+    const sortData = (dataToSort: NotionPage[]) => {
+        if (sort.field === 'Credor') {
+            return [...dataToSort].sort((a, b) => {
+                const aValue = a.properties.Credor?.title[0]?.text.content.toLowerCase() || '';
+                const bValue = b.properties.Credor?.title[0]?.text.content.toLowerCase() || '';
+                return sort.direction === 'asc'
+                    ? aValue.localeCompare(bValue)
+                    : bValue.localeCompare(aValue);
+            });
+        }
+        return dataToSort;
+    };
 
     const processedData = React.useMemo(() => {
-        let result = data?.results?.filter((item: NotionPage) =>
-          item.properties.Credor?.title[0]?.text.content.toLowerCase().includes(filters.credor.toLowerCase())
+        let result = [...(data?.results || []), ...backendResults].reduce((acc: NotionPage[], item: NotionPage) => {
+            if (!acc.some((target) => target.id === item.id)) {
+                acc.push(item);
+            }
+            return acc;
+        }, []);
+
+        result = result.filter((item: NotionPage) =>
+            item.properties.Credor?.title[0]?.text.content.toLowerCase().includes(filters.credor.toLowerCase())
         );
 
-        if (sort.field) {
-            if (sort.field === 'Credor') {
-                result = result?.sort((a: any, b: any) => {
-                    if (sort.direction === 'asc') {
-                        return a.properties.Credor?.title[0]?.text.content.localeCompare(b.properties.Credor?.title[0]?.text.content);
-                    } else {
-                        return b.properties.Credor?.title[0]?.text.content.localeCompare(a.properties.Credor?.title[0]?.text.content);
-                    }
-                });
-            }
-          }
+        if (sort.field === 'Credor') {
+            return result.sort((a: NotionPage, b: NotionPage) => {
+                const aValue = a.properties.Credor?.title[0]?.text.content.toLowerCase() || '';
+                const bValue = b.properties.Credor?.title[0]?.text.content.toLowerCase() || '';
+                return sort.direction === 'asc'
+                    ? aValue.localeCompare(bValue)
+                    : bValue.localeCompare(aValue);
+            });
+        }
+
         return result;
-      }, [data, filters, sort]);
+    }, [data?.results, backendResults, filters.credor, sort.field, sort.direction]);
 
 
-      const handleSort = (field: any) => {
+    const handleSort = (field: any) => {
         setSort(prev => ({
-          field,
-          direction: prev.field === field && prev.direction === 'asc' ? 'desc' : 'asc'
+            field,
+            direction: prev.field === field && prev.direction === 'asc' ? 'desc' : 'asc'
         }));
-      };
+    };
 
         useEffect(() => {
             if (inputCredorRefs.current) {
@@ -85,30 +149,43 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                     }
                 })
             }
-        }, [processedData])
+            setHasMore(data?.has_more || false);
+            setNextCursor(data?.next_cursor || null);
+        }, [data?.has_more, data?.next_cursor, processedData])
 
-      const handleFilterChange = useCallback((field: any, value: any) => {
-        setFilters((prev) => ({
-          ...prev,
-          [field]: value,
-        }));
-      }, []);
-
+        const handleFilterChange = useCallback((field: any, value: any) => {
+            setFilters((prev) => ({
+                ...prev,
+                [field]: value,
+            }));
+            setShouldFetchExternally(true);
+        }, []);
 
 
       useEffect(() => {
-        if (filters.credor) {
-          queryClient.cancelQueries({ queryKey: ['notion_list'] });
+        if (filters.credor && shouldFetchExternally) {
+            const timer = setTimeout(() => {
+                const hasMatch = processedData.some((item: NotionPage) =>
+                    item.properties.Credor?.title[0]?.text.content.toLowerCase().includes(filters.credor.toLowerCase())
+                );
+
+                if (!hasMatch) {
+                    queryClient.cancelQueries({ queryKey: ['notion_list'] });
+                    refetchByName();
+                }
+                setShouldFetchExternally(false);
+            }, 500);
+
+            return () => clearTimeout(timer);
         }
+    }, [filters, queryClient, refetchByName, processedData, shouldFetchExternally]);
 
-        const timer = setTimeout(() => {
-          if (filters.credor) {
-            queryClient.invalidateQueries({ queryKey: ['notion_list'] });
-          }
-        }, 5000);
 
-        return () => clearTimeout(timer);
-      }, [filters, queryClient]);
+      const loadMore = () => {
+        if (hasMore && !isFetchingNextCursor) {
+            refetchNextCursor();
+        }
+    };
 
 
     return (
@@ -121,9 +198,15 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
           onChange={(e) => handleFilterChange('credor', e.target.value)}
           className="max-w-md rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
         />
+        {isFetchingByName && (
+                <div className="flex flex-row text-center text-gray-500 dark:text-gray-400 ml-2 py-2">
+                  <AiOutlineLoading className="animate-spin w-5 h-5" />
+                </div>
+                )}
 
       </div>
             <Table>
+
                 <TableHead>
                     <TableHeadCell className="w-[120px]">
                         <div className='flex gap-2 items-center'>
@@ -134,14 +217,14 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                     <TableHeadCell>
                     <div className='flex gap-2 items-center'>
 
-                    <Button className='flex gap-2 items-center' variant="ghost" onClick={() => handleSort('Credor')}>
+                    {/* <Button className='flex gap-2 items-center' variant="ghost" onClick={() => handleSort('Credor')}> */}
                     <AiOutlineUser className='text-base' /> Nome do Credor
-                        {sort.field === 'Credor' ? (
+                        {/* {sort.field === 'Credor' ? (
                         sort.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
                         ) : (
                         <ArrowUpDown className="ml-2 h-4 w-4" />
-                        )}
-                    </Button>
+                        )} */}
+                    {/* </Button> */}
                     </div>
             </TableHeadCell>
                     {role === 'ativos' && (
@@ -333,6 +416,11 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                     )}
                 </TableBody>
             </Table>
+            {hasMore && (
+                <Button onClick={loadMore} disabled={isFetchingNextCursor}>
+                    {isFetchingNextCursor ? 'Carregando...' : 'Carregar mais'}
+                </Button>
+            )}
         </div>
     )
 }
