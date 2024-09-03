@@ -11,8 +11,8 @@ interface ChartThreeState {
 }
 
 interface ChartThreeProps {
-  title: string;
-  data: NotionResponse;
+  title?: string;
+  data?: NotionResponse;
 };
 
 const ChartThree: React.FC<ChartThreeProps> = ({title, data}) => {
@@ -105,7 +105,10 @@ const ChartThree: React.FC<ChartThreeProps> = ({title, data}) => {
   }
 
   useEffect(() => {
-    handleSeries(data);
+    if (data) {
+
+      handleSeries(data);
+    }
 
   }, [data, handleSeries]);
 
