@@ -36,7 +36,7 @@ export default function Error({ error, reset }: ErrorProps) {
         //         </button>
         //     </div>
         // </div>
-        <div className='h-screen flex flex-col items-center justify-center bg-snow'>
+        <div className='h-screen flex flex-col items-center justify-center bg-snow dark:bg-boxdark'>
 
             <div className='grid grid-cols-2 gap-5'>
                 <div className='col-span-1'>
@@ -48,12 +48,25 @@ export default function Error({ error, reset }: ErrorProps) {
                 </div>
                 <div className='col-span-1 flex flex-col items-center pt-10'>
                     <h1 className='text-3xl text-center mb-5 font-bold'>
-                        OOOPS!
+                        OOOPS, ALGO DEU ERRADO!
                     </h1>
-                    <p className='text-center'>
-                        {error.message}
-                    </p>
-                    <p className='mb-5'>
+                    <div className='flex gap-2'>
+                        <span className='text-center italic font-medium'>
+                            tipo:
+                        </span>
+                        <span className='text-center text-black-2 dark:text-white italic font-light'>
+                            {error.name}
+                        </span>
+                    </div>
+                    <div className='flex gap-2'>
+                        <span className='text-center italic font-medium'>
+                            erro:
+                        </span>
+                        <span className='text-center text-black-2 dark:text-white italic font-light'>
+                            {error.message}
+                        </span>
+                    </div>
+                    <p className='my-5'>
                         Contate o administrador para mais informações.
                     </p>
                     <button
