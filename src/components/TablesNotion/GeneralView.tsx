@@ -1,14 +1,14 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from '../Tables/TableDefault';
 import { IoDocumentTextOutline } from 'react-icons/io5';
-import { AiOutlineUser } from 'react-icons/ai';
+import { AiOutlineLoading, AiOutlineUser } from 'react-icons/ai';
 import { LiaCoinsSolid } from 'react-icons/lia';
 import { BiLoader, BiSolidDockLeft } from 'react-icons/bi';
 import { NotionPage } from '@/interfaces/INotion';
 import { Badge } from 'flowbite-react';
 import tipoOficio from '@/enums/tipoOficio.enum';
 import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants';
-import { PiCursorClick, PiListBulletsBold } from 'react-icons/pi';
+import { PiCursorClick, PiListBulletsBold, PiNotionLogo } from 'react-icons/pi';
 import { RiNotionFill } from 'react-icons/ri';
 import { ImCopy } from 'react-icons/im';
 import numberFormat from '@/functions/formaters/numberFormat';
@@ -16,14 +16,15 @@ import statusOficio from '@/enums/statusOficio.enum';
 import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import notionColorResolver from '@/functions/formaters/notionColorResolver';
 import CustomCheckbox from '../CrmUi/Checkbox';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '../ui/button';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
+import api from '@/utils/api';
+import { MiniMenu } from '../ExtratosTable/MiniMenu';
 
-const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelectRow, handleEditTipoOficio, handleChangeCreditorName, editableLabel, setEditableLabel, handleEditInput, handleNotionDrawer, handleCopyValue, handleEditStatus, statusSelectValue }:
+const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, handleEditTipoOficio, handleChangeCreditorName, editableLabel, setEditableLabel, handleEditInput, handleNotionDrawer, handleCopyValue, handleEditStatus, statusSelectValue, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList }:
     {
         isPending: boolean,
-        data: any,
         checkedList: NotionPage[],
         fetchingValue: Record<string, any> | null,
         handleSelectRow: (item: NotionPage) => void,
@@ -36,38 +37,167 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
         handleCopyValue: (index: number) => void;
         handleEditStatus: (page_id: string, status: statusOficio, currentValue: string) => Promise<void>;
         statusSelectValue: statusOficio | null;
+        archiveStatus: boolean;
+        handleArchiveExtrato: () => Promise<void>;
+        handleSelectAllRows: () => void;
+        setCheckedList: React.Dispatch<React.SetStateAction<NotionPage[]>>;
     }
 ) => {
 
     const queryClient = useQueryClient();
-
     const inputCredorRefs = useRef<HTMLInputElement[] | null>([]);
     const usersListRef = useRef<HTMLDivElement[] | null>([]);
-
-    const { data: { role } } = useContext(UserInfoAPIContext);
+    const { data: { role, user, sub_role } } = useContext(UserInfoAPIContext);
 
     const [filters, setFilters] = useState({ credor: '' });
     const [sort, setSort] = useState({ field: null, direction: 'asc' });
+    const [backendResults, setBackendResults] = useState<NotionPage[]>([]);
+    const [shouldFetchExternally, setShouldFetchExternally] = useState(false);
+    const [firstLoad, setFirstLoad] = useState(true);
+
+
+    const secondaryDefaultFilterObject = useMemo(() => {
+        return {
+            "and":
+                [
+                    {
+                        "property": "Status",
+                        "status": {
+                            "does_not_equal": "Já vendido"
+                        }
+                    },
+                    {
+                        "property": "Status",
+                        "status": {
+                            "does_not_equal": "Considerou Preço Baixo"
+                        }
+                    },
+                    {
+                        "property": "Status",
+                        "status": {
+                            "does_not_equal": "Contato inexiste"
+                        }
+                    },
+                    {
+                        "property": "Status",
+                        "status": {
+                            "does_not_equal": "Ausência de resposta"
+                        }
+                    },
+                    {
+                        "property": "Status",
+                        "status": {
+                            "does_not_equal": "Transação Concluída"
+                        }
+                    },
+                    {
+                        "property": "Status",
+                        "status": {
+                            "does_not_equal": "Ausência de resposta"
+                        }
+                    }
+                ]
+        }
+    }, []);
+
+    const defaultFilterObject = {
+        "and":
+            [
+                {
+                    "property": sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
+                    "multi_select": {
+                        "contains": user
+                    }
+                },
+                secondaryDefaultFilterObject
+            ]
+    }
+
+    const fetchNotionData = async () => {
+        const t = await api.post(`api/notion-api/list/`, defaultFilterObject)
+        return t.data
+    }
+
+    const { isPending: isPendingData, data, error, isFetching, refetch } = useQuery(
+        {
+            queryKey: ['notion_list'],
+            refetchOnReconnect: true,
+            refetchOnWindowFocus: true,
+            refetchInterval: 15000,
+            staleTime: 13000,
+            queryFn: fetchNotionData,
+            enabled: !!user // only fetch if user is defined after context is loaded
+        },
+    );
+    const [nextCursor, setNextCursor] = useState<string | null>();
+    const [hasMore, setHasMore] = useState<boolean>();
+
+
+
+    const fetchByName = async (name: string) => {
+        const response = await api.post("/api/notion-api/list/search/", {
+            "username": user,
+            "creditor_name": name
+        });
+
+        setBackendResults(response.data.results);
+        setNextCursor(response.data.next_cursor);
+        setHasMore(response.data.has_more);
+    };
+
+    const fetchNextCursor = async () => {
+        if (!hasMore || !nextCursor) return;
+
+        try {
+            const response = await api.post(`/api/notion-api/list/database/next-cursor/${nextCursor}/`, {
+                "username": user
+            });
+
+            setNextCursor(response.data.next_cursor);
+            setHasMore(response.data.has_more);
+            setBackendResults(prevResults => [...prevResults, ...response.data.results]);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const { refetch: refetchByName, isFetching: isFetchingByName } = useQuery({
+        queryKey: ['notion_list_creditor_name', filters.credor],
+        queryFn: () => fetchByName(filters.credor),
+        enabled: false,
+    });
+
+    const { refetch: refetchNextCursor, isFetching: isFetchingNextCursor } = useQuery({
+        queryKey: ['notion_list_next_cursor', nextCursor],
+        queryFn: fetchNextCursor,
+        enabled: false,
+    });
 
     const processedData = React.useMemo(() => {
-        let result = data?.results?.filter((item: NotionPage) =>
+        let customResults = {
+            next_cursor: backendResults.length === 0 ? data?.next_cursor : nextCursor,
+            has_more: backendResults.length > 0 ? hasMore : data?.has_more,
+            results: [...(data?.results || []), ...(backendResults) || []]
+        }
+
+        customResults.results = customResults.results.reduce((acc: any, item: NotionPage) => {
+            if (!acc.some((target: NotionPage) => target.id === item.id)) {
+                acc.push(item);
+            }
+            return acc;
+        }, []);
+
+        customResults.results = customResults.results.filter((item: NotionPage) =>
             item.properties.Credor?.title[0]?.text.content.toLowerCase().includes(filters.credor.toLowerCase())
         );
 
-        if (sort.field) {
-            if (sort.field === 'Credor') {
-                result = result?.sort((a: any, b: any) => {
-                    if (sort.direction === 'asc') {
-                        return a.properties.Credor?.title[0]?.text.content.localeCompare(b.properties.Credor?.title[0]?.text.content);
-                    } else {
-                        return b.properties.Credor?.title[0]?.text.content.localeCompare(a.properties.Credor?.title[0]?.text.content);
-                    }
-                });
-            }
-        }
-        return result;
-    }, [data, filters, sort]);
+        customResults.results = customResults.results.sort((a: any, b: any) => {
+            const compareResult = a.properties.Credor?.title[0]?.text.content.localeCompare(b.properties.Credor?.title[0]?.text.content);
+            return sort.direction === 'asc' ? compareResult : -compareResult;
+        });
 
+        return customResults.results
+    }, [backendResults, nextCursor, data?.next_cursor, data?.has_more, data?.results, hasMore, sort.direction, filters.credor]);
 
     const handleSort = (field: any) => {
         setSort(prev => ({
@@ -78,54 +208,91 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
 
     useEffect(() => {
         if (inputCredorRefs.current) {
-            processedData?.map((item: NotionPage, index: number) => {
+            processedData.forEach((item: NotionPage, index: number) => {
                 const ref = inputCredorRefs.current![index];
                 if (ref) {
                     ref.value = item.properties.Credor?.title[0]?.text.content || '';
                 }
-            })
+            });
         }
-    }, [processedData])
+
+    }, [processedData]);
 
     const handleFilterChange = useCallback((field: any, value: any) => {
         setFilters((prev) => ({
             ...prev,
             [field]: value,
         }));
+        setShouldFetchExternally(true);
     }, []);
 
-
-
     useEffect(() => {
-        if (filters.credor) {
-            queryClient.cancelQueries({ queryKey: ['notion_list'] });
+        if (filters.credor && shouldFetchExternally) {
+            const timer = setTimeout(() => {
+                const hasMatch = processedData.some((item: NotionPage) =>
+                    item.properties.Credor?.title[0]?.text.content.toLowerCase().includes(filters.credor.toLowerCase())
+                );
+
+                if (!hasMatch) {
+                    queryClient.cancelQueries({ queryKey: ['notion_list'] });
+                    refetchByName();
+                }
+                setShouldFetchExternally(false);
+            }, 500);
+
+            return () => clearTimeout(timer);
+        }
+    }, [filters, queryClient, refetchByName, processedData, shouldFetchExternally]);
+
+    const loadMore = () => {
+        if (hasMore && !isFetchingNextCursor) {
+            refetchNextCursor();
+        }
+    };
+
+        useEffect(() => {
+        if (firstLoad && data) {
+        setNextCursor(data?.next_cursor);
+        setHasMore(data?.has_more);
+        setFirstLoad(false);
+        return;
         }
 
-        const timer = setTimeout(() => {
-            if (filters.credor) {
-                queryClient.invalidateQueries({ queryKey: ['notion_list'] });
-            }
-        }, 5000);
+        setNextCursor(nextCursor);
+        setHasMore(hasMore);
 
-        return () => clearTimeout(timer);
-    }, [filters, queryClient]);
+    }, [data, data?.has_more, data?.next_cursor, firstLoad, hasMore, nextCursor]);
 
 
     return (
         <div className='max-w-full overflow-x-scroll pb-5'>
+            <MiniMenu
+                archiveStatus={archiveStatus}
+                handleArchiveExtrato={handleArchiveExtrato}
+                handleSelectAllRows={handleSelectAllRows}
+                checkedList={checkedList}
+                setCheckedList={setCheckedList}
+                count={processedData?.length || 0}
+            />
             <div className="flex mb-4">
-                <input
-                    type="text"
-                    placeholder="Filtrar por nome"
-                    value={filters.credor}
-                    onChange={(e) => handleFilterChange('credor', e.target.value)}
-                    className="max-w-md rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                />
+        <input
+          type="text"
+          placeholder="Filtrar por nome"
+          value={filters.credor}
+          onChange={(e) => handleFilterChange('credor', e.target.value)}
+          className="max-w-md rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+        />
+        {isFetchingByName && (
+                <div className="flex flex-row text-center text-gray-500 dark:text-gray-400 ml-2 py-2">
+                  <AiOutlineLoading className="animate-spin w-5 h-5" />
+                </div>
+                )}
 
             </div>
             <Table>
-                <TableHead>
 
+                <TableHead>
+                    <TableRow>
                     <TableHeadCell className="w-[120px]">
                         <div className='flex gap-2 items-center'>
                             <IoDocumentTextOutline className='text-base' />
@@ -166,7 +333,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                             Status
                         </div>
                     </TableHeadCell>
-
+                    </TableRow>
                 </TableHead>
                 <TableBody className=''>
                     {isPending ? (
@@ -218,6 +385,7 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                                                             handleChangeCreditorName(e.currentTarget.value, index, item.id, inputCredorRefs.current)
                                                         }
                                                     }}
+                                                    // onBlur={(e) => handleChangeCreditorName(e.currentTarget.value, index, item.id, inputCredorRefs.current)}
                                                     className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                 />
                                                 {/* absolute div that covers the entire cell */}
@@ -334,6 +502,11 @@ const GeneralView = ({ isPending, data, checkedList, fetchingValue, handleSelect
                     )}
                 </TableBody>
             </Table>
+            {hasMore && (
+                <Button onClick={loadMore} disabled={isFetchingNextCursor}>
+                    {isFetchingNextCursor ? 'Carregando...' : 'Carregar mais'}
+                </Button>
+            )}
         </div>
     )
 }

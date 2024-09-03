@@ -16,6 +16,7 @@ export interface UserInfo {
         email: string;
         bio: string;
         workspace?: string | null | undefined;
+        sub_role: string;
 
 }
 
@@ -80,6 +81,7 @@ export const UserInfoAPIContext = createContext<UserInfoContextType>({
             cpf_cnpj: "",
             email: "",
             bio: "",
+            sub_role: "",
     },
 
     loading: true,
@@ -135,7 +137,8 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
             role: "",
             cpf_cnpj: "",
             email: "",
-            bio: ""
+            bio: "",
+            sub_role: "",
 
     });
 
@@ -277,6 +280,7 @@ export const UserInfoProvider = ({ children }: { children: React.ReactNode }) =>
                         role: data.role,
                         user: response.data.username,
                         email: response.data.email,
+                        sub_role: data.sub_role,
                 });
 
                 setLoading(false);
