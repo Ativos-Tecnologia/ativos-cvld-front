@@ -5,20 +5,20 @@ import { ExtratosTableContext } from '@/context/ExtratosTableContext';
 import { NotionPage } from '@/interfaces/INotion';
 import { AiOutlineLoading } from 'react-icons/ai';
 
-export const MiniMenu = ({ count, checkedList, setCheckedList, handleSelectAllRows, handleArchiveExtrato, archiveStatus }:
+export const MiniMenu = ({ processedData, count, checkedList, setCheckedList, handleSelectAllRows, handleArchiveExtrato, archiveStatus }:
     {
+        processedData: any,
         count: number,
         checkedList: NotionPage[],
         setCheckedList: React.Dispatch<React.SetStateAction<NotionPage[]>>,
-        handleSelectAllRows: () => void,
+        handleSelectAllRows: (list: any) => void,
         handleArchiveExtrato: () => Promise<void>,
         archiveStatus: boolean,
     }
 ) => {
 
     const {
-        currentPage,
-        handleDeleteExtrato
+        currentPage
     } = useContext(ExtratosTableContext);
 
     return (
@@ -31,7 +31,7 @@ export const MiniMenu = ({ count, checkedList, setCheckedList, handleSelectAllRo
                             {checkedList!.length === 0 ? (
                                 <div
                                     className={`relative z-3 w-[15px] h-[15px] flex items-center justify-center duration-100 border-2 border-body dark:border-bodydark rounded-[3px]`}
-                                    onClick={handleSelectAllRows}
+                                    onClick={() => handleSelectAllRows(processedData)}
                                 >
 
                                 </div>

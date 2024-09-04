@@ -128,8 +128,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         }
     }
 
-    const handleSelectAllRows = () => {
-        setCheckedList(data.results.map((item: NotionPage) => item))
+    const handleSelectAllRows = (list: any) => {
+        setCheckedList(list.map((item: NotionPage) => item))
     }
 
     //NOTA: Começo da Área de Mutations
@@ -1277,7 +1277,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     {
                         <div className='w-full mb-2 h-4 flex justify-end items-center'>
                             <div className={`${isFetching ? "opacity-100 visible" : "opacity-0 invisible"} text-center flex justify-center items-center transition-all duration-300`}>
-                                <span className='text-xs mr-2 text-meta-4'>
+                                <span className='text-xs mr-2 text-meta-4 dark:text-bodydark'>
                                     {
                                         isFetching ? {
                                             0: 'Carregando...',
@@ -1329,7 +1329,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             {notionView === 'realizar 1º contato' &&
                 <MakeFirstContact
                     isPending={isPending}
-                    data={data}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
                     setEditableLabel={setEditableLabel}
@@ -1341,33 +1340,38 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     handleChangePhoneNumber={handleChangePhoneNumber}
                     handleChangeEmail={handleChangeEmail}
                     handleEditStatus={handleEditStatus}
+                    archiveStatus={archiveStatus}
+                    handleSelectAllRows={handleSelectAllRows}
+                    handleArchiveExtrato={handleArchiveExtrato}
+                    setCheckedList={setCheckedList}
                 />
             }
 
             {notionView === 'juntar ofício/valor líquido' &&
                 <OfficeTypeAndValue
                     isPending={isPending}
-                    data={data}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
                     setEditableLabel={setEditableLabel}
                     statusSelectValue={statusSelectValue}
                     oficioSelectValue={oficioSelectValue}
                     handleNotionDrawer={handleNotionDrawer}
-                    numberFormat={numberFormat}
                     handleSelectRow={handleSelectRow}
                     handleChangeCreditorName={handleChangeCreditorName}
                     handleEditInput={handleEditInput}
                     handleEditStatus={handleEditStatus}
                     handleEditTipoOficio={handleEditTipoOficio}
                     handleCopyValue={handleCopyValue}
+                    archiveStatus={archiveStatus}
+                    handleArchiveExtrato={handleArchiveExtrato}
+                    handleSelectAllRows={handleSelectAllRows}
+                    setCheckedList={setCheckedList}
                 />
             }
 
             {notionView === 'enviar proposta/negociação' &&
                 <SendProposal
                     isPending={isPending}
-                    data={data}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
                     setEditableLabel={setEditableLabel}
@@ -1381,13 +1385,16 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     handleChangeProposalPrice={handleChangeProposalPrice}
                     handleCopyValue={handleCopyValue}
                     handleChangeFupDate={handleChangeFupDate}
+                    archiveStatus={archiveStatus}
+                    handleArchiveExtrato={handleArchiveExtrato}
+                    handleSelectAllRows={handleSelectAllRows}
+                    setCheckedList={setCheckedList}
                 />
             }
 
             {notionView === 'proposta aceita' &&
                 <ProposalAccepted
                     isPending={isPending}
-                    data={data}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
                     setEditableLabel={setEditableLabel}
@@ -1400,6 +1407,10 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     handleEditInput={handleEditInput}
                     handleEditStatus={handleEditStatus}
                     handleCopyValue={handleCopyValue}
+                    archiveStatus={archiveStatus}
+                    handleArchiveExtrato={handleArchiveExtrato}
+                    handleSelectAllRows={handleSelectAllRows}
+                    setCheckedList={setCheckedList}
                 />
             }
             {/* {isPending &&
