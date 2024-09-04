@@ -28,17 +28,17 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
         checkedList: NotionPage[],
         fetchingValue: Record<string, any> | null,
         handleSelectRow: (item: NotionPage) => void,
-        handleEditTipoOficio: (page_id: string, oficio: tipoOficio, currentValue: string | undefined) => Promise<void>,
-        handleChangeCreditorName: (value: string, index: number, page_id: string, refList: HTMLInputElement[] | null) => Promise<void>,
+        handleEditTipoOficio: (page_id: string, oficio: tipoOficio, queryKeyList: any[]) => Promise<void>,
+        handleChangeCreditorName: (value: string, page_id: string, queryKeyList: any[]) => Promise<void>,
         editableLabel: string | null;
         setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
         handleEditInput: (index: number, refList: HTMLInputElement[] | null) => void;
         handleNotionDrawer: (id: string) => void;
         handleCopyValue: (index: number) => void;
-        handleEditStatus: (page_id: string, status: statusOficio, currentValue: string) => Promise<void>;
+        handleEditStatus: (page_id: string, status: statusOficio, queryKeyList: any[]) => Promise<void>;
         statusSelectValue: statusOficio | null;
         archiveStatus: boolean;
-        handleArchiveExtrato: () => Promise<void>;
+        handleArchiveExtrato: (queryList: any[]) => Promise<void>;
         handleSelectAllRows: (list: any) => void;
         setCheckedList: React.Dispatch<React.SetStateAction<NotionPage[]>>;
     }
@@ -286,6 +286,7 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
     return (
         <div className='max-w-full overflow-x-scroll pb-5'>
             <MiniMenu
+                queryKey={['notion_list']}
                 processedData={processedData}
                 archiveStatus={archiveStatus}
                 handleArchiveExtrato={handleArchiveExtrato}
@@ -378,7 +379,7 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
                                                                 Atualizando ...
                                                             </span>
                                                         ) : (
-                                                            <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleEditTipoOficio(item.id, e.target.value as tipoOficio, (item.properties.Tipo.select?.name))}>
+                                                            <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleEditTipoOficio(item.id, e.target.value as tipoOficio, ['notion_list'])}>
                                                                 {item?.properties?.Tipo.select?.name && (
                                                                     <option value={item.properties.Tipo.select?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                                         {item.properties.Tipo.select?.name}
@@ -402,7 +403,10 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
                                                     ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangeCreditorName(e.currentTarget.value, index, item.id, inputCredorRefs.current)
+                                                            if (inputCredorRefs.current) {
+                                                                inputCredorRefs.current[index].blur()
+                                                            }
+                                                            handleChangeCreditorName(e.currentTarget.value, item.id, ['notion_list'])
                                                         }
                                                     }}
                                                     // onBlur={(e) => handleChangeCreditorName(e.currentTarget.value, index, item.id, inputCredorRefs.current)}
@@ -497,7 +501,7 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
                                                         </span>
                                                     ) : (
                                                         <select className="text-[12px] w-44 text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => {
-                                                            handleEditStatus(item.id, e.target.value as statusOficio, item.properties.Status.status!.name)
+                                                            handleEditStatus(item.id, e.target.value as statusOficio, ['notion_list'])
                                                         }}>
                                                             {item.properties.Status.status?.name && (
                                                                 <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">

@@ -18,6 +18,7 @@ import CustomCheckbox from '../CrmUi/Checkbox'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import api from '@/utils/api'
 import { MiniMenu } from '../ExtratosTable/MiniMenu'
+import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react'
 
 export const OfficeTypeAndValue = ({ isPending, checkedList, editableLabel, setEditableLabel, statusSelectValue, oficioSelectValue, handleSelectRow, handleNotionDrawer,
     handleChangeCreditorName, handleEditInput, handleEditStatus, handleEditTipoOficio, handleCopyValue, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList
@@ -31,13 +32,13 @@ export const OfficeTypeAndValue = ({ isPending, checkedList, editableLabel, setE
         oficioSelectValue: tipoOficio | null;
         handleNotionDrawer: (id: string) => void;
         handleSelectRow: (item: NotionPage) => void;
-        handleChangeCreditorName: (value: string, index: number, page_id: string, refList: HTMLInputElement[] | null) => Promise<void>;
+        handleChangeCreditorName: (value: string, page_id: string, queryKeyList: any[]) => Promise<void>;
         handleEditInput: (index: number, refList: HTMLInputElement[] | null) => void;
-        handleEditStatus: (page_id: string, status: statusOficio, currentValue: string) => Promise<void>;
-        handleEditTipoOficio: (page_id: string, status: tipoOficio, currentValue: string | undefined) => Promise<void>;
+        handleEditStatus: (page_id: string, status: statusOficio, queryKeyList: any[]) => Promise<void>;
+        handleEditTipoOficio: (page_id: string, status: tipoOficio, queryKeyList: any[]) => Promise<void>;
         handleCopyValue: (index: number) => void;
         archiveStatus: boolean,
-        handleArchiveExtrato: () => Promise<void>,
+        handleArchiveExtrato: (queryList: any[]) => Promise<void>,
         handleSelectAllRows: (list: any) => void,
         setCheckedList: React.Dispatch<React.SetStateAction<NotionPage[]>>
     }
@@ -57,42 +58,18 @@ export const OfficeTypeAndValue = ({ isPending, checkedList, editableLabel, setE
 
     const secondaryDefaultFilterObject = useMemo(() => {
         return {
-            "and":
+            "or":
                 [
                     {
                         "property": "Status",
                         "status": {
-                            "does_not_equal": "Já vendido"
+                            "equals": "Juntar Ofício ou Memória de Cálculo"
                         }
                     },
                     {
                         "property": "Status",
                         "status": {
-                            "does_not_equal": "Considerou Preço Baixo"
-                        }
-                    },
-                    {
-                        "property": "Status",
-                        "status": {
-                            "does_not_equal": "Contato inexiste"
-                        }
-                    },
-                    {
-                        "property": "Status",
-                        "status": {
-                            "does_not_equal": "Ausência de resposta"
-                        }
-                    },
-                    {
-                        "property": "Status",
-                        "status": {
-                            "does_not_equal": "Transação Concluída"
-                        }
-                    },
-                    {
-                        "property": "Status",
-                        "status": {
-                            "does_not_equal": "Ausência de resposta"
+                            "equals": "Calcular Valor Líquido"
                         }
                     }
                 ]
@@ -118,7 +95,7 @@ export const OfficeTypeAndValue = ({ isPending, checkedList, editableLabel, setE
     }
     const { isPending: isPendingData, data, error, isFetching, refetch } = useQuery(
         {
-            queryKey: ['notion_list'],
+            queryKey: ['notion_list', 'office_type'],
             refetchOnReconnect: true,
             refetchOnWindowFocus: true,
             refetchInterval: 1000 * 13,
@@ -283,6 +260,7 @@ export const OfficeTypeAndValue = ({ isPending, checkedList, editableLabel, setE
         <div className='max-w-full overflow-x-scroll pb-5'>
 
             <MiniMenu
+                queryKey={['notion_list', 'office_type']}
                 processedData={processedData}
                 archiveStatus={archiveStatus}
                 handleArchiveExtrato={handleArchiveExtrato}
@@ -312,8 +290,16 @@ export const OfficeTypeAndValue = ({ isPending, checkedList, editableLabel, setE
                 <TableHead>
                     <TableHeadCell className='w-[400px]'>
                         <div className='flex gap-2 items-center'>
-                            <AiOutlineUser className='text-base' />
-                            Nome do Credor
+                            <button
+                                className='flex gap-2 items-center uppercase'
+                                onClick={() => handleSort('Credor')}>
+                                <AiOutlineUser className='text-base' /> Nome do Credor
+                                {sort.field === 'Credor' ? (
+                                    sort.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
+                                ) : (
+                                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                                )}
+                            </button>
                         </div>
                     </TableHeadCell>
                     <TableHeadCell className="w-[216px]">
@@ -362,7 +348,10 @@ export const OfficeTypeAndValue = ({ isPending, checkedList, editableLabel, setE
                                                             ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
                                                             onKeyDown={(e) => {
                                                                 if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                                    handleChangeCreditorName(e.currentTarget.value, index, item.id, inputCredorRefs.current)
+                                                                    if (inputCredorRefs.current) {
+                                                                        inputCredorRefs.current[index].blur()
+                                                                    }
+                                                                    handleChangeCreditorName(e.currentTarget.value, item.id, ['notion_list', 'office_type'])
                                                                 }
                                                             }}
                                                             className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
@@ -427,7 +416,7 @@ export const OfficeTypeAndValue = ({ isPending, checkedList, editableLabel, setE
                                             <TableCell className="text-center items-center">
                                                 <Badge color="teal" size="sm" className="text-center text-[12px] w-full">
                                                     <select className="text-[12px] w-full text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => {
-                                                        handleEditStatus(item.id, e.target.value as statusOficio, item.properties.Status.status!.name)
+                                                        handleEditStatus(item.id, e.target.value as statusOficio, ['notion_list', 'office_type'])
                                                     }}>
                                                         {item.properties.Status.status?.name && (
                                                             <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
@@ -446,7 +435,7 @@ export const OfficeTypeAndValue = ({ isPending, checkedList, editableLabel, setE
                                             {/* Ofício tipo */}
                                             <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
                                                 <Badge color="indigo" size="sm" className="max-w-full text-[12px]">
-                                                    <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleEditTipoOficio(item.id, e.target.value as tipoOficio, item.properties.Tipo.select?.name)}>
+                                                    <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleEditTipoOficio(item.id, e.target.value as tipoOficio, ['notion_list', 'office_type'])}>
                                                         {item.properties.Tipo.select?.name && (
                                                             <option value={item.properties.Tipo.select?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                                 {oficioSelectValue || item.properties.Tipo.select?.name}

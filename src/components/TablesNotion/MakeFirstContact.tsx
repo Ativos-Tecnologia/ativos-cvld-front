@@ -15,6 +15,7 @@ import CustomCheckbox from '../CrmUi/Checkbox';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/utils/api';
 import { MiniMenu } from '../ExtratosTable/MiniMenu';
+import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 
 const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLabel, selectStatusValue, handleNotionDrawer, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, handleEditStatus,
     handleArchiveExtrato, archiveStatus, handleSelectAllRows, setCheckedList
@@ -27,13 +28,13 @@ const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLa
         selectStatusValue: statusOficio | null;
         handleNotionDrawer: (id: string) => void;
         handleSelectRow: (item: NotionPage) => void;
-        handleChangeCreditorName: (value: string, index: number, page_id: string, refList: HTMLInputElement[] | null) => Promise<void>;
+        handleChangeCreditorName: (value: string, page_id: string, queryKeyList: any[]) => Promise<void>;
         handleEditInput: (index: number, refList: HTMLInputElement[] | null) => void;
-        handleChangePhoneNumber: (page_id: string, type: string, value: string, index: number, refList: HTMLInputElement[] | null) => Promise<void>;
-        handleChangeEmail: (page_id: string, value: string, index: number, refList: HTMLInputElement[] | null) => Promise<void>;
-        handleEditStatus: (page_id: string, status: statusOficio, currentValue: string) => Promise<void>;
+        handleChangePhoneNumber: (page_id: string, type: string, value: string, queryKeyList: any[]) => Promise<void>;
+        handleChangeEmail: (page_id: string, value: string, queryKeyList: any[]) => Promise<void>;
+        handleEditStatus: (page_id: string, status: statusOficio, queryKeyList: any[]) => Promise<void>;
         archiveStatus: boolean,
-        handleArchiveExtrato: () => Promise<void>,
+        handleArchiveExtrato: (queryList: any[]) => Promise<void>,
         handleSelectAllRows: (list: any) => void,
         setCheckedList: React.Dispatch<React.SetStateAction<NotionPage[]>>
     }
@@ -57,42 +58,30 @@ const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLa
 
     const secondaryDefaultFilterObject = useMemo(() => {
         return {
-            "and":
+            "or":
                 [
                     {
                         "property": "Status",
                         "status": {
-                            "does_not_equal": "Já vendido"
+                            "equals": "Realizar Primeiro Contato"
                         }
                     },
                     {
                         "property": "Status",
                         "status": {
-                            "does_not_equal": "Considerou Preço Baixo"
+                            "equals": "1º Contato não alcançado"
                         }
                     },
                     {
                         "property": "Status",
                         "status": {
-                            "does_not_equal": "Contato inexiste"
+                            "equals": "2º Contato não alcançado"
                         }
                     },
                     {
                         "property": "Status",
                         "status": {
-                            "does_not_equal": "Ausência de resposta"
-                        }
-                    },
-                    {
-                        "property": "Status",
-                        "status": {
-                            "does_not_equal": "Transação Concluída"
-                        }
-                    },
-                    {
-                        "property": "Status",
-                        "status": {
-                            "does_not_equal": "Ausência de resposta"
+                            "equals": "3º Contato não alcançado"
                         }
                     }
                 ]
@@ -118,7 +107,7 @@ const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLa
     }
     const { isPending: isPendingData, data, error, isFetching, refetch } = useQuery(
         {
-            queryKey: ['notion_list'],
+            queryKey: ['notion_list', 'first_contact'],
             refetchOnReconnect: true,
             refetchOnWindowFocus: true,
             refetchInterval: 1000 * 13,
@@ -287,6 +276,7 @@ const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLa
             className='max-w-full overflow-x-scroll pb-5'>
 
             <MiniMenu
+                queryKey={['notion_list', 'first_contact']}
                 processedData={processedData}
                 archiveStatus={archiveStatus}
                 handleArchiveExtrato={handleArchiveExtrato}
@@ -316,8 +306,16 @@ const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLa
                 <TableHead>
                     <TableHeadCell className="min-w-[400px]">
                         <div className='flex gap-2 items-center'>
-                            <AiOutlineUser className='text-base' />
-                            Nome do Credor
+                            <button
+                                className='flex gap-2 items-center uppercase'
+                                onClick={() => handleSort('Credor')}>
+                                <AiOutlineUser className='text-base' /> Nome do Credor
+                                {sort.field === 'Credor' ? (
+                                    sort.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
+                                ) : (
+                                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                                )}
+                            </button>
                         </div>
                     </TableHeadCell>
                     <TableHeadCell className="min-w-[216px]">
@@ -381,7 +379,10 @@ const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLa
                                                             ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
                                                             onKeyDown={(e) => {
                                                                 if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                                    handleChangeCreditorName(e.currentTarget.value, index, item.id, inputCredorRefs.current)
+                                                                    if (inputCredorRefs.current) {
+                                                                        inputCredorRefs.current[index].blur()
+                                                                    }
+                                                                    handleChangeCreditorName(e.currentTarget.value, item.id, ['notion_list', 'first_contact'])
                                                                 }
                                                             }}
                                                             className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
@@ -446,7 +447,7 @@ const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLa
                                             <TableCell className="text-center items-center w-full">
                                                 <Badge color="teal" size="sm" className="text-center text-[12px]">
                                                     <select className="text-[12px] w-full text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => {
-                                                        handleEditStatus(item.id, e.target.value as statusOficio, item.properties.Status.status!.name)
+                                                        handleEditStatus(item.id, e.target.value as statusOficio, ['notion_list', 'first_contact'])
                                                     }}>
                                                         {item.properties.Status.status?.name && (
                                                             <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
@@ -470,7 +471,10 @@ const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLa
                                                     defaultValue={item.properties['Contato Telefônico'].phone_number || ''}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangePhoneNumber(item.id, "Contato Telefônico", e.currentTarget.value, index, inputPhoneOneRefs.current)
+                                                            if (inputPhoneOneRefs.current) {
+                                                                inputPhoneOneRefs.current[index].blur()
+                                                            }
+                                                            handleChangePhoneNumber(item.id, "Contato Telefônico", e.currentTarget.value, ['notion_list', 'first_contact'])
                                                         }
                                                     }}
                                                     className={`w-full p-0 focus-within:ring-0 focus-within:border-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
@@ -485,7 +489,10 @@ const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLa
                                                     defaultValue={item.properties['Contato Telefônico 2'].phone_number || ''}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangePhoneNumber(item.id, "Contato Telefônico 2", e.currentTarget.value, index, inputPhoneTwoRefs.current)
+                                                            if (inputPhoneTwoRefs.current) {
+                                                                inputPhoneTwoRefs.current[index].blur()
+                                                            }
+                                                            handleChangePhoneNumber(item.id, "Contato Telefônico 2", e.currentTarget.value, ['notion_list', 'first_contact'])
                                                         }
                                                     }}
                                                     className={`w-full p-0 focus-within:ring-0 focus-within:border-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
@@ -500,7 +507,10 @@ const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLa
                                                     defaultValue={item.properties['Contato Telefônico 3'].phone_number || ''}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangePhoneNumber(item.id, "Contato Telefônico 3", e.currentTarget.value, index, inputPhoneThreeRefs.current)
+                                                            if (inputPhoneThreeRefs.current) {
+                                                                inputPhoneThreeRefs.current[index].blur()
+                                                            }
+                                                            handleChangePhoneNumber(item.id, "Contato Telefônico 3", e.currentTarget.value, ['notion_list', 'first_contact'])
                                                         }
                                                     }}
                                                     className={`w-full p-0 focus-within:ring-0 focus-within:border-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
@@ -515,7 +525,11 @@ const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLa
                                                     defaultValue={item.properties['Contato de E-mail'].email || ''}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangeEmail(item.id, e.currentTarget.value, index, inputEmailRefs.current)
+                                                            if (inputEmailRefs.current) {
+                                                                inputEmailRefs.current[index].blur()
+                                                            }
+                                                            handleChangeEmail(item.id, e.currentTarget.value, ['notion_list', 'first_contact'])
+
                                                         }
                                                     }}
                                                     className={`w-full p-0 focus-within:ring-0 focus-within:border-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
