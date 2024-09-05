@@ -118,7 +118,7 @@ const LabelPassword = ({ title, errors, register, field, passwordInput, strength
                     </div>
                 )}
 
-                <span className='absolute top-4 right-2 cursor-pointer'
+                <span className='absolute top-4.5 right-2 cursor-pointer'
                     onClick={handleToggleHide}
                 >
                     {showPassword ? <BsEye style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} /> : <BsEyeSlash style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />}
