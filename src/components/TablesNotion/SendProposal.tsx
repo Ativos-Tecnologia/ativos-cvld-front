@@ -19,6 +19,7 @@ import CustomCheckbox from '../CrmUi/Checkbox'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import api from '@/utils/api'
 import { MiniMenu } from '../ExtratosTable/MiniMenu'
+import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react'
 
 export const SendProposal = ({ isPending, checkedList, editableLabel, setEditableLabel, statusSelectValue, fetchingValue, handleNotionDrawer, handleSelectRow, handleChangeFupDate, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList,
     handleChangeCreditorName, handleEditInput, handleEditStatus, handleCopyValue, handleChangeProposalPrice
@@ -32,14 +33,14 @@ export const SendProposal = ({ isPending, checkedList, editableLabel, setEditabl
         fetchingValue: Record<string, any> | null;
         handleNotionDrawer: (id: string) => void;
         handleSelectRow: (item: NotionPage) => void;
-        handleChangeCreditorName: (value: string, index: number, page_id: string, refList: HTMLInputElement[] | null) => Promise<void>;
+        handleChangeCreditorName: (value: string, page_id: string, queryKeyList: any[]) => Promise<void>;
         handleEditInput: (index: number, refList: HTMLInputElement[] | null) => void;
-        handleEditStatus: (page_id: string, status: statusOficio, currentTarget: string) => Promise<void>;
-        handleChangeProposalPrice: (page_id: string, value: string, index: number, refList: HTMLInputElement[] | null) => Promise<void>;
+        handleEditStatus: (page_id: string, status: statusOficio, queryKeyList: any[]) => Promise<void>;
+        handleChangeProposalPrice: (page_id: string, value: string, queryKeyList: any[]) => Promise<void>;
         handleCopyValue: (index: number) => void;
-        handleChangeFupDate: (page_id: string, value: string, type: string, index: number) => Promise<void>;
+        handleChangeFupDate: (page_id: string, value: string, type: string, queryKeyList: any[]) => Promise<void>;
         archiveStatus: boolean;
-        handleArchiveExtrato: () => Promise<void>;
+        handleArchiveExtrato: (queryList: any[]) => Promise<void>;
         handleSelectAllRows: (list: any) => void;
         setCheckedList: React.Dispatch<React.SetStateAction<NotionPage[]>>;
     }
@@ -62,44 +63,14 @@ export const SendProposal = ({ isPending, checkedList, editableLabel, setEditabl
 
     const secondaryDefaultFilterObject = useMemo(() => {
         return {
-            "and":
+            "or":
                 [
                     {
                         "property": "Status",
                         "status": {
-                            "does_not_equal": "Já vendido"
+                            "equals": "Enviar proposta"
                         }
                     },
-                    {
-                        "property": "Status",
-                        "status": {
-                            "does_not_equal": "Considerou Preço Baixo"
-                        }
-                    },
-                    {
-                        "property": "Status",
-                        "status": {
-                            "does_not_equal": "Contato inexiste"
-                        }
-                    },
-                    {
-                        "property": "Status",
-                        "status": {
-                            "does_not_equal": "Ausência de resposta"
-                        }
-                    },
-                    {
-                        "property": "Status",
-                        "status": {
-                            "does_not_equal": "Transação Concluída"
-                        }
-                    },
-                    {
-                        "property": "Status",
-                        "status": {
-                            "does_not_equal": "Ausência de resposta"
-                        }
-                    }
                 ]
         }
     }, []);
@@ -130,7 +101,7 @@ export const SendProposal = ({ isPending, checkedList, editableLabel, setEditabl
     }
     const { isPending: isPendingData, data, error, isFetching, refetch } = useQuery(
         {
-            queryKey: ['notion_list'],
+            queryKey: ['notion_list', 'send_proposal'],
             refetchOnReconnect: true,
             refetchOnWindowFocus: true,
             refetchInterval: 1000 * 13,
@@ -298,6 +269,7 @@ export const SendProposal = ({ isPending, checkedList, editableLabel, setEditabl
             className='max-w-full overflow-x-scroll pb-5'>
 
             <MiniMenu
+                queryKey={['notion_list', 'send_proposal']}
                 processedData={processedData}
                 archiveStatus={archiveStatus}
                 handleArchiveExtrato={handleArchiveExtrato}
@@ -327,8 +299,16 @@ export const SendProposal = ({ isPending, checkedList, editableLabel, setEditabl
                 <TableHead>
                     <TableHeadCell className='min-w-[400px]'>
                         <div className='flex gap-2 items-center'>
-                            <AiOutlineUser className='text-base' />
-                            Nome do Credor
+                            <button
+                                className='flex gap-2 items-center uppercase'
+                                onClick={() => handleSort('Credor')}>
+                                <AiOutlineUser className='text-base' /> Nome do Credor
+                                {sort.field === 'Credor' ? (
+                                    sort.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
+                                ) : (
+                                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                                )}
+                            </button>
                         </div>
                     </TableHeadCell>
                     <TableHeadCell className="min-w-[216px]">
@@ -421,7 +401,10 @@ export const SendProposal = ({ isPending, checkedList, editableLabel, setEditabl
                                                             ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
                                                             onKeyDown={(e) => {
                                                                 if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                                    handleChangeCreditorName(e.currentTarget.value, index, item.id, inputCredorRefs.current)
+                                                                    if (inputCredorRefs.current) {
+                                                                        inputCredorRefs.current[index].blur()
+                                                                    }
+                                                                    handleChangeCreditorName(e.currentTarget.value, item.id, ['notion_list', 'send_proposal'])
                                                                 }
                                                             }}
                                                             className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
@@ -488,7 +471,7 @@ export const SendProposal = ({ isPending, checkedList, editableLabel, setEditabl
                                                     <select
                                                         title={statusSelectValue || item.properties.Status.status?.name}
                                                         className="text-[12px] w-full text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => {
-                                                            handleEditStatus(item.id, e.target.value as statusOficio, item.properties.Status.status!.name)
+                                                            handleEditStatus(item.id, e.target.value as statusOficio, ['notion_list', 'send_proposal'])
                                                         }}>
                                                         {item.properties.Status.status?.name && (
                                                             <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
@@ -513,7 +496,10 @@ export const SendProposal = ({ isPending, checkedList, editableLabel, setEditabl
                                                     defaultValue={numberFormat(item.properties['Preço Proposto']?.number || 0)}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangeProposalPrice(item.id, e.currentTarget.value, index, inputProposalPriceRefs.current)
+                                                            if (inputProposalPriceRefs.current) {
+                                                                inputProposalPriceRefs.current[index].blur();
+                                                            }
+                                                            handleChangeProposalPrice(item.id, e.currentTarget.value, ['notion_list', 'send_proposal'])
                                                         }
                                                     }}
                                                     className={`text-right w-full px-0 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
@@ -562,7 +548,7 @@ export const SendProposal = ({ isPending, checkedList, editableLabel, setEditabl
                                                     type="text"
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangeFupDate(item.id, e.currentTarget.value, '1ª FUP', index)
+                                                            handleChangeFupDate(item.id, e.currentTarget.value, '1ª FUP', ['notion_list', 'send_proposal'])
                                                         }
                                                     }}
                                                     className={`w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
@@ -579,7 +565,7 @@ export const SendProposal = ({ isPending, checkedList, editableLabel, setEditabl
                                                     type="text"
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangeFupDate(item.id, e.currentTarget.value, '2ª FUP ', index)
+                                                            handleChangeFupDate(item.id, e.currentTarget.value, '2ª FUP ', ['notion_list', 'send_proposal'])
                                                         }
                                                     }}
                                                     className={`w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
@@ -596,7 +582,7 @@ export const SendProposal = ({ isPending, checkedList, editableLabel, setEditabl
                                                     type="text"
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangeFupDate(item.id, e.currentTarget.value, '3ª FUP', index)
+                                                            handleChangeFupDate(item.id, e.currentTarget.value, '3ª FUP', ['notion_list', 'send_proposal'])
                                                         }
                                                     }}
                                                     className={`w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
@@ -612,7 +598,7 @@ export const SendProposal = ({ isPending, checkedList, editableLabel, setEditabl
                                                     type="text"
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangeFupDate(item.id, e.currentTarget.value, '4ª FUP', index)
+                                                            handleChangeFupDate(item.id, e.currentTarget.value, '4ª FUP', ['notion_list', 'send_proposal'])
                                                         }
                                                     }}
                                                     className={`w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
@@ -629,7 +615,7 @@ export const SendProposal = ({ isPending, checkedList, editableLabel, setEditabl
                                                     type="text"
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangeFupDate(item.id, e.currentTarget.value, '5ª FUP ', index)
+                                                            handleChangeFupDate(item.id, e.currentTarget.value, '5ª FUP ', ['notion_list', 'send_proposal'])
                                                         }
                                                     }}
                                                     className={`w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}

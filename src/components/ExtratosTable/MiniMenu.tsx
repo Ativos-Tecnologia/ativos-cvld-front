@@ -5,14 +5,15 @@ import { ExtratosTableContext } from '@/context/ExtratosTableContext';
 import { NotionPage } from '@/interfaces/INotion';
 import { AiOutlineLoading } from 'react-icons/ai';
 
-export const MiniMenu = ({ processedData, count, checkedList, setCheckedList, handleSelectAllRows, handleArchiveExtrato, archiveStatus }:
+export const MiniMenu = ({ queryKey, processedData, count, checkedList, setCheckedList, handleSelectAllRows, handleArchiveExtrato, archiveStatus }:
     {
+        queryKey: any[],
         processedData: any,
         count: number,
         checkedList: NotionPage[],
         setCheckedList: React.Dispatch<React.SetStateAction<NotionPage[]>>,
         handleSelectAllRows: (list: any) => void,
-        handleArchiveExtrato: () => Promise<void>,
+        handleArchiveExtrato: (queryKey: any[]) => Promise<void>,
         archiveStatus: boolean,
     }
 ) => {
@@ -20,6 +21,8 @@ export const MiniMenu = ({ processedData, count, checkedList, setCheckedList, ha
     const {
         currentPage
     } = useContext(ExtratosTableContext);
+
+    const queryKeyList = queryKey;
 
     return (
         <div className="flex max-h-6 items-center justify-between my-3">
@@ -69,7 +72,7 @@ export const MiniMenu = ({ processedData, count, checkedList, setCheckedList, ha
                     <div
                         title='Arquivar selecionado(s)'
                         className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer"
-                        onClick={() => handleArchiveExtrato()}
+                        onClick={() => handleArchiveExtrato(queryKey)}
                     >
                         {archiveStatus ? (
                             <AiOutlineLoading className='animate-spin text-lg' />
