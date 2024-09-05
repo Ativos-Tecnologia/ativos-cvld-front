@@ -21,7 +21,7 @@ const LabelConfirmPassword = ({ title, errors, register, field, passwordsMatch }
                 <input
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Digite sua nova senha novamente"
-                    className={`${errors[field] && '!border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                    className={`${errors[field] && '!border-rose-400 !ring-0 !border-2'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                     id="confirm_password"
                     {
                     ...register("confirm_password", {
@@ -39,7 +39,7 @@ const LabelConfirmPassword = ({ title, errors, register, field, passwordsMatch }
                     </div>
                 )}
 
-                <span className='absolute top-4 right-2 cursor-pointer'
+                <span className='absolute top-4.5 right-2 cursor-pointer'
                     onClick={handleToggleHidde}
                 >
                     {showPassword ? <BsEye style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} /> : <BsEyeSlash style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />}

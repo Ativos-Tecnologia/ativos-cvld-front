@@ -1,10 +1,11 @@
 "use client";
-import { Button } from 'flowbite-react';
+import { Button } from '@/components/ui/button';
 import React, { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
 import { BiEnvelope, BiMailSend, BiX } from 'react-icons/bi';
 import { AiOutlineLoading } from 'react-icons/ai';
+import api from '@/utils/api';
 
 type ChangePasswordProps = {
   state: boolean;
@@ -22,23 +23,34 @@ const ForgotPassword = ({ state, setState }: ChangePasswordProps) => {
     formState: { errors }
   } = useForm<ChangePasswordProps>();
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [status, setStatus] = useState<string | null>(null);
 
   const onCloseModal = () => {
     reset();
-    setLoading(false);
+    setStatus(null);
     setState(false);
   };
 
+  const onSubmit = async (data: ChangePasswordProps) => {
+    setStatus('sending_request');
 
-  const onSubmit = (data: ChangePasswordProps) => {
-    setLoading(true);
+    const response = await api.post('/api/reset-password/', {
+      email: data.recovery_email
+    });
+
+    if (response.status === 200) {
+      setStatus('request_success')
+    } else {
+      setStatus('null')
+      throw new Error('Aconteceu um problema ao enviar a requisição')
+    }
+
   };
 
 
   return (
     <div className={`${state ? 'opacity-100 visible' : 'opacity-0 invisible'} 
-      fixed top-0 left-0 flex items-center justify-center w-screen h-screen z-1 bg-black/50 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 transition-all duration-300 ease-in-out`}>
+      fixed top-0 left-0 flex items-center justify-center w-screen h-screen z-1 bg-black-2/50 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 transition-all duration-300 ease-in-out`}>
       <div className='relative w-11/12 xsm:w-100 h-fit rounded-lg bg-white p-10 border border-stroke dark:border-strokedark dark:bg-boxdark'>
         <span className='absolute top-4 right-4 cursor-pointer'>
           <BiX style={{ width: '26px', height: '26px', fill: '#BAC1CB' }} onClick={onCloseModal} />
@@ -71,13 +83,12 @@ const ForgotPassword = ({ state, setState }: ChangePasswordProps) => {
               </span>
             </div>
           </div>
-          <Button gradientDuoTone="purpleToBlue" type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-1 text-white hover:bg-opacity-90 dark:border-primary dark:bg-primary dark:hover:bg-opacity-90'>
-            <span className="text-[16px] font-medium" aria-disabled={loading}>
-              {loading ? "Definindo nova senha..." : "Confirmar"}
+          <Button type='submit' className={`${status === 'request_success' && 'bg-green-500'} flex items-center justify-center w-full cursor-pointer rounded-lg text-white hover:bg-opacity-90`}>
+            <span className='text-[16px] font-medium'>
+              {status === null && 'Confirmar'}
+              {status === 'sending_request' && 'Enviando e-mail...'}
+              {status === 'request_success' && 'E-mail enviado!'}
             </span>
-            {
-              !loading ? (<BiMailSend className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
-            }
           </Button>
         </form>
       </div>
