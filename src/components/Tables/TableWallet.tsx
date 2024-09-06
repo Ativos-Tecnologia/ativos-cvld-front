@@ -452,6 +452,7 @@ const TableWallet = ({ data, isPending, setVlData }: ITableWalletProps) => {
                                             {
                                                 data?.results?.map((item: NotionPage, index: number) => (
                                                     <TableRow
+                                                        onClick={() => fetchUpdatedVL(item)}
                                                         key={item.id}
                                                         className={`${checkedList!.some(target => target.id === item.id) && 'bg-blue-50 dark:bg-form-strokedark'} hover:shadow-3 dark:hover:shadow-body group`}
                                                     >
