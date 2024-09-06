@@ -128,15 +128,15 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         }
     }
 
-    const handleSelectAllRows = () => {
-        setCheckedList(data.results.map((item: NotionPage) => item))
+    const handleSelectAllRows = (list: any) => {
+        setCheckedList(list.map((item: NotionPage) => item))
     }
 
     //NOTA: Começo da Área de Mutations
     const deleteMutation = useMutation({
-        mutationFn: async (pageIds: string[]) => {
+        mutationFn: async (paramsObj: { pageIds: string[], queryKeyList: string[] }) => {
             const response = await api.patch('api/notion-api/page/bulk-action/visibility/', {
-                page_ids: pageIds,
+                page_ids: paramsObj.pageIds,
                 archived: true
             });
 
@@ -145,21 +145,21 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             }
             return response.data;
         },
-        onMutate: async (pageIds: string[]) => {
-            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
-            const previousData: any = queryClient.getQueryData(['notion_list']);
-            queryClient.setQueryData(['notion_list'], (old: any) => {
-                return { ...old, results: old.results.filter((item: any) => !pageIds.includes(item.id)) };
+        onMutate: async (paramsObj: { pageIds: string[], queryKeyList: any[] }) => {
+            await queryClient.cancelQueries({ queryKey: paramsObj.queryKeyList });
+            const previousData: any = queryClient.getQueryData(paramsObj.queryKeyList);
+            queryClient.setQueryData(paramsObj.queryKeyList, (old: any) => {
+                return { ...old, results: old.results.filter((item: any) => !paramsObj.pageIds.includes(item.id)) };
             });
-            setArchivedOficios(previousData?.results.filter((item: any) => pageIds.includes(item.id)))
+            setArchivedOficios(previousData?.results.filter((item: any) => paramsObj.pageIds.includes(item.id)))
             return { previousData };
         },
-        onError: (err, pageIds, context) => {
-            queryClient.setQueryData(['notion_list'], context?.previousData);
+        onError: (err, paramsObj, context) => {
+            queryClient.setQueryData(paramsObj.queryKeyList, context?.previousData);
             toast.error('Erro ao arquivar os dados');
         },
-        onSuccess: (data, pageIds) => {
-            toast(`${pageIds.length > 1 ? `${pageIds.length} extratos arquivados!` : 'Extrato arquivado!'}`, {
+        onSuccess: (data, paramsObj) => {
+            toast(`${paramsObj.pageIds.length > 1 ? `${paramsObj.pageIds.length} extratos arquivados!` : 'Extrato arquivado!'}`, {
                 classNames: {
                     toast: "dark:bg-form-strokedark",
                     title: "dark:text-snow",
@@ -169,20 +169,18 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                 action: {
                     label: "Desfazer",
                     onClick: () => {
-                        handleUnarchiveExtrato()
+                        handleUnarchiveExtrato(paramsObj.queryKeyList)
                     },
                 }
             });
-        },
-        // onSettled: () => {
-        //   queryClient.invalidateQueries({ queryKey: ['notion_list'] });
-        // },
+            setCheckedList([])
+        }
     });
 
     const undeleteMutation = useMutation({
-        mutationFn: async (pageIds: string[]) => {
+        mutationFn: async (paramsObj: { pageIds: string[], queryKeyList: any[] }) => {
             const response = await api.patch('api/notion-api/page/bulk-action/visibility/', {
-                page_ids: pageIds,
+                page_ids: paramsObj.pageIds,
                 archived: false
             });
 
@@ -191,20 +189,20 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             }
             return response.data;
         },
-        onMutate: async (pageIds: string[]) => {
-            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
-            const previousData: any = queryClient.getQueryData(['notion_list']);
-            queryClient.setQueryData(['notion_list'], (old: any) => {
+        onMutate: async (paramsObj) => {
+            await queryClient.cancelQueries({ queryKey: paramsObj.queryKeyList });
+            const previousData: any = queryClient.getQueryData(paramsObj.queryKeyList);
+            queryClient.setQueryData(paramsObj.queryKeyList, (old: any) => {
                 return { ...old, results: [...archivedOficios, ...old.results] }
             })
             return { previousData };
         },
-        onError: (error, pageIds, context) => {
-            queryClient.setQueryData(['notion_list'], context?.previousData);
+        onError: (error, paramsObj, context) => {
+            queryClient.setQueryData(paramsObj.queryKeyList, context?.previousData);
             toast.error('Erro ao desarquivar os dados');
         },
-        onSuccess: (data, pageIds) => {
-            toast(`${pageIds.length > 1 ? `${pageIds.length} extratos desarquivados!` : 'Extrato desarquivado!'}`, {
+        onSuccess: (data, paramsObj) => {
+            toast(`${paramsObj.pageIds.length > 1 ? `${paramsObj.pageIds.length} extratos desarquivados!` : 'Extrato desarquivado!'}`, {
                 classNames: {
                     toast: "dark:bg-form-strokedark",
                     title: "dark:text-snow",
@@ -212,17 +210,18 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     actionButton: "!bg-slate-100 dark:bg-form-strokedark"
                 },
                 action: {
-                    label: "Desfazer",
+                    label: "Fechar",
                     onClick: () => {
                         toast.dismiss();
                     },
                 }
             });
+            setArchivedOficios([]);
         }
     });
 
     const statusMutation = useMutation({
-        mutationFn: async (paramsObj: { page_id: string, status: statusOficio }) => {
+        mutationFn: async (paramsObj: { page_id: string, status: statusOficio, queryKeyList: any[] }) => {
             const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
                 "Status": {
                     "status": {
@@ -235,10 +234,10 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             }
             return response.data
         },
-        onMutate: async (paramsObj: { page_id: string, status: statusOficio }) => {
-            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
-            const previousData: any = queryClient.getQueryData(['notion_list']);
-            queryClient.setQueryData(['notion_list'], (old: any) => {
+        onMutate: async (paramsObj: { page_id: string, status: statusOficio, queryKeyList: any[] }) => {
+            await queryClient.cancelQueries({ queryKey: paramsObj.queryKeyList });
+            const previousData: any = queryClient.getQueryData(paramsObj.queryKeyList);
+            queryClient.setQueryData(paramsObj.queryKeyList, (old: any) => {
                 return {
                     ...old, results: old.results.map((item: any) => {
                         if (item.id === paramsObj.page_id) {
@@ -250,14 +249,17 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             })
             return { previousData }
         },
-        onError: (data, paramsObj, context) => {
-            queryClient.setQueryData(['notion_list'], context?.previousData)
+        onError: (error, paramsObj, context) => {
+            queryClient.setQueryData(paramsObj.queryKeyList, context?.previousData)
             toast.error('Erro ao alterar o status do ofício')
         },
+        onSuccess: (data, paramsObj) => {
+            queryClient.invalidateQueries({ queryKey: paramsObj.queryKeyList })
+        }
     });
 
     const tipoMutation = useMutation({
-        mutationFn: async (paramsObj: { page_id: string, oficio: tipoOficio }) => {
+        mutationFn: async (paramsObj: { page_id: string, oficio: tipoOficio, queryKeyList: any[] }) => {
             const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
                 "Tipo": {
                     "select": {
@@ -271,10 +273,10 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             }
             return response.data;
         },
-        onMutate: async (paramsObj: { page_id: string, oficio: tipoOficio }) => {
-            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
-            const previousData: any = queryClient.getQueryData(['notion_list']);
-            queryClient.setQueryData(['notion_list'], (old: any) => {
+        onMutate: async (paramsObj: { page_id: string, oficio: tipoOficio, queryKeyList: any[] }) => {
+            await queryClient.cancelQueries({ queryKey: paramsObj.queryKeyList });
+            const previousData: any = queryClient.getQueryData(paramsObj.queryKeyList);
+            queryClient.setQueryData(paramsObj.queryKeyList, (old: any) => {
                 return {
                     ...old, results: old.results.map((item: any) => {
                         if (item.id === paramsObj.page_id) {
@@ -288,14 +290,17 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             })
             return { previousData }
         },
-        onError: (data, paramsObj, context) => {
-            queryClient.setQueryData(['notion_list'], context?.previousData);
+        onError: (error, paramsObj, context) => {
+            queryClient.setQueryData(paramsObj.queryKeyList, context?.previousData);
             toast.error('Erro ao alterar o tipo do ofício');
+        },
+        onSuccess: (data, paramsObj) => {
+            queryClient.invalidateQueries({ queryKey: paramsObj.queryKeyList })
         }
     });
 
     const creditorNameMutation = useMutation({
-        mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+        mutationFn: async (paramsObj: { page_id: string, value: string, queryKeyList: any[] }) => {
             const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
                 "Credor": {
                     "title": [
@@ -312,10 +317,10 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             }
             return response.data
         },
-        onMutate: async (paramsObj: any) => {
-            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
-            const previousData: any = queryClient.getQueryData(['notion_list']);
-            queryClient.setQueryData(['notion_list'], (old: any) => {
+        onMutate: async (paramsObj) => {
+            await queryClient.cancelQueries({ queryKey: paramsObj.queryKeyList });
+            const previousData: any = queryClient.getQueryData(paramsObj.queryKeyList);
+            queryClient.setQueryData(paramsObj.queryKeyList, (old: any) => {
                 return {
                     ...old, results: old.results.map((item: any) => {
                         if (item.id === paramsObj.page_id) {
@@ -328,14 +333,14 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             )
             return { previousData }
         },
-        onError: (data, paramsObj, context) => {
-            queryClient.setQueryData(['notion_list'], context?.previousData)
+        onError: (error, paramsObj, context) => {
+            queryClient.setQueryData(paramsObj.queryKeyList, context?.previousData)
             toast.error('Erro ao alterar o nome do credor')
         }
     });
 
     const phoneNumberMutation = useMutation({
-        mutationFn: async (paramsObj: { page_id: string, type: string, value: string }) => {
+        mutationFn: async (paramsObj: { page_id: string, type: string, value: string, queryKeyList: any[] }) => {
             const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
                 [paramsObj.type]: {
                     "phone_number": paramsObj.value
@@ -346,19 +351,19 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             }
             return response.data
         },
-        onMutate: async (paramsObj: any) => {
-            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
-            const previousData: any = queryClient.getQueryData(['notion_list']);
+        onMutate: async (paramsObj) => {
+            await queryClient.cancelQueries({ queryKey: paramsObj.queryKeyList });
+            const previousData: any = queryClient.getQueryData(paramsObj.queryKeyList);
             return { previousData }
         },
-        onError: (data, paramsObj, context) => {
-            queryClient.setQueryData(['notion_list'], context?.previousData);
+        onError: (error, paramsObj, context) => {
+            queryClient.setQueryData(paramsObj.queryKeyList, context?.previousData);
             toast.error('Erro ao alterar o contato');
         }
     });
 
     const emailMutation = useMutation({
-        mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+        mutationFn: async (paramsObj: { page_id: string, value: string, queryKeyList: any[] }) => {
             const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
                 "Contato de E-mail": {
                     "email": paramsObj.value
@@ -369,19 +374,19 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             }
             return response.data
         },
-        onMutate: async (paramsObj: { page_id: string, value: string }) => {
-            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
-            const previousData: any = queryClient.getQueryData(['notion_list']);
+        onMutate: async (paramsObj) => {
+            await queryClient.cancelQueries({ queryKey: paramsObj.queryKeyList });
+            const previousData: any = queryClient.getQueryData(paramsObj.queryKeyList);
             return { previousData }
         },
-        onError: (data, paramsObj, context) => {
-            queryClient.setQueryData(['notion_list'], context?.previousData);
+        onError: (error, paramsObj, context) => {
+            queryClient.setQueryData(paramsObj.queryKeyList, context?.previousData);
             toast.error('Erro ao alterar o email');
         }
     });
 
     const proposalPriceMutation = useMutation({
-        mutationFn: async (paramsObj: { page_id: string, value: number }) => {
+        mutationFn: async (paramsObj: { page_id: string, value: number, queryKeyList: any[] }) => {
             const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
                 "Preço Proposto": {
                     "number": paramsObj.value
@@ -393,59 +398,43 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             return response.data
         },
         onMutate: async (paramsObj) => {
-            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
-            const previousData: any = queryClient.getQueryData(['notion_list']);
+            await queryClient.cancelQueries({ queryKey: paramsObj.queryKeyList });
+            const previousData: any = queryClient.getQueryData(paramsObj.queryKeyList);
             return { previousData }
         },
-        onError: (data, paramsObj, context) => {
-            queryClient.setQueryData(['notion_list'], context?.previousData);
+        onError: (error, paramsObj, context) => {
+            queryClient.setQueryData(paramsObj.queryKeyList, context?.previousData);
             toast.error('Erro ao alterar o preço proposto');
         }
     });
 
     const fupDateMutation = useMutation({
-        mutationFn: async (paramsObj: { page_id: string, value: string, type: string, index: number }) => {
-            let responseStatus: number = 0;
+        mutationFn: async (paramsObj: { page_id: string, value: string, type: string, queryKeyList: any[] }) => {
+            const dateObject = {
+                end: null,
+                start: paramsObj.value,
+                time_zone: null
+            }
 
-            if (data.results[paramsObj.index].properties[paramsObj.type].date === null) {
-
-                const dateObject = {
-                    end: null,
-                    start: paramsObj.value,
-                    time_zone: null
+            const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+                [paramsObj.type]: {
+                    "date": dateObject
                 }
+            });
 
-                const resNotion = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-                    [paramsObj.type]: {
-                        "date": dateObject
-                    }
-                });
-
-                responseStatus = resNotion.status;
-
-            } else {
-                const resNotion = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-                    [paramsObj.type]: {
-                        "date": {
-                            "start": paramsObj.value
-                        }
-                    }
-                });
-
-                responseStatus = resNotion.status;
+            if (response.status !== 202) {
+                throw new Error('houve um erro ao salvar os dados no notion');
             }
 
-            if (responseStatus !== 202) {
-                console.log('houve um erro ao salvar os dados no notion');
-            }
+            return response.data
         },
-        onMutate: async (paramsObj: any) => {
-            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
-            const previousData: any = queryClient.getQueryData(['notion_list']);
+        onMutate: async (paramsObj) => {
+            await queryClient.cancelQueries({ queryKey: paramsObj.queryKeyList });
+            const previousData: any = queryClient.getQueryData(paramsObj.queryKeyList);
             return { previousData }
         },
-        onError: (data, paramsObj, context) => {
-            queryClient.setQueryData(['notion_list'], context?.previousData);
+        onError: (error, paramsObj, context) => {
+            queryClient.setQueryData(paramsObj.queryKeyList, context?.previousData);
             toast.error('Erro ao alterar a data de follow up');
         }
     });
@@ -533,73 +522,77 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         }
     }
 
-    const handleArchiveExtrato = async () => {
+    const handleArchiveExtrato = async (queryKeyList: any[]) => {
         setArchiveStatus(true);
         const pageIds = checkedList.map(notionPage => notionPage.id);
-        await deleteMutation.mutateAsync(pageIds, {
-            onSuccess: () => setCheckedList([])
+        await deleteMutation.mutateAsync({
+            pageIds,
+            queryKeyList
         });
         setArchiveStatus(false);
     };
 
-    const handleUnarchiveExtrato = async () => {
+    const handleUnarchiveExtrato = async (queryKeyList: any[]) => {
         const pageIds = archivedOficios.map(notionPage => notionPage.id);
-        await undeleteMutation.mutateAsync(pageIds, {
-            onSuccess: () => setArchivedOficios([])
+        await undeleteMutation.mutateAsync({
+            pageIds,
+            queryKeyList
         });
     }
 
-    const handleEditStatus = async (page_id: string, status: statusOficio, currentValue: string) => {
+    const handleEditStatus = async (page_id: string, status: statusOficio, queryKeyList: any[]) => {
         await statusMutation.mutateAsync({
             page_id,
-            status
+            status,
+            queryKeyList
         })
     }
 
-    const handleEditTipoOficio = async (page_id: string, oficio: tipoOficio, currentValue: string | undefined) => {
+    const handleEditTipoOficio = async (page_id: string, oficio: tipoOficio, queryKeyList: any[]) => {
         await tipoMutation.mutateAsync({
             page_id,
-            oficio
+            oficio,
+            queryKeyList
         });
     }
 
-    const handleChangeCreditorName = async (value: string, index: number, page_id: string, refList: HTMLInputElement[] | null) => {
-        refList![index].blur();
+    const handleChangeCreditorName = async (value: string, page_id: string, queryKeyList: any[]) => {
         setEditableLabel(null);
         await creditorNameMutation.mutateAsync({
             page_id,
-            value
+            value,
+            queryKeyList
         });
     }
 
-    const handleChangePhoneNumber = async (page_id: string, type: string, value: string, index: number, refList: HTMLInputElement[] | null) => {
-        refList![index].blur();
+    const handleChangePhoneNumber = async (page_id: string, type: string, value: string, queryKeyList: any[]) => {
         await phoneNumberMutation.mutateAsync({
             page_id,
             type,
-            value
+            value,
+            queryKeyList
         });
     }
 
-    const handleChangeEmail = async (page_id: string, value: string, index: number, refList: HTMLInputElement[] | null) => {
-        refList![index].blur();
+    const handleChangeEmail = async (page_id: string, value: string, queryKeyList: any[]) => {
         await emailMutation.mutateAsync({
             page_id,
-            value
+            value,
+            queryKeyList
         });
     }
 
-    const handleChangeProposalPrice = async (page_id: string, value: string, index: number, refList: HTMLInputElement[] | null) => {
-        refList![index].blur();
+    const handleChangeProposalPrice = async (page_id: string, value: string, queryKeyList: any[]) => {
         const formatedValue = value.replace(/[^0-9,]/g, '');
         const valueToNumber = parseFloat(formatedValue);
         await proposalPriceMutation.mutateAsync({
             page_id,
-            value: valueToNumber
+            value: valueToNumber,
+            queryKeyList
         });
     }
 
-    const handleChangeFupDate = async (page_id: string, value: string, type: string, index: number) => {
+    const handleChangeFupDate = async (page_id: string, value: string, type: string, queryKeyList: any[]) => {
 
         if (/^[0-9/]{10}$/.test(value)) {
 
@@ -608,7 +601,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                 page_id,
                 value: parsedValue,
                 type,
-                index
+                queryKeyList
             })
 
         } else {
@@ -1025,18 +1018,18 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
     /* verifica se o usuário pressionou a tecla DELETE
     para deletar um ou mais extratos selecionados */
-    useEffect(() => {
-        const keyHandler = ({ keyCode }: KeyboardEvent) => {
-            if (keyCode !== 46) return;
+    // useEffect(() => {
+    //     const keyHandler = ({ keyCode }: KeyboardEvent) => {
+    //         if (keyCode !== 46) return;
 
-            if (checkedList.length >= 1) {
-                handleArchiveExtrato()
-            }
+    //         if (checkedList.length >= 1) {
+    //             handleArchiveExtrato()
+    //         }
 
-        };
-        document.addEventListener("keydown", keyHandler);
-        return () => document.removeEventListener("keydown", keyHandler);
-    });
+    //     };
+    //     document.addEventListener("keydown", keyHandler);
+    //     return () => document.removeEventListener("keydown", keyHandler);
+    // });
 
     useEffect(() => {
         if (Object.keys(listQuery).length > 0) {
@@ -1277,7 +1270,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     {
                         <div className='w-full mb-2 h-4 flex justify-end items-center'>
                             <div className={`${isFetching ? "opacity-100 visible" : "opacity-0 invisible"} text-center flex justify-center items-center transition-all duration-300`}>
-                                <span className='text-xs mr-2 text-meta-4'>
+                                <span className='text-xs mr-2 text-meta-4 dark:text-bodydark'>
                                     {
                                         isFetching ? {
                                             0: 'Carregando...',
@@ -1329,7 +1322,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             {notionView === 'realizar 1º contato' &&
                 <MakeFirstContact
                     isPending={isPending}
-                    data={data}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
                     setEditableLabel={setEditableLabel}
@@ -1341,33 +1333,38 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     handleChangePhoneNumber={handleChangePhoneNumber}
                     handleChangeEmail={handleChangeEmail}
                     handleEditStatus={handleEditStatus}
+                    archiveStatus={archiveStatus}
+                    handleSelectAllRows={handleSelectAllRows}
+                    handleArchiveExtrato={handleArchiveExtrato}
+                    setCheckedList={setCheckedList}
                 />
             }
 
             {notionView === 'juntar ofício/valor líquido' &&
                 <OfficeTypeAndValue
                     isPending={isPending}
-                    data={data}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
                     setEditableLabel={setEditableLabel}
                     statusSelectValue={statusSelectValue}
                     oficioSelectValue={oficioSelectValue}
                     handleNotionDrawer={handleNotionDrawer}
-                    numberFormat={numberFormat}
                     handleSelectRow={handleSelectRow}
                     handleChangeCreditorName={handleChangeCreditorName}
                     handleEditInput={handleEditInput}
                     handleEditStatus={handleEditStatus}
                     handleEditTipoOficio={handleEditTipoOficio}
                     handleCopyValue={handleCopyValue}
+                    archiveStatus={archiveStatus}
+                    handleArchiveExtrato={handleArchiveExtrato}
+                    handleSelectAllRows={handleSelectAllRows}
+                    setCheckedList={setCheckedList}
                 />
             }
 
             {notionView === 'enviar proposta/negociação' &&
                 <SendProposal
                     isPending={isPending}
-                    data={data}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
                     setEditableLabel={setEditableLabel}
@@ -1381,13 +1378,16 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     handleChangeProposalPrice={handleChangeProposalPrice}
                     handleCopyValue={handleCopyValue}
                     handleChangeFupDate={handleChangeFupDate}
+                    archiveStatus={archiveStatus}
+                    handleArchiveExtrato={handleArchiveExtrato}
+                    handleSelectAllRows={handleSelectAllRows}
+                    setCheckedList={setCheckedList}
                 />
             }
 
             {notionView === 'proposta aceita' &&
                 <ProposalAccepted
                     isPending={isPending}
-                    data={data}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
                     setEditableLabel={setEditableLabel}
@@ -1400,6 +1400,10 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     handleEditInput={handleEditInput}
                     handleEditStatus={handleEditStatus}
                     handleCopyValue={handleCopyValue}
+                    archiveStatus={archiveStatus}
+                    handleArchiveExtrato={handleArchiveExtrato}
+                    handleSelectAllRows={handleSelectAllRows}
+                    setCheckedList={setCheckedList}
                 />
             }
             {/* {isPending &&

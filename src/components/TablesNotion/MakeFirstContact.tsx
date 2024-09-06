@@ -2,34 +2,50 @@
 import { ENUM_OFICIOS_LIST } from '@/constants/constants';
 import statusOficio from '@/enums/statusOficio.enum';
 import { NotionPage } from '@/interfaces/INotion';
-import React, { useContext, useEffect, useRef } from 'react'
-import { AiOutlinePhone, AiOutlineUser } from 'react-icons/ai';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { AiOutlineLoading, AiOutlinePhone, AiOutlineUser } from 'react-icons/ai';
 import { BiLoader, BiSolidDockLeft } from 'react-icons/bi';
 import { PiCursorClick } from 'react-icons/pi';
 import { RiNotionFill } from 'react-icons/ri';
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from '../Tables/TableDefault';
-import { Badge } from 'flowbite-react';
+import { Badge, Button } from 'flowbite-react';
 import { MdOutlineAlternateEmail } from 'react-icons/md';
 import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import CustomCheckbox from '../CrmUi/Checkbox';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import api from '@/utils/api';
+import { MiniMenu } from '../ExtratosTable/MiniMenu';
+import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 
-const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEditableLabel, selectStatusValue, handleNotionDrawer, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, handleEditStatus }:
+const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLabel, selectStatusValue, handleNotionDrawer, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, handleEditStatus,
+    handleArchiveExtrato, archiveStatus, handleSelectAllRows, setCheckedList
+}:
     {
         isPending: boolean,
-        data: any,
         checkedList: NotionPage[],
         editableLabel: string | null;
         setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
         selectStatusValue: statusOficio | null;
         handleNotionDrawer: (id: string) => void;
         handleSelectRow: (item: NotionPage) => void;
-        handleChangeCreditorName: (value: string, index: number, page_id: string, refList: HTMLInputElement[] | null) => Promise<void>;
+        handleChangeCreditorName: (value: string, page_id: string, queryKeyList: any[]) => Promise<void>;
         handleEditInput: (index: number, refList: HTMLInputElement[] | null) => void;
-        handleChangePhoneNumber: (page_id: string, type: string, value: string, index: number, refList: HTMLInputElement[] | null) => Promise<void>;
-        handleChangeEmail: (page_id: string, value: string, index: number, refList: HTMLInputElement[] | null) => Promise<void>;
-        handleEditStatus: (page_id: string, status: statusOficio, currentValue: string) => Promise<void>;
+        handleChangePhoneNumber: (page_id: string, type: string, value: string, queryKeyList: any[]) => Promise<void>;
+        handleChangeEmail: (page_id: string, value: string, queryKeyList: any[]) => Promise<void>;
+        handleEditStatus: (page_id: string, status: statusOficio, queryKeyList: any[]) => Promise<void>;
+        archiveStatus: boolean,
+        handleArchiveExtrato: (queryList: any[]) => Promise<void>,
+        handleSelectAllRows: (list: any) => void,
+        setCheckedList: React.Dispatch<React.SetStateAction<NotionPage[]>>
     }
 ) => {
+
+    /* ========> states <======== */
+    const queryClient = useQueryClient();
+    const [filters, setFilters] = useState({ credor: '' });
+    const [sort, setSort] = useState({ field: null, direction: 'asc' });
+    const [backendResults, setBackendResults] = useState<NotionPage[]>([]);
+    const [firstLoad, setFirstLoad] = useState(true);
 
     /* ----> refs <----- */
     const inputCredorRefs = useRef<HTMLInputElement[] | null>([]);
@@ -38,18 +54,219 @@ const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEdit
     const inputPhoneThreeRefs = useRef<HTMLInputElement[] | null>([]);
     const inputEmailRefs = useRef<HTMLInputElement[] | null>([]);
 
-    const { data: { role } } = useContext(UserInfoAPIContext);
+    const { data: { user, role, sub_role } } = useContext(UserInfoAPIContext);
 
+    const secondaryDefaultFilterObject = useMemo(() => {
+        return {
+            "or":
+                [
+                    {
+                        "property": "Status",
+                        "status": {
+                            "equals": "Realizar Primeiro Contato"
+                        }
+                    },
+                    {
+                        "property": "Status",
+                        "status": {
+                            "equals": "1º Contato não alcançado"
+                        }
+                    },
+                    {
+                        "property": "Status",
+                        "status": {
+                            "equals": "2º Contato não alcançado"
+                        }
+                    },
+                    {
+                        "property": "Status",
+                        "status": {
+                            "equals": "3º Contato não alcançado"
+                        }
+                    }
+                ]
+        }
+    }, []);
+
+    const defaultFilterObject = {
+        "and":
+            [
+                {
+                    "property": sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
+                    "multi_select": {
+                        "contains": user
+                    }
+                },
+                secondaryDefaultFilterObject
+            ]
+    }
+
+    const fetchNotionData = async () => {
+        const t = await api.post(`api/notion-api/list/`, defaultFilterObject)
+        return t.data
+    }
+    const { isPending: isPendingData, data, error, isFetching, refetch } = useQuery(
+        {
+            queryKey: ['notion_list', 'first_contact'],
+            refetchOnReconnect: true,
+            refetchOnWindowFocus: true,
+            refetchInterval: 1000 * 13,
+            staleTime: 1000 * 13,
+            queryFn: fetchNotionData,
+            enabled: !!user // only fetch if user is defined after context is loaded
+        },
+    );
+    const [nextCursor, setNextCursor] = useState<string | null>();
+    const [hasMore, setHasMore] = useState<boolean>();
+
+    /* função que faz uma requisição ao backend para retornar resultados que contenham
+    a determinada palavra-chave e adiciona a nova linha filtrada para os resultados já 
+    existentes (caso haja) */
+    const fetchByName = async (name: string) => {
+        const response = await api.post("/api/notion-api/list/search/", {
+            "username": user,
+            "creditor_name": name
+        });
+
+        setBackendResults(response.data.results);
+        setNextCursor(response.data.next_cursor);
+        setHasMore(response.data.has_more);
+    };
+
+    /* função que verifica se há mais dados no backend para serem puxados para a tabela.
+    se existir, faz o fetch e atualiza a tabela com os dados novos */
+    const fetchNextCursor = async () => {
+        if (!hasMore || !nextCursor) return;
+
+        try {
+            const response = await api.post(`/api/notion-api/list/database/next-cursor/${nextCursor}/`, {
+                "username": user
+            });
+
+            setNextCursor(response.data.next_cursor);
+            setHasMore(response.data.has_more);
+            setBackendResults(prevResults => [...prevResults, ...response.data.results]);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const { refetch: refetchByName, isFetching: isFetchingByName } = useQuery({
+        queryKey: ['notion_list_creditor_name', filters.credor],
+        queryFn: () => fetchByName(filters.credor),
+        enabled: false,
+    });
+
+    const { refetch: refetchNextCursor, isFetching: isFetchingNextCursor } = useQuery({
+        queryKey: ['notion_list_next_cursor', nextCursor],
+        queryFn: fetchNextCursor,
+        enabled: false,
+    });
+
+    /* variável responsável por processar os dados puros que vem do notion, de forma que
+    serve para classificar por ordem alfabética ou filtrar algum dado específico */
+    const processedData = React.useMemo(() => {
+        let customResults = {
+            next_cursor: backendResults.length === 0 ? data?.next_cursor : nextCursor,
+            has_more: backendResults.length > 0 ? hasMore : data?.has_more,
+            results: [...(data?.results || []), ...(backendResults) || []]
+        }
+
+        /* o método reduce neste caso é para eliminar possíveis duplicatas no array original */
+        customResults.results = customResults.results.reduce((acc: any, item: NotionPage) => {
+            if (!acc.some((target: NotionPage) => target.id === item.id)) {
+                acc.push(item);
+            }
+            return acc;
+        }, []);
+
+        /* aqui os dados são filtrados para retornar somente o(s) credor(es) que estiverem na propriedade
+        credor do filters. Se por um acaso a string for vazia, nada é filtrado e o array retornado é igual ao original */
+        customResults.results = customResults.results.filter((item: NotionPage) =>
+            item.properties.Credor?.title[0]?.text.content.toLowerCase().includes(filters.credor.toLowerCase())
+        );
+
+        /* aqui os dados são ordenados de acordo com a ordem alfabética e são baseados no
+        nome do credor e na direção do estado sort */
+        customResults.results = customResults.results.sort((a: any, b: any) => {
+            const compareResult = a.properties.Credor?.title[0]?.text.content.localeCompare(b.properties.Credor?.title[0]?.text.content);
+            return sort.direction === 'asc' ? compareResult : -compareResult;
+        });
+
+        return customResults.results
+    }, [backendResults, nextCursor, data?.next_cursor, data?.has_more, data?.results, hasMore, sort.direction, filters.credor]);
+
+    /* função que seta a ordenação de mostragem dos dados da tabela (padrão ordem
+    alfabética) */
+    const handleSort = (field: any) => {
+        setSort(prev => ({
+            field,
+            direction: prev.field === field && prev.direction === 'asc' ? 'desc' : 'asc'
+        }));
+    };
+
+    /* função que seta o valor do filtro, se existir mais de um valor, somente
+    o especificado em field será modificado */
+    const handleFilterChange = useCallback((field: string, value: string) => {
+        setFilters((prev) => ({
+            ...prev,
+            [field]: value,
+        }));
+        // setShouldFetchExternally(true);
+    }, []);
+
+    /* função que é responsável por carregar mais ofícios para a tabela, caso existam mais */
+    const loadMore = () => {
+        if (hasMore && !isFetchingNextCursor) {
+            refetchNextCursor();
+        }
+    };
+
+    /* efeito disparado para que verificar a cada 0.5s se o valor da prop credor
+    do filtro bate com algum credor elemento do processedData */
+    useEffect(() => {
+        if (filters.credor/* && shouldFetchExternally*/) {
+            const timer = setTimeout(() => {
+                const hasMatch = processedData.some((item: NotionPage) =>
+                    item.properties.Credor?.title[0]?.text.content.toLowerCase().includes(filters.credor.toLowerCase())
+                );
+
+                if (!hasMatch) {
+                    queryClient.cancelQueries({ queryKey: ['notion_list'] });
+                    refetchByName();
+                }
+                // setShouldFetchExternally(false);
+            }, 500);
+
+            return () => clearTimeout(timer);
+        }
+    }, [filters, queryClient, refetchByName, processedData /*shouldFetchExternally*/]);
+
+    /* atribui os valores de nomes dos credores aos inputs */
     useEffect(() => {
         if (inputCredorRefs.current) {
-            data?.results.map((item: NotionPage, index: number) => {
+            processedData.forEach((item: NotionPage, index: number) => {
                 const ref = inputCredorRefs.current![index];
                 if (ref) {
-                    ref.value = item.properties.Credor?.title[0].text.content || '';
+                    ref.value = item.properties.Credor?.title[0]?.text.content || '';
                 }
-            })
+            });
         }
-    }, [data])
+
+    }, [processedData]);
+
+    useEffect(() => {
+        if (firstLoad && data) {
+            setNextCursor(data?.next_cursor);
+            setHasMore(data?.has_more);
+            setFirstLoad(false);
+            return;
+        }
+
+        setNextCursor(nextCursor);
+        setHasMore(hasMore);
+
+    }, [data, data?.has_more, data?.next_cursor, firstLoad, hasMore, nextCursor]);
 
     return (
         <div
@@ -57,12 +274,48 @@ const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEdit
                 boxShadow: "inset -4px 0 4px rgba(0 0 0 / 0.1)"
             }}
             className='max-w-full overflow-x-scroll pb-5'>
+
+            <MiniMenu
+                queryKey={['notion_list', 'first_contact']}
+                processedData={processedData}
+                archiveStatus={archiveStatus}
+                handleArchiveExtrato={handleArchiveExtrato}
+                handleSelectAllRows={handleSelectAllRows}
+                checkedList={checkedList}
+                setCheckedList={setCheckedList}
+                count={processedData?.length || 0}
+            />
+
+            <div className="flex mb-4">
+                <input
+                    type="text"
+                    placeholder="Filtrar por nome"
+                    value={filters.credor}
+                    onChange={(e) => handleFilterChange('credor', e.target.value)}
+                    className="max-w-md rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                />
+                {isFetchingByName && (
+                    <div className="flex flex-row text-center text-gray-500 dark:text-gray-400 ml-2 py-2">
+                        <AiOutlineLoading className="animate-spin w-5 h-5" />
+                    </div>
+                )}
+
+            </div>
+
             <Table>
                 <TableHead>
                     <TableHeadCell className="min-w-[400px]">
                         <div className='flex gap-2 items-center'>
-                            <AiOutlineUser className='text-base' />
-                            Nome do Credor
+                            <button
+                                className='flex gap-2 items-center uppercase'
+                                onClick={() => handleSort('Credor')}>
+                                <AiOutlineUser className='text-base' /> Nome do Credor
+                                {sort.field === 'Credor' ? (
+                                    sort.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
+                                ) : (
+                                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                                )}
+                            </button>
                         </div>
                     </TableHeadCell>
                     <TableHeadCell className="min-w-[216px]">
@@ -105,7 +358,7 @@ const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEdit
 
                             {data?.results?.length > 0 && (
                                 <>
-                                    {data?.results.map((item: NotionPage, index: number) => (
+                                    {processedData?.map((item: NotionPage, index: number) => (
 
                                         <TableRow key={item.id} className={`${checkedList!.some(target => target.id === item.id) && 'bg-blue-50 dark:bg-form-strokedark'} hover:shadow-3 dark:hover:shadow-body group`}>
 
@@ -126,7 +379,10 @@ const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEdit
                                                             ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
                                                             onKeyDown={(e) => {
                                                                 if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                                    handleChangeCreditorName(e.currentTarget.value, index, item.id, inputCredorRefs.current)
+                                                                    if (inputCredorRefs.current) {
+                                                                        inputCredorRefs.current[index].blur()
+                                                                    }
+                                                                    handleChangeCreditorName(e.currentTarget.value, item.id, ['notion_list', 'first_contact'])
                                                                 }
                                                             }}
                                                             className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
@@ -191,7 +447,7 @@ const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEdit
                                             <TableCell className="text-center items-center w-full">
                                                 <Badge color="teal" size="sm" className="text-center text-[12px]">
                                                     <select className="text-[12px] w-full text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => {
-                                                        handleEditStatus(item.id, e.target.value as statusOficio, item.properties.Status.status!.name)
+                                                        handleEditStatus(item.id, e.target.value as statusOficio, ['notion_list', 'first_contact'])
                                                     }}>
                                                         {item.properties.Status.status?.name && (
                                                             <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
@@ -215,7 +471,10 @@ const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEdit
                                                     defaultValue={item.properties['Contato Telefônico'].phone_number || ''}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangePhoneNumber(item.id, "Contato Telefônico", e.currentTarget.value, index, inputPhoneOneRefs.current)
+                                                            if (inputPhoneOneRefs.current) {
+                                                                inputPhoneOneRefs.current[index].blur()
+                                                            }
+                                                            handleChangePhoneNumber(item.id, "Contato Telefônico", e.currentTarget.value, ['notion_list', 'first_contact'])
                                                         }
                                                     }}
                                                     className={`w-full p-0 focus-within:ring-0 focus-within:border-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
@@ -230,7 +489,10 @@ const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEdit
                                                     defaultValue={item.properties['Contato Telefônico 2'].phone_number || ''}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangePhoneNumber(item.id, "Contato Telefônico 2", e.currentTarget.value, index, inputPhoneTwoRefs.current)
+                                                            if (inputPhoneTwoRefs.current) {
+                                                                inputPhoneTwoRefs.current[index].blur()
+                                                            }
+                                                            handleChangePhoneNumber(item.id, "Contato Telefônico 2", e.currentTarget.value, ['notion_list', 'first_contact'])
                                                         }
                                                     }}
                                                     className={`w-full p-0 focus-within:ring-0 focus-within:border-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
@@ -245,7 +507,10 @@ const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEdit
                                                     defaultValue={item.properties['Contato Telefônico 3'].phone_number || ''}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangePhoneNumber(item.id, "Contato Telefônico 3", e.currentTarget.value, index, inputPhoneThreeRefs.current)
+                                                            if (inputPhoneThreeRefs.current) {
+                                                                inputPhoneThreeRefs.current[index].blur()
+                                                            }
+                                                            handleChangePhoneNumber(item.id, "Contato Telefônico 3", e.currentTarget.value, ['notion_list', 'first_contact'])
                                                         }
                                                     }}
                                                     className={`w-full p-0 focus-within:ring-0 focus-within:border-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
@@ -260,7 +525,11 @@ const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEdit
                                                     defaultValue={item.properties['Contato de E-mail'].email || ''}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangeEmail(item.id, e.currentTarget.value, index, inputEmailRefs.current)
+                                                            if (inputEmailRefs.current) {
+                                                                inputEmailRefs.current[index].blur()
+                                                            }
+                                                            handleChangeEmail(item.id, e.currentTarget.value, ['notion_list', 'first_contact'])
+
                                                         }
                                                     }}
                                                     className={`w-full p-0 focus-within:ring-0 focus-within:border-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
@@ -277,6 +546,13 @@ const MakeFirstContact = ({ isPending, data, checkedList, editableLabel, setEdit
                 </TableBody>
 
             </Table>
+
+            {hasMore && (
+                <Button onClick={loadMore} disabled={isFetchingNextCursor} className='mt-5'>
+                    {isFetchingNextCursor ? 'Carregando...' : 'Carregar mais'}
+                </Button>
+            )}
+
         </div>
     )
 }

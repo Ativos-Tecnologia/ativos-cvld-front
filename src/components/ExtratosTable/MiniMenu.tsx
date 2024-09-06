@@ -5,21 +5,24 @@ import { ExtratosTableContext } from '@/context/ExtratosTableContext';
 import { NotionPage } from '@/interfaces/INotion';
 import { AiOutlineLoading } from 'react-icons/ai';
 
-export const MiniMenu = ({ count, checkedList, setCheckedList, handleSelectAllRows, handleArchiveExtrato, archiveStatus }:
+export const MiniMenu = ({ queryKey, processedData, count, checkedList, setCheckedList, handleSelectAllRows, handleArchiveExtrato, archiveStatus }:
     {
+        queryKey: any[],
+        processedData: any,
         count: number,
         checkedList: NotionPage[],
         setCheckedList: React.Dispatch<React.SetStateAction<NotionPage[]>>,
-        handleSelectAllRows: () => void,
-        handleArchiveExtrato: () => Promise<void>,
+        handleSelectAllRows: (list: any) => void,
+        handleArchiveExtrato: (queryKey: any[]) => Promise<void>,
         archiveStatus: boolean,
     }
 ) => {
 
     const {
-        currentPage,
-        handleDeleteExtrato
+        currentPage
     } = useContext(ExtratosTableContext);
+
+    const queryKeyList = queryKey;
 
     return (
         <div className="flex max-h-6 items-center justify-between my-3">
@@ -31,7 +34,7 @@ export const MiniMenu = ({ count, checkedList, setCheckedList, handleSelectAllRo
                             {checkedList!.length === 0 ? (
                                 <div
                                     className={`relative z-3 w-[15px] h-[15px] flex items-center justify-center duration-100 border-2 border-body dark:border-bodydark rounded-[3px]`}
-                                    onClick={handleSelectAllRows}
+                                    onClick={() => handleSelectAllRows(processedData)}
                                 >
 
                                 </div>
@@ -69,7 +72,7 @@ export const MiniMenu = ({ count, checkedList, setCheckedList, handleSelectAllRo
                     <div
                         title='Arquivar selecionado(s)'
                         className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 cursor-pointer"
-                        onClick={() => handleArchiveExtrato()}
+                        onClick={() => handleArchiveExtrato(queryKey)}
                     >
                         {archiveStatus ? (
                             <AiOutlineLoading className='animate-spin text-lg' />

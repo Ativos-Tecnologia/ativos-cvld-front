@@ -28,18 +28,18 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
         checkedList: NotionPage[],
         fetchingValue: Record<string, any> | null,
         handleSelectRow: (item: NotionPage) => void,
-        handleEditTipoOficio: (page_id: string, oficio: tipoOficio, currentValue: string | undefined) => Promise<void>,
-        handleChangeCreditorName: (value: string, index: number, page_id: string, refList: HTMLInputElement[] | null) => Promise<void>,
+        handleEditTipoOficio: (page_id: string, oficio: tipoOficio, queryKeyList: any[]) => Promise<void>,
+        handleChangeCreditorName: (value: string, page_id: string, queryKeyList: any[]) => Promise<void>,
         editableLabel: string | null;
         setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
         handleEditInput: (index: number, refList: HTMLInputElement[] | null) => void;
         handleNotionDrawer: (id: string) => void;
         handleCopyValue: (index: number) => void;
-        handleEditStatus: (page_id: string, status: statusOficio, currentValue: string) => Promise<void>;
+        handleEditStatus: (page_id: string, status: statusOficio, queryKeyList: any[]) => Promise<void>;
         statusSelectValue: statusOficio | null;
         archiveStatus: boolean;
-        handleArchiveExtrato: () => Promise<void>;
-        handleSelectAllRows: () => void;
+        handleArchiveExtrato: (queryList: any[]) => Promise<void>;
+        handleSelectAllRows: (list: any) => void;
         setCheckedList: React.Dispatch<React.SetStateAction<NotionPage[]>>;
     }
 ) => {
@@ -123,8 +123,8 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
             queryKey: ['notion_list'],
             refetchOnReconnect: true,
             refetchOnWindowFocus: true,
-            refetchInterval: 15000,
-            staleTime: 13000,
+            refetchInterval: 1000 * 13,
+            staleTime: 1000 * 13,
             queryFn: fetchNotionData,
             enabled: !!user // only fetch if user is defined after context is loaded
         },
@@ -132,8 +132,9 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
     const [nextCursor, setNextCursor] = useState<string | null>();
     const [hasMore, setHasMore] = useState<boolean>();
 
-
-
+    /* função que faz uma requisição ao backend para retornar resultados que contenham
+    a determinada palavra-chave e adiciona a nova linha filtrada para os resultados já 
+    existentes (caso haja) */
     const fetchByName = async (name: string) => {
         const response = await api.post("/api/notion-api/list/search/", {
             "username": user,
@@ -145,7 +146,10 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
         setHasMore(response.data.has_more);
     };
 
+    /* função que verifica se há mais dados no backend para serem puxados para a tabela.
+    se existir, faz o fetch e atualiza a tabela com os dados novos */
     const fetchNextCursor = async () => {
+        debugger
         if (!hasMore || !nextCursor) return;
 
         try {
@@ -173,6 +177,8 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
         enabled: false,
     });
 
+    /* variável responsável por processar os dados puros que vem do notion, de forma que
+    serve para classificar por ordem alfabética ou filtrar algum dado específico */
     const processedData = React.useMemo(() => {
         let customResults = {
             next_cursor: backendResults.length === 0 ? data?.next_cursor : nextCursor,
@@ -180,6 +186,7 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
             results: [...(data?.results || []), ...(backendResults) || []]
         }
 
+        /* o método reduce neste caso é para eliminar possíveis duplicatas no array original */
         customResults.results = customResults.results.reduce((acc: any, item: NotionPage) => {
             if (!acc.some((target: NotionPage) => target.id === item.id)) {
                 acc.push(item);
@@ -187,10 +194,14 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
             return acc;
         }, []);
 
+        /* aqui os dados são filtrados para retornar somente o(s) credor(es) que estiverem na propriedade
+        credor do filters. Se por um acaso a string for vazia, nada é filtrado e o array retornado é igual ao original */
         customResults.results = customResults.results.filter((item: NotionPage) =>
             item.properties.Credor?.title[0]?.text.content.toLowerCase().includes(filters.credor.toLowerCase())
         );
 
+        /* aqui os dados são ordenados de acordo com a ordem alfabética e são baseados no
+        nome do credor e na direção do estado sort */
         customResults.results = customResults.results.sort((a: any, b: any) => {
             const compareResult = a.properties.Credor?.title[0]?.text.content.localeCompare(b.properties.Credor?.title[0]?.text.content);
             return sort.direction === 'asc' ? compareResult : -compareResult;
@@ -199,6 +210,8 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
         return customResults.results
     }, [backendResults, nextCursor, data?.next_cursor, data?.has_more, data?.results, hasMore, sort.direction, filters.credor]);
 
+    /* função que seta a ordenação de mostragem dos dados da tabela (padrão ordem
+    alfabética) */
     const handleSort = (field: any) => {
         setSort(prev => ({
             field,
@@ -206,6 +219,7 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
         }));
     };
 
+    /* atribui os valores de nomes dos credores aos inputs */
     useEffect(() => {
         if (inputCredorRefs.current) {
             processedData.forEach((item: NotionPage, index: number) => {
@@ -218,16 +232,20 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
 
     }, [processedData]);
 
-    const handleFilterChange = useCallback((field: any, value: any) => {
+    /* função que seta o valor do filtro, se existir mais de um valor, somente
+    o especificado em field será modificado */
+    const handleFilterChange = useCallback((field: string, value: string) => {
         setFilters((prev) => ({
             ...prev,
             [field]: value,
         }));
-        setShouldFetchExternally(true);
+        // setShouldFetchExternally(true);
     }, []);
 
+    /* efeito disparado para que verificar a cada 0.5s se o valor da prop credor
+    do filtro bate com algum credor elemento do processedData */
     useEffect(() => {
-        if (filters.credor && shouldFetchExternally) {
+        if (filters.credor/* && shouldFetchExternally*/) {
             const timer = setTimeout(() => {
                 const hasMatch = processedData.some((item: NotionPage) =>
                     item.properties.Credor?.title[0]?.text.content.toLowerCase().includes(filters.credor.toLowerCase())
@@ -237,25 +255,26 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
                     queryClient.cancelQueries({ queryKey: ['notion_list'] });
                     refetchByName();
                 }
-                setShouldFetchExternally(false);
+                // setShouldFetchExternally(false);
             }, 500);
 
             return () => clearTimeout(timer);
         }
-    }, [filters, queryClient, refetchByName, processedData, shouldFetchExternally]);
+    }, [filters, queryClient, refetchByName, processedData /*shouldFetchExternally*/]);
 
+    /* função que é responsável por carregar mais ofícios para a tabela, caso existam mais */
     const loadMore = () => {
         if (hasMore && !isFetchingNextCursor) {
             refetchNextCursor();
         }
     };
 
-        useEffect(() => {
+    useEffect(() => {
         if (firstLoad && data) {
-        setNextCursor(data?.next_cursor);
-        setHasMore(data?.has_more);
-        setFirstLoad(false);
-        return;
+            setNextCursor(data?.next_cursor);
+            setHasMore(data?.has_more);
+            setFirstLoad(false);
+            return;
         }
 
         setNextCursor(nextCursor);
@@ -267,6 +286,8 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
     return (
         <div className='max-w-full overflow-x-scroll pb-5'>
             <MiniMenu
+                queryKey={['notion_list']}
+                processedData={processedData}
                 archiveStatus={archiveStatus}
                 handleArchiveExtrato={handleArchiveExtrato}
                 handleSelectAllRows={handleSelectAllRows}
@@ -275,17 +296,17 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
                 count={processedData?.length || 0}
             />
             <div className="flex mb-4">
-        <input
-          type="text"
-          placeholder="Filtrar por nome"
-          value={filters.credor}
-          onChange={(e) => handleFilterChange('credor', e.target.value)}
-          className="max-w-md rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-        />
-        {isFetchingByName && (
-                <div className="flex flex-row text-center text-gray-500 dark:text-gray-400 ml-2 py-2">
-                  <AiOutlineLoading className="animate-spin w-5 h-5" />
-                </div>
+                <input
+                    type="text"
+                    placeholder="Filtrar por nome"
+                    value={filters.credor}
+                    onChange={(e) => handleFilterChange('credor', e.target.value)}
+                    className="max-w-md rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                />
+                {isFetchingByName && (
+                    <div className="flex flex-row text-center text-gray-500 dark:text-gray-400 ml-2 py-2">
+                        <AiOutlineLoading className="animate-spin w-5 h-5" />
+                    </div>
                 )}
 
             </div>
@@ -293,46 +314,46 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
 
                 <TableHead>
                     <TableRow>
-                    <TableHeadCell className="w-[120px]">
-                        <div className='flex gap-2 items-center'>
-                            <IoDocumentTextOutline className='text-base' />
-                            Oficio
-                        </div>
-                    </TableHeadCell>
-                    <TableHeadCell>
-                        <div className='flex gap-2 items-center'>
-                            <button
-                                className='flex gap-2 items-center uppercase'
-                                onClick={() => handleSort('Credor')}>
-                                <AiOutlineUser className='text-base' /> Nome do Credor
-                                {sort.field === 'Credor' ? (
-                                    sort.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
-                                ) : (
-                                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                                )}
-                            </button>
-                        </div>
-                    </TableHeadCell>
-                    {role === 'ativos' && (
-                        <TableHeadCell className="">
-                            <div className="flex gap-2 items-center">
-                                <PiListBulletsBold className='text-base' />
-                                Usuários
+                        <TableHeadCell className="w-[120px]">
+                            <div className='flex gap-2 items-center'>
+                                <IoDocumentTextOutline className='text-base' />
+                                Oficio
                             </div>
                         </TableHeadCell>
-                    )}
-                    <TableHeadCell className="min-w-[150px]">
-                        <div className="flex gap-2 items-center">
-                            <LiaCoinsSolid className='text-base' />
-                            Valor Líquido
-                        </div>
-                    </TableHeadCell>
-                    <TableHeadCell className="">
-                        <div className="flex gap-2 items-center">
-                            <BiLoader className='text-base' />
-                            Status
-                        </div>
-                    </TableHeadCell>
+                        <TableHeadCell>
+                            <div className='flex gap-2 items-center'>
+                                <button
+                                    className='flex gap-2 items-center uppercase'
+                                    onClick={() => handleSort('Credor')}>
+                                    <AiOutlineUser className='text-base' /> Nome do Credor
+                                    {sort.field === 'Credor' ? (
+                                        sort.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
+                                    ) : (
+                                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                                    )}
+                                </button>
+                            </div>
+                        </TableHeadCell>
+                        {role === 'ativos' && (
+                            <TableHeadCell className="">
+                                <div className="flex gap-2 items-center">
+                                    <PiListBulletsBold className='text-base' />
+                                    Usuários
+                                </div>
+                            </TableHeadCell>
+                        )}
+                        <TableHeadCell className="min-w-[150px]">
+                            <div className="flex gap-2 items-center">
+                                <LiaCoinsSolid className='text-base' />
+                                Valor Líquido
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="">
+                            <div className="flex gap-2 items-center">
+                                <BiLoader className='text-base' />
+                                Status
+                            </div>
+                        </TableHeadCell>
                     </TableRow>
                 </TableHead>
                 <TableBody className=''>
@@ -358,7 +379,7 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
                                                                 Atualizando ...
                                                             </span>
                                                         ) : (
-                                                            <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleEditTipoOficio(item.id, e.target.value as tipoOficio, (item.properties.Tipo.select?.name))}>
+                                                            <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleEditTipoOficio(item.id, e.target.value as tipoOficio, ['notion_list'])}>
                                                                 {item?.properties?.Tipo.select?.name && (
                                                                     <option value={item.properties.Tipo.select?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                                         {item.properties.Tipo.select?.name}
@@ -382,7 +403,10 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
                                                     ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangeCreditorName(e.currentTarget.value, index, item.id, inputCredorRefs.current)
+                                                            if (inputCredorRefs.current) {
+                                                                inputCredorRefs.current[index].blur()
+                                                            }
+                                                            handleChangeCreditorName(e.currentTarget.value, item.id, ['notion_list'])
                                                         }
                                                     }}
                                                     // onBlur={(e) => handleChangeCreditorName(e.currentTarget.value, index, item.id, inputCredorRefs.current)}
@@ -477,7 +501,7 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
                                                         </span>
                                                     ) : (
                                                         <select className="text-[12px] w-44 text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => {
-                                                            handleEditStatus(item.id, e.target.value as statusOficio, item.properties.Status.status!.name)
+                                                            handleEditStatus(item.id, e.target.value as statusOficio, ['notion_list'])
                                                         }}>
                                                             {item.properties.Status.status?.name && (
                                                                 <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
@@ -503,7 +527,7 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
                 </TableBody>
             </Table>
             {hasMore && (
-                <Button onClick={loadMore} disabled={isFetchingNextCursor}>
+                <Button onClick={loadMore} disabled={isFetchingNextCursor} className='mt-5'>
                     {isFetchingNextCursor ? 'Carregando...' : 'Carregar mais'}
                 </Button>
             )}
