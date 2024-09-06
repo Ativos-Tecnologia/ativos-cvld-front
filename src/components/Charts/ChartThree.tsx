@@ -30,11 +30,14 @@ const ChartThree: React.FC<ChartThreeProps> = ({title, data}) => {
         color: "#637381",
       },
     },
+
     chart: {
       fontFamily: "Satoshi, sans-serif",
       type: "donut",
+      toolbar: {
+        show: true,
+      },
     },
-    colors: ["#3C50E0", "#6577F3", "#8FD0EF", "#0FADCF"],
     labels: data?.results.map((item) => item.properties["Credor"]?.title[0]?.plain_text),
     tooltip: {
       y: {
@@ -83,26 +86,25 @@ const ChartThree: React.FC<ChartThreeProps> = ({title, data}) => {
 
 
   function handleSeries(data: NotionResponse) {
-    let ehIssoMesmo = Array<{
+    let serie = Array<{
       name: string,
       value: number
     }>();
 
     let dataForChart = data?.results.forEach((item) => {
-      item?.properties["Valor de aquisição"]?.formula?.number && ehIssoMesmo.push({
+      item?.properties["Valor de Aquisição (Wallet)"].number && serie.push({
         name: item.properties["Credor"]?.title[0]?.plain_text,
-        value: item.properties["Valor de aquisição"]?.formula?.number
+        value: item.properties["Valor de Aquisição (Wallet)"]?.number
       })
       }
     )
-
-
-
-    setState((prevState) => ({
-      ...prevState,
-      series: ehIssoMesmo.map((item) => item.value)
-    }));
+    setState({
+      series: serie.map((item) => item.value)
+    });
   }
+
+
+
 
   useEffect(() => {
     if (data) {
@@ -110,7 +112,7 @@ const ChartThree: React.FC<ChartThreeProps> = ({title, data}) => {
       handleSeries(data);
     }
 
-  }, [data, handleSeries]);
+  }, [data]);
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-5">
