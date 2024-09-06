@@ -1,3 +1,4 @@
+import { NotionResponse } from "@/interfaces/INotion";
 import { ApexOptions } from "apexcharts";
 import React, { useState } from "react";
 import ReactApexChart from "react-apexcharts";
@@ -69,7 +70,15 @@ interface ChartTwoState {
   }[];
 }
 
-const ChartTwo: React.FC = () => {
+interface ProfitBarChartProps {
+  title?: string;
+  data?: NotionResponse;
+}
+
+const ProfitBarChart: React.FC<ProfitBarChartProps> = ({
+  title,
+  data,
+}) => {
   const [state, setState] = useState<ChartTwoState>({
     series: [
       {
@@ -150,4 +159,4 @@ const ChartTwo: React.FC = () => {
   );
 };
 
-export default ChartTwo;
+export default ProfitBarChart;

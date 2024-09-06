@@ -30,7 +30,7 @@ interface IWalletResponse {
   result: IWalletResults[];
 }
 
-const ChartOne: React.FC = () => {
+const RentabilityChart: React.FC = () => {
   const [response, setResponse] = useState<IWalletResponse>(
     {
       "id": "1601fbf8-7f93-489c-8f35-1a2a6739f5ac",
@@ -386,4 +386,4 @@ const ChartOne: React.FC = () => {
   );
 };
 
-export default ChartOne;
+export default RentabilityChart;

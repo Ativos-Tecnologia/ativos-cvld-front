@@ -1,21 +1,18 @@
 "use client";
 import React, { useContext } from "react";
-import ChartOne from "../Charts/ChartOne";
-import ChartThree from "../Charts/ChartThree";
-import ChartTwo from "../Charts/ChartTwo";
+import RentabilityChart from "../Charts/RentabilityChart";
+import DistributionChart from "../Charts/ChartThree";
+import ProfitChart from "../Charts/ProfitBarChart";
 import ChatCard from "../Chat/ChatCard";
 import TableOne from "../Tables/TableOne";
 import CardDataStats from "../ui/CardDataStats";
-import MapOne from "../Maps/MapOne";
 import DataStatsFour from "../DataStats/DataStatsFour";
-import { QueryClient, QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
+import { QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
 import api from "@/utils/api";
 import { NotionResponse } from "@/interfaces/INotion";
-import numberFormat from "@/functions/formaters/numberFormat";
 import CardDataStatsSkeleton from "../ui/CardDataStatsSkeleton";
 import AnimatedNumber from "../ui/AnimatedNumber";
-import factorFormater from "@/functions/formaters/factorFormater";
 import percentageFormater from "@/functions/formaters/percentFormater";
 
 const Wallet: React.FC = () => {
@@ -176,9 +173,9 @@ const Wallet: React.FC = () => {
       </div>
 
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-        <ChartOne />
-        <ChartTwo />
-        <ChartThree title={"Distribuição da Carteira"} data={data} />
+        <RentabilityChart />
+        <ProfitChart title={""} data={data} />
+        <DistributionChart title={"Distribuição da Carteira"} data={data} />
         {/* <MapOne /> */}
       <DataStatsFour />
         <div className="col-span-12 xl:col-span-8">
