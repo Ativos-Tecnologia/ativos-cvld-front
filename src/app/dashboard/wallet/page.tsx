@@ -4,7 +4,7 @@ import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 
 export const metadata: Metadata = {
-  title: "CellerApp | Wallet",
+  title: "CelerApp | Wallet",
   description:
     "Carteira de ativos digitais, com informações sobre o saldo, valorização e desvalorização dos ativos.",
 };

@@ -15,6 +15,8 @@ import { NotionResponse } from "@/interfaces/INotion";
 import numberFormat from "@/functions/formaters/numberFormat";
 import CardDataStatsSkeleton from "../ui/CardDataStatsSkeleton";
 import AnimatedNumber from "../ui/AnimatedNumber";
+import factorFormater from "@/functions/formaters/factorFormater";
+import percentageFormater from "@/functions/formaters/percentFormater";
 
 const Wallet: React.FC = () => {
   const { data: { user } } = useContext(UserInfoAPIContext);
@@ -42,8 +44,8 @@ const Wallet: React.FC = () => {
   function handleTotalInvested(data: NotionResponse) {
     let totalInvested = 0;
     data?.results.forEach((result) => {
-      if (result.properties["Valor de aquisição"]?.formula?.number) {
-        totalInvested += Number(result.properties["Valor de aquisição"].formula.number) || 0;
+      if (result.properties["Valor de Aquisição (Wallet)"]?.number) {
+        totalInvested += Number(result.properties["Valor de Aquisição (Wallet)"].number) || 0;
       }
     });
     return totalInvested;
@@ -64,6 +66,7 @@ const Wallet: React.FC = () => {
   }
 
   function handleProfit(data: NotionResponse) {
+    return handleTotalLiquid(data) - handleTotalInvested(data);
   }
 
   return (
@@ -99,9 +102,6 @@ const Wallet: React.FC = () => {
           <CardDataStats title="Total Líquido" total={
           data && <AnimatedNumber value={data && handleTotalLiquid(data)} />
         } rate="4.35%" levelUp>
-            {/*
-            Lucro Presumido é o total de lucro que o investidor teria se vendesse todos os seus ativos no momento da consulta.
-            */}
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -121,7 +121,13 @@ const Wallet: React.FC = () => {
           </svg>
         </CardDataStats> : <CardDataStatsSkeleton />}
         {data ?
-          <CardDataStats title="Total Users" total="3.456" rate="0.95%" levelDown>
+          <CardDataStats title="Lucro" total={
+          data && <AnimatedNumber value={data && handleProfit(data)} />
+          } rate={
+            data && percentageFormater(handleProfit(data) / handleTotalInvested(data) * 100) || 0
+          } {
+            ...data && handleProfit(data) > 0 ? { levelUp: true } : { levelDown: true }
+          }>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -172,8 +178,8 @@ const Wallet: React.FC = () => {
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
         <ChartOne />
         <ChartTwo />
-        <ChartThree title={"Total Investido"} data={data} />
-        <MapOne />
+        <ChartThree title={"Distribuição da Carteira"} data={data} />
+        {/* <MapOne /> */}
       <DataStatsFour />
         <div className="col-span-12 xl:col-span-8">
           <TableOne />
