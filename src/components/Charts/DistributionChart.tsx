@@ -103,9 +103,6 @@ const DistributionChart: React.FC<ChartThreeProps> = ({title, data}) => {
     });
   }
 
-
-
-
   useEffect(() => {
     if (data) {
 

@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import RentabilityChart from "../Charts/RentabilityChart";
 import DistributionChart from "../Charts/DistributionChart";
 import ProfitChart from "../Charts/ProfitBarChart";
@@ -10,13 +10,30 @@ import DataStatsFour from "../DataStats/DataStatsFour";
 import { QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
 import api from "@/utils/api";
-import { NotionResponse } from "@/interfaces/INotion";
+import { NotionPage, NotionResponse } from "@/interfaces/INotion";
 import CardDataStatsSkeleton from "../ui/CardDataStatsSkeleton";
 import AnimatedNumber from "../ui/AnimatedNumber";
 import percentageFormater from "@/functions/formaters/percentFormater";
+import { IWalletResponse } from "@/interfaces/IWallet";
 
 const Wallet: React.FC = () => {
   const { data: { user } } = useContext(UserInfoAPIContext);
+
+  const [vlData, setVlData] = useState<IWalletResponse>({
+    id: "",
+    valor_investido: 0,
+    previsao_de_pgto: "",
+    result: [
+      {
+        data_atualizacao: "",
+        valor_principal: 0,
+        valor_juros: 0,
+        valor_inscrito: 0,
+        valor_bruto_atualizado_final: 0,
+        valor_liquido_disponivel: 0,
+      },
+    ]
+  });
 
   const fetchWalletNotionList = async () => {
     const response = await api.post('/api/notion-api/wallet/', {
@@ -24,6 +41,22 @@ const Wallet: React.FC = () => {
     });
     return response.data;
   };
+
+
+  const fetchUpdatedVL = async (oficio: NotionPage) => {
+    // Essa função recebe um objeto do tipo NotionPage e retorna um objeto do tipo IWalletResponse com os valores atualizados
+    try {
+      const response = await api.post('/api/extrato/wallet/', {
+        oficio
+      });
+      if (response.data) {
+        setVlData(response.data);
+      }
+
+    } catch (error:any) {
+      throw new Error(error.message);
+  }
+}
 
   const queryClient = useQueryClient()
   const { isPending, data, error, isFetching, refetch } = useQuery(
@@ -37,6 +70,8 @@ const Wallet: React.FC = () => {
           enabled: !!user
       },
   );
+
+
 
   function handleTotalInvested(data: NotionResponse) {
     let totalInvested = 0;
@@ -173,8 +208,8 @@ const Wallet: React.FC = () => {
       </div>
 
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-        <RentabilityChart />
-        <ProfitChart title={""} data={data} />
+        <RentabilityChart data={vlData} />
+        <ProfitChart title={"Performance de Lucro"} data={vlData} />
         <DistributionChart title={"Distribuição da Carteira"} data={data} />
         {/* <MapOne /> */}
       <DataStatsFour />
