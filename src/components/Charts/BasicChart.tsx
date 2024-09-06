@@ -2,7 +2,7 @@
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import RentabilityChart from "@/components/Charts/RentabilityChart";
 import ProfitChart from "@/components/Charts/ProfitBarChart";
-import DistributionChart from "@/components/Charts/ChartThree";
+import DistributionChart from "@/components/Charts/DistributionChart";
 
 const BasicChart: React.FC = () => {
   return (

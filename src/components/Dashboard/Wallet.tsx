@@ -1,7 +1,7 @@
 "use client";
 import React, { useContext } from "react";
 import RentabilityChart from "../Charts/RentabilityChart";
-import DistributionChart from "../Charts/ChartThree";
+import DistributionChart from "../Charts/DistributionChart";
 import ProfitChart from "../Charts/ProfitBarChart";
 import ChatCard from "../Chat/ChatCard";
 import TableOne from "../Tables/TableOne";
