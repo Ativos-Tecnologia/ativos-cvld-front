@@ -72,14 +72,14 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
       className="overflow-hidden"
     >
 
-      {
+      {/* {
         role === 'ativos' ? (
 
           <div className="p-5 bg-white rounded-sm dark:bg-boxdark">
           </div>
         ) : (<div className="p-5 bg-white rounded-sm dark:bg-boxdark">
         </div>)
-      }
+      } */}
 
       {window.innerWidth >= 435 ? (
           <>
