@@ -85,6 +85,7 @@ export interface NotionPage {
   id: string;
   created_time?: string;
   last_edited_time?: string;
+  properties: NotionProperties;
   created_by?: {
     object: NotionObject;
     id: string;
@@ -101,7 +102,6 @@ export interface NotionPage {
   };
   archived?: boolean;
   in_trash?: boolean;
-  properties: NotionProperties;
   url?: string;
   public_url?: string | null;
 }

@@ -1,11 +1,11 @@
 import dateFormater from "@/functions/formaters/dateFormater";
 import numberFormat from "@/functions/formaters/numberFormat";
 import percentageFormater from "@/functions/formaters/percentFormater";
+import { IWalletResponse } from "@/interfaces/IWallet";
 import { ApexOptions } from "apexcharts";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
-
-
+import { AiOutlineLoading } from "react-icons/ai";
 
 interface ChartOneState {
   series: {
@@ -13,113 +13,19 @@ interface ChartOneState {
     data: number[]
   }[];
 }
-
-interface IWalletResults {
-  data_atualizacao: string;
-  valor_principal: number;
-  valor_juros: number;
-  valor_inscrito: number;
-  valor_bruto_atualizado_final: number;
-  valor_liquido_disponivel: number;
+export interface RentabilityChartProps {
+  data: IWalletResponse;
 }
 
-interface IWalletResponse {
-  id: string;
-  valor_investido: number;
-  previsao_de_pgto: string;
-  result: IWalletResults[];
-}
+const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
 
-const ChartOne: React.FC = () => {
-  const [response, setResponse] = useState<IWalletResponse>(
-    {
-      "id": "1601fbf8-7f93-489c-8f35-1a2a6739f5ac",
-      "valor_investido": 144335.06443864203,
-      "previsao_de_pgto": "2025-12-05",
-      "result": [
-        {
-          "data_atualizacao": "2024-01-05",
-          "valor_principal": 230625.7,
-          "valor_juros": 35323.81,
-          "valor_inscrito": 265949.51,
-          "valor_bruto_atualizado_final": 302880.75856881065,
-          "valor_liquido_disponivel": 292930.78881881066
-        },
-        {
-          "data_atualizacao": "2024-02-05",
-          "valor_principal": 230625.7,
-          "valor_juros": 35323.81,
-          "valor_inscrito": 265949.51,
-          "valor_bruto_atualizado_final": 303819.68892037397,
-          "valor_liquido_disponivel": 293747.58617037395
-        },
-        {
-          "data_atualizacao": "2024-03-05",
-          "valor_principal": 230625.7,
-          "valor_juros": 35323.81,
-          "valor_inscrito": 265949.51,
-          "valor_bruto_atualizado_final": 306189.4824939529,
-          "valor_liquido_disponivel": 295809.1252439529
-        },
-        {
-          "data_atualizacao": "2024-04-05",
-          "valor_principal": 230625.7,
-          "valor_juros": 35323.81,
-          "valor_inscrito": 265949.51,
-          "valor_bruto_atualizado_final": 307291.7646309312,
-          "valor_liquido_disponivel": 296768.0268809312
-        },
-        {
-          "data_atualizacao": "2024-05-05",
-          "valor_principal": 230625.7,
-          "valor_juros": 35323.81,
-          "valor_inscrito": 265949.51,
-          "valor_bruto_atualizado_final": 307937.0773366561,
-          "valor_liquido_disponivel": 297329.3980866561
-        },
-        {
-          "data_atualizacao": "2024-06-05",
-          "valor_principal": 230625.7,
-          "valor_juros": 35323.81,
-          "valor_inscrito": 265949.51,
-          "valor_bruto_atualizado_final": 309292.0004769374,
-          "valor_liquido_disponivel": 298508.0772269374
-        },
-        {
-          "data_atualizacao": "2024-07-05",
-          "valor_principal": 230625.7,
-          "valor_juros": 35323.81,
-          "valor_inscrito": 265949.51,
-          "valor_bruto_atualizado_final": 310498.2392787974,
-          "valor_liquido_disponivel": 299557.4130287974
-        },
-        {
-          "data_atualizacao": "2024-08-05",
-          "valor_principal": 230625.7,
-          "valor_juros": 35323.81,
-          "valor_inscrito": 265949.51,
-          "valor_bruto_atualizado_final": 311429.7339966338,
-          "valor_liquido_disponivel": 300367.7422466338
-        },
-        {
-          "data_atualizacao": "2024-09-05",
-          "valor_principal": 230625.7,
-          "valor_juros": 35323.81,
-          "valor_inscrito": 265949.51,
-          "valor_bruto_atualizado_final": 312021.45049122744,
-          "valor_liquido_disponivel": 300882.48924122745
-        }
-      ]
-    }
-   );
-
-   function handleRantabilideTotal (response: IWalletResponse) {
-    return (response.result[response.result.length - 1].valor_liquido_disponivel - response.valor_investido) / response.valor_investido;
+   function handleRantabilideTotal (data: IWalletResponse) {
+    return (data.result[data.result.length - 1].valor_liquido_disponivel - data.valor_investido) / data.valor_investido;
    }
 
-   function handleMesesAteOPagamento (response: IWalletResponse) {
-    const data_aquisicao = new Date(response.result[0].data_atualizacao);
-    const previsao_de_pgto = new Date(response.previsao_de_pgto);
+   function handleMesesAteOPagamento (data: IWalletResponse) {
+    const data_aquisicao = new Date(data.result[0].data_atualizacao);
+    const previsao_de_pgto = new Date(data.previsao_de_pgto);
 
     const diffMonths = Math.abs(previsao_de_pgto.getTime() - data_aquisicao.getTime()) / (1000 * 60 * 60 * 24 * 30)
     return diffMonths;
@@ -216,7 +122,7 @@ const ChartOne: React.FC = () => {
     },
     xaxis: {
       type: "category",
-      categories: response.result.map((item) => dateFormater(item.data_atualizacao).slice(3, 10)),
+      categories: data?.result.map((item) => dateFormater(item.data_atualizacao).slice(3, 10)),
       axisBorder: {
         show: false,
       },
@@ -250,26 +156,37 @@ const ChartOne: React.FC = () => {
     series: [
       {
         name: "Valor Liquido Disponivel",
-        data: response.result.map((item) => Number(item.valor_liquido_disponivel.toFixed(2))),
+        data: data?.result.map((item) => Number(item.valor_liquido_disponivel.toFixed(2))) || [],
       },
       {
         name: "Valor Inscrito",
-        data: response.result.map((item) => item.valor_inscrito),
+        data: data?.result.map((item) => item.valor_inscrito) || [],
       },
       {
         name: "Valor Investido",
-        data: response.result.map((item) => response.valor_investido),
+        data: data?.result.map((item) => data?.valor_investido) || [],
       },
-
     ],
   });
 
-  const handleReset = () => {
-    setState((prevState) => ({
-      ...prevState,
-    }));
-  };
-  handleReset;
+  useEffect(() => {
+    setState({
+      series: [
+        {
+          name: "Valor Liquido Disponivel",
+          data: data?.result.map((item) => Number(item.valor_liquido_disponivel.toFixed(2))) || [],
+        },
+        {
+          name: "Valor Inscrito",
+          data: data?.result.map((item) => item.valor_inscrito) || [],
+        },
+        {
+          name: "Valor Investido",
+          data: data?.result.map((item) => data.valor_investido) || [],
+        },
+      ],
+    });
+  }, [data]);
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
@@ -283,11 +200,11 @@ const ChartOne: React.FC = () => {
               <p className="font-semibold text-primary">Valorização do Ativo</p>
               <p className="text-sm font-medium">
                 {
-                  dateFormater(response.result[0].data_atualizacao)
+                  dateFormater(data?.result[0].data_atualizacao)
                 }
                  &nbsp;a&nbsp;
                 {
-                  dateFormater(response.result[response.result.length - 1].data_atualizacao)
+                  dateFormater(data?.result[data.result.length - 1].data_atualizacao)
                 }
               </p>
             </div>
@@ -298,15 +215,14 @@ const ChartOne: React.FC = () => {
             </span>
             <div className="w-full mb-4">
               <p className="font-semibold text-primary">Previsão de Pagamento</p>
-              <p className="text-sm font-medium">
-                {
-                  dateFormater(response.previsao_de_pgto)
+              { data ?  (<p className="text-sm font-medium">
+                ({
+                  dateFormater(data?.previsao_de_pgto)
                 }
               - Cerca de {
-                Math.floor(handleMesesAteOPagamento(response))
-              } meses
-
-              </p>
+                Math.floor(handleMesesAteOPagamento(data))
+              } meses)
+              </p>) : <AiOutlineLoading className="animate-spin mr-2" />}
             </div>
           </div>
 
@@ -343,9 +259,9 @@ const ChartOne: React.FC = () => {
             </span>
             <div className="w-full">
               <p className="font-semibold text-meta-4">Valor Investido</p>
-              <p className="text-sm font-medium">{
-                numberFormat(response.valor_investido)
-                }</p>
+              {data ? (<p className="text-sm font-medium">{
+                numberFormat(data?.valor_investido)
+                }</p>) : <AiOutlineLoading className="animate-spin mr-2" />}
             </div>
           </div>
           {/* <div className="flex min-w-47.5">
@@ -365,9 +281,9 @@ const ChartOne: React.FC = () => {
             </span>
             <div className="w-full">
               <p className="font-semibold text-meta-4">Rentabilidade A.A</p>
-              <p className="text-sm font-medium">{
-                (handleRentabilideAA(handleRantabilideTotal(response), handleMesesAteOPagamento(response)) * 100).toFixed(2) + "%"
-                }</p>
+              {data ? (<p className="text-sm font-medium">{
+                (handleRentabilideAA(handleRantabilideTotal(data), handleMesesAteOPagamento(data)) * 100).toFixed(2) + "%"
+                }</p>) : <AiOutlineLoading className="animate-spin mr-2" />}
             </div>
           </div>
           <div className="flex min-w-47.5">
@@ -376,9 +292,9 @@ const ChartOne: React.FC = () => {
             </span>
             <div className="w-full">
               <p className="font-semibold text-meta-4">Rentabilidade A.M.</p>
-              <p className="text-sm font-medium">{
-                (handleRentabilidadeAM(handleRentabilideAA(handleRantabilideTotal(response), handleMesesAteOPagamento(response))) * 100).toFixed(2) + "%"
-                }</p>
+              {data ?(<p className="text-sm font-medium">{
+                (handleRentabilidadeAM(handleRentabilideAA(handleRantabilideTotal(data), handleMesesAteOPagamento(data))) * 100).toFixed(2) + "%"
+                }</p>) : <AiOutlineLoading className="animate-spin mr-2" />}
             </div>
           </div>
           </div>
@@ -386,4 +302,4 @@ const ChartOne: React.FC = () => {
   );
 };
 
-export default ChartOne;
+export default RentabilityChart;
