@@ -3,11 +3,11 @@ import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import tipoOficio from '@/enums/tipoOficio.enum';
 import api from '@/utils/api';
 import { LucideChevronsUpDown } from 'lucide-react';
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { forwardRef, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { BiLoader, BiSolidCategoryAlt, BiSolidDockLeft, BiSolidWallet, BiUpArrowAlt } from 'react-icons/bi';
 import { MdOutlineFilterAltOff } from 'react-icons/md';
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from './TableDefault';
-import { AiOutlineUser } from 'react-icons/ai';
+import { AiOutlineLoading, AiOutlineUser } from 'react-icons/ai';
 import { PiCursorClick, PiHash, PiListBulletsBold } from 'react-icons/pi';
 import { BsCalendar3 } from 'react-icons/bs';
 import { LiaCoinsSolid } from 'react-icons/lia';
@@ -20,34 +20,81 @@ import { RiNotionFill } from 'react-icons/ri';
 import { LuBarChart4 } from 'react-icons/lu';
 import { IWalletResponse } from '@/interfaces/IWallet';
 import numberFormat from '@/functions/formaters/numberFormat';
+import notionColorResolver from '@/functions/formaters/notionColorResolver';
+import { Item } from '@radix-ui/react-select';
+import { Button } from '../ui/button';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 export interface ITableWalletProps {
     data: any;
     isPending: boolean;
-    setVlData: React.Dispatch<React.SetStateAction<IWalletResponse>>
+    isFetching: boolean;
+    setVlData: React.Dispatch<React.SetStateAction<IWalletResponse>>;
+    setDefaultFilterObject: React.Dispatch<React.SetStateAction<any>>;
 }
 
-const TableWallet = ({ data, isPending, setVlData }: ITableWalletProps) => {
+const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data, isPending, isFetching, setVlData, setDefaultFilterObject }, ref) => {
 
     /* =====> states <====== */
-    const [editableLabel, setEditableLabel] = useState<string | null>(null);
+    const [fetchingVL, setFetchingVL] = useState<string | null>(null);
     const [openTipoOficioPopover, setOpenTipoOficioPopover] = useState<boolean>(false);
     const [openUsersPopover, setOpenUsersPopover] = useState<boolean>(false)
     const [oficioSelectValue, setOficioSelectValue] = useState<tipoOficio | null>(null);
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
     const [usersList, setUsersList] = useState<string[]>([]);
-    const [checkedList, setCheckedList] = useState<any[]>([])
-    const { data: { user, role } } = useContext(UserInfoAPIContext)
+    const [filters, setFilters] = useState({ credor: '' });
+    const [backendResults, setBackendResults] = useState<NotionPage[]>([]);
+    const [nextCursor, setNextCursor] = useState<string | null>();
+    const [hasMore, setHasMore] = useState<boolean>();
+    const { data: { user, role } } = useContext(UserInfoAPIContext);
+    const queryClient = useQueryClient();
 
-    console.log(data)
+    const { refetch: refetchByName, isFetching: isFetchingByName } = useQuery({
+        queryKey: ['notion_wallet_creditor_name', filters.credor],
+        queryFn: () => fetchByName(filters.credor),
+        enabled: false,
+    });
+
+    const { refetch: refetchNextCursor, isFetching: isFetchingNextCursor } = useQuery({
+        queryKey: ['notion_wallet_next_cursor', nextCursor],
+        queryFn: () => fetchNextCursor,
+        enabled: false,
+    });
 
     /* =====> refs <====== */
     const selectTipoOficioRef = useRef<any>(null);
     const selectUserRef = useRef<any>(null);
     const inputCredorRefs = useRef<HTMLInputElement[] | null>([]);
 
+    /* variável responsável por processar os dados puros que vem do notion, de forma que
+    serve para classificar por ordem alfabética ou filtrar algum dado específico */
+    const processedData = React.useMemo(() => {
+        let customResults = {
+            next_cursor: backendResults.length === 0 ? data?.next_cursor : nextCursor,
+            has_more: backendResults.length > 0 ? hasMore : data?.has_more,
+            results: [...(data?.results || []), ...(backendResults) || []]
+        }
+
+        /* o método reduce neste caso é para eliminar possíveis duplicatas no array original */
+        customResults.results = customResults.results.reduce((acc: any, item: NotionPage) => {
+            if (!acc.some((target: NotionPage) => target.id === item.id)) {
+                acc.push(item);
+            }
+            return acc;
+        }, []);
+
+        /* aqui os dados são filtrados para retornar somente o(s) credor(es) que estiverem na propriedade
+        credor do filters. Se por um acaso a string for vazia, nada é filtrado e o array retornado é igual ao original */
+        customResults.results = customResults.results.filter((item: NotionPage) =>
+            item.properties.Credor?.title[0]?.text.content.toLowerCase().includes(filters.credor.toLowerCase())
+        );
+
+        return customResults.results
+    }, [backendResults, nextCursor, data?.next_cursor, data?.has_more, data?.results, hasMore, filters.credor]);
+
     /* =====> functions <===== */
     const fetchUpdatedVL = async (oficio: NotionPage) => {
+        setFetchingVL(oficio.id)
         // Essa função recebe um objeto do tipo NotionPage e retorna um objeto do tipo IWalletResponse com os valores atualizados
         try {
             const response = await api.post('/api/extrato/wallet/', {
@@ -55,100 +102,112 @@ const TableWallet = ({ data, isPending, setVlData }: ITableWalletProps) => {
             });
             if (response.data) {
                 setVlData(response.data);
+                if (ref && 'current' in ref && ref.current) {
+                    ref.current.scrollIntoView({
+                        behavior: 'smooth'
+                    })
+                }
             }
 
         } catch (error: any) {
             throw new Error(error.message);
+        } finally {
+            setFetchingVL(null);
         }
-    }
-
-    const handleFilterByTipoOficio = (oficio: tipoOficio) => {
-        setOficioSelectValue(oficio);
-        setOpenTipoOficioPopover(false);
-        // setListQuery(
-        //     {
-        //         "and": [
-        //             {
-        //                 "property": selectedUser && data2?.sub_role === 'coordenador' ? "Usuário" : "Coordenadores",
-        //                 "multi_select": {
-        //                     "contains": selectedUser && data2?.sub_role === 'coordenador' ? selectedUser : ""
-        //                 }
-        //             },
-        //             data2?.sub_role === 'coordenador' ? {
-        //                 "property": "Coordenadores",
-        //                 "multi_select": {
-        //                     "contains": data2?.user
-        //                 }
-        //             } : {
-        //                 "property": "Usuário",
-        //                 "multi_select": {
-        //                     "contains": selectedUser || data2?.user
-        //                 }
-        //             },
-        //             {
-        //                 "property": "Status",
-        //                 "status": {
-        //                     "equals": statusSelectValue || ''
-        //                 }
-        //             },
-        //             {
-        //                 "property": "Tipo",
-        //                 "select": {
-        //                     "equals": oficio
-        //                 }
-        //             },
-        //             secondaryDefaultFilterObject
-        //         ]
-        //     }
-        // );
     }
 
     const handleFilterByUser = (user: string) => {
         setOpenUsersPopover(false)
         setSelectedUser(user);
-        // setListQuery({
-        //     "and": [
-        //         {
-        //             "property": selectedUser && data2?.sub_role === 'coordenador' ? "Usuário" : "Coordenadores",
-        //             "multi_select": {
-        //                 "contains": selectedUser && data2?.sub_role === 'coordenador' ? user : ""
-        //             }
-        //         },
-        //         data2?.sub_role === 'coordenador' ? {
-        //             "property": "Coordenadores",
-        //             "multi_select": {
-        //                 "contains": data2?.user
-        //             }
-        //         } : {
-        //             "property": "Usuário",
-        //             "multi_select": {
-        //                 "contains": user
-        //             }
-        //         },
-        //         {
-        //             "property": "Status",
-        //             "status": {
-        //                 "equals": statusSelectValue || ''
-        //             }
-        //         },
-        //         {
-        //             "property": "Tipo",
-        //             "select": {
-        //                 "equals": oficioSelectValue || ''
-        //             }
-        //         },
-        //         secondaryDefaultFilterObject
-        //     ]
-        // });
+        setDefaultFilterObject({
+            "username": user
+        })
     }
 
     const handleCleanAllFilters = () => {
         setOficioSelectValue(null);
         setSelectedUser(null);
-        // setListQuery(defaultFilterObject);
+        setDefaultFilterObject({
+            "username": user
+        })
     }
 
+    function dateConverter(date: string): string {
+        const convertedDate = date.split("-").reverse().join("/");
+        return convertedDate;
+    }
+
+    /* função que seta o valor do filtro, se existir mais de um valor, somente
+    o especificado em field será modificado */
+    const handleFilterChange = useCallback((field: string, value: string) => {
+        setFilters((prev) => ({
+            ...prev,
+            [field]: value,
+        }));
+        // setShouldFetchExternally(true);
+    }, []);
+
+    /* função que faz uma requisição ao backend para retornar resultados que contenham
+    a determinada palavra-chave e adiciona a nova linha filtrada para os resultados já 
+    existentes (caso haja) */
+    const fetchByName = async (name: string) => {
+        const response = await api.post("/api/notion-api/list/search/", {
+            "username": user,
+            "creditor_name": name
+        });
+
+        setBackendResults(response.data.results);
+        setNextCursor(response.data.next_cursor);
+        setHasMore(response.data.has_more);
+    };
+
+    /* função que verifica se há mais dados no backend para serem puxados para a tabela.
+    se existir, faz o fetch e atualiza a tabela com os dados novos */
+    const fetchNextCursor = async () => {
+        debugger
+        if (!hasMore || !nextCursor) return;
+
+        try {
+            const response = await api.post(`/api/notion-api/list/database/next-cursor/${nextCursor}/`, {
+                "username": user
+            });
+
+            setNextCursor(response.data.next_cursor);
+            setHasMore(response.data.has_more);
+            setBackendResults(prevResults => [...prevResults, ...response.data.results]);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    /* função que é responsável por carregar mais ofícios para a tabela, caso existam mais */
+    const loadMore = () => {
+        if (hasMore && !isFetchingNextCursor) {
+            refetchNextCursor();
+        }
+    };
+
     /* =====> effects <===== */
+    /* efeito disparado para que verificar a cada 0.5s se o valor da prop credor
+    do filtro bate com algum credor elemento do processedData */
+    useEffect(() => {
+        if (filters.credor) {
+            const timer = setTimeout(() => {
+                const hasMatch = processedData.some((item: NotionPage) =>
+                    item.properties.Credor?.title[0]?.text.content.toLowerCase().includes(filters.credor.toLowerCase())
+                );
+
+                if (!hasMatch) {
+                    queryClient.cancelQueries({ queryKey: ['notion_wallet_list'] });
+                    refetchByName();
+                }
+                
+            }, 500);
+
+            return () => clearTimeout(timer);
+        }
+    }, [filters, processedData]);
+
     // seta a lista de usuários de a role do usuário for ativos
     useEffect(() => {
         const fetchData = async () => {
@@ -199,52 +258,29 @@ const TableWallet = ({ data, isPending, setVlData }: ITableWalletProps) => {
                     className={`py-1 px-2 min-w-30 flex items-center justify-start gap-2 border-b-2 text-blue-700 dark:text-blue-500 border-blue-700 dark:border-blue-500`}
                 >
                     <BiSolidWallet className='text-sm' />
-                    <span>WORKSPACE NOTION</span>
+                    <span>LISTA DE OFÍCIOS (WALLET)</span>
                 </div>
             </div>
 
             {/* Filtros estilo select */}
-            <div className={`flex items-center justify-between mt-3 ${isPending && 'pointer-events-none'}`}>
+            <div className={`flex items-center justify-between my-3 ${isPending && 'pointer-events-none'}`}>
                 <div className='flex items-center gap-2'>
 
-                    {/* ====== select de tipoOficio ====== */}
-                    <>
-                        <div className='flex items-center justify-center gap-1'>
-                            <div className='relative'>
-                                <div className='flex items-center justify-center'>
-                                    <div
-                                        onClick={() => setOpenTipoOficioPopover(!openTipoOficioPopover)}
-                                        className={`min-w-48 flex items-center justify-between gap-1 border border-stroke dark:border-strokedark text-xs font-semibold py-1 px-2 hover:bg-slate-100 uppercase dark:hover:bg-slate-700 ${openTipoOficioPopover && 'bg-slate-100 dark:bg-slate-700'} rounded-md transition-colors duration-200 cursor-pointer`}>
-                                        <span>
-                                            {oficioSelectValue || 'Tipo do Ofício'}
-                                        </span>
-                                        <LucideChevronsUpDown className='w-4 h-4' />
-                                    </div>
-                                </div>
-                                {/* ==== popover ==== */}
-
-                                {openTipoOficioPopover && (
-
-                                    <div
-                                        ref={selectTipoOficioRef}
-                                        className={`absolute mt-3 w-[230px] z-20 p-3 rounded-md bg-white dark:bg-form-strokedark shadow-1 border border-stroke dark:border-strokedark ${openTipoOficioPopover ? 'opacity-100 visible animate-in fade-in-0 zoom-in-95' : ' animate-out fade-out-0 zoom-out-95 invisible opacity-0'} transition-opacity duration-500`}>
-                                        <div className='flex flex-col max-h-49 overflow-y-scroll gap-1'>
-                                            {ENUM_TIPO_OFICIOS_LIST.map((tipoOficio) => (
-                                                <span
-                                                    key={tipoOficio}
-                                                    className='cursor-pointer text-sm p-1 rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700'
-                                                    onClick={() => handleFilterByTipoOficio(tipoOficio)}>
-                                                    {tipoOficio}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                                {/* ==== end popover ==== */}
+                    <div className="flex">
+                        <input
+                            type="text"
+                            placeholder="Filtrar por nome"
+                            value={filters.credor}
+                            onChange={(e) => handleFilterChange('credor', e.target.value)}
+                            className="max-w-md rounded-md text-sm border border-stroke bg-white px-3 py-2 font-medium dark:border-strokedark dark:bg-boxdark-2"
+                        />
+                        {isFetchingByName && (
+                            <div className="flex flex-row text-center text-gray-500 dark:text-gray-400 ml-2 py-2">
+                                <AiOutlineLoading className="animate-spin w-5 h-5" />
                             </div>
-                        </div>
-                    </>
-                    {/* ====== finaliza select de tipoOficio ====== */}
+                        )}
+
+                    </div>
 
                     {role === 'ativos' && (
                         <React.Fragment>
@@ -258,7 +294,7 @@ const TableWallet = ({ data, isPending, setVlData }: ITableWalletProps) => {
                                     <div className='flex items-center justify-center'>
                                         <div
                                             onClick={() => setOpenUsersPopover(!openUsersPopover)}
-                                            className={`min-w-48 flex items-center justify-between gap-1 border border-stroke dark:border-strokedark text-xs font-semibold py-1 px-2 hover:bg-slate-100 uppercase dark:hover:bg-slate-700 ${openUsersPopover && 'bg-slate-100 dark:bg-slate-700'} rounded-md transition-colors duration-200 cursor-pointer`}>
+                                            className={`min-w-48 flex items-center justify-between gap-1 border border-stroke text-sm dark:border-strokedark font-semibold py-2 px-3 hover:bg-slate-100 uppercase dark:hover:bg-slate-700 dark:bg-boxdark-2 ${openUsersPopover && 'bg-slate-100 dark:bg-slate-700'} rounded-md transition-colors duration-200 cursor-pointer`}>
                                             <span>
                                                 {selectedUser || user}
                                             </span>
@@ -272,16 +308,7 @@ const TableWallet = ({ data, isPending, setVlData }: ITableWalletProps) => {
                                         <div
                                             ref={selectUserRef}
                                             className={`absolute mt-3 w-[230px] z-20 p-3 rounded-md bg-white dark:bg-form-strokedark shadow-1 border border-stroke dark:border-strokedark ${openUsersPopover ? 'opacity-100 visible animate-in fade-in-0 zoom-in-95' : ' animate-out fade-out-0 zoom-out-95 invisible opacity-0'} transition-opacity duration-500`}>
-                                            {/* <div className='flex gap-1 items-center justify-center border-b border-stroke dark:border-bodydark2'>
-                                    <AiOutlineSearch className='text-lg' />
-                                    <input
-                                        ref={searchRef}
-                                        type="text"
-                                        placeholder='Pesquisar status...'
-                                        className='w-full border-none focus-within:ring-0 bg-transparent dark:placeholder:text-bodydark2'
-                                        onKeyUp={(e) => searchStatus(e.currentTarget.value)}
-                                    />
-                                </div> */}
+
                                             <div className='flex flex-col max-h-49 overflow-y-scroll gap-1'>
                                                 {usersList.filter(user => user !== data.user).map((user) => (
                                                     <span
@@ -314,10 +341,10 @@ const TableWallet = ({ data, isPending, setVlData }: ITableWalletProps) => {
                 <div className='w-full flex justify-end items-right'>
                     {
                         <div className='w-full mb-2 h-4 flex justify-end items-center'>
-                            <div className={`${isPending ? "opacity-100 visible" : "opacity-0 invisible"} text-center flex justify-center items-center transition-all duration-300`}>
+                            <div className={`${isFetching ? "opacity-100 visible" : "opacity-0 invisible"} text-center flex justify-center items-center transition-all duration-300`}>
                                 <span className='text-xs mr-2 text-meta-4 dark:text-bodydark'>
                                     {
-                                        isPending ? {
+                                        isFetching ? {
                                             0: 'Carregando...',
                                             1: 'Sincronizando bases de dados...',
                                             2: 'Atualizando...'
@@ -332,11 +359,14 @@ const TableWallet = ({ data, isPending, setVlData }: ITableWalletProps) => {
             </div>
             {/* End Filtros estilo select */}
 
-            <div className='max-w-full overflow-x-scroll pb-5'>
+            <div className='col-span-12 max-w-full overflow-x-scroll pb-5'>
                 {/* TABLE */}
                 <Table>
                     <TableHead>
                         <TableRow>
+                            <TableHeadCell className='max-w-[50px]'>
+
+                            </TableHeadCell>
                             <TableHeadCell className='min-w-100'>
                                 <div className='flex gap-2'>
                                     <AiOutlineUser className='text-base' />
@@ -450,16 +480,27 @@ const TableWallet = ({ data, isPending, setVlData }: ITableWalletProps) => {
                                     data?.results?.length > 0 && (
                                         <>
                                             {
-                                                data?.results?.map((item: NotionPage, index: number) => (
+                                                processedData?.map((item: NotionPage, index: number) => (
                                                     <TableRow
-                                                        onClick={() => fetchUpdatedVL(item)}
                                                         key={item.id}
-                                                        className={`${checkedList!.some(target => target.id === item.id) && 'bg-blue-50 dark:bg-form-strokedark'} hover:shadow-3 dark:hover:shadow-body group`}
+                                                        className={`hover:shadow-3 dark:hover:shadow-body`}
                                                     >
+
+                                                        {/* botão de abrir gráficos */}
+                                                        <TableCell>
+                                                            <button
+                                                                title='Abrir gráficos'
+                                                                onClick={() => fetchUpdatedVL(item)}
+                                                                className='w-6 h-6 rounded-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-colos duration-300 grid place-items-center'
+                                                            >
+                                                                {fetchingVL === item.id ? <AiOutlineLoading className='animate-spin' /> : <LuBarChart4 />}
+                                                            </button>
+                                                        </TableCell>
+
                                                         {/* credor info */}
                                                         <TableCell
                                                             title={item.properties.Credor?.title[0].text.content || ''}
-                                                            className="h-full flex items-center gap-2 font-semibold text-sm"
+                                                            className="h-[34.8px] flex items-center gap-2 font-semibold text-sm"
                                                         >
                                                             {
                                                                 item.properties.Credor?.title[0].text.content || ''
@@ -467,8 +508,95 @@ const TableWallet = ({ data, isPending, setVlData }: ITableWalletProps) => {
                                                         </TableCell>
 
                                                         {/* valor de aquisição */}
+                                                        <TableCell className='text-sm text-right'>
+                                                            {numberFormat(item.properties['Valor de Aquisição (Wallet)']?.number || 0)}
+                                                        </TableCell>
+
+                                                        {/* valor projetado */}
+                                                        <TableCell className='text-sm text-right'>
+                                                            {numberFormat(item.properties['Valor Projetado']?.number || 0)}
+                                                        </TableCell>
+
+                                                        {/* Previsão de pagamento */}
                                                         <TableCell className='text-sm'>
-                                                                {numberFormat(item.properties['Valor de Aquisição (Wallet)']?.number || 0)}
+                                                            {dateConverter(item.properties['Previsão de pagamento']?.date?.start || '')}
+                                                        </TableCell>
+
+                                                        {/* Valor líquido */}
+                                                        <TableCell className='text-sm text-right'>
+                                                            {numberFormat(item.properties["Valor Líquido (Com Reserva dos Honorários)"].formula?.number || 0)}
+                                                        </TableCell>
+
+                                                        {/* Data de aquisição */}
+                                                        <TableCell className='text-sm'>
+                                                            {dateConverter(item.properties["Data de aquisição do precatório"].date?.start || '')}
+                                                        </TableCell>
+
+                                                        {/* Natureza */}
+                                                        <TableCell className='text-sm'>
+                                                            {item.properties["Natureza"].select?.name}
+                                                        </TableCell>
+
+                                                        {/* Data de recebimento */}
+                                                        <TableCell className='text-sm'>
+                                                            {dateConverter(item.properties["Data do Recebimento"].date?.start || '')}
+                                                        </TableCell>
+
+                                                        {/* Data base */}
+                                                        <TableCell className='text-sm'>
+                                                            {dateConverter(item.properties["Data Base"].date?.start || '')}
+                                                        </TableCell>
+
+                                                        {/* Juros fixados */}
+                                                        <TableCell className='text-sm'>
+                                                            <CustomCheckbox
+                                                                check={item.properties['Juros fixados?'].checkbox}
+                                                            />
+                                                        </TableCell>
+
+                                                        {/* PSS */}
+                                                        <TableCell className='text-sm text-right'>
+                                                            {numberFormat(item.properties["PSS"].number || 0)}
+                                                        </TableCell>
+
+                                                        {/* Meses RRa */}
+                                                        <TableCell className='text-sm text-right'>
+                                                            {item.properties["Meses RRA"].number}
+                                                        </TableCell>
+
+                                                        {/* Incidência de IR */}
+                                                        <TableCell className='text-sm'>
+                                                            <CustomCheckbox
+                                                                check={item.properties['Incidência IR'].checkbox}
+                                                            />
+                                                        </TableCell>
+
+                                                        {/* Valor Principal */}
+                                                        <TableCell className='text-sm text-right'>
+                                                            {numberFormat(item.properties["Valor Principal"].number || 0)}
+                                                        </TableCell>
+
+                                                        {/* Valor Juros */}
+                                                        <TableCell className='text-sm text-right'>
+                                                            {numberFormat(item.properties["Valor Juros"].number || 0)}
+                                                        </TableCell>
+
+                                                        {/* Usuário da Wallet */}
+                                                        <TableCell className='text-sm'>
+                                                            <div
+                                                                // ref={(input) => { if (input) usersListRef.current![index] = input; }}
+                                                                className='flex items-center gap-1 overflow-x-scroll custom-scrollbar pb-0.5'>
+                                                                {item.properties["Usuário"].multi_select?.map((user: any) => (
+                                                                    <span
+                                                                        key={user.id}
+                                                                        style={{
+                                                                            backgroundColor: notionColorResolver(user.color)
+                                                                        }}
+                                                                        className='px-2 py-0 text-white rounded'>
+                                                                        {user.name}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
                                                         </TableCell>
                                                     </TableRow>
                                                 ))
@@ -481,9 +609,21 @@ const TableWallet = ({ data, isPending, setVlData }: ITableWalletProps) => {
                     </TableBody>
                 </Table>
                 {/* END TABLE */}
+
+                {data?.results?.length === 0 && (
+                    <div className='flex items-center justify-center pt-5'>
+                        <span>Não há registros para exibir</span>
+                    </div>
+                )}
+
+                {hasMore && (
+                    <Button onClick={loadMore} disabled={isFetchingNextCursor} className='mt-5'>
+                        {isFetchingNextCursor ? 'Carregando...' : 'Carregar mais'}
+                    </Button>
+                )}
             </div>
         </div>
     )
-}
+});
 
 export default TableWallet
