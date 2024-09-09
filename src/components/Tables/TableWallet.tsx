@@ -626,4 +626,6 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
     )
 });
 
+TableWallet.displayName = 'TableWallet';
+
 export default TableWallet
