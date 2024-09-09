@@ -24,6 +24,7 @@ import notionColorResolver from '@/functions/formaters/notionColorResolver';
 import { Item } from '@radix-ui/react-select';
 import { Button } from '../ui/button';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { WalletTableSkeletons } from '../Skeletons/WalletTableSkeletons';
 
 export interface ITableWalletProps {
     data: any;
@@ -201,7 +202,7 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                     queryClient.cancelQueries({ queryKey: ['notion_wallet_list'] });
                     refetchByName();
                 }
-                
+
             }, 500);
 
             return () => clearTimeout(timer);
@@ -250,6 +251,8 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
         }
 
     }, [data]);
+
+    console.log(data)
 
     return (
         <div className='col-span-12 bg-white dark:bg-boxdark border-stroke dark:border-strokedark p-[30px] rounded-sm shadow-default'>
@@ -474,7 +477,13 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {isPending ? null : (
+                        {isPending ? (
+                            <>
+                                {[...Array(3)].map((_, index) => (
+                                    <WalletTableSkeletons key={index} />
+                                ))}
+                            </>
+                        ) : (
                             <React.Fragment>
                                 {
                                     data?.results?.length > 0 && (
