@@ -199,6 +199,8 @@ const Wallet: React.FC = () => {
           {/* <MapOne /> */}
           {/* <DataStatsFour /> */}
           <div className="col-span-12">
+            <div className="mb-4 justify-between gap-4">
+          </div>
             <TableWallet
               data={data}
               isPending={isPending}

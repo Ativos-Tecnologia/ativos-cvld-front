@@ -49,7 +49,7 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
     colors: ["#3056D3", "#80CAEE", "#3B82F6"],
     chart: {
       fontFamily: "Satoshi, sans-serif",
-      height: 350,
+      height: 450,
       zoom: {
         enabled: true,
       },

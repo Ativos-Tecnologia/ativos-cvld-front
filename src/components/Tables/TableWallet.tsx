@@ -48,6 +48,7 @@ const TableWallet = ({ data, isPending, setVlData }: ITableWalletProps) => {
 
     /* =====> functions <===== */
     const fetchUpdatedVL = async (oficio: NotionPage) => {
+        console.log('a')
         // Essa função recebe um objeto do tipo NotionPage e retorna um objeto do tipo IWalletResponse com os valores atualizados
         try {
             const response = await api.post('/api/extrato/wallet/', {
@@ -452,10 +453,13 @@ const TableWallet = ({ data, isPending, setVlData }: ITableWalletProps) => {
                                             {
                                                 data?.results?.map((item: NotionPage, index: number) => (
                                                     <TableRow
-                                                        onClick={() => fetchUpdatedVL(item)}
+
                                                         key={item.id}
-                                                        className={`${checkedList!.some(target => target.id === item.id) && 'bg-blue-50 dark:bg-form-strokedark'} hover:shadow-3 dark:hover:shadow-body group`}
+                                                        className={`${checkedList!.some(target => target.id === item.id) && 'bg-blue-50 dark:bg-form-strokedark'} hover:shadow-3 dark:hover:shadow-body group relative`}
                                                     >
+                                                        <div className='absolute inset-0' onClick={() => fetchUpdatedVL(item)}>
+
+                                                        </div>
                                                         {/* credor info */}
                                                         <TableCell
                                                             title={item.properties.Credor?.title[0].text.content || ''}
@@ -465,8 +469,6 @@ const TableWallet = ({ data, isPending, setVlData }: ITableWalletProps) => {
                                                                 item.properties.Credor?.title[0].text.content || ''
                                                             }
                                                         </TableCell>
-
-                                                        {/* valor de aquisição */}
                                                         <TableCell className='text-sm'>
                                                                 {numberFormat(item.properties['Valor de Aquisição (Wallet)']?.number || 0)}
                                                         </TableCell>
