@@ -202,6 +202,22 @@ input[type="password"]::-webkit-textfield-decoration-container {
   @apply !inline-flex gap-1.5;
 }
 
+.apexcharts-menu.apexcharts-menu-open {
+  @apply dark:!bg-boxdark dark:!border-strokedark
+}
+
+.apexcharts-menu-icon {
+  @apply !bg-transparent !border-none !z-0
+}
+
+.apexcharts-menu-icon svg {
+  @apply !fill-body dark:!fill-bodydark hover:!fill-black-2 dark:hover:!fill-slate-300
+}
+
+.apexcharts-menu-item {
+  @apply hover:!bg-slate-100 dark:hover:!bg-slate-600
+}
+
 .apexcharts-tooltip.apexcharts-theme-light {
   @apply dark:!border-strokedark dark:!bg-boxdark;
 }

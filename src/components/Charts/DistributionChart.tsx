@@ -36,7 +36,7 @@ const DistributionChart: React.FC<ChartThreeProps> = ({title, data}) => {
       type: "donut",
       toolbar: {
         show: true,
-      },
+      }
     },
     labels: data?.results.map((item) => item.properties["Credor"]?.title[0]?.plain_text),
     tooltip: {
