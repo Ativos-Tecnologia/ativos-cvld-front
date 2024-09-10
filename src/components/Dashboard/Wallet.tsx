@@ -133,8 +133,7 @@ const Wallet: React.FC = () => {
     <>
       <QueryClientProvider client={queryClient}>
         <div
-          ref={mainRef}
-          className="scroll-mt-30 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
+          className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
           {data ? <CardDataStats title="Total Investido" total={
             data && <AnimatedNumber value={data && handleTotalInvested(data?.response[0])} />
           } >
@@ -165,10 +164,11 @@ const Wallet: React.FC = () => {
               </CardDataStats> : <CardDataStatsSkeleton />}
         </div>
 
-        <div className={`grid grid-cols-12 mt-4 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5`}>
-          <RentabilityChart data={vlData} />
+        <div className="scroll-mt-26 grid grid-cols-12 mt-4 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5" ref={mainRef}
+        >
           <ProfitChart title={"Performance de Lucro"} data={vlData} />
           <DistributionChart title={"Distribuição da Carteira"} data={data?.response[0]} />
+          <RentabilityChart data={vlData} />
           {/* <MapOne /> */}
           {/* <DataStatsFour /> */}
         </div>
