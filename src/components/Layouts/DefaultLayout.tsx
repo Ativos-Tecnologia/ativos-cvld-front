@@ -6,6 +6,7 @@ import { UserInfoProvider } from "@/context/UserInfoContext";
 import { Alert } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import UserProduct from "../UserProduct";
 
 const queryClient = new QueryClient();
 
@@ -36,27 +37,29 @@ export default function DefaultLayout({
           {/* <!-- ===== Main Content Start ===== --> */}
           <main className="w-full">
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-              <QueryClientProvider client={queryClient}>
-              {children}
-              </QueryClientProvider>
+              <UserProduct>
+                <QueryClientProvider client={queryClient}>
+                  {children}
+                </QueryClientProvider>
+              </UserProduct>
             </div>
           </main>
           {/* <!-- ===== Main Content End ===== --> */}
           {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
             showAlert && (
               <div className="sticky w-full bottom-0 z-9 py-3 px-5 text-white text-center">
-            <Alert color="warning" icon={HiInformationCircle} className="mb-0 transition-all duration-300" onDismiss={() => {
-              setStyleRelated({ opacity: 0 });
-              setTimeout(() => {
-                setShowAlert(false);
-              }, 300);
-            }} style={
-              styleRelated
-            }>
-                Você está usando uma versão em desenvolvimento!
-              </Alert>
-            </div>
-          )
+                <Alert color="warning" icon={HiInformationCircle} className="mb-0 transition-all duration-300" onDismiss={() => {
+                  setStyleRelated({ opacity: 0 });
+                  setTimeout(() => {
+                    setShowAlert(false);
+                  }, 300);
+                }} style={
+                  styleRelated
+                }>
+                  Você está usando uma versão em desenvolvimento!
+                </Alert>
+              </div>
+            )
           )}
         </div>
         {/* <!-- ===== Content Area End ===== --> */}

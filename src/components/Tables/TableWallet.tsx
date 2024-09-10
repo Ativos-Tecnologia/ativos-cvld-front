@@ -560,6 +560,7 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                                                         <TableCell className='text-sm'>
                                                             <CustomCheckbox
                                                                 check={item.properties['Juros fixados?'].checkbox}
+                                                                readOnly
                                                             />
                                                         </TableCell>
 
@@ -577,6 +578,7 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                                                         <TableCell className='text-sm'>
                                                             <CustomCheckbox
                                                                 check={item.properties['Incidência IR'].checkbox}
+                                                                readOnly
                                                             />
                                                         </TableCell>
 
