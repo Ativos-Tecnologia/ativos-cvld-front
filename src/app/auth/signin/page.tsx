@@ -51,25 +51,20 @@ const SignIn: React.FC = () => {
   const router = useRouter();
   const MySwal = UseMySwal();
 
+  async function checkUserProduct (): Promise<string> {
+    try {
+      const response = await api.get("/api/profile/");
+
+      return response.data.product;
+
+    } catch (error) {
+      throw new Error('Ocorreu um erro ao tentar buscar o produto do usuário')
+      // return 'error';
+    }
+  }
+
   const onSubmit: SubmitHandler<SignInInputs> = async (data) => {
     setLoading(true);
-
-    const checkIsUserFirstLogin = async (): Promise<boolean> => {
-      try {
-        const response = await api.get("/api/check-first-login/");
-
-        if (response.data.is_first_login === true) {
-          return true;
-        }
-
-        return false;
-
-      } catch (error) {
-        console.error(error);
-        return false;
-      }
-    }
-
 
     try {
       const res = await api.post("/api/token/", data);
@@ -77,15 +72,18 @@ const SignIn: React.FC = () => {
         localStorage.setItem(`ATIVOS_${ACCESS_TOKEN}`, res.data.access);
         localStorage.setItem(`ATIVOS_${REFRESH_TOKEN}`, res.data.refresh);
 
+        const userProduct = await checkUserProduct();
 
-        if (await checkIsUserFirstLogin()) {
-          router.push(APP_ROUTES.private.profile.name);
+        if (userProduct === 'wallet') {
+          router.push(APP_ROUTES.private.wallet.name);
           MySwal.fire({
             position: "bottom-end",
-            icon: "info",
-            title: "Seja bem-vindo ao CVLD Simulator",
-            text: "Para uma melhor experiência em nossa plataforma, por favor, complete seu cadastro",
-            showConfirmButton: true,
+            icon: "success",
+            title: "Bem-vindo de volta!",
+            showConfirmButton: false,
+            timer: 2000,
+            toast: true,
+            timerProgressBar: true,
           });
         } else {
           router.push(APP_ROUTES.private.dashboard.name);

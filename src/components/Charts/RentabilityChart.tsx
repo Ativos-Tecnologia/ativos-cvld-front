@@ -19,21 +19,22 @@ export interface RentabilityChartProps {
 
 const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
 
-   function handleRantabilideTotal (data: IWalletResponse) {
-    return (data.result[data.result.length - 1].valor_liquido_disponivel - data.valor_investido) / data.valor_investido;
-   }
+  function handleRentabilidadeTotal(data: IWalletResponse) {
+    const result = (data.result[data.result.length - 1].valor_liquido_disponivel - data.valor_investido) / data.valor_investido;
+    return Number.isNaN(result) ? 0 : result;
+  }
 
-   function handleMesesAteOPagamento (data: IWalletResponse) {
+  function handleMesesAteOPagamento(data: IWalletResponse) {
     const data_aquisicao = new Date(data.result[0].data_atualizacao);
     const previsao_de_pgto = new Date(data.previsao_de_pgto);
 
     const diffMonths = Math.abs(previsao_de_pgto.getTime() - data_aquisicao.getTime()) / (1000 * 60 * 60 * 24 * 30)
-    return diffMonths;
-   }
+    return Number.isNaN(diffMonths) ? 0 : diffMonths ;
+  }
 
-   function handleRentabilideAA(rentabilidadeTotal: number, mesesAtePagamento: number) {
+  function handleRentabilideAA(rentabilidadeTotal: number, mesesAtePagamento: number) {
     const rentabilidade = Math.pow(1 + rentabilidadeTotal, 12 / mesesAtePagamento) - 1;
-    return rentabilidade;
+    return Number.isNaN(rentabilidade) ? 0 : rentabilidade;
   }
 
   function handleRentabilidadeAM(rentabilidadeAnual: number) {
@@ -145,11 +146,11 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
           return numberFormat(val);
         },
       },
-      }
+    }
 
 
 
-    };
+  };
 
 
   const [state, setState] = useState<ChartOneState>({
@@ -202,7 +203,7 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
                 {
                   dateFormater(data?.result[0].data_atualizacao)
                 }
-                 &nbsp;a&nbsp;
+                &nbsp;a&nbsp;
                 {
                   dateFormater(data?.result[data.result.length - 1].data_atualizacao)
                 }
@@ -215,13 +216,13 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
             </span>
             <div className="w-full mb-4">
               <p className="font-semibold text-black dark:text-snow">Previsão de Pagamento</p>
-              { data ?  (<p className="text-sm font-medium">
+              {data ? (<p className="text-sm font-medium">
                 ({
                   dateFormater(data?.previsao_de_pgto)
                 }
-              - Cerca de {
-                Math.floor(handleMesesAteOPagamento(data))
-              } meses)
+                - Cerca de {
+                  Math.floor(handleMesesAteOPagamento(data))
+                } meses)
               </p>) : <AiOutlineLoading className="animate-spin mr-2" />}
             </div>
           </div>
@@ -253,51 +254,51 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
         </div>
       </div>
       <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
-      <div className="flex min-w-36.5">
-            <span className="mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-black dark:border-snow">
-              <span className="block h-2 w-full max-w-2 rounded-full bg-black dark:bg-snow"></span>
-            </span>
-            <div className="w-full">
-              <p className="font-semibold text-black dark:text-snow">Valor Investido</p>
-              {data ? (<p className="text-sm font-medium">{
-                numberFormat(data?.valor_investido)
-                }</p>) : <AiOutlineLoading className="animate-spin mr-2" />}
-            </div>
+        <div className="flex min-w-36.5">
+          <span className="mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-black dark:border-snow">
+            <span className="block h-2 w-full max-w-2 rounded-full bg-black dark:bg-snow"></span>
+          </span>
+          <div className="w-full">
+            <p className="font-semibold text-black dark:text-snow">Valor Investido</p>
+            {data ? (<p className="text-sm font-medium">{
+              numberFormat(data?.valor_investido)
+            }</p>) : <AiOutlineLoading className="animate-spin mr-2" />}
           </div>
-          {/* <div className="flex min-w-47.5">
+        </div>
+        {/* <div className="flex min-w-47.5">
             <span className="mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-lime-300">
               <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-black"></span>
             </span>
             <div className="w-full">
               <p className="font-semibold">Rentabilidade Total</p>
               <p className="text-sm font-medium">{
-                (handleRantabilideTotal(response) * 100).toFixed(2) + "%"
+                (handleRentabilidadeTotal(response) * 100).toFixed(2) + "%"
                 }</p>
             </div>
           </div> */}
-          <div className="flex min-w-47.5">
-            <span className="mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-black dark:border-snow">
-              <span className="block h-2 w-full max-w-2 rounded-full bg-black dark:bg-snow"></span>
-            </span>
-            <div className="w-full">
-              <p className="font-semibold text-black dark:text-snow">Rentabilidade A.A</p>
-              {data ? (<p className="text-sm font-medium">{
-                (handleRentabilideAA(handleRantabilideTotal(data), handleMesesAteOPagamento(data)) * 100).toFixed(2) + "%"
-                }</p>) : <AiOutlineLoading className="animate-spin mr-2" />}
-            </div>
+        <div className="flex min-w-47.5">
+          <span className="mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-black dark:border-snow">
+            <span className="block h-2 w-full max-w-2 rounded-full bg-black dark:bg-snow"></span>
+          </span>
+          <div className="w-full">
+            <p className="font-semibold text-black dark:text-snow">Rentabilidade A.A</p>
+            {data ? (<p className="text-sm font-medium">{
+              (handleRentabilideAA(handleRentabilidadeTotal(data), handleMesesAteOPagamento(data)) * 100).toFixed(2).replace('.', ',') + "%"
+            }</p>) : <AiOutlineLoading className="animate-spin mr-2" />}
           </div>
-          <div className="flex min-w-47.5">
-            <span className="mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-black dark:border-snow">
-              <span className="block h-2 w-full max-w-2 rounded-full bg-black dark:bg-snow"></span>
-            </span>
-            <div className="w-full">
-              <p className="font-semibold text-black dark:text-snow">Rentabilidade A.M.</p>
-              {data ?(<p className="text-sm font-medium">{
-                (handleRentabilidadeAM(handleRentabilideAA(handleRantabilideTotal(data), handleMesesAteOPagamento(data))) * 100).toFixed(2) + "%"
-                }</p>) : <AiOutlineLoading className="animate-spin mr-2" />}
-            </div>
+        </div>
+        <div className="flex min-w-47.5">
+          <span className="mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-black dark:border-snow">
+            <span className="block h-2 w-full max-w-2 rounded-full bg-black dark:bg-snow"></span>
+          </span>
+          <div className="w-full">
+            <p className="font-semibold text-black dark:text-snow">Rentabilidade A.M.</p>
+            {data ? (<p className="text-sm font-medium">{
+              (handleRentabilidadeAM(handleRentabilideAA(handleRentabilidadeTotal(data), handleMesesAteOPagamento(data))) * 100).toFixed(2).replace('.', ',') + "%"
+            }</p>) : <AiOutlineLoading className="animate-spin mr-2" />}
           </div>
-          </div>
+        </div>
+      </div>
     </div>
   );
 };
