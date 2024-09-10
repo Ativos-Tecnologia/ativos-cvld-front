@@ -149,7 +149,7 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
     }, []);
 
     /* função que faz uma requisição ao backend para retornar resultados que contenham
-    a determinada palavra-chave e adiciona a nova linha filtrada para os resultados já 
+    a determinada palavra-chave e adiciona a nova linha filtrada para os resultados já
     existentes (caso haja) */
     const fetchByName = async (name: string) => {
         const response = await api.post("/api/notion-api/list/search/", {

@@ -49,7 +49,7 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
     colors: ["#3056D3", "#80CAEE", "#3B82F6"],
     chart: {
       fontFamily: "Satoshi, sans-serif",
-      height: 350,
+      height: 450,
       zoom: {
         enabled: true,
       },
@@ -197,7 +197,7 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
               <span className="block h-2 w-full max-w-2 rounded-full bg-black dark:bg-snow"></span>
             </span>
             <div className="w-full mb-4">
-              <p className="font-semibold text-black dark:text-snow">Valorização do Ativo</p>
+              <p className="font-semibold text-black dark:text-snow">Análise de Investimentos</p>
               <p className="text-sm font-medium">
                 {
                   dateFormater(data?.result[0].data_atualizacao)

@@ -14,12 +14,13 @@ import { NotionPage, NotionResponse } from "@/interfaces/INotion";
 import CardDataStatsSkeleton from "../ui/CardDataStatsSkeleton";
 import AnimatedNumber from "../ui/AnimatedNumber";
 import percentageFormater from "@/functions/formaters/percentFormater";
-import { IWalletResponse } from "@/interfaces/IWallet";
+import { IWalletResponse, IWalletResults } from "@/interfaces/IWallet";
 import TableWallet from "../Tables/TableWallet";
 import { TbMoneybag } from "react-icons/tb";
 import { MdOutlineAttachMoney } from "react-icons/md";
 import { IoMdTrendingUp } from "react-icons/io";
 import { LuShoppingBag } from "react-icons/lu";
+import numberFormat from "@/functions/formaters/numberFormat";
 
 const Wallet: React.FC = () => {
   const { data: { user } } = useContext(UserInfoAPIContext);
@@ -46,6 +47,7 @@ const Wallet: React.FC = () => {
 
   const fetchWalletNotionList = async () => {
     const response = await api.post('/api/notion-api/wallet/', defaultFilterObject);
+
     return response.data;
   };
 
@@ -64,7 +66,7 @@ const Wallet: React.FC = () => {
 
   function handleTotalInvested(data: NotionResponse) {
     let totalInvested = 0;
-    data?.results.forEach((result) => {
+    data?.results?.forEach((result) => {
       if (result.properties["Valor de Aquisição (Wallet)"]?.number) {
         totalInvested += Number(result.properties["Valor de Aquisição (Wallet)"].number) || 0;
       }
@@ -72,22 +74,55 @@ const Wallet: React.FC = () => {
     return totalInvested;
   }
 
-  function handleTotalLiquid(data: NotionResponse) {
+  function handleTotalLiquid(data: IWalletResults[]) {
+
     let totalLiquid = 0;
-    data?.results.forEach((result) => {
-      if (result.properties["Valor Líquido (Com Reserva dos Honorários)"]?.formula?.number) {
-        totalLiquid += Number(result.properties["Valor Líquido (Com Reserva dos Honorários)"]?.formula.number) || 0;
+    data?.forEach((result) => {
+      if (result.valor_liquido_disponivel) {
+        totalLiquid += result.valor_liquido_disponivel || 0;
       }
     });
+
     return totalLiquid;
   }
+
+  function handleTotalLiquidUntilRecebimento(result: NotionResponse) {
+
+    let totalLiquid = 0;
+
+    result?.results?.forEach((result: NotionPage) => {
+        if (result.properties["Valor Líquido (Com Reserva dos Honorários)"]?.formula?.number) {
+          totalLiquid += Number(result.properties["Valor Líquido (Com Reserva dos Honorários)"]?.formula.number) || 0;
+        }
+      });
+      return totalLiquid;
+    }
 
   function handleTotalProducts(data: NotionResponse) {
     return data?.results.length || 0;
   }
 
-  function handleProfit(data: NotionResponse) {
-    return handleTotalLiquid(data) - handleTotalInvested(data);
+  function handleProfit(data: any) {
+    const liquid = handleTotalLiquid(data?.[1]);
+    const invested = handleTotalInvested(data?.[0]);
+
+    return liquid - invested;
+  }
+
+  function handleLiquidUpdatedAmount(data: any) {
+    const liquid = handleTotalLiquid(data?.[1]);
+
+    const outdatedLiquid = handleTotalLiquidUntilRecebimento(data?.[0]);
+
+    return liquid - outdatedLiquid;
+  }
+
+  function handleLiquidUpdatedAMountLucroPercent(data: any) {
+    const liquid = handleTotalLiquid(data?.[1]);
+
+    const outdatedLiquid = handleTotalLiquidUntilRecebimento(data?.[0]);
+
+    return (liquid - outdatedLiquid) / outdatedLiquid;
   }
 
   useEffect(() => {
@@ -101,46 +136,46 @@ const Wallet: React.FC = () => {
           ref={mainRef}
           className="scroll-mt-30 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
           {data ? <CardDataStats title="Total Investido" total={
-            data && <AnimatedNumber value={data && handleTotalInvested(data)} />
-          } rate="" levelUp>
-            <TbMoneybag className="w-[22px] h-[22px]" />
+            data && <AnimatedNumber value={data && handleTotalInvested(data?.response[0])} />
+          } >
+            <TbMoneybag className="w-[18px] h-[18px]" />
           </CardDataStats> : <CardDataStatsSkeleton />}
           {data ?
-            <CardDataStats title="Total Líquido" total={
-              data && <AnimatedNumber value={data && handleTotalLiquid(data)} />
-            } rate="4.35%" levelUp>
-              <MdOutlineAttachMoney className="w-[22px] h-[22px]" />
+            <CardDataStats title="Total Líquido Atualizado" total={
+              data && <AnimatedNumber value={data && handleTotalLiquid(data?.response[1])}  />
+            } rate={
+              data && percentageFormater(handleLiquidUpdatedAMountLucroPercent(data.response)) || 0
+            } levelUp>
+              <MdOutlineAttachMoney className="w-[18px] h-[18px]" />
             </CardDataStats> : <CardDataStatsSkeleton />}
           {data ?
             <CardDataStats title="Lucro" total={
-              data && <AnimatedNumber value={data && handleProfit(data)} />
+              data && <AnimatedNumber value={data && handleProfit(data?.response)} />
             } rate={
-              data && percentageFormater(handleProfit(data) / handleTotalInvested(data) * 100) || 0
-            } {
-              ...data && handleProfit(data) > 0 ? { levelUp: true } : { levelDown: true }
-              }>
-              <IoMdTrendingUp className="w-[22px] h-[22px]" />
+              data && numberFormat(handleLiquidUpdatedAmount(data.response)) || 0
+            } levelUp>
+              <IoMdTrendingUp className="w-[18px] h-[18px]" />
             </CardDataStats> : <CardDataStatsSkeleton />}
           {
             data ?
               <CardDataStats title="Total de Produtos" total={
-                data && <AnimatedNumber value={data && handleTotalProducts(data)} isNotCurrency={true} />
-              } rate="2.59%" levelUp>
-                <LuShoppingBag className="w-[22px] h-[22px]" />
+                data && <AnimatedNumber value={data && handleTotalProducts(data?.response[0])} isNotCurrency={true} />
+              }>
+                <LuShoppingBag className="w-[18px] h-[18px]" />
               </CardDataStats> : <CardDataStatsSkeleton />}
         </div>
 
         <div className={`grid grid-cols-12 mt-4 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5`}>
           <RentabilityChart data={vlData} />
           <ProfitChart title={"Performance de Lucro"} data={vlData} />
-          <DistributionChart title={"Distribuição da Carteira"} data={data} />
+          <DistributionChart title={"Distribuição da Carteira"} data={data?.response[0]} />
           {/* <MapOne /> */}
           {/* <DataStatsFour /> */}
         </div>
         <div className="mt-4 grid grid-cols-12 md:mt-6 2xl:mt-7.5">
           <TableWallet
             ref={mainRef}
-            data={data}
+            data={data?.response[0]}
             isPending={isPending}
             isFetching={isFetching}
             setVlData={setVlData}
