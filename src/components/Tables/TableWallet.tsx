@@ -252,8 +252,6 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
 
     }, [data]);
 
-    console.log(data)
-
     return (
         <div className='col-span-12 bg-white dark:bg-boxdark border-stroke dark:border-strokedark p-[30px] rounded-sm shadow-default'>
             <div className='mb-3 flex gap-3 border-b border-zinc-300 dark:border-form-strokedark text-xs font-semibold'>
