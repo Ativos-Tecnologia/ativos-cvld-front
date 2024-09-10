@@ -74,29 +74,54 @@ const Wallet: React.FC = () => {
     return totalInvested;
   }
 
-  function handleTotalLiquid(data: IWalletResults[]) {
-
+  function handleTotalLiquid(data: [IWalletResults[]]) {
     let totalLiquid = 0;
+
     data?.forEach((result) => {
-      if (result.valor_liquido_disponivel) {
-        totalLiquid += result.valor_liquido_disponivel || 0;
-      }
+      result.forEach((item: any, index) => {
+        if (index === 1) {
+          totalLiquid += item.valor_liquido_disponivel || 0;
+        }
+      });
     });
 
     return totalLiquid;
   }
 
-  function handleTotalLiquidUntilRecebimento(result: NotionResponse) {
-
+  function handleTotalLiquidUntilBuy(data: [IWalletResults[]]) {
     let totalLiquid = 0;
 
-    result?.results?.forEach((result: NotionPage) => {
-        if (result.properties["Valor Líquido (Com Reserva dos Honorários)"]?.formula?.number) {
-          totalLiquid += Number(result.properties["Valor Líquido (Com Reserva dos Honorários)"]?.formula.number) || 0;
+    data?.forEach((result) => {
+      result.forEach((item: any, index) => {
+        if (index === 0) {
+          totalLiquid += item.valor_liquido_disponivel || 0;
         }
       });
-      return totalLiquid;
-    }
+    });
+
+    return totalLiquid;
+  }
+
+  function handleTotalLiquidUntilAcquisition(result: [
+    NotionResponse,
+    IWalletResults[]
+  ]) {
+
+    let vldDataDaCompra = 0;
+    let vldAtualizado = 0;
+
+    result[1].forEach((item: any) => {
+      item.forEach((item: any, index: number) => {
+        if(index === 0) {
+          vldDataDaCompra += item.valor_liquido_disponivel || 0;
+        } else {
+          vldAtualizado += item.valor_liquido_disponivel || 0;
+        }
+
+      });
+    });
+    return vldAtualizado - vldDataDaCompra
+  }
 
   function handleTotalProducts(data: NotionResponse) {
     return data?.results.length || 0;
@@ -109,20 +134,12 @@ const Wallet: React.FC = () => {
     return liquid - invested;
   }
 
-  function handleLiquidUpdatedAmount(data: any) {
-    const liquid = handleTotalLiquid(data?.[1]);
-
-    const outdatedLiquid = handleTotalLiquidUntilRecebimento(data?.[0]);
-
-    return liquid - outdatedLiquid;
-  }
-
   function handleLiquidUpdatedAMountLucroPercent(data: any) {
-    const liquid = handleTotalLiquid(data?.[1]);
+    const totalLiquidUntilAcquisition = handleTotalLiquidUntilBuy(data?.[1]);
 
-    const outdatedLiquid = handleTotalLiquidUntilRecebimento(data?.[0]);
+    const diferenca = handleTotalLiquidUntilAcquisition(data);
 
-    return (liquid - outdatedLiquid) / outdatedLiquid;
+    return diferenca / totalLiquidUntilAcquisition;
   }
 
   useEffect(() => {
@@ -151,7 +168,7 @@ const Wallet: React.FC = () => {
             <CardDataStats title="Lucro" total={
               data && <AnimatedNumber value={data && handleProfit(data?.response)} />
             } rate={
-              data && numberFormat(handleLiquidUpdatedAmount(data.response)) || 0
+              data && numberFormat(handleTotalLiquidUntilAcquisition(data.response)) || 0
             } levelUp>
               <IoMdTrendingUp className="w-[18px] h-[18px]" />
             </CardDataStats> : <CardDataStatsSkeleton />}
@@ -167,7 +184,7 @@ const Wallet: React.FC = () => {
         <div className="scroll-mt-26 grid grid-cols-12 mt-4 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5" ref={mainRef}
         >
           <ProfitChart title={"Performance de Lucro"} data={vlData} />
-          <DistributionChart title={"Distribuição da Carteira"} data={data?.response[0]} />
+          <DistributionChart title={"Distribuição da Carteira"} response={data?.response} />
           <RentabilityChart data={vlData} />
           {/* <MapOne /> */}
           {/* <DataStatsFour /> */}
