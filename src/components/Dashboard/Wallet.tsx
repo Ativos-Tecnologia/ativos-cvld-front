@@ -25,6 +25,7 @@ import numberFormat from "@/functions/formaters/numberFormat";
 const Wallet: React.FC = () => {
   const { data: { user } } = useContext(UserInfoAPIContext);
   const mainRef = useRef<HTMLDivElement | null>(null);
+  const [counter, setCounter] = useState(0);
   const [vlData, setVlData] = useState<IWalletResponse>({
     id: "",
     valor_investido: 0,
@@ -41,15 +42,20 @@ const Wallet: React.FC = () => {
     ]
   });
 
+
+
   const [defaultFilterObject, setDefaultFilterObject] = useState<any>({
     "username": user
   })
 
   const fetchWalletNotionList = async () => {
-    const response = await api.post('/api/notion-api/wallet/', defaultFilterObject);
-
-    return response.data;
+    if (user !== "") {
+      const response = await api.post('/api/notion-api/wallet/', counter === 0 ? {
+        "username": user
+      } : defaultFilterObject);
+      return response.data;
   };
+};
 
   const queryClient = useQueryClient()
   const { isPending, data, error, isFetching, refetch } = useQuery(
@@ -141,6 +147,11 @@ const Wallet: React.FC = () => {
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: ['notion_wallet_list'] });
   }, [defaultFilterObject])
+
+  useEffect(() => {
+    setCounter(counter + 1);
+    user !== "" && setDefaultFilterObject({ "username": user });
+  }, [counter, user]);
 
   return (
     <>
