@@ -78,6 +78,9 @@ const MainForm: React.FC<CVLDFormProps> = ({
   const enumOficiosList = Object.values(statusOficio);
   const enumTipoOficiosList = Object.values(tipoOficio);
 
+  const { data } =
+  useContext<UserInfoContextType>(UserInfoAPIContext);
+
   const estados = [
     { id: "AC", nome: "Acre" },
     { id: "AL", nome: "Alagoas" },
@@ -115,10 +118,63 @@ const MainForm: React.FC<CVLDFormProps> = ({
     { id: "TRF4", nome: "Tribunal Regional Federal - 4ª Região" },
     { id: "TRF5", nome: "Tribunal Regional Federal - 5ª Região" },
     { id: "TRF6", nome: "Tribunal Regional Federal - 6ª Região" },
+    { id: "STF", nome: "Supremo Tribunal Federal" },
+    { id: "STJ", nome: "Superior Tribunal de Justiça" },
+    { id: "TST", nome: "Tribunal Superior do Trabalho" },
+    { id: "TSE", nome: "Tribunal Superior Eleitoral" },
+    { id: "STM", nome: "Superior Tribunal Militar" },
+    { id: "TJAC", nome: "Tribunal de Justiça do Acre" },
+    { id: "TJAL", nome: "Tribunal de Justiça de Alagoas" },
+    { id: "TJAP", nome: "Tribunal de Justiça do Amapá" },
+    { id: "TJAM", nome: "Tribunal de Justiça do Amazonas" },
+    { id: "TJBA", nome: "Tribunal de Justiça da Bahia" },
+    { id: "TJCE", nome: "Tribunal de Justiça do Ceará" },
+    { id: "TJDFT", nome: "Tribunal de Justiça do Distrito Federal e dos Territórios" },
+    { id: "TJES", nome: "Tribunal de Justiça do Espírito Santo" },
+    { id: "TJGO", nome: "Tribunal de Justiça de Goiás" },
+    { id: "TJMA", nome: "Tribunal de Justiça do Maranhão" },
+    { id: "TJMT", nome: "Tribunal de Justiça do Mato Grosso" },
+    { id: "TJMS", nome: "Tribunal de Justiça do Mato Grosso do Sul" },
+    { id: "TJMG", nome: "Tribunal de Justiça de Minas Gerais" },
+    { id: "TJPA", nome: "Tribunal de Justiça do Pará" },
+    { id: "TJPB", nome: "Tribunal de Justiça da Paraíba" },
+    { id: "TJPE", nome: "Tribunal de Justiça de Pernambuco" },
+    { id: "TJPI", nome: "Tribunal de Justiça do Piauí" },
+    { id: "TJPR", nome: "Tribunal de Justiça do Paraná" },
+    { id: "TJRJ", nome: "Tribunal de Justiça do Rio de Janeiro" },
+    { id: "TJRN", nome: "Tribunal de Justiça do Rio Grande do Norte" },
+    { id: "TJRO", nome: "Tribunal de Justiça de Rondônia" },
+    { id: "TJRR", nome: "Tribunal de Justiça de Roraima" },
+    { id: "TJRS", nome: "Tribunal de Justiça do Rio Grande do Sul" },
+    { id: "TJSC", nome: "Tribunal de Justiça de Santa Catarina" },
+    { id: "TJSE", nome: "Tribunal de Justiça de Sergipe" },
+    { id: "TJSP", nome: "Tribunal de Justiça de São Paulo" },
+    { id: "TJTO", nome: "Tribunal de Justiça do Tocantins" },
+    { id: "TRT1", nome: "Tribunal Regional do Trabalho da 1ª Região" },
+    { id: "TRT2", nome: "Tribunal Regional do Trabalho da 2ª Região" },
+    { id: "TRT3", nome: "Tribunal Regional do Trabalho da 3ª Região" },
+    { id: "TRT4", nome: "Tribunal Regional do Trabalho da 4ª Região" },
+    { id: "TRT5", nome: "Tribunal Regional do Trabalho da 5ª Região" },
+    { id: "TRT6", nome: "Tribunal Regional do Trabalho da 6ª Região" },
+    { id: "TRT7", nome: "Tribunal Regional do Trabalho da 7ª Região" },
+    { id: "TRT8", nome: "Tribunal Regional do Trabalho da 8ª Região" },
+    { id: "TRT9", nome: "Tribunal Regional do Trabalho da 9ª Região" },
+    { id: "TRT10", nome: "Tribunal Regional do Trabalho da 10ª Região" },
+    { id: "TRT11", nome: "Tribunal Regional do Trabalho da 11ª Região" },
+    { id: "TRT12", nome: "Tribunal Regional do Trabalho da 12ª Região" },
+    { id: "TRT13", nome: "Tribunal Regional do Trabalho da 13ª Região" },
+    { id: "TRT14", nome: "Tribunal Regional do Trabalho da 14ª Região" },
+    { id: "TRT15", nome: "Tribunal Regional do Trabalho da 15ª Região" },
+    { id: "TRT16", nome: "Tribunal Regional do Trabalho da 16ª Região" },
+    { id: "TRT17", nome: "Tribunal Regional do Trabalho da 17ª Região" },
+    { id: "TRT18", nome: "Tribunal Regional do Trabalho da 18ª Região" },
+    { id: "TRT19", nome: "Tribunal Regional do Trabalho da 19ª Região" },
+    { id: "TRT20", nome: "Tribunal Regional do Trabalho da 20ª Região" },
+    { id: "TRT21", nome: "Tribunal Regional do Trabalho da 21ª Região" },
+    { id: "TRT22", nome: "Tribunal Regional do Trabalho da 22ª Região" },
+    { id: "TRT23", nome: "Tribunal Regional do Trabalho da 23ª Região" },
+    { id: "TRT24", nome: "Tribunal Regional do Trabalho da 24ª Região" },
   ];
-
-  const { setCredits, credits, data } =
-    useContext<UserInfoContextType>(UserInfoAPIContext);
 
   const [oficioForm, setOficioForm] = useState<any>(null);
 
