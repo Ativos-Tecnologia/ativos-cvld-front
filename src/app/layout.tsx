@@ -12,8 +12,6 @@ import { checkIsPublicRoute } from "@/functions/check-is-public-route";
 import PrivateRoute from "@/components/PrivateRoute";
 import { UserInfoProvider } from "@/context/UserInfoContext";
 import { Toaster } from "@/components/ui/sonner"
-import DefaultLayout from "@/components/Layouts/DefaultLayout";
-
 
 export default function RootLayout({
   children,

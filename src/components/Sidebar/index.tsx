@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -11,6 +11,8 @@ import { AiOutlineBars, AiOutlineDown, AiOutlinePlus } from "react-icons/ai";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { FiClipboard } from "react-icons/fi";
+import { UserInfoAPIContext } from "@/context/UserInfoContext";
+import { LuWallet2 } from "react-icons/lu";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -23,6 +25,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
+
+  const { data: { product } } = useContext(UserInfoAPIContext)
 
   let storedSidebarExpanded = "true";
 
@@ -106,7 +110,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
       <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
         {/* <!-- Sidebar Menu --> */}
-        <nav className="mt-5 px-4 py-4 lg:mt-9 lg:px-6 text-white">
+        <nav className="mt-5 px-4 py-4 lg:mt-9 lg:px-6">
           {/* <!-- Menu Group --> */}
           <div>
             <h3 className="mb-4 ml-4 text-sm font-semibold">
@@ -125,7 +129,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     <React.Fragment>
                       <Link
                         href="#"
-                        className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium hover:bg-blue-300/50 dark:hover:bg-meta-4 ${(pathname === "/" ||
+                        className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-white hover:bg-blue-300/50 dark:hover:bg-meta-4 ${(pathname === "/" ||
                           pathname.includes("dashboard")) &&
                           "bg-blue-300/50 dark:bg-meta-4"
                           }`}
@@ -141,38 +145,39 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         <AiOutlineDown className={`absolute right-4 top-1/2 -translate-y-1/2 transition-all duration-300 fill-current ${open && "rotate-180"}`} />
                       </Link>
 
-                      {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
+
                       <div
                         className={`translate transform overflow-hidden ${!open && "hidden"
                           }`}
                       >
                         <ul className="mb-5.5 mt-4 flex flex-col gap-2.5 pl-6">
-                          <li>
-                            <Link
-                              href="/"
-                              className={`group relative flex items-center gap-2.5 px-4 py-2 font-medium rounded-md hover:bg-blue-300/50 dark:hover:bg-meta-4 ${pathname === "/" && "bg-blue-300/50 dark:bg-meta-4"
-                                }`}
-                            >
-                              <BiCalculator />
-                              <span>Calculadora</span>
-                            </Link>
-                          </li>
-                          {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
-
-                          <li>
-                            <Link
-                              href="/dashboard/wallet"
-                              className={`group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ${
-                                pathname === "/dashboard/wallet" && "text-white"
-                              }`}
-                            >
-                              Wallet
-                            </Link>
-                          </li>
+                          {product !== 'wallet' && (
+                            <li>
+                              <Link
+                                href="/"
+                                className={`group relative flex items-center gap-2.5 px-4 py-2 font-medium rounded-md duration-300 ease-in-out hover:bg-blue-300/50 dark:hover:bg-meta-4 hover:text-white ${pathname === "/" && "bg-blue-300/50 dark:bg-meta-4 text-white"
+                                  }`}
+                              >
+                                <BiCalculator />
+                                <span>Calculadora</span>
+                              </Link>
+                            </li>
                           )}
+                          {product !== 'crm' && (
+                            <li>
+                              <Link
+                                href="/dashboard/wallet"
+                                className={`group relative flex items-center gap-2.5 px-4 py-2 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-300/50 dark:hover:bg-meta-4 hover:text-white ${pathname === "/dashboard/wallet" && "text-white bg-blue-300/50 dark:bg-meta-4"
+                                  }`}
+                              >
+                                <LuWallet2 />
+                                <span>Wallet</span>
+                              </Link>
+                            </li>
+                          )}
+
                         </ul>
                       </div>
-                      )}
 
                     </React.Fragment>
                   );
@@ -180,33 +185,33 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               </SidebarLinkGroup>
 
               {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
-              <SidebarLinkGroup
-                activeCondition={
-                  pathname === "/tasks" || pathname.includes("tasks")
-                }
-              >
-                {(handleClick, open) => {
-                  return (
-                    <React.Fragment>
-                      <Link
-                        href="#"
-                        className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium duration-300 ease-in-out hover:bg-blue-300/50 dark:hover:bg-meta-4 ${(pathname === "/tasks" ||
-                          pathname.includes("tasks")) &&
-                          "bg-blue-300/50 dark:bg-meta-4"
-                          }`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          sidebarExpanded
-                            ? handleClick()
-                            : setSidebarExpanded(true);
-                        }}
-                      >
-                        <AiOutlineBars />
-                        Tarefas
-                        <AiOutlineDown className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current transition--all duration-300 ${open && "rotate-180"
-                          }`} />
-                      </Link>
-                      {/* <!-- Dropdown Menu Start --> */}
+                <SidebarLinkGroup
+                  activeCondition={
+                    pathname === "/tasks" || pathname.includes("tasks")
+                  }
+                >
+                  {(handleClick, open) => {
+                    return (
+                      <React.Fragment>
+                        <Link
+                          href="#"
+                          className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 text-white font-medium duration-300 ease-in-out hover:bg-blue-300/50 dark:hover:bg-meta-4 ${(pathname === "/tasks" ||
+                            pathname.includes("tasks")) &&
+                            "bg-blue-300/50 dark:bg-meta-4"
+                            }`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            sidebarExpanded
+                              ? handleClick()
+                              : setSidebarExpanded(true);
+                          }}
+                        >
+                          <AiOutlineBars />
+                          Tarefas
+                          <AiOutlineDown className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current transition--all duration-300 ${open && "rotate-180"
+                            }`} />
+                        </Link>
+                        {/* <!-- Dropdown Menu Start --> */}
 
                         <div
                           className={`translate transform overflow-hidden ${!open && "hidden"
@@ -216,7 +221,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             <li>
                               <Link
                                 href="/tasks/task-list"
-                                className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium hover:bg-blue-300/50 dark:hover:bg-meta-4 duration-300 ease-in-out ${pathname === "/tasks/task-list" && "bg-blue-300/50 dark:bg-meta-4 text-white"
+                                className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium hover:bg-blue-300/50 dark:hover:bg-meta-4 hover:text-white duration-300 ease-in-out ${pathname === "/tasks/task-list" && "bg-blue-300/50 dark:bg-meta-4 text-white"
                                   }`}
                               >
                                 <FiClipboard />
@@ -229,7 +234,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             <li>
                               <Link
                                 href="/tasks/task-kanban"
-                                className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium hover:bg-blue-300/50 dark:hover:bg-meta-4 duration-300 ease-in-out ${pathname === "/tasks/task-kanban" &&
+                                className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium hover:bg-blue-300/50 dark:hover:bg-meta-4 hover:text-white duration-300 ease-in-out ${pathname === "/tasks/task-kanban" &&
                                   "bg-blue-300/50 dark:bg-meta-4 text-white"
                                   } `}
                               >
@@ -243,7 +248,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             <li>
                               <Dialog>
                                 <DialogTrigger asChild>
-                                  <button className="group w-full relative flex items-center gap-1 rounded-md px-4 py-2 font-medium duration-300 ease-in-out hover:bg-blue-300/50 dark:hover:bg-meta-4">
+                                  <button className="group w-full relative flex items-center gap-1 rounded-md px-4 py-2 font-medium duration-300 hover:text-white ease-in-out hover:bg-blue-300/50 dark:hover:bg-meta-4">
                                     <AiOutlinePlus />
                                     Adicionar tarefa
                                   </button>
@@ -503,11 +508,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             </li>
                           </ul>
                         </div>
-                      {/* <!-- Dropdown Menu End --> */}
-                    </React.Fragment>
-                  );
-                }}
-              </SidebarLinkGroup>
+                        {/* <!-- Dropdown Menu End --> */}
+                      </React.Fragment>
+                    );
+                  }}
+                </SidebarLinkGroup>
               )}
 
               {/* <!-- Menu Item Dashboard --> */}

@@ -3,6 +3,9 @@ export const APP_ROUTES = {
         dashboard: {
             name: "/"
         },
+        wallet: {
+            name: "/dashboard/wallet"
+        },
         profile: {
             name: "/profile"
         },

@@ -78,6 +78,9 @@ const MainForm: React.FC<CVLDFormProps> = ({
   const enumOficiosList = Object.values(statusOficio);
   const enumTipoOficiosList = Object.values(tipoOficio);
 
+  const { data } =
+  useContext<UserInfoContextType>(UserInfoAPIContext);
+
   const estados = [
     { id: "AC", nome: "Acre" },
     { id: "AL", nome: "Alagoas" },
@@ -115,10 +118,63 @@ const MainForm: React.FC<CVLDFormProps> = ({
     { id: "TRF4", nome: "Tribunal Regional Federal - 4ª Região" },
     { id: "TRF5", nome: "Tribunal Regional Federal - 5ª Região" },
     { id: "TRF6", nome: "Tribunal Regional Federal - 6ª Região" },
+    { id: "STF", nome: "Supremo Tribunal Federal" },
+    { id: "STJ", nome: "Superior Tribunal de Justiça" },
+    { id: "TST", nome: "Tribunal Superior do Trabalho" },
+    { id: "TSE", nome: "Tribunal Superior Eleitoral" },
+    { id: "STM", nome: "Superior Tribunal Militar" },
+    { id: "TJAC", nome: "Tribunal de Justiça do Acre" },
+    { id: "TJAL", nome: "Tribunal de Justiça de Alagoas" },
+    { id: "TJAP", nome: "Tribunal de Justiça do Amapá" },
+    { id: "TJAM", nome: "Tribunal de Justiça do Amazonas" },
+    { id: "TJBA", nome: "Tribunal de Justiça da Bahia" },
+    { id: "TJCE", nome: "Tribunal de Justiça do Ceará" },
+    { id: "TJDFT", nome: "Tribunal de Justiça do Distrito Federal e dos Territórios" },
+    { id: "TJES", nome: "Tribunal de Justiça do Espírito Santo" },
+    { id: "TJGO", nome: "Tribunal de Justiça de Goiás" },
+    { id: "TJMA", nome: "Tribunal de Justiça do Maranhão" },
+    { id: "TJMT", nome: "Tribunal de Justiça do Mato Grosso" },
+    { id: "TJMS", nome: "Tribunal de Justiça do Mato Grosso do Sul" },
+    { id: "TJMG", nome: "Tribunal de Justiça de Minas Gerais" },
+    { id: "TJPA", nome: "Tribunal de Justiça do Pará" },
+    { id: "TJPB", nome: "Tribunal de Justiça da Paraíba" },
+    { id: "TJPE", nome: "Tribunal de Justiça de Pernambuco" },
+    { id: "TJPI", nome: "Tribunal de Justiça do Piauí" },
+    { id: "TJPR", nome: "Tribunal de Justiça do Paraná" },
+    { id: "TJRJ", nome: "Tribunal de Justiça do Rio de Janeiro" },
+    { id: "TJRN", nome: "Tribunal de Justiça do Rio Grande do Norte" },
+    { id: "TJRO", nome: "Tribunal de Justiça de Rondônia" },
+    { id: "TJRR", nome: "Tribunal de Justiça de Roraima" },
+    { id: "TJRS", nome: "Tribunal de Justiça do Rio Grande do Sul" },
+    { id: "TJSC", nome: "Tribunal de Justiça de Santa Catarina" },
+    { id: "TJSE", nome: "Tribunal de Justiça de Sergipe" },
+    { id: "TJSP", nome: "Tribunal de Justiça de São Paulo" },
+    { id: "TJTO", nome: "Tribunal de Justiça do Tocantins" },
+    { id: "TRT1", nome: "Tribunal Regional do Trabalho da 1ª Região" },
+    { id: "TRT2", nome: "Tribunal Regional do Trabalho da 2ª Região" },
+    { id: "TRT3", nome: "Tribunal Regional do Trabalho da 3ª Região" },
+    { id: "TRT4", nome: "Tribunal Regional do Trabalho da 4ª Região" },
+    { id: "TRT5", nome: "Tribunal Regional do Trabalho da 5ª Região" },
+    { id: "TRT6", nome: "Tribunal Regional do Trabalho da 6ª Região" },
+    { id: "TRT7", nome: "Tribunal Regional do Trabalho da 7ª Região" },
+    { id: "TRT8", nome: "Tribunal Regional do Trabalho da 8ª Região" },
+    { id: "TRT9", nome: "Tribunal Regional do Trabalho da 9ª Região" },
+    { id: "TRT10", nome: "Tribunal Regional do Trabalho da 10ª Região" },
+    { id: "TRT11", nome: "Tribunal Regional do Trabalho da 11ª Região" },
+    { id: "TRT12", nome: "Tribunal Regional do Trabalho da 12ª Região" },
+    { id: "TRT13", nome: "Tribunal Regional do Trabalho da 13ª Região" },
+    { id: "TRT14", nome: "Tribunal Regional do Trabalho da 14ª Região" },
+    { id: "TRT15", nome: "Tribunal Regional do Trabalho da 15ª Região" },
+    { id: "TRT16", nome: "Tribunal Regional do Trabalho da 16ª Região" },
+    { id: "TRT17", nome: "Tribunal Regional do Trabalho da 17ª Região" },
+    { id: "TRT18", nome: "Tribunal Regional do Trabalho da 18ª Região" },
+    { id: "TRT19", nome: "Tribunal Regional do Trabalho da 19ª Região" },
+    { id: "TRT20", nome: "Tribunal Regional do Trabalho da 20ª Região" },
+    { id: "TRT21", nome: "Tribunal Regional do Trabalho da 21ª Região" },
+    { id: "TRT22", nome: "Tribunal Regional do Trabalho da 22ª Região" },
+    { id: "TRT23", nome: "Tribunal Regional do Trabalho da 23ª Região" },
+    { id: "TRT24", nome: "Tribunal Regional do Trabalho da 24ª Região" },
   ];
-
-  const { setCredits, credits, data } =
-    useContext<UserInfoContextType>(UserInfoAPIContext);
 
   const [oficioForm, setOficioForm] = useState<any>(null);
 
@@ -639,20 +695,20 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 className={`flex items-center gap-2 ${watch("data_base") < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
               >
 
-                {/* <CustomCheckbox
+                <CustomCheckbox
                   check={watch("incidencia_juros_moratorios")}
                   id={'incidencia_juros_moratorios'}
                   defaultChecked
                   register={register("incidencia_juros_moratorios")}
-                /> */}
+                />
 
-                <input
+                {/* <input
                   type="checkbox"
                   id="incidencia_juros_moratorios"
                   className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                   defaultChecked
                   {...register("incidencia_juros_moratorios")}
-                />
+                /> */}
                 <label
                   htmlFor="incidencia_juros_moratorios"
                   className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -682,19 +738,19 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </div>
             </div>
             <div className="flex items-center gap-2 col-span-2">
-              {/* <CustomCheckbox
+              <CustomCheckbox
                 check={watch("incidencia_rra_ir")}
                 id={'incidencia_rra_ir'}
                 defaultChecked
                 register={register("incidencia_rra_ir")}
-              /> */}
-              <input
+              />
+              {/* <input
                 type="checkbox"
                 id="incidencia_rra_ir"
                 className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                 defaultChecked
                 {...register("incidencia_rra_ir")}
-              />
+              /> */}
               <label
                 htmlFor="incidencia_rra_ir"
                 className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -711,17 +767,17 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </>
             ) : (
               <div className={`flex gap-2 ${watch("ir_incidente_rra") ? 'items-start' : 'items-center'} 2xsm:col-span-2 sm:col-span-1`}>
-                {/* <CustomCheckbox
+                <CustomCheckbox
                   check={watch("ir_incidente_rra")}
                   id={'ir_incidente_rra'}
                   register={register("ir_incidente_rra")}
-                /> */}
-                <input
+                />
+                {/* <input
                   type="checkbox"
                   id="ir_incidente_rra"
                   className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                   {...register("ir_incidente_rra")}
-                />
+                /> */}
                 <label
                   htmlFor="ir_incidente_rra"
                   className="mt-1 font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -761,17 +817,17 @@ const MainForm: React.FC<CVLDFormProps> = ({
             )}
             {watch("natureza") !== "TRIBUTÁRIA" ? (
               <div className={`flex gap-2 ${watch('incidencia_pss') ? 'items-start' : 'items-center'} 2xsm:col-span-2 sm:col-span-1`}>
-                {/* <CustomCheckbox
+                <CustomCheckbox
                   check={watch("incidencia_pss")}
                   id={'incidencia_pss'}
                   register={register("incidencia_pss")}
-                /> */}
-                <input
+                />
+                {/* <input
                   type="checkbox"
                   id="incidencia_pss"
                   className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                   {...register("incidencia_pss")}
-                />
+                /> */}
                 <label
                   htmlFor="incidencia_pss"
                   className="mt-1 font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -817,17 +873,17 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </>
             )}
             <div className={`flex gap-2 ${watch("data_limite_de_atualizacao_check") ? "items-start" : "items-center"} 2xsm:col-span-2 sm:col-span-1`}>
-              {/* <CustomCheckbox
+              <CustomCheckbox
                 check={watch("data_limite_de_atualizacao_check")}
                 id={'data_limite_de_atualizacao_check'}
                 register={register("data_limite_de_atualizacao_check")}
-              /> */}
-              <input
+              />
+              {/* <input
                 type="checkbox"
                 id="data_limite_de_atualizacao_check"
                 className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                 {...register("data_limite_de_atualizacao_check")}
-              />
+              /> */}
               <label
                 htmlFor="data_limite_de_atualizacao_check"
                 className="mt-1 font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -866,17 +922,17 @@ const MainForm: React.FC<CVLDFormProps> = ({
             {/* CVLD */}
             <div className="flex flex-col gap-2 col-span-2">
               <div className="flex gap-2 items-center ">
-                {/* <CustomCheckbox
+                <CustomCheckbox
                   check={watch("gerar_cvld")}
                   id={'gerar_cvld'}
                   register={register("gerar_cvld")}
-                /> */}
-                <input
+                />
+                {/* <input
                   type="checkbox"
                   id="gerar_cvld"
                   className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                   {...register("gerar_cvld")}
-                />
+                /> */}
                 {/* <label htmlFor="gerar_cvld" className="text-sm font-medium text-meta-5">
                     Emitir Certidão de Valor Líquido Disponível (CVLD)?
                   </label> */}
@@ -1043,19 +1099,19 @@ const MainForm: React.FC<CVLDFormProps> = ({
                       watch("especie") === undefined) && (
                         <div className="my-4 flex w-full flex-row justify-between gap-4 sm:col-span-2">
                           <div className={`flex flex-row ${watch('ja_possui_destacamento') ? 'items-center' : 'items-start'} w-full gap-2 sm:col-span-1`}>
-                            {/* <CustomCheckbox
-                              check={watch("ja_possui_destacamento")}
+                            <CustomCheckbox
+                              check={watch("ja_possui_destacamento") || true}
                               id={'ja_possui_destacamento'}
                               register={register("ja_possui_destacamento")}
                               defaultChecked
-                            /> */}
-                            <input
+                            />
+                            {/* <input
                               type="checkbox"
                               id="ja_possui_destacamento"
                               defaultChecked
                               className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                               {...register("ja_possui_destacamento")}
-                            />
+                            /> */}
                             <label
                               htmlFor="ja_possui_destacamento"
                               className={`${!watch('ja_possui_destacamento') && 'mt-1'} font-nexa text-xs font-semibold uppercase text-meta-5`}
@@ -1756,19 +1812,19 @@ const MainForm: React.FC<CVLDFormProps> = ({
                   <div className="flex flex-col gap-2">
                     <div className="flex flex-col gap-2 sm:col-span-2">
                       <div className="flex gap-2 invisible">
-                        {/* <CustomCheckbox
+                        <CustomCheckbox
                           check={watch("upload-notion")}
                           id={'upload-notion'}
                           register={register("upload-notion")}
-                        /> */}
-                        <input
+                        />
+                        {/* <input
                           type="checkbox"
                           id="upload_notion"
                           disabled={watch("regime") === "ESPECIAL" ? true : false}
                           defaultChecked={true}
                           className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark disabled:opacity-50 disabled:cursor-not-allowed`}
                           {...register("upload_notion")}
-                        />
+                        /> */}
                         <label
                           htmlFor="upload_notion"
                           aria-disabled={watch("regime") === "ESPECIAL" ? true : false}
@@ -1781,17 +1837,17 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <>
                           <div className="flex justify-between">
                             <div className="flex gap-2 items-center">
-                              {/* <CustomCheckbox
+                              <CustomCheckbox
                                 check={watch("vincular_usuario")}
                                 id={'vincular_usuario'}
                                 register={register("vincular_usuario")}
-                              /> */}
-                              <input
+                              />
+                              {/* <input
                                 type="checkbox"
                                 id="vincular_usuario"
                                 className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                                 {...register("vincular_usuario")}
-                              />
+                              /> */}
                               <label htmlFor="vincular_usuario" className="text-sm font-medium text-meta-5 flex flex-row align-self-baseline cursor-pointer">
                                 <BiLogoUpwork className="h-4 w-4 mt-0.5 mr-2" /> Vincular a outro usuário?
                               </label>
@@ -1849,18 +1905,18 @@ const MainForm: React.FC<CVLDFormProps> = ({
                                 <div>
                                   <label htmlFor="novo_usuario" className="text-sm font-medium text-meta-5 cursor-pointer flex items-center gap-1">
                                     {/* <span className="text-meta-7 text-xs">👤</span> */}
-                                    {/* <CustomCheckbox
+                                    <CustomCheckbox
                                       check={watch("novo_usuario")}
                                       id={'novo_usuario'}
                                       register={register("novo_usuario")}
-                                    /> */}
+                                    />
                                     <span>O nome não está na lista? Crie um novo usuário!</span>
-                                    <input
+                                    {/* <input
                                       type="checkbox"
                                       id="novo_usuario"
                                       className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                                       {...register("novo_usuario")}
-                                    />
+                                    /> */}
                                   </label>
                                 </div>
                                 {watch('novo_usuario') === true &&

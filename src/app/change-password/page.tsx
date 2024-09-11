@@ -1,17 +1,18 @@
 "use client";
-import React from 'react'
+import React, { useState } from 'react'
 import Image from 'next/image'
 import { BsCheck2 } from "react-icons/bs";
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button, Tooltip } from 'flowbite-react';
+import { Button } from '@/components/ui/button';
 import { AiOutlineLoading } from 'react-icons/ai';
 import LabelPassword from '@/components/InputLabels/LabelPassword';
 import { ChangePasswordProps } from '@/types/form';
 import LabelConfirmPassword from '@/components/InputLabels/LabelConfirmPassword';
 import usePassword from '@/hooks/usePassword';
 import { BiArrowBack } from 'react-icons/bi';
-import UseMySwal from '@/hooks/useMySwal';
 import { useRouter } from 'next/navigation';
+import useColorMode from '@/hooks/useColorMode';
+import api from '@/utils/api';
 
 const ChangePassword = () => {
 
@@ -19,19 +20,20 @@ const ChangePassword = () => {
         register,
         handleSubmit,
         watch,
+        reset,
         formState: { errors },
         clearErrors
     } = useForm<ChangePasswordProps>();
+    const [colorMode, setColorMode] = useColorMode()
 
     // form
     const passwordInput = watch('password');
     const confirmPasswordInput = watch('confirm_password');
 
     const router = useRouter();
-    const MySwal = UseMySwal();
+    const [status, setStatus] = useState<string | null>(null)
 
-    const { loading,
-        setLoading,
+    const {
         passwordsMatch,
         passwordStr,
         strengthColor,
@@ -39,25 +41,30 @@ const ChangePassword = () => {
         passwordRequirements } = usePassword(passwordInput, confirmPasswordInput);
 
     const onSubmit: SubmitHandler<ChangePasswordProps> = async (data) => {
-        setLoading(true);
+        setStatus('sending_request');
+
+        const userToken = window.location.href.split('password')[1]
+        
+        const response = await api.post(`/api/reset-password/${userToken}`, {
+            new_password: data.password
+        })
+        
+        if (response.status === 200) {
+            setStatus('request_success');
+            reset()
+        } else {
+            setStatus(null)
+            throw new Error('Ocorreu um erro ao redefinir a senha');
+        }
     }
 
     const redirectToLogin = () => {
         router.push('/auth/signin');
-        MySwal.fire({
-            position: "center",
-            icon: 'warning',
-            title: "Alteração cancelada!",
-            showConfirmButton: false,
-            timer: 2000,
-            toast: true,
-            timerProgressBar: true,
-        });
     }
 
     return (
-        <div className='bg-slate-200 mx-auto flex justify-center items-center min-h-screen max-w-screen-2xl p-4 md:p-6 2xl:p-10'>
-            <div className='relative min-w-96 w-[500px] min-h-[550px] py-5 px-6 flex flex-col items-center bg-white border border-stroke shadow-1'>
+        <div className='bg-gray dark:bg-boxdark-2 mx-auto flex justify-center items-center min-h-screen max-w-screen-2xl p-4 md:p-6 2xl:p-10'>
+            <div className='relative min-w-96 w-[500px] min-h-[550px] py-5 px-6 flex flex-col items-center rounded-md bg-white dark:bg-boxdark border border-stroke dark:border-strokedark shadow-1'>
                 <div className='absolute top-8 left-5 transition-all duration-200 hover:text-primary'>
                     <span onClick={redirectToLogin} title='Voltar para o login'>
                         <BiArrowBack className='h-6 w-6 dark:text-white cursor-pointer' />
@@ -65,21 +72,23 @@ const ChangePassword = () => {
                 </div>
                 <span className="mb-12 flex flex-col justify-center
                items-center">
-                    <Image
-                        className="hidden dark:block"
-                        src={"/images/logo/logo-dark.svg"}
-                        alt="Logo"
-                        width={176}
-                        height={32}
-                    />
-                    <Image
-                        className="dark:hidden"
-                        src={"/images/logo/logo.svg"}
-                        alt="Logo"
-                        width={176}
-                        height={32}
-                    />
-                    <h2 className="2xsm:px-20 mt-4 text-2xl text-graydark font-bold dark:text-white" aria-selected="false">
+                    <div className="hidden dark:flex items-center gap-3 bg">
+                        <Image
+                            src={"/images/logo/celer-app-text-dark.svg"}
+                            alt="Logo"
+                            width={180}
+                            height={32}
+                        />
+                    </div>
+                    <div className="dark:hidden flex flex-col items-center gap-3 bg">
+                        <Image
+                            src={"/images/logo/celer-app-text.svg"}
+                            alt="Logo"
+                            width={180}
+                            height={32}
+                        />
+                    </div>
+                    <h2 className="2xsm:px-20 mt-6 text-2xl text-graydark font-bold dark:text-white" aria-selected="false">
                         Redefinição de senha
                     </h2>
                 </span>
@@ -106,13 +115,12 @@ const ChangePassword = () => {
                         passwordsMatch={passwordsMatch}
                     />
 
-                    <Button gradientDuoTone="purpleToBlue" type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-4 text-white hover:bg-opacity-90 dark:border-primary dark:bg-primary dark:hover:bg-opacity-90'>
-                        <span className="text-[16px] font-medium" aria-disabled={loading}>
-                            {loading ? "Definindo nova senha..." : "Confirmar"}
+                    <Button disabled={!passwordsMatch} type='submit' className={`${status === 'request_success' && 'bg-green-500 hover:bg-green-600'} flex items-center justify-center w-full cursor-pointer rounded-lg py-8 text-white hover:bg-opacity-90 disabled:opacity-50`}>
+                        <span className="text-[16px] font-medium">
+                            {status === null && 'Confirmar'}
+                            {status === 'sending_request' && 'Redefinindo senha'}
+                            {status === 'request_success' && 'Senha redefinida com sucesso!'}
                         </span>
-                        {
-                            !loading ? (<BsCheck2 className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
-                        }
                     </Button>
                 </form>
             </div>
