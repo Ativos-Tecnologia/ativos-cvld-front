@@ -51,6 +51,8 @@ const SignIn: React.FC = () => {
   const router = useRouter();
   const MySwal = UseMySwal();
 
+  //TODO: modificar esse check para retornar um objeto com product e is_confirmed
+
   async function checkUserProduct (): Promise<string> {
     try {
       const response = await api.get("/api/profile/");

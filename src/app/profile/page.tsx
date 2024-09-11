@@ -556,7 +556,6 @@ const Profile = () => {
                       Email
                     </label>
                     <input
-                      disabled={!editModeUser}
                       className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                       type="email"
                       id="emailAddress"
@@ -588,7 +587,7 @@ const Profile = () => {
                     )}
                   </div>
 
-                  <div className="relative mb-8">
+                  {/* <div className="relative mb-8">
                     <label
                       className="mb-3 block text-sm font-medium text-black dark:text-white"
                       htmlFor="username"
@@ -630,11 +629,11 @@ const Profile = () => {
                         )}
                       </span>
                     )}
-                  </div>
+                  </div> */}
 
 
                   <div className="flex justify-end gap-4.5">
-                    <button
+                    {/* <button
                       className="flex justify-center rounded border border-stroke px-4 py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white dark:bg-white/20 dark:hover:bg-white/30 bg-gray-100 hover:bg-gray-300 transition-all duration-200"
                       type="button"
                       onClick={handleCancelProfileEdit}
@@ -642,9 +641,8 @@ const Profile = () => {
                       {
                         editModeUser ? "Cancelar" : "Editar"
                       }
-                    </button>
+                    </button> */}
                     <button
-                      disabled={!editModeUser}
                       className="flex justify-center rounded bg-blue-700 hover:!bg-blue-800 transition-all duration-300 px-4 py-2 font-medium text-gray dark:hover:!bg-blue-800 dark:bg-blue-700 dark:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:!hover-blue-700"
                       type="submit"
                     >
