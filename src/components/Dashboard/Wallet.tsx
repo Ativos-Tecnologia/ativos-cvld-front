@@ -23,7 +23,7 @@ import { LuShoppingBag } from "react-icons/lu";
 import numberFormat from "@/functions/formaters/numberFormat";
 
 const Wallet: React.FC = () => {
-  const { data: { user } } = useContext(UserInfoAPIContext);
+  const { data: { user }, loading: chargeLoading } = useContext(UserInfoAPIContext);
   const mainRef = useRef<HTMLDivElement | null>(null);
   const [counter, setCounter] = useState(0);
   const [vlData, setVlData] = useState<IWalletResponse>({
@@ -49,10 +49,8 @@ const Wallet: React.FC = () => {
   })
 
   const fetchWalletNotionList = async () => {
-    if (user !== "") {
-      const response = await api.post('/api/notion-api/wallet/', counter === 0 ? {
-        "username": user
-      } : defaultFilterObject);
+    if (!chargeLoading) {
+      const response = await api.post('/api/notion-api/wallet/',  { "username": user });
       return response.data;
   };
 };
@@ -66,7 +64,7 @@ const Wallet: React.FC = () => {
       refetchInterval: 15000,
       staleTime: 13000,
       queryFn: fetchWalletNotionList,
-      enabled: !!user
+      enabled: !chargeLoading
     },
   );
 
@@ -144,14 +142,14 @@ const Wallet: React.FC = () => {
     return handleTotalLiquidUntilAcquisition(data) / handleTotalLiquidUntilBuy(data?.[1]);
   }
 
-  useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ['notion_wallet_list'] });
-  }, [defaultFilterObject])
+  // useEffect(() => {
+  //   queryClient.invalidateQueries({ queryKey: ['notion_wallet_list'] });
+  // }, [defaultFilterObject])
 
   useEffect(() => {
-    setCounter(counter + 1);
     user !== "" && setDefaultFilterObject({ "username": user });
-  }, [counter, user]);
+    setCounter(counter + 1);
+  }, [user]);
 
   return (
     <>

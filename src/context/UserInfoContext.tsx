@@ -74,7 +74,7 @@ export const UserInfoAPIContext = createContext<UserInfoContextType>({
     data: {
             first_name: "",
             last_name: "",
-            user: "",
+            user: "None",
             phone: "",
             profile_picture: "",
             title: "",
