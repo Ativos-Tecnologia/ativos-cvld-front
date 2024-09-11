@@ -532,9 +532,6 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
     onError: (data, paramsObj, context) => {
       queryClient.setQueryData(['notion_page_data'], context?.previousData)
       toast.error('não foi possível atualizar o campo Juízo');
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notion_list'] })
     }
   });
 
@@ -561,7 +558,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       toast.error('não foi possível atualizar o campo honorário')
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notion_list'] })
+      queryClient.invalidateQueries({ queryKey: ['notion_page_data'] })
     },
     onSettled: () => {
       setCheckMark(null)
@@ -590,6 +587,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       toast.error('Erro ao alterar o preço proposto');
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notion_page_data'] })
       queryClient.invalidateQueries({ queryKey: ['notion_list'] })
     }
   });
