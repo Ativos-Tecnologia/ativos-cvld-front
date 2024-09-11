@@ -160,7 +160,7 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
         data: data?.result.map((item) => data?.valor_investido) || [],
       },
       {
-        name: "Valor Liquido Disponivel",
+        name: "Total Atualizado",
         data: data?.result.map((item) => Number(item.valor_liquido_disponivel.toFixed(2))) || [],
       },
     ],
@@ -174,7 +174,7 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
           data: data?.result.map((item) => data.valor_investido) || [],
         },
         {
-          name: "Valor Liquido Disponivel",
+          name: "Total Atualizado",
           data: data?.result.map((item) => Number(item.valor_liquido_disponivel.toFixed(2))) || [],
         },
       ],

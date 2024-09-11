@@ -153,7 +153,7 @@ const Wallet: React.FC = () => {
             <TbMoneybag className="w-[18px] h-[18px]" />
           </CardDataStats> : <CardDataStatsSkeleton />}
           {data ?
-            <CardDataStats title="Total Líquido Atualizado" total={
+            <CardDataStats title="Total Atualizado" total={
               data && <AnimatedNumber value={data && handleTotalLiquid(data?.response[1])}  />
             } rate={
               data && percentageFormater(handleLiquidUpdatedAMountLucroPercent(data.response)) || 0
@@ -161,7 +161,7 @@ const Wallet: React.FC = () => {
               <MdOutlineAttachMoney className="w-[18px] h-[18px]" />
             </CardDataStats> : <CardDataStatsSkeleton />}
           {data ?
-            <CardDataStats title="Lucro" total={
+            <CardDataStats title="Ágio" total={
               data && <AnimatedNumber value={data && handleProfit(data?.response)} />
             } rate={
               data && numberFormat(handleTotalLiquidUntilAcquisition(data.response)) || 0

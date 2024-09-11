@@ -74,6 +74,7 @@ const ProfitBarChart: React.FC<ProfitBarChartProps> = ({
       categories: data.result.map((item) => dateFormater(item.data_atualizacao)),
     },
     yaxis: {
+      show: false,
       labels: {
         formatter: function (val) {
           return numberFormat(val);
@@ -100,7 +101,7 @@ const ProfitBarChart: React.FC<ProfitBarChartProps> = ({
   const [state, setState] = useState<ChartTwoState>({
     series: [
       {
-        name: "V.L. na aquisição",
+        name: "Total na aquisição",
         data: []
       },
       {
@@ -114,7 +115,7 @@ const ProfitBarChart: React.FC<ProfitBarChartProps> = ({
     setState({
       series: [
         {
-          name: "V.L. na aquisição",
+          name: "Total na aquisição",
           data: data.result.map((item) => item.valor_liquido_disponivel),
         },
         {

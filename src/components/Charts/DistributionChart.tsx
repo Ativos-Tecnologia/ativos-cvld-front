@@ -35,7 +35,7 @@ const DistributionChart: React.FC<newWalletResponse> = ({title, response: data})
 
   const options: ApexOptions = {
     title: {
-      text: title,
+      // text: title,
       style: {
         fontSize: "18px",
         fontWeight: "bold",
@@ -67,13 +67,27 @@ const DistributionChart: React.FC<newWalletResponse> = ({title, response: data})
     },
 
     plotOptions: {
+
       pie: {
+
         donut: {
           size: "65%",
           background: "transparent",
 
+          labels: {
+            value: {
+              show: true,
+              fontSize: "22px",
+              fontFamily: "Satoshi, sans-serif",
+              color: "#637381",
+              offsetY: 8,
+            },
+          },
         },
+
+
       },
+
     },
     dataLabels: {
       enabled: false,
@@ -130,11 +144,11 @@ const DistributionChart: React.FC<newWalletResponse> = ({title, response: data})
     <div className="col-span-12 rounded-sm border border-stroke bg-white py-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-5">
       <div className="mb-3 justify-between gap-4 sm:flex">
         <div>
-          {/* <h5 className="text-xl font-semibold text-black dark:text-white">
+          <h5 className="text-xl font-semibold text-black dark:text-white mt-4">
             {
               title
             }
-          </h5> */}
+          </h5>
         </div>
       </div>
 
