@@ -405,6 +405,9 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         onError: (error, paramsObj, context) => {
             queryClient.setQueryData(paramsObj.queryKeyList, context?.previousData);
             toast.error('Erro ao alterar o preço proposto');
+        },
+        onSuccess: (paramsObj) => {
+            queryClient.invalidateQueries({ queryKey: paramsObj.queryKeyList });
         }
     });
 
