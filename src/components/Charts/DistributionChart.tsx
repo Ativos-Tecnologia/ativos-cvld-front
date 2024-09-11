@@ -13,7 +13,7 @@ interface ChartThreeState {
 
 interface newWalletResponse {
   title: string;
-  response?: [
+  response: [
     NotionResponse,
     IWalletResponse[]
   ]
@@ -21,39 +21,17 @@ interface newWalletResponse {
 
 interface ChartThreeProps {
   title?: string;
-  data?: NotionResponse;
+  data: NotionResponse;
 };
 
 
 
-function handleRantabilideTotal (data: IWalletResponse) {
-  return (data.result[data.result.length - 1].valor_liquido_disponivel - data.valor_investido) / data.valor_investido;
- }
-
- function handleMesesAteOPagamento (data: IWalletResponse) {
-  const data_aquisicao = new Date(data.result[0].data_atualizacao);
-  const previsao_de_pgto = new Date(data.previsao_de_pgto);
-
-  const diffMonths = Math.abs(previsao_de_pgto.getTime() - data_aquisicao.getTime()) / (1000 * 60 * 60 * 24 * 30)
-  return diffMonths;
- }
-
-function handleRentabilideMediaAA(data: IWalletResponse) {
-  const rentabilidadeTotal = handleRantabilideTotal(data);
-  const mesesAtePagamento = handleMesesAteOPagamento(data);
-  const rentabilidade = Math.pow(1 + rentabilidadeTotal, 12 / mesesAtePagamento) - 1;
-  return rentabilidade;
-}
-
-function handleRentabilidadeMediaAM(data: IWalletResponse) {
-  const rentabilidadeAnual = handleRentabilideMediaAA(data);
-  return Math.pow(1 + rentabilidadeAnual, 1 / 12) - 1;
-}
 
 const DistributionChart: React.FC<newWalletResponse> = ({title, response: data}) => {
   const [state, setState] = useState<ChartThreeState>({
     series: [65, 34, 12, 56],
   });
+
 
   const options: ApexOptions = {
     title: {
@@ -172,7 +150,7 @@ const DistributionChart: React.FC<newWalletResponse> = ({title, response: data})
             </p>
           </div>}
         </div>
-        <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
+        {/* <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
 
           <div className="flex min-w-47.5">
             <span className="mr-2 mt-1 flex h-3 w-full max-w-3 items-center justify-center rounded-full border border-black dark:border-snow">
@@ -195,7 +173,7 @@ const DistributionChart: React.FC<newWalletResponse> = ({title, response: data})
                 }</p>) : <AiOutlineLoading className="animate-spin mr-2" />}
             </div>
           </div>
-          </div>
+          </div> */}
       </div>
     </div>
   );

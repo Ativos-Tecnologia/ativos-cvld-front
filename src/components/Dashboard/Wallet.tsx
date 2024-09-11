@@ -135,11 +135,7 @@ const Wallet: React.FC = () => {
   }
 
   function handleLiquidUpdatedAMountLucroPercent(data: any) {
-    const totalLiquidUntilAcquisition = handleTotalLiquidUntilBuy(data?.[1]);
-
-    const diferenca = handleTotalLiquidUntilAcquisition(data);
-
-    return diferenca / totalLiquidUntilAcquisition;
+    return handleTotalLiquidUntilAcquisition(data) / handleTotalLiquidUntilBuy(data?.[1]);
   }
 
   useEffect(() => {
@@ -174,7 +170,7 @@ const Wallet: React.FC = () => {
             </CardDataStats> : <CardDataStatsSkeleton />}
           {
             data ?
-              <CardDataStats title="Total de Produtos" total={
+              <CardDataStats title="Total de Precatórios" total={
                 data && <AnimatedNumber value={data && handleTotalProducts(data?.response[0])} isNotCurrency={true} />
               }>
                 <LuShoppingBag className="w-[18px] h-[18px]" />
