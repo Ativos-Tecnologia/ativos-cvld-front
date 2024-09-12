@@ -206,6 +206,10 @@ input[type="password"]::-webkit-textfield-decoration-container {
   @apply dark:!bg-boxdark dark:!border-strokedark
 }
 
+.apexcharts-toolbar {
+  @apply !z-0
+}
+
 .apexcharts-menu-icon {
   @apply !bg-transparent !border-none !z-0
 }

@@ -25,6 +25,9 @@ export const APP_ROUTES = {
         },
         change_password: {
             name: '/change-password'
+        },
+        two_step_verification: {
+            name: '/auth/two-step-verification'
         }
     }
 };

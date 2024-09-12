@@ -73,14 +73,17 @@ const SignUp: React.FC = () => {
             localStorage.setItem(`ATIVOS_${REFRESH_TOKEN}`, res.data.refreshToken);
             MySwal.fire({
               title: "Sucesso!",
-              text: "Cadastro realizado com sucesso! Você será redirecionado para a página de login em instantes.",
+              text: "Cadastro realizado com sucesso! Um e-mail de cofirmação foi enviado  para o e-mail cadastrado.",
+
               icon: "success",
-              showConfirmButton: false,
-              timer: 3000,
+              showConfirmButton: true,
+              confirmButtonColor: '#1A56DB',
+              confirmButtonText: 'Voltar para Login'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                router.push(APP_ROUTES.public.login.name);
+              }
             });
-            setTimeout(() => {
-              router.push(APP_ROUTES.public.login.name);
-            }, 3000);
           }
         })
       } catch (error) {
