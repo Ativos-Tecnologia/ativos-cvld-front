@@ -424,7 +424,7 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                                     <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Data de Recebimento</span>
                                 </div>
                             </TableHeadCell>
-                            <TableHeadCell className='max-w-50'>
+                            {/* <TableHeadCell className='max-w-50'>
                                 <div className='flex gap-2'>
                                     <BsCalendar3 className='text-base' />
                                     <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Data Base</span>
@@ -471,7 +471,7 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                                     <PiListBulletsBold className='text-base' />
                                     <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Usuário da Wallet</span>
                                 </div>
-                            </TableHeadCell>
+                            </TableHeadCell> */}
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -552,50 +552,49 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                                                         </TableCell>
 
                                                         {/* Data base */}
-                                                        <TableCell className='text-sm'>
+                                                        {/* <TableCell className='text-sm'>
                                                             {dateConverter(item.properties["Data Base"].date?.start || '')}
-                                                        </TableCell>
+                                                        </TableCell> */}
 
                                                         {/* Juros fixados */}
-                                                        <TableCell className='text-sm'>
+                                                        {/* <TableCell className='text-sm'>
                                                             <CustomCheckbox
                                                                 check={item.properties['Juros fixados?'].checkbox}
                                                                 readOnly
                                                             />
-                                                        </TableCell>
+                                                        </TableCell> */}
 
                                                         {/* PSS */}
-                                                        <TableCell className='text-sm text-right'>
+                                                        {/* <TableCell className='text-sm text-right'>
                                                             {numberFormat(item.properties["PSS"].number || 0)}
-                                                        </TableCell>
+                                                        </TableCell> */}
 
                                                         {/* Meses RRa */}
-                                                        <TableCell className='text-sm text-right'>
+                                                        {/* <TableCell className='text-sm text-right'>
                                                             {item.properties["Meses RRA"].number}
-                                                        </TableCell>
+                                                        </TableCell> */}
 
                                                         {/* Incidência de IR */}
-                                                        <TableCell className='text-sm'>
+                                                        {/* <TableCell className='text-sm'>
                                                             <CustomCheckbox
                                                                 check={item.properties['Incidência IR'].checkbox}
                                                                 readOnly
                                                             />
-                                                        </TableCell>
+                                                        </TableCell> */}
 
                                                         {/* Valor Principal */}
-                                                        <TableCell className='text-sm text-right'>
+                                                        {/* <TableCell className='text-sm text-right'>
                                                             {numberFormat(item.properties["Valor Principal"].number || 0)}
-                                                        </TableCell>
+                                                        </TableCell> */}
 
                                                         {/* Valor Juros */}
-                                                        <TableCell className='text-sm text-right'>
+                                                        {/* <TableCell className='text-sm text-right'>
                                                             {numberFormat(item.properties["Valor Juros"].number || 0)}
-                                                        </TableCell>
+                                                        </TableCell> */}
 
                                                         {/* Usuário da Wallet */}
-                                                        <TableCell className='text-sm'>
+                                                        {/* <TableCell className='text-sm'>
                                                             <div
-                                                                // ref={(input) => { if (input) usersListRef.current![index] = input; }}
                                                                 className='flex items-center gap-1 overflow-x-scroll custom-scrollbar pb-0.5'>
                                                                 {item.properties["Usuário"].multi_select?.map((user: any) => (
                                                                     <span
@@ -608,7 +607,7 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                                                                     </span>
                                                                 ))}
                                                             </div>
-                                                        </TableCell>
+                                                        </TableCell> */}
                                                     </TableRow>
                                                 ))
                                             }
