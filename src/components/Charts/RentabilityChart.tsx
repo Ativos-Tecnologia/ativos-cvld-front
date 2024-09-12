@@ -255,23 +255,23 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
                 }</p>
             </div>
           </div> */}
-        <div className="flex min-w-47.5">
+        <div className="flex min-w-60">
           <span className="mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-black dark:border-snow">
             <span className="block h-2 w-full max-w-2 rounded-full bg-black dark:bg-snow"></span>
           </span>
           <div className="w-full">
-            <p className="font-semibold text-black dark:text-snow">Rentabilidade A.A</p>
+            <p className="font-semibold text-black dark:text-snow">Rentabilidade Projetada A.A</p>
             {data ? (<p className="text-sm font-medium">{
               (handleRentabilideAA(handleRentabilidadeTotal(data), handleMesesAteOPagamento(data)) * 100).toFixed(2).replace('.', ',') + "%"
             }</p>) : <AiOutlineLoading className="animate-spin mr-2" />}
           </div>
         </div>
-        <div className="flex min-w-47.5">
+        <div className="flex min-w-60">
           <span className="mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-black dark:border-snow">
             <span className="block h-2 w-full max-w-2 rounded-full bg-black dark:bg-snow"></span>
           </span>
           <div className="w-full">
-            <p className="font-semibold text-black dark:text-snow">Rentabilidade A.M.</p>
+            <p className="font-semibold text-black dark:text-snow">Rentabilidade Projetada A.M.</p>
             {data ? (<p className="text-sm font-medium">{
               (handleRentabilidadeAM(handleRentabilideAA(handleRentabilidadeTotal(data), handleMesesAteOPagamento(data))) * 100).toFixed(2).replace('.', ',') + "%"
             }</p>) : <AiOutlineLoading className="animate-spin mr-2" />}
