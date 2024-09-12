@@ -298,80 +298,83 @@ export const SendProposal = ({ isPending, checkedList, editableLabel, setEditabl
 
             <Table>
                 <TableHead>
-                    <TableHeadCell className='min-w-[400px]'>
-                        <div className='flex gap-2 items-center'>
-                            <button
-                                className='flex gap-2 items-center uppercase'
-                                onClick={() => handleSort('Credor')}>
-                                <AiOutlineUser className='text-base' /> Nome do Credor
-                                {sort.field === 'Credor' ? (
-                                    sort.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
-                                ) : (
-                                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                                )}
-                            </button>
-                        </div>
-                    </TableHeadCell>
-                    <TableHeadCell className="min-w-[216px]">
-                        <div className="flex gap-2 items-center">
-                            <BiLoader className='text-base' />
-                            Status
-                        </div>
-                    </TableHeadCell>
-                    <TableHeadCell className="min-w-[180px]">
-                        <div className='flex gap-2 items-center'>
-                            <BiPencil className='text-base' />
-                            Preço Proposto
-                        </div>
-                    </TableHeadCell>
-                    <TableHeadCell className='min-w-[120px]'>
-                        <div className="flex gap-2 items-center">
-                            <LuSigma className='text-base' />
-                            Comissão
-                        </div>
-                    </TableHeadCell>
-                    <TableHeadCell className="min-w-50">
-                        <div className="flex gap-2 items-center">
-                            <IoArrowDownCircle className='text-base' />
-                            (R$) Proposta Mínima
-                        </div>
-                    </TableHeadCell>
-                    <TableHeadCell className="min-w-50">
-                        <div className="flex gap-2 items-center">
-                            <IoArrowUpCircle className='text-base' />
-                            (R$) Proposta Máxima
-                        </div>
-                    </TableHeadCell>
-                    <TableHeadCell className="min-w-32">
-                        <div className="flex gap-2 items-center">
-                            <BsCalendar3 className='text-base' />
-                            1ª FUP
-                        </div>
-                    </TableHeadCell>
-                    <TableHeadCell className="min-w-32">
-                        <div className="flex gap-2 items-center">
-                            <BsCalendar3 className='text-base' />
-                            2ª FUP
-                        </div>
-                    </TableHeadCell>
-                    <TableHeadCell className="min-w-32">
-                        <div className="flex gap-2 items-center">
-                            <BsCalendar3 className='text-base' />
-                            3ª FUP
-                        </div>
-                    </TableHeadCell>
-                    <TableHeadCell className="min-w-32">
-                        <div className="flex gap-2 items-center">
-                            <BsCalendar3 className='text-base' />
-                            4ª FUP
-                        </div>
-                    </TableHeadCell>
-                    <TableHeadCell className="min-w-32">
-                        <div className="flex gap-2 items-center">
-                            <BsCalendar3 className='text-base' />
-                            5ª FUP
-                        </div>
-                    </TableHeadCell>
+                    <TableRow>
+
+                        <TableHeadCell className='min-w-[400px]'>
+                            <div className='flex gap-2 items-center'>
+                                <button
+                                    className='flex gap-2 items-center uppercase'
+                                    onClick={() => handleSort('Credor')}>
+                                    <AiOutlineUser className='text-base' /> Nome do Credor
+                                    {sort.field === 'Credor' ? (
+                                        sort.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
+                                    ) : (
+                                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                                    )}
+                                </button>
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="min-w-[216px]">
+                            <div className="flex gap-2 items-center">
+                                <BiLoader className='text-base' />
+                                Status
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="min-w-[180px]">
+                            <div className='flex gap-2 items-center'>
+                                <BiPencil className='text-base' />
+                                Preço Proposto
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className='min-w-[120px]'>
+                            <div className="flex gap-2 items-center">
+                                <LuSigma className='text-base' />
+                                Comissão
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="min-w-50">
+                            <div className="flex gap-2 items-center">
+                                <IoArrowDownCircle className='text-base' />
+                                (R$) Proposta Mínima
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="min-w-50">
+                            <div className="flex gap-2 items-center">
+                                <IoArrowUpCircle className='text-base' />
+                                (R$) Proposta Máxima
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="min-w-32">
+                            <div className="flex gap-2 items-center">
+                                <BsCalendar3 className='text-base' />
+                                1ª FUP
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="min-w-32">
+                            <div className="flex gap-2 items-center">
+                                <BsCalendar3 className='text-base' />
+                                2ª FUP
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="min-w-32">
+                            <div className="flex gap-2 items-center">
+                                <BsCalendar3 className='text-base' />
+                                3ª FUP
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="min-w-32">
+                            <div className="flex gap-2 items-center">
+                                <BsCalendar3 className='text-base' />
+                                4ª FUP
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="min-w-32">
+                            <div className="flex gap-2 items-center">
+                                <BsCalendar3 className='text-base' />
+                                5ª FUP
+                            </div>
+                        </TableHeadCell>
+                    </TableRow>
                 </TableHead>
 
                 <TableBody>

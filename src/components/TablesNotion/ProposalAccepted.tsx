@@ -283,38 +283,40 @@ export const ProposalAccepted = ({ isPending, checkedList, editableLabel, setEdi
 
             <Table>
                 <TableHead>
-                    <TableHeadCell className='w-[400px]'>
-                        <div className='flex gap-2 items-center'>
-                            <button
-                                className='flex gap-2 items-center uppercase'
-                                onClick={() => handleSort('Credor')}>
-                                <AiOutlineUser className='text-base' /> Nome do Credor
-                                {sort.field === 'Credor' ? (
-                                    sort.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
-                                ) : (
-                                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                                )}
-                            </button>
-                        </div>
-                    </TableHeadCell>
-                    <TableHeadCell className="w-[216px]">
-                        <div className="flex gap-2 items-center">
-                            <BiLoader className='text-base' />
-                            Status
-                        </div>
-                    </TableHeadCell>
-                    <TableHeadCell>
-                        <div className="flex gap-2 items-center">
-                            <LuSigma className='text-base' />
-                            Comissão
-                        </div>
-                    </TableHeadCell>
-                    <TableHeadCell className="min-w-[180px]">
-                        <div className="flex gap-2 items-center">
-                            <LiaCoinsSolid className='text-base' />
-                            Valor Líquido (Com reserva dos honorários)
-                        </div>
-                    </TableHeadCell>
+                    <TableRow>
+                        <TableHeadCell className='w-[400px]'>
+                            <div className='flex gap-2 items-center'>
+                                <button
+                                    className='flex gap-2 items-center uppercase'
+                                    onClick={() => handleSort('Credor')}>
+                                    <AiOutlineUser className='text-base' /> Nome do Credor
+                                    {sort.field === 'Credor' ? (
+                                        sort.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
+                                    ) : (
+                                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                                    )}
+                                </button>
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="w-[216px]">
+                            <div className="flex gap-2 items-center">
+                                <BiLoader className='text-base' />
+                                Status
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell>
+                            <div className="flex gap-2 items-center">
+                                <LuSigma className='text-base' />
+                                Comissão
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="min-w-[180px]">
+                            <div className="flex gap-2 items-center">
+                                <LiaCoinsSolid className='text-base' />
+                                Valor Líquido (Com reserva dos honorários)
+                            </div>
+                        </TableHeadCell>
+                    </TableRow>
                 </TableHead>
 
                 <TableBody>
