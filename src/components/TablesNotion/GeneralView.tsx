@@ -21,6 +21,7 @@ import { Button } from '../ui/button';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import api from '@/utils/api';
 import { MiniMenu } from '../ExtratosTable/MiniMenu';
+import { NotionSkeletonOne } from '../Skeletons/NotionSkeletonOne';
 
 const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, handleEditTipoOficio, handleChangeCreditorName, editableLabel, setEditableLabel, handleEditInput, handleNotionDrawer, handleCopyValue, handleEditStatus, statusSelectValue, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList }:
     {
@@ -32,7 +33,7 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
         handleChangeCreditorName: (value: string, page_id: string, queryKeyList: any[]) => Promise<void>,
         editableLabel: string | null;
         setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
-        handleEditInput: (index: number, refList: HTMLInputElement[] | null) => void;
+        handleEditInput: (index: number, refList: HTMLDivElement[] | null) => void;
         handleNotionDrawer: (id: string) => void;
         handleCopyValue: (index: number) => void;
         handleEditStatus: (page_id: string, status: statusOficio, queryKeyList: any[]) => Promise<void>;
@@ -45,7 +46,7 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
 ) => {
 
     const queryClient = useQueryClient();
-    const inputCredorRefs = useRef<HTMLInputElement[] | null>([]);
+    const inputCredorRefs = useRef<HTMLDivElement[] | null>([]);
     const usersListRef = useRef<HTMLDivElement[] | null>([]);
     const { data: { role, user, sub_role } } = useContext(UserInfoAPIContext);
 
@@ -120,7 +121,7 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
 
     const { isPending: isPendingData, data, error, isFetching, refetch } = useQuery(
         {
-            queryKey: ['notion_list'],
+            queryKey: ['notion_list', 'general'],
             refetchOnReconnect: true,
             refetchOnWindowFocus: true,
             refetchInterval: 1000 * 13,
@@ -220,17 +221,17 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
     };
 
     /* atribui os valores de nomes dos credores aos inputs */
-    useEffect(() => {
-        if (inputCredorRefs.current) {
-            processedData.forEach((item: NotionPage, index: number) => {
-                const ref = inputCredorRefs.current![index];
-                if (ref) {
-                    ref.value = item.properties.Credor?.title[0]?.text.content || '';
-                }
-            });
-        }
+    // useEffect(() => {
+    //     if (inputCredorRefs.current) {
+    //         processedData.forEach((item: NotionPage, index: number) => {
+    //             const ref = inputCredorRefs.current![index];
+    //             if (ref) {
+    //                 ref.value = item.properties.Credor?.title[0]?.text.content || '';
+    //             }
+    //         });
+    //     }
 
-    }, [processedData]);
+    // }, [processedData]);
 
     /* função que seta o valor do filtro, se existir mais de um valor, somente
     o especificado em field será modificado */
@@ -282,11 +283,10 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
 
     }, [data, data?.has_more, data?.next_cursor, firstLoad, hasMore, nextCursor]);
 
-
     return (
         <div className='max-w-full overflow-x-scroll pb-5'>
             <MiniMenu
-                queryKey={['notion_list']}
+                queryKey={['notion_list', 'general']}
                 processedData={processedData}
                 archiveStatus={archiveStatus}
                 handleArchiveExtrato={handleArchiveExtrato}
@@ -357,8 +357,12 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
                     </TableRow>
                 </TableHead>
                 <TableBody className=''>
-                    {isPending ? (
-                        null
+                    {firstLoad ? (
+                        <>
+                            {[...Array(3)].map((_, index: number) => (
+                                <NotionSkeletonOne key={index} />
+                            ))}
+                        </>
                     ) : (
                         <React.Fragment>
                             {data?.results?.length > 0 && (
@@ -379,7 +383,7 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
                                                                 Atualizando ...
                                                             </span>
                                                         ) : (
-                                                            <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleEditTipoOficio(item.id, e.target.value as tipoOficio, ['notion_list'])}>
+                                                            <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleEditTipoOficio(item.id, e.target.value as tipoOficio, ['notion_list', 'general'])}>
                                                                 {item?.properties?.Tipo.select?.name && (
                                                                     <option value={item.properties.Tipo.select?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
                                                                         {item.properties.Tipo.select?.name}
@@ -398,7 +402,25 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
                                             <TableCell title={item?.properties?.Credor?.title[0]?.text.content || ''}
                                                 className="relative h-full min-w-100 flex items-center gap-2 font-semibold text-[12px]"
                                             >
-                                                <input
+
+                                                <div
+                                                    dangerouslySetInnerHTML={{ __html: item?.properties?.Credor?.title[0]?.text.content || '' }}
+                                                    ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
+                                                    contentEditable={editableLabel === item.id}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                            if (inputCredorRefs.current) {
+                                                                inputCredorRefs.current[index].blur()
+                                                                handleChangeCreditorName(inputCredorRefs.current[index].innerText, item.id, ['notion_list'])
+                                                            }
+                                                        }
+                                                    }}
+                                                    className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                >
+                                                    {/* {item.properties.Credor?.title[0]?.text.content || ''} */}
+                                                </div>
+
+                                                {/* <input
                                                     type="text"
                                                     ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
                                                     onKeyDown={(e) => {
@@ -411,7 +433,7 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
                                                     }}
                                                     // onBlur={(e) => handleChangeCreditorName(e.currentTarget.value, index, item.id, inputCredorRefs.current)}
                                                     className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                                                />
+                                                /> */}
                                                 {/* absolute div that covers the entire cell */}
                                                 {editableLabel !== item.id && (
                                                     <div className='absolute inset-0 rounded-md flex items-center transition-all duration-200'>
@@ -501,7 +523,7 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
                                                         </span>
                                                     ) : (
                                                         <select className="text-[12px] w-44 text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => {
-                                                            handleEditStatus(item.id, e.target.value as statusOficio, ['notion_list'])
+                                                            handleEditStatus(item.id, e.target.value as statusOficio, ['notion_list', 'general'])
                                                         }}>
                                                             {item.properties.Status.status?.name && (
                                                                 <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
@@ -526,6 +548,13 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
                     )}
                 </TableBody>
             </Table>
+
+            {(!firstLoad && data?.results?.length === 0) && (
+                <div className='flex items-center text-sm justify-center h-[42px] border border-slate-200 dark:border-slate-600'>
+                    <span>Não há registros para exibir</span>
+                </div>
+            )}
+
             {hasMore && (
                 <Button onClick={loadMore} disabled={isFetchingNextCursor} className='mt-5'>
                     {isFetchingNextCursor ? 'Carregando...' : 'Carregar mais'}

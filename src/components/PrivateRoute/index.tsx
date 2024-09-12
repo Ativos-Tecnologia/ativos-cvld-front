@@ -69,15 +69,15 @@ export default function PrivateRoute({ children }: PropsPrivateRouteProps) {
         if (tokenExpiration < now) {
             await refreshToken();
         } else {
-            MySwal.fire({
-                text: "Bem vindo ao Celer.",
-                icon: "success",
-                position: "bottom-end",
-                toast: true,
-                timer: 2000,
-                timerProgressBar: true,
-                showConfirmButton: false
-            })
+            // MySwal.fire({
+            //     text: "Bem vindo ao Celer.",
+            //     icon: "success",
+            //     position: "bottom-end",
+            //     toast: true,
+            //     timer: 2000,
+            //     timerProgressBar: true,
+            //     showConfirmButton: false
+            // })
             setIsUserAuthenticated(true);
         }
     }, []);
