@@ -187,11 +187,12 @@ const Wallet: React.FC = () => {
               </CardDataStats> : <CardDataStatsSkeleton />}
         </div>
 
-        <div className="scroll-mt-26 grid grid-cols-12 mt-4 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5" ref={mainRef}
+        <div className=" grid grid-cols-12 mt-4 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5"
         >
-          <ProfitChart title={"Performance de Lucro"} data={vlData} />
+          <ProfitChart title={"Performance de Lucro"} response={data?.response} />
           <DistributionChart title={"Distribuição da Carteira"} response={data?.response} />
-          <RentabilityChart data={vlData} />
+          <div className="scroll-mt-26" ref={mainRef}></div>
+          <RentabilityChart data={vlData}  />
           {/* <MapOne /> */}
           {/* <DataStatsFour /> */}
         </div>

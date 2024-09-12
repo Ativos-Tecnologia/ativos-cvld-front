@@ -4,14 +4,15 @@ import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import dateFormater from "@/functions/formaters/dateFormater";
 import numberFormat from "@/functions/formaters/numberFormat";
-import { IWalletResponse } from "@/interfaces/IWallet";
+import { IWalletResponse, IWalletResults } from "@/interfaces/IWallet";
+import { AiOutlineLoading } from "react-icons/ai";
 
 
 
 interface ChartTwoState {
   series: {
     name: string;
-    data: number[];
+    data: number[]
   }[];
 }
 
@@ -20,14 +21,27 @@ interface ProfitBarChartProps {
   data: IWalletResponse;
 }
 
+interface newWalletResponse {
+  title: string;
+  response: [
+    NotionResponse,
+    any[]
+  ]
+}
+
 const handleLucro = (vlAquisicao: number, vlDisponivel: number) => {
   return vlDisponivel - vlAquisicao;
 }
 
-const ProfitBarChart: React.FC<ProfitBarChartProps> = ({
+const ProfitBarChart: React.FC<newWalletResponse> = ({
   title,
-  data,
+  response: data,
 }) => {
+
+  console.log(data && data[1].forEach((item) => item.forEach((i: IWalletResults) => console.log(i.valor_liquido_disponivel
+  ))));
+
+
 
   const options: ApexOptions = {
     colors: ["#3C50E0", "#80CAEE"],
@@ -71,7 +85,7 @@ const ProfitBarChart: React.FC<ProfitBarChartProps> = ({
     },
 
     xaxis: {
-      categories: data.result.map((item) => dateFormater(item.data_atualizacao)),
+      categories: data && data?.[0]?.results?.map((item) => item.properties["Credor"]?.title[0]?.plain_text.slice(0, 10).concat('...') ?? 'N/A'),
     },
     yaxis: {
       show: false,
@@ -97,38 +111,58 @@ const ProfitBarChart: React.FC<ProfitBarChartProps> = ({
     },
   };
 
-  const vi = data.valor_investido;
+  // const vi = data?.[1].map((item) => item.valor_projetado);
   const [state, setState] = useState<ChartTwoState>({
     series: [
+      // {
+      //   name: "Total na aquisição",
+      //   data: []
+      // },
+      // {
+      //   name: "Lucro",
+      //   data: []
+      // },
+      // {
+      //   name: "Total atualizado",
+      //   data: []
+      // },
       {
-        name: "Total na aquisição",
+        name: "Investido",
         data: []
-      },
-      {
-        name: "Lucro",
-        data: []
-      },
+      }
     ],
   });
 
-  const handleSeries = () => {
+  const handleSeries = (data: [
+    NotionResponse,
+    IWalletResponse[]
+  ]) => {
     setState({
       series: [
+        // {
+        //   name: "Total na aquisição",
+        //   data: data[1].map((item) => item.valor_projetado),
+        // },
+        // {
+        //   name: "Lucro",
+        //   data: data[1].map((item) => handleLucro(item.valor_investido, item.valor_projetado)),
+        // },
+        // {
+        //   name: "Total atualizado",
+        //   data: []
+        // },
         {
-          name: "Total na aquisição",
-          data: data.result.map((item) => item.valor_liquido_disponivel),
-        },
-        {
-          name: "Lucro",
-          data: data.result.map((item) => handleLucro(vi, item.valor_liquido_disponivel)),
-        },
+          name: "Investido",
+          data: (data && data[0]?.results.map((item) => item.properties["Valor de Aquisição (Wallet)"]?.number).filter((num): num is number => num !== null && num !== undefined)) || [0],
+        }
       ],
-    });
-  };
+    })
+
+  }
 
 
   useEffect(() => {
-    handleSeries();
+    handleSeries(data);
   }, [data]);
 
   return (
@@ -147,13 +181,18 @@ const ProfitBarChart: React.FC<ProfitBarChartProps> = ({
 
       <div>
         <div id="chartTwo" className="-mb-9 -ml-5">
-          <ReactApexChart
+        {data ? <ReactApexChart
             options={options}
             series={state.series}
             type="bar"
             height={350}
-          />
+          />: <div className="flex justify-center items-center h-96 w-full">
+          <p className="text-black dark:text-white">
+            <AiOutlineLoading className="animate-spin mr-2" />
+          </p>
+        </div>}
         </div>
+
       </div>
     </div>
   );
