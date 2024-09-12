@@ -29,6 +29,7 @@ const Wallet: React.FC = () => {
   const [vlData, setVlData] = useState<IWalletResponse>({
     id: "",
     valor_investido: 0,
+    valor_projetado: 0,
     previsao_de_pgto: "",
     result: [
       {
