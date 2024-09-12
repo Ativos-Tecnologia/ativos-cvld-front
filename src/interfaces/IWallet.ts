@@ -10,6 +10,7 @@ export interface IWalletResults {
 export interface IWalletResponse {
     id: string;
     valor_investido: number;
+    valor_projetado: number;
     previsao_de_pgto: string;
     result: IWalletResults[];
   }

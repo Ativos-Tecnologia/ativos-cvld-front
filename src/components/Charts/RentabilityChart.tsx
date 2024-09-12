@@ -20,7 +20,7 @@ export interface RentabilityChartProps {
 const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
 
   function handleRentabilidadeTotal(data: IWalletResponse) {
-    const result = (data.result[data.result.length - 1].valor_liquido_disponivel - data.valor_investido) / data.valor_investido;
+    const result = (data.valor_projetado - data.valor_investido) / data.valor_investido;
     return Number.isNaN(result) ? 0 : result;
   }
 
