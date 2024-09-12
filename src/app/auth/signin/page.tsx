@@ -69,6 +69,17 @@ const SignIn: React.FC = () => {
     setLoading(true);
 
     try {
+
+      // let isConfirmed;
+
+      // const req = await api.get("/api/profile/");
+      // if (req.status === 200) {
+      //   isConfirmed = req.data.is_confirmed;
+      // } else {
+      //   router.push(APP_ROUTES.public.login.name);
+      //   return;
+      // }
+
       const res = await api.post("/api/token/", data);
       if (res.status === 200) {
         localStorage.setItem(`ATIVOS_${ACCESS_TOKEN}`, res.data.access);
@@ -78,26 +89,26 @@ const SignIn: React.FC = () => {
 
         if (userProduct === 'wallet') {
           router.push(APP_ROUTES.private.wallet.name);
-          MySwal.fire({
-            position: "bottom-end",
-            icon: "success",
-            title: "Bem-vindo de volta!",
-            showConfirmButton: false,
-            timer: 2000,
-            toast: true,
-            timerProgressBar: true,
-          });
+          // MySwal.fire({
+          //   position: "bottom-end",
+          //   icon: "success",
+          //   title: "Bem-vindo de volta!",
+          //   showConfirmButton: false,
+          //   timer: 2000,
+          //   toast: true,
+          //   timerProgressBar: true,
+          // });
         } else {
           router.push(APP_ROUTES.private.dashboard.name);
-          MySwal.fire({
-            position: "bottom-end",
-            icon: "success",
-            title: "Bem-vindo de volta!",
-            showConfirmButton: false,
-            timer: 2000,
-            toast: true,
-            timerProgressBar: true,
-          });
+          // MySwal.fire({
+          //   position: "bottom-end",
+          //   icon: "success",
+          //   title: "Bem-vindo de volta!",
+          //   showConfirmButton: false,
+          //   timer: 2000,
+          //   toast: true,
+          //   timerProgressBar: true,
+          // });
         }
 
       } else {

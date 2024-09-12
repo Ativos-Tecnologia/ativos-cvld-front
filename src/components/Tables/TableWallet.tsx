@@ -509,9 +509,11 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                                                             title={item.properties.Credor?.title[0].text.content || ''}
                                                             className="h-[34.8px] flex items-center gap-2 font-semibold text-sm"
                                                         >
-                                                            {
-                                                                item.properties.Credor?.title[0].text.content || ''
-                                                            }
+                                                            <div className='max-w-[366px] text-ellipsis overflow-hidden whitespace-nowrap'>
+                                                                {
+                                                                    item.properties.Credor?.title[0].text.content || ''
+                                                                }
+                                                            </div>
                                                         </TableCell>
 
                                                         {/* valor de aquisição */}

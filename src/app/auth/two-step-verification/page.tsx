@@ -11,11 +11,38 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp"
 import { Button } from "@/components/ui/button";
+import api from "@/utils/api";
+import { APP_ROUTES } from "@/constants/app-routes";
+import { useRouter } from "next/navigation";
 
 const TwoStepVerification: React.FC = () => {
 
+  const router = useRouter();
   const [colorMode, setColorMode] = useColorMode();
   const [value, setValue] = useState("");
+  const [validatingState, setValidatingState] = useState<string | null>(null);
+
+  console.log(validatingState)
+
+  const submitData = async (e: any) => {
+    e.preventDefault();
+    setValidatingState('validating')
+    try {
+      
+      const response = await api.post('/api/confirm-user', {
+        "confirmation_code": value
+      })
+
+      if (response.status === 200) {
+        setValidatingState('validating_success');
+        router.push(APP_ROUTES.public.login.name)
+      }
+
+    } catch (error) {
+      console.log(error)
+      setValidatingState('validating_error');
+    }
+  }
 
   return (
     <UnloggedLayout>
@@ -52,7 +79,7 @@ const TwoStepVerification: React.FC = () => {
                     Digite os 4 digitos enviados para o seu e-mail cadastrado
                   </p>
 
-                  <form>
+                  <form onSubmit={(e) => submitData(e)}>
                     <div className="flex items-center justify-center gap-4.5 mb-7.5">
                       <InputOTP
                         maxLength={4}
@@ -71,8 +98,12 @@ const TwoStepVerification: React.FC = () => {
                       </InputOTP>
                     </div>
 
-                    <Button className="flex w-full justify-center rounded-md bg-blue-700 hover:bg-blue-800 p-[13px] font-bold text-snow">
-                      Confirmar
+                    <Button
+                    className={`${validatingState === 'validating_success' && 'bg-green-500 hover:bg-green-600'} ${validatingState === 'validating_error' && 'bg-red hover:bg-red-500'} ${validatingState === null && 'bg-blue-700 hover:bg-blue-800'} flex w-full justify-center rounded-md p-[13px] font-bold text-snow transition-all duration-200`}>
+                      {validatingState === 'validating' && 'Validando...'}
+                      {validatingState === 'validating_success' && 'Sucesso!'}
+                      {validatingState === 'validating_error' && 'Código incorreto'}
+                      {validatingState === null && 'Confirmar'}
                     </Button>
 
                     <span className="mt-5 block text-red text-sm">
