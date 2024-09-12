@@ -20,6 +20,7 @@ import { MiniMenu } from '../ExtratosTable/MiniMenu'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import api from '@/utils/api'
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react'
+import { NotionSkeletonThree } from '../Skeletons/NotionSkeletonThree'
 
 export const ProposalAccepted = ({ isPending, checkedList, editableLabel, setEditableLabel, statusSelectValue, handleSelectRow, handleChangeCreditorName, handleEditInput, handleEditStatus, handleCopyValue, handleNotionDrawer, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList
 }:
@@ -34,7 +35,7 @@ export const ProposalAccepted = ({ isPending, checkedList, editableLabel, setEdi
         numberFormat: (number: number) => string;
         handleSelectRow: (item: NotionPage) => void;
         handleChangeCreditorName: (value: string, page_id: string, queryKeyList: any[]) => Promise<void>;
-        handleEditInput: (index: number, refList: HTMLInputElement[] | null) => void;
+        handleEditInput: (index: number, refList: HTMLDivElement[] | null) => void;
         handleEditStatus: (page_id: string, status: statusOficio, queryKeyList: any[]) => Promise<void>;
         handleCopyValue: (index: number) => void;
         archiveStatus: boolean,
@@ -52,7 +53,7 @@ export const ProposalAccepted = ({ isPending, checkedList, editableLabel, setEdi
     const [firstLoad, setFirstLoad] = useState(true);
 
     /* ----> refs <----- */
-    const inputCredorRefs = useRef<HTMLInputElement[] | null>([]);
+    const inputCredorRefs = useRef<HTMLDivElement[] | null>([]);
 
     const { data: { user, role, sub_role } } = useContext(UserInfoAPIContext);
 
@@ -225,17 +226,17 @@ export const ProposalAccepted = ({ isPending, checkedList, editableLabel, setEdi
     }, [filters, queryClient, refetchByName, processedData /*shouldFetchExternally*/]);
 
     /* atribui os valores de nomes dos credores aos inputs */
-    useEffect(() => {
-        if (inputCredorRefs.current) {
-            processedData.forEach((item: NotionPage, index: number) => {
-                const ref = inputCredorRefs.current![index];
-                if (ref) {
-                    ref.value = item.properties.Credor?.title[0]?.text.content || '';
-                }
-            });
-        }
+    // useEffect(() => {
+    //     if (inputCredorRefs.current) {
+    //         processedData.forEach((item: NotionPage, index: number) => {
+    //             const ref = inputCredorRefs.current![index];
+    //             if (ref) {
+    //                 ref.value = item.properties.Credor?.title[0]?.text.content || '';
+    //             }
+    //         });
+    //     }
 
-    }, [processedData]);
+    // }, [processedData]);
 
     useEffect(() => {
         if (firstLoad && data) {
@@ -317,7 +318,13 @@ export const ProposalAccepted = ({ isPending, checkedList, editableLabel, setEdi
                 </TableHead>
 
                 <TableBody>
-                    {isPending ? null : (
+                    {firstLoad ? (
+                        <>
+                            {[...Array(3)].map((_, index: number) => (
+                                <NotionSkeletonThree key={index} />
+                            ))}
+                        </>
+                    ) : (
                         <React.Fragment>
                             {data?.results?.length > 0 && (
                                 <>
@@ -337,7 +344,24 @@ export const ProposalAccepted = ({ isPending, checkedList, editableLabel, setEdi
                                                     />
 
                                                     <div className="relative w-full">
-                                                        <input
+
+                                                        <div
+                                                            ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
+                                                            contentEditable={editableLabel === item.id}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                                    if (inputCredorRefs.current) {
+                                                                        inputCredorRefs.current[index].blur()
+                                                                        handleChangeCreditorName(inputCredorRefs.current[index].innerText, item.id, ['notion_list'])
+                                                                    }
+                                                                }
+                                                            }}
+                                                            className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                        >
+                                                            {item.properties.Credor?.title[0]?.text.content || ''}
+                                                        </div>
+
+                                                        {/* <input
                                                             type="text"
                                                             ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
                                                             onKeyDown={(e) => {
@@ -349,7 +373,7 @@ export const ProposalAccepted = ({ isPending, checkedList, editableLabel, setEdi
                                                                 }
                                                             }}
                                                             className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                                                        />
+                                                        /> */}
                                                         {/* absolute div that covers the entire cell */}
                                                         {editableLabel !== item.id && (
                                                             <div className='absolute inset-0 rounded-md flex items-center transition-all duration-200'>
@@ -457,6 +481,12 @@ export const ProposalAccepted = ({ isPending, checkedList, editableLabel, setEdi
                     )}
                 </TableBody>
             </Table>
+
+            {(!firstLoad && data?.results?.length === 0) && (
+                <div className='flex items-center text-sm justify-center h-[42px] border border-slate-200 dark:border-slate-600'>
+                    <span>Não há registros para exibir</span>
+                </div>
+            )}
 
             {hasMore && (
                 <Button onClick={loadMore} disabled={isFetchingNextCursor} className='mt-5'>

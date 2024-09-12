@@ -16,6 +16,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/utils/api';
 import { MiniMenu } from '../ExtratosTable/MiniMenu';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
+import { NotionSkeletonTwo } from '../Skeletons/NotionSkeletonTwo';
 
 const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLabel, selectStatusValue, handleNotionDrawer, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, handleEditStatus,
     handleArchiveExtrato, archiveStatus, handleSelectAllRows, setCheckedList
@@ -29,7 +30,7 @@ const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLa
         handleNotionDrawer: (id: string) => void;
         handleSelectRow: (item: NotionPage) => void;
         handleChangeCreditorName: (value: string, page_id: string, queryKeyList: any[]) => Promise<void>;
-        handleEditInput: (index: number, refList: HTMLInputElement[] | null) => void;
+        handleEditInput: (index: number, refList: HTMLDivElement[] | null) => void;
         handleChangePhoneNumber: (page_id: string, type: string, value: string, queryKeyList: any[]) => Promise<void>;
         handleChangeEmail: (page_id: string, value: string, queryKeyList: any[]) => Promise<void>;
         handleEditStatus: (page_id: string, status: statusOficio, queryKeyList: any[]) => Promise<void>;
@@ -48,7 +49,7 @@ const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLa
     const [firstLoad, setFirstLoad] = useState(true);
 
     /* ----> refs <----- */
-    const inputCredorRefs = useRef<HTMLInputElement[] | null>([]);
+    const inputCredorRefs = useRef<HTMLDivElement[] | null>([]);
     const inputPhoneOneRefs = useRef<HTMLInputElement[] | null>([]);
     const inputPhoneTwoRefs = useRef<HTMLInputElement[] | null>([]);
     const inputPhoneThreeRefs = useRef<HTMLInputElement[] | null>([]);
@@ -243,17 +244,17 @@ const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLa
     }, [filters, queryClient, refetchByName, processedData /*shouldFetchExternally*/]);
 
     /* atribui os valores de nomes dos credores aos inputs */
-    useEffect(() => {
-        if (inputCredorRefs.current) {
-            processedData.forEach((item: NotionPage, index: number) => {
-                const ref = inputCredorRefs.current![index];
-                if (ref) {
-                    ref.value = item.properties.Credor?.title[0]?.text.content || '';
-                }
-            });
-        }
+    // useEffect(() => {
+    //     if (inputCredorRefs.current) {
+    //         processedData.forEach((item: NotionPage, index: number) => {
+    //             const ref = inputCredorRefs.current![index];
+    //             if (ref) {
+    //                 ref.value = item.properties.Credor?.title[0]?.text.content || '';
+    //             }
+    //         });
+    //     }
 
-    }, [processedData]);
+    // }, [processedData]);
 
     useEffect(() => {
         if (firstLoad && data) {
@@ -304,55 +305,61 @@ const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLa
 
             <Table>
                 <TableHead>
-                    <TableHeadCell className="min-w-[400px]">
-                        <div className='flex gap-2 items-center'>
-                            <button
-                                className='flex gap-2 items-center uppercase'
-                                onClick={() => handleSort('Credor')}>
-                                <AiOutlineUser className='text-base' /> Nome do Credor
-                                {sort.field === 'Credor' ? (
-                                    sort.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
-                                ) : (
-                                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                                )}
-                            </button>
-                        </div>
-                    </TableHeadCell>
-                    <TableHeadCell className="min-w-[216px]">
-                        <div className="flex gap-2 items-center">
-                            <BiLoader className='text-base' />
-                            Status
-                        </div>
-                    </TableHeadCell>
-                    <TableHeadCell className="min-w-[150px]">
-                        <div className="flex gap-2 items-center">
-                            <AiOutlinePhone className='text-base' />
-                            Contato
-                        </div>
-                    </TableHeadCell>
-                    <TableHeadCell className="min-w-[150px]">
-                        <div className="flex gap-2 items-center">
-                            <AiOutlinePhone className='text-base' />
-                            Contato 2
-                        </div>
-                    </TableHeadCell>
-                    <TableHeadCell className="min-w-[150px]">
-                        <div className="flex gap-2 items-center">
-                            <AiOutlinePhone className='text-base' />
-                            Contato 3
-                        </div>
-                    </TableHeadCell>
-                    <TableHeadCell className="min-w-[200px]">
-                        <div className="flex gap-2 items-center">
-                            <MdOutlineAlternateEmail className='text-base' />
-                            Contato de E-mail
-                        </div>
-                    </TableHeadCell>
+                    <TableRow>
+                        <TableHeadCell className="min-w-[400px]">
+                            <div className='flex gap-2 items-center'>
+                                <button
+                                    className='flex gap-2 items-center uppercase'
+                                    onClick={() => handleSort('Credor')}>
+                                    <AiOutlineUser className='text-base' /> Nome do Credor
+                                    {sort.field === 'Credor' ? (
+                                        sort.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
+                                    ) : (
+                                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                                    )}
+                                </button>
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="min-w-[216px]">
+                            <div className="flex gap-2 items-center">
+                                <BiLoader className='text-base' />
+                                Status
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="min-w-[150px]">
+                            <div className="flex gap-2 items-center">
+                                <AiOutlinePhone className='text-base' />
+                                Contato
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="min-w-[150px]">
+                            <div className="flex gap-2 items-center">
+                                <AiOutlinePhone className='text-base' />
+                                Contato 2
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="min-w-[150px]">
+                            <div className="flex gap-2 items-center">
+                                <AiOutlinePhone className='text-base' />
+                                Contato 3
+                            </div>
+                        </TableHeadCell>
+                        <TableHeadCell className="min-w-[200px]">
+                            <div className="flex gap-2 items-center">
+                                <MdOutlineAlternateEmail className='text-base' />
+                                Contato de E-mail
+                            </div>
+                        </TableHeadCell>
+                    </TableRow>
                 </TableHead>
 
                 <TableBody>
-                    {isPending ? (
-                        null
+                    {firstLoad ? (
+                        <>
+                            {[...Array(3)].map((_, index: number) => (
+                                <NotionSkeletonTwo key={index} />
+                            ))}
+                        </>
                     ) : (
                         <React.Fragment>
 
@@ -374,7 +381,24 @@ const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLa
                                                     />
 
                                                     <div className="relative w-full">
-                                                        <input
+
+                                                        <div
+                                                            ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
+                                                            contentEditable={editableLabel === item.id}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                                    if (inputCredorRefs.current) {
+                                                                        inputCredorRefs.current[index].blur()
+                                                                        handleChangeCreditorName(inputCredorRefs.current[index].innerText, item.id, ['notion_list'])
+                                                                    }
+                                                                }
+                                                            }}
+                                                            className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                        >
+                                                            {item.properties.Credor?.title[0]?.text.content || ''}
+                                                        </div>
+
+                                                        {/* <input
                                                             type="text"
                                                             ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
                                                             onKeyDown={(e) => {
@@ -386,7 +410,7 @@ const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLa
                                                                 }
                                                             }}
                                                             className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                                                        />
+                                                        /> */}
                                                         {/* absolute div that covers the entire cell */}
                                                         {editableLabel !== item.id && (
                                                             <div className='absolute inset-0 rounded-md flex items-center transition-all duration-200'>
@@ -546,6 +570,12 @@ const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLa
                 </TableBody>
 
             </Table>
+
+            {(!firstLoad && data?.results?.length === 0) && (
+                <div className='flex items-center text-sm justify-center h-[42px] border border-slate-200 dark:border-slate-600'>
+                    <span>Não há registros para exibir</span>
+                </div>
+            )}
 
             {hasMore && (
                 <Button onClick={loadMore} disabled={isFetchingNextCursor} className='mt-5'>
