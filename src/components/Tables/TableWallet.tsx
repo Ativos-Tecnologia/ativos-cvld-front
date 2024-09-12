@@ -412,7 +412,7 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                                     </div>
                                 </Title>
                             </TableHeadCell>
-                            <TableHeadCell className='max-w-50'>
+                            {/* <TableHeadCell className='max-w-50'>
                                 <div className='flex gap-2'>
                                     <BiSolidCategoryAlt className='text-base' />
                                     <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Natureza</span>
@@ -424,7 +424,7 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                                     <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Data de Recebimento</span>
                                 </div>
                             </TableHeadCell>
-                            {/* <TableHeadCell className='max-w-50'>
+                            <TableHeadCell className='max-w-50'>
                                 <div className='flex gap-2'>
                                     <BsCalendar3 className='text-base' />
                                     <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Data Base</span>
@@ -542,14 +542,14 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                                                         </TableCell>
 
                                                         {/* Natureza */}
-                                                        <TableCell className='text-sm'>
+                                                        {/* <TableCell className='text-sm'>
                                                             {item.properties["Natureza"].select?.name}
-                                                        </TableCell>
+                                                        </TableCell> */}
 
                                                         {/* Data de recebimento */}
-                                                        <TableCell className='text-sm'>
+                                                        {/* <TableCell className='text-sm'>
                                                             {dateConverter(item.properties["Data do Recebimento"].date?.start || '')}
-                                                        </TableCell>
+                                                        </TableCell> */}
 
                                                         {/* Data base */}
                                                         {/* <TableCell className='text-sm'>
