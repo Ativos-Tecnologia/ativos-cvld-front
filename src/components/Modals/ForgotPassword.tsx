@@ -1,11 +1,12 @@
 "use client";
 import { Button } from '@/components/ui/button';
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
 import { BiEnvelope, BiMailSend, BiX } from 'react-icons/bi';
 import { AiOutlineLoading } from 'react-icons/ai';
 import api from '@/utils/api';
+import UseMySwal from '@/hooks/useMySwal';
 
 type ChangePasswordProps = {
   state: boolean;
@@ -23,35 +24,69 @@ const ForgotPassword = ({ state, setState }: ChangePasswordProps) => {
     formState: { errors }
   } = useForm<ChangePasswordProps>();
 
-  const [status, setStatus] = useState<string | null>(null);
+  const [isSending, setIsSending] = useState<boolean>(false);
+  const MySwal = UseMySwal();
+  const modalRef = useRef<any>(null);
 
   const onCloseModal = () => {
     reset();
-    setStatus(null);
+    setIsSending(false);
     setState(false);
   };
 
   const onSubmit = async (data: ChangePasswordProps) => {
-    setStatus('sending_request');
+    setIsSending(true);
 
     const response = await api.post('/api/reset-password/', {
       email: data.recovery_email
     });
 
     if (response.status === 200) {
-      setStatus('request_success')
+      MySwal.fire({
+        icon: "success",
+        title: "Sucesso!",
+        text: "Em até 5min, um e-mail com o link de alteração de senha será enviado para o e-mail informado.",
+        showConfirmButton: true,
+        confirmButtonText: "OK",
+        confirmButtonColor: "#1A56DB"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          reset();
+          setState(false);
+        }
+      })
     } else {
-      setStatus('null')
-      throw new Error('Aconteceu um problema ao enviar a requisição')
+      console.error('Aconteceu um problema ao enviar a requisição');
+      MySwal.fire({
+        icon: "error",
+        title: "Oops!",
+        text: "Ocorreu um erro ao enviar a solicitação",
+        showConfirmButton: true,
+        confirmButtonText: "OK",
+        confirmButtonColor: "#1A56DB"
+      })
     }
 
+    setIsSending(false);
+
   };
+
+  // close on click outside
+  useEffect(() => {
+    const clickHandler = ({ target }: MouseEvent) => {
+      if (!modalRef.current) return;
+      if (modalRef?.current?.contains(target)) return;
+      setState(false);
+    };
+    document.addEventListener("click", clickHandler);
+    return () => document.removeEventListener("click", clickHandler);
+  });
 
 
   return (
     <div className={`${state ? 'opacity-100 visible' : 'opacity-0 invisible'} 
       fixed top-0 left-0 flex items-center justify-center w-screen h-screen z-1 bg-black-2/50 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 transition-all duration-300 ease-in-out`}>
-      <div className='relative w-11/12 xsm:w-100 h-fit rounded-lg bg-white p-10 border border-stroke dark:border-strokedark dark:bg-boxdark'>
+      <div ref={modalRef} className='relative w-11/12 xsm:w-100 h-fit rounded-lg bg-white p-10 border border-stroke dark:border-strokedark dark:bg-boxdark'>
         <span className='absolute top-4 right-4 cursor-pointer'>
           <BiX style={{ width: '26px', height: '26px', fill: '#BAC1CB' }} onClick={onCloseModal} />
         </span>
@@ -85,9 +120,7 @@ const ForgotPassword = ({ state, setState }: ChangePasswordProps) => {
           </div>
           <Button type='submit' className={`${status === 'request_success' && 'bg-green-500'} flex items-center justify-center w-full cursor-pointer rounded-lg text-white hover:bg-opacity-90`}>
             <span className='text-[16px] font-medium'>
-              {status === null && 'Confirmar'}
-              {status === 'sending_request' && 'Enviando e-mail...'}
-              {status === 'request_success' && 'E-mail enviado!'}
+              {isSending ? "Enviando e-mail" : "Enviar"}
             </span>
           </Button>
         </form>
