@@ -397,10 +397,10 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                                 </Title>
                             </TableHeadCell>
                             <TableHeadCell className='max-w-50'>
-                                <Title text='Valor Líquido (Com Reserva dos Honorários)'>
+                                <Title text='LOA'>
                                     <div className='flex gap-2'>
                                         <LiaCoinsSolid className='text-base' />
-                                        <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Valor Líquido (Com Reserva dos Honorários)</span>
+                                        <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>LOA</span>
                                     </div>
                                 </Title>
                             </TableHeadCell>
@@ -532,8 +532,8 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                                                         </TableCell>
 
                                                         {/* Valor líquido */}
-                                                        <TableCell className='text-sm text-right'>
-                                                            {numberFormat(item.properties["Valor Líquido (Com Reserva dos Honorários)"].formula?.number || 0)}
+                                                        <TableCell className='text-sm text-left'>
+                                                           { item.properties["LOA"].number || 0}
                                                         </TableCell>
 
                                                         {/* Data de aquisição */}
