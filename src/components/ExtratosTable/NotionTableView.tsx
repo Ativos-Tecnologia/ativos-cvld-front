@@ -52,11 +52,13 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const [openStatusPopover, setOpenStatusPopover] = useState<boolean>(false);
     const [openTipoOficioPopover, setOpenTipoOficioPopover] = useState<boolean>(false);
     const [openUsersPopover, setOpenUsersPopover] = useState<boolean>(false);
-    const [filteredValues, setFilteredValues] = useState<statusOficio[]>(ENUM_OFICIOS_LIST);
+    const [filteredStatusValues, setFilteredStatusValues] = useState<statusOficio[]>(ENUM_OFICIOS_LIST);
+    const [filteredUsersList, setFilteredUsersList] = useState<string[]>(ENUM_OFICIOS_LIST);
     const [fetchingValue, setFetchingValue] = useState<Record<string, any> | null>(null);
     const [archiveStatus, setArchiveStatus] = useState<boolean>(false);
     const [archivedOficios, setArchivedOficios] = useState<NotionPage[]>([]);
-    const searchRef = useRef<HTMLInputElement | null>(null);
+    const searchStatusRef = useRef<HTMLInputElement | null>(null);
+    const searchUserRef = useRef<HTMLInputElement | null>(null);
     const selectStatusRef = useRef<any>(null);
     const selectTipoOficioRef = useRef<any>(null);
     const selectUserRef = useRef<any>(null);
@@ -756,17 +758,25 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
     const searchStatus = (value: string) => {
         if (!value) {
-            setFilteredValues(ENUM_OFICIOS_LIST);
+            setFilteredStatusValues(ENUM_OFICIOS_LIST);
             return;
         }
-        setFilteredValues(ENUM_OFICIOS_LIST.filter((status) => status.toLowerCase().includes(value.toLowerCase())));
+        setFilteredStatusValues(ENUM_OFICIOS_LIST.filter((status) => status.toLowerCase().includes(value.toLowerCase())));
+    }
+
+    const searchUser = (value: string) => {
+        if (!value) {
+            setFilteredUsersList(usersList);
+            return;
+        }
+        setFilteredUsersList(usersList.filter((user) => user.toLowerCase().includes(value.toLowerCase())));
     }
 
     const handleSelectStatus = (status: statusOficio) => {
         setOpenStatusPopover(false);
-        setFilteredValues(ENUM_OFICIOS_LIST);
+        setFilteredStatusValues(ENUM_OFICIOS_LIST);
         setStatusSelectValue(status);
-        searchRef.current!.value = '';
+        searchStatusRef.current!.value = '';
         setListQuery({
             "and": [
                 {
@@ -1064,6 +1074,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                 const [usersList] = await Promise.all([api.get("/api/notion-api/list/users/")]);
                 if (usersList.status === 200) {
                     setUsersList(usersList.data);
+                    setFilteredUsersList(usersList.data);
                 }
             };
         };
@@ -1142,7 +1153,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                                     <div className='flex gap-1 items-center justify-center border-b border-stroke dark:border-bodydark2'>
                                         <AiOutlineSearch className='text-lg' />
                                         <input
-                                            ref={searchRef}
+                                            ref={searchStatusRef}
                                             type="text"
                                             placeholder='Pesquisar'
                                             className='w-full border-none focus-within:ring-0 bg-transparent dark:placeholder:text-bodydark2'
@@ -1150,7 +1161,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                                         />
                                     </div>
                                     <div className='flex flex-col max-h-49 overflow-y-scroll gap-1 mt-3'>
-                                        {filteredValues.map((status) => (
+                                        {filteredStatusValues.map((status) => (
                                             <span
                                                 key={status}
                                                 className='cursor-pointer text-sm p-1 rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700'
@@ -1195,7 +1206,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                                             {/* <div className='flex gap-1 items-center justify-center border-b border-stroke dark:border-bodydark2'>
                                     <AiOutlineSearch className='text-lg' />
                                     <input
-                                        ref={searchRef}
+                                        ref={searchStatusRef}
                                         type="text"
                                         placeholder='Pesquisar status...'
                                         className='w-full border-none focus-within:ring-0 bg-transparent dark:placeholder:text-bodydark2'
@@ -1247,18 +1258,20 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                                         <div
                                             ref={selectUserRef}
                                             className={`absolute mt-3 w-[230px] z-20 p-3 rounded-md bg-white dark:bg-form-strokedark shadow-1 border border-stroke dark:border-strokedark ${openUsersPopover ? 'opacity-100 visible animate-in fade-in-0 zoom-in-95' : ' animate-out fade-out-0 zoom-out-95 invisible opacity-0'} transition-opacity duration-500`}>
-                                            {/* <div className='flex gap-1 items-center justify-center border-b border-stroke dark:border-bodydark2'>
-                                    <AiOutlineSearch className='text-lg' />
-                                    <input
-                                        ref={searchRef}
-                                        type="text"
-                                        placeholder='Pesquisar status...'
-                                        className='w-full border-none focus-within:ring-0 bg-transparent dark:placeholder:text-bodydark2'
-                                        onKeyUp={(e) => searchStatus(e.currentTarget.value)}
-                                    />
-                                </div> */}
-                                            <div className='flex flex-col max-h-49 overflow-y-scroll gap-1'>
-                                                {usersList.filter(user => user !== data.user).map((user) => (
+
+                                            <div className='flex gap-1 items-center justify-center border-b border-stroke dark:border-bodydark2'>
+                                                <AiOutlineSearch className='text-lg' />
+                                                <input
+                                                    ref={searchUserRef}
+                                                    type="text"
+                                                    placeholder='Pesquisar usuário...'
+                                                    className='w-full border-none focus-within:ring-0 bg-transparent dark:placeholder:text-bodydark2'
+                                                    onKeyUp={(e) => searchUser(e.currentTarget.value)}
+                                                />
+                                            </div>
+
+                                            <div className='flex flex-col mt-3 max-h-49 overflow-y-scroll gap-1'>
+                                                {filteredUsersList.filter(user => user !== data.user).map((user) => (
                                                     <span
                                                         key={user}
                                                         className='cursor-pointer text-sm p-1 rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700'
@@ -1267,6 +1280,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                                                     </span>
                                                 ))}
                                             </div>
+
                                         </div>
                                     )}
                                     {/* ==== end popover ==== */}

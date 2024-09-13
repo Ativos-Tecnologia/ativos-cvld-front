@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
@@ -14,19 +14,20 @@ import { Button } from "@/components/ui/button";
 import api from "@/utils/api";
 import { APP_ROUTES } from "@/constants/app-routes";
 import { useRouter } from "next/navigation";
+import UseMySwal from "@/hooks/useMySwal";
+import { SweetAlertResult } from "sweetalert2";
 
 const TwoStepVerification: React.FC = () => {
 
   const router = useRouter();
+  const MySwal = UseMySwal();
   const [colorMode, setColorMode] = useColorMode();
+  const [isValidating, setIsValidating] = useState<boolean>(false);
   const [value, setValue] = useState("");
-  const [validatingState, setValidatingState] = useState<string | null>(null);
 
-  console.log(validatingState)
-
-  const submitData = async (e: any) => {
+  const submitData = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setValidatingState('validating')
+    setIsValidating(true);
     try {
       
       const response = await api.post('/api/confirm-user', {
@@ -34,13 +35,31 @@ const TwoStepVerification: React.FC = () => {
       })
 
       if (response.status === 200) {
-        setValidatingState('validating_success');
-        router.push(APP_ROUTES.public.login.name)
+        MySwal.fire({
+          icon: "success",
+          title: "Tudo certo",
+          text: "A sua conta foi confirmada! Agora você já pode usar o nosso sistema.",
+          showConfirmButton: true,
+          confirmButtonText: "Ir para LogIn",
+          confirmButtonColor: "#1A56DB",
+        }).then((result: SweetAlertResult<any>) => {
+          if (result.isConfirmed) {
+            router.push(APP_ROUTES.public.login.name)
+          }
+        });
       }
 
     } catch (error) {
-      console.log(error)
-      setValidatingState('validating_error');
+      console.log(error);
+      MySwal.fire({
+        icon: "error",
+        title: "Oops!",
+        text: "Parece que houve um problema ao confirmar a sua conta, tente novamente.",
+        showConfirmButton: true,
+        confirmButtonColor: "#1A56DB",
+      });
+    } finally {
+      setIsValidating(false);
     }
   }
 
@@ -76,7 +95,7 @@ const TwoStepVerification: React.FC = () => {
                   </h1>
 
                   <p className="mb-7.5 font-medium">
-                    Digite os 4 digitos enviados para o seu e-mail cadastrado
+                    Digite os 4 números enviados para o seu e-mail cadastrado
                   </p>
 
                   <form onSubmit={(e) => submitData(e)}>
@@ -99,15 +118,12 @@ const TwoStepVerification: React.FC = () => {
                     </div>
 
                     <Button
-                    className={`${validatingState === 'validating_success' && 'bg-green-500 hover:bg-green-600'} ${validatingState === 'validating_error' && 'bg-red hover:bg-red-500'} ${validatingState === null && 'bg-blue-700 hover:bg-blue-800'} flex w-full justify-center rounded-md p-[13px] font-bold text-snow transition-all duration-200`}>
-                      {validatingState === 'validating' && 'Validando...'}
-                      {validatingState === 'validating_success' && 'Sucesso!'}
-                      {validatingState === 'validating_error' && 'Código incorreto'}
-                      {validatingState === null && 'Confirmar'}
+                    className={`bg-blue-700 hover:bg-blue-800 flex w-full justify-center rounded-md p-[13px] font-bold text-snow transition-all duration-200`}>
+                      {isValidating ? 'Validando código...' : 'Confirmar'}
                     </Button>
 
                     <span className="mt-5 block text-red text-sm">
-                      Não compartile seu código com ninguém!
+                      Não compartilhe seu código com ninguém!
                     </span>
                   </form>
                 </div>

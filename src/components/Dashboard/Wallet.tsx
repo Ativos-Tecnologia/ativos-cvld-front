@@ -43,8 +43,6 @@ const Wallet: React.FC = () => {
     ]
   });
 
-
-
   const [defaultFilterObject, setDefaultFilterObject] = useState<any>({
     "username": user
   })

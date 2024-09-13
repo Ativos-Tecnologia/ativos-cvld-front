@@ -13,6 +13,7 @@ import { BiArrowBack } from 'react-icons/bi';
 import { useRouter } from 'next/navigation';
 import useColorMode from '@/hooks/useColorMode';
 import api from '@/utils/api';
+import UseMySwal from '@/hooks/useMySwal';
 
 const ChangePassword = () => {
 
@@ -31,7 +32,8 @@ const ChangePassword = () => {
     const confirmPasswordInput = watch('confirm_password');
 
     const router = useRouter();
-    const [status, setStatus] = useState<string | null>(null)
+    const MySwal = UseMySwal();
+    const [loading, setLoading] = useState<boolean>(false);
 
     const {
         passwordsMatch,
@@ -41,7 +43,7 @@ const ChangePassword = () => {
         passwordRequirements } = usePassword(passwordInput, confirmPasswordInput);
 
     const onSubmit: SubmitHandler<ChangePasswordProps> = async (data) => {
-        setStatus('sending_request');
+        setLoading(true);
 
         const userToken = window.location.href.split('password')[1]
         
@@ -50,12 +52,27 @@ const ChangePassword = () => {
         })
         
         if (response.status === 200) {
-            setStatus('request_success');
-            reset()
+            reset();
+            MySwal.fire({
+                icon: "success",
+                title: "Tudo certo",
+                text: "Sua senha foi alterada com sucesso!",
+                showConfirmButton: true,
+                confirmButtonText: "Ir para LogIn",
+                confirmButtonColor: "#1A56DB"
+            })
         } else {
-            setStatus(null)
-            throw new Error('Ocorreu um erro ao redefinir a senha');
+            console.error('Ocorreu um erro ao redefinir a senha');
+            MySwal.fire({
+                icon: "error",
+                title: "Oops!",
+                text: "Algo deu errado ao alterar a sua senha.",
+                showConfirmButton: true,
+                confirmButtonColor: "#1A56DB"
+            })
         }
+
+        setLoading(false);
     }
 
     const redirectToLogin = () => {
@@ -117,9 +134,7 @@ const ChangePassword = () => {
 
                     <Button disabled={!passwordsMatch} type='submit' className={`${status === 'request_success' && 'bg-green-500 hover:bg-green-600'} flex items-center justify-center w-full cursor-pointer rounded-lg py-8 text-white hover:bg-opacity-90 disabled:opacity-50`}>
                         <span className="text-[16px] font-medium">
-                            {status === null && 'Confirmar'}
-                            {status === 'sending_request' && 'Redefinindo senha'}
-                            {status === 'request_success' && 'Senha redefinida com sucesso!'}
+                            {loading ? "Alterando senha" : "Confirmar"}
                         </span>
                     </Button>
                 </form>

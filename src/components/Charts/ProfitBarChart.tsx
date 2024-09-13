@@ -38,17 +38,15 @@ const ProfitBarChart: React.FC<newWalletResponse> = ({
   response: data,
 }) => {
 
-  console.log(data && data[1].forEach((item) => item.forEach((i: IWalletResults) => console.log(i.valor_liquido_disponivel
-  ))));
 
 
 
   const options: ApexOptions = {
-    colors: ["#3C50E0", "#80CAEE"],
+    colors: ["#58DC61","#3C50E0", "#80CAEE"],
     chart: {
       fontFamily: "Satoshi, sans-serif",
       type: "bar",
-      height: 335,
+      height: 535,
       stacked: true,
       toolbar: {
         show: false,
@@ -74,6 +72,8 @@ const ProfitBarChart: React.FC<newWalletResponse> = ({
     plotOptions: {
       bar: {
         horizontal: false,
+        distributed: false,
+        isFunnel: true,
         borderRadius: 0,
         columnWidth: "25%",
         borderRadiusApplication: "end",
@@ -111,25 +111,20 @@ const ProfitBarChart: React.FC<newWalletResponse> = ({
     },
   };
 
-  // const vi = data?.[1].map((item) => item.valor_projetado);
   const [state, setState] = useState<ChartTwoState>({
     series: [
-      // {
-      //   name: "Total na aquisição",
-      //   data: []
-      // },
-      // {
-      //   name: "Lucro",
-      //   data: []
-      // },
-      // {
-      //   name: "Total atualizado",
-      //   data: []
-      // },
+      {
+        name: "Ágio",
+        data: []
+      },
       {
         name: "Investido",
         data: []
-      }
+      },
+      {
+        name: "Total atualizado",
+        data: []
+      },
     ],
   });
 
@@ -139,22 +134,19 @@ const ProfitBarChart: React.FC<newWalletResponse> = ({
   ]) => {
     setState({
       series: [
-        // {
-        //   name: "Total na aquisição",
-        //   data: data[1].map((item) => item.valor_projetado),
-        // },
-        // {
-        //   name: "Lucro",
-        //   data: data[1].map((item) => handleLucro(item.valor_investido, item.valor_projetado)),
-        // },
-        // {
-        //   name: "Total atualizado",
-        //   data: []
-        // },
+
+        {
+          name: "Ágio",
+          data: data && data[1].map((item: any) => handleLucro(item[0].valor_liquido_disponivel, item[1].valor_liquido_disponivel)),
+        },
         {
           name: "Investido",
           data: (data && data[0]?.results.map((item) => item.properties["Valor de Aquisição (Wallet)"]?.number).filter((num): num is number => num !== null && num !== undefined)) || [0],
-        }
+        },
+        {
+          name: "Total atualizado",
+          data: data && data[1].map((item: any) => item[1].valor_liquido_disponivel)
+        },
       ],
     })
 
