@@ -73,12 +73,11 @@ const SignUp: React.FC = () => {
             localStorage.setItem(`ATIVOS_${REFRESH_TOKEN}`, res.data.refreshToken);
             MySwal.fire({
               title: "Sucesso!",
-              text: "Cadastro realizado com sucesso! Um e-mail de cofirmação foi enviado  para o e-mail cadastrado.",
-
+              text: "Cadastro realizado com sucesso! Em até 5 minutos, um e-mail de confirmação será enviado para o e-mail cadastrado.",
               icon: "success",
               showConfirmButton: true,
               confirmButtonColor: '#1A56DB',
-              confirmButtonText: 'Voltar para Login'
+              confirmButtonText: 'Voltar para Login',
             }).then((result) => {
               if (result.isConfirmed) {
                 router.push(APP_ROUTES.public.login.name);
@@ -92,8 +91,7 @@ const SignUp: React.FC = () => {
           text: "Email ou usuário já cadastrado. Por favor, tente novamente com outras credenciais.",
           icon: "error",
           showConfirmButton: true,
-
-        });
+        })
         console.error(error);
       }
     } else if (data.password !== data.confirm_password) {

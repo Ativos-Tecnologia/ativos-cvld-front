@@ -3,25 +3,6 @@ import { TableCell, TableRow } from '../Tables/TableDefault';
 
 export const WalletTableSkeletons = () => {
 
-    // const renderSkeletons = (): React.ReactNode[] => {
-    //     const skeletons = [];
-
-    //     skeletons.push(
-    //         <TableCell>
-    //             <div className='animate-pulse w-3 h-3 bg-slate-200 rounded-full dark:bg-slate-300'></div>
-    //         </TableCell>
-    //     )
-
-    //     for (let i = 0; i < 16; i++) {
-    //         skeletons.push(
-    //             <TableCell>
-    //                 <div className='animate-pulse w-full h-3 bg-slate-200 rounded-md dark:bg-slate-300'></div>
-    //             </TableCell>
-    //         );
-    //     }
-    //     return skeletons;
-    // }
-
     return (
         <TableRow>
 

@@ -22,6 +22,14 @@ import { SendProposal } from '../TablesNotion/SendProposal';
 import { ProposalAccepted } from '../TablesNotion/ProposalAccepted';
 import GeneralView from '../TablesNotion/GeneralView';
 
+const existentQueries = [
+    ['notion_list'],
+    ['notion_list', 'general'],
+    ['notion_list', 'first_contact'],
+    ['notion_list', 'office_type'],
+    ['notion_list', 'proposal_accepted'],
+    ['notion_list', 'send_proposal']
+]
 
 const notionViews: string[] = [
     'geral',
@@ -519,7 +527,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         })
     }
 
-    const handleEditInput = (index: number, refList: HTMLInputElement[] | null) => {
+    const handleEditInput = (index: number, refList: HTMLDivElement[] | null) => {
         if (refList) {
             refList[index].focus();
         }
@@ -796,6 +804,10 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
     }
 
+    const removeQueries = () => {
+        existentQueries.forEach((query: string[]) => queryClient.removeQueries({ queryKey: query }))
+    }
+
     const handleChangeViews = (view: string) => {
 
         switch (view) {
@@ -821,7 +833,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
     }
 
-    const displayViewDefault = () => {
+    const displayViewDefault = async () => {
+        await removeQueries()
         setStatusSelectValue(null);
         setOficioSelectValue(null);
         setNotionView("geral");
@@ -883,6 +896,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     }
 
     const displayViewFirstContact = async () => {
+        await removeQueries()
         setNotionView('realizar 1º contato');
         setListQuery(
             {
@@ -930,6 +944,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     }
 
     const displayViewOfficeType = async () => {
+        await removeQueries()
         setNotionView("juntar ofício/valor líquido");
         setListQuery(
             {
@@ -965,6 +980,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     };
 
     const displayViewNegociation = async () => {
+        await removeQueries()
         setNotionView("enviar proposta/negociação");
         setListQuery({
 
@@ -992,6 +1008,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     }
 
     const displayViewProposalAccepted = async () => {
+        await removeQueries()
         setNotionView('proposta aceita');
         setListQuery(
             {
