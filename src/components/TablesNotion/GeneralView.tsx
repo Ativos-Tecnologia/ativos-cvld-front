@@ -23,9 +23,9 @@ import api from '@/utils/api';
 import { MiniMenu } from '../ExtratosTable/MiniMenu';
 import { NotionSkeletonOne } from '../Skeletons/NotionSkeletonOne';
 
-const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, handleEditTipoOficio, handleChangeCreditorName, editableLabel, setEditableLabel, handleEditInput, handleNotionDrawer, handleCopyValue, handleEditStatus, statusSelectValue, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList }:
+const GeneralView = ({ data, checkedList, fetchingValue, handleSelectRow, handleEditTipoOficio, handleChangeCreditorName, editableLabel, setEditableLabel, handleEditInput, handleNotionDrawer, handleCopyValue, handleEditStatus, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList }:
     {
-        isPending: boolean,
+        data: any,
         checkedList: NotionPage[],
         fetchingValue: Record<string, any> | null,
         handleSelectRow: (item: NotionPage) => void,
@@ -37,7 +37,6 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
         handleNotionDrawer: (id: string) => void;
         handleCopyValue: (index: number) => void;
         handleEditStatus: (page_id: string, status: statusOficio, queryKeyList: any[]) => Promise<void>;
-        statusSelectValue: statusOficio | null;
         archiveStatus: boolean;
         handleArchiveExtrato: (queryList: any[]) => Promise<void>;
         handleSelectAllRows: (list: any) => void;
@@ -119,17 +118,17 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
         return t.data
     }
 
-    const { isPending: isPendingData, data, error, isFetching, refetch } = useQuery(
-        {
-            queryKey: ['notion_list', 'general'],
-            refetchOnReconnect: true,
-            refetchOnWindowFocus: true,
-            refetchInterval: 1000 * 13,
-            staleTime: 1000 * 13,
-            queryFn: fetchNotionData,
-            enabled: !!user // only fetch if user is defined after context is loaded
-        },
-    );
+    // const { isPending: isPendingData, data, error, isFetching, refetch } = useQuery(
+    //     {
+    //         queryKey: ['notion_list', 'general'],
+    //         refetchOnReconnect: true,
+    //         refetchOnWindowFocus: true,
+    //         refetchInterval: 1000 * 13,
+    //         staleTime: 1000 * 13,
+    //         queryFn: fetchNotionData,
+    //         enabled: !!user // only fetch if user is defined after context is loaded
+    //     },
+    // );
     const [nextCursor, setNextCursor] = useState<string | null>();
     const [hasMore, setHasMore] = useState<boolean>();
 
@@ -527,7 +526,7 @@ const GeneralView = ({ isPending, checkedList, fetchingValue, handleSelectRow, h
                                                         }}>
                                                             {item.properties.Status.status?.name && (
                                                                 <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                                    {statusSelectValue || item.properties.Status.status?.name}
+                                                                    {item.properties.Status.status?.name}
                                                                 </option>
                                                             )}
                                                             {ENUM_OFICIOS_LIST.filter((status) => status !== item.properties.Status.status?.name).map((status) => (

@@ -22,14 +22,13 @@ import api from '@/utils/api'
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react'
 import { NotionSkeletonThree } from '../Skeletons/NotionSkeletonThree'
 
-export const ProposalAccepted = ({ isPending, checkedList, editableLabel, setEditableLabel, statusSelectValue, handleSelectRow, handleChangeCreditorName, handleEditInput, handleEditStatus, handleCopyValue, handleNotionDrawer, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList
+export const ProposalAccepted = ({ data, checkedList, editableLabel, setEditableLabel, handleSelectRow, handleChangeCreditorName, handleEditInput, handleEditStatus, handleCopyValue, handleNotionDrawer, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList
 }:
     {
-        isPending: boolean,
+        data: any,
         checkedList: NotionPage[],
         editableLabel: string | null;
         setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
-        statusSelectValue: statusOficio | null;
         fetchingValue: Record<string, any> | null;
         handleNotionDrawer: (id: string) => void;
         numberFormat: (number: number) => string;
@@ -88,17 +87,17 @@ export const ProposalAccepted = ({ isPending, checkedList, editableLabel, setEdi
         const t = await api.post(`api/notion-api/list/`, defaultFilterObject)
         return t.data
     }
-    const { isPending: isPendingData, data, error, isFetching, refetch } = useQuery(
-        {
-            queryKey: ['notion_list', 'proposal_accepted'],
-            refetchOnReconnect: true,
-            refetchOnWindowFocus: true,
-            refetchInterval: 1000 * 13,
-            staleTime: 1000 * 13,
-            queryFn: fetchNotionData,
-            enabled: !!user // only fetch if user is defined after context is loaded
-        },
-    );
+    // const { isPending: isPendingData, data, error, isFetching, refetch } = useQuery(
+    //     {
+    //         queryKey: ['notion_list', 'proposal_accepted'],
+    //         refetchOnReconnect: true,
+    //         refetchOnWindowFocus: true,
+    //         refetchInterval: 1000 * 13,
+    //         staleTime: 1000 * 13,
+    //         queryFn: fetchNotionData,
+    //         enabled: !!user // only fetch if user is defined after context is loaded
+    //     },
+    // );
     const [nextCursor, setNextCursor] = useState<string | null>();
     const [hasMore, setHasMore] = useState<boolean>();
 
@@ -440,7 +439,7 @@ export const ProposalAccepted = ({ isPending, checkedList, editableLabel, setEdi
                                                     }}>
                                                         {item.properties.Status.status?.name && (
                                                             <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                                {statusSelectValue || item.properties.Status.status?.name}
+                                                                {item.properties.Status.status?.name}
                                                             </option>
                                                         )}
                                                         {ENUM_OFICIOS_LIST.filter((status) => status !== item.properties.Status.status?.name).map((status) => (

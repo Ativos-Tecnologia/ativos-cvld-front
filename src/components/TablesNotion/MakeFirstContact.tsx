@@ -18,15 +18,14 @@ import { MiniMenu } from '../ExtratosTable/MiniMenu';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { NotionSkeletonTwo } from '../Skeletons/NotionSkeletonTwo';
 
-const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLabel, selectStatusValue, handleNotionDrawer, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, handleEditStatus,
+const MakeFirstContact = ({ data, checkedList, editableLabel, setEditableLabel, handleNotionDrawer, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, handleEditStatus,
     handleArchiveExtrato, archiveStatus, handleSelectAllRows, setCheckedList
 }:
     {
-        isPending: boolean,
+        data: any,
         checkedList: NotionPage[],
         editableLabel: string | null;
         setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
-        selectStatusValue: statusOficio | null;
         handleNotionDrawer: (id: string) => void;
         handleSelectRow: (item: NotionPage) => void;
         handleChangeCreditorName: (value: string, page_id: string, queryKeyList: any[]) => Promise<void>;
@@ -106,17 +105,17 @@ const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLa
         const t = await api.post(`api/notion-api/list/`, defaultFilterObject)
         return t.data
     }
-    const { isPending: isPendingData, data, error, isFetching, refetch } = useQuery(
-        {
-            queryKey: ['notion_list', 'first_contact'],
-            refetchOnReconnect: true,
-            refetchOnWindowFocus: true,
-            refetchInterval: 1000 * 13,
-            staleTime: 1000 * 13,
-            queryFn: fetchNotionData,
-            enabled: !!user // only fetch if user is defined after context is loaded
-        },
-    );
+    // const { isPending: isPendingData, data, error, isFetching, refetch } = useQuery(
+    //     {
+    //         queryKey: ['notion_list', 'first_contact'],
+    //         refetchOnReconnect: true,
+    //         refetchOnWindowFocus: true,
+    //         refetchInterval: 1000 * 13,
+    //         staleTime: 1000 * 13,
+    //         queryFn: fetchNotionData,
+    //         enabled: !!user // only fetch if user is defined after context is loaded
+    //     },
+    // );
     const [nextCursor, setNextCursor] = useState<string | null>();
     const [hasMore, setHasMore] = useState<boolean>();
 
@@ -475,7 +474,7 @@ const MakeFirstContact = ({ isPending, checkedList, editableLabel, setEditableLa
                                                     }}>
                                                         {item.properties.Status.status?.name && (
                                                             <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                                {selectStatusValue || item.properties.Status.status?.name}
+                                                                {item.properties.Status.status?.name}
                                                             </option>
                                                         )}
                                                         {ENUM_OFICIOS_LIST.filter((status) => status !== item.properties.Status.status?.name).map((status) => (
