@@ -143,6 +143,11 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     }
 
     //NOTA: Começo da Área de Mutations
+
+    /*AVISO: essa área de mutations sofreu uma alteração de queries dinâmicas para uma query
+    estática. Qualquer problema causado por essa mudança, favor, alterar somente o conteúdo referente
+    a queryKey de ['notion_list'] para paramsObj.queryKeyList, para que esta volte a ser dinâmica. */
+
     const deleteMutation = useMutation({
         mutationFn: async (paramsObj: { pageIds: string[], queryKeyList: string[] }) => {
             const response = await api.patch('api/notion-api/page/bulk-action/visibility/', {
@@ -156,16 +161,16 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             return response.data;
         },
         onMutate: async (paramsObj: { pageIds: string[], queryKeyList: any[] }) => {
-            await queryClient.cancelQueries({ queryKey: paramsObj.queryKeyList });
-            const previousData: any = queryClient.getQueryData(paramsObj.queryKeyList);
-            queryClient.setQueryData(paramsObj.queryKeyList, (old: any) => {
+            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
+            const previousData: any = queryClient.getQueryData(['notion_list']);
+            queryClient.setQueryData(['notion_list'], (old: any) => {
                 return { ...old, results: old.results.filter((item: any) => !paramsObj.pageIds.includes(item.id)) };
             });
             setArchivedOficios(previousData?.results.filter((item: any) => paramsObj.pageIds.includes(item.id)))
             return { previousData };
         },
         onError: (err, paramsObj, context) => {
-            queryClient.setQueryData(paramsObj.queryKeyList, context?.previousData);
+            queryClient.setQueryData(['notion_list'], context?.previousData);
             toast.error('Erro ao arquivar os dados');
         },
         onSuccess: (data, paramsObj) => {
@@ -179,7 +184,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                 action: {
                     label: "Desfazer",
                     onClick: () => {
-                        handleUnarchiveExtrato(paramsObj.queryKeyList)
+                        handleUnarchiveExtrato(['notion_list'])
                     },
                 }
             });
@@ -200,15 +205,15 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             return response.data;
         },
         onMutate: async (paramsObj) => {
-            await queryClient.cancelQueries({ queryKey: paramsObj.queryKeyList });
-            const previousData: any = queryClient.getQueryData(paramsObj.queryKeyList);
-            queryClient.setQueryData(paramsObj.queryKeyList, (old: any) => {
+            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
+            const previousData: any = queryClient.getQueryData(['notion_list']);
+            queryClient.setQueryData(['notion_list'], (old: any) => {
                 return { ...old, results: [...archivedOficios, ...old.results] }
             })
             return { previousData };
         },
         onError: (error, paramsObj, context) => {
-            queryClient.setQueryData(paramsObj.queryKeyList, context?.previousData);
+            queryClient.setQueryData(['notion_list'], context?.previousData);
             toast.error('Erro ao desarquivar os dados');
         },
         onSuccess: (data, paramsObj) => {
@@ -245,9 +250,9 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             return response.data
         },
         onMutate: async (paramsObj: { page_id: string, status: statusOficio, queryKeyList: any[] }) => {
-            await queryClient.cancelQueries({ queryKey: paramsObj.queryKeyList });
-            const previousData: any = queryClient.getQueryData(paramsObj.queryKeyList);
-            queryClient.setQueryData(paramsObj.queryKeyList, (old: any) => {
+            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
+            const previousData: any = queryClient.getQueryData(['notion_list']);
+            queryClient.setQueryData(['notion_list'], (old: any) => {
                 return {
                     ...old, results: old.results.map((item: any) => {
                         if (item.id === paramsObj.page_id) {
@@ -260,11 +265,11 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             return { previousData }
         },
         onError: (error, paramsObj, context) => {
-            queryClient.setQueryData(paramsObj.queryKeyList, context?.previousData)
+            queryClient.setQueryData(['notion_list'], context?.previousData)
             toast.error('Erro ao alterar o status do ofício')
         },
         onSuccess: (data, paramsObj) => {
-            queryClient.invalidateQueries({ queryKey: paramsObj.queryKeyList })
+            queryClient.invalidateQueries({ queryKey: ['notion_list'] })
         }
     });
 
@@ -284,9 +289,9 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             return response.data;
         },
         onMutate: async (paramsObj: { page_id: string, oficio: tipoOficio, queryKeyList: any[] }) => {
-            await queryClient.cancelQueries({ queryKey: paramsObj.queryKeyList });
-            const previousData: any = queryClient.getQueryData(paramsObj.queryKeyList);
-            queryClient.setQueryData(paramsObj.queryKeyList, (old: any) => {
+            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
+            const previousData: any = queryClient.getQueryData(['notion_list']);
+            queryClient.setQueryData(['notion_list'], (old: any) => {
                 return {
                     ...old, results: old.results.map((item: any) => {
                         if (item.id === paramsObj.page_id) {
@@ -301,11 +306,11 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             return { previousData }
         },
         onError: (error, paramsObj, context) => {
-            queryClient.setQueryData(paramsObj.queryKeyList, context?.previousData);
+            queryClient.setQueryData(['notion_list'], context?.previousData);
             toast.error('Erro ao alterar o tipo do ofício');
         },
         onSuccess: (data, paramsObj) => {
-            queryClient.invalidateQueries({ queryKey: paramsObj.queryKeyList })
+            queryClient.invalidateQueries({ queryKey: ['notion_list'] })
         }
     });
 
@@ -328,9 +333,9 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             return response.data
         },
         onMutate: async (paramsObj) => {
-            await queryClient.cancelQueries({ queryKey: paramsObj.queryKeyList });
-            const previousData: any = queryClient.getQueryData(paramsObj.queryKeyList);
-            queryClient.setQueryData(paramsObj.queryKeyList, (old: any) => {
+            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
+            const previousData: any = queryClient.getQueryData(['notion_list']);
+            queryClient.setQueryData(['notion_list'], (old: any) => {
                 return {
                     ...old, results: old.results.map((item: any) => {
                         if (item.id === paramsObj.page_id) {
@@ -344,7 +349,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             return { previousData }
         },
         onError: (error, paramsObj, context) => {
-            queryClient.setQueryData(paramsObj.queryKeyList, context?.previousData)
+            queryClient.setQueryData(['notion_list'], context?.previousData)
             toast.error('Erro ao alterar o nome do credor')
         }
     });
@@ -362,12 +367,12 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             return response.data
         },
         onMutate: async (paramsObj) => {
-            await queryClient.cancelQueries({ queryKey: paramsObj.queryKeyList });
-            const previousData: any = queryClient.getQueryData(paramsObj.queryKeyList);
+            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
+            const previousData: any = queryClient.getQueryData(['notion_list']);
             return { previousData }
         },
         onError: (error, paramsObj, context) => {
-            queryClient.setQueryData(paramsObj.queryKeyList, context?.previousData);
+            queryClient.setQueryData(['notion_list'], context?.previousData);
             toast.error('Erro ao alterar o contato');
         }
     });
@@ -385,12 +390,12 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             return response.data
         },
         onMutate: async (paramsObj) => {
-            await queryClient.cancelQueries({ queryKey: paramsObj.queryKeyList });
-            const previousData: any = queryClient.getQueryData(paramsObj.queryKeyList);
+            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
+            const previousData: any = queryClient.getQueryData(['notion_list']);
             return { previousData }
         },
         onError: (error, paramsObj, context) => {
-            queryClient.setQueryData(paramsObj.queryKeyList, context?.previousData);
+            queryClient.setQueryData(['notion_list'], context?.previousData);
             toast.error('Erro ao alterar o email');
         }
     });
@@ -408,16 +413,16 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             return response.data
         },
         onMutate: async (paramsObj) => {
-            await queryClient.cancelQueries({ queryKey: paramsObj.queryKeyList });
-            const previousData: any = queryClient.getQueryData(paramsObj.queryKeyList);
+            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
+            const previousData: any = queryClient.getQueryData(['notion_list']);
             return { previousData }
         },
         onError: (error, paramsObj, context) => {
-            queryClient.setQueryData(paramsObj.queryKeyList, context?.previousData);
+            queryClient.setQueryData(['notion_list'], context?.previousData);
             toast.error('Erro ao alterar o preço proposto');
         },
         onSuccess: (paramsObj) => {
-            queryClient.invalidateQueries({ queryKey: paramsObj.queryKeyList });
+            queryClient.invalidateQueries({ queryKey: ['notion_list'] });
         }
     });
 
@@ -442,12 +447,12 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             return response.data
         },
         onMutate: async (paramsObj) => {
-            await queryClient.cancelQueries({ queryKey: paramsObj.queryKeyList });
-            const previousData: any = queryClient.getQueryData(paramsObj.queryKeyList);
+            await queryClient.cancelQueries({ queryKey: ['notion_list'] });
+            const previousData: any = queryClient.getQueryData(['notion_list']);
             return { previousData }
         },
         onError: (error, paramsObj, context) => {
-            queryClient.setQueryData(paramsObj.queryKeyList, context?.previousData);
+            queryClient.setQueryData(['notion_list'], context?.previousData);
             toast.error('Erro ao alterar a data de follow up');
         }
     });
@@ -507,6 +512,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             enabled: !!data2?.user // only fetch if user is defined after context is loaded
         },
     );
+
+    console.log(queryClient.getQueryCache().getAll())
 
     //NOTA: Área das funções do tipo handle
     const handleCopyValue = (index: number) => {
@@ -623,6 +630,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     }
 
     const buildQuery = useCallback(() => {
+
+        console.log(statusSelectValue)
         return {
             "and": [
                 // {
@@ -1178,7 +1187,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     {/* ====== select de statusOficio ====== */}
 
                     {/* ====== select de tipoOficio ====== */}
-                    {(notionView === 'geral' || notionView === notionViews[1]) && (
+                    {(notionView === 'geral' || notionView === notionViews[2]) && (
                         <>
                             {/* separator */}
                             <div className="w-px mx-1 h-5 bg-zinc-300 dark:bg-form-strokedark"></div>
@@ -1285,18 +1294,19 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                                     )}
                                     {/* ==== end popover ==== */}
                                 </div>
-                                {(statusSelectValue || oficioSelectValue || selectedUser) && (
-                                    <div
-                                        title='limpar filtro de status'
-                                        className={`${statusSelectValue || oficioSelectValue || selectedUser ? 'opacity-100 visible translate-x-0' : 'opacity-0 invisible translate-y-5'} relative w-6 h-6 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md transition-all duration-500 cursor-pointer`}
-                                        onClick={handleCleanAllFilters}
-                                    >
-                                        <MdOutlineFilterAltOff />
-                                    </div>
-                                )}
                             </div>
                             {/* ====== finaliza select de user ====== */}
                         </React.Fragment>
+                    )}
+
+                    {(statusSelectValue || oficioSelectValue || selectedUser) && (
+                        <div
+                            title='limpar filtro de status'
+                            className={`${statusSelectValue || oficioSelectValue || selectedUser ? 'opacity-100 visible translate-x-0' : 'opacity-0 invisible translate-y-5'} relative w-6 h-6 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md transition-all duration-500 cursor-pointer`}
+                            onClick={handleCleanAllFilters}
+                        >
+                            <MdOutlineFilterAltOff />
+                        </div>
                     )}
 
                 </div>
@@ -1332,7 +1342,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
             {notionView === 'geral' && (
                 <GeneralView
-                    isPending={isPending}
+                    data={data}
                     checkedList={checkedList}
                     fetchingValue={fetchingValue}
                     handleSelectRow={handleSelectRow}
@@ -1344,7 +1354,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     handleNotionDrawer={handleNotionDrawer}
                     handleCopyValue={handleCopyValue}
                     handleEditStatus={handleEditStatus}
-                    statusSelectValue={statusSelectValue}
                     archiveStatus={archiveStatus}
                     handleArchiveExtrato={handleArchiveExtrato}
                     handleSelectAllRows={handleSelectAllRows}
@@ -1355,11 +1364,10 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
             {notionView === 'realizar 1º contato' &&
                 <MakeFirstContact
-                    isPending={isPending}
+                    data={data}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
                     setEditableLabel={setEditableLabel}
-                    selectStatusValue={statusSelectValue}
                     handleNotionDrawer={handleNotionDrawer}
                     handleSelectRow={handleSelectRow}
                     handleChangeCreditorName={handleChangeCreditorName}
@@ -1376,12 +1384,10 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
             {notionView === 'juntar ofício/valor líquido' &&
                 <OfficeTypeAndValue
-                    isPending={isPending}
+                    data={data}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
                     setEditableLabel={setEditableLabel}
-                    statusSelectValue={statusSelectValue}
-                    oficioSelectValue={oficioSelectValue}
                     handleNotionDrawer={handleNotionDrawer}
                     handleSelectRow={handleSelectRow}
                     handleChangeCreditorName={handleChangeCreditorName}
@@ -1398,11 +1404,10 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
             {notionView === 'enviar proposta/negociação' &&
                 <SendProposal
-                    isPending={isPending}
+                    data={data}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
                     setEditableLabel={setEditableLabel}
-                    statusSelectValue={statusSelectValue}
                     fetchingValue={fetchingValue}
                     handleNotionDrawer={handleNotionDrawer}
                     handleSelectRow={handleSelectRow}
@@ -1421,11 +1426,10 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
             {notionView === 'proposta aceita' &&
                 <ProposalAccepted
-                    isPending={isPending}
+                    data={data}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
                     setEditableLabel={setEditableLabel}
-                    statusSelectValue={statusSelectValue}
                     fetchingValue={fetchingValue}
                     numberFormat={numberFormat}
                     handleNotionDrawer={handleNotionDrawer}

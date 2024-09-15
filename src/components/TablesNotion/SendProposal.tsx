@@ -22,15 +22,14 @@ import { MiniMenu } from '../ExtratosTable/MiniMenu'
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react'
 import { NotionSkeletonFour } from '../Skeletons/NotionSkeletonFour'
 
-export const SendProposal = ({ isPending, checkedList, editableLabel, setEditableLabel, statusSelectValue, fetchingValue, handleNotionDrawer, handleSelectRow, handleChangeFupDate, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList,
+export const SendProposal = ({ data, checkedList, editableLabel, setEditableLabel, handleNotionDrawer, handleSelectRow, handleChangeFupDate, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList,
     handleChangeCreditorName, handleEditInput, handleEditStatus, handleCopyValue, handleChangeProposalPrice
 }:
     {
-        isPending: boolean,
+        data: any,
         checkedList: NotionPage[],
         editableLabel: string | null;
         setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
-        statusSelectValue: statusOficio | null;
         fetchingValue: Record<string, any> | null;
         handleNotionDrawer: (id: string) => void;
         handleSelectRow: (item: NotionPage) => void;
@@ -100,17 +99,17 @@ export const SendProposal = ({ isPending, checkedList, editableLabel, setEditabl
         const t = await api.post(`api/notion-api/list/`, defaultFilterObject)
         return t.data
     }
-    const { isPending: isPendingData, data, error, isFetching, refetch } = useQuery(
-        {
-            queryKey: ['notion_list', 'send_proposal'],
-            refetchOnReconnect: true,
-            refetchOnWindowFocus: true,
-            refetchInterval: 1000 * 13,
-            staleTime: 1000 * 13,
-            queryFn: fetchNotionData,
-            enabled: !!user // only fetch if user is defined after context is loaded
-        },
-    );
+    // const { isPending: isPendingData, data, error, isFetching, refetch } = useQuery(
+    //     {
+    //         queryKey: ['notion_list', 'send_proposal'],
+    //         refetchOnReconnect: true,
+    //         refetchOnWindowFocus: true,
+    //         refetchInterval: 1000 * 13,
+    //         staleTime: 1000 * 13,
+    //         queryFn: fetchNotionData,
+    //         enabled: !!user // only fetch if user is defined after context is loaded
+    //     },
+    // );
 
     /* função que faz uma requisição ao backend para retornar resultados que contenham
     a determinada palavra-chave e adiciona a nova linha filtrada para os resultados já 
@@ -496,13 +495,13 @@ export const SendProposal = ({ isPending, checkedList, editableLabel, setEditabl
                                             <TableCell className="text-center items-center">
                                                 <Badge color="teal" size="sm" className="text-center h-6 text-[12px] w-full">
                                                     <select
-                                                        title={statusSelectValue || item.properties.Status.status?.name}
+                                                        title={item.properties.Status.status?.name}
                                                         className="text-[12px] w-full text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => {
                                                             handleEditStatus(item.id, e.target.value as statusOficio, ['notion_list', 'send_proposal'])
                                                         }}>
                                                         {item.properties.Status.status?.name && (
                                                             <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                                {statusSelectValue || item.properties.Status.status?.name}
+                                                                {item.properties.Status.status?.name}
                                                             </option>
                                                         )}
                                                         {ENUM_OFICIOS_LIST.filter((status) => status !== item.properties.Status.status?.name).map((status) => (
