@@ -21,16 +21,14 @@ import { MiniMenu } from '../ExtratosTable/MiniMenu'
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react'
 import { NotionSkeletonThree } from '../Skeletons/NotionSkeletonThree'
 
-export const OfficeTypeAndValue = ({ isPending, checkedList, editableLabel, setEditableLabel, statusSelectValue, oficioSelectValue, handleSelectRow, handleNotionDrawer,
+export const OfficeTypeAndValue = ({ data, checkedList, editableLabel, setEditableLabel, handleSelectRow, handleNotionDrawer,
     handleChangeCreditorName, handleEditInput, handleEditStatus, handleEditTipoOficio, handleCopyValue, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList
 }:
     {
-        isPending: boolean,
+        data: any,
         checkedList: NotionPage[],
         editableLabel: string | null;
         setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
-        statusSelectValue: statusOficio | null;
-        oficioSelectValue: tipoOficio | null;
         handleNotionDrawer: (id: string) => void;
         handleSelectRow: (item: NotionPage) => void;
         handleChangeCreditorName: (value: string, page_id: string, queryKeyList: any[]) => Promise<void>;
@@ -94,17 +92,17 @@ export const OfficeTypeAndValue = ({ isPending, checkedList, editableLabel, setE
         const t = await api.post(`api/notion-api/list/`, defaultFilterObject)
         return t.data
     }
-    const { isPending: isPendingData, data, error, isFetching, refetch } = useQuery(
-        {
-            queryKey: ['notion_list', 'office_type'],
-            refetchOnReconnect: true,
-            refetchOnWindowFocus: true,
-            refetchInterval: 1000 * 13,
-            staleTime: 1000 * 13,
-            queryFn: fetchNotionData,
-            enabled: !!user // only fetch if user is defined after context is loaded
-        },
-    );
+    // const { isPending: isPendingData, data, error, isFetching, refetch } = useQuery(
+    //     {
+    //         queryKey: ['notion_list', 'office_type'],
+    //         refetchOnReconnect: true,
+    //         refetchOnWindowFocus: true,
+    //         refetchInterval: 1000 * 13,
+    //         staleTime: 1000 * 13,
+    //         queryFn: fetchNotionData,
+    //         enabled: !!user // only fetch if user is defined after context is loaded
+    //     },
+    // );
     const [nextCursor, setNextCursor] = useState<string | null>();
     const [hasMore, setHasMore] = useState<boolean>();
 
@@ -448,7 +446,7 @@ export const OfficeTypeAndValue = ({ isPending, checkedList, editableLabel, setE
                                                     }}>
                                                         {item.properties.Status.status?.name && (
                                                             <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                                {statusSelectValue || item.properties.Status.status?.name}
+                                                                {item.properties.Status.status?.name}
                                                             </option>
                                                         )}
                                                         {ENUM_OFICIOS_LIST.filter((status) => status !== item.properties.Status.status?.name).map((status) => (
@@ -466,7 +464,7 @@ export const OfficeTypeAndValue = ({ isPending, checkedList, editableLabel, setE
                                                     <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleEditTipoOficio(item.id, e.target.value as tipoOficio, ['notion_list', 'office_type'])}>
                                                         {item.properties.Tipo.select?.name && (
                                                             <option value={item.properties.Tipo.select?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                                {oficioSelectValue || item.properties.Tipo.select?.name}
+                                                                {item.properties.Tipo.select?.name}
                                                             </option>
                                                         )}
                                                         {ENUM_TIPO_OFICIOS_LIST.filter((status) => status !== item.properties.Tipo.select?.name).map((status) => (
