@@ -426,7 +426,7 @@ export const SendProposal = ({ data, setIsEditing, checkedList, editableLabel, s
                                                                 setEditableLabel(null);
                                                                 setIsEditing(false);
                                                             }}
-                                                            className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                            className={`${editableLabel === item.id && '!border-1 !border-blue-700'} max-w[370px] py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md overflow-hidden whitespace-nowrap`}
                                                         >
                                                             {item.properties.Credor?.title[0]?.text.content || ''}
                                                         </div>
