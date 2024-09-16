@@ -1106,12 +1106,22 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         return () => document.removeEventListener("click", clickHandler);
     });
 
-    // close if the esc key is pressed
+    // close the select filters if the esc key is pressed
     useEffect(() => {
         const keyHandler = ({ keyCode }: KeyboardEvent) => {
             if (!openStatusPopover || !openTipoOficioPopover || keyCode !== 27) return;
             setOpenStatusPopover(false);
             setOpenTipoOficioPopover(false);
+        };
+        document.addEventListener("keydown", keyHandler);
+        return () => document.removeEventListener("keydown", keyHandler);
+    });
+
+    // arquiva os extratos da tabela por meio da tecla delete
+    useEffect(() => {
+        const keyHandler = ({ keyCode }: KeyboardEvent) => {
+            if (checkedList.length <= 0 && keyCode !== 46) return;
+            handleArchiveExtrato(['notion_list'])
         };
         document.addEventListener("keydown", keyHandler);
         return () => document.removeEventListener("keydown", keyHandler);
