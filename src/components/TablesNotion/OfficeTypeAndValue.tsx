@@ -21,11 +21,12 @@ import { MiniMenu } from '../ExtratosTable/MiniMenu'
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react'
 import { NotionSkeletonThree } from '../Skeletons/NotionSkeletonThree'
 
-export const OfficeTypeAndValue = ({ data, checkedList, editableLabel, setEditableLabel, handleSelectRow, handleNotionDrawer,
+export const OfficeTypeAndValue = ({ data, setIsEditing, checkedList, editableLabel, setEditableLabel, handleSelectRow, handleNotionDrawer,
     handleChangeCreditorName, handleEditInput, handleEditStatus, handleEditTipoOficio, handleCopyValue, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList
 }:
     {
         data: any,
+        setIsEditing: React.Dispatch<React.SetStateAction<boolean>>,
         checkedList: NotionPage[],
         editableLabel: string | null;
         setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
@@ -359,10 +360,18 @@ export const OfficeTypeAndValue = ({ data, checkedList, editableLabel, setEditab
                                                             onKeyDown={(e) => {
                                                                 if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
                                                                     if (inputCredorRefs.current) {
-                                                                        inputCredorRefs.current[index].blur()
+                                                                        inputCredorRefs.current[index].blur();
+                                                                        setIsEditing(false);
                                                                         handleChangeCreditorName(inputCredorRefs.current[index].innerText, item.id, ['notion_list'])
                                                                     }
+                                                                } else {
+                                                                    setIsEditing(true);
+                                                                    queryClient.cancelQueries({ queryKey: ['notion_list'] })
                                                                 }
+                                                            }}
+                                                            onBlur={() => {
+                                                                setEditableLabel(null);
+                                                                setIsEditing(false);
                                                             }}
                                                             className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                         >

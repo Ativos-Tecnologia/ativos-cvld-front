@@ -23,9 +23,10 @@ import api from '@/utils/api';
 import { MiniMenu } from '../ExtratosTable/MiniMenu';
 import { NotionSkeletonOne } from '../Skeletons/NotionSkeletonOne';
 
-const GeneralView = ({ data, checkedList, fetchingValue, handleSelectRow, handleEditTipoOficio, handleChangeCreditorName, editableLabel, setEditableLabel, handleEditInput, handleNotionDrawer, handleCopyValue, handleEditStatus, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList }:
+const GeneralView = ({ data, setIsEditing, checkedList, fetchingValue, handleSelectRow, handleEditTipoOficio, handleChangeCreditorName, editableLabel, setEditableLabel, handleEditInput, handleNotionDrawer, handleCopyValue, handleEditStatus, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList }:
     {
         data: any,
+        setIsEditing: React.Dispatch<React.SetStateAction<boolean>>,
         checkedList: NotionPage[],
         fetchingValue: Record<string, any> | null,
         handleSelectRow: (item: NotionPage) => void,
@@ -398,23 +399,32 @@ const GeneralView = ({ data, checkedList, fetchingValue, handleSelectRow, handle
                                                     </Badge>
                                                 </div>
                                             </TableCell>
-                                            <TableCell title={item?.properties?.Credor?.title[0]?.text.content || ''}
+                                            <TableCell
                                                 className="relative h-full min-w-100 flex items-center gap-2 font-semibold text-[12px]"
                                             >
 
                                                 <div
+                                                    title={item?.properties?.Credor?.title[0]?.text.content || ''}
                                                     dangerouslySetInnerHTML={{ __html: item?.properties?.Credor?.title[0]?.text.content || '' }}
                                                     ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
                                                     contentEditable={editableLabel === item.id}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
                                                             if (inputCredorRefs.current) {
-                                                                inputCredorRefs.current[index].blur()
+                                                                inputCredorRefs.current[index].blur();
+                                                                setIsEditing(false);
                                                                 handleChangeCreditorName(inputCredorRefs.current[index].innerText, item.id, ['notion_list'])
                                                             }
+                                                        } else {
+                                                            setIsEditing(true);
+                                                            queryClient.cancelQueries({ queryKey: ['notion_list'] })
                                                         }
                                                     }}
-                                                    className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                    onBlur={() => {
+                                                        setEditableLabel(null);
+                                                        setIsEditing(false);
+                                                    }}
+                                                    className={`${editableLabel === item.id && '!border-1 !border-blue-700'} max-w-[370px] py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                 >
                                                     {/* {item.properties.Credor?.title[0]?.text.content || ''} */}
                                                 </div>
@@ -435,7 +445,9 @@ const GeneralView = ({ data, checkedList, fetchingValue, handleSelectRow, handle
                                                 /> */}
                                                 {/* absolute div that covers the entire cell */}
                                                 {editableLabel !== item.id && (
-                                                    <div className='absolute inset-0 rounded-md flex items-center transition-all duration-200'>
+                                                    <div
+                                                        title={item?.properties?.Credor?.title[0]?.text.content || ''}
+                                                        className='absolute inset-0 rounded-md flex items-center transition-all duration-200'>
 
                                                         <React.Fragment>
                                                             {item.properties.Credor?.title[0]?.plain_text?.length === 0 ? (

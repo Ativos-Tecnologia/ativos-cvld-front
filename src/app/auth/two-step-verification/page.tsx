@@ -34,6 +34,8 @@ const TwoStepVerification: React.FC = () => {
         "confirmation_code": value
       })
 
+      console.log(response.status)
+
       if (response.status === 200) {
         MySwal.fire({
           icon: "success",
@@ -46,6 +48,14 @@ const TwoStepVerification: React.FC = () => {
           if (result.isConfirmed) {
             router.push(APP_ROUTES.public.login.name)
           }
+        });
+      } else {
+        MySwal.fire({
+          icon: "error",
+          title: "Oops!",
+          text: "Parece que houve um problema ao confirmar a sua conta, tente novamente.",
+          showConfirmButton: true,
+          confirmButtonColor: "#1A56DB",
         });
       }
 
