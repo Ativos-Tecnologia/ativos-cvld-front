@@ -490,7 +490,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const [statusSelectValue, setStatusSelectValue] = useState<statusOficio | null>(null);
     const [oficioSelectValue, setOficioSelectValue] = useState<tipoOficio | null>(null);
     const [selectedUser, setSelectedUser] = useState<string | null>(null)
-    const [activeFilter, setActiveFilter] = useState<ActiveState>('ALL');
+    const [isEditing, setIsEditing] = useState<boolean>(false);
     const [usersList, setUsersList] = useState<string[]>([])
     const [listQuery, setListQuery] = useState<object>({});
 
@@ -509,11 +509,9 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             refetchInterval: 15000,
             staleTime: 13000,
             queryFn: fetchNotionData,
-            enabled: !!data2?.user // only fetch if user is defined after context is loaded
+            enabled: !!data2?.user && !isEditing // only fetch if user is defined after context is loaded and is not editing any table label
         },
     );
-
-    console.log(queryClient.getQueryCache().getAll())
 
     //NOTA: Área das funções do tipo handle
     const handleCopyValue = (index: number) => {
@@ -631,7 +629,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
     const buildQuery = useCallback(() => {
 
-        console.log(statusSelectValue)
         return {
             "and": [
                 // {
@@ -1343,6 +1340,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             {notionView === 'geral' && (
                 <GeneralView
                     data={data}
+                    setIsEditing={setIsEditing}
                     checkedList={checkedList}
                     fetchingValue={fetchingValue}
                     handleSelectRow={handleSelectRow}
@@ -1365,6 +1363,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             {notionView === 'realizar 1º contato' &&
                 <MakeFirstContact
                     data={data}
+                    setIsEditing={setIsEditing}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
                     setEditableLabel={setEditableLabel}
@@ -1385,6 +1384,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             {notionView === 'juntar ofício/valor líquido' &&
                 <OfficeTypeAndValue
                     data={data}
+                    setIsEditing={setIsEditing}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
                     setEditableLabel={setEditableLabel}
@@ -1405,6 +1405,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             {notionView === 'enviar proposta/negociação' &&
                 <SendProposal
                     data={data}
+                    setIsEditing={setIsEditing}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
                     setEditableLabel={setEditableLabel}
@@ -1427,6 +1428,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             {notionView === 'proposta aceita' &&
                 <ProposalAccepted
                     data={data}
+                    setIsEditing={setIsEditing}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
                     setEditableLabel={setEditableLabel}

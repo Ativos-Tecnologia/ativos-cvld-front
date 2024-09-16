@@ -22,10 +22,11 @@ import api from '@/utils/api'
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react'
 import { NotionSkeletonThree } from '../Skeletons/NotionSkeletonThree'
 
-export const ProposalAccepted = ({ data, checkedList, editableLabel, setEditableLabel, handleSelectRow, handleChangeCreditorName, handleEditInput, handleEditStatus, handleCopyValue, handleNotionDrawer, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList
+export const ProposalAccepted = ({ data, setIsEditing, checkedList, editableLabel, setEditableLabel, handleSelectRow, handleChangeCreditorName, handleEditInput, handleEditStatus, handleCopyValue, handleNotionDrawer, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList
 }:
     {
         data: any,
+        setIsEditing: React.Dispatch<React.SetStateAction<boolean>>,
         checkedList: NotionPage[],
         editableLabel: string | null;
         setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
@@ -352,12 +353,20 @@ export const ProposalAccepted = ({ data, checkedList, editableLabel, setEditable
                                                             onKeyDown={(e) => {
                                                                 if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
                                                                     if (inputCredorRefs.current) {
-                                                                        inputCredorRefs.current[index].blur()
+                                                                        inputCredorRefs.current[index].blur();
+                                                                        setIsEditing(false);
                                                                         handleChangeCreditorName(inputCredorRefs.current[index].innerText, item.id, ['notion_list'])
                                                                     }
+                                                                } else {
+                                                                    setIsEditing(true);
+                                                                    queryClient.cancelQueries({ queryKey: ['notion_list'] })
                                                                 }
                                                             }}
-                                                            className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                            onBlur={() => {
+                                                                setEditableLabel(null);
+                                                                setIsEditing(false);
+                                                            }}
+                                                            className={`${editableLabel === item.id && '!border-1 !border-blue-700'} max-w[370px] py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md overflow-hidden whitespace-nowrap`}
                                                         >
                                                             {item.properties.Credor?.title[0]?.text.content || ''}
                                                         </div>

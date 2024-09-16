@@ -18,11 +18,12 @@ import { MiniMenu } from '../ExtratosTable/MiniMenu';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { NotionSkeletonTwo } from '../Skeletons/NotionSkeletonTwo';
 
-const MakeFirstContact = ({ data, checkedList, editableLabel, setEditableLabel, handleNotionDrawer, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, handleEditStatus,
+const MakeFirstContact = ({ data, setIsEditing, checkedList, editableLabel, setEditableLabel, handleNotionDrawer, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, handleEditStatus,
     handleArchiveExtrato, archiveStatus, handleSelectAllRows, setCheckedList
 }:
     {
         data: any,
+        setIsEditing: React.Dispatch<React.SetStateAction<boolean>>,
         checkedList: NotionPage[],
         editableLabel: string | null;
         setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
@@ -387,12 +388,20 @@ const MakeFirstContact = ({ data, checkedList, editableLabel, setEditableLabel, 
                                                             onKeyDown={(e) => {
                                                                 if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
                                                                     if (inputCredorRefs.current) {
-                                                                        inputCredorRefs.current[index].blur()
+                                                                        inputCredorRefs.current[index].blur();
+                                                                        setIsEditing(false);
                                                                         handleChangeCreditorName(inputCredorRefs.current[index].innerText, item.id, ['notion_list'])
                                                                     }
+                                                                } else {
+                                                                    setIsEditing(true);
+                                                                    queryClient.cancelQueries({ queryKey: ['notion_list'] })
                                                                 }
                                                             }}
-                                                            className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                            onBlur={() => {
+                                                                setEditableLabel(null);
+                                                                setIsEditing(false);
+                                                            }}
+                                                            className={`${editableLabel === item.id && '!border-1 !border-blue-700'} max-w[370px] py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md overflow-hidden whitespace-nowrap`}
                                                         >
                                                             {item.properties.Credor?.title[0]?.text.content || ''}
                                                         </div>
