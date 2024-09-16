@@ -317,6 +317,9 @@ const MainForm: React.FC<CVLDFormProps> = ({
     mutationFn: (newData) => {
       return postNotionData(newData);
     },
+    onMutate: async (newData) => {
+      queryClient.cancelQueries({queryKey: ['notion_list']});
+    },
     onSuccess: (data) => {
       queryClient.setQueryData(["notion_list"], (oldData: any) => {
         return { ...oldData, results: [data.data.result[1], ...oldData.results] };
