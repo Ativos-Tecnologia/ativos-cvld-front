@@ -317,6 +317,9 @@ const MainForm: React.FC<CVLDFormProps> = ({
     mutationFn: (newData) => {
       return postNotionData(newData);
     },
+    onMutate: async (newData) => {
+      queryClient.cancelQueries({queryKey: ['notion_list']});
+    },
     onSuccess: (data) => {
       queryClient.setQueryData(["notion_list"], (oldData: any) => {
         return { ...oldData, results: [data.data.result[1], ...oldData.results] };
@@ -331,7 +334,15 @@ const MainForm: React.FC<CVLDFormProps> = ({
     data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
 
     if (!data.data_limite_de_atualizacao_check) {
-      data.data_limite_de_atualizacao = new Date().toISOString().split("T")[0];
+      const dateInSaoPaulo = new Date().toLocaleDateString('pt-BR', {
+        timeZone: 'America/Sao_Paulo',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      });
+
+      const formattedDate = dateInSaoPaulo.split('/').reverse().join('-');
+      data.data_limite_de_atualizacao = formattedDate;
     }
 
     if (!data.status) {
