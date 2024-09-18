@@ -286,8 +286,6 @@ export const OfficeTypeAndValue = ({ data, setIsEditing, checkedList, updateStat
 
     }, [data, data?.has_more, data?.next_cursor, firstLoad, hasMore, nextCursor]);
 
-    console.log(firstLoad, data?.results?.length)
-
     return (
         <div className='max-w-full overflow-x-scroll pb-5'>
 
