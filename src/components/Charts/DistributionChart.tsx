@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import numberFormat from "@/functions/formaters/numberFormat";
 import { NotionResponse } from "@/interfaces/INotion";
-import { IWalletResponse } from "@/interfaces/IWallet";
+import { IWalletResponse, IWalletResults } from "@/interfaces/IWallet";
 import { ApexOptions } from "apexcharts";
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
@@ -15,7 +15,7 @@ interface newWalletResponse {
   title: string;
   response: [
     NotionResponse,
-    IWalletResponse[]
+    IWalletResults[][]
   ]
 }
 
@@ -27,7 +27,7 @@ interface ChartThreeProps {
 
 
 
-const DistributionChart: React.FC<newWalletResponse> = ({title, response: data}) => {
+const DistributionChart: React.FC<newWalletResponse> = ({ title, response: data }) => {
   const [state, setState] = useState<ChartThreeState>({
     series: [65, 34, 12, 56],
   });
@@ -114,31 +114,31 @@ const DistributionChart: React.FC<newWalletResponse> = ({title, response: data})
 
 
 
-  function handleSeries(data: NotionResponse) {
-    let serie = Array<{
-      name: string,
-      value: number
-    }>();
+  function handleSeries(data: IWalletResults[][]) {
+    let serie: number[] = [];
 
-    data?.results.forEach((item) => {
-      item?.properties["Valor de Aquisição (Wallet)"].number && serie.push({
-        name: item.properties["Credor"]?.title[0]?.plain_text,
-        value: item.properties["Valor de Aquisição (Wallet)"]?.number
+    data?.forEach((item: any[]) => {
+      item.forEach((results: IWalletResults, index: number) => {
+        if (index === 1) {
+          results.valor_liquido_disponivel && serie.push(
+            results.valor_liquido_disponivel
+          )
+        }
       })
-      }
-    )
+    })
     setState({
-      series: serie.map((item) => item.value)
+      series: serie
     });
   }
 
   useEffect(() => {
     if (data) {
-
-      handleSeries(data && data[0]);
+      handleSeries(data[1]);
     }
 
   }, [data]);
+
+  console.log(data && data[1])
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white py-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-5">
