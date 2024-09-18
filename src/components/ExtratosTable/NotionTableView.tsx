@@ -54,7 +54,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const [openUsersPopover, setOpenUsersPopover] = useState<boolean>(false);
     const [filteredStatusValues, setFilteredStatusValues] = useState<statusOficio[]>(ENUM_OFICIOS_LIST);
     const [filteredUsersList, setFilteredUsersList] = useState<string[]>(ENUM_OFICIOS_LIST);
-    const [fetchingValue, setFetchingValue] = useState<Record<string, any> | null>(null);
+    const [updateState, setUpdateState] = useState<string | null>(null);
+    const [editLock, setEditLock] = useState<boolean>(false);
     const [archiveStatus, setArchiveStatus] = useState<boolean>(false);
     const [archivedOficios, setArchivedOficios] = useState<NotionPage[]>([]);
     const searchStatusRef = useRef<HTMLInputElement | null>(null);
@@ -62,7 +63,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const selectStatusRef = useRef<any>(null);
     const selectTipoOficioRef = useRef<any>(null);
     const selectUserRef = useRef<any>(null);
-
 
     const {
         setOpenDetailsDrawer,
@@ -333,6 +333,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             return response.data
         },
         onMutate: async (paramsObj) => {
+            setUpdateState('pending');
+            setEditLock(true);
             await queryClient.cancelQueries({ queryKey: ['notion_list'] });
             const previousData: any = queryClient.getQueryData(['notion_list']);
             queryClient.setQueryData(['notion_list'], (old: any) => {
@@ -350,7 +352,25 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         },
         onError: (error, paramsObj, context) => {
             queryClient.setQueryData(['notion_list'], context?.previousData)
-            toast.error('Erro ao alterar o nome do credor')
+            toast.error('Erro ao alterar o nome do credor');
+            setUpdateState('error');
+        },
+        onSuccess: () => {
+            setUpdateState('success');
+        },
+        onSettled: () => {
+            const timeOut = setTimeout(() => {
+                setEditableLabel(prevObj => {
+                    return {
+                        ...prevObj,
+                        id: '',
+                        nameCredor: false
+                    }
+                });
+                setUpdateState(null);
+                setEditLock(false);
+            }, 1500);
+            return () => clearTimeout(timeOut);
         }
     });
 
@@ -367,6 +387,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             return response.data
         },
         onMutate: async (paramsObj) => {
+            setUpdateState('pending');
+            setEditLock(true);
             await queryClient.cancelQueries({ queryKey: ['notion_list'] });
             const previousData: any = queryClient.getQueryData(['notion_list']);
             return { previousData }
@@ -374,6 +396,28 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         onError: (error, paramsObj, context) => {
             queryClient.setQueryData(['notion_list'], context?.previousData);
             toast.error('Erro ao alterar o contato');
+            setUpdateState('error');
+        },
+        onSuccess: () => {
+            setUpdateState('success');
+        },
+        onSettled: () => {
+            const timeOut = setTimeout(() => {
+                setEditableLabel(prevObj => {
+                    return {
+                        ...prevObj,
+                        id: '',
+                        phone: {
+                            one: false,
+                            two: false,
+                            three: false,
+                        }
+                    }
+                });
+                setUpdateState(null);
+                setEditLock(false);
+            }, 1500);
+            return () => clearTimeout(timeOut);
         }
     });
 
@@ -390,13 +434,33 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             return response.data
         },
         onMutate: async (paramsObj) => {
+            setEditLock(true);
+            setUpdateState('pending');
             await queryClient.cancelQueries({ queryKey: ['notion_list'] });
             const previousData: any = queryClient.getQueryData(['notion_list']);
             return { previousData }
         },
         onError: (error, paramsObj, context) => {
+            setUpdateState('error');
             queryClient.setQueryData(['notion_list'], context?.previousData);
             toast.error('Erro ao alterar o email');
+        },
+        onSuccess: () => {
+            setUpdateState('success');
+        },
+        onSettled: () => {
+            const timeOut = setTimeout(() => {
+                setEditableLabel(prevObj => {
+                    return {
+                        ...prevObj,
+                        id: '',
+                        email: false
+                    }
+                });
+                setUpdateState(null);
+                setEditLock(false);
+            }, 1500);
+            return () => clearTimeout(timeOut);
         }
     });
 
@@ -413,16 +477,34 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             return response.data
         },
         onMutate: async (paramsObj) => {
+            setUpdateState('pending');
+            setEditLock(true);
             await queryClient.cancelQueries({ queryKey: ['notion_list'] });
             const previousData: any = queryClient.getQueryData(['notion_list']);
             return { previousData }
         },
         onError: (error, paramsObj, context) => {
+            setUpdateState('error');
             queryClient.setQueryData(['notion_list'], context?.previousData);
             toast.error('Erro ao alterar o preço proposto');
         },
         onSuccess: (paramsObj) => {
+            setUpdateState('success');
             queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+        },
+        onSettled: () => {
+            const timeOut = setTimeout(() => {
+                setEditableLabel(prevObj => {
+                    return {
+                        ...prevObj,
+                        id: '',
+                        proposalPrice: false
+                    }
+                });
+                setUpdateState(null);
+                setEditLock(false);
+            }, 1500);
+            return () => clearTimeout(timeOut);
         }
     });
 
@@ -447,13 +529,39 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             return response.data
         },
         onMutate: async (paramsObj) => {
+            setUpdateState('pending');
+            setEditLock(true)
             await queryClient.cancelQueries({ queryKey: ['notion_list'] });
             const previousData: any = queryClient.getQueryData(['notion_list']);
             return { previousData }
         },
         onError: (error, paramsObj, context) => {
+            setUpdateState('error');
             queryClient.setQueryData(['notion_list'], context?.previousData);
             toast.error('Erro ao alterar a data de follow up');
+        },
+        onSuccess: () => {
+            setUpdateState('success');
+        },
+        onSettled: () => {
+            const timeOut = setTimeout(() => {
+                setEditableLabel(prevObj => {
+                    return {
+                        ...prevObj,
+                        id: '',
+                        fup: {
+                            first: false,
+                            second: false,
+                            third: false,
+                            fourth: false,
+                            fifth: false
+                        }
+                    }
+                });
+                setUpdateState(null);
+                setEditLock(false);
+            }, 1500);
+            return () => clearTimeout(timeOut);
         }
     });
 
@@ -575,7 +683,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     }
 
     const handleChangeCreditorName = async (value: string, page_id: string, queryKeyList: any[]) => {
-        setEditableLabel(null);
         await creditorNameMutation.mutateAsync({
             page_id,
             value,
@@ -1351,8 +1458,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                 <GeneralView
                     data={data}
                     setIsEditing={setIsEditing}
+                    updateState={updateState}
                     checkedList={checkedList}
-                    fetchingValue={fetchingValue}
                     handleSelectRow={handleSelectRow}
                     handleEditTipoOficio={handleEditTipoOficio}
                     handleChangeCreditorName={handleChangeCreditorName}
@@ -1374,6 +1481,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                 <MakeFirstContact
                     data={data}
                     setIsEditing={setIsEditing}
+                    updateState={updateState}
+                    editLock={editLock}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
                     setEditableLabel={setEditableLabel}
@@ -1397,6 +1506,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     setIsEditing={setIsEditing}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
+                    updateState={updateState}
                     setEditableLabel={setEditableLabel}
                     handleNotionDrawer={handleNotionDrawer}
                     handleSelectRow={handleSelectRow}
@@ -1418,8 +1528,9 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     setIsEditing={setIsEditing}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
+                    updateState={updateState}
+                    editLock={editLock}
                     setEditableLabel={setEditableLabel}
-                    fetchingValue={fetchingValue}
                     handleNotionDrawer={handleNotionDrawer}
                     handleSelectRow={handleSelectRow}
                     handleChangeCreditorName={handleChangeCreditorName}
@@ -1440,9 +1551,9 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                     data={data}
                     setIsEditing={setIsEditing}
                     checkedList={checkedList}
+                    updateState={updateState}
                     editableLabel={editableLabel}
                     setEditableLabel={setEditableLabel}
-                    fetchingValue={fetchingValue}
                     numberFormat={numberFormat}
                     handleNotionDrawer={handleNotionDrawer}
                     handleSelectRow={handleSelectRow}

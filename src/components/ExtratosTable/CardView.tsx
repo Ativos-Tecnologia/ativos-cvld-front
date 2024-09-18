@@ -65,14 +65,14 @@ const CardView = ({ count }: { count: number }) => {
                                                 title="Editar Credor"
                                                 onClick={
                                                     () => {
-                                                        setEditableLabel(item.id)
+                                                        // setEditableLabel(item.id)
                                                         handleEditInput(index);
                                                     }
                                                 }
-                                                className={`${editableLabel === item.id ? 'opacity-0 invisible duration-500' : 'opacity-100 visible duration-1000'} absolute top-0 mt-1.5 z-2 text-xl hover:opacity-80 dark:hover:text-white cursor-pointer transition-all `}
+                                                // className={`${editableLabel === item.id ? 'opacity-0 invisible duration-500' : 'opacity-100 visible duration-1000'} absolute top-0 mt-1.5 z-2 text-xl hover:opacity-80 dark:hover:text-white cursor-pointer transition-all `}
                                             />
 
-                                            {loading ? <ImSpinner2 className={`${editableLabel === item.id ? 'opacity-100 visible animate-spin' : 'opacity-0 invisible'} text-2xl`} /> :
+                                            {/* {loading ? <ImSpinner2 className={`${editableLabel === item.id ? 'opacity-100 visible animate-spin' : 'opacity-0 invisible'} text-2xl`} /> :
                                                 <BiCheck
                                                     title="Confirmar Edição"
                                                     onClick={(e) => {
@@ -82,21 +82,21 @@ const CardView = ({ count }: { count: number }) => {
                                                     }}
                                                     className={`${editableLabel === item.id ? 'opacity-100 visible duration-1000' : 'opacity-0 invisible'} ${editLabelState === 'success' && 'text-green-500'} text-2xl hover:opacity-80 dark:hover:text-white cursor-pointer transition-all`}
                                                 />
-                                            }
+                                            } */}
 
-                                            <BiX
+                                            {/* <BiX
                                                 title="Cancelar Edição"
                                                 onClick={() => {
                                                     setEditableLabel(null);
                                                     setEditLabelState('');
-                                                }} className={`${editableLabel === item.id ? 'opacity-100 visible translate-y-7 duration-1000' : 'opacity-0 invisible translate-y-0 rotate-90 duration-200'} ${editLabelState === 'error' && 'text-meta-1'} absolute top-0 mt-1.5 z-1 text-2xl hover:opacity-80 dark:hover:text-white cursor-pointer transition-all`} />
+                                                }} className={`${editableLabel === item.id ? 'opacity-100 visible translate-y-7 duration-1000' : 'opacity-0 invisible translate-y-0 rotate-90 duration-200'} ${editLabelState === 'error' && 'text-meta-1'} absolute top-0 mt-1.5 z-1 text-2xl hover:opacity-80 dark:hover:text-white cursor-pointer transition-all`} /> */}
                                         </div>
                                     </div>
                                     <div className="relative w-55 h-22">
 
-                                        {editableLabel !== item.id && <div
+                                        {/* {editableLabel !== item.id && <div
                                             title={item?.credor || "NOME NÃO INFORMADO"}
-                                            className="absolute inset-0 bg-transparent"></div>}
+                                            className="absolute inset-0 bg-transparent"></div>} */}
 
                                         <textarea
                                             title={item?.credor || "NOME NÃO INFORMADO"}

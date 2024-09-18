@@ -6,11 +6,9 @@ import { CVLDResultProps } from "@/interfaces/IResultCVLD";
 import statusOficio from "@/enums/statusOficio.enum";
 import tipoOficio from "@/enums/tipoOficio.enum";
 import { toast } from "sonner";
-import { AxiosResponse } from "axios";
 import useUpdateOficio from "@/hooks/useUpdateOficio";
 import { NotionResponse } from "@/interfaces/INotion";
 import { UserInfoAPIContext } from "./UserInfoContext";
-import { QueryClient } from "@tanstack/react-query";
 
 // types
 export type ActiveState = "ALL" | "PRECATÓRIO" | "R.P.V" | "CREDITÓRIO";
@@ -31,6 +29,29 @@ export type ModalOptionsProps = {
     items: CVLDResultProps[] | never[]
 }
 
+export interface IEditableLabels {
+    id: string,
+    nameCredor: boolean,
+    phone: {
+        one: boolean,
+        two: boolean,
+        three: boolean
+    }
+    email: boolean,
+    proposalPrice: boolean,
+    fup: {
+        first: boolean,
+        second: boolean,
+        third: boolean,
+        fourth: boolean,
+        fifth: boolean,
+    },
+    identification: boolean,
+    npuOrig: boolean,
+    npuPrec: boolean,
+    court: boolean,
+}
+
 // main interface
 export interface IExtratosTable {
     /*  ====> states <===== */
@@ -46,8 +67,8 @@ export interface IExtratosTable {
     setActiveFilter: React.Dispatch<React.SetStateAction<ActiveState>>;
     activedTab: Tabs;
     setActivedTab: React.Dispatch<React.SetStateAction<Tabs>>;
-    editableLabel: string | null;
-    setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
+    editableLabel: IEditableLabels;
+    setEditableLabel: React.Dispatch<React.SetStateAction<IEditableLabels>>;
     item: any;
     setItem: React.Dispatch<React.SetStateAction<any>>;
     loading: boolean;
@@ -114,7 +135,28 @@ export const ExtratosTableContext = createContext<IExtratosTable>({
     setActiveFilter: () => { },
     activedTab: "GERAL",
     setActivedTab: () => { },
-    editableLabel: null,
+    editableLabel: {
+        id: '',
+        nameCredor: false,
+        phone: {
+            one: false,
+            two: false,
+            three: false
+        },
+        email: false,
+        proposalPrice: false,
+        fup: {
+            first: false,
+            second: false,
+            third: false,
+            fourth: false,
+            fifth: false,
+        },
+        identification: false,
+        npuOrig: false,
+        npuPrec: false,
+        court: false,
+    },
     setEditableLabel: () => { },
     item: {},
     setItem: () => { },
@@ -184,7 +226,28 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
     const [oficioSelectValue, setOficioSelectValue] = useState<tipoOficio | null>(null);
     const [activeFilter, setActiveFilter] = useState<ActiveState>('ALL');
     const [activedTab, setActivedTab] = useState<Tabs>('WORKSPACE NOTION');
-    const [editableLabel, setEditableLabel] = useState<string | null>(null);
+    const [editableLabel, setEditableLabel] = useState<IEditableLabels>({
+        id: '',
+        nameCredor: false,
+        phone: {
+            one: false,
+            two: false,
+            three: false
+        },
+        email: false,
+        proposalPrice: false,
+        fup: {
+            first: false,
+            second: false,
+            third: false,
+            fourth: false,
+            fifth: false,
+        },
+        identification: false,
+        npuOrig: false,
+        npuPrec: false,
+        court: false,
+    });
     const [item, setItem] = useState<CVLDResultProps | {}>({});
     const [loading, setLoading] = useState<boolean>(false);
     const [viewOption, setViewOption] = useState<LocalExtractViewProps>({
@@ -474,7 +537,7 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
     /* função que manipula a troca de nome do credor em todas as views */
     const updateCreditorName = async (id: string, value: string, page_id?: string) => {
 
-        setEditableLabel(null);
+        // setEditableLabel(null);
 
         const res = await api.patch(`/api/extrato/update/credor/${id}/`, {
             credor: value

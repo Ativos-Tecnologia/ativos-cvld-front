@@ -171,7 +171,7 @@ const TableView = ({ count }: { count: number }) => {
                                         <TableCell title={item?.credor || ''}
                                             className="relative h-full  flex items-center gap-2 font-semibold text-[12px]"
                                         >
-                                            <input
+                                            {/* <input
                                                 type="text"
                                                 ref={(input) => { if (input) inputRefs.current![index] = input; }}
                                                 defaultValue={item?.credor || ''}
@@ -182,7 +182,7 @@ const TableView = ({ count }: { count: number }) => {
                                                 }}
                                                 onBlur={(e) => handleChangeCreditorName(item.id, e.currentTarget.value, index, item.notion_link?.slice(-32))}
                                                 className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                                            />
+                                            /> */}
 
                                             {/* =====> confirm edition old button <===== */}
 
@@ -210,7 +210,7 @@ const TableView = ({ count }: { count: number }) => {
 
 
                                             {/* absolute div that covers the entire cell */}
-                                            {editableLabel !== item.id && (
+                                            {/* {editableLabel !== item.id && (
                                                 <div className='absolute inset-0 rounded-md flex items-center transition-all duration-200'>
 
                                                     {editableLabel === null && (
@@ -252,7 +252,7 @@ const TableView = ({ count }: { count: number }) => {
                                                         </React.Fragment>
                                                     )}
                                                 </div>
-                                            )}
+                                            )} */}
 
                                         </TableCell>
                                         <TableCell className=" font-semibold text-[14px]">
