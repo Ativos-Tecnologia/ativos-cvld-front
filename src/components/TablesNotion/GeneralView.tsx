@@ -3,7 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from 
 import { IoDocumentTextOutline } from 'react-icons/io5';
 import { AiOutlineLoading, AiOutlineUser } from 'react-icons/ai';
 import { LiaCoinsSolid } from 'react-icons/lia';
-import { BiLoader, BiSolidDockLeft } from 'react-icons/bi';
+import { BiLoader, BiSolidDockLeft, BiSolidSave } from 'react-icons/bi';
 import { NotionPage } from '@/interfaces/INotion';
 import { Badge } from 'flowbite-react';
 import tipoOficio from '@/enums/tipoOficio.enum';
@@ -22,18 +22,20 @@ import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import api from '@/utils/api';
 import { MiniMenu } from '../ExtratosTable/MiniMenu';
 import { NotionSkeletonOne } from '../Skeletons/NotionSkeletonOne';
+import SaveButton from '../Button/SaveButton';
+import { IEditableLabels } from '@/context/ExtratosTableContext';
 
-const GeneralView = ({ data, setIsEditing, checkedList, fetchingValue, handleSelectRow, handleEditTipoOficio, handleChangeCreditorName, editableLabel, setEditableLabel, handleEditInput, handleNotionDrawer, handleCopyValue, handleEditStatus, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList }:
+const GeneralView = ({ data, setIsEditing, updateState, checkedList, handleSelectRow, handleEditTipoOficio, handleChangeCreditorName, editableLabel, setEditableLabel, handleEditInput, handleNotionDrawer, handleCopyValue, handleEditStatus, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList }:
     {
         data: any,
         setIsEditing: React.Dispatch<React.SetStateAction<boolean>>,
+        updateState: string | null;
         checkedList: NotionPage[],
-        fetchingValue: Record<string, any> | null,
         handleSelectRow: (item: NotionPage) => void,
         handleEditTipoOficio: (page_id: string, oficio: tipoOficio, queryKeyList: any[]) => Promise<void>,
         handleChangeCreditorName: (value: string, page_id: string, queryKeyList: any[]) => Promise<void>,
-        editableLabel: string | null;
-        setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
+        editableLabel: IEditableLabels;
+        setEditableLabel: React.Dispatch<React.SetStateAction<IEditableLabels>>;
         handleEditInput: (index: number, refList: HTMLDivElement[] | null) => void;
         handleNotionDrawer: (id: string) => void;
         handleCopyValue: (index: number) => void;
@@ -132,6 +134,32 @@ const GeneralView = ({ data, setIsEditing, checkedList, fetchingValue, handleSel
     // );
     const [nextCursor, setNextCursor] = useState<string | null>();
     const [hasMore, setHasMore] = useState<boolean>();
+
+    // função que manuseia o início de uma edição de label
+    const resetOthersEditions = () => {
+        setEditableLabel({
+            id: '',
+            nameCredor: false,
+            phone: {
+                one: false,
+                two: false,
+                three: false
+            },
+            email: false,
+            proposalPrice: false,
+            fup: {
+                first: false,
+                second: false,
+                third: false,
+                fourth: false,
+                fifth: false,
+            },
+            identification: false,
+            npuOrig: false,
+            npuPrec: false,
+            court: false,
+        })
+    }
 
     /* função que faz uma requisição ao backend para retornar resultados que contenham
     a determinada palavra-chave e adiciona a nova linha filtrada para os resultados já 
@@ -283,6 +311,8 @@ const GeneralView = ({ data, setIsEditing, checkedList, fetchingValue, handleSel
 
     }, [data, data?.has_more, data?.next_cursor, firstLoad, hasMore, nextCursor]);
 
+    console.log(data)
+
     return (
         <div className='max-w-full overflow-x-scroll pb-5'>
             <MiniMenu
@@ -378,55 +408,59 @@ const GeneralView = ({ data, setIsEditing, checkedList, fetchingValue, handleSel
                                                         callbackFunction={() => handleSelectRow(item)}
                                                     />
                                                     <Badge color="indigo" size="sm" className={`w-[139px] h-7 text-[12px]`}>
-                                                        {(fetchingValue?.page_id === item?.id && fetchingValue.tipo === 'tipo_oficio') ? (
-                                                            <span className='w-[139px] pl-3 uppercase'>
-                                                                Atualizando ...
-                                                            </span>
-                                                        ) : (
-                                                            <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleEditTipoOficio(item.id, e.target.value as tipoOficio, ['notion_list', 'general'])}>
-                                                                {item?.properties?.Tipo.select?.name && (
-                                                                    <option value={item.properties.Tipo.select?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                                        {item.properties.Tipo.select?.name}
-                                                                    </option>
-                                                                )}
-                                                                {ENUM_TIPO_OFICIOS_LIST.filter((status) => status !== item.properties?.Tipo.select?.name).map((status) => (
-                                                                    <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                                        {status}
-                                                                    </option>
-                                                                ))}
-                                                            </select>
-                                                        )}
+                                                        <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleEditTipoOficio(item.id, e.target.value as tipoOficio, ['notion_list', 'general'])}>
+                                                            {item?.properties?.Tipo.select?.name && (
+                                                                <option value={item.properties.Tipo.select?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                                    {item.properties.Tipo.select?.name}
+                                                                </option>
+                                                            )}
+                                                            {ENUM_TIPO_OFICIOS_LIST.filter((status) => status !== item.properties?.Tipo.select?.name).map((status) => (
+                                                                <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                                    {status}
+                                                                </option>
+                                                            ))}
+                                                        </select>
                                                     </Badge>
                                                 </div>
                                             </TableCell>
                                             <TableCell
-                                                className="relative h-full min-w-100 flex items-center gap-2 font-semibold text-[12px]"
+                                                className="relative h-11 min-w-100 flex items-center gap-2 font-semibold text-[12px]"
                                             >
-
-                                                <div
-                                                    title={item?.properties?.Credor?.title[0]?.text.content || ''}
-                                                    dangerouslySetInnerHTML={{ __html: item?.properties?.Credor?.title[0]?.text.content || '' }}
-                                                    ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
-                                                    contentEditable={editableLabel === item.id}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            if (inputCredorRefs.current) {
-                                                                inputCredorRefs.current[index].blur();
-                                                                setIsEditing(false);
-                                                                handleChangeCreditorName(inputCredorRefs.current[index].innerText, item.id, ['notion_list'])
+                                                <div className='w-full h-full flex gap-2 items-center'>
+                                                    <div
+                                                        title={item?.properties?.Credor?.title[0]?.text.content || ''}
+                                                        dangerouslySetInnerHTML={{ __html: item?.properties?.Credor?.title[0]?.text.content || '' }}
+                                                        ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
+                                                        contentEditable={editableLabel.id === item.id && editableLabel.nameCredor}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                                if (inputCredorRefs.current) {
+                                                                    inputCredorRefs.current[index].blur();
+                                                                    setIsEditing(false);
+                                                                    handleChangeCreditorName(inputCredorRefs.current[index].innerText, item.id, ['notion_list']);
+                                                                }
+                                                            } else {
+                                                                setIsEditing(true);
+                                                                queryClient.cancelQueries({ queryKey: ['notion_list'] })
                                                             }
-                                                        } else {
-                                                            setIsEditing(true);
-                                                            queryClient.cancelQueries({ queryKey: ['notion_list'] })
-                                                        }
-                                                    }}
-                                                    onBlur={() => {
-                                                        setEditableLabel(null);
-                                                        setIsEditing(false);
-                                                    }}
-                                                    className={`${editableLabel === item.id && '!border-1 !border-blue-700'} max-w-[370px] py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md overflow-hidden whitespace-nowrap`}
-                                                >
-                                                    {/* {item.properties.Credor?.title[0]?.text.content || ''} */}
+                                                        }}
+                                                        // onBlur={() => {
+                                                        //     setEditableLabel(null);
+                                                        //     setIsEditing(false);
+                                                        // }}
+                                                        className='flex-1 max-w-[370px] py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md overflow-hidden whitespace-nowrap'
+                                                    ></div>
+
+                                                    {editableLabel.id === item.id && editableLabel.nameCredor && (
+                                                        <SaveButton
+                                                            onClick={() => {
+                                                                inputCredorRefs.current![index].blur();
+                                                                setIsEditing(false);
+                                                                handleChangeCreditorName(inputCredorRefs.current![index].innerText, item.id, ['notion_list'])
+                                                            }}
+                                                            status={updateState}
+                                                        />
+                                                    )}
                                                 </div>
 
                                                 {/* <input
@@ -444,7 +478,7 @@ const GeneralView = ({ data, setIsEditing, checkedList, fetchingValue, handleSel
                                                     className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                 /> */}
                                                 {/* absolute div that covers the entire cell */}
-                                                {editableLabel !== item.id && (
+                                                {(editableLabel.id !== item.id && !editableLabel.nameCredor) && (
                                                     <div
                                                         title={item?.properties?.Credor?.title[0]?.text.content || ''}
                                                         className='absolute inset-0 rounded-md flex items-center transition-all duration-200'>
@@ -453,7 +487,14 @@ const GeneralView = ({ data, setIsEditing, checkedList, fetchingValue, handleSel
                                                             {item.properties.Credor?.title[0]?.plain_text?.length === 0 ? (
                                                                 <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200'
                                                                     onClick={() => {
-                                                                        setEditableLabel!(item.id)
+                                                                        resetOthersEditions()
+                                                                        setEditableLabel(prevObj => {
+                                                                            return {
+                                                                                ...prevObj,
+                                                                                id: item.id,
+                                                                                nameCredor: true
+                                                                            }
+                                                                        })
                                                                         handleEditInput(index, inputCredorRefs.current);
                                                                     }}>
                                                                     <div className='flex gap-1 pl-4 text-slate-400'>
@@ -465,7 +506,14 @@ const GeneralView = ({ data, setIsEditing, checkedList, fetchingValue, handleSel
                                                                 <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 text-sm
                                                                     font-semibold pl-[21px]'
                                                                     onClick={() => {
-                                                                        setEditableLabel!(item.id)
+                                                                        resetOthersEditions()
+                                                                        setEditableLabel(prevObj => {
+                                                                            return {
+                                                                                ...prevObj,
+                                                                                id: item.id,
+                                                                                nameCredor: true
+                                                                            }
+                                                                        })
                                                                         handleEditInput(index, inputCredorRefs.current);
                                                                     }}>
                                                                     <span>
@@ -528,26 +576,20 @@ const GeneralView = ({ data, setIsEditing, checkedList, fetchingValue, handleSel
                                             </TableCell>
                                             <TableCell className="text-center items-center ">
                                                 <Badge color="teal" size="sm" className="text-center h-7 text-[12px] w-48">
-                                                    {(fetchingValue?.page_id === item?.id && fetchingValue.tipo === 'status_oficio') ? (
-                                                        <span className='w-[192px] pl-3 pr-10 uppercase'>
-                                                            Atualizando ...
-                                                        </span>
-                                                    ) : (
-                                                        <select className="text-[12px] w-44 text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => {
-                                                            handleEditStatus(item.id, e.target.value as statusOficio, ['notion_list', 'general'])
-                                                        }}>
-                                                            {item.properties.Status.status?.name && (
-                                                                <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                                    {item.properties.Status.status?.name}
-                                                                </option>
-                                                            )}
-                                                            {ENUM_OFICIOS_LIST.filter((status) => status !== item.properties.Status.status?.name).map((status) => (
-                                                                <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
-                                                                    {status}
-                                                                </option>
-                                                            ))}
-                                                        </select>
-                                                    )}
+                                                    <select className="text-[12px] w-44 text-ellipsis overflow-x-hidden whitespace-nowrap bg-transparent border-none py-0 focus-within:ring-0 uppercase" onChange={(e) => {
+                                                        handleEditStatus(item.id, e.target.value as statusOficio, ['notion_list', 'general'])
+                                                    }}>
+                                                        {item.properties.Status.status?.name && (
+                                                            <option value={item.properties.Status.status?.name} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                                {item.properties.Status.status?.name}
+                                                            </option>
+                                                        )}
+                                                        {ENUM_OFICIOS_LIST.filter((status) => status !== item.properties.Status.status?.name).map((status) => (
+                                                            <option key={status} value={status} className="text-[12px] bg-transparent border-none border-noround font-bold">
+                                                                {status}
+                                                            </option>
+                                                        ))}
+                                                    </select>
                                                 </Badge>
                                             </TableCell>
 

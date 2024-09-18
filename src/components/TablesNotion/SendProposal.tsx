@@ -21,17 +21,20 @@ import api from '@/utils/api'
 import { MiniMenu } from '../ExtratosTable/MiniMenu'
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react'
 import { NotionSkeletonFour } from '../Skeletons/NotionSkeletonFour'
+import { IEditableLabels } from '@/context/ExtratosTableContext'
+import SaveButton from '../Button/SaveButton'
 
-export const SendProposal = ({ data, setIsEditing, checkedList, editableLabel, setEditableLabel, handleNotionDrawer, handleSelectRow, handleChangeFupDate, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList,
+export const SendProposal = ({ data, setIsEditing, checkedList, editLock, editableLabel, updateState, setEditableLabel, handleNotionDrawer, handleSelectRow, handleChangeFupDate, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList,
     handleChangeCreditorName, handleEditInput, handleEditStatus, handleCopyValue, handleChangeProposalPrice
 }:
     {
         data: any,
         setIsEditing: React.Dispatch<React.SetStateAction<boolean>>,
         checkedList: NotionPage[],
-        editableLabel: string | null;
-        setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
-        fetchingValue: Record<string, any> | null;
+        editLock: boolean,
+        updateState: string | null,
+        editableLabel: IEditableLabels;
+        setEditableLabel: React.Dispatch<React.SetStateAction<IEditableLabels>>;
         handleNotionDrawer: (id: string) => void;
         handleSelectRow: (item: NotionPage) => void;
         handleChangeCreditorName: (value: string, page_id: string, queryKeyList: any[]) => Promise<void>;
@@ -59,6 +62,11 @@ export const SendProposal = ({ data, setIsEditing, checkedList, editableLabel, s
     /* ----> refs <----- */
     const inputCredorRefs = useRef<HTMLDivElement[] | null>([]);
     const inputProposalPriceRefs = useRef<HTMLInputElement[] | null>([]);
+    const [maskRefsOne, setMaskRefsOne] = useState<any>();
+    const [maskRefsTwo, setMaskRefsTwo] = useState<any>();
+    const [maskRefsThree, setMaskRefsThree] = useState<any>();
+    const [maskRefsFour, setMaskRefsFour] = useState<any>();
+    const [maskRefsFive, setMaskRefsFive] = useState<any>();
 
     const { data: { user, role, sub_role } } = useContext(UserInfoAPIContext);
 
@@ -111,6 +119,32 @@ export const SendProposal = ({ data, setIsEditing, checkedList, editableLabel, s
     //         enabled: !!user // only fetch if user is defined after context is loaded
     //     },
     // );
+
+    // função que manuseia o início de uma edição de label
+    const resetOthersEditions = () => {
+        setEditableLabel({
+            id: '',
+            nameCredor: false,
+            phone: {
+                one: false,
+                two: false,
+                three: false
+            },
+            email: false,
+            proposalPrice: false,
+            fup: {
+                first: false,
+                second: false,
+                third: false,
+                fourth: false,
+                fifth: false,
+            },
+            identification: false,
+            npuOrig: false,
+            npuPrec: false,
+            court: false,
+        })
+    }
 
     /* função que faz uma requisição ao backend para retornar resultados que contenham
     a determinada palavra-chave e adiciona a nova linha filtrada para os resultados já 
@@ -249,6 +283,16 @@ export const SendProposal = ({ data, setIsEditing, checkedList, editableLabel, s
     // }, [processedData]);
 
     useEffect(() => {
+
+        setMaskRefsOne(document.querySelectorAll('.fup1'))
+        setMaskRefsTwo(document.querySelectorAll('.fup2'))
+        setMaskRefsThree(document.querySelectorAll('.fup3'))
+        setMaskRefsFour(document.querySelectorAll('.fup4'))
+        setMaskRefsFive(document.querySelectorAll('.fup5'))
+
+    }, [processedData]);
+
+    useEffect(() => {
         if (firstLoad && data) {
             setNextCursor(data?.next_cursor);
             setHasMore(data?.has_more);
@@ -344,31 +388,31 @@ export const SendProposal = ({ data, setIsEditing, checkedList, editableLabel, s
                                 (R$) Proposta Máxima
                             </div>
                         </TableHeadCell>
-                        <TableHeadCell className="min-w-32">
+                        <TableHeadCell className="min-w-40">
                             <div className="flex gap-2 items-center">
                                 <BsCalendar3 className='text-base' />
                                 1ª FUP
                             </div>
                         </TableHeadCell>
-                        <TableHeadCell className="min-w-32">
+                        <TableHeadCell className="min-w-40">
                             <div className="flex gap-2 items-center">
                                 <BsCalendar3 className='text-base' />
                                 2ª FUP
                             </div>
                         </TableHeadCell>
-                        <TableHeadCell className="min-w-32">
+                        <TableHeadCell className="min-w-40">
                             <div className="flex gap-2 items-center">
                                 <BsCalendar3 className='text-base' />
                                 3ª FUP
                             </div>
                         </TableHeadCell>
-                        <TableHeadCell className="min-w-32">
+                        <TableHeadCell className="min-w-40">
                             <div className="flex gap-2 items-center">
                                 <BsCalendar3 className='text-base' />
                                 4ª FUP
                             </div>
                         </TableHeadCell>
-                        <TableHeadCell className="min-w-32">
+                        <TableHeadCell className="min-w-40">
                             <div className="flex gap-2 items-center">
                                 <BsCalendar3 className='text-base' />
                                 5ª FUP
@@ -407,28 +451,37 @@ export const SendProposal = ({ data, setIsEditing, checkedList, editableLabel, s
 
                                                     <div className="relative w-full">
 
-                                                        <div
-                                                            ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
-                                                            contentEditable={editableLabel === item.id}
-                                                            onKeyDown={(e) => {
-                                                                if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                                    if (inputCredorRefs.current) {
-                                                                        inputCredorRefs.current[index].blur();
-                                                                        setIsEditing(false);
-                                                                        handleChangeCreditorName(inputCredorRefs.current[index].innerText, item.id, ['notion_list'])
+                                                        <div className='w-full h-full flex gap-2 items-center'>
+                                                            <div
+                                                                title={item?.properties?.Credor?.title[0]?.text.content || ''}
+                                                                dangerouslySetInnerHTML={{ __html: item?.properties?.Credor?.title[0]?.text.content || '' }}
+                                                                ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
+                                                                contentEditable={editableLabel.id === item.id && editableLabel.nameCredor}
+                                                                onKeyDown={(e) => {
+                                                                    if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                                        if (inputCredorRefs.current) {
+                                                                            inputCredorRefs.current[index].blur();
+                                                                            setIsEditing(false);
+                                                                            handleChangeCreditorName(inputCredorRefs.current[index].innerText, item.id, ['notion_list']);
+                                                                        }
+                                                                    } else {
+                                                                        setIsEditing(true);
+                                                                        queryClient.cancelQueries({ queryKey: ['notion_list'] })
                                                                     }
-                                                                } else {
-                                                                    setIsEditing(true);
-                                                                    queryClient.cancelQueries({ queryKey: ['notion_list'] })
-                                                                }
-                                                            }}
-                                                            onBlur={() => {
-                                                                setEditableLabel(null);
-                                                                setIsEditing(false);
-                                                            }}
-                                                            className={`${editableLabel === item.id && '!border-1 !border-blue-700'} max-w[370px] py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md overflow-hidden whitespace-nowrap`}
-                                                        >
-                                                            {item.properties.Credor?.title[0]?.text.content || ''}
+                                                                }}
+                                                                className='flex-1 max-w-[370px] py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md overflow-hidden whitespace-nowrap'
+                                                            ></div>
+
+                                                            {editableLabel.id === item.id && editableLabel.nameCredor && (
+                                                                <SaveButton
+                                                                    onClick={() => {
+                                                                        inputCredorRefs.current![index].blur();
+                                                                        setIsEditing(false);
+                                                                        handleChangeCreditorName(inputCredorRefs.current![index].innerText, item.id, ['notion_list'])
+                                                                    }}
+                                                                    status={updateState}
+                                                                />
+                                                            )}
                                                         </div>
 
                                                         {/* <input
@@ -445,14 +498,21 @@ export const SendProposal = ({ data, setIsEditing, checkedList, editableLabel, s
                                                             className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                         /> */}
                                                         {/* absolute div that covers the entire cell */}
-                                                        {editableLabel !== item.id && (
+                                                        {(editableLabel.id !== item.id && !editableLabel.nameCredor) && (
                                                             <div className='absolute inset-0 rounded-md flex items-center transition-all duration-200'>
 
                                                                 <React.Fragment>
                                                                     {item.properties.Credor?.title[0].plain_text?.length === 0 ? (
                                                                         <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200'
                                                                             onClick={() => {
-                                                                                setEditableLabel!(item.id)
+                                                                                resetOthersEditions()
+                                                                                setEditableLabel(prevObj => {
+                                                                                    return {
+                                                                                        ...prevObj,
+                                                                                        id: item.id,
+                                                                                        nameCredor: true
+                                                                                    }
+                                                                                })
                                                                                 handleEditInput(index, inputCredorRefs.current);
                                                                             }}>
                                                                             <div className='flex gap-1 pl-4 text-slate-400'>
@@ -464,7 +524,14 @@ export const SendProposal = ({ data, setIsEditing, checkedList, editableLabel, s
                                                                         <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 text-sm
                                                                     font-semibold pl-[21px]'
                                                                             onClick={() => {
-                                                                                setEditableLabel!(item.id)
+                                                                                resetOthersEditions()
+                                                                                setEditableLabel(prevObj => {
+                                                                                    return {
+                                                                                        ...prevObj,
+                                                                                        id: item.id,
+                                                                                        nameCredor: true
+                                                                                    }
+                                                                                })
                                                                                 handleEditInput(index, inputCredorRefs.current);
                                                                             }}>
                                                                             <span>
@@ -524,26 +591,56 @@ export const SendProposal = ({ data, setIsEditing, checkedList, editableLabel, s
 
                                             {/* preço proposto */}
                                             <TableCell className="relative font-semibold text-[14px]">
-                                                <input
-                                                    title={numberFormat(item.properties['Preço Proposto']?.number || 0)}
-                                                    type="text"
-                                                    ref={(input) => { if (input) inputProposalPriceRefs.current![index] = input; }}
-                                                    defaultValue={numberFormat(item.properties['Preço Proposto']?.number || 0)}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            if (inputProposalPriceRefs.current) {
-                                                                inputProposalPriceRefs.current[index].blur();
+                                                <div className='relative flex gap-2 items-center'>
+
+                                                    {editableLabel.id === item.id && editableLabel.proposalPrice ? (
+                                                        <SaveButton
+                                                            onClick={() => {
+                                                                if (editLock) return;
+                                                                inputProposalPriceRefs.current![index].blur();
+                                                                setIsEditing(false);
+                                                                handleChangeProposalPrice(item.id, inputProposalPriceRefs.current![index].innerText, ['notion_list'])
+                                                            }}
+                                                            status={updateState}
+                                                        />
+                                                    ) : (
+                                                        <ImCopy
+                                                            title='Copiar valor'
+                                                            onClick={() => handleCopyValue(index)}
+                                                            className='absolute top-1/2 -translate-y-1/2 left-2 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
+                                                        />
+                                                    )}
+
+                                                    {editLock && (
+                                                        <div className='absolute inset-0 cursor-not-allowed'></div>
+                                                    )}
+
+                                                    <input
+                                                        title={numberFormat(item.properties['Preço Proposto']?.number || 0)}
+                                                        type="text"
+                                                        ref={(input) => { if (input) inputProposalPriceRefs.current![index] = input; }}
+                                                        defaultValue={numberFormat(item.properties['Preço Proposto']?.number || 0)}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                                if (inputProposalPriceRefs.current) {
+                                                                    inputProposalPriceRefs.current[index].blur();
+                                                                }
+                                                                handleChangeProposalPrice(item.id, e.currentTarget.value, ['notion_list', 'send_proposal'])
                                                             }
-                                                            handleChangeProposalPrice(item.id, e.currentTarget.value, ['notion_list', 'send_proposal'])
-                                                        }
-                                                    }}
-                                                    className={`text-right w-full px-0 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                                                />
-                                                <ImCopy
-                                                    title='Copiar valor'
-                                                    onClick={() => handleCopyValue(index)}
-                                                    className='absolute top-1/2 -translate-y-1/2 left-2 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
-                                                />
+                                                        }}
+                                                        onClick={() => {
+                                                            resetOthersEditions()
+                                                            setEditableLabel(prevObj => {
+                                                                return {
+                                                                    ...prevObj,
+                                                                    id: item.id,
+                                                                    proposalPrice: true
+                                                                }
+                                                            })
+                                                        }}
+                                                        className='text-right w-full px-0 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap'
+                                                    />
+                                                </div>
                                             </TableCell>
 
                                             {/* comissão */}
@@ -577,84 +674,250 @@ export const SendProposal = ({ data, setIsEditing, checkedList, editableLabel, s
                                             {/* 1ª FUP */}
                                             <TableCell className="font-semibold text-[14px] text-right">
 
-                                                <ReactInputMask
-                                                    mask='99/99/9999'
-                                                    defaultValue={fupDateConveter(item.properties["1ª FUP"]?.date?.start || '')}
-                                                    type="text"
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangeFupDate(item.id, e.currentTarget.value, '1ª FUP', ['notion_list', 'send_proposal'])
-                                                        }
-                                                    }}
-                                                    className={`w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                                                />
+                                                <div className='relative flex gap-2 items-center'>
+
+                                                    {editLock && (
+                                                        <div className='absolute inset-0 cursor-not-allowed'></div>
+                                                    )}
+
+                                                    <ReactInputMask
+                                                        mask='99/99/9999'
+                                                        defaultValue={fupDateConveter(item.properties["1ª FUP"]?.date?.start || '')}
+                                                        type="text"
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                                handleChangeFupDate(item.id, e.currentTarget.value, '1ª FUP', ['notion_list', 'send_proposal'])
+                                                            }
+                                                        }}
+                                                        onClick={() => {
+                                                            resetOthersEditions()
+                                                            setEditableLabel(prevObj => {
+                                                                return {
+                                                                    ...prevObj,
+                                                                    id: item.id,
+                                                                    fup: {
+                                                                        ...prevObj.fup,
+                                                                        first: true
+                                                                    }
+                                                                }
+                                                            })
+                                                        }}
+                                                        className='fup1 w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap'
+                                                    />
+
+                                                    {editableLabel.id === item.id && editableLabel.fup.first && (
+                                                        <SaveButton
+                                                            onClick={() => {
+                                                                if (editLock) return;
+                                                                maskRefsOne[index].blur();
+                                                                setIsEditing(false);
+                                                                handleChangeFupDate(item.id, maskRefsOne[index].value, '1ª FUP', ['notion_list'])
+                                                            }}
+                                                            status={updateState}
+                                                        />
+                                                    )}
+
+                                                </div>
 
                                             </TableCell>
 
                                             {/* 2ª FUP */}
                                             <TableCell className="font-semibold text-[14px] text-right">
 
-                                                <ReactInputMask
-                                                    mask='99/99/9999'
-                                                    defaultValue={fupDateConveter(item.properties["2ª FUP "]?.date?.start || '')}
-                                                    type="text"
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangeFupDate(item.id, e.currentTarget.value, '2ª FUP ', ['notion_list', 'send_proposal'])
-                                                        }
-                                                    }}
-                                                    className={`w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                                                />
+                                                <div className='relative flex gap-2 items-center'>
+
+                                                    {editLock && (
+                                                        <div className='absolute inset-0 cursor-not-allowed'></div>
+                                                    )}
+
+                                                    <ReactInputMask
+                                                        mask='99/99/9999'
+                                                        defaultValue={fupDateConveter(item.properties["2ª FUP "]?.date?.start || '')}
+                                                        type="text"
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                                handleChangeFupDate(item.id, e.currentTarget.value, '2ª FUP ', ['notion_list', 'send_proposal'])
+                                                            }
+                                                        }}
+                                                        onClick={() => {
+                                                            resetOthersEditions()
+                                                            setEditableLabel(prevObj => {
+                                                                return {
+                                                                    ...prevObj,
+                                                                    id: item.id,
+                                                                    fup: {
+                                                                        ...prevObj.fup,
+                                                                        second: true
+                                                                    }
+                                                                }
+                                                            })
+                                                        }}
+                                                        className={`fup2 w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                    />
+
+                                                    {editableLabel.id === item.id && editableLabel.fup.second && (
+                                                        <SaveButton
+                                                            onClick={() => {
+                                                                if (editLock) return;
+                                                                maskRefsTwo[index].blur();
+                                                                setIsEditing(false);
+                                                                handleChangeFupDate(item.id, maskRefsTwo[index].value, '2ª FUP ', ['notion_list'])
+                                                            }}
+                                                            status={updateState}
+                                                        />
+                                                    )}
+
+                                                </div>
 
                                             </TableCell>
 
                                             {/* 3ª FUP */}
                                             <TableCell className="font-semibold text-[14px] text-right">
 
-                                                <ReactInputMask
-                                                    mask='99/99/9999'
-                                                    defaultValue={fupDateConveter(item.properties["3ª FUP"]?.date?.start || '')}
-                                                    type="text"
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangeFupDate(item.id, e.currentTarget.value, '3ª FUP', ['notion_list', 'send_proposal'])
-                                                        }
-                                                    }}
-                                                    className={`w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                                                />
+                                                <div className='relative flex gap-2 items-center'>
+
+                                                    {editLock && (
+                                                        <div className='absolute inset-0 cursor-not-allowed'></div>
+                                                    )}
+
+                                                    <ReactInputMask
+                                                        mask='99/99/9999'
+                                                        defaultValue={fupDateConveter(item.properties["3ª FUP"]?.date?.start || '')}
+                                                        type="text"
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                                handleChangeFupDate(item.id, e.currentTarget.value, '3ª FUP', ['notion_list', 'send_proposal'])
+                                                            }
+                                                        }}
+                                                        onClick={() => {
+                                                            resetOthersEditions()
+                                                            setEditableLabel(prevObj => {
+                                                                return {
+                                                                    ...prevObj,
+                                                                    id: item.id,
+                                                                    fup: {
+                                                                        ...prevObj.fup,
+                                                                        third: true
+                                                                    }
+                                                                }
+                                                            })
+                                                        }}
+                                                        className={`fup3 w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                    />
+
+                                                    {editableLabel.id === item.id && editableLabel.fup.third && (
+                                                        <SaveButton
+                                                            onClick={() => {
+                                                                if (editLock) return;
+                                                                maskRefsThree[index].blur();
+                                                                setIsEditing(false);
+                                                                handleChangeFupDate(item.id, maskRefsThree[index].value, '3ª FUP', ['notion_list'])
+                                                            }}
+                                                            status={updateState}
+                                                        />
+                                                    )}
+
+                                                </div>
                                             </TableCell>
 
                                             {/* 4ª FUP */}
                                             <TableCell className="font-semibold text-[14px] text-right">
 
-                                                <ReactInputMask
-                                                    mask='99/99/9999'
-                                                    defaultValue={fupDateConveter(item.properties["4ª FUP"]?.date?.start || '')}
-                                                    type="text"
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangeFupDate(item.id, e.currentTarget.value, '4ª FUP', ['notion_list', 'send_proposal'])
-                                                        }
-                                                    }}
-                                                    className={`w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                                                />
+                                                <div className='relative flex gap-2 items-center'>
+
+                                                    {editLock && (
+                                                        <div className='absolute inset-0 cursor-not-allowed'></div>
+                                                    )}
+
+                                                    <ReactInputMask
+                                                        mask='99/99/9999'
+                                                        defaultValue={fupDateConveter(item.properties["4ª FUP"]?.date?.start || '')}
+                                                        type="text"
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                                handleChangeFupDate(item.id, e.currentTarget.value, '4ª FUP', ['notion_list', 'send_proposal'])
+                                                            }
+                                                        }}
+                                                        onClick={() => {
+                                                            resetOthersEditions()
+                                                            setEditableLabel(prevObj => {
+                                                                return {
+                                                                    ...prevObj,
+                                                                    id: item.id,
+                                                                    fup: {
+                                                                        ...prevObj.fup,
+                                                                        fourth: true
+                                                                    }
+                                                                }
+                                                            })
+                                                        }}
+                                                        className={`fup4 w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                    />
+
+                                                    {editableLabel.id === item.id && editableLabel.fup.fourth && (
+                                                        <SaveButton
+                                                            onClick={() => {
+                                                                if (editLock) return;
+                                                                maskRefsFour[index].blur();
+                                                                setIsEditing(false);
+                                                                handleChangeFupDate(item.id, maskRefsFour[index].value, '4ª FUP', ['notion_list'])
+                                                            }}
+                                                            status={updateState}
+                                                        />
+                                                    )}
+
+                                                </div>
 
                                             </TableCell>
 
                                             {/* 5ª FUP */}
                                             <TableCell className="font-semibold text-[14px] text-right">
 
-                                                <ReactInputMask
-                                                    mask='99/99/9999'
-                                                    defaultValue={fupDateConveter(item.properties["5ª FUP "]?.date?.start || '')}
-                                                    type="text"
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            handleChangeFupDate(item.id, e.currentTarget.value, '5ª FUP ', ['notion_list', 'send_proposal'])
-                                                        }
-                                                    }}
-                                                    className={`w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                                                />
+                                                <div className='relative flex gap-2 items-center'>
+
+                                                    {editLock && (
+                                                        <div className='absolute inset-0 cursor-not-allowed'></div>
+                                                    )}
+
+                                                    <ReactInputMask
+                                                        mask='99/99/9999'
+                                                        defaultValue={fupDateConveter(item.properties["5ª FUP "]?.date?.start || '')}
+                                                        type="text"
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                                handleChangeFupDate(item.id, e.currentTarget.value, '5ª FUP ', ['notion_list', 'send_proposal'])
+                                                            }
+                                                        }}
+                                                        onClick={() => {
+                                                            resetOthersEditions()
+                                                            setEditableLabel(prevObj => {
+                                                                return {
+                                                                    ...prevObj,
+                                                                    id: item.id,
+                                                                    fup: {
+                                                                        ...prevObj.fup,
+                                                                        fifth: true
+                                                                    }
+                                                                }
+                                                            })
+                                                        }}
+                                                        className={`fup5 w-full pl-1 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                    />
+
+                                                    {editableLabel.id === item.id && editableLabel.fup.fifth && (
+                                                        <SaveButton
+                                                            onClick={() => {
+                                                                if (editLock) return;
+                                                                maskRefsFive[index].blur();
+                                                                setIsEditing(false);
+                                                                handleChangeFupDate(item.id, maskRefsFive[index].value, '5ª FUP ', ['notion_list'])
+                                                            }}
+                                                            status={updateState}
+                                                        />
+                                                    )}
+
+                                                </div>
+
                                             </TableCell>
 
                                         </TableRow>

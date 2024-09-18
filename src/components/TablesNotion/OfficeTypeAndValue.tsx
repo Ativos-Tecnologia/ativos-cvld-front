@@ -20,16 +20,19 @@ import api from '@/utils/api'
 import { MiniMenu } from '../ExtratosTable/MiniMenu'
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react'
 import { NotionSkeletonThree } from '../Skeletons/NotionSkeletonThree'
+import { IEditableLabels } from '@/context/ExtratosTableContext'
+import SaveButton from '../Button/SaveButton'
 
-export const OfficeTypeAndValue = ({ data, setIsEditing, checkedList, editableLabel, setEditableLabel, handleSelectRow, handleNotionDrawer,
+export const OfficeTypeAndValue = ({ data, setIsEditing, checkedList, updateState, editableLabel, setEditableLabel, handleSelectRow, handleNotionDrawer,
     handleChangeCreditorName, handleEditInput, handleEditStatus, handleEditTipoOficio, handleCopyValue, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList
 }:
     {
         data: any,
         setIsEditing: React.Dispatch<React.SetStateAction<boolean>>,
         checkedList: NotionPage[],
-        editableLabel: string | null;
-        setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
+        updateState: string | null;
+        editableLabel: IEditableLabels;
+        setEditableLabel: React.Dispatch<React.SetStateAction<IEditableLabels>>;
         handleNotionDrawer: (id: string) => void;
         handleSelectRow: (item: NotionPage) => void;
         handleChangeCreditorName: (value: string, page_id: string, queryKeyList: any[]) => Promise<void>;
@@ -106,6 +109,33 @@ export const OfficeTypeAndValue = ({ data, setIsEditing, checkedList, editableLa
     // );
     const [nextCursor, setNextCursor] = useState<string | null>();
     const [hasMore, setHasMore] = useState<boolean>();
+
+
+    // função que manuseia o início de uma edição de label
+    const resetOthersEditions = () => {
+        setEditableLabel({
+            id: '',
+            nameCredor: false,
+            phone: {
+                one: false,
+                two: false,
+                three: false
+            },
+            email: false,
+            proposalPrice: false,
+            fup: {
+                first: false,
+                second: false,
+                third: false,
+                fourth: false,
+                fifth: false,
+            },
+            identification: false,
+            npuOrig: false,
+            npuPrec: false,
+            court: false,
+        })
+    }
 
     /* função que faz uma requisição ao backend para retornar resultados que contenham
     a determinada palavra-chave e adiciona a nova linha filtrada para os resultados já 
@@ -354,28 +384,41 @@ export const OfficeTypeAndValue = ({ data, setIsEditing, checkedList, editableLa
 
                                                     <div className="relative w-full">
 
-                                                        <div
-                                                            ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
-                                                            contentEditable={editableLabel === item.id}
-                                                            onKeyDown={(e) => {
-                                                                if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                                    if (inputCredorRefs.current) {
-                                                                        inputCredorRefs.current[index].blur();
-                                                                        setIsEditing(false);
-                                                                        handleChangeCreditorName(inputCredorRefs.current[index].innerText, item.id, ['notion_list'])
+                                                        <div className='w-full h-full flex gap-2 items-center'>
+                                                            <div
+                                                                title={item?.properties?.Credor?.title[0]?.text.content || ''}
+                                                                dangerouslySetInnerHTML={{ __html: item?.properties?.Credor?.title[0]?.text.content || '' }}
+                                                                ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
+                                                                contentEditable={editableLabel.id === item.id && editableLabel.nameCredor}
+                                                                onKeyDown={(e) => {
+                                                                    if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                                        if (inputCredorRefs.current) {
+                                                                            inputCredorRefs.current[index].blur();
+                                                                            setIsEditing(false);
+                                                                            handleChangeCreditorName(inputCredorRefs.current[index].innerText, item.id, ['notion_list']);
+                                                                        }
+                                                                    } else {
+                                                                        setIsEditing(true);
+                                                                        queryClient.cancelQueries({ queryKey: ['notion_list'] })
                                                                     }
-                                                                } else {
-                                                                    setIsEditing(true);
-                                                                    queryClient.cancelQueries({ queryKey: ['notion_list'] })
-                                                                }
-                                                            }}
-                                                            onBlur={() => {
-                                                                setEditableLabel(null);
-                                                                setIsEditing(false);
-                                                            }}
-                                                            className={`${editableLabel === item.id && '!border-1 !border-blue-700'} max-w[370px] py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md overflow-hidden whitespace-nowrap`}
-                                                        >
-                                                            {item.properties.Credor?.title[0]?.text.content || ''}
+                                                                }}
+                                                                // onBlur={() => {
+                                                                //     setEditableLabel(null);
+                                                                //     setIsEditing(false);
+                                                                // }}
+                                                                className='flex-1 max-w-[370px] py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md overflow-hidden whitespace-nowrap'
+                                                            ></div>
+
+                                                            {editableLabel.id === item.id && editableLabel.nameCredor && (
+                                                                <SaveButton
+                                                                    onClick={() => {
+                                                                        inputCredorRefs.current![index].blur();
+                                                                        setIsEditing(false);
+                                                                        handleChangeCreditorName(inputCredorRefs.current![index].innerText, item.id, ['notion_list'])
+                                                                    }}
+                                                                    status={updateState}
+                                                                />
+                                                            )}
                                                         </div>
 
                                                         {/* <input
@@ -392,14 +435,21 @@ export const OfficeTypeAndValue = ({ data, setIsEditing, checkedList, editableLa
                                                             className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                         /> */}
                                                         {/* absolute div that covers the entire cell */}
-                                                        {editableLabel !== item.id && (
+                                                        {(editableLabel.id !== item.id && !editableLabel.nameCredor) && (
                                                             <div className='absolute inset-0 rounded-md flex items-center transition-all duration-200'>
 
                                                                 <React.Fragment>
                                                                     {item.properties.Credor?.title[0].plain_text?.length === 0 ? (
                                                                         <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200'
                                                                             onClick={() => {
-                                                                                setEditableLabel!(item.id)
+                                                                                resetOthersEditions()
+                                                                                setEditableLabel(prevObj => {
+                                                                                    return {
+                                                                                        ...prevObj,
+                                                                                        id: item.id,
+                                                                                        nameCredor: true
+                                                                                    }
+                                                                                })
                                                                                 handleEditInput(index, inputCredorRefs.current);
                                                                             }}>
                                                                             <div className='flex gap-1 pl-4 text-slate-400'>
@@ -411,7 +461,14 @@ export const OfficeTypeAndValue = ({ data, setIsEditing, checkedList, editableLa
                                                                         <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 text-sm
                                                                     font-semibold pl-[21px]'
                                                                             onClick={() => {
-                                                                                setEditableLabel!(item.id)
+                                                                                resetOthersEditions()
+                                                                                setEditableLabel(prevObj => {
+                                                                                    return {
+                                                                                        ...prevObj,
+                                                                                        id: item.id,
+                                                                                        nameCredor: true
+                                                                                    }
+                                                                                })
                                                                                 handleEditInput(index, inputCredorRefs.current);
                                                                             }}>
                                                                             <span>

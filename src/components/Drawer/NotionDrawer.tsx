@@ -26,6 +26,8 @@ import { HiMiniCalendar } from "react-icons/hi2";
 import Title from "../CrmUi/Title";
 import CustomCheckbox from "../CrmUi/Checkbox";
 import { toast } from "sonner";
+import { ExtratosTableContext } from "@/context/ExtratosTableContext";
+import SaveButton from "../Button/SaveButton";
 
 type NotionDrawerProps = {
   pageId: string;
@@ -43,7 +45,13 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
   const [dynamicListId, setDynamicListId] = useState<string | null>(null);
   const [checkMark, setCheckMark] = useState<string | null>(null);
   const [editableTaskInput, setEditableTaskInput] = useState<boolean>(false);
-  const { data: { role } } = useContext(UserInfoAPIContext)
+  const [updateState, setUpdateState] = useState<string | null>(null);
+  const [editLock, setEditLock] = useState<boolean>(false);
+  const { data: { role } } = useContext(UserInfoAPIContext);
+
+  const {
+    editableLabel, setEditableLabel
+  } = useContext(ExtratosTableContext);
 
   const fetchNotionPageData = async (): Promise<NotionPage> => {
     const { data } = await api.get(`api/notion-api/list/page/${pageId}/`);
@@ -62,6 +70,39 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
 
   /* -----> refs <----- */
   const inputCreditorRef = useRef<HTMLInputElement | null>(null);
+  const inputIdentificationRef = useRef<HTMLInputElement | null>(null);
+  const inputEmailRef = useRef<HTMLInputElement | null>(null);
+  const inputJuizoRef = useRef<HTMLInputElement | null>(null);
+  const inputPriceRef = useRef<HTMLInputElement | null>(null);
+  const [phoneRefs, setPhoneRefs] = useState<any>();
+  const [fupRefs, setFupRefs] = useState<any>();
+  const [npuRefs, setNpuRefs] = useState<any>();
+
+  // função que manuseia o início de uma edição de label
+  const resetOthersEditions = () => {
+    setEditableLabel({
+      id: '',
+      nameCredor: false,
+      phone: {
+        one: false,
+        two: false,
+        three: false
+      },
+      email: false,
+      proposalPrice: false,
+      fup: {
+        first: false,
+        second: false,
+        third: false,
+        fourth: false,
+        fifth: false,
+      },
+      identification: false,
+      npuOrig: false,
+      npuPrec: false,
+      court: false,
+    })
+  }
 
   const handleClose = () => {
     setNotionDrawer(false);
@@ -114,17 +155,16 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
   const handleChangeFupDate = async (page_id: string, value: string, type: string) => {
 
     if (/^[0-9/]{10}$/.test(value)) {
-
       const parsedValue = value.split('/').reverse().join('-');
       await fupDateMutation.mutateAsync({
         page_id,
         value: parsedValue,
         type
       })
-
     } else {
-      console.log('um campo de data precisa de 8 caracteres');
+      toast.error('A data deve ter no mínimo 8 caracteres');
     }
+
   }
 
   const handleChangeTipo = async (page_id: string, oficio: tipoOficio) => {
@@ -197,16 +237,34 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       return response.data
     },
     onMutate: async (paramsObj: any) => {
+      setEditLock(true);
+      setUpdateState('pending');
       await queryClient.cancelQueries({ queryKey: ['notion_list'] });
       const previousData = queryClient.getQueryData(['notion_page_data']);
       return { previousData }
     },
     onError: (data, paramsObj, context) => {
+      setUpdateState('error');
       queryClient.setQueryData(['notion_page_data'], context?.previousData);
       toast.error('Não foi possível alterar o nome do credor');
     },
     onSuccess: () => {
+      setUpdateState('success');
       queryClient.invalidateQueries({ queryKey: ['notion_list'] })
+    },
+    onSettled: () => {
+      const timeOut = setTimeout(() => {
+        setEditableLabel(prevObj => {
+          return {
+            ...prevObj,
+            id: '',
+            nameCredor: false
+          }
+        });
+        setUpdateState(null);
+        setEditLock(false);
+      }, 1500);
+      return () => clearTimeout(timeOut);
     }
   });
 
@@ -229,15 +287,33 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       return response.data;
     },
     onMutate: async (paramsObj: any) => {
+      setUpdateState('pending');
+      setEditLock(true);
       await queryClient.cancelQueries({ queryKey: ['notion_list'] });
       const previousData: any = queryClient.getQueryData(['notion_page_data']);
       return { previousData }
     },
     onError: (data, paramsObj, context) => {
+      setUpdateState('error');
       queryClient.setQueryData(['notion_page_data'], context?.previousData)
     },
     onSuccess: () => {
+      setUpdateState('success')
       queryClient.invalidateQueries({ queryKey: ['notion_list'] })
+    },
+    onSettled: () => {
+      const timeOut = setTimeout(() => {
+        setEditableLabel(prevObj => {
+          return {
+            ...prevObj,
+            id: '',
+            identification: false
+          }
+        });
+        setUpdateState(null);
+        setEditLock(false);
+      }, 1500);
+      return () => clearTimeout(timeOut);
     }
   });
 
@@ -254,16 +330,34 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       return response.data
     },
     onMutate: async (paramsObj: { page_id: string, value: string }) => {
+      setUpdateState('pending');
+      setEditLock(true);
       await queryClient.cancelQueries({ queryKey: ['notion_list'] });
       const previousData: any = queryClient.getQueryData(['notion_page_data']);
       return { previousData }
     },
     onError: (data, paramsObj, context) => {
+      setUpdateState('error');
       queryClient.setQueryData(['notion_page_data'], context?.previousData);
       toast.error('Erro ao alterar o email');
     },
     onSuccess: () => {
+      setUpdateState('success')
       queryClient.invalidateQueries({ queryKey: ['notion_list'] })
+    },
+    onSettled: () => {
+      const timeOut = setTimeout(() => {
+        setEditableLabel(prevObj => {
+          return {
+            ...prevObj,
+            id: '',
+            email: false
+          }
+        });
+        setUpdateState(null);
+        setEditLock(false);
+      }, 1500);
+      return () => clearTimeout(timeOut);
     }
   });
 
@@ -280,16 +374,38 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       return response.data
     },
     onMutate: async (paramsObj: any) => {
+      setUpdateState('pending');
+      setEditLock(true);
       await queryClient.cancelQueries({ queryKey: ['notion_list'] });
       const previousData: any = queryClient.getQueryData(['notion_page_data']);
       return { previousData }
     },
     onError: (data, paramsObj, context) => {
+      setUpdateState('error');
       queryClient.setQueryData(['notion_page_data'], context?.previousData);
       toast.error('Erro ao alterar o contato');
     },
     onSuccess: () => {
+      setUpdateState('success')
       queryClient.invalidateQueries({ queryKey: ['notion_list'] })
+    },
+    onSettled: () => {
+      const timeOut = setTimeout(() => {
+        setEditableLabel(prevObj => {
+          return {
+            ...prevObj,
+            id: '',
+            phone: {
+              one: false,
+              two: false,
+              three: false
+            }
+          }
+        });
+        setUpdateState(null);
+        setEditLock(false);
+      }, 1500);
+      return () => clearTimeout(timeOut);
     }
   });
 
@@ -373,16 +489,40 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       }
     },
     onMutate: async (paramsObj: any) => {
+      setUpdateState('pending');
+      setEditLock(true);
       await queryClient.cancelQueries({ queryKey: ['notion_list'] });
       const previousData: any = queryClient.getQueryData(['notion_page_data']);
       return { previousData }
     },
     onError: (data, paramsObj, context) => {
+      setUpdateState('error');
       queryClient.setQueryData(['notion_page_data'], context?.previousData);
       toast.error('Erro ao alterar a data de follow up');
     },
     onSuccess: () => {
+      setUpdateState('success');
       queryClient.invalidateQueries({ queryKey: ['notion_list'] })
+    },
+    onSettled: () => {
+      const timeOut = setTimeout(() => {
+        setEditableLabel(prevObj => {
+          return {
+            ...prevObj,
+            id: '',
+            fup: {
+              first: false,
+              second: false,
+              third: false,
+              fourth: false,
+              fifth: false,
+            }
+          }
+        });
+        setUpdateState(null);
+        setEditLock(false);
+      }, 1500);
+      return () => clearTimeout(timeOut);
     }
   });
 
@@ -449,16 +589,35 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       return response.data
     },
     onMutate: async (paramsObj: any) => {
+      setUpdateState('pending');
+      setEditLock(true);
       await queryClient.cancelQueries({ queryKey: ['notion_list'] });
       const previousData: any = queryClient.getQueryData(['notion_page_data']);
       return { previousData }
     },
     onError: (data, paramsObj, context) => {
+      setUpdateState('error');
       queryClient.setQueryData(['notion_page_data'], context?.previousData);
       toast.error('não foi possível atualizar o campo')
     },
     onSuccess: () => {
+      setUpdateState('success');
       queryClient.invalidateQueries({ queryKey: ['notion_list'] });
+    },
+    onSettled: () => {
+      const timeOut = setTimeout(() => {
+        setEditableLabel(prevObj => {
+          return {
+            ...prevObj,
+            id: '',
+            npuOrig: false,
+            npuPrec: false
+          }
+        });
+        setUpdateState(null);
+        setEditLock(false);
+      }, 1500);
+      return () => clearTimeout(timeOut);
     }
   });
 
@@ -525,13 +684,33 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       return response.data
     },
     onMutate: async (paramsObj: any) => {
+      setUpdateState('pending');
+      setEditLock(true)
       await queryClient.cancelQueries({ queryKey: ['notion_list'] });
       const previousData: any = queryClient.getQueryData(['notion_page_data']);
       return { previousData }
     },
     onError: (data, paramsObj, context) => {
+      setUpdateState('error');
       queryClient.setQueryData(['notion_page_data'], context?.previousData)
       toast.error('não foi possível atualizar o campo Juízo');
+    },
+    onSuccess: () => {
+      setUpdateState('success');
+    },
+    onSettled: () => {
+      const timeOut = setTimeout(() => {
+        setEditableLabel(prevObj => {
+          return {
+            ...prevObj,
+            id: '',
+            court: false
+          }
+        });
+        setUpdateState(null);
+        setEditLock(false);
+      }, 1500);
+      return () => clearTimeout(timeOut);
     }
   });
 
@@ -578,17 +757,35 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       return response.data
     },
     onMutate: async (paramsObj) => {
+      setUpdateState('pending');
+      setEditLock(true);
       await queryClient.cancelQueries({ queryKey: ['notion_list'] });
       const previousData: any = queryClient.getQueryData(['notion_page_data']);
       return { previousData }
     },
     onError: (data, paramsObj, context) => {
+      setUpdateState('error');
       queryClient.setQueryData(['notion_page_data'], context?.previousData);
       toast.error('Erro ao alterar o preço proposto');
     },
     onSuccess: () => {
+      setUpdateState('success')
       queryClient.invalidateQueries({ queryKey: ['notion_page_data'] })
       queryClient.invalidateQueries({ queryKey: ['notion_list'] })
+    },
+    onSettled: () => {
+      const timeOut = setTimeout(() => {
+        setEditableLabel(prevObj => {
+          return {
+            ...prevObj,
+            id: '',
+            proposalPrice: false
+          }
+        });
+        setUpdateState(null);
+        setEditLock(false);
+      }, 1500);
+      return () => clearTimeout(timeOut);
     }
   });
 
@@ -611,6 +808,17 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
     return maskedStr
   }
 
+  /* ----> Effects <----- */
+  useEffect(() => {
+
+    setPhoneRefs(document.querySelectorAll('.phone_number'));
+    setFupRefs(document.querySelectorAll('.follow_up'));
+    setNpuRefs(document.querySelectorAll('.npu'));
+
+  }, [data]);
+
+  console.log(fupRefs)
+
   return (
     <>
       {
@@ -629,7 +837,25 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                 <div className="mb-1 border-b dark:border-form-strokedark">
                   <div className="flex items-center mb-4 gap-3 text-2xl font-semibold">
                     <CgDetailsMore />
-                    <div className="relative flex-1">
+
+                    <div
+                      onClick={() => {
+                        resetOthersEditions()
+                        setEditableLabel(prevObj => {
+                          return {
+                            ...prevObj,
+                            id: data?.id || "",
+                            nameCredor: true
+                          }
+                        })
+                      }}
+                      className="relative flex flex-1 items-center"
+                    >
+
+                      {editLock && (
+                        <div className='absolute inset-0 cursor-not-allowed'></div>
+                      )}
+
                       <input
                         ref={inputCreditorRef}
                         type="text"
@@ -641,6 +867,14 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         }}
                         className={`w-full text-2xl pl-1 focus-within:ring-0 focus-within:border-transparent border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                       />
+
+                      {(editableLabel.id === data?.id && editableLabel.nameCredor) && (
+                        <SaveButton
+                          onClick={() => handleChangeCreditorName(inputCreditorRef.current?.value || "", data!.id)}
+                          status={updateState}
+                        />
+                      )}
+
                     </div>
                     <div className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-slate-300 dark:hover:bg-form-strokedark text-lg cursor-pointer transition-all duration-200">
                       <BiX onClick={handleClose} />
@@ -668,7 +902,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                     <Table className="min-w-full table-auto border-collapse">
                       <tbody>
                         <tr className="bg-blue-700">
-                          <td className="text-white px-4 py-2 font-semibold flex items-center">
+                          <td className="text-white px-4 min-w-[210px] py-2 font-semibold flex items-center">
                             <AiOutlineUser className="mr-4 text-lg" /> Informações do Credor
                           </td>
                           <td className="text-boxdark min-w-[210px] px-4 py-2">
@@ -683,95 +917,238 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                               </tr>
                           } */}
                         {
-                          <tr className="bg-gray dark:bg-boxdark-2">
+                          <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                             <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">CPF/CNPJ do credor</td>
                             <td className="border border-stroke dark:border-strokedark px-4 py-2">
+                              <div
+                                className="relative flex gap-2 items-center"
+                                onClick={() => {
+                                  resetOthersEditions();
+                                  setEditableLabel(prevObj => {
+                                    return {
+                                      ...prevObj,
+                                      id: data?.id || "",
+                                      identification: true
+                                    }
+                                  })
+                                }}
+                              >
+
+                                {editLock && (
+                                  <div className='absolute inset-0 cursor-not-allowed'></div>
+                                )}
+
+                                <input
+                                  ref={inputIdentificationRef}
+                                  type="text"
+                                  defaultValue={applyMaskCpfCnpj(data?.properties["CPF/CNPJ"]?.rich_text?.length ? data?.properties["CPF/CNPJ"]?.rich_text![0]!.plain_text : "")}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                      handleChangeIdentification(data!.id, e.currentTarget.value)
+                                    }
+                                  }}
+                                  className={`w-full p-0 focus-within:ring-0 focus-within:border-transparent text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                />
+
+                                {(editableLabel.id === data?.id && editableLabel.identification) && (
+                                  <SaveButton
+                                    onClick={() => handleChangeIdentification(data!.id, inputIdentificationRef.current?.value || "")}
+                                    status={updateState}
+                                  />
+                                )}
+
+                              </div>
+                            </td>
+                          </tr>
+                        }
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">E-mail</td>
+                          <td className="border border-stroke dark:border-strokedark px-4 py-2">
+
+                            <div
+                              className="relative flex gap-2 items-center"
+                              onClick={() => {
+                                resetOthersEditions();
+                                setEditableLabel(prevObj => {
+                                  return {
+                                    ...prevObj,
+                                    id: data?.id || "",
+                                    email: true
+                                  }
+                                })
+                              }}
+                            >
+
+                              {editLock && (
+                                <div className='absolute inset-0 cursor-not-allowed'></div>
+                              )}
+
                               <input
+                                ref={inputEmailRef}
                                 type="text"
-                                defaultValue={applyMaskCpfCnpj(data?.properties["CPF/CNPJ"]?.rich_text?.length ? data?.properties["CPF/CNPJ"]?.rich_text![0]!.plain_text : "")}
+                                defaultValue={data?.properties['Contato de E-mail'].email || ''}
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                    handleChangeIdentification(data!.id, e.currentTarget.value)
+                                    handleChangeEmail(data!.id, e.currentTarget.value)
                                   }
                                 }}
                                 className={`w-full p-0 focus-within:ring-0 focus-within:border-transparent text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                               />
-                              {/* {data?.properties["CPF/CNPJ"]?.rich_text?.length ? data?.properties["CPF/CNPJ"]?.rich_text![0]!.plain_text : ""} */}
-                            </td>
-                          </tr>
-                        }
-                        <tr className="bg-gray dark:bg-boxdark-2">
-                          <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">E-mail</td>
-                          <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                            <input
-                              type="text"
-                              defaultValue={data?.properties['Contato de E-mail'].email || ''}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                  handleChangeEmail(data!.id, e.currentTarget.value)
-                                }
-                              }}
-                              className={`w-full p-0 focus-within:ring-0 focus-within:border-transparent text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                            />
+
+                              {(editableLabel.id === data?.id && editableLabel.email) && (
+                                <SaveButton
+                                  onClick={() => handleChangeEmail(data!.id, inputEmailRef.current?.value || "")}
+                                  status={updateState}
+                                />
+                              )}
+
+                            </div>
                             {/* {data?.properties["Contato de E-mail"].email || ""} */}
                           </td>
                         </tr>
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Contato</td>
                           <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                            <ReactInputMask
-                              mask='(99) 99999-9999'
-                              maskChar={null}
-                              defaultValue={data?.properties["Contato Telefônico"].phone_number || ''}
-                              type="text"
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                  handleChangePhoneNumber(data!.id, 'Contato Telefônico', e.currentTarget.value)
-                                }
+                            <div
+                              className="relative flex gap-2 items-center"
+                              onClick={() => {
+                                resetOthersEditions();
+                                setEditableLabel(prevObj => {
+                                  return {
+                                    ...prevObj,
+                                    id: data?.id || "",
+                                    phone: {
+                                      ...prevObj.phone,
+                                      one: true
+                                    }
+                                  }
+                                })
                               }}
-                              className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
-                            />
+                            >
+
+                              {editLock && (
+                                <div className='absolute inset-0 cursor-not-allowed'></div>
+                              )}
+
+                              <ReactInputMask
+                                mask='(99) 99999-9999'
+                                maskChar={null}
+                                defaultValue={data?.properties["Contato Telefônico"].phone_number || ''}
+                                type="text"
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                    handleChangePhoneNumber(data!.id, 'Contato Telefônico', e.currentTarget.value)
+                                  }
+                                }}
+                                className="phone_number w-full border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
+                              />
+
+                              {(editableLabel.id === data?.id && editableLabel.phone.one) && (
+                                <SaveButton
+                                  onClick={() => handleChangePhoneNumber(data!.id, 'Contato Telefônico', phoneRefs[0].value || "")}
+                                  status={updateState}
+                                />
+                              )}
+                            </div>
                           </td>
                         </tr>
 
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Contato 2</td>
                           <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                            <ReactInputMask
-                              mask='(99) 99999-9999'
-                              maskChar={null}
-                              defaultValue={data?.properties["Contato Telefônico 2"].phone_number || ''}
-                              type="text"
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                  handleChangePhoneNumber(data!.id, 'Contato Telefônico 2', e.currentTarget.value)
-                                }
+                            <div
+                              className="relative flex gap-2 items-center"
+                              onClick={() => {
+                                resetOthersEditions();
+                                setEditableLabel(prevObj => {
+                                  return {
+                                    ...prevObj,
+                                    id: data?.id || "",
+                                    phone: {
+                                      ...prevObj.phone,
+                                      two: true
+                                    }
+                                  }
+                                })
                               }}
-                              className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
-                            />
+                            >
+
+                              {editLock && (
+                                <div className='absolute inset-0 cursor-not-allowed'></div>
+                              )}
+
+                              <ReactInputMask
+                                mask='(99) 99999-9999'
+                                maskChar={null}
+                                defaultValue={data?.properties["Contato Telefônico 2"].phone_number || ''}
+                                type="text"
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                    handleChangePhoneNumber(data!.id, 'Contato Telefônico 2', e.currentTarget.value)
+                                  }
+                                }}
+                                className="phone_number w-full border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
+                              />
+
+                              {(editableLabel.id === data?.id && editableLabel.phone.two) && (
+                                <SaveButton
+                                  onClick={() => handleChangePhoneNumber(data!.id, 'Contato Telefônico 2', phoneRefs[1].value || "")}
+                                  status={updateState}
+                                />
+                              )}
+                            </div>
                           </td>
                         </tr>
 
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Contato 3</td>
                           <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                            <ReactInputMask
-                              mask='(99) 99999-9999'
-                              maskChar={null}
-                              defaultValue={data?.properties["Contato Telefônico 3"].phone_number || ''}
-                              type="text"
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                  handleChangePhoneNumber(data!.id, 'Contato Telefônico 3', e.currentTarget.value)
-                                }
+                            <div
+                              className="relative flex gap-2 items-center"
+                              onClick={() => {
+                                resetOthersEditions();
+                                setEditableLabel(prevObj => {
+                                  return {
+                                    ...prevObj,
+                                    id: data?.id || "",
+                                    phone: {
+                                      ...prevObj.phone,
+                                      three: true
+                                    }
+                                  }
+                                })
                               }}
-                              className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
-                            />
+                            >
+
+                              {editLock && (
+                                <div className='absolute inset-0 cursor-not-allowed'></div>
+                              )}
+
+                              <ReactInputMask
+                                mask='(99) 99999-9999'
+                                maskChar={null}
+                                defaultValue={data?.properties["Contato Telefônico 3"].phone_number || ''}
+                                type="text"
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                    handleChangePhoneNumber(data!.id, 'Contato Telefônico 3', e.currentTarget.value)
+                                  }
+                                }}
+                                className="phone_number w-full border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
+                              />
+
+                              {(editableLabel.id === data?.id && editableLabel.phone.three) && (
+                                <SaveButton
+                                  onClick={() => handleChangePhoneNumber(data!.id, 'Contato Telefônico 2', phoneRefs[2].value || "")}
+                                  status={updateState}
+                                />
+                              )}
+                            </div>
                           </td>
                         </tr>
 
                         {role === 'ativos' && (
-                          <tr className="bg-gray dark:bg-boxdark-2">
+                          <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                             <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">
                               Usuários vinculados
                             </td>
@@ -793,7 +1170,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </tr>
                         )}
 
-                        <tr className="bg-blue-700">
+                        <tr className="bg-blue-700 h-[43px]">
                           <td className="text-white px-4 py-2 flex items-center font-semibold">
                             <MdOutlineFollowTheSigns className="mr-4" /> Follow Up
                           </td>
@@ -803,7 +1180,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         </tr>
 
                         {
-                          <tr className="bg-gray dark:bg-boxdark-2">
+                          <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                             <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Status</td>
                             <td
                               onClick={() => setDynamicListId('status')}
@@ -836,7 +1213,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </tr>
                         }
                         {
-                          <tr className="bg-gray dark:bg-boxdark-2">
+                          <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                             <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Due do ativo</td>
                             <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                               <input
@@ -852,7 +1229,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         }
 
                         {
-                          <tr className="bg-gray dark:bg-boxdark-2">
+                          <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                             <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Certidões emitidas</td>
                             <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                               <input
@@ -867,7 +1244,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </tr>
                         }
                         {
-                          <tr className="bg-gray dark:bg-boxdark-2">
+                          <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                             <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">CVLD Necessária?</td>
                             <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                               <input
@@ -882,116 +1259,266 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </tr>
                         }
                         {
-                          <tr className="bg-gray dark:bg-boxdark-2">
+                          <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                             <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">1ª Follow Up</td>
                             <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
 
-                              <ReactInputMask
-                                mask='99/99/9999'
-                                defaultValue={fupDateConveter(data?.properties["1ª FUP"]?.date?.start || '')}
-                                type="text"
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                    handleChangeFupDate(data!.id, e.currentTarget.value, '1ª FUP')
-                                  }
+                              <div
+                                className="relative flex gap-2 items-center"
+                                onClick={() => {
+                                  resetOthersEditions();
+                                  setEditableLabel(prevObj => {
+                                    return {
+                                      ...prevObj,
+                                      id: data?.id || "",
+                                      fup: {
+                                        ...prevObj.fup,
+                                        first: true
+                                      }
+                                    }
+                                  })
                                 }}
-                                className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
-                              />
+                              >
 
-                              <HiMiniCalendar className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+                                {editLock && (
+                                  <div className='absolute inset-0 cursor-not-allowed'></div>
+                                )}
+
+                                <ReactInputMask
+                                  mask='99/99/9999'
+                                  defaultValue={fupDateConveter(data?.properties["1ª FUP"]?.date?.start || '')}
+                                  type="text"
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                      handleChangeFupDate(data!.id, e.currentTarget.value, '1ª FUP')
+                                    }
+                                  }}
+                                  className="follow_up w-full border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
+                                />
+
+                                {(editableLabel.id === data?.id && editableLabel.fup.first) && (
+                                  <SaveButton
+                                    onClick={() => handleChangeFupDate(data!.id, fupRefs[0].value || "", '1ª FUP')}
+                                    status={updateState}
+                                  />
+                                )}
+
+                              </div>
+
+                              {!editableLabel.fup.first && (
+                                <HiMiniCalendar className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+                              )}
 
                             </td>
                           </tr>
                         }
                         {
-                          <tr className="bg-gray dark:bg-boxdark-2">
+                          <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                             <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">2ª Follow Up</td>
                             <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
 
-                              <ReactInputMask
-                                mask='99/99/9999'
-                                defaultValue={fupDateConveter(data?.properties["2ª FUP "]?.date?.start || '')}
-                                type="text"
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                    handleChangeFupDate(data!.id, e.currentTarget.value, '2ª FUP ')
-                                  }
+                              <div
+                                className="relative flex gap-2 items-center"
+                                onClick={() => {
+                                  resetOthersEditions();
+                                  setEditableLabel(prevObj => {
+                                    return {
+                                      ...prevObj,
+                                      id: data?.id || "",
+                                      fup: {
+                                        ...prevObj.fup,
+                                        second: true
+                                      }
+                                    }
+                                  })
                                 }}
-                                className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
-                              />
+                              >
 
-                              <HiMiniCalendar className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+                                {editLock && (
+                                  <div className='absolute inset-0 cursor-not-allowed'></div>
+                                )}
+
+                                <ReactInputMask
+                                  mask='99/99/9999'
+                                  defaultValue={fupDateConveter(data?.properties["2ª FUP "]?.date?.start || '')}
+                                  type="text"
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                      handleChangeFupDate(data!.id, e.currentTarget.value, '2ª FUP ')
+                                    }
+                                  }}
+                                  className="follow_up w-full border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
+                                />
+
+                                {(editableLabel.id === data?.id && editableLabel.fup.second) && (
+                                  <SaveButton
+                                    onClick={() => handleChangeFupDate(data!.id, fupRefs[1].value || "", '2ª FUP ')}
+                                    status={updateState}
+                                  />
+                                )}
+
+                              </div>
+
+                              {!editableLabel.fup.second && (
+                                <HiMiniCalendar className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+                              )}
 
                             </td>
                           </tr>
                         }
                         {
-                          <tr className="bg-gray dark:bg-boxdark-2">
+                          <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                             <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">3ª Follow Up</td>
                             <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
 
-                              <ReactInputMask
-                                mask='99/99/9999'
-                                defaultValue={fupDateConveter(data?.properties["3ª FUP"]?.date?.start || '')}
-                                type="text"
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                    handleChangeFupDate(data!.id, e.currentTarget.value, '3ª FUP')
-                                  }
+                              <div
+                                className="relative flex gap-2 items-center"
+                                onClick={() => {
+                                  resetOthersEditions();
+                                  setEditableLabel(prevObj => {
+                                    return {
+                                      ...prevObj,
+                                      id: data?.id || "",
+                                      fup: {
+                                        ...prevObj.fup,
+                                        third: true
+                                      }
+                                    }
+                                  })
                                 }}
-                                className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
-                              />
+                              >
 
-                              <HiMiniCalendar className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+                                <ReactInputMask
+                                  mask='99/99/9999'
+                                  defaultValue={fupDateConveter(data?.properties["3ª FUP"]?.date?.start || '')}
+                                  type="text"
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                      handleChangeFupDate(data!.id, e.currentTarget.value, '3ª FUP')
+                                    }
+                                  }}
+                                  className="follow_up w-full border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
+                                />
+
+                                {(editableLabel.id === data?.id && editableLabel.fup.third) && (
+                                  <SaveButton
+                                    onClick={() => handleChangeFupDate(data!.id, fupRefs[2].value || "", '3ª FUP')}
+                                    status={updateState}
+                                  />
+                                )}
+
+                              </div>
+
+
+                              {!editableLabel.fup.third && (
+                                <HiMiniCalendar className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+                              )}
 
                             </td>
                           </tr>
                         }
                         {
-                          <tr className="bg-gray dark:bg-boxdark-2">
+                          <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                             <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">4ª Follow Up</td>
                             <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
 
-                              <ReactInputMask
-                                mask='99/99/9999'
-                                defaultValue={fupDateConveter(data?.properties["4ª FUP"]?.date?.start || '')}
-                                type="text"
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                    handleChangeFupDate(data!.id, e.currentTarget.value, '4ª FUP')
-                                  }
+                              <div
+                                className="relative flex gap-2 items-center"
+                                onClick={() => {
+                                  resetOthersEditions();
+                                  setEditableLabel(prevObj => {
+                                    return {
+                                      ...prevObj,
+                                      id: data?.id || "",
+                                      fup: {
+                                        ...prevObj.fup,
+                                        fourth: true
+                                      }
+                                    }
+                                  })
                                 }}
-                                className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
-                              />
+                              >
 
-                              <HiMiniCalendar className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+                                <ReactInputMask
+                                  mask='99/99/9999'
+                                  defaultValue={fupDateConveter(data?.properties["4ª FUP"]?.date?.start || '')}
+                                  type="text"
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                      handleChangeFupDate(data!.id, e.currentTarget.value, '4ª FUP')
+                                    }
+                                  }}
+                                  className="follow_up w-full border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
+                                />
+
+                                {(editableLabel.id === data?.id && editableLabel.fup.fourth) && (
+                                  <SaveButton
+                                    onClick={() => handleChangeFupDate(data!.id, fupRefs[3].value || "", '4ª FUP')}
+                                    status={updateState}
+                                  />
+                                )}
+
+                              </div>
+
+
+                              {!editableLabel.fup.fourth && (
+                                <HiMiniCalendar className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+                              )}
 
                             </td>
                           </tr>
                         }
                         {
-                          <tr className="bg-gray dark:bg-boxdark-2">
+                          <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                             <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">5ª Follow Up</td>
                             <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
 
-                              <ReactInputMask
-                                mask='99/99/9999'
-                                defaultValue={fupDateConveter(data?.properties["5ª FUP "]?.date?.start || '')}
-                                type="text"
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                    handleChangeFupDate(data!.id, e.currentTarget.value, '5ª FUP ')
-                                  }
+                              <div
+                                className="relative flex gap-2 items-center"
+                                onClick={() => {
+                                  resetOthersEditions();
+                                  setEditableLabel(prevObj => {
+                                    return {
+                                      ...prevObj,
+                                      id: data?.id || "",
+                                      fup: {
+                                        ...prevObj.fup,
+                                        fifth: true
+                                      }
+                                    }
+                                  })
                                 }}
-                                className="border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
-                              />
+                              >
 
-                              <HiMiniCalendar className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+                                <ReactInputMask
+                                  mask='99/99/9999'
+                                  defaultValue={fupDateConveter(data?.properties["5ª FUP "]?.date?.start || '')}
+                                  type="text"
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                      handleChangeFupDate(data!.id, e.currentTarget.value, '5ª FUP ')
+                                    }
+                                  }}
+                                  className="follow_up w-full border-none text-sm p-0 h-[19.2px] bg-transparent focus-within:ring-0 focus-within:border-none"
+                                />
+
+                                {(editableLabel.id === data?.id && editableLabel.fup.fifth) && (
+                                  <SaveButton
+                                    onClick={() => handleChangeFupDate(data!.id, fupRefs[4].value || "", '5ª FUP ')}
+                                    status={updateState}
+                                  />
+                                )}
+
+                              </div>
+
+                              {!editableLabel.fup.fifth && (
+                                <HiMiniCalendar className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
+                              )}
 
                             </td>
                           </tr>
                         }
-                        <tr className="bg-blue-700">
+                        <tr className="bg-blue-700 h-[43px]">
                           <td className="text-white px-4 py-2 flex items-center font-semibold">
                             <IoDocumentTextOutline className="mr-4" /> Processo
                           </td>
@@ -1000,7 +1527,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </td>
                         </tr>
                         {
-                          <tr className="bg-gray dark:bg-boxdark-2">
+                          <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                             <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Tipo</td>
                             <td
                               onClick={() => setDynamicListId('tipo')}
@@ -1029,44 +1556,91 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </tr>
                         }
                         {
-                          <tr className="bg-gray dark:bg-boxdark-2">
+                          <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                             <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">NPU Originário</td>
                             <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                              <ReactInputMask
-                                mask="9999999-99.9999.9.99.9999"
-                                type="text"
-                                defaultValue={data?.properties["NPU (Originário)"]?.rich_text![0]?.text?.content || ""}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                    handleChangeNpu(data!.id, "NPU (Originário)", e.currentTarget.value)
-                                  }
+
+                              <div
+                                className="relative flex gap-2 items-center"
+                                onClick={() => {
+                                  resetOthersEditions();
+                                  setEditableLabel(prevObj => {
+                                    return {
+                                      ...prevObj,
+                                      id: data?.id || "",
+                                      npuOrig: true
+                                    }
+                                  })
                                 }}
-                                className={`w-full p-0 focus-within:ring-0 focus-within:border-transparent text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                              />
-                              {/* {data?.properties["NPU (Originário)"]?.rich_text![0]?.text?.content || ""} */}
+                              >
+
+                                <ReactInputMask
+                                  mask="9999999-99.9999.9.99.9999"
+                                  type="text"
+                                  defaultValue={data?.properties["NPU (Originário)"]?.rich_text![0]?.text?.content || ""}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                      handleChangeNpu(data!.id, "NPU (Originário)", e.currentTarget.value)
+                                    }
+                                  }}
+                                  className={`npu w-full p-0 focus-within:ring-0 focus-within:border-transparent text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                />
+
+                                {(editableLabel.id === data?.id && editableLabel.npuOrig) && (
+                                  <SaveButton
+                                    onClick={() => handleChangeNpu(data!.id, 'NPU (Originário)', npuRefs[0].value || "")}
+                                    status={updateState}
+                                  />
+                                )}
+
+                              </div>
                             </td>
                           </tr>
                         }
                         {
-                          <tr className="bg-gray dark:bg-boxdark-2">
+                          <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                             <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">NPU Precatório</td>
                             <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                              <ReactInputMask
-                                mask="9999999-99.9999.9.99.9999"
-                                type="text"
-                                defaultValue={data?.properties["NPU (Precatório)"]?.rich_text![0]?.text?.content || ""}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                    handleChangeNpu(data!.id, "NPU (Precatório)", e.currentTarget.value)
-                                  }
+
+                              <div
+                                className="relative flex gap-2 items-center"
+                                onClick={() => {
+                                  resetOthersEditions();
+                                  setEditableLabel(prevObj => {
+                                    return {
+                                      ...prevObj,
+                                      id: data?.id || "",
+                                      npuPrec: true
+                                    }
+                                  })
                                 }}
-                                className={`w-full p-0 focus-within:ring-0 focus-within:border-transparent text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                              />
-                              {/* {data?.properties["NPU (Precatório)"]?.rich_text![0]?.text?.content || ""} */}
+                              >
+
+                                <ReactInputMask
+                                  mask="9999999-99.9999.9.99.9999"
+                                  type="text"
+                                  defaultValue={data?.properties["NPU (Precatório)"]?.rich_text![0]?.text?.content || ""}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                      handleChangeNpu(data!.id, "NPU (Precatório)", e.currentTarget.value)
+                                    }
+                                  }}
+                                  className={`npu w-full p-0 focus-within:ring-0 focus-within:border-transparent text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                />
+
+                                {(editableLabel.id === data?.id && editableLabel.npuPrec) && (
+                                  <SaveButton
+                                    onClick={() => handleChangeNpu(data!.id, 'NPU (Precatório)', npuRefs[1].value || "")}
+                                    status={updateState}
+                                  />
+                                )}
+
+                              </div>
+
                             </td>
                           </tr>
                         }
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Tribunal</td>
                           <td
                             onClick={() => setDynamicListId('tribunal')}
@@ -1097,24 +1671,50 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                             />
                           </td>
                         </tr>
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Juízo</td>
                           <td className="border border-stroke dark:border-strokedark px-4 py-2">
-                            <Title text={data?.properties?.Juízo?.rich_text![0]?.plain_text || ""}>
-                              <input
-                                type="text"
-                                defaultValue={data?.properties?.Juízo?.rich_text![0]?.plain_text || ""}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                    handleChangeJuizo(data!.id, e.currentTarget.value)
-                                  }
+                            <Title text={data?.properties?.["Juízo"]?.rich_text![0]?.plain_text || ""}>
+
+                              <div
+                                className="relative flex gap-2 items-center"
+                                onClick={() => {
+                                  resetOthersEditions();
+                                  setEditableLabel(prevObj => {
+                                    return {
+                                      ...prevObj,
+                                      id: data?.id || "",
+                                      court: true
+                                    }
+                                  })
                                 }}
-                                className={`w-full p-0 focus-within:ring-0 focus-within:border-transparent text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                              />
+                              >
+
+                                <input
+                                  ref={inputJuizoRef}
+                                  type="text"
+                                  defaultValue={data?.properties?.["Juízo"]?.rich_text![0]?.plain_text || ""}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                      handleChangeJuizo(data!.id, e.currentTarget.value)
+                                    }
+                                  }}
+                                  className={`w-full p-0 focus-within:ring-0 focus-within:border-transparent text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                />
+
+                                {(editableLabel.id === data?.id && editableLabel.court) && (
+                                  <SaveButton
+                                    onClick={() => handleChangeJuizo(data!.id, inputJuizoRef.current?.value || "")}
+                                    status={updateState}
+                                  />
+                                )}
+
+                              </div>
+
                             </Title>
                           </td>
                         </tr>
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">L.O.A.</td>
                           <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                             {data?.properties.LOA.number}
@@ -1123,7 +1723,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                             </Title>
                           </td>
                         </tr>
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Valor Principal</td>
                           <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                             {numberFormat(data?.properties["Valor Principal"]?.number || 0)}
@@ -1133,7 +1733,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </td>
                         </tr>
                         {
-                          <tr className="bg-gray dark:bg-boxdark-2">
+                          <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                             <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Valor Juros</td>
                             <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                               {numberFormat(data?.properties["Valor Juros"]?.number || 0)}
@@ -1143,7 +1743,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                             </td>
                           </tr>
                         }
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Valor Inscrito</td>
                           <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                             {numberFormat(data?.properties["Valor Total Inscrito"]?.formula?.number || 0)}
@@ -1152,7 +1752,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                             </Title>
                           </td>
                         </tr>
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Valor Atualizado</td>
                           <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                             {numberFormat(data?.properties["Valor Atualizado"]?.number || 0)}
@@ -1167,7 +1767,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                             <td className="border border-stroke dark:border-strokedark px-4 py-2 text-boxdark">{numberFormat(data?.properties["Valor Total Inscrito"]?.formula?.number || 0)}</td>
                           </tr>
                         } */}
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Data Base</td>
                           <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                             {dateFormater(data?.properties["Data Base"]?.date?.start)}
@@ -1176,7 +1776,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                             </Title>
                           </td>
                         </tr>
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Data do Recebimento</td>
                           <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                             {dateFormater(data?.properties["Data do Recebimento"]?.date?.start || "2024-05-04")}
@@ -1294,7 +1894,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           )
                         } */}
 
-                        <tr className="bg-blue-700">
+                        <tr className="bg-blue-700 h-[43px]">
                           <td className="text-white px-4 py-2 flex items-center font-semibold">
                             <BiTransfer className="mr-4" /> Deduções
                           </td>
@@ -1302,7 +1902,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                             &nbsp;
                           </td>
                         </tr>
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Honorários já destacados?</td>
                           <td className="border border-stroke dark:border-strokedark px-4 py-2">
                             {checkMark === 'honorário' ? (
@@ -1333,7 +1933,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         </tr>
                         {data?.properties["Honorários já destacados?"].checkbox === false && (
                           <>
-                            <tr className="bg-gray dark:bg-boxdark-2">
+                            <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                               <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Percentual de Honorários Não destacados</td>
                               <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                                 {percentageFormater(data?.properties["Percentual de Honorários Não destacados"].number || 0)}
@@ -1354,7 +1954,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </>
 
                         )}
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Imposto de Renda (3%)</td>
                           <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                             {data?.properties["Imposto de Renda Retido 3%"]?.number ? numberFormat(data?.properties["Imposto de Renda Retido 3%"].number || 0) : "Não Informado"}
@@ -1364,7 +1964,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </td>
                         </tr>
 
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">IR/RRA</td>
                           <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                             {data?.properties["RRA"]?.number ? numberFormat(data?.properties["RRA"].number || 0) : "Não Informado"}
@@ -1374,7 +1974,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </td>
                         </tr>
 
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">PSS</td>
                           <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                             {numberFormat(data?.properties?.PSS.number || 0)}
@@ -1384,7 +1984,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           </td>
                         </tr>
 
-                        <tr className="bg-blue-700">
+                        <tr className="bg-blue-700 h-[43px]">
                           <td className="text-white px-4 py-2 flex items-center font-semibold">
                             <IoDocumentTextOutline className="mr-4" /> Estimativas
                           </td>
@@ -1401,23 +2001,49 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                             </td>
                           </tr> */}
 
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">Preço Proposto</td>
                           <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
-                            <input
-                              title={numberFormat(data?.properties['Preço Proposto']?.number || 0)}
-                              type="text"
-                              defaultValue={numberFormat(data?.properties['Preço Proposto']?.number || 0)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                  handleChangeProposalPrice(data!.id, e.currentTarget.value)
-                                }
+
+                            <div
+                              className="relative flex gap-2 items-center"
+                              onClick={() => {
+                                resetOthersEditions();
+                                setEditableLabel(prevObj => {
+                                  return {
+                                    ...prevObj,
+                                    id: data?.id || "",
+                                    proposalPrice: true
+                                  }
+                                })
                               }}
-                              className={`w-full p-0 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                            />
+                            >
+
+                              <input
+                                ref={inputPriceRef}
+                                title={numberFormat(data?.properties['Preço Proposto']?.number || 0)}
+                                type="text"
+                                defaultValue={numberFormat(data?.properties['Preço Proposto']?.number || 0)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                    handleChangeProposalPrice(data!.id, e.currentTarget.value)
+                                  }
+                                }}
+                                className={`w-full p-0 focus-within:ring-0 focus-within:border-none text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                              />
+
+                              {(editableLabel.id === data?.id && editableLabel.proposalPrice) && (
+                                <SaveButton
+                                  onClick={() => handleChangeProposalPrice(data!.id, inputPriceRef.current?.value || "")}
+                                  status={updateState}
+                                />
+                              )}
+
+                            </div>
+
                           </td>
                         </tr>
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">(R$) Proposta Mínima</td>
                           <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                             {numberFormat(data?.properties["(R$) Proposta Mínima "]?.formula?.number || 0)}
@@ -1426,7 +2052,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                             </Title>
                           </td>
                         </tr>
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">(%) Proposta Mínima</td>
                           <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
                             {percentageFormater(data?.properties["(%) Proposta Mínima "]?.formula?.string || 0)}
@@ -1435,7 +2061,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                             </Title>
                           </td>
                         </tr>
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">(R$) Proposta Máxima
                           </td>
                           <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
@@ -1445,7 +2071,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                             </Title>
                           </td>
                         </tr>
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">(%) Proposta Máxima
                           </td>
                           <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
@@ -1455,7 +2081,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                             </Title>
                           </td>
                         </tr>
-                        <tr className="bg-gray dark:bg-boxdark-2">
+                        <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">
                             Comissão
                           </td>
@@ -1466,7 +2092,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                             </Title>
                           </td>
                         </tr>
-                        <tr className="bg-green-300">
+                        <tr className="bg-green-300 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left text-boxdark font-semibold">Valor Líquido Disponível</td>
                           <td className="relative border border-stroke dark:border-strokedark px-4 py-2 text-boxdark font-semibold">{
                             data?.properties["Honorários já destacados?"].checkbox === false ? (
