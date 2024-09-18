@@ -47,7 +47,8 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
       position: "top",
       horizontalAlign: "left",
     },
-    colors: ["#3056D3", "#58DC61"],
+    colors: ["#58DC61"],
+    // colors: ["#3056D3", "#58DC61"],
     chart: {
       fontFamily: "Satoshi, sans-serif",
       height: 450,
@@ -110,7 +111,7 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
     markers: {
       size: 4,
       colors: "#fff",
-      strokeColors: ["#3056D3", "#80CAEE"],
+      strokeColors: ["#58DC85"],
       strokeWidth: 3,
       strokeOpacity: 0.9,
       strokeDashArray: 0,
@@ -155,10 +156,10 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
 
   const [state, setState] = useState<ChartOneState>({
     series: [
-      {
-        name: "Valor Investido",
-        data: data?.result.map((item) => data?.valor_investido) || [],
-      },
+      // {
+      //   name: "Valor Investido",
+      //   data: data?.result.map((item) => data?.valor_investido) || [],
+      // },
       {
         name: "Total Atualizado",
         data: data?.result.map((item) => Number(item.valor_liquido_disponivel.toFixed(2))) || [],
@@ -169,10 +170,10 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
   useEffect(() => {
     setState({
       series: [
-        {
-          name: "Valor Investido",
-          data: data?.result.map((item) => data.valor_investido) || [],
-        },
+        // {
+        //   name: "Valor Investido",
+        //   data: data?.result.map((item) => data.valor_investido) || [],
+        // },
         {
           name: "Total Atualizado",
           data: data?.result.map((item) => Number(item.valor_liquido_disponivel.toFixed(2))) || [],
