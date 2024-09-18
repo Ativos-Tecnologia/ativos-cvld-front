@@ -17,16 +17,20 @@ import api from '@/utils/api';
 import { MiniMenu } from '../ExtratosTable/MiniMenu';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { NotionSkeletonTwo } from '../Skeletons/NotionSkeletonTwo';
+import { IEditableLabels } from '@/context/ExtratosTableContext';
+import SaveButton from '../Button/SaveButton';
 
-const MakeFirstContact = ({ data, setIsEditing, checkedList, editableLabel, setEditableLabel, handleNotionDrawer, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, handleEditStatus,
+const MakeFirstContact = ({ data, setIsEditing, updateState, editLock, checkedList, editableLabel, setEditableLabel, handleNotionDrawer, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, handleEditStatus,
     handleArchiveExtrato, archiveStatus, handleSelectAllRows, setCheckedList
 }:
     {
         data: any,
         setIsEditing: React.Dispatch<React.SetStateAction<boolean>>,
+        updateState: string | null,
+        editLock: boolean,
         checkedList: NotionPage[],
-        editableLabel: string | null;
-        setEditableLabel: React.Dispatch<React.SetStateAction<string | null>>;
+        editableLabel: IEditableLabels;
+        setEditableLabel: React.Dispatch<React.SetStateAction<IEditableLabels>>;
         handleNotionDrawer: (id: string) => void;
         handleSelectRow: (item: NotionPage) => void;
         handleChangeCreditorName: (value: string, page_id: string, queryKeyList: any[]) => Promise<void>;
@@ -119,6 +123,32 @@ const MakeFirstContact = ({ data, setIsEditing, checkedList, editableLabel, setE
     // );
     const [nextCursor, setNextCursor] = useState<string | null>();
     const [hasMore, setHasMore] = useState<boolean>();
+
+    // função que manuseia o início de uma edição de label
+    const resetOthersEditions = () => {
+        setEditableLabel({
+            id: '',
+            nameCredor: false,
+            phone: {
+                one: false,
+                two: false,
+                three: false
+            },
+            email: false,
+            proposalPrice: false,
+            fup: {
+                first: false,
+                second: false,
+                third: false,
+                fourth: false,
+                fifth: false,
+            },
+            identification: false,
+            npuOrig: false,
+            npuPrec: false,
+            court: false,
+        })
+    }
 
     /* função que faz uma requisição ao backend para retornar resultados que contenham
     a determinada palavra-chave e adiciona a nova linha filtrada para os resultados já 
@@ -269,6 +299,8 @@ const MakeFirstContact = ({ data, setIsEditing, checkedList, editableLabel, setE
 
     }, [data, data?.has_more, data?.next_cursor, firstLoad, hasMore, nextCursor]);
 
+    console.log(updateState)
+
     return (
         <div
             style={{
@@ -326,25 +358,25 @@ const MakeFirstContact = ({ data, setIsEditing, checkedList, editableLabel, setE
                                 Status
                             </div>
                         </TableHeadCell>
-                        <TableHeadCell className="min-w-[150px]">
+                        <TableHeadCell className="min-w-45">
                             <div className="flex gap-2 items-center">
                                 <AiOutlinePhone className='text-base' />
                                 Contato
                             </div>
                         </TableHeadCell>
-                        <TableHeadCell className="min-w-[150px]">
+                        <TableHeadCell className="min-w-45">
                             <div className="flex gap-2 items-center">
                                 <AiOutlinePhone className='text-base' />
                                 Contato 2
                             </div>
                         </TableHeadCell>
-                        <TableHeadCell className="min-w-[150px]">
+                        <TableHeadCell className="min-w-45">
                             <div className="flex gap-2 items-center">
                                 <AiOutlinePhone className='text-base' />
                                 Contato 3
                             </div>
                         </TableHeadCell>
-                        <TableHeadCell className="min-w-[200px]">
+                        <TableHeadCell className="min-w-54">
                             <div className="flex gap-2 items-center">
                                 <MdOutlineAlternateEmail className='text-base' />
                                 Contato de E-mail
@@ -382,28 +414,41 @@ const MakeFirstContact = ({ data, setIsEditing, checkedList, editableLabel, setE
 
                                                     <div className="relative w-full">
 
-                                                        <div
-                                                            ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
-                                                            contentEditable={editableLabel === item.id}
-                                                            onKeyDown={(e) => {
-                                                                if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                                    if (inputCredorRefs.current) {
-                                                                        inputCredorRefs.current[index].blur();
-                                                                        setIsEditing(false);
-                                                                        handleChangeCreditorName(inputCredorRefs.current[index].innerText, item.id, ['notion_list'])
+                                                        <div className='w-full h-full flex gap-2 place-items-center'>
+                                                            <div
+                                                                title={item?.properties?.Credor?.title[0]?.text.content || ''}
+                                                                dangerouslySetInnerHTML={{ __html: item?.properties?.Credor?.title[0]?.text.content || '' }}
+                                                                ref={(input) => { if (input) inputCredorRefs.current![index] = input; }}
+                                                                contentEditable={editableLabel.id === item.id && editableLabel.nameCredor}
+                                                                onKeyDown={(e) => {
+                                                                    if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                                        if (inputCredorRefs.current) {
+                                                                            inputCredorRefs.current[index].blur();
+                                                                            setIsEditing(false);
+                                                                            handleChangeCreditorName(inputCredorRefs.current[index].innerText, item.id, ['notion_list']);
+                                                                        }
+                                                                    } else {
+                                                                        setIsEditing(true);
+                                                                        queryClient.cancelQueries({ queryKey: ['notion_list'] })
                                                                     }
-                                                                } else {
-                                                                    setIsEditing(true);
-                                                                    queryClient.cancelQueries({ queryKey: ['notion_list'] })
-                                                                }
-                                                            }}
-                                                            onBlur={() => {
-                                                                setEditableLabel(null);
-                                                                setIsEditing(false);
-                                                            }}
-                                                            className={`${editableLabel === item.id && '!border-1 !border-blue-700'} max-w[370px] py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md overflow-hidden whitespace-nowrap`}
-                                                        >
-                                                            {item.properties.Credor?.title[0]?.text.content || ''}
+                                                                }}
+                                                                // onBlur={() => {
+                                                                //     setEditableLabel(null);
+                                                                //     setIsEditing(false);
+                                                                // }}
+                                                                className='flex-1 max-w-[370px] py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md overflow-hidden whitespace-nowrap'
+                                                            ></div>
+
+                                                            {editableLabel.id === item.id && editableLabel.nameCredor && (
+                                                                <SaveButton
+                                                                    onClick={() => {
+                                                                        inputCredorRefs.current![index].blur();
+                                                                        setIsEditing(false);
+                                                                        handleChangeCreditorName(inputCredorRefs.current![index].innerText, item.id, ['notion_list'])
+                                                                    }}
+                                                                    status={updateState}
+                                                                />
+                                                            )}
                                                         </div>
 
                                                         {/* <input
@@ -419,15 +464,23 @@ const MakeFirstContact = ({ data, setIsEditing, checkedList, editableLabel, setE
                                                             }}
                                                             className={`${editableLabel === item.id && '!border-1 !border-blue-700'} w-full pl-1 focus-within:ring-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
                                                         /> */}
+
                                                         {/* absolute div that covers the entire cell */}
-                                                        {editableLabel !== item.id && (
+                                                        {(editableLabel.id !== item.id && !editableLabel.nameCredor) && (
                                                             <div className='absolute inset-0 rounded-md flex items-center transition-all duration-200'>
 
                                                                 <React.Fragment>
                                                                     {item.properties.Credor?.title[0].plain_text?.length === 0 ? (
                                                                         <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200'
                                                                             onClick={() => {
-                                                                                setEditableLabel!(item.id)
+                                                                                resetOthersEditions()
+                                                                                setEditableLabel(prevObj => {
+                                                                                    return {
+                                                                                        ...prevObj,
+                                                                                        id: item.id,
+                                                                                        nameCredor: true
+                                                                                    }
+                                                                                })
                                                                                 handleEditInput(index, inputCredorRefs.current);
                                                                             }}>
                                                                             <div className='flex gap-1 pl-4 text-slate-400'>
@@ -439,7 +492,13 @@ const MakeFirstContact = ({ data, setIsEditing, checkedList, editableLabel, setE
                                                                         <div className='flex-1 h-full flex items-center select-none cursor-pointer opacity-0 text-sm
                                                                     font-semibold pl-[21px]'
                                                                             onClick={() => {
-                                                                                setEditableLabel!(item.id)
+                                                                                setEditableLabel(prevObj => {
+                                                                                    return {
+                                                                                        ...prevObj,
+                                                                                        id: item.id,
+                                                                                        nameCredor: true
+                                                                                    }
+                                                                                })
                                                                                 handleEditInput(index, inputCredorRefs.current);
                                                                             }}>
                                                                             <span>
@@ -497,75 +556,201 @@ const MakeFirstContact = ({ data, setIsEditing, checkedList, editableLabel, setE
 
                                             {/* phone 1 */}
                                             <TableCell className="text-center items-center ">
-                                                <input
-                                                    type="text"
-                                                    ref={(input) => { if (input) inputPhoneOneRefs.current![index] = input; }}
-                                                    defaultValue={item.properties['Contato Telefônico'].phone_number || ''}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            if (inputPhoneOneRefs.current) {
-                                                                inputPhoneOneRefs.current[index].blur()
+                                                <div className='relative flex gap-2'>
+
+                                                    {editLock && (
+                                                        <div className='absolute inset-0 cursor-not-allowed'></div>
+                                                    )}
+
+                                                    <input
+                                                        type="text"
+                                                        ref={(input) => { if (input) inputPhoneOneRefs.current![index] = input; }}
+                                                        defaultValue={item.properties['Contato Telefônico'].phone_number || ''}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                                if (inputPhoneOneRefs.current) {
+                                                                    inputPhoneOneRefs.current[index].blur()
+                                                                }
+                                                                handleChangePhoneNumber(item.id, "Contato Telefônico", e.currentTarget.value, ['notion_list', 'first_contact'])
                                                             }
-                                                            handleChangePhoneNumber(item.id, "Contato Telefônico", e.currentTarget.value, ['notion_list', 'first_contact'])
-                                                        }
-                                                    }}
-                                                    className={`w-full p-0 focus-within:ring-0 focus-within:border-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                                                />
+                                                        }}
+                                                        onClick={() => {
+                                                            resetOthersEditions()
+                                                            setEditableLabel(prevObj => {
+                                                                return {
+                                                                    ...prevObj,
+                                                                    id: item.id,
+                                                                    phone: {
+                                                                        ...prevObj.phone,
+                                                                        one: true
+                                                                    }
+                                                                }
+                                                            })
+                                                        }}
+                                                        className={`flex-1 max-w-28 p-0 focus-within:ring-0 focus-within:border-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                    />
+
+                                                    {(editableLabel.id === item.id && editableLabel.phone.one) && (
+                                                        <SaveButton
+                                                            onClick={() => {
+                                                                if (editLock) return;
+                                                                inputPhoneOneRefs.current![index].blur()
+                                                                setIsEditing(false);
+                                                                handleChangePhoneNumber(item.id, "Contato Telefônico", inputPhoneOneRefs.current![index].value, ['notion_list', 'first_contact'])
+                                                            }}
+                                                            status={updateState}
+                                                        />
+                                                    )}
+
+                                                </div>
                                             </TableCell>
 
                                             {/* phone 2 */}
                                             <TableCell className="text-center items-center ">
-                                                <input
-                                                    type="text"
-                                                    ref={(input) => { if (input) inputPhoneTwoRefs.current![index] = input; }}
-                                                    defaultValue={item.properties['Contato Telefônico 2'].phone_number || ''}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            if (inputPhoneTwoRefs.current) {
-                                                                inputPhoneTwoRefs.current[index].blur()
+                                                <div className='relative flex gap-2'>
+
+                                                    {editLock && (
+                                                        <div className='absolute inset-0 cursor-not-allowed'></div>
+                                                    )}
+
+                                                    <input
+                                                        type="text"
+                                                        ref={(input) => { if (input) inputPhoneTwoRefs.current![index] = input; }}
+                                                        defaultValue={item.properties['Contato Telefônico 2'].phone_number || ''}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                                if (inputPhoneTwoRefs.current) {
+                                                                    inputPhoneTwoRefs.current[index].blur()
+                                                                }
+                                                                handleChangePhoneNumber(item.id, "Contato Telefônico 2", e.currentTarget.value || '', ['notion_list', 'first_contact'])
                                                             }
-                                                            handleChangePhoneNumber(item.id, "Contato Telefônico 2", e.currentTarget.value, ['notion_list', 'first_contact'])
-                                                        }
-                                                    }}
-                                                    className={`w-full p-0 focus-within:ring-0 focus-within:border-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                                                />
+                                                        }}
+                                                        onClick={() => {
+                                                            resetOthersEditions()
+                                                            setEditableLabel(prevObj => {
+                                                                return {
+                                                                    ...prevObj,
+                                                                    id: item.id,
+                                                                    phone: {
+                                                                        ...prevObj.phone,
+                                                                        two: true
+                                                                    }
+                                                                }
+                                                            })
+                                                        }}
+                                                        className={`w-full p-0 focus-within:ring-0 focus-within:border-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                    />
+
+                                                    {(editableLabel.id === item.id && editableLabel.phone.two) && (
+                                                        <SaveButton
+                                                            onClick={() => {
+                                                                if (editLock) return;
+                                                                inputPhoneTwoRefs.current![index].blur()
+                                                                setIsEditing(false);
+                                                                handleChangePhoneNumber(item.id, "Contato Telefônico 2", inputPhoneTwoRefs.current![index].value || '', ['notion_list', 'first_contact'])
+                                                            }}
+                                                            status={updateState}
+                                                        />
+                                                    )}
+                                                </div>
                                             </TableCell>
 
                                             {/* phone 3 */}
                                             <TableCell className="text-center items-center ">
-                                                <input
-                                                    type="text"
-                                                    ref={(input) => { if (input) inputPhoneThreeRefs.current![index] = input; }}
-                                                    defaultValue={item.properties['Contato Telefônico 3'].phone_number || ''}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            if (inputPhoneThreeRefs.current) {
-                                                                inputPhoneThreeRefs.current[index].blur()
+                                                <div className='relative flex gap-2'>
+
+                                                    {editLock && (
+                                                        <div className='absolute inset-0 cursor-not-allowed'></div>
+                                                    )}
+
+                                                    <input
+                                                        type="text"
+                                                        ref={(input) => { if (input) inputPhoneThreeRefs.current![index] = input; }}
+                                                        defaultValue={item.properties['Contato Telefônico 3'].phone_number || ''}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                                if (inputPhoneThreeRefs.current) {
+                                                                    inputPhoneThreeRefs.current[index].blur()
+                                                                }
+                                                                handleChangePhoneNumber(item.id, "Contato Telefônico 3", e.currentTarget.value || '', ['notion_list', 'first_contact'])
                                                             }
-                                                            handleChangePhoneNumber(item.id, "Contato Telefônico 3", e.currentTarget.value, ['notion_list', 'first_contact'])
-                                                        }
-                                                    }}
-                                                    className={`w-full p-0 focus-within:ring-0 focus-within:border-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                                                />
+                                                        }}
+                                                        onClick={() => {
+                                                            resetOthersEditions();
+                                                            setEditableLabel(prevObj => {
+                                                                return {
+                                                                    ...prevObj,
+                                                                    id: item.id,
+                                                                    phone: {
+                                                                        ...prevObj.phone,
+                                                                        three: true
+                                                                    }
+                                                                }
+                                                            })
+                                                        }}
+                                                        className={`w-full p-0 focus-within:ring-0 focus-within:border-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                    />
+
+                                                    {(editableLabel.id === item.id && editableLabel.phone.three) && (
+                                                        <SaveButton
+                                                            onClick={() => {
+                                                                if (editLock) return;
+                                                                inputPhoneThreeRefs.current![index].blur()
+                                                                setIsEditing(false);
+                                                                handleChangePhoneNumber(item.id, "Contato Telefônico 3", inputPhoneThreeRefs.current![index].value || '', ['notion_list', 'first_contact'])
+                                                            }}
+                                                            status={updateState}
+                                                        />
+                                                    )}
+                                                </div>
                                             </TableCell>
 
                                             {/* e-mail */}
                                             <TableCell className="text-center items-center ">
-                                                <input
-                                                    type="text"
-                                                    ref={(input) => { if (input) inputEmailRefs.current![index] = input; }}
-                                                    defaultValue={item.properties['Contato de E-mail'].email || ''}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
-                                                            if (inputEmailRefs.current) {
-                                                                inputEmailRefs.current[index].blur()
-                                                            }
-                                                            handleChangeEmail(item.id, e.currentTarget.value, ['notion_list', 'first_contact'])
+                                                <div className='relative flex gap-2'>
 
-                                                        }
-                                                    }}
-                                                    className={`w-full p-0 focus-within:ring-0 focus-within:border-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
-                                                />
+                                                    {editLock && (
+                                                        <div className='absolute inset-0 cursor-not-allowed'></div>
+                                                    )}
+
+                                                    <input
+                                                        type="text"
+                                                        ref={(input) => { if (input) inputEmailRefs.current![index] = input; }}
+                                                        defaultValue={item.properties['Contato de E-mail'].email || ''}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                                                                if (inputEmailRefs.current) {
+                                                                    inputEmailRefs.current[index].blur()
+                                                                }
+                                                                handleChangeEmail(item.id, e.currentTarget.value, ['notion_list', 'first_contact'])
+
+                                                            }
+                                                        }}
+                                                        onClick={() => {
+                                                            resetOthersEditions();
+                                                            setEditableLabel(prevObj => {
+                                                                return {
+                                                                    ...prevObj,
+                                                                    id: item.id,
+                                                                    email: true
+                                                                }
+                                                            })
+                                                        }}
+                                                        className={`flex-1 max-w-45 p-0 focus-within:ring-0 focus-within:border-0 text-sm border-transparent bg-transparent rounded-md text-ellipsis overflow-hidden whitespace-nowrap`}
+                                                    />
+
+                                                    {(editableLabel.id === item.id && editableLabel.email) && (
+                                                        <SaveButton
+                                                            onClick={() => {
+                                                                if (editLock) return;
+                                                                inputEmailRefs.current![index].blur()
+                                                                setIsEditing(false);
+                                                                handleChangeEmail(item.id, inputEmailRefs.current![index].value || '', ['notion_list', 'first_contact'])
+                                                            }}
+                                                            status={updateState}
+                                                        />
+                                                    )}
+                                                </div>
                                             </TableCell>
 
                                         </TableRow>
