@@ -20,11 +20,12 @@ import { NotionSkeletonTwo } from '../Skeletons/NotionSkeletonTwo';
 import { IEditableLabels } from '@/context/ExtratosTableContext';
 import SaveButton from '../Button/SaveButton';
 
-const MakeFirstContact = ({ data, setIsEditing, updateState, editLock, checkedList, editableLabel, setEditableLabel, handleNotionDrawer, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, handleEditStatus,
+const MakeFirstContact = ({ data, userSubrole, setIsEditing, updateState, editLock, checkedList, editableLabel, setEditableLabel, handleNotionDrawer, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, handleEditStatus,
     handleArchiveExtrato, archiveStatus, handleSelectAllRows, setCheckedList
 }:
     {
         data: any,
+        userSubrole: string,
         setIsEditing: React.Dispatch<React.SetStateAction<boolean>>,
         updateState: string | null,
         editLock: boolean,
@@ -171,7 +172,8 @@ const MakeFirstContact = ({ data, setIsEditing, updateState, editLock, checkedLi
 
         try {
             const response = await api.post(`/api/notion-api/list/database/next-cursor/${nextCursor}/`, {
-                "username": user
+                "username": user,
+                "is_coordenador": userSubrole === "coordenador" ? true : false
             });
 
             setNextCursor(response.data.next_cursor);

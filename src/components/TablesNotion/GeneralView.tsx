@@ -25,9 +25,10 @@ import { NotionSkeletonOne } from '../Skeletons/NotionSkeletonOne';
 import SaveButton from '../Button/SaveButton';
 import { IEditableLabels } from '@/context/ExtratosTableContext';
 
-const GeneralView = ({ data, setIsEditing, updateState, checkedList, handleSelectRow, handleEditTipoOficio, handleChangeCreditorName, editableLabel, setEditableLabel, handleEditInput, handleNotionDrawer, handleCopyValue, handleEditStatus, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList }:
+const GeneralView = ({ data, userSubrole, setIsEditing, updateState, checkedList, handleSelectRow, handleEditTipoOficio, handleChangeCreditorName, editableLabel, setEditableLabel, handleEditInput, handleNotionDrawer, handleCopyValue, handleEditStatus, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList }:
     {
         data: any,
+        userSubrole: string,
         setIsEditing: React.Dispatch<React.SetStateAction<boolean>>,
         updateState: string | null;
         checkedList: NotionPage[],
@@ -178,12 +179,12 @@ const GeneralView = ({ data, setIsEditing, updateState, checkedList, handleSelec
     /* função que verifica se há mais dados no backend para serem puxados para a tabela.
     se existir, faz o fetch e atualiza a tabela com os dados novos */
     const fetchNextCursor = async () => {
-        debugger
         if (!hasMore || !nextCursor) return;
 
         try {
             const response = await api.post(`/api/notion-api/list/database/next-cursor/${nextCursor}/`, {
-                "username": user
+                "username": user,
+                "is_coordenador": userSubrole === "coordenador" ? true : false
             });
 
             setNextCursor(response.data.next_cursor);
@@ -310,8 +311,6 @@ const GeneralView = ({ data, setIsEditing, updateState, checkedList, handleSelec
         setHasMore(hasMore);
 
     }, [data, data?.has_more, data?.next_cursor, firstLoad, hasMore, nextCursor]);
-
-    console.log(data)
 
     return (
         <div className='max-w-full overflow-x-scroll pb-5'>

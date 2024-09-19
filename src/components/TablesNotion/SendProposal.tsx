@@ -24,11 +24,12 @@ import { NotionSkeletonFour } from '../Skeletons/NotionSkeletonFour'
 import { IEditableLabels } from '@/context/ExtratosTableContext'
 import SaveButton from '../Button/SaveButton'
 
-export const SendProposal = ({ data, setIsEditing, checkedList, editLock, editableLabel, updateState, setEditableLabel, handleNotionDrawer, handleSelectRow, handleChangeFupDate, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList,
+export const SendProposal = ({ data, userSubrole, setIsEditing, checkedList, editLock, editableLabel, updateState, setEditableLabel, handleNotionDrawer, handleSelectRow, handleChangeFupDate, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList,
     handleChangeCreditorName, handleEditInput, handleEditStatus, handleCopyValue, handleChangeProposalPrice
 }:
     {
         data: any,
+        userSubrole: string,
         setIsEditing: React.Dispatch<React.SetStateAction<boolean>>,
         checkedList: NotionPage[],
         editLock: boolean,
@@ -167,7 +168,8 @@ export const SendProposal = ({ data, setIsEditing, checkedList, editLock, editab
 
         try {
             const response = await api.post(`/api/notion-api/list/database/next-cursor/${nextCursor}/`, {
-                "username": user
+                "username": user,
+                "is_coordenador": userSubrole === "coordenador" ? true : false
             });
 
             setNextCursor(response.data.next_cursor);
