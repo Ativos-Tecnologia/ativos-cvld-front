@@ -23,11 +23,12 @@ import { NotionSkeletonThree } from '../Skeletons/NotionSkeletonThree'
 import { IEditableLabels } from '@/context/ExtratosTableContext'
 import SaveButton from '../Button/SaveButton'
 
-export const OfficeTypeAndValue = ({ data, setIsEditing, checkedList, updateState, editableLabel, setEditableLabel, handleSelectRow, handleNotionDrawer,
+export const OfficeTypeAndValue = ({ data, userSubrole, setIsEditing, checkedList, updateState, editableLabel, setEditableLabel, handleSelectRow, handleNotionDrawer,
     handleChangeCreditorName, handleEditInput, handleEditStatus, handleEditTipoOficio, handleCopyValue, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList
 }:
     {
         data: any,
+        userSubrole: string,
         setIsEditing: React.Dispatch<React.SetStateAction<boolean>>,
         checkedList: NotionPage[],
         updateState: string | null;
@@ -158,7 +159,8 @@ export const OfficeTypeAndValue = ({ data, setIsEditing, checkedList, updateStat
 
         try {
             const response = await api.post(`/api/notion-api/list/database/next-cursor/${nextCursor}/`, {
-                "username": user
+                "username": user,
+                "is_coordenador": userSubrole === "coordenador" ? true : false
             });
 
             setNextCursor(response.data.next_cursor);

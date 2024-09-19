@@ -592,7 +592,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             ]
     }
 
-
     const [currentQuery, setCurrentQuery] = useState({});
 
     const [statusSelectValue, setStatusSelectValue] = useState<statusOficio | null>(null);
@@ -826,6 +825,8 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     const handleFilterByUser = (user: string) => {
         setOpenUsersPopover(false)
         setSelectedUser(user);
+        setFilteredUsersList(usersList);
+        searchUserRef.current!.value = ''
         setListQuery({
             "and": [
                 {
@@ -1457,6 +1458,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             {notionView === 'geral' && (
                 <GeneralView
                     data={data}
+                    userSubrole={data2?.sub_role}
                     setIsEditing={setIsEditing}
                     updateState={updateState}
                     checkedList={checkedList}
@@ -1480,6 +1482,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             {notionView === 'realizar 1º contato' &&
                 <MakeFirstContact
                     data={data}
+                    userSubrole={data2?.sub_role}
                     setIsEditing={setIsEditing}
                     updateState={updateState}
                     editLock={editLock}
@@ -1503,6 +1506,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             {notionView === 'juntar ofício/valor líquido' &&
                 <OfficeTypeAndValue
                     data={data}
+                    userSubrole={data2?.sub_role}
                     setIsEditing={setIsEditing}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
@@ -1525,6 +1529,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             {notionView === 'enviar proposta/negociação' &&
                 <SendProposal
                     data={data}
+                    userSubrole={data2?.sub_role}
                     setIsEditing={setIsEditing}
                     checkedList={checkedList}
                     editableLabel={editableLabel}
@@ -1549,6 +1554,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
             {notionView === 'proposta aceita' &&
                 <ProposalAccepted
                     data={data}
+                    userSubrole={data2?.sub_role}
                     setIsEditing={setIsEditing}
                     checkedList={checkedList}
                     updateState={updateState}
