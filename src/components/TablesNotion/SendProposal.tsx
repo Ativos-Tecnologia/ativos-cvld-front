@@ -14,7 +14,7 @@ import { ImCopy } from 'react-icons/im'
 import numberFormat from '@/functions/formaters/numberFormat'
 import { BsCalendar3 } from 'react-icons/bs'
 import ReactInputMask from 'react-input-mask'
-import { UserInfoAPIContext } from '@/context/UserInfoContext'
+import { UserInfo, UserInfoAPIContext } from '@/context/UserInfoContext'
 import CustomCheckbox from '../CrmUi/Checkbox'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import api from '@/utils/api'
@@ -24,11 +24,12 @@ import { NotionSkeletonFour } from '../Skeletons/NotionSkeletonFour'
 import { IEditableLabels } from '@/context/ExtratosTableContext'
 import SaveButton from '../Button/SaveButton'
 
-export const SendProposal = ({ data, setIsEditing, checkedList, editLock, editableLabel, updateState, setEditableLabel, handleNotionDrawer, handleSelectRow, handleChangeFupDate, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList,
+export const SendProposal = ({ data, userInfo, setIsEditing, checkedList, editLock, editableLabel, updateState, setEditableLabel, handleNotionDrawer, handleSelectRow, handleChangeFupDate, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList,
     handleChangeCreditorName, handleEditInput, handleEditStatus, handleCopyValue, handleChangeProposalPrice
 }:
     {
         data: any,
+        userInfo: UserInfo,
         setIsEditing: React.Dispatch<React.SetStateAction<boolean>>,
         checkedList: NotionPage[],
         editLock: boolean,
@@ -167,7 +168,8 @@ export const SendProposal = ({ data, setIsEditing, checkedList, editLock, editab
 
         try {
             const response = await api.post(`/api/notion-api/list/database/next-cursor/${nextCursor}/`, {
-                "username": user
+                "username": user,
+                "is_coordenador": userInfo.sub_role === "coordenador" ? true : false
             });
 
             setNextCursor(response.data.next_cursor);
@@ -444,10 +446,12 @@ export const SendProposal = ({ data, setIsEditing, checkedList, editLock, editab
                                                     title={item.properties.Credor?.title[0].text.content || ''}
                                                     className='relative w-full flex items-center gap-3'>
 
-                                                    <CustomCheckbox
-                                                        check={checkedList!.some(target => target.id === item.id)}
-                                                        callbackFunction={() => handleSelectRow(item)}
-                                                    />
+                                                    {userInfo?.role === 'ativos' && (
+                                                        <CustomCheckbox
+                                                            check={checkedList!.some(target => target.id === item.id)}
+                                                            callbackFunction={() => handleSelectRow(item)}
+                                                        />
+                                                    )}
 
                                                     <div className="relative w-full">
 

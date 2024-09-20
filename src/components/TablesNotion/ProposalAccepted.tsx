@@ -14,7 +14,7 @@ import { ENUM_OFICIOS_LIST, ENUM_TIPO_OFICIOS_LIST } from '@/constants/constants
 import { ImCopy } from 'react-icons/im'
 import numberFormat from '@/functions/formaters/numberFormat'
 import { LuSigma } from 'react-icons/lu'
-import { UserInfoAPIContext } from '@/context/UserInfoContext'
+import { UserInfo, UserInfoAPIContext } from '@/context/UserInfoContext'
 import CustomCheckbox from '../CrmUi/Checkbox'
 import { MiniMenu } from '../ExtratosTable/MiniMenu'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -24,10 +24,11 @@ import { NotionSkeletonThree } from '../Skeletons/NotionSkeletonThree'
 import { IEditableLabels } from '@/context/ExtratosTableContext'
 import SaveButton from '../Button/SaveButton'
 
-export const ProposalAccepted = ({ data, setIsEditing, checkedList, updateState, editableLabel, setEditableLabel, handleSelectRow, handleChangeCreditorName, handleEditInput, handleEditStatus, handleCopyValue, handleNotionDrawer, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList
+export const ProposalAccepted = ({ data, userInfo, setIsEditing, checkedList, updateState, editableLabel, setEditableLabel, handleSelectRow, handleChangeCreditorName, handleEditInput, handleEditStatus, handleCopyValue, handleNotionDrawer, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList
 }:
     {
         data: any,
+        userInfo: UserInfo,
         setIsEditing: React.Dispatch<React.SetStateAction<boolean>>,
         checkedList: NotionPage[],
         updateState: string | null,
@@ -125,7 +126,8 @@ export const ProposalAccepted = ({ data, setIsEditing, checkedList, updateState,
 
         try {
             const response = await api.post(`/api/notion-api/list/database/next-cursor/${nextCursor}/`, {
-                "username": user
+                "username": user,
+                "is_coordenador": userInfo.sub_role === "coordenador" ? true : false
             });
 
             setNextCursor(response.data.next_cursor);
@@ -342,10 +344,12 @@ export const ProposalAccepted = ({ data, setIsEditing, checkedList, updateState,
                                             >
                                                 <div className='relative w-full flex items-center gap-3'>
 
-                                                    <CustomCheckbox
-                                                        check={checkedList!.some(target => target.id === item.id)}
-                                                        callbackFunction={() => handleSelectRow(item)}
-                                                    />
+                                                    {userInfo?.role === 'ativos' && (
+                                                        <CustomCheckbox
+                                                            check={checkedList!.some(target => target.id === item.id)}
+                                                            callbackFunction={() => handleSelectRow(item)}
+                                                        />
+                                                    )}
 
                                                     <div className="relative w-full">
 

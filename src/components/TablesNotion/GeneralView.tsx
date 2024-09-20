@@ -13,7 +13,7 @@ import { RiNotionFill } from 'react-icons/ri';
 import { ImCopy } from 'react-icons/im';
 import numberFormat from '@/functions/formaters/numberFormat';
 import statusOficio from '@/enums/statusOficio.enum';
-import { UserInfoAPIContext } from '@/context/UserInfoContext';
+import { UserInfo, UserInfoAPIContext } from '@/context/UserInfoContext';
 import notionColorResolver from '@/functions/formaters/notionColorResolver';
 import CustomCheckbox from '../CrmUi/Checkbox';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -25,9 +25,10 @@ import { NotionSkeletonOne } from '../Skeletons/NotionSkeletonOne';
 import SaveButton from '../Button/SaveButton';
 import { IEditableLabels } from '@/context/ExtratosTableContext';
 
-const GeneralView = ({ data, setIsEditing, updateState, checkedList, handleSelectRow, handleEditTipoOficio, handleChangeCreditorName, editableLabel, setEditableLabel, handleEditInput, handleNotionDrawer, handleCopyValue, handleEditStatus, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList }:
+const GeneralView = ({ data, userInfo, setIsEditing, updateState, checkedList, handleSelectRow, handleEditTipoOficio, handleChangeCreditorName, editableLabel, setEditableLabel, handleEditInput, handleNotionDrawer, handleCopyValue, handleEditStatus, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList }:
     {
         data: any,
+        userInfo: UserInfo,
         setIsEditing: React.Dispatch<React.SetStateAction<boolean>>,
         updateState: string | null;
         checkedList: NotionPage[],
@@ -178,12 +179,12 @@ const GeneralView = ({ data, setIsEditing, updateState, checkedList, handleSelec
     /* função que verifica se há mais dados no backend para serem puxados para a tabela.
     se existir, faz o fetch e atualiza a tabela com os dados novos */
     const fetchNextCursor = async () => {
-        debugger
         if (!hasMore || !nextCursor) return;
 
         try {
             const response = await api.post(`/api/notion-api/list/database/next-cursor/${nextCursor}/`, {
-                "username": user
+                "username": user,
+                "is_coordenador": userInfo.sub_role === "coordenador" ? true : false
             });
 
             setNextCursor(response.data.next_cursor);
@@ -311,8 +312,6 @@ const GeneralView = ({ data, setIsEditing, updateState, checkedList, handleSelec
 
     }, [data, data?.has_more, data?.next_cursor, firstLoad, hasMore, nextCursor]);
 
-    console.log(data)
-
     return (
         <div className='max-w-full overflow-x-scroll pb-5'>
             <MiniMenu
@@ -403,10 +402,12 @@ const GeneralView = ({ data, setIsEditing, updateState, checkedList, handleSelec
 
                                             <TableCell className="text-center whitespace-nowrap font-medium text-gray-900 dark:text-white">
                                                 <div className='flex items-center justify-center gap-3'>
-                                                    <CustomCheckbox
-                                                        check={checkedList!.some(target => target.id === item.id)}
-                                                        callbackFunction={() => handleSelectRow(item)}
-                                                    />
+                                                    {userInfo?.role === 'ativos' && (
+                                                        <CustomCheckbox
+                                                            check={checkedList!.some(target => target.id === item.id)}
+                                                            callbackFunction={() => handleSelectRow(item)}
+                                                        />
+                                                    )}
                                                     <Badge color="indigo" size="sm" className={`w-[139px] h-7 text-[12px]`}>
                                                         <select className="text-[12px] bg-transparent border-none py-0 focus-within:ring-0" onChange={(e) => handleEditTipoOficio(item.id, e.target.value as tipoOficio, ['notion_list', 'general'])}>
                                                             {item?.properties?.Tipo.select?.name && (

@@ -10,7 +10,7 @@ import { RiNotionFill } from 'react-icons/ri';
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from '../Tables/TableDefault';
 import { Badge, Button } from 'flowbite-react';
 import { MdOutlineAlternateEmail } from 'react-icons/md';
-import { UserInfoAPIContext } from '@/context/UserInfoContext';
+import { UserInfo, UserInfoAPIContext } from '@/context/UserInfoContext';
 import CustomCheckbox from '../CrmUi/Checkbox';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/utils/api';
@@ -20,11 +20,12 @@ import { NotionSkeletonTwo } from '../Skeletons/NotionSkeletonTwo';
 import { IEditableLabels } from '@/context/ExtratosTableContext';
 import SaveButton from '../Button/SaveButton';
 
-const MakeFirstContact = ({ data, setIsEditing, updateState, editLock, checkedList, editableLabel, setEditableLabel, handleNotionDrawer, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, handleEditStatus,
+const MakeFirstContact = ({ data, userInfo, setIsEditing, updateState, editLock, checkedList, editableLabel, setEditableLabel, handleNotionDrawer, handleSelectRow, handleChangeCreditorName, handleEditInput, handleChangePhoneNumber, handleChangeEmail, handleEditStatus,
     handleArchiveExtrato, archiveStatus, handleSelectAllRows, setCheckedList
 }:
     {
         data: any,
+        userInfo: UserInfo,
         setIsEditing: React.Dispatch<React.SetStateAction<boolean>>,
         updateState: string | null,
         editLock: boolean,
@@ -171,7 +172,8 @@ const MakeFirstContact = ({ data, setIsEditing, updateState, editLock, checkedLi
 
         try {
             const response = await api.post(`/api/notion-api/list/database/next-cursor/${nextCursor}/`, {
-                "username": user
+                "username": user,
+                "is_coordenador": userInfo.sub_role === "coordenador" ? true : false
             });
 
             setNextCursor(response.data.next_cursor);
@@ -407,10 +409,12 @@ const MakeFirstContact = ({ data, setIsEditing, updateState, editLock, checkedLi
                                             >
                                                 <div className='relative w-full flex items-center gap-3'>
 
-                                                    <CustomCheckbox
-                                                        check={checkedList!.some(target => target.id === item.id)}
-                                                        callbackFunction={() => handleSelectRow(item)}
-                                                    />
+                                                    {userInfo?.role === 'ativos' && (
+                                                        <CustomCheckbox
+                                                            check={checkedList!.some(target => target.id === item.id)}
+                                                            callbackFunction={() => handleSelectRow(item)}
+                                                        />
+                                                    )}
 
                                                     <div className="relative w-full">
 
