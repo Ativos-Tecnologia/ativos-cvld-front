@@ -357,6 +357,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
         },
         onSuccess: () => {
             setUpdateState('success');
+            queryClient.invalidateQueries({ queryKey: ['notion_list'] })
         },
         onSettled: () => {
             const timeOut = setTimeout(() => {
