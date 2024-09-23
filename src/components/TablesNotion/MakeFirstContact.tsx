@@ -245,7 +245,6 @@ const MakeFirstContact = ({ data, userInfo, setIsEditing, updateState, editLock,
             ...prev,
             [field]: value,
         }));
-        // setShouldFetchExternally(true);
     }, []);
 
     /* função que é responsável por carregar mais ofícios para a tabela, caso existam mais */
@@ -258,7 +257,7 @@ const MakeFirstContact = ({ data, userInfo, setIsEditing, updateState, editLock,
     /* efeito disparado para que verificar a cada 0.5s se o valor da prop credor
     do filtro bate com algum credor elemento do processedData */
     useEffect(() => {
-        if (filters.credor/* && shouldFetchExternally*/) {
+        if (filters.credor) {
             const timer = setTimeout(() => {
                 const hasMatch = processedData.some((item: NotionPage) =>
                     item.properties.Credor?.title[0]?.text.content.toLowerCase().includes(filters.credor.toLowerCase())
@@ -268,25 +267,11 @@ const MakeFirstContact = ({ data, userInfo, setIsEditing, updateState, editLock,
                     queryClient.cancelQueries({ queryKey: ['notion_list'] });
                     refetchByName();
                 }
-                // setShouldFetchExternally(false);
             }, 500);
 
             return () => clearTimeout(timer);
         }
-    }, [filters, queryClient, refetchByName, processedData /*shouldFetchExternally*/]);
-
-    /* atribui os valores de nomes dos credores aos inputs */
-    // useEffect(() => {
-    //     if (inputCredorRefs.current) {
-    //         processedData.forEach((item: NotionPage, index: number) => {
-    //             const ref = inputCredorRefs.current![index];
-    //             if (ref) {
-    //                 ref.value = item.properties.Credor?.title[0]?.text.content || '';
-    //             }
-    //         });
-    //     }
-
-    // }, [processedData]);
+    }, [filters, queryClient, refetchByName, processedData]);
 
     useEffect(() => {
         if (firstLoad && data) {
@@ -431,15 +416,8 @@ const MakeFirstContact = ({ data, userInfo, setIsEditing, updateState, editLock,
                                                                             setIsEditing(false);
                                                                             handleChangeCreditorName(inputCredorRefs.current[index].innerText, item.id, ['notion_list']);
                                                                         }
-                                                                    } else {
-                                                                        setIsEditing(true);
-                                                                        queryClient.cancelQueries({ queryKey: ['notion_list'] })
                                                                     }
                                                                 }}
-                                                                // onBlur={() => {
-                                                                //     setEditableLabel(null);
-                                                                //     setIsEditing(false);
-                                                                // }}
                                                                 className='flex-1 max-w-[370px] py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md overflow-hidden whitespace-nowrap'
                                                             ></div>
 
@@ -484,7 +462,8 @@ const MakeFirstContact = ({ data, userInfo, setIsEditing, updateState, editLock,
                                                                                         id: item.id,
                                                                                         nameCredor: true
                                                                                     }
-                                                                                })
+                                                                                });
+                                                                                setIsEditing(true);
                                                                                 handleEditInput(index, inputCredorRefs.current);
                                                                             }}>
                                                                             <div className='flex gap-1 pl-4 text-slate-400'>
@@ -502,7 +481,8 @@ const MakeFirstContact = ({ data, userInfo, setIsEditing, updateState, editLock,
                                                                                         id: item.id,
                                                                                         nameCredor: true
                                                                                     }
-                                                                                })
+                                                                                });
+                                                                                setIsEditing(true);
                                                                                 handleEditInput(index, inputCredorRefs.current);
                                                                             }}>
                                                                             <span>
