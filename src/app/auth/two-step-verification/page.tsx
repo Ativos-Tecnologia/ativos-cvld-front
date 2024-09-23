@@ -1,5 +1,5 @@
 "use client"
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
@@ -33,8 +33,6 @@ const TwoStepVerification: React.FC = () => {
       const response = await api.post('/api/confirm-user', {
         "confirmation_code": value
       })
-
-      console.log(response.status)
 
       if (response.status === 200) {
         MySwal.fire({
@@ -72,6 +70,18 @@ const TwoStepVerification: React.FC = () => {
       setIsValidating(false);
     }
   }
+
+  useEffect(() => {
+
+    const localAccess = localStorage.getItem('ATIVOS_access');
+    const localRefresh = localStorage.getItem('ATIVOS_refresh');
+
+    if (localAccess === 'undefined' || localRefresh === 'undefined') {
+      localStorage.removeItem('ATIVOS_access');
+      localStorage.removeItem('ATIVOS_refresh');
+    }
+
+  }, [])
 
   return (
     <UnloggedLayout>
