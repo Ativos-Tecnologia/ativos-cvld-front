@@ -24,6 +24,7 @@ import { MiniMenu } from '../ExtratosTable/MiniMenu';
 import { NotionSkeletonOne } from '../Skeletons/NotionSkeletonOne';
 import SaveButton from '../Button/SaveButton';
 import { IEditableLabels } from '@/context/ExtratosTableContext';
+import CopyButton from '../Button/CopyButton';
 
 const GeneralView = ({ data, userInfo, setIsEditing, updateState, checkedList, handleSelectRow, handleEditTipoOficio, handleChangeCreditorName, editableLabel, setEditableLabel, handleEditInput, handleNotionDrawer, handleCopyValue, handleEditStatus, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList }:
     {
@@ -249,19 +250,6 @@ const GeneralView = ({ data, userInfo, setIsEditing, updateState, checkedList, h
         }));
     };
 
-    /* atribui os valores de nomes dos credores aos inputs */
-    // useEffect(() => {
-    //     if (inputCredorRefs.current) {
-    //         processedData.forEach((item: NotionPage, index: number) => {
-    //             const ref = inputCredorRefs.current![index];
-    //             if (ref) {
-    //                 ref.value = item.properties.Credor?.title[0]?.text.content || '';
-    //             }
-    //         });
-    //     }
-
-    // }, [processedData]);
-
     /* função que seta o valor do filtro, se existir mais de um valor, somente
     o especificado em field será modificado */
     const handleFilterChange = useCallback((field: string, value: string) => {
@@ -269,13 +257,12 @@ const GeneralView = ({ data, userInfo, setIsEditing, updateState, checkedList, h
             ...prev,
             [field]: value,
         }));
-        // setShouldFetchExternally(true);
     }, []);
 
     /* efeito disparado para que verificar a cada 0.5s se o valor da prop credor
     do filtro bate com algum credor elemento do processedData */
     useEffect(() => {
-        if (filters.credor/* && shouldFetchExternally*/) {
+        if (filters.credor) {
             const timer = setTimeout(() => {
                 const hasMatch = processedData.some((item: NotionPage) =>
                     item.properties.Credor?.title[0]?.text.content.toLowerCase().includes(filters.credor.toLowerCase())
@@ -285,12 +272,11 @@ const GeneralView = ({ data, userInfo, setIsEditing, updateState, checkedList, h
                     queryClient.cancelQueries({ queryKey: ['notion_list'] });
                     refetchByName();
                 }
-                // setShouldFetchExternally(false);
             }, 500);
 
             return () => clearTimeout(timer);
         }
-    }, [filters, queryClient, refetchByName, processedData /*shouldFetchExternally*/]);
+    }, [filters, queryClient, refetchByName, processedData]);
 
     /* função que é responsável por carregar mais ofícios para a tabela, caso existam mais */
     const loadMore = () => {
@@ -440,15 +426,8 @@ const GeneralView = ({ data, userInfo, setIsEditing, updateState, checkedList, h
                                                                     setIsEditing(false);
                                                                     handleChangeCreditorName(inputCredorRefs.current[index].innerText, item.id, ['notion_list']);
                                                                 }
-                                                            } else {
-                                                                setIsEditing(true);
-                                                                queryClient.cancelQueries({ queryKey: ['notion_list'] })
                                                             }
                                                         }}
-                                                        // onBlur={() => {
-                                                        //     setEditableLabel(null);
-                                                        //     setIsEditing(false);
-                                                        // }}
                                                         className='flex-1 max-w-[370px] py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md overflow-hidden whitespace-nowrap'
                                                     ></div>
 
@@ -496,6 +475,7 @@ const GeneralView = ({ data, userInfo, setIsEditing, updateState, checkedList, h
                                                                                 nameCredor: true
                                                                             }
                                                                         })
+                                                                        setIsEditing(true);
                                                                         handleEditInput(index, inputCredorRefs.current);
                                                                     }}>
                                                                     <div className='flex gap-1 pl-4 text-slate-400'>
@@ -515,6 +495,7 @@ const GeneralView = ({ data, userInfo, setIsEditing, updateState, checkedList, h
                                                                                 nameCredor: true
                                                                             }
                                                                         })
+                                                                        setIsEditing(true);
                                                                         handleEditInput(index, inputCredorRefs.current);
                                                                     }}>
                                                                     <span>
@@ -565,13 +546,11 @@ const GeneralView = ({ data, userInfo, setIsEditing, updateState, checkedList, h
                                                     </div>
                                                 </TableCell>
                                             )}
-                                            <TableCell className="relative font-semibold text-[14px] text-right">
+                                            <TableCell className="group/value relative font-semibold text-[14px] text-right">
                                                 <div>
                                                     {numberFormat(item.properties['Valor Líquido'].formula?.number || 0)}
-                                                    <ImCopy
-                                                        title='Copiar valor'
+                                                    <CopyButton
                                                         onClick={() => handleCopyValue(index)}
-                                                        className='absolute top-1/2 -translate-y-1/2 left-2 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
                                                     />
                                                 </div>
                                             </TableCell>

@@ -23,6 +23,7 @@ import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react'
 import { NotionSkeletonThree } from '../Skeletons/NotionSkeletonThree'
 import { IEditableLabels } from '@/context/ExtratosTableContext'
 import SaveButton from '../Button/SaveButton'
+import CopyButton from '../Button/CopyButton'
 
 export const ProposalAccepted = ({ data, userInfo, setIsEditing, checkedList, updateState, editableLabel, setEditableLabel, handleSelectRow, handleChangeCreditorName, handleEditInput, handleEditStatus, handleCopyValue, handleNotionDrawer, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList
 }:
@@ -199,7 +200,6 @@ export const ProposalAccepted = ({ data, userInfo, setIsEditing, checkedList, up
             ...prev,
             [field]: value,
         }));
-        // setShouldFetchExternally(true);
     }, []);
 
     /* função que é responsável por carregar mais ofícios para a tabela, caso existam mais */
@@ -212,7 +212,7 @@ export const ProposalAccepted = ({ data, userInfo, setIsEditing, checkedList, up
     /* efeito disparado para que verificar a cada 0.5s se o valor da prop credor
     do filtro bate com algum credor elemento do processedData */
     useEffect(() => {
-        if (filters.credor/* && shouldFetchExternally*/) {
+        if (filters.credor) {
             const timer = setTimeout(() => {
                 const hasMatch = processedData.some((item: NotionPage) =>
                     item.properties.Credor?.title[0]?.text.content.toLowerCase().includes(filters.credor.toLowerCase())
@@ -222,25 +222,11 @@ export const ProposalAccepted = ({ data, userInfo, setIsEditing, checkedList, up
                     queryClient.cancelQueries({ queryKey: ['notion_list'] });
                     refetchByName();
                 }
-                // setShouldFetchExternally(false);
             }, 500);
 
             return () => clearTimeout(timer);
         }
-    }, [filters, queryClient, refetchByName, processedData /*shouldFetchExternally*/]);
-
-    /* atribui os valores de nomes dos credores aos inputs */
-    // useEffect(() => {
-    //     if (inputCredorRefs.current) {
-    //         processedData.forEach((item: NotionPage, index: number) => {
-    //             const ref = inputCredorRefs.current![index];
-    //             if (ref) {
-    //                 ref.value = item.properties.Credor?.title[0]?.text.content || '';
-    //             }
-    //         });
-    //     }
-
-    // }, [processedData]);
+    }, [filters, queryClient, refetchByName, processedData]);
 
     useEffect(() => {
         if (firstLoad && data) {
@@ -366,9 +352,6 @@ export const ProposalAccepted = ({ data, userInfo, setIsEditing, checkedList, up
                                                                             setIsEditing(false);
                                                                             handleChangeCreditorName(inputCredorRefs.current[index].innerText, item.id, ['notion_list'])
                                                                         }
-                                                                    } else {
-                                                                        setIsEditing(true);
-                                                                        queryClient.cancelQueries({ queryKey: ['notion_list'] })
                                                                     }
                                                                 }}
                                                                 className='flex-1 max-w-[370px] py-2 pr-3 pl-1 focus-visible:outline-none text-sm border-transparent bg-transparent rounded-md overflow-hidden whitespace-nowrap'
@@ -414,7 +397,8 @@ export const ProposalAccepted = ({ data, userInfo, setIsEditing, checkedList, up
                                                                                         id: item.id,
                                                                                         nameCredor: true
                                                                                     }
-                                                                                })
+                                                                                });
+                                                                                setIsEditing(true);
                                                                                 handleEditInput(index, inputCredorRefs.current);
                                                                             }}>
                                                                             <div className='flex gap-1 pl-4 text-slate-400'>
@@ -432,7 +416,8 @@ export const ProposalAccepted = ({ data, userInfo, setIsEditing, checkedList, up
                                                                                         id: item.id,
                                                                                         nameCredor: true
                                                                                     }
-                                                                                })
+                                                                                });
+                                                                                setIsEditing(true);
                                                                                 handleEditInput(index, inputCredorRefs.current);
                                                                             }}>
                                                                             <span>
@@ -502,10 +487,8 @@ export const ProposalAccepted = ({ data, userInfo, setIsEditing, checkedList, up
                                             <TableCell className="font-semibold text-[14px]">
                                                 <div className="relative">
                                                     {numberFormat(item.properties['Valor Líquido (Com Reserva dos Honorários)'].formula?.number || 0)}
-                                                    <ImCopy
-                                                        title='Copiar valor'
+                                                    <CopyButton
                                                         onClick={() => handleCopyValue(index)}
-                                                        className='absolute top-1/2 -translate-y-1/2 left-28 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'
                                                     />
                                                 </div>
                                             </TableCell>
