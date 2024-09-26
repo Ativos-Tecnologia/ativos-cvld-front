@@ -9,14 +9,19 @@ import { IEditableLabels } from "./ExtratosTableContext";
 import { toast } from "sonner";
 import numberFormat from "@/functions/formaters/numberFormat";
 import { ENUM_OFICIOS_LIST } from "@/constants/constants";
+import { waitForDebugger } from "inspector";
 
 /* ===================> Iterfaces & Types <================== */
 export interface ITableNotion {
-    data: NotionResponse,
+    data: any,
+    userData: any;
     isFetching: boolean,
+    updateState: string | null;
     selectedUser: string | null;
+    archiveStatus: boolean;
     statusSelectValue: statusOficio | null;
     oficioSelectValue: tipoOficio | null;
+    setListQuery: React.Dispatch<React.SetStateAction<object | null>>;
     editableLabel: IEditableLabels;
     setEditableLabel: React.Dispatch<React.SetStateAction<IEditableLabels>>;
     usersList: string[];
@@ -26,6 +31,7 @@ export interface ITableNotion {
     isEditing: boolean,
     setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
     checkedList: NotionPage[];
+    setCheckedList:  React.Dispatch<React.SetStateAction<NotionPage[]>>;
     handleSelectRow: (row: NotionPage) => void;
     handleSelectAllRows: (list: NotionPage[]) => void;
     handleCopyValue: (index: number) => void;
@@ -49,9 +55,12 @@ export interface ITableNotion {
 /* ===================> Context <================== */
 export const TableNotionContext = createContext<ITableNotion>({
     /*  ====> states <===== */
-    data: { object: "list", results: [] },
+    data: {},
+    userData: null,
     selectedUser: null,
+    archiveStatus: false,
     isFetching: false,
+    updateState: null,
     statusSelectValue: null,
     oficioSelectValue: null,
     editableLabel: {
@@ -76,6 +85,7 @@ export const TableNotionContext = createContext<ITableNotion>({
         npuPrec: false,
         court: false,
     },
+    setListQuery: () => { },
     setEditableLabel: () => { },
     usersList: [],
     setUsersList: () => { },
@@ -84,6 +94,7 @@ export const TableNotionContext = createContext<ITableNotion>({
     isEditing: false,
     setIsEditing: () => { },
     checkedList: [],
+    setCheckedList: () => { },
     handleSelectRow: () => { },
     handleSelectAllRows: () => { },
     handleCopyValue: () => { },
@@ -105,7 +116,7 @@ export const TableNotionContext = createContext<ITableNotion>({
 });
 
 export const TableNotionProvider = ({ children }: { children: React.ReactNode }) => {
-
+    
     /*  ====> states <===== */
     const [statusSelectValue, setStatusSelectValue] = useState<statusOficio | null>(null);
     const [oficioSelectValue, setOficioSelectValue] = useState<tipoOficio | null>(null);
@@ -113,7 +124,7 @@ export const TableNotionProvider = ({ children }: { children: React.ReactNode })
     const [selectedUser, setSelectedUser] = useState<string | null>(null)
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [usersList, setUsersList] = useState<string[]>([]);
-    const [listQuery, setListQuery] = useState<object>({});
+    const [listQuery, setListQuery] = useState<object | null>(null);
     const [editableLabel, setEditableLabel] = useState<IEditableLabels>({
         id: '',
         nameCredor: false,
@@ -143,8 +154,39 @@ export const TableNotionProvider = ({ children }: { children: React.ReactNode })
     const [filteredUsersList, setFilteredUsersList] = useState<string[]>([]);
     const [filteredStatusValues, setFilteredStatusValues] = useState<statusOficio[]>(ENUM_OFICIOS_LIST);
 
+    /*  ====> query <==== */
+    // query for user
+    const queryClient = useQueryClient();
+    const fetchUser = async () => {
+        const t = await api.get("/api/profile/");
+        return t.data
+    }
+    const { data: userData } = useQuery({
+        queryKey: ['user'],
+        queryFn: fetchUser,
+    })
+
+    // query for oficios
+    const fetchNotionData = async () => {
+        if (userData.user && listQuery !== null) {
+            const t = await api.post(`api/notion-api/list/`, listQuery)
+            return t.data
+        }
+    }
+    const { isPending, data, error, isFetching, refetch } = useQuery(
+        {
+            queryKey: ['notion_list'],
+            refetchOnReconnect: true,
+            refetchOnWindowFocus: true,
+            refetchInterval: 15000,
+            staleTime: 100,
+            queryFn: fetchNotionData,
+            enabled: userData?.user && listQuery !== null && !isEditing // only fetch if user is defined after context is loaded and is not editing any table label
+        },
+    );
+
     /* ====> constants <==== */
-    const { data: userData } = useContext(UserInfoAPIContext);
+    // const { data: userData } = useContext(UserInfoAPIContext);
     const secondaryDefaultFilterObject = useMemo(() => {
         return {
             "and":
@@ -200,24 +242,6 @@ export const TableNotionProvider = ({ children }: { children: React.ReactNode })
                 secondaryDefaultFilterObject
             ]
     }
-
-    /*  ====> query <==== */
-    const fetchNotionData = async () => {
-        const t = await api.post(`api/notion-api/list/`, !!userData?.user && listQuery)
-        return t.data
-    }
-    const queryClient = useQueryClient()
-    const { isPending, data, error, isFetching, refetch } = useQuery(
-        {
-            queryKey: ['notion_list'],
-            refetchOnReconnect: true,
-            refetchOnWindowFocus: true,
-            refetchInterval: 15000,
-            staleTime: 13000,
-            queryFn: fetchNotionData,
-            enabled: !!userData?.user && !isEditing // only fetch if user is defined after context is loaded and is not editing any table label
-        },
-    );
 
     /*  ====> mutations <==== */
 
@@ -847,7 +871,7 @@ export const TableNotionProvider = ({ children }: { children: React.ReactNode })
             }
         );
     };
-    
+
     const handleFilterByStatus = (status: statusOficio) => {
         setFilteredStatusValues(ENUM_OFICIOS_LIST);
         setStatusSelectValue(status);
@@ -956,18 +980,33 @@ export const TableNotionProvider = ({ children }: { children: React.ReactNode })
     /*  ====> Effects <==== */
     // atualiza a queryList
     useEffect(() => {
-        const updatedQuery = buildQuery();
-        setListQuery(updatedQuery);
+        if (userData) {
+            const updatedQuery = buildQuery();
+            setListQuery(updatedQuery);
 
-        if (Object.keys(updatedQuery).length > 0) {
-            refetch();
+            if (Object.keys(updatedQuery).length > 0) {
+                refetch();
+            }
         }
+
     }, [userData?.user, statusSelectValue, oficioSelectValue, selectedUser, buildQuery, refetch]);
+
+    // atualiza o state do listQuery quando renderiza o contexto
+    useEffect(() => {
+        if (userData && listQuery === null) {
+            const defaultQuery = buildQuery();
+            setListQuery(defaultQuery);
+
+            if (Object.keys(defaultQuery).length > 0) {
+                refetch();
+            }
+        }
+    }, [])
 
     // seta a lista de usuários se a role do usuário for ativos
     useEffect(() => {
         const fetchData = async () => {
-            if (userData.role === "ativos") {
+            if (userData?.role === "ativos") {
                 const [usersList] = await Promise.all([api.get("/api/notion-api/list/users/")]);
                 if (usersList.status === 200) {
                     setUsersList(usersList.data);
@@ -977,18 +1016,21 @@ export const TableNotionProvider = ({ children }: { children: React.ReactNode })
         };
 
         fetchData();
-    }, [userData.role]);
+    }, [userData?.role]);
+
+    console.log(data)
 
     return (
         <TableNotionContext.Provider value={{
-            data, isFetching, statusSelectValue, oficioSelectValue, editableLabel, setEditableLabel,
+            data, userData, isFetching, statusSelectValue, oficioSelectValue, editableLabel, setEditableLabel,
             usersList, checkedList, setUsersList, filteredUsersList, setFilteredUsersList,
             isEditing, setIsEditing, handleSelectRow, handleSelectAllRows, handleCopyValue,
-            handleEditInput, handleArchiveExtrato, handleEditStatus,
+            handleEditInput, handleArchiveExtrato, handleEditStatus, setListQuery,
             handleEditTipoOficio, handleChangeCreditorName, handleChangePhoneNumber,
             handleChangeEmail, handleChangeProposalPrice, handleChangeFupDate,
             handleFilterByTipoOficio, handleFilterByUser, handleCleanAllFilters,
-            searchStatus, searchUser, handleFilterByStatus, selectedUser
+            searchStatus, searchUser, handleFilterByStatus, selectedUser, setCheckedList,
+            updateState, archiveStatus
         }}>
             {children}
         </TableNotionContext.Provider>

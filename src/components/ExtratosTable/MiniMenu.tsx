@@ -8,7 +8,7 @@ import { UserInfoAPIContext } from '@/context/UserInfoContext';
 
 export const MiniMenu = ({ queryKey, processedData, count, checkedList, setCheckedList, handleSelectAllRows, handleArchiveExtrato, archiveStatus }:
     {
-        queryKey: any[],
+        queryKey: string[],
         processedData: any,
         count: number,
         checkedList: NotionPage[],

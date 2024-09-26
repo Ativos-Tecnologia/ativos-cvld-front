@@ -47,9 +47,9 @@ type NotionTableViewProps = {
 }
 
 const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotionDrawer }: NotionTableViewProps) => {
-
+    
     const [currentNotionView, setCurrentNotionView] = useState<string>('geral');
-    const [checkedList, setCheckedList] = React.useState<NotionPage[]>([]);
+    // const [checkedList, setCheckedList] = React.useState<NotionPage[]>([]);
     const [openStatusPopover, setOpenStatusPopover] = useState<boolean>(false);
     const [openTipoOficioPopover, setOpenTipoOficioPopover] = useState<boolean>(false);
     const [openUsersPopover, setOpenUsersPopover] = useState<boolean>(false);
@@ -591,9 +591,9 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
     const [statusSelectValue, setStatusSelectValue] = useState<statusOficio | null>(null);
     const [oficioSelectValue, setOficioSelectValue] = useState<tipoOficio | null>(null);
-    const [selectedUser, setSelectedUser] = useState<string | null>(null)
+    // const [selectedUser, setSelectedUser] = useState<string | null>(null)
     const [isEditing, setIsEditing] = useState<boolean>(false);
-    const [listQuery, setListQuery] = useState<object>({});
+    // const [listQuery, setListQuery] = useState<object>({});
 
     //TODO: mover essas funções de fetch para um hook
     // const fetchNotionData = async () => {
@@ -603,12 +603,11 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
     const queryClient = useQueryClient()
     const { data, isFetching, editableLabel, setEditableLabel,
-        usersList, handleSelectRow, handleSelectAllRows,
+        handleSelectRow, handleSelectAllRows, selectedUser,
         handleCopyValue, handleEditInput, handleArchiveExtrato,
         handleEditStatus, handleEditTipoOficio, handleChangeCreditorName,
         handleChangePhoneNumber, handleChangeEmail, handleChangeProposalPrice,
-        handleChangeFupDate, handleFilterByTipoOficio, handleFilterByUser,
-        handleCleanAllFilters, searchStatus, searchUser, handleFilterByStatus
+        handleChangeFupDate, setListQuery, checkedList, setCheckedList
     } = useContext(TableNotionContext);
 
     // const { isPending, data, error, isFetching, refetch } = useQuery(
@@ -1268,24 +1267,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
             {currentNotionView === 'geral' && (
                 <GeneralView
-                    data={data}
-                    userInfo={userData}
-                    setIsEditing={setIsEditing}
-                    updateState={updateState}
-                    checkedList={checkedList}
-                    handleSelectRow={handleSelectRow}
-                    handleEditTipoOficio={handleEditTipoOficio}
-                    handleChangeCreditorName={handleChangeCreditorName}
-                    editableLabel={editableLabel}
-                    setEditableLabel={setEditableLabel}
-                    handleEditInput={handleEditInput}
                     handleNotionDrawer={handleNotionDrawer}
-                    handleCopyValue={handleCopyValue}
-                    handleEditStatus={handleEditStatus}
-                    archiveStatus={archiveStatus}
-                    handleArchiveExtrato={handleArchiveExtrato}
-                    handleSelectAllRows={handleSelectAllRows}
-                    setCheckedList={setCheckedList}
                 />
             )}
 
