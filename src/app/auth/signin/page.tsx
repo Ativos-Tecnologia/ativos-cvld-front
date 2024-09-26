@@ -19,6 +19,7 @@ import ForgotPassword from "@/components/Modals/ForgotPassword";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import usePassword from "@/hooks/usePassword";
 import { Button } from "@/components/ui/button";
+import { useQueryClient } from "@tanstack/react-query";
 
 
 // export const metadata: Metadata = {
@@ -39,6 +40,7 @@ const SignIn: React.FC = () => {
     formState: { errors },
   } = useForm<SignInInputs>()
   const passwordInput = watch("password");
+  const queryClient = useQueryClient();
 
   const {
     loading,
@@ -53,7 +55,7 @@ const SignIn: React.FC = () => {
 
   //TODO: modificar esse check para retornar um objeto com product e is_confirmed
 
-  async function checkUserProduct (): Promise<string> {
+  async function checkUserProduct(): Promise<string> {
     try {
       const response = await api.get("/api/profile/");
 
@@ -76,6 +78,9 @@ const SignIn: React.FC = () => {
         localStorage.setItem(`ATIVOS_${REFRESH_TOKEN}`, res.data.refresh);
 
         const userProduct = await checkUserProduct();
+
+        queryClient.removeQueries({ queryKey: ['notion_list'] })
+        queryClient.removeQueries({ queryKey: ['user'] })
 
         if (userProduct === 'wallet') {
           router.push(APP_ROUTES.private.wallet.name);

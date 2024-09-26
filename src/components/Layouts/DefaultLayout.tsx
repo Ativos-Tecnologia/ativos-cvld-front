@@ -38,9 +38,7 @@ export default function DefaultLayout({
           <main className="w-full">
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
               <UserProduct>
-                <QueryClientProvider client={queryClient}>
-                  {children}
-                </QueryClientProvider>
+                {children}
               </UserProduct>
             </div>
           </main>
