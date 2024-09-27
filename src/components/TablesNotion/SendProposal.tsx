@@ -24,35 +24,33 @@ import { NotionSkeletonFour } from '../Skeletons/NotionSkeletonFour'
 import { IEditableLabels } from '@/context/ExtratosTableContext'
 import SaveButton from '../Button/SaveButton'
 import CopyButton from '../Button/CopyButton'
+import { TableNotionContext } from '@/context/NotionTableContext'
 
-export const SendProposal = ({ data, userInfo, setIsEditing, checkedList, editLock, editableLabel, updateState, setEditableLabel, handleNotionDrawer, handleSelectRow, handleChangeFupDate, archiveStatus, handleArchiveExtrato, handleSelectAllRows, setCheckedList,
-    handleChangeCreditorName, handleEditInput, handleEditStatus, handleCopyValue, handleChangeProposalPrice
-}:
-    {
-        data: any,
-        userInfo: UserInfo,
-        setIsEditing: React.Dispatch<React.SetStateAction<boolean>>,
-        checkedList: NotionPage[],
-        editLock: boolean,
-        updateState: string | null,
-        editableLabel: IEditableLabels;
-        setEditableLabel: React.Dispatch<React.SetStateAction<IEditableLabels>>;
-        handleNotionDrawer: (id: string) => void;
-        handleSelectRow: (item: NotionPage) => void;
-        handleChangeCreditorName: (value: string, page_id: string, queryKeyList: any[]) => Promise<void>;
-        handleEditInput: (index: number, refList: HTMLDivElement[] | null) => void;
-        handleEditStatus: (page_id: string, status: statusOficio, queryKeyList: any[]) => Promise<void>;
-        handleChangeProposalPrice: (page_id: string, value: string, queryKeyList: any[]) => Promise<void>;
-        handleCopyValue: (index: number) => void;
-        handleChangeFupDate: (page_id: string, value: string, type: string, queryKeyList: any[]) => Promise<void>;
-        archiveStatus: boolean;
-        handleArchiveExtrato: (queryList: any[]) => Promise<void>;
-        handleSelectAllRows: (list: any) => void;
-        setCheckedList: React.Dispatch<React.SetStateAction<NotionPage[]>>;
-    }
-) => {
+export const SendProposal = ({ handleNotionDrawer }: { handleNotionDrawer: (id: string) => void }) => {
 
     /* ========> states <======== */
+    const {
+        data,
+        userData,
+        setIsEditing,
+        updateState,
+        checkedList,
+        editLock,
+        setCheckedList,
+        handleSelectRow,
+        handleChangeCreditorName,
+        editableLabel,
+        setEditableLabel,
+        handleEditInput,
+        handleCopyValue,
+        handleEditStatus,
+        archiveStatus,
+        handleArchiveExtrato,
+        handleSelectAllRows,
+        handleChangeFupDate,
+        handleChangeProposalPrice,
+    } = useContext(TableNotionContext);
+
     const queryClient = useQueryClient();
     const [filters, setFilters] = useState({ credor: '' });
     const [sort, setSort] = useState({ field: null, direction: 'asc' });
@@ -69,8 +67,6 @@ export const SendProposal = ({ data, userInfo, setIsEditing, checkedList, editLo
     const [maskRefsThree, setMaskRefsThree] = useState<any>();
     const [maskRefsFour, setMaskRefsFour] = useState<any>();
     const [maskRefsFive, setMaskRefsFive] = useState<any>();
-
-    const { data: { user, role, sub_role } } = useContext(UserInfoAPIContext);
 
     const secondaryDefaultFilterObject = useMemo(() => {
         return {
@@ -90,9 +86,9 @@ export const SendProposal = ({ data, userInfo, setIsEditing, checkedList, editLo
         "and":
             [
                 {
-                    "property": sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
+                    "property": userData?.sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
                     "multi_select": {
-                        "contains": user
+                        "contains": userData?.user
                     }
                 },
                 secondaryDefaultFilterObject
@@ -153,7 +149,7 @@ export const SendProposal = ({ data, userInfo, setIsEditing, checkedList, editLo
     existentes (caso haja) */
     const fetchByName = async (name: string) => {
         const response = await api.post("/api/notion-api/list/search/", {
-            "username": user,
+            "username": userData?.user,
             "creditor_name": name
         });
 
@@ -169,8 +165,8 @@ export const SendProposal = ({ data, userInfo, setIsEditing, checkedList, editLo
 
         try {
             const response = await api.post(`/api/notion-api/list/database/next-cursor/${nextCursor}/`, {
-                "username": user,
-                "is_coordenador": userInfo.sub_role === "coordenador" ? true : false
+                "username": userData?.user,
+                "is_coordenador": userData?.sub_role === "coordenador" ? true : false
             });
 
             setNextCursor(response.data.next_cursor);
@@ -432,7 +428,7 @@ export const SendProposal = ({ data, userInfo, setIsEditing, checkedList, editLo
                                                     title={item.properties.Credor?.title[0].text.content || ''}
                                                     className='relative w-full flex items-center gap-3'>
 
-                                                    {userInfo?.role === 'ativos' && (
+                                                    {userData?.role === 'ativos' && (
                                                         <CustomCheckbox
                                                             check={checkedList!.some(target => target.id === item.id)}
                                                             callbackFunction={() => handleSelectRow(item)}
@@ -539,7 +535,7 @@ export const SendProposal = ({ data, userInfo, setIsEditing, checkedList, editLo
                                                                         />
                                                                         <span className='text-xs'>Abrir</span>
                                                                     </div>
-                                                                    {(item.url && role === 'ativos') && (
+                                                                    {(item.url && userData?.role === 'ativos') && (
                                                                         <a href={item.url} target='_blank' rel='referrer'
                                                                             title='Abrir no Notion'
                                                                             className='py-1 px-2 mr-1 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 cursor-pointer'

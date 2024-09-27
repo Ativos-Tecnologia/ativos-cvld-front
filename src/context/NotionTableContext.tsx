@@ -16,6 +16,7 @@ export interface ITableNotion {
     data: any,
     userData: any;
     isFetching: boolean,
+    editLock: boolean;
     updateState: string | null;
     selectedUser: string | null;
     archiveStatus: boolean;
@@ -31,7 +32,7 @@ export interface ITableNotion {
     isEditing: boolean,
     setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
     checkedList: NotionPage[];
-    setCheckedList:  React.Dispatch<React.SetStateAction<NotionPage[]>>;
+    setCheckedList: React.Dispatch<React.SetStateAction<NotionPage[]>>;
     handleSelectRow: (row: NotionPage) => void;
     handleSelectAllRows: (list: NotionPage[]) => void;
     handleCopyValue: (index: number) => void;
@@ -58,6 +59,7 @@ export const TableNotionContext = createContext<ITableNotion>({
     data: {},
     userData: null,
     selectedUser: null,
+    editLock: false,
     archiveStatus: false,
     isFetching: false,
     updateState: null,
@@ -116,7 +118,7 @@ export const TableNotionContext = createContext<ITableNotion>({
 });
 
 export const TableNotionProvider = ({ children }: { children: React.ReactNode }) => {
-    
+
     /*  ====> states <===== */
     const [statusSelectValue, setStatusSelectValue] = useState<statusOficio | null>(null);
     const [oficioSelectValue, setOficioSelectValue] = useState<tipoOficio | null>(null);
@@ -668,16 +670,11 @@ export const TableNotionProvider = ({ children }: { children: React.ReactNode })
     });
 
     /*  ====> Functions <==== */
-    const buildQuery = useCallback(() => {
+    const buildQueryForUserOnly = useCallback(() => {
 
         return {
             "and": [
-                userData?.sub_role === 'coordenador' ? {
-                    "property": "Coordenadores",
-                    "multi_select": {
-                        "contains": userData?.user
-                    }
-                } : {
+                {
                     "property": "Usuário",
                     "multi_select": {
                         "contains": selectedUser || userData?.user
@@ -697,8 +694,43 @@ export const TableNotionProvider = ({ children }: { children: React.ReactNode })
                 },
                 secondaryDefaultFilterObject
             ]
-        };
-    }, [userData?.sub_role, userData?.user, selectedUser, statusSelectValue, oficioSelectValue, secondaryDefaultFilterObject]);
+        }
+
+    }, [userData?.user, selectedUser, statusSelectValue, oficioSelectValue, secondaryDefaultFilterObject]);
+
+    const buildQueryForCoordinatorOnly = useCallback(() => {
+
+        return {
+            "and": [
+                {
+                    "property": "Coordenadores",
+                    "multi_select": {
+                        "contains": userData?.user
+                    }
+                },
+                {
+                    "property": "Usuário",
+                    "multi_select": {
+                        "contains": selectedUser || ''
+                    }
+                },
+                {
+                    "property": "Status",
+                    "status": {
+                        "equals": statusSelectValue || ''
+                    }
+                },
+                {
+                    "property": "Tipo",
+                    "select": {
+                        "equals": oficioSelectValue || ''
+                    }
+                },
+                secondaryDefaultFilterObject
+            ]
+        }
+
+    }, [userData?.user, selectedUser, statusSelectValue, oficioSelectValue, secondaryDefaultFilterObject]);
 
     const handleSelectRow = (item: NotionPage) => {
 
@@ -835,23 +867,18 @@ export const TableNotionProvider = ({ children }: { children: React.ReactNode })
     const handleFilterByTipoOficio = (oficio: tipoOficio) => {
         setOficioSelectValue(oficio);
         setListQuery(
-            {
+            userData?.sub_role === 'coordenador' ? {
                 "and": [
                     {
-                        "property": selectedUser && userData?.sub_role === 'coordenador' ? "Usuário" : "Coordenadores",
-                        "multi_select": {
-                            "contains": selectedUser && userData?.sub_role === 'coordenador' ? selectedUser : ""
-                        }
-                    },
-                    userData?.sub_role === 'coordenador' ? {
                         "property": "Coordenadores",
                         "multi_select": {
                             "contains": userData?.user
                         }
-                    } : {
+                    },
+                    {
                         "property": "Usuário",
                         "multi_select": {
-                            "contains": selectedUser || userData?.user
+                            "contains": selectedUser || ''
                         }
                     },
                     {
@@ -868,6 +895,28 @@ export const TableNotionProvider = ({ children }: { children: React.ReactNode })
                     },
                     secondaryDefaultFilterObject
                 ]
+            } : {
+                "and": [
+                    {
+                        "property": "Usuário",
+                        "multi_select": {
+                            "contains": selectedUser || userData?.user
+                        }
+                    },
+                    {
+                        "property": "Status",
+                        "status": {
+                            "equals": statusSelectValue || ''
+                        }
+                    },
+                    {
+                        "property": "Tipo",
+                        "select": {
+                            "equals": oficio || ''
+                        }
+                    },
+                    secondaryDefaultFilterObject
+                ]
             }
         );
     };
@@ -875,80 +924,117 @@ export const TableNotionProvider = ({ children }: { children: React.ReactNode })
     const handleFilterByStatus = (status: statusOficio) => {
         setFilteredStatusValues(ENUM_OFICIOS_LIST);
         setStatusSelectValue(status);
-        setListQuery({
-            "and": [
-                {
-                    "property": selectedUser && userData?.sub_role === 'coordenador' ? "Usuário" : "Coordenadores",
-                    "multi_select": {
-                        "contains": selectedUser && userData?.sub_role === 'coordenador' ? selectedUser : ""
-                    }
-                },
-                userData?.sub_role === 'coordenador' ? {
-                    "property": "Coordenadores",
-                    "multi_select": {
-                        "contains": userData?.user
-                    }
-                } : {
-                    "property": "Usuário",
-                    "multi_select": {
-                        "contains": selectedUser || userData?.user
-                    }
-                },
-                {
-                    "property": "Status",
-                    "status": {
-                        "equals": status
-                    }
-                },
-                {
-                    "property": "Tipo",
-                    "select": {
-                        "equals": oficioSelectValue || ''
-                    }
-                },
-                secondaryDefaultFilterObject
-            ]
-        });
-
+        setListQuery(
+            userData?.sub_role === 'coordenador' ? {
+                "and": [
+                    {
+                        "property": "Coordenadores",
+                        "multi_select": {
+                            "contains": userData?.user
+                        }
+                    },
+                    {
+                        "property": "Usuário",
+                        "multi_select": {
+                            "contains": selectedUser || ''
+                        }
+                    },
+                    {
+                        "property": "Status",
+                        "status": {
+                            "equals": status || ''
+                        }
+                    },
+                    {
+                        "property": "Tipo",
+                        "select": {
+                            "equals": oficioSelectValue || ''
+                        }
+                    },
+                    secondaryDefaultFilterObject
+                ]
+            } : {
+                "and": [
+                    {
+                        "property": "Usuário",
+                        "multi_select": {
+                            "contains": selectedUser || userData?.user
+                        }
+                    },
+                    {
+                        "property": "Status",
+                        "status": {
+                            "equals": status || ''
+                        }
+                    },
+                    {
+                        "property": "Tipo",
+                        "select": {
+                            "equals": oficioSelectValue || ''
+                        }
+                    },
+                    secondaryDefaultFilterObject
+                ]
+            }
+        );
     };
 
     const handleFilterByUser = (user: string) => {
         setSelectedUser(user);
         setFilteredUsersList(usersList);
-        setListQuery({
-            "and": [
-                {
-                    "property": selectedUser && userData?.sub_role === 'coordenador' ? "Usuário" : "Coordenadores",
-                    "multi_select": {
-                        "contains": selectedUser && userData?.sub_role === 'coordenador' ? user : ""
-                    }
-                },
-                userData?.sub_role === 'coordenador' ? {
-                    "property": "Coordenadores",
-                    "multi_select": {
-                        "contains": userData?.user
-                    }
-                } : {
-                    "property": "Usuário",
-                    "multi_select": {
-                        "contains": user
-                    }
-                },
-                {
-                    "property": "Status",
-                    "status": {
-                        "equals": statusSelectValue || ''
-                    }
-                },
-                {
-                    "property": "Tipo",
-                    "select": {
-                        "equals": oficioSelectValue || ''
-                    }
-                },
-                secondaryDefaultFilterObject
-            ]
-        });
+        setListQuery(
+            userData?.sub_role === 'coordenador' ? {
+                "and": [
+                    {
+                        "property": "Coordenadores",
+                        "multi_select": {
+                            "contains": userData?.user
+                        }
+                    },
+                    {
+                        "property": "Usuário",
+                        "multi_select": {
+                            "contains": user
+                        }
+                    },
+                    {
+                        "property": "Status",
+                        "status": {
+                            "equals": statusSelectValue || ''
+                        }
+                    },
+                    {
+                        "property": "Tipo",
+                        "select": {
+                            "equals": oficioSelectValue || ''
+                        }
+                    },
+                    secondaryDefaultFilterObject
+                ]
+            } : {
+                "and": [
+                    {
+                        "property": "Usuário",
+                        "multi_select": {
+                            "contains": user
+                        }
+                    },
+                    {
+                        "property": "Status",
+                        "status": {
+                            "equals": statusSelectValue || ''
+                        }
+                    },
+                    {
+                        "property": "Tipo",
+                        "select": {
+                            "equals": oficioSelectValue || ''
+                        }
+                    },
+                    secondaryDefaultFilterObject
+                ]
+            }
+        );
     };
 
     const handleCleanAllFilters = () => {
@@ -981,7 +1067,7 @@ export const TableNotionProvider = ({ children }: { children: React.ReactNode })
     // atualiza a queryList
     useEffect(() => {
         if (userData) {
-            const updatedQuery = buildQuery();
+            const updatedQuery = userData?.sub_role === 'coordenador' ? buildQueryForCoordinatorOnly() : buildQueryForUserOnly();
             setListQuery(updatedQuery);
 
             if (Object.keys(updatedQuery).length > 0) {
@@ -989,12 +1075,12 @@ export const TableNotionProvider = ({ children }: { children: React.ReactNode })
             }
         }
 
-    }, [userData?.user, statusSelectValue, oficioSelectValue, selectedUser, buildQuery, refetch]);
+    }, [userData?.user, statusSelectValue, oficioSelectValue, selectedUser]);
 
     // atualiza o state do listQuery quando renderiza o contexto
     useEffect(() => {
         if (userData && listQuery === null) {
-            const defaultQuery = buildQuery();
+            const defaultQuery = buildQueryForUserOnly();
             setListQuery(defaultQuery);
 
             if (Object.keys(defaultQuery).length > 0) {
@@ -1018,7 +1104,6 @@ export const TableNotionProvider = ({ children }: { children: React.ReactNode })
         fetchData();
     }, [userData?.role]);
 
-    console.log(data)
 
     return (
         <TableNotionContext.Provider value={{
@@ -1030,7 +1115,7 @@ export const TableNotionProvider = ({ children }: { children: React.ReactNode })
             handleChangeEmail, handleChangeProposalPrice, handleChangeFupDate,
             handleFilterByTipoOficio, handleFilterByUser, handleCleanAllFilters,
             searchStatus, searchUser, handleFilterByStatus, selectedUser, setCheckedList,
-            updateState, archiveStatus
+            updateState, archiveStatus, editLock
         }}>
             {children}
         </TableNotionContext.Provider>

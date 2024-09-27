@@ -81,7 +81,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
         </div>)
       } */}
 
-      {window.innerWidth >= 435 ? (
+      {window.innerWidth >= 100 ? (
           <>
 
             {/* desktop view */}

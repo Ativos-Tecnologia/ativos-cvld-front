@@ -1274,96 +1274,25 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
 
             {currentNotionView === 'realizar 1º contato' &&
                 <MakeFirstContact
-                    data={data}
-                    userInfo={userData}
-                    setIsEditing={setIsEditing}
-                    updateState={updateState}
-                    editLock={editLock}
-                    checkedList={checkedList}
-                    editableLabel={editableLabel}
-                    setEditableLabel={setEditableLabel}
                     handleNotionDrawer={handleNotionDrawer}
-                    handleSelectRow={handleSelectRow}
-                    handleChangeCreditorName={handleChangeCreditorName}
-                    handleEditInput={handleEditInput}
-                    handleChangePhoneNumber={handleChangePhoneNumber}
-                    handleChangeEmail={handleChangeEmail}
-                    handleEditStatus={handleEditStatus}
-                    archiveStatus={archiveStatus}
-                    handleSelectAllRows={handleSelectAllRows}
-                    handleArchiveExtrato={handleArchiveExtrato}
-                    setCheckedList={setCheckedList}
                 />
             }
 
             {currentNotionView === 'juntar ofício/valor líquido' &&
                 <OfficeTypeAndValue
-                    data={data}
-                    userInfo={userData}
-                    setIsEditing={setIsEditing}
-                    checkedList={checkedList}
-                    editableLabel={editableLabel}
-                    updateState={updateState}
-                    setEditableLabel={setEditableLabel}
                     handleNotionDrawer={handleNotionDrawer}
-                    handleSelectRow={handleSelectRow}
-                    handleChangeCreditorName={handleChangeCreditorName}
-                    handleEditInput={handleEditInput}
-                    handleEditStatus={handleEditStatus}
-                    handleEditTipoOficio={handleEditTipoOficio}
-                    handleCopyValue={handleCopyValue}
-                    archiveStatus={archiveStatus}
-                    handleArchiveExtrato={handleArchiveExtrato}
-                    handleSelectAllRows={handleSelectAllRows}
-                    setCheckedList={setCheckedList}
                 />
             }
 
             {currentNotionView === 'enviar proposta/negociação' &&
                 <SendProposal
-                    data={data}
-                    userInfo={userData}
-                    setIsEditing={setIsEditing}
-                    checkedList={checkedList}
-                    editableLabel={editableLabel}
-                    updateState={updateState}
-                    editLock={editLock}
-                    setEditableLabel={setEditableLabel}
                     handleNotionDrawer={handleNotionDrawer}
-                    handleSelectRow={handleSelectRow}
-                    handleChangeCreditorName={handleChangeCreditorName}
-                    handleEditInput={handleEditInput}
-                    handleEditStatus={handleEditStatus}
-                    handleChangeProposalPrice={handleChangeProposalPrice}
-                    handleCopyValue={handleCopyValue}
-                    handleChangeFupDate={handleChangeFupDate}
-                    archiveStatus={archiveStatus}
-                    handleArchiveExtrato={handleArchiveExtrato}
-                    handleSelectAllRows={handleSelectAllRows}
-                    setCheckedList={setCheckedList}
                 />
             }
 
             {currentNotionView === 'proposta aceita' &&
                 <ProposalAccepted
-                    data={data}
-                    userInfo={userData}
-                    setIsEditing={setIsEditing}
-                    checkedList={checkedList}
-                    updateState={updateState}
-                    editableLabel={editableLabel}
-                    setEditableLabel={setEditableLabel}
-                    numberFormat={numberFormat}
                     handleNotionDrawer={handleNotionDrawer}
-                    handleSelectRow={handleSelectRow}
-                    handleChangeCreditorName={handleChangeCreditorName}
-                    handleEditInput={handleEditInput}
-                    handleEditStatus={handleEditStatus}
-                    handleCopyValue={handleCopyValue}
-                    archiveStatus={archiveStatus}
-                    handleArchiveExtrato={handleArchiveExtrato}
-                    handleSelectAllRows={handleSelectAllRows}
-                    setCheckedList={setCheckedList}
                 />
             }
             {/* {isPending &&
