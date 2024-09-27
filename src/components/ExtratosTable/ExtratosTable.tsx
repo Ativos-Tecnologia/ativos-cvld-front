@@ -81,7 +81,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
         </div>)
       } */}
 
-      {window.innerWidth >= 435 ? (
+      {window.innerWidth >= 100 ? (
           <>
 
             {/* desktop view */}
@@ -98,11 +98,11 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
                     <div className="flex w-full h-full items-center justify-between">
 
                       {/* filters */}
-                      {
+                      {/* {
                         <Filters
                           resetFilters={resetFilters}
                           filterData={filterData} />
-                      }
+                      } */}
                       {/* end filters */}
 
                       {/* alternate between view extract mode */}
@@ -173,10 +173,10 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
             <div className="flex w-full h-full items-center justify-between">
 
               {/* filters */}
-              <Filters
+              {/* <Filters
                 resetFilters={resetFilters}
                 filterData={filterData}
-              />
+              /> */}
               {/* end filters */}
 
               {/* alternate between view extract mode */}
