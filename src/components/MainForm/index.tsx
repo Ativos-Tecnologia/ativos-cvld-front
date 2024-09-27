@@ -79,7 +79,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
   const enumTipoOficiosList = Object.values(tipoOficio);
 
   const { data } =
-  useContext<UserInfoContextType>(UserInfoAPIContext);
+    useContext<UserInfoContextType>(UserInfoAPIContext);
 
   const estados = [
     { id: "AC", nome: "Acre" },
@@ -318,7 +318,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
       return postNotionData(newData);
     },
     onMutate: async (newData) => {
-      queryClient.cancelQueries({queryKey: ['notion_list']});
+      queryClient.cancelQueries({ queryKey: ['notion_list'] });
     },
     onSuccess: (data) => {
       queryClient.setQueryData(["notion_list"], (oldData: any) => {
@@ -333,6 +333,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
     data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
     data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
 
+    //#TODO colocar essa condicional dentro de uma função utilitária
     if (!data.data_limite_de_atualizacao_check) {
       const dateInSaoPaulo = new Date().toLocaleDateString('pt-BR', {
         timeZone: 'America/Sao_Paulo',
@@ -702,31 +703,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 />
                 <ErrorMessage errors={errors} field="data_base" />
               </div>
-              <div
-                className={`flex items-center gap-2 ${watch("data_base") < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
-              >
-
-                <CustomCheckbox
-                  check={watch("incidencia_juros_moratorios")}
-                  id={'incidencia_juros_moratorios'}
-                  defaultChecked
-                  register={register("incidencia_juros_moratorios")}
-                />
-
-                {/* <input
-                  type="checkbox"
-                  id="incidencia_juros_moratorios"
-                  className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
-                  defaultChecked
-                  {...register("incidencia_juros_moratorios")}
-                /> */}
-                <label
-                  htmlFor="incidencia_juros_moratorios"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Juros de Mora fixados em sentença
-                </label>
-              </div>
             </div>
 
             <div className="flex flex-col gap-2 2xsm:col-span-2 2xsm:mt-3 sm:col-span-1 sm:mt-0">
@@ -747,6 +723,55 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 />
                 <ErrorMessage errors={errors} field="data_requisicao" />
               </div>
+            </div>
+            <div
+              className={`flex items-center col-span-1 gap-2 ${watch("data_base") < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
+            >
+
+              <CustomCheckbox
+                check={watch("incidencia_juros_moratorios")}
+                id={'incidencia_juros_moratorios'}
+                defaultChecked
+                register={register("incidencia_juros_moratorios")}
+              />
+
+              {/* <input
+                  type="checkbox"
+                  id="incidencia_juros_moratorios"
+                  className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
+                  defaultChecked
+                  {...register("incidencia_juros_moratorios")}
+                /> */}
+              <label
+                htmlFor="incidencia_juros_moratorios"
+                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+              >
+                Juros de Mora fixados em sentença
+              </label>
+            </div>
+            <div
+              className={`flex items-center col-span-1 gap-2 ${watch("data_base") > "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
+            >
+
+              <CustomCheckbox
+                check={watch("nao_incide_selic_no_periodo_db_ate_abril")}
+                id={'nao_incide_selic_no_periodo_db_ate_abril'}
+                register={register("nao_incide_selic_no_periodo_db_ate_abril")}
+              />
+
+              {/* <input
+                  type="checkbox"
+                  id="nao_incide_selic_no_periodo_db_ate_abril"
+                  className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
+                  defaultChecked
+                  {...register("nao_incide_selic_no_periodo_db_ate_abril")}
+                /> */}
+              <label
+                htmlFor="nao_incide_selic_no_periodo_db_ate_abril"
+                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+              >
+                Não incide SELIC sobre juros desde a data base até 12/2021
+              </label>
             </div>
             <div className="flex items-center gap-2 col-span-2">
               <CustomCheckbox
@@ -1863,7 +1888,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                                 <BiLogoUpwork className="h-4 w-4 mt-0.5 mr-2" /> Vincular a outro usuário?
                               </label>
                             </div>
-                            {(watch("novo_usuario") === false || watch("novo_usuario") === undefined) &&watch("vincular_usuario") === true && (
+                            {(watch("novo_usuario") === false || watch("novo_usuario") === undefined) && watch("vincular_usuario") === true && (
                               <div className="flex gap-2 items-center">
                                 <button
                                   type="button"
