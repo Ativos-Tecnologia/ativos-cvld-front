@@ -16,6 +16,7 @@ export interface ITableNotion {
     data: any,
     userData: any;
     isFetching: boolean,
+    editLock: boolean;
     updateState: string | null;
     selectedUser: string | null;
     archiveStatus: boolean;
@@ -58,6 +59,7 @@ export const TableNotionContext = createContext<ITableNotion>({
     data: {},
     userData: null,
     selectedUser: null,
+    editLock: false,
     archiveStatus: false,
     isFetching: false,
     updateState: null,
@@ -1065,7 +1067,6 @@ export const TableNotionProvider = ({ children }: { children: React.ReactNode })
     // atualiza a queryList
     useEffect(() => {
         if (userData) {
-            console.log("mudou o valor de status e está sendo refeita a query")
             const updatedQuery = userData?.sub_role === 'coordenador' ? buildQueryForCoordinatorOnly() : buildQueryForUserOnly();
             setListQuery(updatedQuery);
 
@@ -1114,7 +1115,7 @@ export const TableNotionProvider = ({ children }: { children: React.ReactNode })
             handleChangeEmail, handleChangeProposalPrice, handleChangeFupDate,
             handleFilterByTipoOficio, handleFilterByUser, handleCleanAllFilters,
             searchStatus, searchUser, handleFilterByStatus, selectedUser, setCheckedList,
-            updateState, archiveStatus
+            updateState, archiveStatus, editLock
         }}>
             {children}
         </TableNotionContext.Provider>
