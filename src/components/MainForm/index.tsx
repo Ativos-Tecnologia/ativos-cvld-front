@@ -750,7 +750,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </label>
             </div>
             <div
-              className={`flex items-center col-span-1 gap-2 ${watch("data_base") > "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
+              className={`flex items-center col-span-2 gap-2 ${watch("data_base") > "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
             >
 
               <CustomCheckbox
@@ -770,7 +770,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 htmlFor="nao_incide_selic_no_periodo_db_ate_abril"
                 className="font-nexa text-xs font-semibold uppercase text-meta-5"
               >
-                Não incide SELIC sobre juros desde a data base até 12/2021
+                SELIC somente sobre o principal
               </label>
             </div>
             <div className="flex items-center gap-2 col-span-2">
