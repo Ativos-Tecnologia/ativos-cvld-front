@@ -15,6 +15,7 @@ const Filters = ({ currentNotionView, notionViews }: { currentNotionView: string
     /* ====> states <==== */
     const {
         isFetching,
+        setIsEditing,
         statusSelectValue,
         oficioSelectValue,
         handleFilterByStatus,
@@ -77,6 +78,16 @@ const Filters = ({ currentNotionView, notionViews }: { currentNotionView: string
         document.addEventListener("click", clickHandler);
         return () => document.removeEventListener("click", clickHandler);
     });
+
+    // bloqueia as queries automáticas se algum select estiver aberto
+    useEffect(() => {
+        if (openStatusPopover || openTipoOficioPopover || openUsersPopover) {
+            setIsEditing(true);
+        } else {
+            setIsEditing(false);
+        }
+    }, [openStatusPopover, openTipoOficioPopover, openUsersPopover]);
+
 
     return (
         <div className={`flex items-center justify-between mt-3 ${isFetching && 'pointer-events-none'}`}>
