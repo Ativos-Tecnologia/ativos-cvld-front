@@ -28,6 +28,9 @@ export const APP_ROUTES = {
         },
         two_step_verification: {
             name: '/auth/two-step-verification'
+        },
+        automated_proposal: {
+            name: "/automated-proposal"
         }
     }
 };
