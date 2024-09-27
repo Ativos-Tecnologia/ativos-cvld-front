@@ -49,7 +49,7 @@ const GeneralView = ({ handleNotionDrawer }: { handleNotionDrawer: (id: string) 
         handleArchiveExtrato,
         handleSelectAllRows
     } = useContext(TableNotionContext)
-    console.log(userData)
+    
     const queryClient = useQueryClient();
     const inputCredorRefs = useRef<HTMLDivElement[] | null>([]);
     const usersListRef = useRef<HTMLDivElement[] | null>([]);
