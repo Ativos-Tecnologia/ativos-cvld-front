@@ -41,6 +41,7 @@ import { PaginatedResponse } from "../TaskElements";
 import { Avatar } from "flowbite-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import CustomCheckbox from "../CrmUi/Checkbox";
+import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
 
 interface ChartTwoState {
   series: {
@@ -296,17 +297,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
     const decoded: JWTToken = jwtDecode(token!);
     return decoded.is_staff;
   };
-
-  function backendNumberFormat(value: string) {
-    if (!value?.replace) {
-      return "0.00";
-    }
-
-    return (
-      value.replace("R$ ", "").replaceAll(".", "").replaceAll(",", ".") ||
-      "0.00"
-    );
-  }
 
   const postNotionData = async (data: any) => {
     const response = await api.post("/api/extrato/create/", data)

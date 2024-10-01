@@ -29,7 +29,7 @@ export default function UnloggedLayout({ children, }: { children: React.ReactNod
           {/* <!-- ===== Main Content Start ===== --> */}
           {/* put p-4 md:p-6 2xl:p-10 on the children principal container */}
           <main>
-            <div className="relative mx-auto overflow-hidden max-w-screen-2xl">
+            <div className="relative mx-auto overflow-hidden">
               {children}
             </div>
           </main>

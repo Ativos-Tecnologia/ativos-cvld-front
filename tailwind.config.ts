@@ -337,6 +337,26 @@ const config = {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
+        "fade-up": {
+          "0%": {
+            opacity: "0",
+            transform: "translateY(100px)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateY(0)"
+          }
+        },
+        "fade-right": {
+          "0%": {
+            opacity: "0",
+            transform: "translateX(100px)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateX(0)"
+          }
+        },
         "caret-blink": {
           "0%,70%,100%": { opacity: "1" },
           "20%,50%": { opacity: "0" },
@@ -463,6 +483,8 @@ const config = {
         },
       },
       animation: {
+        "fade-up": "fade-up 1s ease-out forwards",
+        "fade-right": "fade-right 1s ease-out forwards",
         "caret-blink": "caret-blink 1.25s ease-out infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
