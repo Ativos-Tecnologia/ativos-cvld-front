@@ -16,6 +16,7 @@ import React, { useEffect, useRef, useState } from "react"
 import { Controller, useForm } from "react-hook-form";
 import { AiOutlineLoading } from "react-icons/ai";
 import { BiChevronDown } from "react-icons/bi";
+import { FaWhatsapp } from "react-icons/fa";
 import { toast } from "sonner";
 
 interface IProposalFormStateProps {
@@ -38,6 +39,8 @@ interface IProposalFormStateProps {
     percentual_de_honorarios: number,
     percentual_a_ser_adquirido: number
 }
+
+const whatsAppNumber = "5581996871762"; // número do consultor da Ativos para receber mensagens
 
 const tribunais = [
     { id: "TRF1", nome: "Tribunal Regional Federal - 1ª Região" },
@@ -139,6 +142,8 @@ const AutomatedProposal = () => {
     const [headerColorset, setHeaderColorset] = useState<'smooth' | 'glass'>('smooth');
     const [loading, setLoading] = useState<boolean>(false);
     const [showResults, setShowResults] = useState<boolean>(false);
+    const [filledFormData, setFilledFormData] = useState<IProposalFormStateProps | null>(null);
+    console.log(filledFormData)
     const mainRef = useRef<HTMLDivElement | null>(null);
 
     /* ====> value states <==== */
@@ -149,8 +154,9 @@ const AutomatedProposal = () => {
         comission: 0
     })
 
+    // Função para atualizar a proposta e ajustar a comissão proporcionalmente
     const handleProposalSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newProposalSliderValue = parseInt(e.target.value);
+        const newProposalSliderValue = parseFloat(e.target.value);
         setSliderValues(oldValues => {
             return { ...oldValues, proposal: newProposalSliderValue }
         });
@@ -159,13 +165,13 @@ const AutomatedProposal = () => {
         const proportion = (newProposalSliderValue - proposalValue.min) / (proposalValue.max - proposalValue.min);
         const newComissionSliderValue = comissionValue.max - proportion * (comissionValue.max - comissionValue.min);
         setSliderValues(oldValues => {
-            return { ...oldValues, comission: Math.round(newComissionSliderValue) }
+            return { ...oldValues, comission: newComissionSliderValue }
         });
     };
 
     // Função para atualizar a comissão e ajustar a proposta proporcionalmente
     const handleComissionSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newComissionSliderValue = parseInt(e.target.value);
+        const newComissionSliderValue = parseFloat(e.target.value);
         setSliderValues(oldValues => {
             return { ...oldValues, comission: newComissionSliderValue }
         });
@@ -174,7 +180,7 @@ const AutomatedProposal = () => {
         const proportion = (newComissionSliderValue - comissionValue.min) / (comissionValue.max - comissionValue.min);
         const newProposalSliderValue = proposalValue.max - proportion * (proposalValue.max - proposalValue.min);
         setSliderValues(oldValues => {
-            return {...oldValues,  proposal: Math.round(newProposalSliderValue)}
+            return { ...oldValues, proposal: newProposalSliderValue }
         });
     };
 
@@ -193,8 +199,6 @@ const AutomatedProposal = () => {
             data.percentual_de_honorarios = 30;
         }
 
-        console.log(data);
-
         try {
 
             const response = await api.post('/api/lead-magnet/', data);
@@ -203,6 +207,7 @@ const AutomatedProposal = () => {
                 setProposalValue({ min: results.min_proposal, max: results.max_proposal });
                 setComissionValue({ min: results.min_comission, max: results.max_comission });
                 setShowResults(true);
+                setFilledFormData(data)
             } else if (response.status === 400) {
                 toast.error(response.data.error) // lança toast de erro na tela com mensagem personalizada
             }
@@ -213,6 +218,43 @@ const AutomatedProposal = () => {
             setLoading(false);
         }
 
+    }
+
+    function dateConverter(date: string): string {
+        const convertedDate = date.split("-").reverse().join("/");
+        return convertedDate;
+    }
+
+    const redirectToWhatsApp = () => {
+        const message = `
+        Olá, venho da aplicação CelerApp, onde acabo de fazer um cálculo de proposta.
+Segue abaixo os dados do cálculo:
+
+    - Valor de proposta: ${numberFormat(sliderValues.proposal)}
+    - Valor de comissão: ${numberFormat(sliderValues.comission)}
+
+
+E abaixo, uma memória das informações de entrada:
+
+    - Tipo: ${filledFormData!.tipo_do_oficio}
+    - Natureza: ${filledFormData!.natureza}
+    - Esfera: ${filledFormData!.esfera}
+    - Tribunal:  ${filledFormData!.tribunal}
+    - Valor Principal: ${numberFormat(filledFormData!.valor_principal)}
+    - Valor Juros: ${numberFormat(filledFormData!.valor_juros)}
+    - Data Base: ${dateConverter(filledFormData!.data_base)}
+    - Data de Requisição:  ${dateConverter(filledFormData!.data_requisicao)}
+    - Percentual de Aquisição: ${filledFormData!.percentual_a_ser_adquirido}%
+    - Juros de mora?: ${filledFormData!.incidencia_juros_moratorios ? "Sim" : "Não"}
+    - Incidência de IR?: ${filledFormData!.incidencia_rra_ir ? "Sim" : "Não"}
+    - IR incide sobre RRA?: ${filledFormData!.ir_incidente_rra ? "Sim" : "Não"}
+    - Incidência de PSS?: ${filledFormData!.incidencia_pss ? "Sim" : "Não"}
+    - Quantidade de meses: ${filledFormData!.numero_de_meses}
+    - Possui destacamento de honorários?: ${filledFormData!.ja_possui_destacamento ? "Sim" : "Não"}
+        `;
+
+        const linkWhatsApp = `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(message)}`;
+        window.open(linkWhatsApp, "_blank", "noopener,noreferrer")
     }
 
     useEffect(() => {
@@ -741,69 +783,93 @@ const AutomatedProposal = () => {
                         {/* end calculate button */}
                     </form>
                     {showResults && (
-                        <div className="flex flex-col gap-10 mt-20 opacity-0 animate-fade-up">
-                            <div>
-                                <h2 className="text-xl font-medium uppercase">Tudo pronto!</h2>
-                                <p className="text-slate-500 text-sm">
-                                    Abaixo foram gerados os valores mínimos e máximos de proposta e comissão. Mova os sliders para alterar os valores proporcionalmente.
-                                </p>
-                            </div>
-                            <div className="grid gap-10 mt-10">
-
-                                <div className="flex items-center justify-between gap-5">
-                                    <div className="relative flex flex-col items-center">
-                                        <h4 className="">Proposta Mínima</h4>
-                                        <span>
-                                            {numberFormat(proposalValue.min)}
-                                        </span>
-                                    </div>
-                                    <div className="flex flex-col flex-1 gap-1 items-center">
-                                        <span className="text-sm">Proposta atual: {sliderValues.proposal}</span>
-                                        <input
-                                            type="range"
-                                            min={proposalValue.min}
-                                            max={proposalValue.max}
-                                            value={sliderValues.proposal}
-                                            onChange={handleProposalSliderChange}
-                                            className="w-full"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col items-center">
-                                        <h4 className="">Proposta Máxima</h4>
-                                        <span>
-                                            {numberFormat(proposalValue.max)}
-                                        </span>
-                                    </div>
+                        <React.Fragment>
+                            <div className="flex flex-col gap-10 my-20 opacity-0 animate-fade-up">
+                                <div>
+                                    <h2 className="text-xl font-medium uppercase">Tudo pronto!</h2>
+                                    <p className="text-slate-500 text-sm">
+                                        Abaixo foram gerados os valores mínimos e máximos de proposta e comissão. Mova os sliders para alterar os valores proporcionalmente.
+                                    </p>
                                 </div>
+                                <div className="grid gap-10 mt-10">
 
-                                <div className="relative flex items-center justify-between gap-5">
-                                    <div className="flex flex-col items-center">
-                                        <h4 className="">Comissão Mínima</h4>
-                                        <span>
-                                            {numberFormat(comissionValue.min)}
-                                        </span>
+                                    <div className="flex items-center justify-between gap-5">
+                                        <div className="relative flex flex-col items-center">
+                                            <h4 className="">Proposta Mínima</h4>
+                                            <span>
+                                                {numberFormat(proposalValue.min)}
+                                            </span>
+                                        </div>
+                                        <div className="flex flex-col flex-1 gap-1 items-center">
+                                            <span className="text-sm font-medium">Proposta Atual: {numberFormat(sliderValues.proposal)}</span>
+                                            <input
+                                                type="range"
+                                                step="0.01"
+                                                min={proposalValue.min}
+                                                max={proposalValue.max}
+                                                value={sliderValues.proposal}
+                                                onChange={handleProposalSliderChange}
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col items-center">
+                                            <h4 className="">Proposta Máxima</h4>
+                                            <span>
+                                                {numberFormat(proposalValue.max)}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div className="flex flex-col flex-1 gap-1 items-center">
-                                        <span className="text-sm">Comissão atual: {sliderValues.comission}</span>
-                                        <input
-                                            type="range"
-                                            min={comissionValue.min}
-                                            max={comissionValue.max}
-                                            value={sliderValues.comission}
-                                            onChange={handleComissionSliderChange}
-                                            className="w-full"
-                                        />
+
+                                    <div className="relative flex items-center justify-between gap-5">
+                                        <div className="flex flex-col items-center">
+                                            <h4 className="">Comissão Mínima</h4>
+                                            <span>
+                                                {numberFormat(comissionValue.min)}
+                                            </span>
+                                        </div>
+                                        <div className="flex flex-col flex-1 gap-1 items-center">
+                                            <span className="text-sm font-medium">Comissão Atual: {numberFormat(sliderValues.comission)}</span>
+                                            <input
+                                                type="range"
+                                                step="0.01"
+                                                min={comissionValue.min}
+                                                max={comissionValue.max}
+                                                value={sliderValues.comission}
+                                                onChange={handleComissionSliderChange}
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col items-center">
+                                            <h4 className="">Comissão Máxima</h4>
+                                            <span>
+                                                {numberFormat(comissionValue.max)}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div className="flex flex-col items-center">
-                                        <h4 className="">Comissão Máxima</h4>
-                                        <span>
-                                            {numberFormat(comissionValue.max)}
-                                        </span>
-                                    </div>
+
                                 </div>
-
                             </div>
-                        </div>
+
+                            <div className="flex gap-4 items-center justify-center">
+                                {/* register button */}
+                                <Link
+                                    href={"/auth/signup"}
+                                    className="flex items-center justify-center px-6 py-3 h-14 bg-blue-700 text-snow border rounded-md hover:bg-blue-800 transition-all duration-300">
+                                    Desejo cadastrar este ativo no Celer
+                                </Link>
+                                {/* register button */}
+
+                                {/* whatsapp button */}
+                                <button
+                                    className={`${headerColorset === 'glass' ? "opacity-100 cursor-pointer" : "opacity-0 cursor-default"} px-4 py-2 flex gap-2 place-items-center rounded-md bg-green-500 hover:bg-green-600 text-snow transition-all duration-300`}
+                                    onClick={redirectToWhatsApp}
+                                >
+                                    <span>Falar com um consultor Ativos</span>
+                                    <FaWhatsapp className='w-10 h-10 text-snow' />
+                                </button>
+                                {/* end whatsapp button */}
+                            </div>
+                        </React.Fragment>
                     )}
                 </div>
                 {/* end form */}
