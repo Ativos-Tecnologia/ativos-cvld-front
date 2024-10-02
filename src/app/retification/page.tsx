@@ -84,6 +84,10 @@ const RecalculateTrf1 = () => {
             data.incidencia_pss = true;
         }
 
+        if (valuesFormater(data.numero_de_meses) > 0) {
+            data.ir_incidente_rra = true;
+        }
+
         data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
 
         if (data.data_base > "2021-12-01") {
@@ -130,10 +134,13 @@ const RecalculateTrf1 = () => {
 
             {/* image-wrapper */}
             <div className="relative">
-                <img
+                <Image
                     src="/images/TRF1.jpg"
                     alt="imagem do tribunal regional 1"
                     className="w-full max-h-[500px]"
+                    width={1920}
+                    height={500}
+                    quality={100}
                 />
                 <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(229,231,235,1)_1%,transparent_99%)] flex flex-col">
                     <div className="w-230 mx-auto">
