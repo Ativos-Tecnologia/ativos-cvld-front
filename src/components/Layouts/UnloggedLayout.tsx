@@ -12,8 +12,8 @@ export default function UnloggedLayout({ children, }: { children: React.ReactNod
     localStorage.removeItem('ATIVOS_refresh');
   }
 
-  // automatically will set the dark or light mode using the localStorage value
-  const [colorMode, setColorMode] = useColorMode();
+  // // automatically will set the dark or light mode using the localStorage value
+  // const [colorMode, setColorMode] = useColorMode();
   return (
     <>
       {/* <!-- ===== Page Wrapper Start ===== --> */}
@@ -34,9 +34,9 @@ export default function UnloggedLayout({ children, }: { children: React.ReactNod
             <div className="relative mx-auto overflow-hidden">
               {children}
             </div>
-        {/* {
+        {
           window.location.pathname === '/auth/signin' || window.location.pathname === '/auth/signup' ? <LiteFooter /> : <MainFooter />
-        } */}
+        }
           </main>
           {/* <!-- ===== Main Content End ===== --> */}
         </div>

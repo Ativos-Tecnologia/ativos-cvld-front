@@ -20,6 +20,7 @@ import { BsEye, BsEyeSlash } from "react-icons/bs";
 import usePassword from "@/hooks/usePassword";
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
+import "./index.css";
 
 
 // export const metadata: Metadata = {
@@ -105,15 +106,14 @@ const SignIn: React.FC = () => {
 
   return (
     <UnloggedLayout>
-      <div className="p-4">
+      <div>
         <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-          <div className="flex flex-wrap items-center">
+          <div className="flex flex-wrap">
             {/* Bloco Desktop */}
-            <div className="hidden w-full xl:block xl:w-1/2">
-              <div className="px-26 py-17.5 text-center">
-                <Link className="mb-12 flex flex-col justify-center
-               items-center" href="/">
-                  <div className="hidden dark:flex flex-col items-center gap-3 bg">
+            <div className="hidden min-h-full w-full xl:block xl:w-1/2 xl:border-r-2 shadow-default dark:border-strokedark">
+              <div className="px-26 flex flex-col min-h-full text-center justify-around hero_login .hero_login_shadow">
+                <div className="mb-12 flex flex-col justify-center items-center">
+                  <div className="hidden dark:flex flex-col items-center ">
                     <Image
                       src={"/images/logo/celer-app-logo-dark.svg"}
                       alt="Logo"
@@ -127,7 +127,7 @@ const SignIn: React.FC = () => {
                       height={32}
                     />
                   </div>
-                  <div className="dark:hidden flex flex-col items-center gap-3 bg">
+                  <div className="dark:hidden flex flex-col items-center gap-3">
                     <Image
                       src={"/images/logo/celer-app-logo.svg"}
                       alt="Logo"
@@ -141,7 +141,7 @@ const SignIn: React.FC = () => {
                       height={32}
                     />
                   </div>
-                </Link>
+                </div>
                 <p className="2xl:px-10 text-lg font-medium">
                   Atualização inteligente dos valores de precatórios com base na legislação vigente
                 </p>
@@ -151,8 +151,8 @@ const SignIn: React.FC = () => {
 
             {/* Bloco Mobile */}
 
-            <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
-              <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
+            <div className="w-full border-stroke dark:border-strokedark xl:w-1/2">
+              <div className="w-full sm:p-12.5">
                 <div className="block w-full xl:hidden xl:w-1/2">
                   <div className="sm:px-26 pt-5 text-center">
                     <Link className="flex flex-col justify-center items-center mb-15" href="/">
