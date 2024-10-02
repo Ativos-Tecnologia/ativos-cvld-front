@@ -4,6 +4,7 @@ import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
 import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
 import { ShadSelect } from "@/components/ShadSelect";
 import { SelectItem } from "@/components/ui/select";
+import { APP_ROUTES } from "@/constants/app-routes";
 import { ENUM_TIPO_OFICIOS_LIST } from "@/constants/constants";
 import tipoOficio from "@/enums/tipoOficio.enum";
 import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
@@ -40,7 +41,7 @@ interface IProposalFormStateProps {
     percentual_a_ser_adquirido: number
 }
 
-const whatsAppNumber = "5581996871762"; // número do consultor da Ativos para receber mensagens
+const whatsAppNumber = "5581998158585"; // número do consultor da Ativos para receber mensagens
 
 const tribunais = [
     { id: "TRF1", nome: "Tribunal Regional Federal - 1ª Região" },
@@ -143,7 +144,6 @@ const AutomatedProposal = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [showResults, setShowResults] = useState<boolean>(false);
     const [filledFormData, setFilledFormData] = useState<IProposalFormStateProps | null>(null);
-    console.log(filledFormData)
     const mainRef = useRef<HTMLDivElement | null>(null);
 
     /* ====> value states <==== */
@@ -190,6 +190,10 @@ const AutomatedProposal = () => {
         data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
         data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
         data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
+
+        if (data.tribunal === "TRF1" || data.tribunal === "TRF6") {
+            data.nao_incide_selic_no_periodo_db_ate_abril = true;
+        }
 
         if (data.data_base > "2021-12-01") {
             data.incidencia_juros_moratorios = false
@@ -585,7 +589,7 @@ E abaixo, uma memória das informações de entrada:
 
                             {/* ====> checkbox SELIC SOBRE PRINCIPAL <==== */}
                             <div
-                                className={`flex items-center col-span-2 gap-2 ${watch("data_base") > "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
+                                className={`flex items-center col-span-2 gap-2 ${watch("data_base") > "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" && watch("tribunal") !== "TRF1" && watch("tribunal") !== "TRF6" ? "" : "hidden"}`}
                             >
 
                                 <CustomCheckbox
@@ -853,7 +857,7 @@ E abaixo, uma memória das informações de entrada:
                             <div className="flex gap-4 items-center justify-center">
                                 {/* register button */}
                                 <Link
-                                    href={"/auth/signup"}
+                                    href={APP_ROUTES.public.automated_proposal.name}
                                     className="flex items-center justify-center px-6 py-3 h-14 bg-blue-700 text-snow border rounded-md hover:bg-blue-800 transition-all duration-300">
                                     Desejo cadastrar este ativo no Celer
                                 </Link>
