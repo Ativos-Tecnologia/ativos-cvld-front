@@ -301,25 +301,33 @@ E abaixo, uma memória das informações de entrada:
       <div ref={mainRef}>
         {/* header */}
         <div
-          className={`${headerColorset === "smooth" ? "bg-transparent" : "bg-boxdark-2 bg-opacity-10 bg-clip-padding backdrop-blur-sm backdrop-filter"} fixed top-0 z-1 flex w-full items-center justify-between gap-5 transition-colors duration-200 2xsm:ml-0 2xsm:flex-col 2xsm:flex-wrap  2xsm:pl-0 2xsm:pt-10 xsm:px-5 md:mt-0 md:w-full md:flex-row `}
+          className={`${headerColorset === "smooth" ? "bg-transparent" : " bg-boxdark-2 bg-opacity-10 bg-clip-padding backdrop-blur-sm backdrop-filter transition-colors duration-200 2xsm:shadow-3 md:shadow-none"} fixed top-0 z-1 flex w-full items-center justify-between gap-5 transition-colors duration-200 2xsm:ml-0 2xsm:py-[10px] 2xsm:pl-5 2xsm:pr-5 md:mt-0 md:w-full`}
         >
           <Image
-            className="block"
+            className="2xsm:hidden sm:hidden md:block"
             src={"/images/logo/celer-app-logo-text.svg"}
             alt="Logo"
             width={176}
             height={32}
           />
-          <div className="flex items-center gap-4 2xsm:text-sm sm:text-sm md:text-3xl lg:text-7xl">
+
+          <Image
+            className="md:hidden"
+            src={"/images/logo/celer-app-logo-dark.svg"}
+            alt="Logo"
+            width={40}
+            height={32}
+          />
+          <div className="flex items-center gap-4 2xsm:text-[15px] sm:text-sm md:text-3xl lg:text-7xl">
             <Link
               href="/auth/signin/"
-              className="transition-translate rounded-md border border-snow px-6 py-3 text-snow duration-300 hover:-translate-y-1 hover:border-snow hover:bg-snow hover:text-black-2"
+              className="transition-translate rounded-md border border-snow text-snow duration-300 hover:-translate-y-1 hover:border-snow hover:bg-snow hover:text-black-2 2xsm:p-2 md:px-6 md:py-3"
             >
               <span>Entrar</span>
             </Link>
             <Link
               href="/auth/signup/"
-              className="rounded-md border border-snow bg-snow px-6 py-3 text-black-2 transition-all duration-300 hover:-translate-y-1 hover:border-snow"
+              className="rounded-md border border-snow bg-snow text-black-2 transition-all duration-300 hover:-translate-y-1 hover:border-snow 2xsm:p-2 md:px-6 md:py-3"
             >
               <span>Cadastrar</span>
             </Link>
@@ -341,7 +349,7 @@ E abaixo, uma memória das informações de entrada:
             </h1>
 
             {/* title for mobile */}
-            <h1 className="w-full translate-x-10 animate-fade-up pt-20 text-center font-bold text-snow opacity-0 2xsm:mt-40 2xsm:text-[20px] sm:text-[30px] md:hidden">
+            <h1 className="w-full translate-x-10 animate-fade-up text-center font-bold text-snow opacity-0 2xsm:mt-40 2xsm:text-[30px] sm:text-[30px] md:hidden">
               Gerador de Propostas Automáticas
             </h1>
           </div>
@@ -349,7 +357,7 @@ E abaixo, uma memória das informações de entrada:
         {/* end image-wrapper */}
 
         {/* form */}
-        <div className="2xsm: mx-auto mb-50 max-w-270 py-10 2xsm:mt-8 2xsm:p-15">
+        <div className="2xsm: mx-auto mb-50 max-w-270 py-10 2xsm:mt-8 2xsm:p-8">
           <div className="mb-10">
             <h2 className="text-xl font-medium uppercase">
               Preencha o formulário abaixo
@@ -361,7 +369,7 @@ E abaixo, uma memória das informações de entrada:
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="grid grid-cols-2 gap-5 sm:grid-cols-2">
               {/* ====> label TIPO DO OFÍCIO <==== */}
-              <div className="col-span-1 mb-4 flex w-full flex-col gap-2">
+              <div className="mb-4 flex w-full flex-col gap-2 2xsm:col-span-2 md:col-span-1">
                 <label
                   htmlFor="tipo_do_oficio"
                   className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -433,7 +441,7 @@ E abaixo, uma memória das informações de entrada:
               {/* ====> end label ESFERA <==== */}
 
               {/* ====> label TRIBUNUAL <==== */}
-              <div className="relative mb-4 flex w-full flex-col gap-2 sm:col-span-1">
+              <div className="relative mb-4 flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
                 <label
                   htmlFor="tribunal"
                   className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -812,7 +820,7 @@ E abaixo, uma memória das informações de entrada:
             {/* calculate button */}
             <button
               type="submit"
-              className="mb-8 mt-15 flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-700 px-8 py-3 text-sm text-white transition-all duration-200 hover:bg-blue-800 focus:z-0"
+              className="mb-8 mt-15 flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-700 px-8 py-3 text-sm text-white transition-all duration-200 hover:bg-blue-800 focus:z-0 2xsm:w-full md:w-40"
             >
               <span className="text-[16px] font-medium" aria-disabled={loading}>
                 {loading ? "Calculando valores..." : "Calcular"}
