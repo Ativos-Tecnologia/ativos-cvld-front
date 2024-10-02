@@ -19,7 +19,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   const pathname = usePathname();
   const isPublicRoute = checkIsPublicRoute(pathname);
 
@@ -32,32 +31,18 @@ export default function RootLayout({
 
   const queryClient = new QueryClient();
 
-
   return (
     <html lang="pt-br">
       <body suppressHydrationWarning={true} className="2xl:min-h-screen">
         <QueryClientProvider client={queryClient}>
           <div className="relative bg-[#f0f0f0] dark:bg-boxdark-2 dark:text-bodydark 2xl:min-h-screen">
-
-            {
-              !isPublicRoute ? (
-                <UserInfoProvider>
-                  <PrivateRoute>
-                    {children}
-                  </PrivateRoute>
-                </UserInfoProvider>
-              ) : (
-                <>
-                  {loading ? (
-                    <Loader />
-                  ) : (
-                    <>
-                      {children}
-                    </>
-                  )}
-                </>
-              )
-            }
+            {!isPublicRoute ? (
+              <UserInfoProvider>
+                <PrivateRoute>{children}</PrivateRoute>
+              </UserInfoProvider>
+            ) : (
+              <>{loading ? <Loader /> : <>{children}</>}</>
+            )}
             <Toaster />
           </div>
         </QueryClientProvider>
