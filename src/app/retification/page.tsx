@@ -138,7 +138,7 @@ const RecalculateTrf1 = () => {
                 <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(229,231,235,1)_1%,transparent_99%)] flex flex-col">
                     <div className="w-230 mx-auto">
                         <h1 className="block text-6xl font-bold pt-44 opacity-0 translate-x-25 animate-fade-right text-[#222]">
-                            Retificação de <br /> Valor Disponível <br /> Nos TRF's 1 e 6
+                            Retificação de <br /> Valor Disponível <br /> Nos TRFs 1 e 6
                         </h1>
                     </div>
                 </div>
