@@ -111,8 +111,11 @@ const SignIn: React.FC = () => {
           <div className="flex flex-wrap">
             {/* Bloco Desktop */}
             <div className="hidden min-h-full w-full xl:block xl:w-1/2 xl:border-r-2 shadow-default dark:border-strokedark">
-              <div className="px-26 flex flex-col min-h-full text-center justify-around hero_login .hero_login_shadow">
-                <div className="mb-12 flex flex-col justify-center items-center">
+              <div className="px-26 flex flex-col min-h-full text-center justify-around hero_login">
+                <div className="hero_login_shadow">
+
+                </div>
+                <div className="mb-12 flex flex-col justify-center items-center relative z-3">
                   <div className="hidden dark:flex flex-col items-center ">
                     <Image
                       src={"/images/logo/celer-app-logo-dark.svg"}
@@ -129,20 +132,20 @@ const SignIn: React.FC = () => {
                   </div>
                   <div className="dark:hidden flex flex-col items-center gap-3">
                     <Image
-                      src={"/images/logo/celer-app-logo.svg"}
+                      src={"/images/logo/celer-app-logo-dark.svg"}
                       alt="Logo"
                       width={160}
                       height={32}
                     />
                     <Image
-                      src={"/images/logo/celer-app-text.svg"}
+                      src={"/images/logo/celer-app-text-dark.svg"}
                       alt="Logo"
                       width={200}
                       height={32}
                     />
                   </div>
                 </div>
-                <p className="2xl:px-10 text-lg font-medium">
+                <p className="2xl:px-10 text-lg font-medium relative z-3 text-white">
                   Atualização inteligente dos valores de precatórios com base na legislação vigente
                 </p>
               </div>
@@ -152,13 +155,14 @@ const SignIn: React.FC = () => {
             {/* Bloco Mobile */}
 
             <div className="w-full border-stroke dark:border-strokedark xl:w-1/2">
-              <div className="w-full sm:p-12.5">
+              <div className="w-full sm:p-12.5 2xsm:p-8">
                 <div className="block w-full xl:hidden xl:w-1/2">
                   <div className="sm:px-26 pt-5 text-center">
                     <Link className="flex flex-col justify-center items-center mb-15" href="/">
                       <div className="hidden dark:flex flex-col items-center gap-3 bg">
                         <Image
                           src={"/images/logo/celer-app-logo-dark.svg"}
+
                           alt="Logo"
                           width={0}
                           height={0}
