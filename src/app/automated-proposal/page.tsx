@@ -1,6 +1,7 @@
 'use client'
 import CustomCheckbox from "@/components/CrmUi/Checkbox";
 import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
+import UnloggedHeader from "@/components/Header/UnloggedHeader";
 import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
 import { ShadSelect } from "@/components/ShadSelect";
 import { SelectItem } from "@/components/ui/select";
@@ -281,59 +282,37 @@ E abaixo, uma memória das informações de entrada:
     }, [])
 
     return (
-        <UnloggedLayout>
-            <div ref={mainRef}>
-                {/* header */}
-                <div className={`fixed top-0 w-full z-1 py-6 xsm:px-5 lg:px-10 flex items-center justify-between ${headerColorset === 'smooth' ? 'bg-transparent' : 'bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 bg-boxdark-2'} transition-colors duration-200`}>
-                    <Image
-                        className="block"
-                        src={"/images/logo/celer-app-logo-text.svg"}
-                        alt="Logo"
-                        width={176}
-                        height={32}
-                    />
-                    {/* <nav className='flex items-center text-strokedark justify-center gap-12'>
-                    <Link href="#">Home</Link>
-                    <Link href="#" className='flex items-center gap-1'>
-                        <span>Produtos</span>
-                        <BiChevronDown />
-                    </Link>
-                    <Link href="#" className='flex items-center gap-1'>
-                        <span>Recursos</span>
-                        <BiChevronDown />
-                    </Link>
-                    <Link href="#">Sobre nós</Link>
-                </nav> */}
-                    <div className='flex items-center gap-4'>
-                        <Link href='/auth/signin/' className='px-6 py-3 border border-snow rounded-md text-snow hover:-translate-y-1 hover:bg-snow hover:border-snow hover:text-black-2 transition-translate duration-300'>
-                            <span>Entrar</span>
-                        </Link>
-                        <Link href='/auth/signup/' className='px-6 py-3 bg-snow border border-snow text-black-2 rounded-md hover:-translate-y-1 hover:border-snow transition-all duration-300'>
-                            <span>Cadastrar</span>
-                        </Link>
-                    </div>
-                </div>
-                {/* end header */}
+        <div ref={mainRef}>
+            <UnloggedHeader
+                theme="dark" //tema do header
+                logoPath="/images/logo/celer-app-logo-text.svg" //logo do header
+            />
 
-                {/* image-wrapper */}
-                <div className="relative">
-                    <img
-                        src="/images/hero-image.jfif"
-                        alt="homem com terno e notebook"
-                        className="w-full"
-                    />
-                    <div className="absolute inset-0 bg-[linear-gradient(to_top,#1A222C_5%,transparent_95%)] flex flex-col items-start justify-center">
-                        <h1 className="text-7xl font-bold pl-10 pt-15 opacity-0 translate-x-25 animate-fade-right text-snow">
+            {/* image-wrapper */}
+            <div className="relative">
+                <Image
+                    src="/images/hero-image.jfif"
+                    alt="homem com terno e notebook"
+                    className="w-full"
+                    width={1913}
+                    height={490}
+                    quality={100}
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(to_top,#1A222C_5%,transparent_95%)] flex flex-col items-start justify-center">
+                    <div className="w-[1080px] mx-auto">
+                        <h1 className="text-7xl font-bold pt-15 opacity-0 translate-x-25 animate-fade-right text-snow">
                             Gerador de <br /> Propostas <br /> Automáticas
                         </h1>
                     </div>
                 </div>
-                {/* end image-wrapper */}
+            </div>
+            {/* end image-wrapper */}
 
-                {/* form */}
-                <div className="max-w-270 mx-auto py-10 mb-50">
+            {/* form */}
+            <div className="bg-boxdark-2">
+                <div className="max-w-270 mx-auto py-10">
                     <div className="mb-10">
-                        <h2 className="text-xl font-medium uppercase">Preencha o formulário abaixo</h2>
+                        <h2 className="text-xl font-medium uppercase text-bodydark">Preencha o formulário abaixo</h2>
                         <p className="text-slate-500 text-sm">Gere valores de proposta e comissão baseado nos dados do ativo</p>
                     </div>
                     <form onSubmit={handleSubmit(onSubmit)}>
@@ -352,6 +331,7 @@ E abaixo, uma memória das informações de entrada:
                                     name="tipo_do_oficio"
                                     control={control}
                                     defaultValue={enumTipoOficiosList[0]}
+                                    className="bg-form-input border-strokedark text-bodydark"
 
                                 // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
                                 >
@@ -377,6 +357,7 @@ E abaixo, uma memória das informações de entrada:
                                     name="natureza"
                                     control={control}
                                     defaultValue={"NÃO TRIBUTÁRIA"}
+                                    className="bg-form-input border-strokedark text-bodydark"
 
                                 // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
                                 >
@@ -399,7 +380,12 @@ E abaixo, uma memória das informações de entrada:
                                 >
                                     Esfera
                                 </label>
-                                <ShadSelect defaultValue="FEDERAL" name="esfera" control={control}>
+                                <ShadSelect
+                                    defaultValue="FEDERAL"
+                                    name="esfera"
+                                    control={control}
+                                    className="bg-form-input border-strokedark text-bodydark"
+                                >
                                     <SelectItem value="FEDERAL">Federal</SelectItem>
                                     <SelectItem value="ESTADUAL">Estadual</SelectItem>
                                     <SelectItem value="MUNICIPAL">Municipal</SelectItem>
@@ -420,6 +406,7 @@ E abaixo, uma memória das informações de entrada:
                                     control={control}
                                     defaultValue={tribunais[0].nome}
                                     required={true}
+                                    className="bg-form-input border-strokedark text-bodydark"
                                 >
                                     {tribunais.map((tribunal) => (
                                         <SelectItem key={tribunal.id} value={tribunal.id}>
@@ -447,7 +434,7 @@ E abaixo, uma memória das informações de entrada:
                                     render={({ field }) => (
                                         <Cleave
                                             {...field}
-                                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                            className="w-full rounded-md border px-3 py-2 text-sm font-medium border-strokedark bg-form-input text-bodydark"
                                             options={{
                                                 numeral: true,
                                                 numeralThousandsGroupStyle: "thousand",
@@ -478,7 +465,7 @@ E abaixo, uma memória das informações de entrada:
                                     render={({ field }) => (
                                         <Cleave
                                             {...field}
-                                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                            className="w-full rounded-md border px-3 py-2 text-sm font-medium border-strokedark bg-form-input text-bodydark"
                                             options={{
                                                 numeral: true,
                                                 numeralPositiveOnly: true,
@@ -507,7 +494,7 @@ E abaixo, uma memória das informações de entrada:
                                     <input
                                         type="date"
                                         id="data_base"
-                                        className={`${errors.data_base && "!border-rose-400 !ring-0"} w-full rounded-md border bg-white px-3 py-2 text-sm font-medium border-stroke dark:border-strokedark dark:bg-boxdark-2`}
+                                        className={`${errors.data_base && "!border-rose-400 !ring-0"} w-full rounded-md border px-3 py-2 text-sm font-medium border-strokedark bg-form-input text-bodydark`}
                                         {...register("data_base", {
                                             required: "Campo obrigatório",
                                         })}
@@ -530,7 +517,7 @@ E abaixo, uma memória das informações de entrada:
                                     <input
                                         type="date"
                                         id="data_requisicao"
-                                        className={`${errors.data_requisicao && "!border-rose-400 !ring-0"} w-full rounded-md border bg-white px-3 py-2 text-sm font-medium border-stroke dark:border-strokedark dark:bg-boxdark-2`}
+                                        className={`${errors.data_requisicao && "!border-rose-400 !ring-0"} w-full rounded-md border px-3 py-2 text-sm font-medium border-strokedark bg-form-input text-bodydark`}
                                         {...register("data_requisicao", {
                                             required: "Campo obrigatório",
                                         })}
@@ -552,7 +539,7 @@ E abaixo, uma memória das informações de entrada:
                                     type="number"
                                     id="percentual_a_ser_adquirido"
                                     defaultValue={100}
-                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                    className="w-full rounded-md border px-3 py-2 text-sm font-medium border-strokedark bg-form-input text-bodydark"
                                     min={0}
                                     {...register("percentual_a_ser_adquirido", {
                                         required: "Campo obrigatório",
@@ -660,7 +647,7 @@ E abaixo, uma memória das informações de entrada:
                                     <input
                                         type="number"
                                         id="numero_de_meses"
-                                        className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                        className="w-full rounded-md border px-3 py-2 text-sm font-medium border-strokedark bg-form-input text-bodydark"
                                         min={0}
                                         {...register("numero_de_meses", {
                                             required: "Campo obrigatório",
@@ -714,7 +701,7 @@ E abaixo, uma memória das informações de entrada:
                                         render={({ field }) => (
                                             <Cleave
                                                 {...field}
-                                                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                                className="w-full rounded-md border px-3 py-2 text-sm font-medium border-strokedark bg-form-input text-bodydark"
                                                 options={{
                                                     numeral: true,
                                                     numeralThousandsGroupStyle: "thousand",
@@ -766,7 +753,7 @@ E abaixo, uma memória das informações de entrada:
                                     <input
                                         type="number"
                                         id="percentual_de_honorarios"
-                                        className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                        className="h-[37px] w-full rounded-md border px-3 py-2 text-sm font-medium border-strokedark bg-form-input text-bodydark"
                                         {...register("percentual_de_honorarios", {})}
                                     />
                                 </div>
@@ -857,8 +844,8 @@ E abaixo, uma memória das informações de entrada:
                             <div className="flex gap-4 items-center justify-center">
                                 {/* register button */}
                                 <Link
-                                    href={APP_ROUTES.public.automated_proposal.name}
-                                    className="flex items-center justify-center px-6 py-3 h-14 bg-blue-700 text-snow border rounded-md hover:bg-blue-800 transition-all duration-300">
+                                    href={APP_ROUTES.public.register.name}
+                                    className="flex items-center justify-center px-4 py-2 h-14 bg-blue-700 text-snow rounded-md hover:bg-blue-800 transition-all duration-300">
                                     Desejo cadastrar este ativo no Celer
                                 </Link>
                                 {/* register button */}
@@ -876,9 +863,9 @@ E abaixo, uma memória das informações de entrada:
                         </React.Fragment>
                     )}
                 </div>
-                {/* end form */}
             </div>
-        </UnloggedLayout>
+            {/* end form */}
+        </div>
     )
 }
 
