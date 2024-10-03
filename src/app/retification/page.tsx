@@ -129,7 +129,8 @@ const RecalculateTrf1 = () => {
     return (
         <>
             <UnloggedHeader
-                logoPath="/images/logo/celer-app-logo-text-black.svg"
+                theme="light" //tema do header
+                logoPath="/images/logo/celer-app-logo-text-black.svg" //logo do header
             />
 
             {/* image-wrapper */}

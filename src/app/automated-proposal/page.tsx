@@ -1,6 +1,7 @@
 'use client'
 import CustomCheckbox from "@/components/CrmUi/Checkbox";
 import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
+import UnloggedHeader from "@/components/Header/UnloggedHeader";
 import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
 import { ShadSelect } from "@/components/ShadSelect";
 import { SelectItem } from "@/components/ui/select";
@@ -283,37 +284,11 @@ E abaixo, uma memória das informações de entrada:
     return (
         <UnloggedLayout>
             <div ref={mainRef}>
-                {/* header */}
-                <div className={`fixed top-0 w-full z-1 py-6 xsm:px-5 lg:px-10 flex items-center justify-between ${headerColorset === 'smooth' ? 'bg-transparent' : 'bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 bg-boxdark-2'} transition-colors duration-200`}>
-                    <Image
-                        className="block"
-                        src={"/images/logo/celer-app-logo-text.svg"}
-                        alt="Logo"
-                        width={176}
-                        height={32}
-                    />
-                    {/* <nav className='flex items-center text-strokedark justify-center gap-12'>
-                    <Link href="#">Home</Link>
-                    <Link href="#" className='flex items-center gap-1'>
-                        <span>Produtos</span>
-                        <BiChevronDown />
-                    </Link>
-                    <Link href="#" className='flex items-center gap-1'>
-                        <span>Recursos</span>
-                        <BiChevronDown />
-                    </Link>
-                    <Link href="#">Sobre nós</Link>
-                </nav> */}
-                    <div className='flex items-center gap-4'>
-                        <Link href='/auth/signin/' className='px-6 py-3 border border-snow rounded-md text-snow hover:-translate-y-1 hover:bg-snow hover:border-snow hover:text-black-2 transition-translate duration-300'>
-                            <span>Entrar</span>
-                        </Link>
-                        <Link href='/auth/signup/' className='px-6 py-3 bg-snow border border-snow text-black-2 rounded-md hover:-translate-y-1 hover:border-snow transition-all duration-300'>
-                            <span>Cadastrar</span>
-                        </Link>
-                    </div>
-                </div>
-                {/* end header */}
+
+                <UnloggedHeader
+                    theme="dark" //tema do header
+                    logoPath="/images/logo/celer-app-logo-text.svg" //logo do header
+                />
 
                 {/* image-wrapper */}
                 <div className="relative">
@@ -323,9 +298,11 @@ E abaixo, uma memória das informações de entrada:
                         className="w-full"
                     />
                     <div className="absolute inset-0 bg-[linear-gradient(to_top,#1A222C_5%,transparent_95%)] flex flex-col items-start justify-center">
-                        <h1 className="text-7xl font-bold pl-10 pt-15 opacity-0 translate-x-25 animate-fade-right text-snow">
-                            Gerador de <br /> Propostas <br /> Automáticas
-                        </h1>
+                        <div className="w-[1080px] mx-auto">
+                            <h1 className="text-7xl font-bold pt-15 opacity-0 translate-x-25 animate-fade-right text-snow">
+                                Gerador de <br /> Propostas <br /> Automáticas
+                            </h1>
+                        </div>
                     </div>
                 </div>
                 {/* end image-wrapper */}
