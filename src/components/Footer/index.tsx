@@ -16,10 +16,10 @@ export function MainFooter() {
   return (
     <div className="rounded-lg bg-white p-8 text-gray-500 shadow-lg dark:bg-boxdark dark:text-gray-400 md:mx-auto md:w-full md:max-w-7xl ">
       <div className="w-full">
-        <div className=" flex w-full justify-between gap-20 md:flex-col lg:gap-5">
+        <div className="flex w-full justify-between 2xsm:flex-col 2xsm:gap-0 lg:gap-5 xl:flex-row">
           <div className="md:p-0 lg:col-span-2 lg:p-5">
             <Footer.Title title="Ativos" />
-            <div className="md:max-w-full lg:max-w-[600px]">
+            <div className="md:max-w-full xl:max-w-[600px]">
               <p className="font-satoshi">
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                 Praesentium debitis asperiores ipsum iure alias veniam qui omnis
@@ -28,11 +28,11 @@ export function MainFooter() {
               </p>
             </div>
           </div>
-          <div className="md:hidden">
+          <div className="lg:hidden">
             <Footer.Divider />
           </div>
-          <div className="grid w-full 2xsm:grid-cols-1 sm:mt-4 sm:grid-cols-1 sm:gap-6 md:grid-cols-8 md:gap-2 lg:grid-cols-8 lg:gap-3">
-            <div className="col-span-1">
+          <div className="grid w-full gap-2 2xsm:grid-cols-1 md:mt-4 md:grid-cols-8 lg:grid-cols-8 lg:gap-3">
+            <div className="md:col-span-1">
               <Footer.Title title="Sobre" />
               <Footer.LinkGroup col>
                 <Footer.Link href="#">Ativos</Footer.Link>
@@ -41,7 +41,7 @@ export function MainFooter() {
                 <Footer.Link href="#">Contato</Footer.Link>
               </Footer.LinkGroup>
             </div>
-            <div className="col-span-2">
+            <div className="md:col-span-2">
               <Footer.Title title="Produtos" />
               <Footer.LinkGroup col>
                 <Footer.Link href="/">CelerApp</Footer.Link>
@@ -53,7 +53,7 @@ export function MainFooter() {
                 </Footer.Link>
               </Footer.LinkGroup>
             </div>
-            <div className="col-span-3">
+            <div className="md:col-span-3">
               <Footer.Title title="Contato" />
               <Footer.LinkGroup col>
                 <div>
@@ -89,7 +89,7 @@ export function MainFooter() {
                 </div>
               </Footer.LinkGroup>
             </div>
-            <div className="col-span-2">
+            <div className="md:col-span-2">
               <Footer.Title title="Legal" />
               <Footer.LinkGroup col>
                 <Footer.Link aria-disabled href="#">
@@ -158,7 +158,7 @@ export function MainFooter() {
             </div>
           </div>
 
-          {/* Versão Mobile */}
+          {/* Versão Mobile das logos */}
           <div className="flex min-w-fit items-center justify-center sm:flex sm:max-w-none md:hidden">
             <div className="flex items-center space-x-4 ">
               <div className="bg flex flex-col items-center justify-center gap-3 dark:hidden">
