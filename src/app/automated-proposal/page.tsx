@@ -1,9 +1,11 @@
 "use client";
 import CustomCheckbox from "@/components/CrmUi/Checkbox";
 import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
+import UnloggedHeader from "@/components/Header/UnloggedHeader";
 import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
 import { ShadSelect } from "@/components/ShadSelect";
 import { SelectItem } from "@/components/ui/select";
+import { APP_ROUTES } from "@/constants/app-routes";
 import { ENUM_TIPO_OFICIOS_LIST } from "@/constants/constants";
 import tipoOficio from "@/enums/tipoOficio.enum";
 import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
@@ -40,7 +42,7 @@ interface IProposalFormStateProps {
   percentual_a_ser_adquirido: number;
 }
 
-const whatsAppNumber = "5581996871762"; // número do consultor da Ativos para receber mensagens
+const whatsAppNumber = "5581998158585"; // número do consultor da Ativos para receber mensagens
 
 const tribunais = [
   { id: "TRF1", nome: "Tribunal Regional Federal - 1ª Região" },
@@ -297,69 +299,37 @@ E abaixo, uma memória das informações de entrada:
   }, []);
 
   return (
-    <UnloggedLayout>
-      <div ref={mainRef}>
-        {/* header */}
-        <div
-          className={`${headerColorset === "smooth" ? "bg-transparent" : " bg-boxdark-2 bg-opacity-10 bg-clip-padding backdrop-blur-sm backdrop-filter transition-colors duration-200 2xsm:shadow-3 md:shadow-none"} fixed top-0 z-1 flex w-full items-center justify-between gap-5 transition-colors duration-200 2xsm:ml-0 2xsm:py-[10px] 2xsm:pl-5 2xsm:pr-5 md:mt-0 md:w-full`}
-        >
-          <Image
-            className="2xsm:hidden sm:hidden md:block"
-            src={"/images/logo/celer-app-logo-text.svg"}
-            alt="Logo"
-            width={176}
-            height={32}
-          />
+    <div ref={mainRef}>
+      <UnloggedHeader
+        theme="dark" //tema do header
+        logoPath="/images/logo/celer-app-logo-text.svg" //logo do header
+      />
 
-          <Image
-            className="md:hidden"
-            src={"/images/logo/celer-app-logo-dark.svg"}
-            alt="Logo"
-            width={40}
-            height={32}
-          />
-          <div className="flex items-center gap-4 2xsm:text-[15px] sm:text-sm md:text-3xl lg:text-7xl">
-            <Link
-              href="/auth/signin/"
-              className="transition-translate rounded-md border border-snow text-snow duration-300 hover:-translate-y-1 hover:border-snow hover:bg-snow hover:text-black-2 2xsm:p-2 md:px-6 md:py-3"
-            >
-              <span>Entrar</span>
-            </Link>
-            <Link
-              href="/auth/signup/"
-              className="rounded-md border border-snow bg-snow text-black-2 transition-all duration-300 hover:-translate-y-1 hover:border-snow 2xsm:p-2 md:px-6 md:py-3"
-            >
-              <span>Cadastrar</span>
-            </Link>
-          </div>
-        </div>
-        {/* end header */}
-
-        {/* image-wrapper */}
-        <div className="relative">
-          <img
-            src="/images/hero-image.jfif"
-            alt="homem com terno e notebook"
-            className="w-full"
-          />
-          <div className="absolute inset-0 flex flex-col items-start justify-center bg-[linear-gradient(to_top,#1A222C_5%,transparent_95%)]">
-            {/* title for desktop */}
-            <h1 className="translate-x-25 animate-fade-right pl-10 pt-15 text-7xl font-bold text-snow opacity-0 2xsm:mt-10 2xsm:hidden md:block">
+      {/* image-wrapper */}
+      <div className="relative">
+        <Image
+          src="/images/hero-image.jfif"
+          alt="homem com terno e notebook"
+          className="w-full"
+          width={1913}
+          height={490}
+          quality={100}
+        />
+        <div className="absolute inset-0 flex flex-col items-start justify-center bg-[linear-gradient(to_top,#1A222C_5%,transparent_95%)]">
+          <div className="mx-auto w-[1080px]">
+            <h1 className="translate-x-25 animate-fade-right pt-15 text-7xl font-bold text-snow opacity-0">
               Gerador de <br /> Propostas <br /> Automáticas
             </h1>
-
-            {/* title for mobile */}
-            <h1 className="w-full translate-x-10 animate-fade-up text-center font-bold text-snow opacity-0 2xsm:mt-40 2xsm:text-[30px] sm:text-[30px] md:hidden">
-              Gerador de Propostas Automáticas
-            </h1>
           </div>
         </div>
-        {/* end image-wrapper */}
+      </div>
+      {/* end image-wrapper */}
 
-        {/* form */}
-        <div className="2xsm: mx-auto mb-50 max-w-270 py-10 2xsm:mt-8 2xsm:p-8">
+      {/* form */}
+      <div className="bg-boxdark-2">
+        <div className="mx-auto max-w-270 py-10">
           <div className="mb-10">
-            <h2 className="text-xl font-medium uppercase">
+            <h2 className="text-xl font-medium uppercase text-bodydark">
               Preencha o formulário abaixo
             </h2>
             <p className="text-sm text-slate-500">
@@ -368,211 +338,6 @@ E abaixo, uma memória das informações de entrada:
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="grid grid-cols-2 gap-5 sm:grid-cols-2">
-              {/* ====> label TIPO DO OFÍCIO <==== */}
-              <div className="mb-4 flex w-full flex-col gap-2 2xsm:col-span-2 md:col-span-1">
-                <label
-                  htmlFor="tipo_do_oficio"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Tipo
-                </label>
-
-                <ShadSelect
-                  name="tipo_do_oficio"
-                  control={control}
-                  defaultValue={enumTipoOficiosList[0]}
-
-                  // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
-                >
-                  {ENUM_TIPO_OFICIOS_LIST.map((status) => (
-                    <SelectItem key={status} value={status}>
-                      {status}
-                    </SelectItem>
-                  ))}
-                </ShadSelect>
-              </div>
-              {/* ====> end label TIPO DO OFÍCIO <==== */}
-
-              {/* ====> label NATUREZA DO OFÍCIO <==== */}
-              <div className="mb-4 flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                <label
-                  htmlFor="natureza"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Natureza
-                </label>
-
-                <ShadSelect
-                  name="natureza"
-                  control={control}
-                  defaultValue={"NÃO TRIBUTÁRIA"}
-
-                  // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
-                >
-                  <SelectItem
-                    defaultValue="NÃO TRIBUTÁRIA"
-                    value="NÃO TRIBUTÁRIA"
-                  >
-                    Não Tributária
-                  </SelectItem>
-                  <SelectItem value="TRIBUTÁRIA">Tributária</SelectItem>
-                </ShadSelect>
-              </div>
-              {/* ====>  end label NATUREZA DO OFÍCIO <==== */}
-
-              {/* ====> label ESFERA <==== */}
-              <div className="mb-4 flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                <label
-                  htmlFor="esfera"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Esfera
-                </label>
-                <ShadSelect
-                  defaultValue="FEDERAL"
-                  name="esfera"
-                  control={control}
-                >
-                  <SelectItem value="FEDERAL">Federal</SelectItem>
-                  <SelectItem value="ESTADUAL">Estadual</SelectItem>
-                  <SelectItem value="MUNICIPAL">Municipal</SelectItem>
-                </ShadSelect>
-              </div>
-              {/* ====> end label ESFERA <==== */}
-
-              {/* ====> label TRIBUNUAL <==== */}
-              <div className="relative mb-4 flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
-                <label
-                  htmlFor="tribunal"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Tribunal
-                </label>
-                <ShadSelect
-                  name="tribunal"
-                  control={control}
-                  defaultValue={tribunais[0].nome}
-                  required={true}
-                >
-                  {tribunais.map((tribunal) => (
-                    <SelectItem key={tribunal.id} value={tribunal.id}>
-                      {tribunal.nome}
-                    </SelectItem>
-                  ))}
-                </ShadSelect>
-
-                <ErrorMessage errors={errors} field="tribunal" />
-              </div>
-              {/* ====> end label TRIBUNUAL <==== */}
-
-              {/* ====> label VALOR PRINCIPAL <==== */}
-              <div className="mb-4 flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                <label
-                  htmlFor="valor_principal"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Valor Principal
-                </label>
-                <Controller
-                  name="valor_principal"
-                  control={control}
-                  defaultValue={0}
-                  render={({ field }) => (
-                    <Cleave
-                      {...field}
-                      className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                      options={{
-                        numeral: true,
-                        numeralThousandsGroupStyle: "thousand",
-                        numeralDecimalScale: 2,
-                        numeralDecimalMark: ",",
-                        delimiter: ".",
-                        prefix: "R$ ",
-                        rawValueTrimPrefix: true,
-                      }}
-                    />
-                  )}
-                />
-              </div>
-              {/* ====> end label VALOR PRINCIPAL <==== */}
-
-              {/* ====> label JUROS <==== */}
-              <div className="mb-4 flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                <label
-                  htmlFor="valor_juros"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Juros
-                </label>
-                <Controller
-                  name="valor_juros"
-                  control={control}
-                  defaultValue={0}
-                  render={({ field }) => (
-                    <Cleave
-                      {...field}
-                      className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                      options={{
-                        numeral: true,
-                        numeralPositiveOnly: true,
-                        numeralThousandsGroupStyle: "thousand",
-                        numeralDecimalScale: 2,
-                        numeralDecimalMark: ",",
-                        delimiter: ".",
-                        prefix: "R$ ",
-                        rawValueTrimPrefix: true,
-                      }}
-                    />
-                  )}
-                />
-              </div>
-              {/* ====> end label JUROS <==== */}
-
-              {/* ====> label DATA BASE <==== */}
-              <div className="flex min-h-17.5 flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                <div className="relative mb-4 flex flex-col justify-between">
-                  <label
-                    htmlFor="data_base"
-                    className="mb-1 font-nexa text-xs font-semibold uppercase text-meta-5"
-                  >
-                    Data Base
-                  </label>
-                  <input
-                    type="date"
-                    id="data_base"
-                    className={`${errors.data_base && "!border-rose-400 !ring-0"} w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
-                    {...register("data_base", {
-                      required: "Campo obrigatório",
-                    })}
-                    aria-invalid={errors.data_base ? "true" : "false"}
-                  />
-                  <ErrorMessage errors={errors} field="data_base" />
-                </div>
-              </div>
-              {/* ====> end label DATA BASE <==== */}
-
-              {/* ====> label DATA DE REQUISIÇÃO <==== */}
-              <div className="flex flex-col gap-2 2xsm:col-span-2 2xsm:mt-3 sm:col-span-1 sm:mt-0">
-                <div className="relative mb-4 flex flex-col justify-between">
-                  <label
-                    htmlFor="data_requisicao"
-                    className="mb-1 font-nexa text-xs font-semibold uppercase text-meta-5"
-                  >
-                    Data de Requisição / Recebimento
-                  </label>
-                  <input
-                    type="date"
-                    id="data_requisicao"
-                    className={`${errors.data_requisicao && "!border-rose-400 !ring-0"} w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
-                    {...register("data_requisicao", {
-                      required: "Campo obrigatório",
-                    })}
-                  />
-                  <ErrorMessage errors={errors} field="data_requisicao" />
-                </div>
-              </div>
-              {/* ====> endlabel DATA DE REQUISIÇÃO <==== */}
-
               {/* ====> label PERCENTUAL DE AQUISIÇÃO <==== */}
               <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                 <label
@@ -920,9 +685,9 @@ E abaixo, uma memória das informações de entrada:
             </React.Fragment>
           )}
         </div>
-        {/* end form */}
       </div>
-    </UnloggedLayout>
+      {/* end form */}
+    </div>
   );
 };
 

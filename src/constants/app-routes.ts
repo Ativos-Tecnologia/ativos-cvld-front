@@ -31,6 +31,9 @@ export const APP_ROUTES = {
         },
         automated_proposal: {
             name: "/automated-proposal"
+        },
+        recalculate_trf1: {
+            name: "/retification"
         }
     }
 };
