@@ -29,7 +29,7 @@ const UnloggedHeader = ({ logoPath, theme }: IUnloggedHeaderProps) => {
     <>
       {/* header */}
       <div
-        className={`fixed top-0 z-1 w-full ${headerType === "smooth" ? "bg-transparent" : headerType === "solid" ? "bg-gray-200" : "bg-boxdark-2 bg-opacity-10 bg-clip-padding backdrop-blur-sm backdrop-filter"} py-6 transition-colors duration-500 xsm:px-5 lg:px-10`}
+        className={`fixed top-0 z-1 w-full ${headerType === "smooth" ? "bg-transparent" : headerType === "solid" ? "bg-gray-200" : "bg-boxdark-2 bg-opacity-10 bg-clip-padding backdrop-blur-sm backdrop-filter"} py-6 transition-colors duration-500 2xsm:px-5 lg:px-10`}
       >
         <div className="mx-auto flex max-w-270 items-center justify-between">
           <Image
@@ -46,7 +46,7 @@ const UnloggedHeader = ({ logoPath, theme }: IUnloggedHeaderProps) => {
             width={40}
             height={32}
           />
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 2xsm:text-[10px] md:text-[18px]">
             {theme === "light" ? (
               <>
                 <Link

@@ -334,7 +334,7 @@ E abaixo, uma memória das informações de entrada:
 
       {/* form */}
       <div className="bg-boxdark-2">
-        <div className="mx-auto max-w-270 py-10 md:max-w-[80%]">
+        <div className="mx-auto  max-w-[80%] py-10">
           <div className="mb-10">
             <h2 className="text-xl font-medium uppercase text-bodydark">
               Preencha o formulário abaixo
@@ -346,7 +346,7 @@ E abaixo, uma memória das informações de entrada:
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="grid grid-cols-2 gap-5 sm:grid-cols-2">
               {/* ====> label TIPO DO OFÍCIO <==== */}
-              <div className="col-span-1 mb-4 flex w-full flex-col gap-2">
+              <div className="mb-4 flex w-full flex-col gap-2 2xsm:col-span-2 md:col-span-1">
                 <label
                   htmlFor="tipo_do_oficio"
                   className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -421,7 +421,7 @@ E abaixo, uma memória das informações de entrada:
               {/* ====> end label ESFERA <==== */}
 
               {/* ====> label TRIBUNUAL <==== */}
-              <div className="relative mb-4 flex w-full flex-col gap-2 sm:col-span-1 md:col-span-1">
+              <div className="relative mb-4 flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
                 <label
                   htmlFor="tribunal"
                   className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -801,7 +801,7 @@ E abaixo, uma memória das informações de entrada:
             {/* calculate button */}
             <button
               type="submit"
-              className="mb-8 mt-15 flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-700 px-8 py-3 text-sm text-white transition-all duration-200 hover:bg-blue-800 focus:z-0"
+              className="mb-8 mt-15 flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-700 px-8 py-3 text-sm text-white transition-all duration-200 hover:bg-blue-800 focus:z-0 2xsm:w-full md:w-fit"
             >
               <span className="text-[16px] font-medium" aria-disabled={loading}>
                 {loading ? "Calculando valores..." : "Calcular"}
