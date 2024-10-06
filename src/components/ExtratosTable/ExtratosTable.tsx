@@ -1,4 +1,4 @@
-import { Suspense, useContext, useEffect, useRef, useState } from "react";
+import React, { Suspense, useContext, useEffect, useRef, useState } from "react";
 import UseMySwal from "@/hooks/useMySwal";
 import { AwesomeDrawer } from "../Drawer/Drawer";
 import { CVLDResultProps } from "@/interfaces/IResultCVLD";
