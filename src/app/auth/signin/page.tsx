@@ -12,6 +12,7 @@ import UseMySwal from "@/hooks/useMySwal";
 import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
 
 import { HiOutlineArrowRight } from "react-icons/hi"
+import { Fade } from "react-awesome-reveal";
 
 import { BiLockAlt, BiUser } from "react-icons/bi";
 import { AiOutlineLoading } from "react-icons/ai";
@@ -145,6 +146,7 @@ const SignIn: React.FC = () => {
                     />
                   </div>
                 </div>
+
                 <h1 className="text-left translate-x-25 animate-fade-right pt-8 text-5xl font-bold text-snow opacity-0 2xsm:hidden md:block md:text-4xl lg:text-6xl">
                   Sua solução <br /> one-stop-shop <br /> em precatórios
                 </h1>
@@ -198,9 +200,11 @@ const SignIn: React.FC = () => {
                 {/* <span className="xl:mb-1.5 mb-10 block font-medium xl:text-2xl xl:text-left text-center text-lg">
                   Celer App
                 </span> */}
+                <Fade delay={1e2} damping={1e-1} cascade>
                 <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
                   Acesse sua conta
                 </h2>
+                </Fade>
 
                 {/* Fim do Bloco Mobile */}
 
