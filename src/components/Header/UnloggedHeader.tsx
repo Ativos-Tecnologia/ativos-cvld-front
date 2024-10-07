@@ -23,7 +23,7 @@ const UnloggedHeader = ({ logoPath, theme }: IUnloggedHeaderProps) => {
     };
     window.addEventListener("scroll", watchWindowScroll);
     return () => window.removeEventListener("scroll", watchWindowScroll);
-  }, []);
+  });
 
   return (
     <>
@@ -43,10 +43,10 @@ const UnloggedHeader = ({ logoPath, theme }: IUnloggedHeaderProps) => {
             className="md:hidden"
             src={"/images/logo/celer-app-logo-dark.svg"}
             alt="Logo"
-            width={40}
+            width={50}
             height={32}
           />
-          <div className="flex items-center gap-4 2xsm:text-[10px] md:text-[18px]">
+          <div className="flex items-center gap-4 2xsm:text-[13px] md:text-[18px]">
             {theme === "light" ? (
               <>
                 <Link
@@ -66,13 +66,13 @@ const UnloggedHeader = ({ logoPath, theme }: IUnloggedHeaderProps) => {
               <>
                 <Link
                   href="/auth/signin/"
-                  className="transition-translate rounded-md border border-snow px-6 py-3 text-snow duration-300 hover:-translate-y-1 hover:border-snow hover:bg-snow hover:text-black-2"
+                  className="transition-translate rounded-md border border-snow px-6 py-3 font-semibold text-snow duration-300 hover:-translate-y-1 hover:border-snow hover:bg-snow hover:text-black-2"
                 >
                   <span>Entrar</span>
                 </Link>
                 <Link
                   href="/auth/signup/"
-                  className="rounded-md border border-snow bg-snow px-6 py-3 text-black-2 transition-all duration-300 hover:-translate-y-1 hover:border-snow"
+                  className="rounded-md border border-snow bg-snow px-6 py-3 font-semibold text-black-2 transition-all duration-300 hover:-translate-y-1 hover:border-snow"
                 >
                   <span>Cadastrar</span>
                 </Link>
