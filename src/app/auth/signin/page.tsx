@@ -20,6 +20,7 @@ import { BsEye, BsEyeSlash } from "react-icons/bs";
 import usePassword from "@/hooks/usePassword";
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
+import "./index.css";
 
 
 // export const metadata: Metadata = {
@@ -105,15 +106,17 @@ const SignIn: React.FC = () => {
 
   return (
     <UnloggedLayout>
-      <div className="p-4">
+      <div>
         <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-          <div className="flex flex-wrap items-center">
+          <div className="flex flex-wrap">
             {/* Bloco Desktop */}
-            <div className="hidden w-full xl:block xl:w-1/2">
-              <div className="px-26 py-17.5 text-center">
-                <Link className="mb-12 flex flex-col justify-center
-               items-center" href="/">
-                  <div className="hidden dark:flex flex-col items-center gap-3 bg">
+            <div className="hidden min-h-full w-full xl:block xl:w-1/2 xl:border-r-2 shadow-default dark:border-strokedark">
+              <div className="px-26 flex flex-col min-h-full text-center justify-around hero_login">
+                <div className="hero_login_shadow">
+
+                </div>
+                <div className="mb-12 flex flex-col justify-center items-center relative z-3">
+                  <div className="hidden dark:flex flex-col items-center ">
                     <Image
                       src={"/images/logo/celer-app-logo-dark.svg"}
                       alt="Logo"
@@ -127,22 +130,22 @@ const SignIn: React.FC = () => {
                       height={32}
                     />
                   </div>
-                  <div className="dark:hidden flex flex-col items-center gap-3 bg">
+                  <div className="dark:hidden flex flex-col items-center gap-3">
                     <Image
-                      src={"/images/logo/celer-app-logo.svg"}
+                      src={"/images/logo/celer-app-logo-dark.svg"}
                       alt="Logo"
                       width={160}
                       height={32}
                     />
                     <Image
-                      src={"/images/logo/celer-app-text.svg"}
+                      src={"/images/logo/celer-app-text-dark.svg"}
                       alt="Logo"
                       width={200}
                       height={32}
                     />
                   </div>
-                </Link>
-                <p className="2xl:px-10 text-lg font-medium">
+                </div>
+                <p className="2xl:px-10 text-lg font-medium relative z-3 text-white">
                   Atualização inteligente dos valores de precatórios com base na legislação vigente
                 </p>
               </div>
@@ -151,14 +154,15 @@ const SignIn: React.FC = () => {
 
             {/* Bloco Mobile */}
 
-            <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
-              <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
+            <div className="w-full border-stroke dark:border-strokedark xl:w-1/2">
+              <div className="w-full sm:p-12.5 2xsm:p-8">
                 <div className="block w-full xl:hidden xl:w-1/2">
                   <div className="sm:px-26 pt-5 text-center">
                     <Link className="flex flex-col justify-center items-center mb-15" href="/">
                       <div className="hidden dark:flex flex-col items-center gap-3 bg">
                         <Image
                           src={"/images/logo/celer-app-logo-dark.svg"}
+
                           alt="Logo"
                           width={0}
                           height={0}

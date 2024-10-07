@@ -47,7 +47,7 @@ type NotionTableViewProps = {
 }
 
 const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotionDrawer }: NotionTableViewProps) => {
-    
+
     const [currentNotionView, setCurrentNotionView] = useState<string>('geral');
     // const [checkedList, setCheckedList] = React.useState<NotionPage[]>([]);
     const [openStatusPopover, setOpenStatusPopover] = useState<boolean>(false);
@@ -101,12 +101,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                             "does_not_equal": "Transação Concluída"
                         }
                     },
-                    {
-                        "property": "Status",
-                        "status": {
-                            "does_not_equal": "Ausência de resposta"
-                        }
-                    }
+
                 ]
         }
     }, []);
@@ -1009,12 +1004,6 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
                                             "does_not_equal": "Transação Concluída"
                                         }
                                     },
-                                    {
-                                        "property": "Status",
-                                        "status": {
-                                            "does_not_equal": "Ausência de resposta"
-                                        }
-                                    }
                                 ]
                         }
                     ]
