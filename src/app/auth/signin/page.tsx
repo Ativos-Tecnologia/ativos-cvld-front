@@ -111,11 +111,11 @@ const SignIn: React.FC = () => {
           <div className="flex flex-wrap">
             {/* Bloco Desktop */}
             <div className="hidden min-h-full w-full xl:block xl:w-1/2 xl:border-r-2 shadow-default dark:border-strokedark">
-              <div className="px-26 flex flex-col min-h-full text-center justify-around hero_login">
+              <div className="px-20 flex flex-col min-h-full text-center justify-around hero_login">
                 <div className="hero_login_shadow">
 
                 </div>
-                <div className="mb-12 flex flex-col justify-center items-center relative z-3">
+                <div className="mb-10 flex flex-col justify-center items-center relative z-3">
                   <div className="hidden dark:flex flex-col items-center ">
                     <Image
                       src={"/images/logo/celer-app-logo-dark.svg"}
@@ -145,9 +145,9 @@ const SignIn: React.FC = () => {
                     />
                   </div>
                 </div>
-                <p className="2xl:px-10 text-lg font-medium relative z-3 text-white">
-                  Atualização inteligente dos valores de precatórios com base na legislação vigente
-                </p>
+                <h1 className="text-left translate-x-25 animate-fade-right pt-8 text-7xl font-bold text-snow opacity-0 2xsm:hidden md:block md:text-5xl lg:text-7xl">
+                  Sua solução <br /> one-stop-shop <br /> em precatórios
+                </h1>
               </div>
             </div>
             {/* Fim do bloco desktop */}
