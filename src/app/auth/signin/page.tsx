@@ -145,7 +145,7 @@ const SignIn: React.FC = () => {
                     />
                   </div>
                 </div>
-                <h1 className="text-left translate-x-25 animate-fade-right pt-8 text-7xl font-bold text-snow opacity-0 2xsm:hidden md:block md:text-5xl lg:text-7xl">
+                <h1 className="text-left translate-x-25 animate-fade-right pt-8 text-5xl font-bold text-snow opacity-0 2xsm:hidden md:block md:text-4xl lg:text-6xl">
                   Sua solução <br /> one-stop-shop <br /> em precatórios
                 </h1>
               </div>
