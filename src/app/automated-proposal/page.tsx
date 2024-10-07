@@ -324,8 +324,9 @@ E abaixo, uma memória das informações de entrada:
             <h1 className="translate-x-25 animate-fade-right pt-15 text-7xl font-bold text-snow opacity-0 2xsm:hidden md:block md:text-5xl lg:text-7xl">
               Gerador de <br /> Propostas <br /> Automáticas
             </h1>
-            <h1 className="translate-x-25 animate-fade-right pt-15 font-bold text-snow opacity-0 2xsm:text-title-sm2 md:hidden">
-              Gerador de Propostas Automáticas
+            <h1 className="translate-x-25 animate-fade-right pt-20 font-bold text-snow opacity-0 2xsm:mt-8 2xsm:flex 2xsm:flex-col 2xsm:items-center 2xsm:justify-center  2xsm:text-title-sm md:hidden">
+              <span>Gerador de Propostas</span>
+              <span>Automáticas</span>
             </h1>
           </div>
         </div>
@@ -814,7 +815,7 @@ E abaixo, uma memória das informações de entrada:
           </form>
           {showResults && (
             <React.Fragment>
-              <div className="my-20 flex animate-fade-up flex-col gap-10 opacity-0">
+              <div className="flex animate-fade-up flex-col opacity-0 2xsm:p-10 md:my-20 md:gap-10">
                 <div>
                   <h2 className="text-xl font-medium uppercase">
                     Tudo pronto!
@@ -826,7 +827,7 @@ E abaixo, uma memória das informações de entrada:
                   </p>
                 </div>
                 <div className="mt-10 grid gap-10">
-                  <div className="flex items-center justify-between gap-5">
+                  <div className="flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
                     <div className="relative flex flex-col items-center">
                       <h4 className="">Proposta Mínima</h4>
                       <span>{numberFormat(proposalValue.min)}</span>
@@ -851,7 +852,7 @@ E abaixo, uma memória das informações de entrada:
                     </div>
                   </div>
 
-                  <div className="relative flex items-center justify-between gap-5">
+                  <div className="relative flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
                     <div className="flex flex-col items-center">
                       <h4 className="">Comissão Mínima</h4>
                       <span>{numberFormat(comissionValue.min)}</span>
@@ -878,11 +879,11 @@ E abaixo, uma memória das informações de entrada:
                 </div>
               </div>
 
-              <div className="flex items-center justify-center gap-4">
+              <div className="flex items-center justify-center gap-4 2xsm:flex-wrap">
                 {/* register button */}
                 <Link
                   href={APP_ROUTES.public.register.name}
-                  className="flex h-14 items-center justify-center rounded-md bg-blue-700 px-4 py-2 text-snow transition-all duration-300 hover:bg-blue-800"
+                  className="flex h-14 items-center justify-center rounded-md bg-blue-700 px-4 py-2 text-snow transition-all duration-300 hover:bg-blue-800 2xsm:w-[295px] md:w-fit"
                 >
                   Desejo cadastrar este ativo no Celer
                 </Link>
@@ -890,7 +891,7 @@ E abaixo, uma memória das informações de entrada:
 
                 {/* whatsapp button */}
                 <button
-                  className={`${headerColorset === "glass" ? "cursor-pointer opacity-100" : "cursor-default opacity-0"} flex place-items-center gap-2 rounded-md bg-green-500 px-4 py-2 text-snow transition-all duration-300 hover:bg-green-600`}
+                  className={`${headerColorset === "glass" ? "cursor-pointer opacity-100" : "cursor-default opacity-0"} flex w-fit place-items-center gap-2 rounded-md bg-green-500 px-4 py-2 text-snow transition-all duration-300 hover:bg-green-600`}
                   onClick={redirectToWhatsApp}
                 >
                   <span>Falar com um consultor Ativos</span>
