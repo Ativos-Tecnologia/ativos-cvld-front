@@ -3,6 +3,8 @@ import React, { useState, ReactNode } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import useColorMode from "@/hooks/useColorMode";
+import { MainFooter } from "../Footer";
+import { LiteFooter } from "../Footer/LiteFooter";
 
 export default function UnloggedLayout({ children, }: { children: React.ReactNode }) {
   if (localStorage.getItem('ATIVOS_access') === undefined) {
@@ -10,8 +12,8 @@ export default function UnloggedLayout({ children, }: { children: React.ReactNod
     localStorage.removeItem('ATIVOS_refresh');
   }
 
-  // automatically will set the dark or light mode using the localStorage value
-  const [colorMode, setColorMode] = useColorMode();
+  // // automatically will set the dark or light mode using the localStorage value
+  // const [colorMode, setColorMode] = useColorMode();
   return (
     <>
       {/* <!-- ===== Page Wrapper Start ===== --> */}
@@ -32,6 +34,9 @@ export default function UnloggedLayout({ children, }: { children: React.ReactNod
             <div className="relative mx-auto overflow-hidden">
               {children}
             </div>
+        {
+          window.location.pathname === '/auth/signin' || window.location.pathname === '/auth/signup' ? <LiteFooter /> : <MainFooter />
+        }
           </main>
           {/* <!-- ===== Main Content End ===== --> */}
         </div>

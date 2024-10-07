@@ -1,0 +1,17 @@
+.hero_login {
+    background: url(../../../../public/images/work_calculating.jpg) no-repeat center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.hero_login_shadow {
+    background: #111;
+    position: absolute;
+    inset: 0;
+    content: "";
+    opacity: 0.5;
+    z-index: 0;
+}
