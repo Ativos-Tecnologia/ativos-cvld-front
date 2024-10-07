@@ -176,6 +176,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               </Link>
                             </li>
                           )}
+                          {(!window.location.href.includes('https://ativoscvld.vercel.app/') || !window.location.href.includes('https://dev-ativoscvld.vercel.app/')) && (
                             <li>
                               <Link
                                 href="/dashboard/marketplace"
@@ -183,10 +184,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                   }`}
                               >
                                 <TbShoppingCartUp />
-                                <span>Ativos Disponíveis</span>
+                                <span>MarketPlace</span>
                               </Link>
                             </li>
-
+                          )}
                         </ul>
                       </div>
 
