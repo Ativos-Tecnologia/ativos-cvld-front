@@ -6,6 +6,9 @@ export const APP_ROUTES = {
         wallet: {
             name: "/dashboard/wallet"
         },
+        marketplace: {
+            name: "/dashboard/marketplace"
+        },
         profile: {
             name: "/profile"
         },

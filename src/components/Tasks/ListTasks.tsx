@@ -1,45 +1,19 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import TaskHeader from "../TaskHeader";
 import Drag from "@/js/drag";
 import DropdownDefault from "../Dropdowns/DropdownDefault";
-import Card from "../Cards/marketplaceCard";
-import Image from "next/image";
-import api from "@/utils/api";
-import { NotionResponse } from "@/interfaces/INotion";
 
 const TaskList: React.FC = () => {
   useEffect(() => {
     Drag();
   });
 
-  const [marketPlaceItems, setMarketPlaceItems] = useState<NotionResponse>({
-    object: "list",
-    results: []
-  });
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await api.get("api/notion-api/marketplace/available/");
-
-      if (response.status === 200) {
-        setMarketPlaceItems(response.data);
-      }
-    }
-    fetchData()
-  }, [])
-
   return (
     <>
-      <div className="border border-black rounded p-4 mx-auto mb-20 grid grid-cols-3 bg-black">
-        {marketPlaceItems.results.map((oficio) => (
-          <Card key={oficio.id} oficio={oficio} />
-        ))}
-      </div>
-
       <div className="mx-auto max-w-5xl">
-        <Breadcrumb showTitle={false} pageName="Lista de Tarefas" />
+        <Breadcrumb  showTitle={false} pageName="Lista de Tarefas" />
 
         {/* <!-- Task Header Start --> */}
         <TaskHeader />
@@ -93,7 +67,7 @@ const TaskList: React.FC = () => {
                       </div>
                       <p>
                         Identificar a melhor forma de contato com o Fulano e fazer o primeiro contato
-                      </p>
+                        </p>
                     </div>
                   </label>
 
@@ -125,7 +99,7 @@ const TaskList: React.FC = () => {
                       </div>
                       <p>
                         Realizar o contato por telefone
-                      </p>
+                        </p>
                     </div>
                   </label>
 
@@ -157,7 +131,7 @@ const TaskList: React.FC = () => {
                       </div>
                       <p>
                         Fazer a oferta formal por e-mail
-                      </p>
+                        </p>
                     </div>
                   </label>
                 </div>

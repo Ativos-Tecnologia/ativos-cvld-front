@@ -13,6 +13,7 @@ import { Button } from "../ui/button";
 import { FiClipboard } from "react-icons/fi";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
 import { LuWallet2 } from "react-icons/lu";
+import { TbShoppingCartUp } from "react-icons/tb";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -175,6 +176,16 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               </Link>
                             </li>
                           )}
+                            <li>
+                              <Link
+                                href="/dashboard/marketplace"
+                                className={`group relative flex items-center gap-2.5 px-4 py-2 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-300/50 dark:hover:bg-meta-4 hover:text-white ${pathname === "/dashboard/wallet" && "text-white bg-blue-300/50 dark:bg-meta-4"
+                                  }`}
+                              >
+                                <TbShoppingCartUp />
+                                <span>Ativos Disponíveis</span>
+                              </Link>
+                            </li>
 
                         </ul>
                       </div>
