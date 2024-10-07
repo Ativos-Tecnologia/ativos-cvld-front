@@ -1,7 +1,6 @@
-import Wallet from "@/components/Dashboard/Wallet";
-
 import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import Marketplace from "@/components/Dashboard/Marketplace";
 
 export const metadata: Metadata = {
   title: "CelerApp | MarketPlace",
@@ -12,7 +11,7 @@ export const metadata: Metadata = {
 const WalletPage = () => {
   return (
     <DefaultLayout>
-      <Wallet />
+      <Marketplace />
     </DefaultLayout>
   );
 };
