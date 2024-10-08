@@ -35,7 +35,7 @@ const iconsConfig = {
     },
 }
 
-const Card = ({ oficio }: { oficio: NotionPage }) => {
+const Card = ({ oficio, onClickFn }: { oficio: NotionPage, onClickFn: () => void }) => {
 
     const fetchOficioDataFromWallet = async () => {
         const response = await api.post('/api/extrato/wallet/', {
@@ -55,7 +55,7 @@ const Card = ({ oficio }: { oficio: NotionPage }) => {
     );
 
     return (
-        <div className='px-4 h-65 font-nexa max-w-95'>
+        <div className='px-4 h-65 font-nexa max-w-95' onClick={onClickFn}>
             <div className='relative group h-55'>
                 <div className='absolute z-0 inset-0 overflow-hidden rounded-md'>
                     <Image
