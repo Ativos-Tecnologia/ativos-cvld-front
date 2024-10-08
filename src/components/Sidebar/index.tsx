@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { use, useContext, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -14,6 +14,8 @@ import { FiClipboard } from "react-icons/fi";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
 import { LuWallet2 } from "react-icons/lu";
 import { TbShoppingCartUp } from "react-icons/tb";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/utils/api";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -34,6 +36,25 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const [sidebarExpanded, setSidebarExpanded] = useState(
     storedSidebarExpanded === null ? false : storedSidebarExpanded === "true",
   );
+
+  const fetchItems = async () => {
+    const response = await api.get("api/notion-api/marketplace/available/?count");
+
+    if (response.status === 200) {
+      return response.data
+    } else {
+      return 0
+    }
+  }
+
+  const { data} = useQuery({
+    queryKey: ["marketplace_active_items"],
+    refetchInterval: 60 * 1000, // sessenta segundos
+    staleTime: 50 * 1000, // cinquenta segundos
+    queryFn: fetchItems
+  });
+
+  console.log(data)
 
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
@@ -184,7 +205,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                   }`}
                               >
                                 <TbShoppingCartUp />
-                                <span>Marketplace</span>
+                                <span>MarketPlace</span>
+                                {/* counter */}
+                                {data?.count && (
+                                  <span className="w-4 h-4 bg-red-500 flex items-center justify-center rounded-full text-xs text-snow">
+                                    {data.count || 0}
+                                  </span>
+                                )}
                               </Link>
                             </li>
                           )}
