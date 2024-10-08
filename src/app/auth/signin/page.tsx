@@ -52,6 +52,8 @@ const SignIn: React.FC = () => {
   } = usePassword(passwordInput)
 
   const [openModal, setOpenModal] = useState<boolean>(false);
+  // descomente a linha de baixo para ativar o modo light/dark nessa página
+  // const [colorMode, setColorMode] = useColorMode();
   const router = useRouter();
   const MySwal = UseMySwal();
 

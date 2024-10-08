@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     "Marketplace com oportunidades de investimento em precatórios, RPV's e outros ativos do mercado de crédito.",
 };
 
-const WalletPage = () => {
+const MarketplacePage = () => {
   return (
     <DefaultLayout>
       <Marketplace />
@@ -16,4 +16,4 @@ const WalletPage = () => {
   );
 };
 
-export default WalletPage;
+export default MarketplacePage;

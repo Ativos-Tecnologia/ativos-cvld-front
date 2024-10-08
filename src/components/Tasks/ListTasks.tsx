@@ -33,9 +33,7 @@ const TaskList: React.FC = () => {
   return (
     <>
       <div className="border border-black rounded p-4 mx-auto mb-20 grid grid-cols-3 bg-black">
-        {marketPlaceItems.results.map((oficio) => (
-          <Card key={oficio.id} oficio={oficio} />
-        ))}
+
       </div>
 
       <div className="mx-auto max-w-5xl">

@@ -312,7 +312,7 @@ E abaixo, uma memória das informações de entrada:
       {/* image-wrapper */}
       <div className="relative">
         <Image
-          src="/images/hero-image.jfif"
+          src="/images/hero-image.webp"
           alt="homem com terno e notebook"
           className="w-full"
           width={1913}

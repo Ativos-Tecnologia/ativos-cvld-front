@@ -9,6 +9,9 @@ export const APP_ROUTES = {
         marketplace: {
             name: "/dashboard/marketplace"
         },
+        marketplaceItem: {
+            name: "/dashboard/marketplace/:id"
+        },
         profile: {
             name: "/profile"
         },
