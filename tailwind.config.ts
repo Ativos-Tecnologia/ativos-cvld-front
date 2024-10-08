@@ -1,15 +1,15 @@
-import flowbite from 'flowbite-react/tailwind';
-import defaultTheme from 'tailwindcss/defaultTheme';
+import flowbite from "flowbite-react/tailwind";
+import defaultTheme from "tailwindcss/defaultTheme";
 
-import type { Config } from "tailwindcss"
+import type { Config } from "tailwindcss";
 const config = {
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
     flowbite.content(),
-	],
+  ],
   darkMode: ["class"],
   prefix: "",
   theme: {
@@ -25,12 +25,12 @@ const config = {
     },
     fontFamily: {
       nexa: ["Nexa", "sans-serif"],
-      satoshi : ["Satoshi", "sans-serif"],
+      satoshi: ["Satoshi", "sans-serif"],
+      poppins: ["Poppins", "sans-serif"],
       // sans: ["Inter", "sans-serif"],
     },
 
     extend: {
-
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -291,7 +291,7 @@ const config = {
       },
       backgroundImage: {
         video: "url('../images/video/video.png')",
-        'main-unlogged': "url('/images/logo/main-logo-img.png')"
+        "main-unlogged": "url('/images/logo/main-logo-img.png')",
       },
       content: {
         "icon-copy": 'url("../images/icon/icon-copy-alt.svg")',
@@ -344,8 +344,8 @@ const config = {
           },
           "100%": {
             opacity: "1",
-            transform: "translateY(0)"
-          }
+            transform: "translateY(0)",
+          },
         },
         "fade-right": {
           "0%": {
@@ -354,8 +354,8 @@ const config = {
           },
           "100%": {
             opacity: "1",
-            transform: "translateX(0)"
-          }
+            transform: "translateX(0)",
+          },
         },
         "caret-blink": {
           "0%,70%,100%": { opacity: "1" },
@@ -369,23 +369,23 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        jump:{
-          '0,100%': {
-            transform: 'translateY(0)',
-            'animation-timing-function': 'cubic-bezier(0, 0, 0.2, 1)'
+        jump: {
+          "0,100%": {
+            transform: "translateY(0)",
+            "animation-timing-function": "cubic-bezier(0, 0, 0.2, 1)",
           },
           "50%": {
-            transform: 'translateY(-7px)',
-            'animation-timing-function': 'cubic-bezier(0.8, 0, 1, 1)'
+            transform: "translateY(-7px)",
+            "animation-timing-function": "cubic-bezier(0.8, 0, 1, 1)",
           },
         },
-        'flip-vertical-right': {
+        "flip-vertical-right": {
           from: {
-            transform: 'rotateY(0)'
+            transform: "rotateY(0)",
           },
           to: {
-            transform: 'rotateY(360deg)'
-          }
+            transform: "rotateY(360deg)",
+          },
         },
         topToBottomArrow: {
           "0%": { rotate: "0deg" },
@@ -397,46 +397,46 @@ const config = {
         },
         wiggle: {
           "0%": {
-            transform: 'scale(1)',
+            transform: "scale(1)",
           },
           "2%": {
-            transform: 'scale(1.3)'
+            transform: "scale(1.3)",
           },
           "5%, 15%, 25%, 35%": {
-            transform: 'rotate(25deg) scale(1.6)'
+            transform: "rotate(25deg) scale(1.6)",
           },
           "10%, 20%, 30%, 40%": {
-            transform: 'rotate(-25deg) scale(1.6)'
+            transform: "rotate(-25deg) scale(1.6)",
           },
           "42%": {
-            transform: 'scale(1.3)'
+            transform: "scale(1.3)",
           },
           "44%, 100%": {
-            transform: 'rotate(0deg) scale(1)'
-          }
+            transform: "rotate(0deg) scale(1)",
+          },
         },
         sideforward: {
-          'to': {
-            transform: 'translateX(10px)'
-          }
+          to: {
+            transform: "translateX(10px)",
+          },
         },
         downforward: {
-          'to': {
-            transform: 'translateY(8px)'
-          }
+          to: {
+            transform: "translateY(8px)",
+          },
         },
         upforward: {
-          'to': {
-            transform: 'translateY(-3px)'
-          }
+          to: {
+            transform: "translateY(-3px)",
+          },
         },
         typewriter: {
-          '0%': { width: '0%' },
-          '100%': { width: '100%' },
+          "0%": { width: "0%" },
+          "100%": { width: "100%" },
         },
         blink: {
-          '0%, 100%': { borderColor: 'transparent' },
-          '50%': { borderColor: 'black' },
+          "0%, 100%": { borderColor: "transparent" },
+          "50%": { borderColor: "black" },
         },
         linspin: {
           "100%": { transform: "rotate(360deg)" },
@@ -488,12 +488,13 @@ const config = {
         "caret-blink": "caret-blink 1.25s ease-out infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        jump: 'jump 500ms ease-in-out',
-        flip: 'flip-vertical-right 3.5s infinite linear',
-        wiggle: 'wiggle 2.5s infinite',
-        downforward: 'downforward 1.0s infinite alternate ease-in-out',
-        upforward: 'upforward 1.5s infinite alternate ease-in-out',
-        typewriter: 'typewriter 4s steps(10) 1s infinite alternate both, blink 0.7s infinite step-end',
+        jump: "jump 500ms ease-in-out",
+        flip: "flip-vertical-right 3.5s infinite linear",
+        wiggle: "wiggle 2.5s infinite",
+        downforward: "downforward 1.0s infinite alternate ease-in-out",
+        upforward: "upforward 1.5s infinite alternate ease-in-out",
+        typewriter:
+          "typewriter 4s steps(10) 1s infinite alternate both, blink 0.7s infinite step-end",
         linspin: "linspin 1568.2353ms linear infinite",
         easespin: "easespin 5332ms cubic-bezier(0.4, 0, 0.2, 1) infinite both",
         "left-spin":
@@ -511,11 +512,11 @@ const config = {
         line2: "line-revert 8s infinite linear",
         line3: "line 7s infinite linear",
         topbottom1: "topToBottomArrow 0.5s forwards",
-        bottomtotoparrow: "bottomToTopArrow 0.5s forwards"
+        bottomtotoparrow: "bottomToTopArrow 0.5s forwards",
       },
     },
   },
   plugins: [require("tailwindcss-animate"), flowbite.plugin()],
-} satisfies Config
+} satisfies Config;
 
-export default config
+export default config;
