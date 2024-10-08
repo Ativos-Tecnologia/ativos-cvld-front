@@ -137,7 +137,7 @@ const RecalculateTrf1 = () => {
       {/* image-wrapper */}
       <div className="relative">
         <Image
-          src="/images/TRF1.jpg"
+          src="/images/TRF1-V4.png"
           alt="imagem do tribunal regional 1"
           className="max-h-[500px] w-full"
           width={1920}
@@ -176,7 +176,7 @@ const RecalculateTrf1 = () => {
                   name="natureza"
                   control={control}
                   defaultValue={"NÃO TRIBUTÁRIA"}
-                  className="h-7 w-40 border-transparent bg-transparent py-1"
+                  className="h-7 w-40 border-transparent bg-transparent py-1 text-slate-700 hover:border-gray-700 hover:bg-slate-500 hover:text-slate-50 focus:border-slate-600 focus:bg-slate-600 focus:text-slate-50 active:bg-slate-600"
                 >
                   <SelectItem
                     defaultValue="NÃO TRIBUTÁRIA"
@@ -187,7 +187,7 @@ const RecalculateTrf1 = () => {
                   <SelectItem value="TRIBUTÁRIA">Tributária</SelectItem>
                 </ShadSelect>
               </div>
-              <div className="flex items-center text-sm">
+              <div className="flex items-center text-sm ">
                 <span>Data de Cadastro da Req: </span>
                 <Controller
                   name="data_requisicao"
@@ -201,7 +201,7 @@ const RecalculateTrf1 = () => {
                       {...field}
                       mask="99/99/9999"
                       placeholder="dd/mm/yyyy"
-                      className={`${errors.data_requisicao && "border-red"} ml-2 w-22 border-none bg-transparent p-1 placeholder:text-sm focus-within:ring-0`}
+                      className={`${errors.data_requisicao && "border-red"} ml-2 w-22 border-none border-slate-600 bg-slate-300 bg-transparent p-1 text-center text-xs text-slate-700 placeholder:text-sm focus-within:ring-0 hover:border-gray-700 hover:bg-slate-300  focus:border-slate-800 focus:bg-slate-300 active:bg-slate-300 `}
                       onBlur={(e) => {
                         const inputValue = e.target.value;
 
@@ -294,7 +294,7 @@ const RecalculateTrf1 = () => {
                 <div className="col-span-1 flex items-center justify-center border-r  border-slate-600 bg-slate-300 py-[2px]   text-center   text-xs uppercase  text-slate-700 hover:border-gray-700 hover:bg-slate-500 hover:text-slate-50 focus:border-slate-800 focus:bg-slate-600 active:bg-slate-600">
                   não
                 </div>
-                <div className="col-span-1 flex items-center justify-center border-slate-600 bg-slate-300 p-[3px] text-center text-xs uppercase text-slate-700 hover:border-gray-700 hover:bg-slate-300  focus:border-slate-800 focus:bg-slate-300 active:bg-slate-300 ">
+                <div className="col-span-1 flex items-center justify-center border-slate-600 bg-slate-300 p-[3px] text-center text-xs uppercase text-slate-700 hover:border-gray-700 hover:bg-slate-300 focus:border-slate-800 focus:bg-slate-300 active:bg-slate-300 ">
                   <Controller
                     name="data_base"
                     control={control}
@@ -307,7 +307,7 @@ const RecalculateTrf1 = () => {
                         {...field}
                         mask="99/99/9999"
                         placeholder="dd/mm/yyyy"
-                        className={`${errors.data_base && "border-red"} my-auto h-fit w-full border-none bg-transparent p-1 text-center  text-xs placeholder:text-xs focus-within:border-none focus-visible:border-none`}
+                        className={`${errors.data_base && "border-red"} my-auto h-fit w-full border-none bg-transparent p-1 text-center text-xs  placeholder:text-xs focus-within:border-none focus-visible:border-none`}
                         onBlur={(e) => {
                           const inputValue = e.target.value;
 
@@ -562,7 +562,7 @@ const RecalculateTrf1 = () => {
                         return parseInt(value);
                       },
                     })}
-                    className="w-18 border-none bg-transparent px-1 py-0 text-sm placeholder:text-sm focus-within:ring-0"
+                    className="w-15 border-none bg-slate-300 bg-transparent px-1 py-0 text-sm placeholder:text-sm focus-within:ring-0 hover:border-none hover:bg-slate-600 hover:text-white focus:text-slate-50"
                   />
                 </div>
               </div>
