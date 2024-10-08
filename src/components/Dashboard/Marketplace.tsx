@@ -57,9 +57,12 @@ const Marketplace: React.FC = () => {
           </Fade>
         ) : (
           <>
+                    <Fade cascade damping={0.1}>
+
             {[...Array(6)].map((_, index: number) => (
               <MarketplaceCardSkeleton key={index} />
             ))}
+            </Fade>
           </>
         )}
       </div>
