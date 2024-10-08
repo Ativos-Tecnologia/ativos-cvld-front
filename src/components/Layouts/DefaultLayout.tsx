@@ -7,6 +7,7 @@ import { Alert } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import UserProduct from "../UserProduct";
+import { TableNotionProvider } from "@/context/NotionTableContext";
 
 const queryClient = new QueryClient();
 
@@ -25,7 +26,9 @@ export default function DefaultLayout({
       {/* <!-- ===== Page Wrapper Start ===== --> */}
       <div className="flex h-screen overflow-hidden">
         {/* <!-- ===== Sidebar Start ===== --> */}
-        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <TableNotionProvider>
+          <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        </TableNotionProvider>
         {/* <!-- ===== Sidebar End ===== --> */}
 
         {/* <!-- ===== Content Area Start ===== --> */}

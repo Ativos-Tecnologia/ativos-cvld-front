@@ -42,7 +42,7 @@ const Marketplace: React.FC = () => {
       </div>
 
       {/* content */}
-      <div className='grid grid-cols-3 my-5'>
+      <ul className='grid grid-cols-3 my-5'>
         {marketPlaceItems.results.length > 0 ? (
           <Fade cascade damping={0.1}>
             {marketPlaceItems.results.map((oficio) => (
@@ -56,7 +56,7 @@ const Marketplace: React.FC = () => {
             ))}
           </>
         )}
-      </div>
+      </ul>
     </div>
   );
 };
