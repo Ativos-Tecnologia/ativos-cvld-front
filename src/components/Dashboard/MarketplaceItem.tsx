@@ -1,14 +1,13 @@
 "use client"
-import React, { useEffect } from 'react'
+import React from 'react'
 import CardDataStats from '../ui/CardDataStats';
 import AnimatedNumber from '../ui/AnimatedNumber';
 import { useQuery } from "@tanstack/react-query";
 import api from '@/utils/api';
-import { NotionPage, NotionResponse } from '@/interfaces/INotion';
+import { NotionPage } from '@/interfaces/INotion';
 import { TbMoneybag } from 'react-icons/tb';
 import CardDataStatsSkeleton from '../ui/CardDataStatsSkeleton';
 import { MdOutlineAttachMoney } from 'react-icons/md';
-import percentageFormater from '@/functions/formaters/percentFormater';
 import { IoCalendar } from 'react-icons/io5';
 import { LuDownloadCloud } from 'react-icons/lu';
 import ProjectedProfitabilityChart from '../Charts/ProjectedProfitabilityChart';
@@ -122,10 +121,7 @@ export default function MarketplaceItem({ id }: MarketplaceItemProps) {
                 {/*
                 Botão de realizar investimento
                 */}
-                <button className="col-span-12 md:col-span-6 xl:col-span-4 2xl:col-span-3 bg-primary text-boxdark font-semibold py-3 rounded-md">Realizar Investimento</button>
                 </div>
-
-
         </div>
     )
 }
