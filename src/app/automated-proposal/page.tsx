@@ -771,7 +771,7 @@ E abaixo, uma memória das informações de entrada:
                   htmlFor="ja_possui_destacamento"
                   className={`${!watch("ja_possui_destacamento") && "mt-1"} font-nexa text-xs font-semibold uppercase text-meta-5`}
                 >
-                  Já possui destacamento de honorários?
+                  Já possui destaque de honorários?
                 </label>
               </div>
               {watch("ja_possui_destacamento") === false && (
