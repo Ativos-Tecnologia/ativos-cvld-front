@@ -20,6 +20,7 @@ const CardDataStats: React.FC<CardDataStatsProps> = ({
   children,
   elementHtml
 }) => {
+  console.log(rate)
   return (
     <div className="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="flex h-8.5 w-8.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
@@ -44,7 +45,7 @@ const CardDataStats: React.FC<CardDataStatsProps> = ({
         </div>
 
         <span
-          className={`flex items-center gap-1 mb-0.5 text-[10px] font-medium ${
+          className={`flex items-center gap-1 mb-0.5 text-md font-medium ${
             levelUp && "text-meta-3"
           } ${levelDown && "text-meta-5"} `}
         >

@@ -48,8 +48,8 @@ const Marketplace: React.FC = () => {
       </div>
 
       {/* content */}
-      <div className='grid grid-cols-3 my-5'>
-        { data.results.length > 0 ? (
+      <ul className='grid grid-cols-3 my-5'>
+        {data.results.length > 0 ? (
           <Fade cascade damping={0.1}>
             {data!.results?.map((oficio) => (
                 <Card key={oficio.id} oficio={oficio} onClickFn={() => handleRedirect(oficio.id)} />
@@ -65,7 +65,7 @@ const Marketplace: React.FC = () => {
             </Fade>
           </>
         )}
-      </div>
+      </ul>
     </div>
   );
 };
