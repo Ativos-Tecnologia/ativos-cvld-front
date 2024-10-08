@@ -8,6 +8,7 @@ import Image from 'next/image'
 import React from 'react'
 import { BiSolidCoinStack } from 'react-icons/bi'
 import { FaFileAlt, FaFileInvoiceDollar } from 'react-icons/fa'
+import CustomSkeleton from '../CrmUi/CustomSkeleton'
 
 const imgPaths: Record<string, string> = {
     "TRF1": "/images/card_TRF1.jpg",
@@ -67,7 +68,7 @@ const Card = ({ oficio }: { oficio: NotionPage }) => {
                     <div className='absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.9)_20%,rgba(0,0,0,0.2)_80%)]'></div>
                 </div>
                 <div
-                    className='relative group cursor-pointer p-4 h-full bg-center bg-cover flex flex-col justify-between'
+                    className='relative group cursor-pointer rounded-md p-4 h-full bg-center bg-cover flex flex-col justify-between'
                 >
                     {/* badge */}
                     <div className='group-hover:opacity-0 absolute right-1 -top-1 flex items-center justify-center'>
@@ -101,7 +102,9 @@ const Card = ({ oficio }: { oficio: NotionPage }) => {
                                 {oficio.properties["Tipo"].select?.name || "Sem tipo"}
                             </p>
                             <h2 className='text-gray-300'>
-                                {numberFormat(data?.result[data.result.length - 1]["valor_liquido_disponivel"] || 0)}
+                                {data?.result[data.result.length - 1]["valor_liquido_disponivel"] ? numberFormat(data?.result[data.result.length - 1]["valor_liquido_disponivel"] || 0) : (
+                                    <CustomSkeleton className="h-6" />
+                                )}
                             </h2>
                         </div>
                         {oficio.properties["Destaque"]?.checkbox && (
@@ -121,7 +124,9 @@ const Card = ({ oficio }: { oficio: NotionPage }) => {
                 </div>
 
                 {/* hover info */}
-                <div className='absolute inset-0 z-2 flex flex-col p-4 cursor-pointer justify-between h-55 opacity-0 group-hover:opacity-100 group-hover:h-65 transition-all duration-300 ease-in-out bg-[linear-gradient(to_top,#000000_20%,rgba(17,17,17,0.5)_80%)] rounded-md'>
+                <div
+                    title='clique para acessar o ativo'
+                    className='absolute inset-0 z-2 flex flex-col p-4 cursor-pointer justify-between h-55 opacity-0 group-hover:opacity-100 group-hover:h-65 transition-all duration-300 ease-in-out bg-[linear-gradient(to_top,#000000_20%,rgba(17,17,17,0.5)_80%)] rounded-md'>
 
                     {/* hovered icon */}
                     <span
@@ -153,7 +158,9 @@ const Card = ({ oficio }: { oficio: NotionPage }) => {
                             <div className='col-span-1 uppercase pb-[2px] mb-1 border-b border-snow'>
                                 <p className='text-[10px] text-gray-400'>valor líquido atualizado</p>
                                 <p className='text-sm text-snow'>
-                                    {numberFormat(data?.result[data.result.length - 1]["valor_liquido_disponivel"] || 0)}
+                                    {data?.result[data.result.length - 1]["valor_liquido_disponivel"] ? numberFormat(data?.result[data.result.length - 1]["valor_liquido_disponivel"] || 0) : (
+                                        <CustomSkeleton className="h-6" />
+                                    )}
                                 </p>
                             </div>
                             <div className='col-span-1 uppercase pb-[2px] mb-1 border-b border-snow'>
