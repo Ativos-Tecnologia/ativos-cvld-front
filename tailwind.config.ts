@@ -337,6 +337,10 @@ const config = {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
+        "skeleton-pass": {
+          "0%": { transform: "translateX(-400%)" },
+          "100%": { transform: "translateX(500px)" },
+        },
         "fade-up": {
           "0%": {
             opacity: "0",
@@ -483,6 +487,7 @@ const config = {
         },
       },
       animation: {
+        "skeleton-pass": "skeleton-pass 1s ease-in-out infinite",
         "fade-up": "fade-up 1s ease-out forwards",
         "fade-right": "fade-right 1s ease-out forwards",
         "caret-blink": "caret-blink 1.25s ease-out infinite",
