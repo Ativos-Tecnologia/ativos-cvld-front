@@ -303,7 +303,7 @@ E abaixo, uma memória das informações de entrada:
   }, []);
 
   return (
-    <div ref={mainRef}>
+    <div ref={mainRef} className="bg-boxdark-2">
       <UnloggedHeader
         theme="dark" //tema do header
         logoPath="/images/logo/celer-app-logo-text.svg" //logo do header
@@ -321,10 +321,10 @@ E abaixo, uma memória das informações de entrada:
         />
         <div className="absolute inset-0 flex flex-col items-start justify-center bg-[linear-gradient(to_top,#1A222C_5%,transparent_95%)]">
           <div className="mx-auto md:min-w-[80%] xl:min-w-[1080px]">
-            <h1 className="translate-x-25 animate-fade-right pt-15 text-7xl font-bold text-snow opacity-0 2xsm:hidden md:block md:text-5xl lg:text-7xl">
+            <h1 className="font-poppins translate-x-25 animate-fade-right pt-15 text-7xl text-snow opacity-0 2xsm:hidden md:block md:text-5xl lg:text-7xl">
               Gerador de <br /> Propostas <br /> Automáticas
             </h1>
-            <h1 className="translate-x-25 animate-fade-right pt-20 font-bold text-snow opacity-0 2xsm:mt-8 2xsm:flex 2xsm:flex-col 2xsm:items-center 2xsm:justify-center  2xsm:text-title-sm md:hidden">
+            <h1 className="font-poppins translate-x-25 animate-fade-right pt-20 text-snow opacity-0 2xsm:mt-8 2xsm:flex 2xsm:flex-col 2xsm:items-center 2xsm:justify-center  2xsm:text-title-sm md:hidden">
               <span>Gerador de Propostas</span>
               <span>Automáticas</span>
             </h1>
@@ -335,7 +335,7 @@ E abaixo, uma memória das informações de entrada:
 
       {/* form */}
       <div className="bg-boxdark-2">
-        <div className="mx-auto  max-w-[80%] py-10">
+        <div className="mx-auto  max-w-[80%] py-10 2xl:min-w-[1080px] 2xl:px-60">
           <div className="mb-10">
             <h2 className="text-xl font-medium uppercase text-bodydark">
               Preencha o formulário abaixo
@@ -771,7 +771,7 @@ E abaixo, uma memória das informações de entrada:
                   htmlFor="ja_possui_destacamento"
                   className={`${!watch("ja_possui_destacamento") && "mt-1"} font-nexa text-xs font-semibold uppercase text-meta-5`}
                 >
-                  Já possui destacamento de honorários?
+                  Já possui destaque de honorários?
                 </label>
               </div>
               {watch("ja_possui_destacamento") === false && (
@@ -885,7 +885,7 @@ E abaixo, uma memória das informações de entrada:
                   href={APP_ROUTES.public.register.name}
                   className="flex h-14 items-center justify-center rounded-md bg-blue-700 px-4 py-2 text-snow transition-all duration-300 hover:bg-blue-800 2xsm:w-[295px] md:w-fit"
                 >
-                  Desejo cadastrar este ativo no Celer
+                  Cadastrar este ativo no Celer
                 </Link>
                 {/* register button */}
 
