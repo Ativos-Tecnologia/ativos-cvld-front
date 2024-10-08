@@ -5,13 +5,21 @@ import React, { useEffect, useState } from 'react';
 import MarketplaceCardSkeleton from '../Skeletons/MarketplaceCardSkeleton';
 import { Fade } from 'react-awesome-reveal';
 import Card from '../Cards/marketplaceCard';
+import Link from 'next/link';
+import { useRouter } from "next/navigation";
 
 const Marketplace: React.FC = () => {
+
+  const { push } = useRouter();
 
   const [marketPlaceItems, setMarketPlaceItems] = useState<NotionResponse>({
     object: "list",
     results: []
   });
+
+  function handleRedirect(id: string) {
+    push(`/dashboard/marketplace/${id}`);
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,7 +34,6 @@ const Marketplace: React.FC = () => {
 
   return (
     <div className='flex flex-col gap-5'>
-      {/* title */}
       <div>
         <h1 className='text-4xl font-semibold mb-2 text-snow'>Explore investimentos</h1>
         <p className="font-white">
@@ -39,13 +46,13 @@ const Marketplace: React.FC = () => {
         {marketPlaceItems.results.length > 0 ? (
           <Fade cascade damping={0.1}>
             {marketPlaceItems.results.map((oficio) => (
-              <Card key={oficio.id} oficio={oficio} />
+                <Card key={oficio.id} oficio={oficio} onClickFn={() => handleRedirect(oficio.id)} />
             ))}
           </Fade>
         ) : (
           <>
             {[...Array(6)].map((_, index: number) => (
-              <MarketplaceCardSkeleton />
+              <MarketplaceCardSkeleton key={index} />
             ))}
           </>
         )}
