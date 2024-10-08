@@ -55,7 +55,7 @@ const Card = ({ oficio, onClickFn }: { oficio: NotionPage, onClickFn: () => void
     );
 
     return (
-        <div className='px-4 h-65 font-nexa max-w-95' onClick={onClickFn}>
+        <li className='px-4 h-65 font-nexa max-w-95' onClick={onClickFn}>
             <div className='relative group h-55'>
                 <div className='absolute z-0 inset-0 overflow-hidden rounded-md'>
                     <Image
@@ -194,7 +194,7 @@ const Card = ({ oficio, onClickFn }: { oficio: NotionPage, onClickFn: () => void
                 </div>
                 {/* end hover info */}
             </div>
-        </div>
+        </li>
     )
 }
 
