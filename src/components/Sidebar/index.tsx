@@ -7,7 +7,7 @@ import Image from "next/image";
 import SidebarLinkGroup from "./SidebarLinkGroup";
 import { BiCalculator, BiChevronDown, BiGridAlt, BiUser } from "react-icons/bi";
 import { CiViewBoard } from "react-icons/ci";
-import { AiOutlineBars, AiOutlineDown, AiOutlinePlus } from "react-icons/ai";
+import { AiOutlineBars, AiOutlineDown, AiOutlineLoading, AiOutlinePlus } from "react-icons/ai";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { FiClipboard } from "react-icons/fi";
@@ -16,6 +16,7 @@ import { LuWallet2 } from "react-icons/lu";
 import { TbShoppingCartUp } from "react-icons/tb";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/utils/api";
+import { TableNotionContext } from "@/context/NotionTableContext";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -29,7 +30,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
 
-  const { data: { product } } = useContext(UserInfoAPIContext)
+  const { data: { product } } = useContext(UserInfoAPIContext);
 
   let storedSidebarExpanded = "true";
 
@@ -47,14 +48,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     }
   }
 
-  const { data} = useQuery({
+  const { data } = useQuery({
     queryKey: ["marketplace_active_items"],
     refetchInterval: 60 * 1000, // sessenta segundos
     staleTime: 50 * 1000, // cinquenta segundos
     queryFn: fetchItems
   });
-
-  console.log(data)
 
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
@@ -207,11 +206,15 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 <TbShoppingCartUp />
                                 <span>MarketPlace</span>
                                 {/* counter */}
-                                {data?.count && (
-                                  <span className="w-4 h-4 bg-red-500 flex items-center justify-center rounded-full text-xs text-snow">
-                                    {data.count || 0}
-                                  </span>
-                                )}
+                                <span className="w-4 h-4 bg-red-500 flex items-center justify-center rounded-full text-xs text-snow">
+                                  {!data?.count ? (
+                                    <AiOutlineLoading className="animate-spin text-[10px]" />
+                                  ) : (
+                                    <>
+                                      {data?.count || 0}
+                                    </>
+                                  )}
+                                </span>
                               </Link>
                             </li>
                           )}
