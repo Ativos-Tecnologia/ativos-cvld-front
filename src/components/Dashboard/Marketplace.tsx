@@ -47,7 +47,6 @@ const Marketplace: React.FC = () => {
         </p>
       </div>
 
-      {/* content */}
       <ul className='grid grid-cols-3 my-5'>
         {data.results.length > 0 ? (
           <Fade cascade damping={0.1}>

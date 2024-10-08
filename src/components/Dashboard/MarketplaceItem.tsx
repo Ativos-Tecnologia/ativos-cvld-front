@@ -11,6 +11,8 @@ import { MdOutlineAttachMoney } from 'react-icons/md';
 import percentageFormater from '@/functions/formaters/percentFormater';
 import { IoCalendar } from 'react-icons/io5';
 import { LuDownloadCloud } from 'react-icons/lu';
+import ProjectedProfitabilityChart from '../Charts/ProjectedProfitabilityChart';
+import { Fade } from 'react-awesome-reveal';
 
 type MarketplaceItemProps = {
     id: string;
@@ -45,10 +47,6 @@ export default function MarketplaceItem({ id }: MarketplaceItemProps) {
         }
     );
 
-    console.log('====================================');
-    console.log(data);
-    console.log('====================================');
-
     function handleTotalInvested(data: NotionPage) {
         let totalInvested = 0;
         if (data.properties["Valor de Aquisição (Wallet)"].number) {
@@ -80,6 +78,7 @@ export default function MarketplaceItem({ id }: MarketplaceItemProps) {
         <div>
             <div
                 className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
+                    <Fade cascade damping={0.1} triggerOnce>
                 {
                 data ? <CardDataStats title="Valor de Aquisição" total={
                     data && <AnimatedNumber value={data && handleTotalInvested(data)} />
@@ -111,10 +110,21 @@ export default function MarketplaceItem({ id }: MarketplaceItemProps) {
                     }>
                         <LuDownloadCloud className="w-[18px] h-[18px]" />
                     </CardDataStats> : <CardDataStatsSkeleton />}
+                    </Fade>
             </div>
+                <Fade cascade damping={0.1} triggerOnce>
             <div className=" grid grid-cols-12 mt-4 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
+                    <ProjectedProfitabilityChart data={updatedVlData} />
 
             </div>
+                </Fade>
+            <div className=" grid grid-cols-12 mt-4 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
+                {/*
+                Botão de realizar investimento
+                */}
+                <button className="col-span-12 md:col-span-6 xl:col-span-4 2xl:col-span-3 bg-primary text-boxdark font-semibold py-3 rounded-md">Realizar Investimento</button>
+                </div>
+
 
         </div>
     )

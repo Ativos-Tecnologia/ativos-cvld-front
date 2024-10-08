@@ -18,7 +18,15 @@ export interface RentabilityChartProps {
   data: IWalletResponse;
 }
 
-const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
+const ProjectedProfitabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
+
+  const lastUpdate = data?.result[data.result.length - 1].data_atualizacao;
+  const projectedDate = data?.previsao_de_pgto;
+  const lastUpdatedValue = data?.result[data.result.length - 1].valor_liquido_disponivel;
+  const projectedValue = data?.valor_projetado;
+
+  const chartDataArray = [lastUpdate, projectedDate];
+  const chartValueArray = [lastUpdatedValue, projectedValue];
 
   const options: ApexOptions = {
     legend: {
@@ -46,7 +54,11 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
       },
 
       toolbar: {
-        show: true,
+        show: false,
+        tools: {
+          download: true,
+          selection: true,
+        }
       },
     },
     responsive: [
@@ -103,7 +115,7 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
     },
     xaxis: {
       type: "category",
-      categories: data?.result.map((item) => dateFormater(item.data_atualizacao).slice(3, 10)),
+      categories: data && chartDataArray?.map((item) => dateFormater(item)),
       axisBorder: {
         show: true,
       },
@@ -135,13 +147,9 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
 
   const [state, setState] = useState<ChartOneState>({
     series: [
-      // {
-      //   name: "Valor Investido",
-      //   data: data?.result.map((item) => data?.valor_investido) || [],
-      // },
       {
-        name: "Total Atualizado",
-        data: data?.result.map((item) => Number(item.valor_liquido_disponivel.toFixed(2))) || [],
+        name: "Valor Líquido Atual",
+        data: data && chartValueArray.map((item) => Number(item.toFixed(2))) || [],
       },
     ],
   });
@@ -153,9 +161,9 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
         //   name: "Valor Investido",
         //   data: data?.result.map((item) => data.valor_investido) || [],
         // },
-        {
-          name: "Total Atualizado",
-          data: data?.result.map((item) => Number(item.valor_liquido_disponivel.toFixed(2))) || [],
+       {
+          name: "Valor Líquido Atual",
+          data: data && chartValueArray.map((item) => Number(item.toFixed(2))) || [],
         },
       ],
     });
@@ -170,16 +178,20 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
               <span className="block h-2 w-full max-w-2 rounded-full bg-black dark:bg-snow"></span>
             </span>
             <div className="w-full mb-4">
-              <p className="font-semibold text-black dark:text-snow">Análise de Investimentos</p>
-              <p className="text-sm font-medium">
-                {
-                  dateFormater(data?.result[0].data_atualizacao)
-                }
-                &nbsp;a&nbsp;
-                {
-                  dateFormater(data?.result[data.result.length - 1].data_atualizacao)
-                }
-              </p>
+              <p className="font-semibold text-black dark:text-snow">Análise de Oportunidade</p>
+              {
+                data ? (
+                  <p className="text-sm font-medium">
+                    {
+                      dateFormater(data?.result[0].data_atualizacao)
+                    }
+                    &nbsp;a&nbsp;
+                    {
+                      dateFormater(data?.result[data.result.length - 1].data_atualizacao)
+                    }
+                  </p>
+                ) : <AiOutlineLoading className="animate-spin mr-2" />
+              }
             </div>
           </div>
           <div className="flex w-72">
@@ -262,4 +274,4 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
   );
 };
 
-export default RentabilityChart;
+export default ProjectedProfitabilityChart;
