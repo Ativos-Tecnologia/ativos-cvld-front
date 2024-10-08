@@ -1,6 +1,7 @@
 import dateFormater from "@/functions/formaters/dateFormater";
 import numberFormat from "@/functions/formaters/numberFormat";
 import percentageFormater from "@/functions/formaters/percentFormater";
+import { calculateProjectedValue, CDIProjection } from "@/functions/marketplace/cdiProjection";
 import { handleMesesAteOPagamento, handleRentabilidadeAM, handleRentabilidadeTotal, handleRentabilideAA } from "@/functions/wallet/rentability";
 import { IWalletResponse } from "@/interfaces/IWallet";
 import { ApexOptions } from "apexcharts";
@@ -20,13 +21,25 @@ export interface RentabilityChartProps {
 
 const ProjectedProfitabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
 
+  const lastUpdatedValue = data?.result[data.result.length - 1].valor_liquido_disponivel;
+  const investedValue = data?.valor_investido;
+
+  const projection: CDIProjection = {
+    currentValue: Number(investedValue),
+    cdiRate: 11.75,
+    timePeriodInMonths: Math.floor(handleMesesAteOPagamento(data)),
+  };
+
+  const CDIProjectedValue = calculateProjectedValue(projection);
+
   const lastUpdate = data?.result[data.result.length - 1].data_atualizacao;
   const projectedDate = data?.previsao_de_pgto;
-  const lastUpdatedValue = data?.result[data.result.length - 1].valor_liquido_disponivel;
   const projectedValue = data?.valor_projetado;
 
   const chartDataArray = [lastUpdate, projectedDate];
   const chartValueArray = [lastUpdatedValue, projectedValue];
+  const cdiProjectedValueArray = [investedValue, CDIProjectedValue];
+
 
   const options: ApexOptions = {
     legend: {
@@ -34,8 +47,7 @@ const ProjectedProfitabilityChart: React.FC<RentabilityChartProps> = ({ data }) 
       position: "top",
       horizontalAlign: "left",
     },
-    colors: ["#58DC61"],
-    // colors: ["#3056D3", "#58DC61"],
+    colors: ["#3056D3", "#58DC61"].reverse(),
     chart: {
       fontFamily: "Satoshi, sans-serif",
       height: 450,
@@ -148,23 +160,27 @@ const ProjectedProfitabilityChart: React.FC<RentabilityChartProps> = ({ data }) 
   const [state, setState] = useState<ChartOneState>({
     series: [
       {
-        name: "Valor Líquido Atual",
+        name: "Projeção do Precatório",
         data: data && chartValueArray.map((item) => Number(item.toFixed(2))) || [],
       },
+      {
+        name: "Projeção CDI",
+        data: data && cdiProjectedValueArray.map((item) => Number(item.toFixed(2))) || [],
+      }
     ],
   });
 
   useEffect(() => {
     setState({
       series: [
-        // {
-        //   name: "Valor Investido",
-        //   data: data?.result.map((item) => data.valor_investido) || [],
-        // },
        {
-          name: "Valor Líquido Atual",
+          name: "Projeção do Precatório",
           data: data && chartValueArray.map((item) => Number(item.toFixed(2))) || [],
         },
+        {
+          name: "Projeção CDI",
+          data: data && cdiProjectedValueArray.map((item) => Number(item.toFixed(2))) || [],
+        }
       ],
     });
   }, [data]);
@@ -181,13 +197,18 @@ const ProjectedProfitabilityChart: React.FC<RentabilityChartProps> = ({ data }) 
               <p className="font-semibold text-black dark:text-snow">Análise de Oportunidade</p>
               {
                 data ? (
-                  <p className="text-sm font-medium">
-                    {
+                  (data?.result[0].data_atualizacao !== data?.result[data.result.length - 1].data_atualizacao) ?
+                 (<p className="text-sm font-medium">
+                    &nbsp;De&nbsp;{
                       dateFormater(data?.result[0].data_atualizacao)
                     }
                     &nbsp;a&nbsp;
                     {
                       dateFormater(data?.result[data.result.length - 1].data_atualizacao)
+                    }
+                  </p>) : <p className="text-sm font-medium">
+                    &nbsp;Atualizado em&nbsp;{
+                      dateFormater(data?.result[0].data_atualizacao)
                     }
                   </p>
                 ) : <AiOutlineLoading className="animate-spin mr-2" />

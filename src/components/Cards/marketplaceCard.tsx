@@ -71,7 +71,7 @@ const Card = ({ oficio, onClickFn }: { oficio: NotionPage, onClickFn: () => void
                     className='relative group cursor-pointer rounded-md p-4 h-full bg-center bg-cover flex flex-col justify-between'
                 >
                     {/* badge */}
-                    <div className='group-hover:opacity-0 absolute right-1 -top-1 flex items-center justify-center'>
+                    <div className='group-hover:opacity-0 absolute right-1 -top-1 flex items-center justify-center z-5'>
                         <Image
                             src="/images/badge-tribunal.svg"
                             alt="badge onde mostra o tribunal referente"
