@@ -73,7 +73,6 @@ export default function MarvelousPagination({
 
   const handleClick = (page: number) => {
     if (page >= 1 && page <= pageNum) {
-      // debugger
       onPageChange(page);
       setCurrentPage(page);
       setSelectedPage(page);
