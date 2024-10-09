@@ -17,7 +17,7 @@ const customTableStyles = {
 };
 /* =====> termina estilos dos elementos da tabela <===== */
 
-export const Table = ({ children, className }: React.HTMLAttributes<HTMLTableElement>) => {
+export const Table = ({ children, className }: React.TableHTMLAttributes<HTMLTableElement>) => {
     return (
         <table className={cn(customTableStyles.table, className)}>
             {children}
@@ -41,25 +41,25 @@ export const TableBody = ({children, className}: React.HTMLAttributes<HTMLTableS
     )
 };
 
-export const TableRow = ({children, className}: React.HTMLAttributes<HTMLTableRowElement>) => {
+export const TableRow = ({children, className, ...props}: React.HTMLAttributes<HTMLTableRowElement>) => {
     return (
-        <tr className={cn(customTableStyles.row,className)}>
+        <tr {...props} className={cn(customTableStyles.row,className)}>
             {children}
         </tr>
     )
 };
 
-export const TableHeadCell = ({children, className}: React.HTMLAttributes<HTMLTableCellElement>) => {
+export const TableHeadCell = ({children, className, ...props}: React.ThHTMLAttributes<HTMLTableCellElement>) => {
     return (
-        <th className={cn(customTableStyles.head.cell, className)}>
+        <th {...props} className={cn(customTableStyles.head.cell, className)}>
             {children}
         </th>
     )
 }
 
-export const TableCell = ({children, className}: React.HTMLAttributes<HTMLTableCellElement>) => {
+export const TableCell = ({children, className, ...props}: React.TdHTMLAttributes<HTMLTableCellElement>) => {
     return (
-        <td className={cn(customTableStyles.data, className)}>
+        <td {...props} className={cn(customTableStyles.data, className)}>
             {children}
         </td>
     )

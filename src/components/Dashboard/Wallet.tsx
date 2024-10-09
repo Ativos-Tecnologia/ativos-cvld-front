@@ -18,6 +18,8 @@ import { MdOutlineAttachMoney } from "react-icons/md";
 import { IoMdTrendingUp } from "react-icons/io";
 import { LuShoppingBag } from "react-icons/lu";
 import numberFormat from "@/functions/formaters/numberFormat";
+import { BiSolidHourglass, BiSolidWallet } from "react-icons/bi";
+import TableLiquidation from "../Tables/TableLiquidation";
 
 const Wallet: React.FC = () => {
   const { data: { user }, loading: chargeLoading } = useContext(UserInfoAPIContext);
@@ -42,14 +44,15 @@ const Wallet: React.FC = () => {
 
   const [defaultFilterObject, setDefaultFilterObject] = useState<any>({
     "username": user
-  })
+  });
+  const [activeView, setActiveView] = useState<string>("wallet");
 
   const fetchWalletNotionList = async () => {
     if (!chargeLoading) {
-      const response = await api.post('/api/notion-api/wallet/',  { "username": user });
+      const response = await api.post('/api/notion-api/wallet/', { "username": user });
       return response.data;
+    };
   };
-};
 
   const queryClient = useQueryClient()
   const { isPending, data, error, isFetching, refetch } = useQuery(
@@ -63,6 +66,23 @@ const Wallet: React.FC = () => {
       enabled: !chargeLoading
     },
   );
+
+  function handleChangeView (view: string) {
+    switch (view) {
+      case "wallet":
+        queryClient.removeQueries({queryKey: ["notion_wallet_list"]});
+        setActiveView("wallet")
+        break;
+    
+      case "liquidation":
+        queryClient.removeQueries({queryKey: ["liquidation_list"]});
+        setActiveView("liquidation");
+        break;
+      
+      default:
+        break;
+    }
+  }
 
   function handleTotalInvested(data: NotionResponse) {
     let totalInvested = 0;
@@ -112,7 +132,7 @@ const Wallet: React.FC = () => {
 
     result[1].forEach((item: any) => {
       item.forEach((item: any, index: number) => {
-        if(index === 0) {
+        if (index === 0) {
           vldDataDaCompra += item.valor_liquido_disponivel || 0;
         } else {
           vldAtualizado += item.valor_liquido_disponivel || 0;
@@ -159,7 +179,7 @@ const Wallet: React.FC = () => {
           </CardDataStats> : <CardDataStatsSkeleton />}
           {data ?
             <CardDataStats title="Total Atualizado" total={
-              data && <AnimatedNumber value={data && handleTotalLiquid(data?.response[1])}  />
+              data && <AnimatedNumber value={data && handleTotalLiquid(data?.response[1])} />
             } rate={
               data && percentageFormater(handleLiquidUpdatedAMountLucroPercent(data.response)) || 0
             } levelUp>
@@ -187,18 +207,55 @@ const Wallet: React.FC = () => {
           <ProfitChart title={"Performance de Lucro"} response={data?.response} />
           <DistributionChart title={"Distribuição da Carteira"} response={data?.response} />
           <div className="scroll-mt-26" ref={mainRef}></div>
-          <RentabilityChart data={vlData}  />
+          <RentabilityChart data={vlData} />
           {/* <MapOne /> */}
           {/* <DataStatsFour /> */}
         </div>
         <div className="mt-4 grid grid-cols-12 md:mt-6 2xl:mt-7.5">
-          <TableWallet
-            ref={mainRef}
-            data={data?.response[0]}
-            isPending={isPending}
-            isFetching={isFetching}
-            setVlData={setVlData}
-            setDefaultFilterObject={setDefaultFilterObject} />
+          <div className='col-span-12 bg-white dark:bg-boxdark border-stroke dark:border-strokedark p-[30px] rounded-sm shadow-default'>
+
+            <div className='mb-3 col-span-12 flex gap-3 border-b border-zinc-300 dark:border-form-strokedark text-xs font-semibold'>
+
+              <button
+                disabled={isFetching}
+                onClick={() => handleChangeView("wallet")}
+                className={`uppercase cursor-pointer disabled:cursor-default py-1 px-2 min-w-48 flex items-center justify-start gap-2 border-b-2 ${activeView === "wallet" && "text-blue-700 dark:text-blue-500 border-blue-700 dark:border-blue-500"}`}
+              >
+                <BiSolidWallet className='text-sm' />
+                <span>ativos adquiridos</span>
+              </button>
+
+              <button
+                disabled={isFetching}
+                onClick={() => handleChangeView("liquidation")}
+                className={`uppercase cursor-pointer disabled:cursor-default py-1 px-2 min-w-48 flex items-center justify-start gap-2 border-b-2 ${activeView === "liquidation" && "text-blue-700 dark:text-blue-500 border-blue-700 dark:border-blue-500"}`}
+              >
+                <BiSolidHourglass className="text-sm" />
+                <span>em liquidação</span>
+              </button>
+
+            </div>
+
+            {activeView === "wallet" && (
+              <TableWallet
+                ref={mainRef}
+                data={data?.response[0]}
+                isPending={isPending}
+                isFetching={isFetching}
+                setVlData={setVlData}
+                setDefaultFilterObject={setDefaultFilterObject}
+              />
+            )}
+
+            {activeView === "liquidation" && (
+              <TableLiquidation
+                ref={mainRef}
+                setVlData={setVlData}
+                setDefaultFilterObject={setDefaultFilterObject}
+              />
+            )}
+          </div>
+
         </div>
       </QueryClientProvider>
     </>
