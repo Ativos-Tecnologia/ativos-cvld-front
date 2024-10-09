@@ -40,7 +40,7 @@ const Card = ({ oficio, onClickFn }: { oficio: NotionPage, onClickFn: () => void
     const fetchOficioDataFromWallet = async () => {
         const response = await api.post('/api/extrato/wallet/', {
             oficio,
-            from_recebimento: true
+            from_today: true
         });
         return response.data;
     }
@@ -55,7 +55,7 @@ const Card = ({ oficio, onClickFn }: { oficio: NotionPage, onClickFn: () => void
     );
 
     return (
-        <div className='px-4 h-65 font-nexa max-w-95' onClick={onClickFn}>
+        <li className='px-4 h-65 font-nexa max-w-95' onClick={onClickFn}>
             <div className='relative group h-55'>
                 <div className='absolute z-0 inset-0 overflow-hidden rounded-md'>
                     <Image
@@ -71,7 +71,7 @@ const Card = ({ oficio, onClickFn }: { oficio: NotionPage, onClickFn: () => void
                     className='relative group cursor-pointer rounded-md p-4 h-full bg-center bg-cover flex flex-col justify-between'
                 >
                     {/* badge */}
-                    <div className='group-hover:opacity-0 absolute right-1 -top-1 flex items-center justify-center'>
+                    <div className='group-hover:opacity-0 absolute right-1 -top-1 flex items-center justify-center z-3'>
                         <Image
                             src="/images/badge-tribunal.svg"
                             alt="badge onde mostra o tribunal referente"
@@ -166,7 +166,9 @@ const Card = ({ oficio, onClickFn }: { oficio: NotionPage, onClickFn: () => void
                             <div className='col-span-1 uppercase pb-[2px] mb-1 border-b border-snow'>
                                 <p className='text-[10px] text-gray-400'>rentabilidade A.A.</p>
                                 <p className='text-sm text-snow'>
-                                    {(handleRentabilidadeAM(handleRentabilideAA(handleRentabilidadeTotal(data), handleMesesAteOPagamento(data))) * 100).toFixed(2).replace('.', ',') + "%"}
+                                {
+                                (handleRentabilideAA(handleRentabilidadeTotal(data), handleMesesAteOPagamento(data)) * 100).toFixed(2).replace('.', ',') + "%"
+                                    }
                                 </p>
                             </div>
                             <div className='col-span-1 uppercase pb-[2px] mb-1 border-b border-snow'>
@@ -178,7 +180,7 @@ const Card = ({ oficio, onClickFn }: { oficio: NotionPage, onClickFn: () => void
                             <div className='col-span-1 uppercase pb-[2px] mb-1 border-b border-snow'>
                                 <p className='text-[10px] text-gray-400'>valor da aquisição</p>
                                 <p className='text-sm text-snow'>
-                                    {numberFormat(oficio.properties["Valor de aquisição"].formula?.number || 0)}
+                                    {numberFormat(oficio.properties["Valor de Aquisição (Wallet)"]?.number || 0)}
                                 </p>
                             </div>
                             <div className='col-span-1 uppercase pb-[2px] mb-1 border-b border-snow'>
@@ -194,7 +196,7 @@ const Card = ({ oficio, onClickFn }: { oficio: NotionPage, onClickFn: () => void
                 </div>
                 {/* end hover info */}
             </div>
-        </div>
+        </li>
     )
 }
 

@@ -2,11 +2,13 @@ import React, { ReactNode } from "react";
 
 interface CardDataStatsProps {
   title: string;
-  total: string | number | Promise<number>;
+  total?: string | number | Promise<number>;
+  elementHtml?: ReactNode;
   rate?: string;
   levelUp?: boolean;
   levelDown?: boolean;
   children: ReactNode;
+
 }
 
 const CardDataStats: React.FC<CardDataStatsProps> = ({
@@ -16,7 +18,9 @@ const CardDataStats: React.FC<CardDataStatsProps> = ({
   levelUp,
   levelDown,
   children,
+  elementHtml
 }) => {
+  console.log(rate)
   return (
     <div className="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="flex h-8.5 w-8.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
@@ -24,14 +28,24 @@ const CardDataStats: React.FC<CardDataStatsProps> = ({
       </div>
       <div className="mt-2 flex items-end justify-between">
         <div>
+          {
+            total &&
           <h4 className="text-title-sm font-bold text-black dark:text-white">
             {total}
           </h4>
+          }
+          {
+            elementHtml &&
+            <h4 className="text-title-sm font-bold text-black dark:text-white">
+              {elementHtml}
+            </h4>
+
+          }
           <span className="text-xs font-medium">{title}</span>
         </div>
 
         <span
-          className={`flex items-center gap-1 mb-0.5 text-[10px] font-medium ${
+          className={`flex items-center gap-1 mb-0.5 text-md font-medium ${
             levelUp && "text-meta-3"
           } ${levelDown && "text-meta-5"} `}
         >
