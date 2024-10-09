@@ -9,7 +9,7 @@ import { IEditableLabels } from "./ExtratosTableContext";
 import { toast } from "sonner";
 import numberFormat from "@/functions/formaters/numberFormat";
 import { ENUM_OFICIOS_LIST } from "@/constants/constants";
-import { waitForDebugger } from "inspector";
+
 
 /* ===================> Iterfaces & Types <================== */
 export interface ITableNotion {

@@ -25,7 +25,8 @@ export default function MarketplaceItem({ id }: MarketplaceItemProps) {
 
     const fetchUpdatedVlMarketplaceItem = async () => {
         const response = await api.post('/api/extrato/wallet/', {
-            oficio: data
+            oficio: data,
+            from_today: true
         });
 
         return response.data;

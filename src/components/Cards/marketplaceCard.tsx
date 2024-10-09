@@ -40,7 +40,7 @@ const Card = ({ oficio, onClickFn }: { oficio: NotionPage, onClickFn: () => void
     const fetchOficioDataFromWallet = async () => {
         const response = await api.post('/api/extrato/wallet/', {
             oficio,
-            from_recebimento: true
+            from_today: true
         });
         return response.data;
     }
@@ -166,7 +166,9 @@ const Card = ({ oficio, onClickFn }: { oficio: NotionPage, onClickFn: () => void
                             <div className='col-span-1 uppercase pb-[2px] mb-1 border-b border-snow'>
                                 <p className='text-[10px] text-gray-400'>rentabilidade A.A.</p>
                                 <p className='text-sm text-snow'>
-                                    {(handleRentabilidadeAM(handleRentabilideAA(handleRentabilidadeTotal(data), handleMesesAteOPagamento(data))) * 100).toFixed(2).replace('.', ',') + "%"}
+                                {
+                                (handleRentabilideAA(handleRentabilidadeTotal(data), handleMesesAteOPagamento(data)) * 100).toFixed(2).replace('.', ',') + "%"
+                                    }
                                 </p>
                             </div>
                             <div className='col-span-1 uppercase pb-[2px] mb-1 border-b border-snow'>
