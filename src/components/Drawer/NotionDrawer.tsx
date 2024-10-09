@@ -2055,7 +2055,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                         <tr className="bg-gray dark:bg-boxdark-2 h-[43px]">
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">(%) Proposta Mínima</td>
                           <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
-                            {percentageFormater(data?.properties["(%) Proposta Mínima "]?.formula?.string || 0)}
+                            {percentageFormater(data?.properties["(%) Proposta Mínima "]?.formula?.number || 0)}
                             <Title text="Esta informação não é editável">
                               <HiOutlineLockClosed className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
                             </Title>
@@ -2075,7 +2075,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
                           <td className="border border-stroke dark:border-strokedark px-4 py-2 text-left">(%) Proposta Máxima
                           </td>
                           <td className="relative border border-stroke dark:border-strokedark px-4 py-2">
-                            {percentageFormater(data?.properties["(%) Proposta Máxima "]?.formula?.string || 0)}
+                            {percentageFormater(data?.properties["(%) Proposta Máxima "]?.formula?.number || 0)}
                             <Title text="Esta informação não é editável">
                               <HiOutlineLockClosed className="absolute top-1/2 right-1 -translate-y-1/2 text-body dark:!text-bodydark" />
                             </Title>
