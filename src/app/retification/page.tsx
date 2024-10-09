@@ -137,7 +137,7 @@ const RecalculateTrf1 = () => {
       {/* image-wrapper */}
       <div className="relative">
         <Image
-          src="/images/TRF1-V4.png"
+          src="/images/TRF1.png"
           alt="imagem do tribunal regional 1"
           className="max-h-[500px] w-full"
           width={1920}
