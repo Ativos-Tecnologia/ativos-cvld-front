@@ -3,14 +3,11 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import RentabilityChart from "../Charts/RentabilityChart";
 import DistributionChart from "../Charts/DistributionChart";
 import ProfitChart from "../Charts/ProfitBarChart";
-import ChatCard from "../Chat/ChatCard";
-import TableOne from "../Tables/TableOne";
 import CardDataStats from "../ui/CardDataStats";
-import DataStatsFour from "../DataStats/DataStatsFour";
 import { QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
 import api from "@/utils/api";
-import { NotionPage, NotionResponse } from "@/interfaces/INotion";
+import { NotionResponse } from "@/interfaces/INotion";
 import CardDataStatsSkeleton from "../ui/CardDataStatsSkeleton";
 import AnimatedNumber from "../ui/AnimatedNumber";
 import percentageFormater from "@/functions/formaters/percentFormater";
@@ -169,7 +166,7 @@ const Wallet: React.FC = () => {
               <MdOutlineAttachMoney className="w-[18px] h-[18px]" />
             </CardDataStats> : <CardDataStatsSkeleton />}
           {data ?
-            <CardDataStats title="Ágio" total={
+            <CardDataStats title="Lucro" total={
               data && <AnimatedNumber value={data && handleProfit(data?.response)} />
             } rate={
               data && numberFormat(handleTotalLiquidUntilAcquisition(data.response)) || 0

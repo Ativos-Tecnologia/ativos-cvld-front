@@ -165,7 +165,6 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
     /* função que verifica se há mais dados no backend para serem puxados para a tabela.
     se existir, faz o fetch e atualiza a tabela com os dados novos */
     const fetchNextCursor = async () => {
-        debugger
         if (!hasMore || !nextCursor) return;
 
         try {

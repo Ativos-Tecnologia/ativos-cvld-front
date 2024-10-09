@@ -7,7 +7,8 @@ export function handleRentabilidadeTotal(data: IWalletResponse) {
 }
 
 export function handleMesesAteOPagamento(data: IWalletResponse) {
-  const data_aquisicao = new Date(data?.result[0].data_atualizacao);
+
+  const data_aquisicao = new Date(data?.result[data?.result.length - 1].data_atualizacao);
   const previsao_de_pgto = new Date(data?.previsao_de_pgto);
 
   const diffMonths =
@@ -17,6 +18,7 @@ export function handleMesesAteOPagamento(data: IWalletResponse) {
 }
 
 export function handleRentabilideAA(rentabilidadeTotal: number, mesesAtePagamento: number,) {
+
   const rentabilidade =
     Math.pow(1 + rentabilidadeTotal, 12 / mesesAtePagamento) - 1;
   return Number.isNaN(rentabilidade) ? 0 : rentabilidade;

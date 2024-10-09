@@ -2,11 +2,13 @@ import React, { ReactNode } from "react";
 
 interface CardDataStatsProps {
   title: string;
-  total: string | number | Promise<number>;
+  total?: string | number | Promise<number>;
+  elementHtml?: ReactNode;
   rate?: string;
   levelUp?: boolean;
   levelDown?: boolean;
   children: ReactNode;
+
 }
 
 const CardDataStats: React.FC<CardDataStatsProps> = ({
@@ -16,6 +18,7 @@ const CardDataStats: React.FC<CardDataStatsProps> = ({
   levelUp,
   levelDown,
   children,
+  elementHtml
 }) => {
   console.log(rate)
   return (
@@ -25,9 +28,19 @@ const CardDataStats: React.FC<CardDataStatsProps> = ({
       </div>
       <div className="mt-2 flex items-end justify-between">
         <div>
+          {
+            total &&
           <h4 className="text-title-sm font-bold text-black dark:text-white">
             {total}
           </h4>
+          }
+          {
+            elementHtml &&
+            <h4 className="text-title-sm font-bold text-black dark:text-white">
+              {elementHtml}
+            </h4>
+
+          }
           <span className="text-xs font-medium">{title}</span>
         </div>
 

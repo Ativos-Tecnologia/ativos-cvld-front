@@ -204,7 +204,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                   }`}
                               >
                                 <TbShoppingCartUp />
-                                <span>MarketPlace</span>
+                                <span>Marketplace</span>
                                 {/* counter */}
                                 <span className="w-4 h-4 bg-red-500 flex items-center justify-center rounded-full text-xs text-snow">
                                   {!data?.count ? (
