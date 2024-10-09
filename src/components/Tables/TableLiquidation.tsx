@@ -9,7 +9,7 @@ import { MdOutlineFilterAltOff } from 'react-icons/md';
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from './TableDefault';
 import { AiOutlineLoading, AiOutlineUser } from 'react-icons/ai';
 import { PiCursorClick, PiHash, PiListBulletsBold } from 'react-icons/pi';
-import { BsCalendar3 } from 'react-icons/bs';
+import { BsCalendar3, BsClock } from 'react-icons/bs';
 import { LiaCoinsSolid } from 'react-icons/lia';
 import { CgMathPercent } from 'react-icons/cg';
 import { GiChoice } from "react-icons/gi";
@@ -26,16 +26,10 @@ import { Button } from '../ui/button';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { WalletTableSkeletons } from '../Skeletons/WalletTableSkeletons';
 import dateFormater from '@/functions/formaters/dateFormater';
+import { ITableWalletProps } from './TableWallet';
+import { LiquidationTimeCounter } from '../TimerCounter/LiquidationTimeCounter';
 
-export interface ITableWalletProps {
-    data?: any;
-    isPending?: boolean;
-    isFetching?: boolean;
-    setVlData: React.Dispatch<React.SetStateAction<IWalletResponse>>;
-    setDefaultFilterObject: React.Dispatch<React.SetStateAction<any>>;
-}
-
-const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data, isPending, isFetching, setVlData, setDefaultFilterObject }, ref) => {
+const TableLiquidation = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ setVlData, setDefaultFilterObject }, ref) => {
 
     /* =====> states <====== */
     const [fetchingVL, setFetchingVL] = useState<string | null>(null);
@@ -62,6 +56,23 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
         queryFn: () => fetchNextCursor,
         enabled: false,
     });
+
+    const fetchLiquidationItems = async () => {
+        const response = await api.get("/api/notion-api/marketplace/on-sale/")
+        if (response.status === 200) {
+            console.log(response.data);
+            return response.data
+        }
+    };
+
+    const { data, isPending, isFetching } = useQuery({
+        queryKey: ["liquidation_list"],
+        refetchOnReconnect: true,
+        refetchOnWindowFocus: true,
+        refetchInterval: 15000,
+        staleTime: 13000,
+        queryFn: fetchLiquidationItems,
+    })
 
     /* =====> refs <====== */
     const selectTipoOficioRef = useRef<any>(null);
@@ -95,6 +106,7 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
     }, [backendResults, nextCursor, data?.next_cursor, data?.has_more, data?.results, hasMore, filters.credor]);
 
     /* =====> functions <===== */
+
     const fetchUpdatedVL = async (oficio: NotionPage) => {
         setFetchingVL(oficio.id)
         // Essa função recebe um objeto do tipo NotionPage e retorna um objeto do tipo IWalletResponse com os valores atualizados
@@ -357,10 +369,18 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                 <Table>
                     <TableHead>
                         <TableRow>
-                            {/* <TableHeadCell colSpan={2} className='max-w-[50px]'>
+                            <TableHeadCell className='max-w-[50px]'>
 
-                            </TableHeadCell> */}
-                            <TableHeadCell colSpan={2} className='min-w-100'>
+                            </TableHeadCell>
+                            <TableHeadCell className='max-w-40'>
+                                <Title text='Tempo para expirar liquidação'>
+                                    <div className='flex gap-2'>
+                                        <BsClock className='text-base' />
+                                        <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Tempo para expirar liquidação</span>
+                                    </div>
+                                </Title>
+                            </TableHeadCell>
+                            <TableHeadCell className='min-w-100'>
                                 <div className='flex gap-2'>
                                     <AiOutlineUser className='text-base' />
                                     <span>Nome do Credor</span>
@@ -393,14 +413,6 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                                     <div className='flex gap-2'>
                                         <LiaCoinsSolid className='text-base' />
                                         <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>LOA</span>
-                                    </div>
-                                </Title>
-                            </TableHeadCell>
-                            <TableHeadCell className='max-w-50'>
-                                <Title text='Data de aquisição do precatório'>
-                                    <div className='flex gap-2'>
-                                        <BsCalendar3 className='text-base' />
-                                        <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Data de aquisição do precatório</span>
                                     </div>
                                 </Title>
                             </TableHeadCell>
@@ -484,7 +496,6 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                                                         key={item.id}
                                                         className={`hover:shadow-3 dark:hover:shadow-body`}
                                                     >
-
                                                         {/* botão de abrir gráficos */}
                                                         <TableCell width={50}>
                                                             <button
@@ -495,6 +506,15 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                                                                 {fetchingVL === item.id ? <AiOutlineLoading className='animate-spin' /> : <LuBarChart4 />}
                                                             </button>
                                                         </TableCell>
+
+                                                        {/* Tempo de expiração */}
+                                                        <TableCell className='text-sm text-right font-medium'>
+                                                            <LiquidationTimeCounter
+                                                                purchaseDate={item.properties["Data de aquisição do precatório"].date?.start || ''}
+                                                            />
+                                                            {/* {calculateTimeLeft(item.properties["Data de aquisição do precatório"].date?.start.split("T")[0] || '')} */}
+                                                        </TableCell>
+
 
                                                         {/* credor info */}
                                                         <TableCell
@@ -526,11 +546,6 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                                                         {/* Valor líquido */}
                                                         <TableCell className='text-sm text-left'>
                                                             {item.properties["LOA"].number || 0}
-                                                        </TableCell>
-
-                                                        {/* Data de aquisição */}
-                                                        <TableCell className='text-sm'>
-                                                            {dateFormater(item.properties["Data de aquisição do precatório"].date?.start.split("T")[0] || '')}
                                                         </TableCell>
 
                                                         {/* Natureza */}
@@ -628,6 +643,6 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
     )
 });
 
-TableWallet.displayName = 'TableWallet';
+TableLiquidation.displayName = 'TableLiquidation';
 
-export default TableWallet
+export default TableLiquidation
