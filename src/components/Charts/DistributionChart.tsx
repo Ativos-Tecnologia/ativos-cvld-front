@@ -138,8 +138,6 @@ const DistributionChart: React.FC<newWalletResponse> = ({ title, response: data 
 
   }, [data]);
 
-  console.log(data && data[1])
-
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white py-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-5">
       <div className="mb-3 justify-between gap-4 sm:flex">
