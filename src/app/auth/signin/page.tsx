@@ -122,9 +122,12 @@ const SignIn: React.FC = () => {
                   <div className="hidden dark:flex flex-col items-center ">
                     <Image
                       src={"/images/logo/celer-app-logo-dark.svg"}
+                      id="Logo-Dark-Desktop"
                       alt="Logo"
                       width={160}
                       height={32}
+                      className="2xsm:w-20 md:w-28
+                      "
                     />
                     <Image
                       src={"/images/logo/celer-app-text-dark.svg"}
@@ -139,17 +142,23 @@ const SignIn: React.FC = () => {
                       alt="Logo"
                       width={160}
                       height={32}
+                      className="antialiased"
+                      style={{ filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))' }}
                     />
                     <Image
                       src={"/images/logo/celer-app-text-dark.svg"}
                       alt="Logo"
                       width={200}
                       height={32}
+                      style={{ filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.40))' }}
+
                     />
                   </div>
                 </div>
 
-                <h1 className="text-left translate-x-25 animate-fade-right pt-8 text-5xl font-bold text-snow opacity-0 2xsm:hidden md:block md:text-4xl lg:text-6xl">
+                <h1 className="text-left translate-x-25 animate-fade-right pt-8 text-5xl font-bold text-snow opacity-0 2xsm:hidden md:block md:text-4xl lg:text-6xl" style={{
+                  filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.50))',
+                }}>
                   Sua solução <br /> one-stop-shop <br /> em precatórios
                 </h1>
               </div>
@@ -166,11 +175,12 @@ const SignIn: React.FC = () => {
                       <div className="hidden dark:flex flex-col items-center gap-3 bg">
                         <Image
                           src={"/images/logo/celer-app-logo-dark.svg"}
+                          id="Logo-Dark"
 
                           alt="Logo"
                           width={0}
                           height={0}
-                          className="2xsm:w-20 md:w-28"
+                          className="2xsm:w-20 md:w-28 "
                         />
                         <Image
                           src={"/images/logo/celer-app-text-dark.svg"}
@@ -202,7 +212,7 @@ const SignIn: React.FC = () => {
                 {/* <span className="xl:mb-1.5 mb-10 block font-medium xl:text-2xl xl:text-left text-center text-lg">
                   Celer App
                 </span> */}
-                <Fade delay={1e2} damping={1e-1} cascade>
+                <Fade delay={1e2} damping={1e-1} cascade triggerOnce>
                 <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
                   Acesse sua conta
                 </h2>
