@@ -103,10 +103,12 @@ export default function MarketplaceItem({ id }: MarketplaceItemProps) {
 
                 {
                 data ?
-                    <CardDataStats title="Doc. relacionada" elementHtml={
-                        <div className="flex items-center gap-2">
-                            <span className="text-md font-medium">Baixar PDF</span>
-                        </div>
+                    <CardDataStats title="Due Diligence" elementHtml={
+                        <a href={data?.properties["Link de Due Diligence"]?.url} target='_blank' title='Acessar o link da Due Diligence' className="flex items-center gap-2 cursor-pointer">
+                            <span className="text-md font-medium underline">
+                                Ver documento
+                            </span>
+                        </a>
                     }>
                         <LuDownloadCloud className="w-[18px] h-[18px]" />
                     </CardDataStats> : <CardDataStatsSkeleton />}

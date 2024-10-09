@@ -17,7 +17,7 @@ export function LiteFooter() {
             <div className="flex items-center space-x-4 2xsm:items-center 2xsm:justify-center">
               <div className="bg flex flex-col items-center gap-3 dark:hidden">
                 <Image
-                  src={"/images/logo/celer-app-text.svg"}
+                  src={"/images/logo/logo-ativos.svg"}
                   alt="Logotipo do CelerApp em um fundo branco e na cor azul"
                   width={104}
                   height={32}
@@ -26,8 +26,7 @@ export function LiteFooter() {
               </div>
             </div>
           </div>
-          <FooterLinkGroup className="grid 2xsm:w-full 2xsm:grid-cols-2 2xsm:items-center 2xsm:justify-center 2xsm:gap-5 2xsm:p-10 2xsm:text-center md:flex md:grid-cols-none md:flex-row">
-            <Footer.Link href="/">CelerApp</Footer.Link>
+          <FooterLinkGroup className="grid 2xsm:w-full 2xsm:grid-cols-2 2xsm:items-center 2xsm:justify-center 2xsm:gap-5 2xsm:p-2 2xsm:text-center md:flex md:grid-cols-none md:flex-row">
             <Footer.Link href="/automated-proposal">Lead Magnet</Footer.Link>
             <Footer.Link href="/recalculate-trf1">
               Recalculador do TRF1
@@ -38,7 +37,7 @@ export function LiteFooter() {
         </div>
         <FooterDivider className="-mb-8" />
         <span className="-my-4 block text-center text-sm text-gray-500 sm:block sm:text-left">
-          &copy; {new Date().getFullYear()} - CelerApp™ é uma marca{" "}
+          &copy; {new Date().getFullYear()} - CelerApp é uma marca{" "}
           <span className="font-semibold">Ativos</span>
         </span>
       </div>
