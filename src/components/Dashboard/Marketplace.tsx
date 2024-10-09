@@ -41,10 +41,14 @@ const Marketplace: React.FC = () => {
   return (
     <div className='flex flex-col gap-5'>
       <div>
-        <h1 className='text-4xl font-semibold mb-2 text-snow'>Explore investimentos</h1>
+      <Fade className='text-4xl font-semibold mb-2 dark:text-snow' cascade damping={0.1}>
+        Explore investimentos
+      </Fade>
+      <Fade delay={2100} damping={0.1}>
         <p className="font-white">
           Aproveite oportunidades exclusivas de ativos judiciais e maximize seus retornos com segurança e credibilidade.
         </p>
+        </Fade>
       </div>
 
       <ul className='grid grid-cols-3 my-5'>
