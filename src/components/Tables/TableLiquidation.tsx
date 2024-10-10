@@ -60,7 +60,6 @@ const TableLiquidation = forwardRef<HTMLDivElement | null, ITableWalletProps>(({
     const fetchLiquidationItems = async () => {
         const response = await api.get("/api/notion-api/marketplace/on-sale/")
         if (response.status === 200) {
-            console.log(response.data);
             return response.data
         }
     };
