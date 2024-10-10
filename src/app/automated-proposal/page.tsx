@@ -110,7 +110,7 @@ const tribunais = [
   { id: "TRT22", nome: "Tribunal Regional do Trabalho da 22ª Região" },
   { id: "TRT23", nome: "Tribunal Regional do Trabalho da 23ª Região" },
   { id: "TRT24", nome: "Tribunal Regional do Trabalho da 24ª Região" },
-];
+].sort((a, b) => a.nome.localeCompare(b.nome));
 
 const AutomatedProposal = () => {
   const {
@@ -601,7 +601,7 @@ E abaixo, uma memória das informações de entrada:
               {/* ====> end checkbox JUROS DE MORA <==== */}
 
               {/* ====> checkbox SELIC SOBRE PRINCIPAL <==== */}
-              <div
+              {/* <div
                 className={`col-span-2 flex items-center gap-2 ${watch("data_base") > "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" && watch("tribunal") !== "TRF1" && watch("tribunal") !== "TRF6" ? "" : "hidden"}`}
               >
                 <CustomCheckbox
@@ -618,7 +618,7 @@ E abaixo, uma memória das informações de entrada:
                 >
                   SELIC somente sobre o principal
                 </label>
-              </div>
+              </div> */}
               {/* ====> end checkbox SELIC SOBRE PRINCIPAL <==== */}
 
               {/* ====> checkbox INCIDÊNCIA DE IR <==== */}

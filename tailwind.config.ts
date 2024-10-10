@@ -66,6 +66,7 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        background_slice_2: "var(--background-slice-2)",
         current: "currentColor",
         transparent: "transparent",
         white: "#FFFFFF",

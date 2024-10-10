@@ -10,16 +10,16 @@ import Image from "next/image";
 
 export function LiteFooter() {
   return (
-    <div className="dark:bg-gray-800 rounded-lg bg-white text-gray-500 shadow-lg dark:text-gray-400 2xsm:p-6 md:p-8">
+    <div className="dark:bg-gray-800 rounded-lg bg-snow text-gray-500 shadow-lg dark:text-gray-400 2xsm:p-6 md:p-8 md:pt-0">
       <div className="w-full text-center">
-        <div className="w-full justify-between sm:flex sm:items-center sm:justify-between">
+        <div className="w-full justify-between sm:flex sm:items-center sm:justify-between -my-4">
           <div className="min-w-fit sm:flex sm:max-w-none">
             <div className="flex items-center space-x-4 2xsm:items-center 2xsm:justify-center">
               <div className="bg flex flex-col items-center gap-3 dark:hidden">
                 <Image
-                  src={"/images/logo/logo-ativos.svg"}
+                  src={"/images/logo/ativos_logo_at.svg"}
                   alt="Logotipo do CelerApp em um fundo branco e na cor azul"
-                  width={104}
+                  width={96}
                   height={32}
                   title="CelerApp"
                 />
@@ -35,8 +35,8 @@ export function LiteFooter() {
             <Footer.Link href="#">Termos e Condições</Footer.Link>
           </FooterLinkGroup>
         </div>
-        <FooterDivider className="-mb-8" />
-        <span className="-my-4 block text-center text-sm text-gray-500 sm:block sm:text-left">
+        <hr className="mb-8 border-gray-200 dark:border-gray-700" />
+        <span className="-my-6 block text-center text-xs text-gray-500 sm:block sm:text-left">
           &copy; {new Date().getFullYear()} - CelerApp é uma marca{" "}
           <span className="font-semibold">Ativos</span>
         </span>
