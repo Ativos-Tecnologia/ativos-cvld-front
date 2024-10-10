@@ -12,6 +12,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import api from '@/utils/api'
 import { Button } from '../Button'
+import { AiOutlineLoading } from 'react-icons/ai'
 
 const OfficeInfoModal = ({ setConfirmPurchaseModalOpen, data, updatedVlData, id }: {
     setConfirmPurchaseModalOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -38,6 +39,12 @@ const OfficeInfoModal = ({ setConfirmPurchaseModalOpen, data, updatedVlData, id 
         }
     }
 
+    function handleCloseModal() {
+        setConfirmPurchaseModalOpen(false);
+        queryClient.invalidateQueries({ queryKey: ["notion_marketplace_item"] });
+        queryClient.invalidateQueries({ queryKey: ['updated_vl_marketplace_item', data] });
+    }
+
     async function buyItem(itemID: string) {
         setPurchaseProcess("processing");
         try {
@@ -54,35 +61,37 @@ const OfficeInfoModal = ({ setConfirmPurchaseModalOpen, data, updatedVlData, id 
 
     }
 
-    useEffect(() => {
-        const handleMouseMove = (e: MouseEvent) => {
-            const mouseX = e.clientX;
-            const mouseY = e.clientY;
-            const screenWidth = window.innerWidth
-            const screenHeight = window.innerHeight
+    // OBS: não apague esse código comentado
 
-            if (backButtonRef.current) {
-                const button = backButtonRef.current.getBoundingClientRect()
-                const buttonX = button.x
-                const buttonY = button.y
-                const buttonWidth = button.width
-                const buttonHeight = button.height
+    // useEffect(() => {
+    //     const handleMouseMove = (e: MouseEvent) => {
+    //         const mouseX = e.clientX;
+    //         const mouseY = e.clientY;
+    //         const screenWidth = window.innerWidth
+    //         const screenHeight = window.innerHeight
 
-                if (mouseX >= buttonX && mouseX <= buttonX + buttonWidth && mouseY >= buttonY && mouseY <= buttonY + buttonHeight) {
-                    backButtonRef.current.style.position = "absolute"
-                    backButtonRef.current.style.top = `${Math.floor(Math.random() * (screenHeight - buttonHeight))}px`
-                    backButtonRef.current.style.left = `${Math.floor(Math.random() * (screenWidth - buttonWidth))}px`
-                }
-            }
-        };
+    //         if (backButtonRef.current) {
+    //             const button = backButtonRef.current.getBoundingClientRect()
+    //             const buttonX = button.x
+    //             const buttonY = button.y
+    //             const buttonWidth = button.width
+    //             const buttonHeight = button.height
 
-        window.addEventListener("mousemove", handleMouseMove);
+    //             if (mouseX >= buttonX && mouseX <= buttonX + buttonWidth && mouseY >= buttonY && mouseY <= buttonY + buttonHeight) {
+    //                 backButtonRef.current.style.position = "absolute"
+    //                 backButtonRef.current.style.top = `${Math.floor(Math.random() * (screenHeight - buttonHeight))}px`
+    //                 backButtonRef.current.style.left = `${Math.floor(Math.random() * (screenWidth - buttonWidth))}px`
+    //             }
+    //         }
+    //     };
 
-        // Limpeza do evento ao desmontar o componente
-        return () => {
-            window.removeEventListener("mousemove", handleMouseMove);
-        };
-    }, [])
+    //     window.addEventListener("mousemove", handleMouseMove);
+
+    //     // Limpeza do evento ao desmontar o componente
+    //     return () => {
+    //         window.removeEventListener("mousemove", handleMouseMove);
+    //     };
+    // }, [])
 
     return (
         <div className={`fixed top-0 left-0 flex items-center justify-center min-w-full max-w-screen h-screen z-999999 bg-black-2 bg-clip-padding backdrop-filter backdrop-blur-[2px] bg-opacity-30 transition-all duration-300 ease-in-out`}>
@@ -98,7 +107,7 @@ const OfficeInfoModal = ({ setConfirmPurchaseModalOpen, data, updatedVlData, id 
 
                     {purchaseProcess === "done" ? (
                         <Fade damping={0.1}>
-                            <div className='mt-8 flex flex-col gap-2'>
+                            <div className='mt-8 flex flex-col gap-5'>
                                 <Image
                                     src="/images/order_confirmed.svg"
                                     alt="mulher ao lado de um telefone com compra confirmada"
@@ -107,11 +116,11 @@ const OfficeInfoModal = ({ setConfirmPurchaseModalOpen, data, updatedVlData, id 
                                     className='mx-auto'
                                 />
 
-                                <p className='text-center'>O seu ativo agora encontra-se disponível em sua carteira. Para acessá-lo, basta ir para: Wallet / Em liquidação, onde o mesmo estára em processo que tem tempo limite de até 24horas</p>
+                                <p className='text-center'>O seu ativo agora encontra-se disponível em sua carteira. Para acessá-lo, basta ir para: Wallet / Em liquidação, onde o mesmo estára em processo que tem tempo limite de até 24horas.</p>
 
                                 <Button
                                     className='uppercase block mx-auto mt-10 font-medium'
-                                    onClick={() => setConfirmPurchaseModalOpen(false)}
+                                    onClick={handleCloseModal}
                                 >
                                     Voltar
                                 </Button>
@@ -125,7 +134,12 @@ const OfficeInfoModal = ({ setConfirmPurchaseModalOpen, data, updatedVlData, id 
                             <ul className='flex my-8 flex-col gap-2'>
                                 <li className='flex items-center justify-between'>
                                     <p className='flex-1'>Ente Devedor:</p>
-                                    <p className='font-medium'>{data && data.properties["Ente Devedor"].select?.name || 'Não informado'}</p>
+                                    <p
+                                        title={data && data.properties["Ente Devedor"].select?.name || 'Não informado'}
+                                        className='font-medium max-w-[330px] text-ellipsis overflow-hidden whitespace-nowrap'
+                                    >
+                                        {data && data.properties["Ente Devedor"].select?.name || 'Não informado'}
+                                    </p>
                                 </li>
                                 <li className='flex items-center justify-between'>
                                     <p className='flex-1'>Esfera:</p>
@@ -165,8 +179,9 @@ const OfficeInfoModal = ({ setConfirmPurchaseModalOpen, data, updatedVlData, id 
                                 <div className='flex items-center gap-1'>
                                     <Button
                                         onClick={() => buyItem(id)}
-                                        className='font-medium uppercase text-sm'>
-                                        confirmar
+                                        className='font-medium uppercase text-sm flex items-center gap-2'>
+                                        {purchaseProcess === "processing" && <AiOutlineLoading className='animate-spin text-lg' />}
+                                        <span>confirmar</span>
                                     </Button>
                                     <Button
                                         onClick={() => setConfirmPurchaseModalOpen(false)}
@@ -174,21 +189,15 @@ const OfficeInfoModal = ({ setConfirmPurchaseModalOpen, data, updatedVlData, id 
                                         className='font-medium uppercase text-sm'>
                                         voltar
                                     </Button>
+                                    {/* OBS: Não apague esse código comentado */}
                                     {/* <button
                                         onClick={() => setConfirmPurchaseModalOpen(false)}
                                         ref={backButtonRef}
-                                        className='relative bg-red-500 border-transparent w-fit cursor-pointer rounded-lg border px-4 py-2 transition hover:bg-opacity-90'>
+                                        className='relative bg-red-500 border-transparent w-fit cursor-pointer rounded-lg border px-4 py-2 transition hover:bg-opacity-90 text-snow uppercase'>
                                         voltar
                                     </button> */}
                                 </div>
                             </div>
-                            {purchaseProcess === 'processing' && (
-                                <Fade damping={0.2}>
-                                    <div className='my-3 text-sm text-center'>
-                                        Aguarde um momento enquanto finalizamos sua compra...
-                                    </div>
-                                </Fade>
-                            )}
                         </>
                     )}
 
