@@ -53,12 +53,7 @@ const Marketplace: React.FC = () => {
       </div>
 
       <ul className='grid grid-cols-3 3xl:grid-cols-4 my-5'>
-        <>
-          {[...Array(6)].map((_, index: number) => (
-            <MarketplaceCardSkeleton key={index} />
-          ))}
-        </>
-        {/* {isFetching ? (
+        {isFetching ? (
           <>
             <Fade cascade damping={0.1}>
 
@@ -87,7 +82,7 @@ const Marketplace: React.FC = () => {
               </div>
             )}
           </>
-        )} */}
+        )}
       </ul>
     </div>
   );
