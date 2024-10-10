@@ -112,7 +112,7 @@ const SignIn: React.FC = () => {
           <div className="flex flex-wrap">
             {/* Bloco Desktop */}
             <div className="hidden min-h-full w-full xl:block xl:w-1/2 xl:border-r-2 shadow-default dark:border-strokedark">
-              <div className="px-20 flex flex-col min-h-full text-center justify-around hero_login">
+              <div className="px-20 flex flex-col min-h-full text-center justify-evenly hero_login ">
 
                 <div className="mb-10 flex flex-col justify-center items-center relative z-3">
                   <div className="hidden dark:flex flex-col items-center ">
