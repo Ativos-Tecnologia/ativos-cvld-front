@@ -3,10 +3,11 @@ import confetti from 'canvas-confetti'
 import { TriggerProps } from '../Shop/Checkout';
 
 const ConfettiEffect = ({ handleTrigger }: {
-  handleTrigger: React.Dispatch<React.SetStateAction<TriggerProps>>
+  handleTrigger: React.Dispatch<React.SetStateAction<any>>
 }) => {
 
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
+  const totalScreenWith = window.innerWidth
 
   React.useEffect(() => {
 
@@ -16,25 +17,22 @@ const ConfettiEffect = ({ handleTrigger }: {
         useWorker: true
       });
       confettiEffect({
-        particleCount: 100,
-        spread: 70,
+        particleCount: 300,
+        spread: totalScreenWith / 10,
         origin: {
           y: 0.53,
         }
       })
       // dismount component
       setTimeout(() => {
-        handleTrigger((prev) => ({
-          ...prev,
-          confetti: false
-        }))
-      }, 2500)
+        handleTrigger(false)
+      }, 3500)
     }
 
   }, []);
 
   return (
-    <canvas ref={canvasRef} className='absolute w-full h-full' />
+    <canvas ref={canvasRef} className='absolute w-full h-full top-0 left-0' />
   )
 }
 
