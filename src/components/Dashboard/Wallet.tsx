@@ -73,12 +73,12 @@ const Wallet: React.FC = () => {
         queryClient.removeQueries({queryKey: ["notion_wallet_list"]});
         setActiveView("wallet")
         break;
-    
+
       case "liquidation":
         queryClient.removeQueries({queryKey: ["liquidation_list"]});
         setActiveView("liquidation");
         break;
-      
+
       default:
         break;
     }
