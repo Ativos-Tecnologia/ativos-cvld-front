@@ -57,8 +57,6 @@ const SignIn: React.FC = () => {
   const router = useRouter();
   const MySwal = UseMySwal();
 
-  //TODO: modificar esse check para retornar um objeto com product e is_confirmed
-
   async function checkUserProduct(): Promise<string> {
     try {
       const response = await api.get("/api/profile/");
@@ -110,14 +108,12 @@ const SignIn: React.FC = () => {
   return (
     <UnloggedLayout>
       <div>
-        <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+        <div className="rounded-sm bg-snow shadow-default dark:border-strokedark dark:bg-boxdark">
           <div className="flex flex-wrap">
             {/* Bloco Desktop */}
             <div className="hidden min-h-full w-full xl:block xl:w-1/2 xl:border-r-2 shadow-default dark:border-strokedark">
               <div className="px-20 flex flex-col min-h-full text-center justify-around hero_login">
-                <div className="hero_login_shadow">
 
-                </div>
                 <div className="mb-10 flex flex-col justify-center items-center relative z-3">
                   <div className="hidden dark:flex flex-col items-center ">
                     <Image
