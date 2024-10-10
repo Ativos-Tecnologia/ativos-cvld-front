@@ -35,7 +35,7 @@ export default function UnloggedLayout({ children, }: { children: React.ReactNod
               {children}
             </div>
         {
-          window.location.pathname === '/auth/signin' || window.location.pathname === '/auth/signup' ? <LiteFooter /> : <MainFooter />
+          (window.location.pathname === '/auth/signin' || window.location.pathname === '/auth/signup') && <LiteFooter />
         }
           </main>
           {/* <!-- ===== Main Content End ===== --> */}

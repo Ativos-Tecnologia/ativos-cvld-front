@@ -8,6 +8,7 @@ interface CardDataStatsProps {
   levelUp?: boolean;
   levelDown?: boolean;
   children: ReactNode;
+  href?: string;
 
 }
 
