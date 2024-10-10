@@ -175,7 +175,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
     { id: "TRT22", nome: "Tribunal Regional do Trabalho da 22ª Região" },
     { id: "TRT23", nome: "Tribunal Regional do Trabalho da 23ª Região" },
     { id: "TRT24", nome: "Tribunal Regional do Trabalho da 24ª Região" },
-  ];
+  ].sort((a, b) => a.nome.localeCompare(b.nome));
 
   const [oficioForm, setOficioForm] = useState<any>(null);
 
