@@ -14,22 +14,6 @@ const TaskList: React.FC = () => {
     Drag();
   });
 
-  const [marketPlaceItems, setMarketPlaceItems] = useState<NotionResponse>({
-    object: "list",
-    results: []
-  });
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await api.get("api/notion-api/marketplace/available/");
-
-      if (response.status === 200) {
-        setMarketPlaceItems(response.data);
-      }
-    }
-    fetchData()
-  }, [])
-
   return (
     <>
       <div className="border border-black rounded p-4 mx-auto mb-20 grid grid-cols-3 bg-black">
