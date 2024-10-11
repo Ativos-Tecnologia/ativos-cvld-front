@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from 'next/image';
 import { Button } from '../Button';
+import { AiOutlineLoading } from 'react-icons/ai';
 
 
 const Marketplace: React.FC = () => {
@@ -23,6 +24,7 @@ const Marketplace: React.FC = () => {
   });
   // const [backendResults, setBackendResults] = useState<NotionPage[]>([]);
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
 
   function handleRedirect(id: string) {
     push(`/dashboard/marketplace/${id}`);
@@ -53,14 +55,16 @@ const Marketplace: React.FC = () => {
     return customResults;
   }, [data?.next_cursor, data?.has_more, data?.results, marketPlaceItems]);
 
-  async function loadMore () {
+  async function loadMore() {
+    setLoading(true);
     const response = await api.post("api/notion-api/marketplace/available/", {
-      next_cursor:  data?.next_cursor || null
+      next_cursor: data?.next_cursor || null
     });
 
     if (response.status === 200) {
       setMarketPlaceItems(response.data);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -79,17 +83,17 @@ const Marketplace: React.FC = () => {
   return (
     <div className='flex flex-col gap-5'>
       <div>
-        <Fade className='text-4xl font-semibold mb-2 dark:text-snow' cascade damping={0.1} triggerOnce>
+        <Fade className='font-semibold 2xsm:text-3xl 2xsm:mb-4 xsm:text-4xl md:mb-2 dark:text-snow' cascade damping={0.1} triggerOnce>
           Explore investimentos
         </Fade>
         <Fade delay={2200} damping={0.1} triggerOnce>
-          <p className="font-white">
+          <p className="font-white 2xsm:text-sm lg:text-base">
             Aproveite oportunidades exclusivas de ativos judiciais e maximize seus retornos com segurança e credibilidade.
           </p>
         </Fade>
       </div>
 
-      <ul className='grid grid-cols-3 my-5'>
+      <ul className='grid md:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4 my-5'>
         {(isFetching && firstLoad) ? (
           <>
             <Fade cascade damping={0.1} triggerOnce>
@@ -122,13 +126,20 @@ const Marketplace: React.FC = () => {
         )}
       </ul>
 
-      {updatedData.has_more && (
-        <Button
-          onClick={loadMore}
-          variant='outlined'
-          className='block mx-auto'>
-          Carregar mais
-        </Button>
+      {(updatedData.has_more && updatedData.results.length > 0) && (
+        <div className='flex items-center justify-center w-full'>
+          <Button
+            onClick={loadMore}
+            variant='outlined'
+            className='flex items-center gap-2'>
+            {loading ? (
+              <>
+              <AiOutlineLoading className="animate-spin" />
+              <span>Carregando...</span>
+              </>
+            ) : "Carregar mais"}
+          </Button>
+        </div>
       )}
 
     </div>
