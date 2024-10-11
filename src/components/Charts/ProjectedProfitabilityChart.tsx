@@ -40,7 +40,6 @@ const ProjectedProfitabilityChart: React.FC<RentabilityChartProps> = ({ data }) 
   const chartValueArray = [lastUpdatedValue, projectedValue];
   const cdiProjectedValueArray = [investedValue, CDIProjectedValue];
 
-
   const options: ApexOptions = {
     legend: {
       show: true,
@@ -268,7 +267,7 @@ const ProjectedProfitabilityChart: React.FC<RentabilityChartProps> = ({ data }) 
                 }</p>
             </div>
           </div> */}
-        <div className="flex min-w-60">
+        <div className="flex min-w-65">
           <span className="mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-black dark:border-snow">
             <span className="block h-2 w-full max-w-2 rounded-full bg-black dark:bg-snow"></span>
           </span>
@@ -279,7 +278,7 @@ const ProjectedProfitabilityChart: React.FC<RentabilityChartProps> = ({ data }) 
             }</p>) : <AiOutlineLoading className="animate-spin mr-2" />}
           </div>
         </div>
-        <div className="flex min-w-60">
+        <div className="flex min-w-65">
           <span className="mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-black dark:border-snow">
             <span className="block h-2 w-full max-w-2 rounded-full bg-black dark:bg-snow"></span>
           </span>

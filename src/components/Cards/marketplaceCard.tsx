@@ -55,7 +55,7 @@ const Card = ({ oficio, onClickFn }: { oficio: NotionPage, onClickFn: () => void
     );
 
     return (
-        <li className='px-4 h-65 font-nexa max-w-95 mb-4' onClick={onClickFn}>
+        <li className='px-4 h-65 font-nexa min-w-95 mb-4 max-w-full' onClick={onClickFn}>
             <div className='relative group h-55'>
                 <div className='absolute z-0 inset-0 overflow-hidden rounded-md'>
                     <Image
@@ -166,8 +166,8 @@ const Card = ({ oficio, onClickFn }: { oficio: NotionPage, onClickFn: () => void
                             <div className='col-span-1 uppercase pb-[2px] mb-1 border-b border-snow'>
                                 <p className='text-[10px] text-gray-400'>rentabilidade A.A.</p>
                                 <p className='text-sm text-snow'>
-                                {
-                                (handleRentabilideAA(handleRentabilidadeTotal(data), handleMesesAteOPagamento(data)) * 100).toFixed(2).replace('.', ',') + "%"
+                                    {
+                                        (handleRentabilideAA(handleRentabilidadeTotal(data), handleMesesAteOPagamento(data)) * 100).toFixed(2).replace('.', ',') + "%"
                                     }
                                 </p>
                             </div>

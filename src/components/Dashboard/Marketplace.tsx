@@ -7,6 +7,7 @@ import { Fade } from 'react-awesome-reveal';
 import Card from '../Cards/marketplaceCard';
 import { useRouter } from "next/navigation";
 import { QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
+import Image from 'next/image';
 
 
 const Marketplace: React.FC = () => {
@@ -27,7 +28,7 @@ const Marketplace: React.FC = () => {
     return response.data;
   };
 
-  const { data } = useQuery<NotionResponse>(
+  const { data, isFetching } = useQuery<NotionResponse>(
     {
       queryKey: ['notion_marketplace_list'],
       refetchOnWindowFocus: true,
@@ -60,12 +61,23 @@ const Marketplace: React.FC = () => {
           </Fade>
         ) : (
           <>
-                    <Fade cascade damping={0.1}>
-
-            {[...Array(6)].map((_, index: number) => (
-              <MarketplaceCardSkeleton key={index} />
-            ))}
-            </Fade>
+            {data.results.length > 0 ? (
+              <Fade cascade damping={0.1}>
+                {data!.results?.map((oficio) => (
+                  <Card key={oficio.id} oficio={oficio} onClickFn={() => handleRedirect(oficio.id)} />
+                ))}
+              </Fade>
+            ) : (
+              <div className='flex flex-col gap-5 my-10 items-center justify-center col-span-3'>
+                <Image
+                  src="/images/empty_cart.svg"
+                  alt="homem com lista em mãos e carrinho vazio"
+                  width={280}
+                  height={280}
+                />
+                <p className='tracking-wider font-medium'>Ainda não temos opções de investimentos disponíveis.</p>
+              </div>
+            )}
           </>
         )}
       </ul>

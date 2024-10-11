@@ -48,7 +48,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     }
   }
 
-  const { data } = useQuery({
+  const { data, isPending, isFetching } = useQuery({
     queryKey: ["marketplace_active_items"],
     refetchInterval: 60 * 1000, // sessenta segundos
     staleTime: 50 * 1000, // cinquenta segundos
@@ -207,7 +207,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 <span>Marketplace</span>
                                 {/* counter */}
                                 <span className="w-4 h-4 bg-red-500 flex items-center justify-center rounded-full text-xs text-snow">
-                                  {!data?.count ? (
+                                  {isFetching ? (
                                     <AiOutlineLoading className="animate-spin text-[10px]" />
                                   ) : (
                                     <>
