@@ -69,7 +69,7 @@
   }
 
   body {
-    @apply relative bg-background text-body;
+    @apply relative bg-background text-body tracking-wide;
   }
 }
 @layer utilities {
