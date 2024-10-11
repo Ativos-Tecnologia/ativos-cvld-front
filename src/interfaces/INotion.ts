@@ -108,6 +108,8 @@ export interface NotionPage {
 
 export interface NotionResponse {
   object: NotionObject;
+  next_cursor: string | null;
+  has_more: boolean;
   results: NotionPage[];
 }
 

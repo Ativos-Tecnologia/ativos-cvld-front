@@ -39,7 +39,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   );
 
   const fetchItems = async () => {
-    const response = await api.get("api/notion-api/marketplace/available/?count");
+    const response = await api.post("api/notion-api/marketplace/available/?count/");
 
     if (response.status === 200) {
       return response.data
@@ -134,9 +134,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         <nav className="mt-5 px-4 py-4 lg:mt-9 lg:px-6">
           {/* <!-- Menu Group --> */}
           <div>
-            <h3 className="mb-4 ml-4 text-sm font-semibold">
+            {/* <h3 className="mb-4 ml-4 text-sm font-semibold">
               MENU
-            </h3>
+            </h3> */}
 
             <ul className="mb-6 flex flex-col gap-1.5">
               {/* <!-- Menu Item Dashboard --> */}
@@ -168,15 +168,14 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
 
                       <div
-                        className={`translate transform overflow-hidden ${!open && "hidden"
-                          }`}
+                        className={`translate transform overflow-hidden ${!open ? "max-h-0" : "max-h-550"} transition-all duration-200`}
                       >
                         <ul className="mb-5.5 mt-4 flex flex-col gap-2.5 pl-6">
                           {product !== 'wallet' && (
                             <li>
                               <Link
                                 href="/"
-                                className={`group relative flex items-center gap-2.5 px-4 py-2 font-medium rounded-md duration-300 ease-in-out hover:bg-blue-300/50 dark:hover:bg-meta-4 hover:text-white ${pathname === "/" && "bg-blue-300/50 dark:bg-meta-4 text-white"
+                                className={`group relative flex items-center gap-2.5 px-4 py-2 font-medium rounded-md duration-300 ease-in-out text-bodydark hover:bg-blue-300/50 dark:hover:bg-meta-4 hover:text-white ${pathname === "/" && "bg-blue-300/50 dark:bg-meta-4 text-white"
                                   }`}
                               >
                                 <BiCalculator />
@@ -188,7 +187,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             <li>
                               <Link
                                 href="/dashboard/wallet"
-                                className={`group relative flex items-center gap-2.5 px-4 py-2 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-300/50 dark:hover:bg-meta-4 hover:text-white ${pathname === "/dashboard/wallet" && "text-white bg-blue-300/50 dark:bg-meta-4"
+                                className={`group relative flex items-center gap-2.5 px-4 py-2 rounded-md font-medium text-bodydark duration-300 ease-in-out hover:bg-blue-300/50 dark:hover:bg-meta-4 hover:text-white ${pathname === "/dashboard/wallet" && "text-white bg-blue-300/50 dark:bg-meta-4"
                                   }`}
                               >
                                 <LuWallet2 />
@@ -196,28 +195,27 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               </Link>
                             </li>
                           )}
-                          {(!window.location.href.includes('https://ativoscvld.vercel.app/')) && (
-                            <li>
-                              <Link
-                                href="/dashboard/marketplace"
-                                className={`group relative flex items-center gap-2.5 px-4 py-2 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-300/50 dark:hover:bg-meta-4 hover:text-white ${pathname.includes("/dashboard/marketplace") && "text-white bg-blue-300/50 dark:bg-meta-4"
-                                  }`}
-                              >
-                                <TbShoppingCartUp />
-                                <span>Marketplace</span>
-                                {/* counter */}
-                                <span className="w-4 h-4 bg-red-500 flex items-center justify-center rounded-full text-xs text-snow">
-                                  {isFetching ? (
-                                    <AiOutlineLoading className="animate-spin text-[10px]" />
-                                  ) : (
-                                    <>
-                                      {data?.count || 0}
-                                    </>
-                                  )}
-                                </span>
-                              </Link>
-                            </li>
-                          )}
+
+                          <li>
+                            <Link
+                              href="/dashboard/marketplace"
+                              className={`group relative flex items-center gap-2.5 px-4 py-2 rounded-md font-medium text-bodydark duration-300 ease-in-out hover:bg-blue-300/50 dark:hover:bg-meta-4 hover:text-white ${pathname.includes("/dashboard/marketplace") && "text-white bg-blue-300/50 dark:bg-meta-4"
+                                }`}
+                            >
+                              <TbShoppingCartUp />
+                              <span>Marketplace</span>
+                              {/* counter */}
+                              <span className="w-4.5 h-4.5 bg-red-500 flex items-center justify-center rounded-full text-xs text-snow">
+                                {isFetching ? (
+                                  <AiOutlineLoading className="animate-spin text-[10px]" />
+                                ) : (
+                                  <>
+                                    {data?.count || 0}
+                                  </>
+                                )}
+                              </span>
+                            </Link>
+                          </li>
                         </ul>
                       </div>
 

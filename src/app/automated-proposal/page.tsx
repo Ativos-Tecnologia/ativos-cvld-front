@@ -303,429 +303,161 @@ E abaixo, uma memória das informações de entrada:
   }, []);
 
   return (
-    <div ref={mainRef} className="bg-boxdark-2">
-      <UnloggedHeader
-        theme="dark" //tema do header
-        logoPath="/images/logo/celer-app-logo-text.svg" //logo do header
-      />
-
-      {/* image-wrapper */}
-      <div className="relative">
-        <Image
-          src="/images/hero-image.webp"
-          alt="homem com terno e notebook"
-          className="w-full"
-          width={1913}
-          height={490}
-          quality={100}
+    <UnloggedLayout>
+      <div ref={mainRef} className="bg-boxdark-2">
+        <UnloggedHeader
+          theme="dark" //tema do header
+          logoPath="/images/logo/celer-app-logo-text.svg" //logo do header
         />
-        <div className="absolute inset-0 flex flex-col items-start justify-center bg-[linear-gradient(to_top,#1A222C_5%,transparent_95%)]">
-          <div className="mx-auto md:min-w-[80%] xl:min-w-[1080px]">
-            <h1 className="font-poppins translate-x-25 animate-fade-right pt-15 text-7xl text-snow opacity-0 2xsm:hidden md:block md:text-5xl lg:text-7xl">
-              Gerador de <br /> Propostas <br /> Automáticas
-            </h1>
-            <h1 className="font-poppins translate-x-25 animate-fade-right pt-20 text-snow opacity-0 2xsm:mt-8 2xsm:flex 2xsm:flex-col 2xsm:items-center 2xsm:justify-center  2xsm:text-title-sm md:hidden">
-              <span>Gerador de Propostas</span>
-              <span>Automáticas</span>
-            </h1>
+
+        {/* image-wrapper */}
+        <div className="relative">
+          <Image
+            src="/images/hero-image.webp"
+            alt="homem com terno e notebook"
+            className="w-full"
+            width={1913}
+            height={490}
+            quality={100}
+          />
+          <div className="absolute inset-0 flex flex-col items-start justify-center bg-[linear-gradient(to_top,#1A222C_5%,transparent_95%)]">
+            <div className="mx-auto md:min-w-[80%] xl:min-w-[1080px]">
+              <h1 className="font-poppins translate-x-25 animate-fade-right pt-15 text-7xl text-snow opacity-0 2xsm:hidden md:block md:text-5xl lg:text-7xl">
+                Gerador de <br /> Propostas <br /> Automáticas
+              </h1>
+              <h1 className="font-poppins translate-x-25 animate-fade-right pt-20 text-snow opacity-0 2xsm:mt-8 2xsm:flex 2xsm:flex-col 2xsm:items-center 2xsm:justify-center  2xsm:text-title-sm md:hidden">
+                <span>Gerador de Propostas</span>
+                <span>Automáticas</span>
+              </h1>
+            </div>
           </div>
         </div>
-      </div>
-      {/* end image-wrapper */}
+        {/* end image-wrapper */}
 
-      {/* form */}
-      <div className="bg-boxdark-2">
-        <div className="mx-auto  max-w-[80%] py-10 2xl:min-w-[1080px] 2xl:px-60">
-          <div className="mb-10">
-            <h2 className="text-xl font-medium uppercase text-bodydark">
-              Preencha o formulário abaixo
-            </h2>
-            <p className="text-sm text-slate-500">
-              Gere valores de proposta e comissão baseado nos dados do ativo
-            </p>
-          </div>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="grid grid-cols-2 gap-5 sm:grid-cols-2">
-              {/* ====> label TIPO DO OFÍCIO <==== */}
-              <div className="mb-4 flex w-full flex-col gap-2 2xsm:col-span-2 md:col-span-1">
-                <label
-                  htmlFor="tipo_do_oficio"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Tipo
-                </label>
+        {/* form */}
+        <div className="bg-boxdark-2">
+          <div className="mx-auto  max-w-[80%] py-10 2xl:min-w-[1080px] 2xl:px-60">
+            <div className="mb-10">
+              <h2 className="text-xl font-medium uppercase text-bodydark">
+                Preencha o formulário abaixo
+              </h2>
+              <p className="text-sm text-slate-500">
+                Gere valores de proposta e comissão baseado nos dados do ativo
+              </p>
+            </div>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="grid grid-cols-2 gap-5 sm:grid-cols-2">
+                {/* ====> label TIPO DO OFÍCIO <==== */}
+                <div className="mb-4 flex w-full flex-col gap-2 2xsm:col-span-2 md:col-span-1">
+                  <label
+                    htmlFor="tipo_do_oficio"
+                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                  >
+                    Tipo
+                  </label>
 
-                <ShadSelect
-                  name="tipo_do_oficio"
-                  control={control}
-                  defaultValue={enumTipoOficiosList[0]}
-                  className="border-strokedark bg-form-input text-bodydark"
+                  <ShadSelect
+                    name="tipo_do_oficio"
+                    control={control}
+                    defaultValue={enumTipoOficiosList[0]}
+                    className="border-strokedark bg-form-input text-bodydark"
 
                   // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
-                >
-                  {ENUM_TIPO_OFICIOS_LIST.map((status) => (
-                    <SelectItem key={status} value={status}>
-                      {status}
-                    </SelectItem>
-                  ))}
-                </ShadSelect>
-              </div>
-              {/* ====> end label TIPO DO OFÍCIO <==== */}
+                  >
+                    {ENUM_TIPO_OFICIOS_LIST.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {status}
+                      </SelectItem>
+                    ))}
+                  </ShadSelect>
+                </div>
+                {/* ====> end label TIPO DO OFÍCIO <==== */}
 
-              {/* ====> label NATUREZA DO OFÍCIO <==== */}
-              <div className="mb-4 flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
-                <label
-                  htmlFor="natureza"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Natureza
-                </label>
+                {/* ====> label NATUREZA DO OFÍCIO <==== */}
+                <div className="mb-4 flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
+                  <label
+                    htmlFor="natureza"
+                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                  >
+                    Natureza
+                  </label>
 
-                <ShadSelect
-                  name="natureza"
-                  control={control}
-                  defaultValue={"NÃO TRIBUTÁRIA"}
-                  className="border-strokedark bg-form-input text-bodydark"
+                  <ShadSelect
+                    name="natureza"
+                    control={control}
+                    defaultValue={"NÃO TRIBUTÁRIA"}
+                    className="border-strokedark bg-form-input text-bodydark"
 
                   // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
-                >
-                  <SelectItem
-                    defaultValue="NÃO TRIBUTÁRIA"
-                    value="NÃO TRIBUTÁRIA"
                   >
-                    Não Tributária
-                  </SelectItem>
-                  <SelectItem value="TRIBUTÁRIA">Tributária</SelectItem>
-                </ShadSelect>
-              </div>
-              {/* ====>  end label NATUREZA DO OFÍCIO <==== */}
-
-              {/* ====> label ESFERA <==== */}
-              <div className="mb-4 flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
-                <label
-                  htmlFor="esfera"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Esfera
-                </label>
-                <ShadSelect
-                  defaultValue="FEDERAL"
-                  name="esfera"
-                  control={control}
-                  className="border-strokedark bg-form-input text-bodydark"
-                >
-                  <SelectItem value="FEDERAL">Federal</SelectItem>
-                  <SelectItem value="ESTADUAL">Estadual</SelectItem>
-                  <SelectItem value="MUNICIPAL">Municipal</SelectItem>
-                </ShadSelect>
-              </div>
-              {/* ====> end label ESFERA <==== */}
-
-              {/* ====> label TRIBUNUAL <==== */}
-              <div className="relative mb-4 flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
-                <label
-                  htmlFor="tribunal"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Tribunal
-                </label>
-                <ShadSelect
-                  name="tribunal"
-                  control={control}
-                  defaultValue={tribunais[0].nome}
-                  required={true}
-                  className="border-strokedark bg-form-input text-bodydark"
-                >
-                  {tribunais.map((tribunal) => (
-                    <SelectItem key={tribunal.id} value={tribunal.id}>
-                      {tribunal.nome}
-                    </SelectItem>
-                  ))}
-                </ShadSelect>
-
-                <ErrorMessage errors={errors} field="tribunal" />
-              </div>
-              {/* ====> end label TRIBUNUAL <==== */}
-
-              {/* ====> label VALOR PRINCIPAL <==== */}
-              <div className="mb-4 flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
-                <label
-                  htmlFor="valor_principal"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Valor Principal
-                </label>
-                <Controller
-                  name="valor_principal"
-                  control={control}
-                  defaultValue={0}
-                  render={({ field }) => (
-                    <Cleave
-                      {...field}
-                      className="w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark"
-                      options={{
-                        numeral: true,
-                        numeralThousandsGroupStyle: "thousand",
-                        numeralDecimalScale: 2,
-                        numeralDecimalMark: ",",
-                        delimiter: ".",
-                        prefix: "R$ ",
-                        rawValueTrimPrefix: true,
-                      }}
-                    />
-                  )}
-                />
-              </div>
-              {/* ====> end label VALOR PRINCIPAL <==== */}
-
-              {/* ====> label JUROS <==== */}
-              <div className="mb-4 flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
-                <label
-                  htmlFor="valor_juros"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Juros
-                </label>
-                <Controller
-                  name="valor_juros"
-                  control={control}
-                  defaultValue={0}
-                  render={({ field }) => (
-                    <Cleave
-                      {...field}
-                      className="w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark"
-                      options={{
-                        numeral: true,
-                        numeralPositiveOnly: true,
-                        numeralThousandsGroupStyle: "thousand",
-                        numeralDecimalScale: 2,
-                        numeralDecimalMark: ",",
-                        delimiter: ".",
-                        prefix: "R$ ",
-                        rawValueTrimPrefix: true,
-                      }}
-                    />
-                  )}
-                />
-              </div>
-              {/* ====> end label JUROS <==== */}
-
-              {/* ====> label DATA BASE <==== */}
-              <div className="flex min-h-17.5 flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
-                <div className="relative mb-4 flex flex-col justify-between">
-                  <label
-                    htmlFor="data_base"
-                    className="mb-1 font-nexa text-xs font-semibold uppercase text-meta-5"
-                  >
-                    Data Base
-                  </label>
-                  <input
-                    type="date"
-                    id="data_base"
-                    className={`${errors.data_base && "!border-rose-400 !ring-0"} w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark`}
-                    {...register("data_base", {
-                      required: "Campo obrigatório",
-                    })}
-                    aria-invalid={errors.data_base ? "true" : "false"}
-                  />
-                  <ErrorMessage errors={errors} field="data_base" />
-                </div>
-              </div>
-              {/* ====> end label DATA BASE <==== */}
-
-              {/* ====> label DATA DE REQUISIÇÃO <==== */}
-              <div className="flex flex-col gap-2 2xsm:col-span-2 2xsm:mt-3 sm:col-span-1 sm:mt-0 md:col-span-1">
-                <div className="relative mb-4 flex flex-col justify-between">
-                  <label
-                    htmlFor="data_requisicao"
-                    className="mb-1 font-nexa text-xs font-semibold uppercase text-meta-5"
-                  >
-                    Data de Requisição / Recebimento
-                  </label>
-                  <input
-                    type="date"
-                    id="data_requisicao"
-                    className={`${errors.data_requisicao && "!border-rose-400 !ring-0"} w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark`}
-                    {...register("data_requisicao", {
-                      required: "Campo obrigatório",
-                    })}
-                  />
-                  <ErrorMessage errors={errors} field="data_requisicao" />
-                </div>
-              </div>
-              {/* ====> endlabel DATA DE REQUISIÇÃO <==== */}
-
-              {/* ====> label PERCENTUAL DE AQUISIÇÃO <==== */}
-              <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
-                <label
-                  htmlFor="percentual_a_ser_adquirido"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Percentual de aquisição (%)
-                </label>
-                <input
-                  type="number"
-                  id="percentual_a_ser_adquirido"
-                  defaultValue={100}
-                  className="w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark"
-                  min={0}
-                  {...register("percentual_a_ser_adquirido", {
-                    required: "Campo obrigatório",
-                    setValueAs: (value) => {
-                      return parseInt(value);
-                    },
-                  })}
-                />
-              </div>
-              {/* ====> end label PERCENTUAL DE AQUISIÇÃO <==== */}
-
-              {/* ====> checkbox JUROS DE MORA <==== */}
-              {watch("data_base") < "2021-12-01" &&
-                watch("natureza") !== "TRIBUTÁRIA" && (
-                  <div className={`col-span-2 flex items-center gap-2`}>
-                    <CustomCheckbox
-                      check={watch("incidencia_juros_moratorios")}
-                      id={"incidencia_juros_moratorios"}
-                      defaultChecked
-                      register={register("incidencia_juros_moratorios")}
-                    />
-
-                    <label
-                      htmlFor="incidencia_juros_moratorios"
-                      className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                    <SelectItem
+                      defaultValue="NÃO TRIBUTÁRIA"
+                      value="NÃO TRIBUTÁRIA"
                     >
-                      Juros de Mora fixados em sentença
-                    </label>
-                  </div>
-                )}
-              {/* ====> end checkbox JUROS DE MORA <==== */}
-
-              {/* ====> checkbox SELIC SOBRE PRINCIPAL <==== */}
-              {/* <div
-                className={`col-span-2 flex items-center gap-2 ${watch("data_base") > "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" && watch("tribunal") !== "TRF1" && watch("tribunal") !== "TRF6" ? "" : "hidden"}`}
-              >
-                <CustomCheckbox
-                  check={watch("nao_incide_selic_no_periodo_db_ate_abril")}
-                  id={"nao_incide_selic_no_periodo_db_ate_abril"}
-                  register={register(
-                    "nao_incide_selic_no_periodo_db_ate_abril",
-                  )}
-                />
-
-                <label
-                  htmlFor="nao_incide_selic_no_periodo_db_ate_abril"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  SELIC somente sobre o principal
-                </label>
-              </div> */}
-              {/* ====> end checkbox SELIC SOBRE PRINCIPAL <==== */}
-
-              {/* ====> checkbox INCIDÊNCIA DE IR <==== */}
-              <div className="col-span-2 flex items-center gap-2">
-                <CustomCheckbox
-                  check={watch("incidencia_rra_ir")}
-                  id={"incidencia_rra_ir"}
-                  defaultChecked
-                  register={register("incidencia_rra_ir")}
-                />
-
-                <label
-                  htmlFor="incidencia_rra_ir"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Incidência de IR
-                </label>
-              </div>
-              {/* ====> end checkbox INCIDÊNCIA DE IR <==== */}
-
-              {/* ====> checkbox IR INCIDE RRA <==== */}
-              {watch("natureza") === "TRIBUTÁRIA" ||
-              watch("incidencia_rra_ir") === false ? null : (
-                <div
-                  className={`flex gap-2 ${watch("ir_incidente_rra") ? "items-start" : "items-center"} 2xsm:col-span-2 sm:col-span-1`}
-                >
-                  <CustomCheckbox
-                    check={watch("ir_incidente_rra")}
-                    id={"ir_incidente_rra"}
-                    register={register("ir_incidente_rra")}
-                  />
-
-                  <label
-                    htmlFor="ir_incidente_rra"
-                    className="mt-1 font-nexa text-xs font-semibold uppercase text-meta-5"
-                  >
-                    IR incidente sobre RRA?
-                  </label>
+                      Não Tributária
+                    </SelectItem>
+                    <SelectItem value="TRIBUTÁRIA">Tributária</SelectItem>
+                  </ShadSelect>
                 </div>
-              )}
-              {/* ====> checkbox IR INCIDE RRA <==== */}
+                {/* ====>  end label NATUREZA DO OFÍCIO <==== */}
 
-              {/* ====> label NÚMERO DE MESES <==== */}
-              {watch("ir_incidente_rra") === true &&
-              watch("natureza") !== "TRIBUTÁRIA" ? (
-                <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                {/* ====> label ESFERA <==== */}
+                <div className="mb-4 flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
                   <label
-                    htmlFor="numero_de_meses"
+                    htmlFor="esfera"
                     className="font-nexa text-xs font-semibold uppercase text-meta-5"
                   >
-                    Número de meses
+                    Esfera
                   </label>
-                  <input
-                    type="number"
-                    id="numero_de_meses"
-                    className="w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark"
-                    min={0}
-                    {...register("numero_de_meses", {
-                      required: "Campo obrigatório",
-                      setValueAs: (value) => {
-                        return parseInt(value);
-                      },
-                    })}
-                  />
-                </div>
-              ) : (
-                <>
-                  {watch("natureza") === "TRIBUTÁRIA" ||
-                  watch("incidencia_rra_ir") === false ? null : (
-                    <div className="col-span-1 flex items-center">&nbsp;</div>
-                  )}
-                </>
-              )}
-              {/* ====> label NÚMERO DE MESES <==== */}
-
-              {/* ====> checkbox INCIDE PSS <==== */}
-              {watch("natureza") !== "TRIBUTÁRIA" ? (
-                <div
-                  className={`flex gap-2 ${watch("incidencia_pss") ? "items-start" : "items-center"} 2xsm:col-span-2 sm:col-span-1`}
-                >
-                  <CustomCheckbox
-                    check={watch("incidencia_pss")}
-                    id={"incidencia_pss"}
-                    register={register("incidencia_pss")}
-                  />
-
-                  <label
-                    htmlFor="incidencia_pss"
-                    className="mt-1 font-nexa text-xs font-semibold uppercase text-meta-5"
+                  <ShadSelect
+                    defaultValue="FEDERAL"
+                    name="esfera"
+                    control={control}
+                    className="border-strokedark bg-form-input text-bodydark"
                   >
-                    Incide PSS?
-                  </label>
+                    <SelectItem value="FEDERAL">Federal</SelectItem>
+                    <SelectItem value="ESTADUAL">Estadual</SelectItem>
+                    <SelectItem value="MUNICIPAL">Municipal</SelectItem>
+                  </ShadSelect>
                 </div>
-              ) : null}
-              {/* ====> end checkbox INCIDE PSS<==== */}
+                {/* ====> end label ESFERA <==== */}
 
-              {/* ====> label VALOR PSS <==== */}
-              {watch("incidencia_pss") && watch("natureza") !== "TRIBUTÁRIA" ? (
-                <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                {/* ====> label TRIBUNUAL <==== */}
+                <div className="relative mb-4 flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
                   <label
-                    htmlFor="valor_pss"
+                    htmlFor="tribunal"
                     className="font-nexa text-xs font-semibold uppercase text-meta-5"
                   >
-                    PSS
+                    Tribunal
+                  </label>
+                  <ShadSelect
+                    name="tribunal"
+                    control={control}
+                    defaultValue={tribunais[0].nome}
+                    required={true}
+                    className="border-strokedark bg-form-input text-bodydark"
+                  >
+                    {tribunais.map((tribunal) => (
+                      <SelectItem key={tribunal.id} value={tribunal.id}>
+                        {tribunal.nome}
+                      </SelectItem>
+                    ))}
+                  </ShadSelect>
+
+                  <ErrorMessage errors={errors} field="tribunal" />
+                </div>
+                {/* ====> end label TRIBUNUAL <==== */}
+
+                {/* ====> label VALOR PRINCIPAL <==== */}
+                <div className="mb-4 flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
+                  <label
+                    htmlFor="valor_principal"
+                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                  >
+                    Valor Principal
                   </label>
                   <Controller
-                    name="valor_pss"
+                    name="valor_principal"
                     control={control}
                     defaultValue={0}
                     render={({ field }) => (
@@ -745,166 +477,436 @@ E abaixo, uma memória das informações de entrada:
                     )}
                   />
                 </div>
-              ) : (
-                <>
-                  {watch("natureza") === "TRIBUTÁRIA" ? null : (
-                    <div className="flex items-center">&nbsp;</div>
-                  )}
-                </>
-              )}
-              {/* ====> label VALOR PSS <==== */}
-            </div>
+                {/* ====> end label VALOR PRINCIPAL <==== */}
 
-            {/* ====> checkbox DESTACAMENTO DE HONORÁRIOS <==== */}
-            <div className="my-4 flex w-full flex-row justify-between gap-4 sm:col-span-2">
-              <div
-                className={`flex flex-row ${watch("ja_possui_destacamento") ? "items-center" : "items-start"} w-full gap-2 sm:col-span-1`}
+                {/* ====> label JUROS <==== */}
+                <div className="mb-4 flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
+                  <label
+                    htmlFor="valor_juros"
+                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                  >
+                    Juros
+                  </label>
+                  <Controller
+                    name="valor_juros"
+                    control={control}
+                    defaultValue={0}
+                    render={({ field }) => (
+                      <Cleave
+                        {...field}
+                        className="w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark"
+                        options={{
+                          numeral: true,
+                          numeralPositiveOnly: true,
+                          numeralThousandsGroupStyle: "thousand",
+                          numeralDecimalScale: 2,
+                          numeralDecimalMark: ",",
+                          delimiter: ".",
+                          prefix: "R$ ",
+                          rawValueTrimPrefix: true,
+                        }}
+                      />
+                    )}
+                  />
+                </div>
+                {/* ====> end label JUROS <==== */}
+
+                {/* ====> label DATA BASE <==== */}
+                <div className="flex min-h-17.5 flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
+                  <div className="relative mb-4 flex flex-col justify-between">
+                    <label
+                      htmlFor="data_base"
+                      className="mb-1 font-nexa text-xs font-semibold uppercase text-meta-5"
+                    >
+                      Data Base
+                    </label>
+                    <input
+                      type="date"
+                      id="data_base"
+                      className={`${errors.data_base && "!border-rose-400 !ring-0"} w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark`}
+                      {...register("data_base", {
+                        required: "Campo obrigatório",
+                      })}
+                      aria-invalid={errors.data_base ? "true" : "false"}
+                    />
+                    <ErrorMessage errors={errors} field="data_base" />
+                  </div>
+                </div>
+                {/* ====> end label DATA BASE <==== */}
+
+                {/* ====> label DATA DE REQUISIÇÃO <==== */}
+                <div className="flex flex-col gap-2 2xsm:col-span-2 2xsm:mt-3 sm:col-span-1 sm:mt-0 md:col-span-1">
+                  <div className="relative mb-4 flex flex-col justify-between">
+                    <label
+                      htmlFor="data_requisicao"
+                      className="mb-1 font-nexa text-xs font-semibold uppercase text-meta-5"
+                    >
+                      Data de Requisição / Recebimento
+                    </label>
+                    <input
+                      type="date"
+                      id="data_requisicao"
+                      className={`${errors.data_requisicao && "!border-rose-400 !ring-0"} w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark`}
+                      {...register("data_requisicao", {
+                        required: "Campo obrigatório",
+                      })}
+                    />
+                    <ErrorMessage errors={errors} field="data_requisicao" />
+                  </div>
+                </div>
+                {/* ====> endlabel DATA DE REQUISIÇÃO <==== */}
+
+                {/* ====> label PERCENTUAL DE AQUISIÇÃO <==== */}
+                <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
+                  <label
+                    htmlFor="percentual_a_ser_adquirido"
+                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                  >
+                    Percentual de aquisição (%)
+                  </label>
+                  <input
+                    type="number"
+                    id="percentual_a_ser_adquirido"
+                    defaultValue={100}
+                    className="w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark"
+                    min={0}
+                    {...register("percentual_a_ser_adquirido", {
+                      required: "Campo obrigatório",
+                      setValueAs: (value) => {
+                        return parseInt(value);
+                      },
+                    })}
+                  />
+                </div>
+                {/* ====> end label PERCENTUAL DE AQUISIÇÃO <==== */}
+
+                {/* ====> checkbox JUROS DE MORA <==== */}
+                {watch("data_base") < "2021-12-01" &&
+                  watch("natureza") !== "TRIBUTÁRIA" && (
+                    <div className={`col-span-2 flex items-center gap-2`}>
+                      <CustomCheckbox
+                        check={watch("incidencia_juros_moratorios")}
+                        id={"incidencia_juros_moratorios"}
+                        defaultChecked
+                        register={register("incidencia_juros_moratorios")}
+                      />
+
+                      <label
+                        htmlFor="incidencia_juros_moratorios"
+                        className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                      >
+                        Juros de Mora fixados em sentença
+                      </label>
+                    </div>
+                  )}
+                {/* ====> end checkbox JUROS DE MORA <==== */}
+
+                {/* ====> checkbox SELIC SOBRE PRINCIPAL <==== */}
+                {/* <div
+                className={`col-span-2 flex items-center gap-2 ${watch("data_base") > "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" && watch("tribunal") !== "TRF1" && watch("tribunal") !== "TRF6" ? "" : "hidden"}`}
               >
                 <CustomCheckbox
-                  check={watch("ja_possui_destacamento")}
-                  id={"ja_possui_destacamento"}
-                  register={register("ja_possui_destacamento")}
-                  defaultChecked
+                  check={watch("nao_incide_selic_no_periodo_db_ate_abril")}
+                  id={"nao_incide_selic_no_periodo_db_ate_abril"}
+                  register={register(
+                    "nao_incide_selic_no_periodo_db_ate_abril",
+                  )}
                 />
 
                 <label
-                  htmlFor="ja_possui_destacamento"
-                  className={`${!watch("ja_possui_destacamento") && "mt-1"} font-nexa text-xs font-semibold uppercase text-meta-5`}
+                  htmlFor="nao_incide_selic_no_periodo_db_ate_abril"
+                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
                 >
-                  Já possui destaque de honorários?
+                  SELIC somente sobre o principal
                 </label>
-              </div>
-              {watch("ja_possui_destacamento") === false && (
-                <div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
-                  <div className="flex w-full flex-col gap-2 sm:col-span-1">
+              </div> */}
+                {/* ====> end checkbox SELIC SOBRE PRINCIPAL <==== */}
+
+                {/* ====> checkbox INCIDÊNCIA DE IR <==== */}
+                <div className="col-span-2 flex items-center gap-2">
+                  <CustomCheckbox
+                    check={watch("incidencia_rra_ir")}
+                    id={"incidencia_rra_ir"}
+                    defaultChecked
+                    register={register("incidencia_rra_ir")}
+                  />
+
+                  <label
+                    htmlFor="incidencia_rra_ir"
+                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                  >
+                    Incidência de IR
+                  </label>
+                </div>
+                {/* ====> end checkbox INCIDÊNCIA DE IR <==== */}
+
+                {/* ====> checkbox IR INCIDE RRA <==== */}
+                {watch("natureza") === "TRIBUTÁRIA" ||
+                  watch("incidencia_rra_ir") === false ? null : (
+                  <div
+                    className={`flex gap-2 ${watch("ir_incidente_rra") ? "items-start" : "items-center"} 2xsm:col-span-2 sm:col-span-1`}
+                  >
+                    <CustomCheckbox
+                      check={watch("ir_incidente_rra")}
+                      id={"ir_incidente_rra"}
+                      register={register("ir_incidente_rra")}
+                    />
+
                     <label
-                      htmlFor="percentual_de_honorarios"
+                      htmlFor="ir_incidente_rra"
+                      className="mt-1 font-nexa text-xs font-semibold uppercase text-meta-5"
+                    >
+                      IR incidente sobre RRA?
+                    </label>
+                  </div>
+                )}
+                {/* ====> checkbox IR INCIDE RRA <==== */}
+
+                {/* ====> label NÚMERO DE MESES <==== */}
+                {watch("ir_incidente_rra") === true &&
+                  watch("natureza") !== "TRIBUTÁRIA" ? (
+                  <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                    <label
+                      htmlFor="numero_de_meses"
                       className="font-nexa text-xs font-semibold uppercase text-meta-5"
                     >
-                      Percentual{" "}
-                      <span className="text-xs text-meta-5">(%)</span>
-                      <span className="text-[7px] text-meta-8">
-                        &nbsp; Dedução feita no Notion
-                      </span>
+                      Número de meses
                     </label>
                     <input
                       type="number"
-                      id="percentual_de_honorarios"
-                      className="h-[37px] w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark"
-                      {...register("percentual_de_honorarios", {})}
+                      id="numero_de_meses"
+                      className="w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark"
+                      min={0}
+                      {...register("numero_de_meses", {
+                        required: "Campo obrigatório",
+                        setValueAs: (value) => {
+                          return parseInt(value);
+                        },
+                      })}
                     />
                   </div>
-                </div>
-              )}
-            </div>
-            {/* ====> end checkbox DESTACAMENTO DE HONORÁRIOS <==== */}
+                ) : (
+                  <>
+                    {watch("natureza") === "TRIBUTÁRIA" ||
+                      watch("incidencia_rra_ir") === false ? null : (
+                      <div className="col-span-1 flex items-center">&nbsp;</div>
+                    )}
+                  </>
+                )}
+                {/* ====> label NÚMERO DE MESES <==== */}
 
-            {/* calculate button */}
-            <button
-              type="submit"
-              className="mb-8 mt-15 flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-700 px-8 py-3 text-sm text-white transition-all duration-200 hover:bg-blue-800 focus:z-0 2xsm:w-full md:w-fit"
-            >
-              <span className="text-[16px] font-medium" aria-disabled={loading}>
-                {loading ? "Calculando valores..." : "Calcular"}
-              </span>
-              {loading && (
-                <AiOutlineLoading className="ml-2 mt-[0.2rem] h-4 w-4 animate-spin" />
-              )}
-            </button>
-            {/* end calculate button */}
-          </form>
-          {showResults && (
-            <React.Fragment>
-              <div className="flex animate-fade-up flex-col opacity-0 2xsm:p-10 md:my-20 md:gap-10">
-                <div>
-                  <h2 className="text-xl font-medium uppercase">
-                    Tudo pronto!
-                  </h2>
-                  <p className="text-sm text-slate-500">
-                    Abaixo foram gerados os valores mínimos e máximos de
-                    proposta e comissão. Mova os sliders para alterar os valores
-                    proporcionalmente.
-                  </p>
-                </div>
-                <div className="mt-10 grid gap-10">
-                  <div className="flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
-                    <div className="relative flex flex-col items-center">
-                      <h4 className="">Proposta Mínima</h4>
-                      <span>{numberFormat(proposalValue.min)}</span>
-                    </div>
-                    <div className="flex flex-1 flex-col items-center gap-1">
-                      <span className="text-sm font-medium">
-                        Proposta Atual: {numberFormat(sliderValues.proposal)}
-                      </span>
-                      <input
-                        type="range"
-                        step="0.01"
-                        min={proposalValue.min}
-                        max={proposalValue.max}
-                        value={sliderValues.proposal}
-                        onChange={handleProposalSliderChange}
-                        className="w-full"
-                      />
-                    </div>
-                    <div className="flex flex-col items-center">
-                      <h4 className="">Proposta Máxima</h4>
-                      <span>{numberFormat(proposalValue.max)}</span>
-                    </div>
-                  </div>
+                {/* ====> checkbox INCIDE PSS <==== */}
+                {watch("natureza") !== "TRIBUTÁRIA" ? (
+                  <div
+                    className={`flex gap-2 ${watch("incidencia_pss") ? "items-start" : "items-center"} 2xsm:col-span-2 sm:col-span-1`}
+                  >
+                    <CustomCheckbox
+                      check={watch("incidencia_pss")}
+                      id={"incidencia_pss"}
+                      register={register("incidencia_pss")}
+                    />
 
-                  <div className="relative flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
-                    <div className="flex flex-col items-center">
-                      <h4 className="">Comissão Mínima</h4>
-                      <span>{numberFormat(comissionValue.min)}</span>
-                    </div>
-                    <div className="flex flex-1 flex-col items-center gap-1">
-                      <span className="text-sm font-medium">
-                        Comissão Atual: {numberFormat(sliderValues.comission)}
-                      </span>
-                      <input
-                        type="range"
-                        step="0.01"
-                        min={comissionValue.min}
-                        max={comissionValue.max}
-                        value={sliderValues.comission}
-                        onChange={handleComissionSliderChange}
-                        className="w-full"
-                      />
-                    </div>
-                    <div className="flex flex-col items-center">
-                      <h4 className="">Comissão Máxima</h4>
-                      <span>{numberFormat(comissionValue.max)}</span>
-                    </div>
+                    <label
+                      htmlFor="incidencia_pss"
+                      className="mt-1 font-nexa text-xs font-semibold uppercase text-meta-5"
+                    >
+                      Incide PSS?
+                    </label>
                   </div>
-                </div>
+                ) : null}
+                {/* ====> end checkbox INCIDE PSS<==== */}
+
+                {/* ====> label VALOR PSS <==== */}
+                {watch("incidencia_pss") && watch("natureza") !== "TRIBUTÁRIA" ? (
+                  <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                    <label
+                      htmlFor="valor_pss"
+                      className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                    >
+                      PSS
+                    </label>
+                    <Controller
+                      name="valor_pss"
+                      control={control}
+                      defaultValue={0}
+                      render={({ field }) => (
+                        <Cleave
+                          {...field}
+                          className="w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark"
+                          options={{
+                            numeral: true,
+                            numeralThousandsGroupStyle: "thousand",
+                            numeralDecimalScale: 2,
+                            numeralDecimalMark: ",",
+                            delimiter: ".",
+                            prefix: "R$ ",
+                            rawValueTrimPrefix: true,
+                          }}
+                        />
+                      )}
+                    />
+                  </div>
+                ) : (
+                  <>
+                    {watch("natureza") === "TRIBUTÁRIA" ? null : (
+                      <div className="flex items-center">&nbsp;</div>
+                    )}
+                  </>
+                )}
+                {/* ====> label VALOR PSS <==== */}
               </div>
 
-              <div className="flex items-center justify-center gap-4 2xsm:flex-wrap">
-                {/* register button */}
-                <Link
-                  href={APP_ROUTES.public.register.name}
-                  className="flex h-14 items-center justify-center rounded-md bg-blue-700 px-4 py-2 text-snow transition-all duration-300 hover:bg-blue-800 2xsm:w-[295px] md:w-fit"
+              {/* ====> checkbox DESTACAMENTO DE HONORÁRIOS <==== */}
+              <div className="my-4 flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                <div
+                  className={`flex flex-row ${watch("ja_possui_destacamento") ? "items-center" : "items-start"} w-full gap-2 sm:col-span-1`}
                 >
-                  Cadastrar este ativo no Celer
-                </Link>
-                {/* register button */}
+                  <CustomCheckbox
+                    check={watch("ja_possui_destacamento")}
+                    id={"ja_possui_destacamento"}
+                    register={register("ja_possui_destacamento")}
+                    defaultChecked
+                  />
 
-                {/* whatsapp button */}
-                <button
-                  className={`${headerColorset === "glass" ? "cursor-pointer opacity-100" : "cursor-default opacity-0"} flex w-fit place-items-center gap-2 rounded-md bg-green-500 px-4 py-2 text-snow transition-all duration-300 hover:bg-green-600`}
-                  onClick={redirectToWhatsApp}
-                >
-                  <span>Falar com um consultor Ativos</span>
-                  <FaWhatsapp className="h-10 w-10 text-snow" />
-                </button>
-                {/* end whatsapp button */}
+                  <label
+                    htmlFor="ja_possui_destacamento"
+                    className={`${!watch("ja_possui_destacamento") && "mt-1"} font-nexa text-xs font-semibold uppercase text-meta-5`}
+                  >
+                    Já possui destaque de honorários?
+                  </label>
+                </div>
+                {watch("ja_possui_destacamento") === false && (
+                  <div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                    <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                      <label
+                        htmlFor="percentual_de_honorarios"
+                        className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                      >
+                        Percentual{" "}
+                        <span className="text-xs text-meta-5">(%)</span>
+                        <span className="text-[7px] text-meta-8">
+                          &nbsp; Dedução feita no Notion
+                        </span>
+                      </label>
+                      <input
+                        type="number"
+                        id="percentual_de_honorarios"
+                        className="h-[37px] w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark"
+                        {...register("percentual_de_honorarios", {})}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
-            </React.Fragment>
-          )}
+              {/* ====> end checkbox DESTACAMENTO DE HONORÁRIOS <==== */}
+
+              {/* calculate button */}
+              <button
+                type="submit"
+                className="mb-8 mt-15 flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-700 px-8 py-3 text-sm text-white transition-all duration-200 hover:bg-blue-800 focus:z-0 2xsm:w-full md:w-fit"
+              >
+                <span className="text-[16px] font-medium" aria-disabled={loading}>
+                  {loading ? "Calculando valores..." : "Calcular"}
+                </span>
+                {loading && (
+                  <AiOutlineLoading className="ml-2 mt-[0.2rem] h-4 w-4 animate-spin" />
+                )}
+              </button>
+              {/* end calculate button */}
+            </form>
+            {showResults && (
+              <React.Fragment>
+                <div className="flex animate-fade-up flex-col opacity-0 2xsm:p-10 md:my-20 md:gap-10">
+                  <div>
+                    <h2 className="text-xl font-medium uppercase">
+                      Tudo pronto!
+                    </h2>
+                    <p className="text-sm text-slate-500">
+                      Abaixo foram gerados os valores mínimos e máximos de
+                      proposta e comissão. Mova os sliders para alterar os valores
+                      proporcionalmente.
+                    </p>
+                  </div>
+                  <div className="mt-10 grid gap-10">
+                    <div className="flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
+                      <div className="relative flex flex-col items-center">
+                        <h4 className="">Proposta Mínima</h4>
+                        <span>{numberFormat(proposalValue.min)}</span>
+                      </div>
+                      <div className="flex flex-1 flex-col items-center gap-1">
+                        <span className="text-sm font-medium">
+                          Proposta Atual: {numberFormat(sliderValues.proposal)}
+                        </span>
+                        <input
+                          type="range"
+                          step="0.01"
+                          min={proposalValue.min}
+                          max={proposalValue.max}
+                          value={sliderValues.proposal}
+                          onChange={handleProposalSliderChange}
+                          className="w-full"
+                        />
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <h4 className="">Proposta Máxima</h4>
+                        <span>{numberFormat(proposalValue.max)}</span>
+                      </div>
+                    </div>
+
+                    <div className="relative flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
+                      <div className="flex flex-col items-center">
+                        <h4 className="">Comissão Mínima</h4>
+                        <span>{numberFormat(comissionValue.min)}</span>
+                      </div>
+                      <div className="flex flex-1 flex-col items-center gap-1">
+                        <span className="text-sm font-medium">
+                          Comissão Atual: {numberFormat(sliderValues.comission)}
+                        </span>
+                        <input
+                          type="range"
+                          step="0.01"
+                          min={comissionValue.min}
+                          max={comissionValue.max}
+                          value={sliderValues.comission}
+                          onChange={handleComissionSliderChange}
+                          className="w-full"
+                        />
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <h4 className="">Comissão Máxima</h4>
+                        <span>{numberFormat(comissionValue.max)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-center gap-4 2xsm:flex-wrap">
+                  {/* register button */}
+                  <Link
+                    href={APP_ROUTES.public.register.name}
+                    className="flex h-14 items-center justify-center rounded-md bg-blue-700 px-4 py-2 text-snow transition-all duration-300 hover:bg-blue-800 2xsm:w-[295px] md:w-fit"
+                  >
+                    Cadastrar este ativo no Celer
+                  </Link>
+                  {/* register button */}
+
+                  {/* whatsapp button */}
+                  <button
+                    className={`${headerColorset === "glass" ? "cursor-pointer opacity-100" : "cursor-default opacity-0"} flex w-fit place-items-center gap-2 rounded-md bg-green-500 px-4 py-2 text-snow transition-all duration-300 hover:bg-green-600`}
+                    onClick={redirectToWhatsApp}
+                  >
+                    <span>Falar com um consultor Ativos</span>
+                    <FaWhatsapp className="h-10 w-10 text-snow" />
+                  </button>
+                  {/* end whatsapp button */}
+                </div>
+              </React.Fragment>
+            )}
+          </div>
         </div>
+        {/* end form */}
       </div>
-      {/* end form */}
-    </div>
+    </UnloggedLayout>
   );
 };
 
