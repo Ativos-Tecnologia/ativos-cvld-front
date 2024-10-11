@@ -174,13 +174,14 @@ export default function MarketplaceItem({ id }: MarketplaceItemProps) {
             <CardDataStatsSkeleton />
           )}
           {data ? (
-            <div className="mt-[-30px] flex gap-3 md:hidden">
+            <div className="mt-[-30px] grid grid-cols-2 gap-3 md:hidden">
               <CardDataStats
                 title="Previsão de pagamento"
                 total={data && handlePrevisaoDePagto(data)}
               >
                 <IoCalendar className="h-[18px] w-[18px]" />
               </CardDataStats>
+
               <CardDataStats
                 title="Due Diligence"
                 elementHtml={
@@ -215,10 +216,10 @@ export default function MarketplaceItem({ id }: MarketplaceItemProps) {
       {data && data.properties["Disponível Para Compra"]?.checkbox && (
         <Fade cascade damping={0.1} triggerOnce>
           <div className=" mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-            <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark 2xsm:flex 2xsm:justify-center sm:px-7.5 xl:col-span-12 xl:justify-normal">
+            <div className="col-span-12 rounded-sm border shadow-default 2xsm:flex 2xsm:justify-center 2xsm:border-transparent 2xsm:bg-transparent 2xsm:p-0 sm:px-7.5 md:border-stroke md:bg-white md:px-5 md:pb-5 md:pt-7.5 md:dark:border-strokedark md:dark:bg-boxdark xl:col-span-12 xl:justify-normal">
               <Button
                 onClick={() => setConfirmPurchaseModalOpen(true)}
-                className="text-sm font-medium uppercase"
+                className="font-medium uppercase 2xsm:text-base md:text-sm"
               >
                 adquirir este ativo
               </Button>

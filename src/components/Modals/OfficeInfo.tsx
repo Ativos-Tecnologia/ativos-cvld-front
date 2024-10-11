@@ -119,7 +119,7 @@ const OfficeInfoModal = ({
       className={`max-w-screen fixed left-0 top-0 z-999999 flex h-screen min-w-full items-center justify-center bg-black-2 bg-opacity-30 bg-clip-padding backdrop-blur-[2px] backdrop-filter transition-all duration-300 ease-in-out`}
     >
       <Fade damping={0.1}>
-        <div className="min-w-125 max-w-[450px] rounded-sm border border-stroke bg-white p-5 dark:border-strokedark dark:bg-boxdark">
+        <div className="h-fit rounded-sm border border-stroke bg-white p-5 dark:border-strokedark dark:bg-boxdark  2xsm:w-80 2xsm:text-sm md:min-w-125 md:max-w-[450px] md:text-base">
           <div className="flex "></div>
           <h2 className="text-center text-xl font-semibold uppercase text-black-2 dark:text-snow">
             {purchaseProcess === "done"
@@ -255,7 +255,7 @@ const OfficeInfoModal = ({
                   </p>
                 </li>
               </ul>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between 2xsm:flex-col 2xsm:gap-2 md:flex-row md:gap-0">
                 <p>Deseja confirmar a compra?</p>
                 <div className="flex items-center gap-1">
                   <Button
