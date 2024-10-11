@@ -183,6 +183,8 @@ export const ExtratosTableContext = createContext<IExtratosTable>({
     setModalOptions: () => { },
     notionWorkspaceData: {
         object: "list",
+        next_cursor: null,
+        has_more: false,
         results: []
     },
     setNotionWorkspaceData: () => { },
@@ -265,6 +267,8 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
     });
     const [notionWorkspaceData, setNotionWorkspaceData] = useState<NotionResponse>({
         object: "list",
+        has_more: false,
+        next_cursor: null,
         results: []
     });
 
