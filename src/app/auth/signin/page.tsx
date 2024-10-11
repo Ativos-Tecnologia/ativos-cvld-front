@@ -108,14 +108,13 @@ const SignIn: React.FC = () => {
   return (
     <UnloggedLayout>
       <div>
-        <div className="rounded-sm bg-snow shadow-default dark:border-strokedark dark:bg-boxdark">
+        <div className="rounded-sm bg-snow shadow-default">
           <div className="flex flex-wrap">
             {/* Bloco Desktop */}
-            <div className="hidden min-h-full w-full xl:block xl:w-1/2 xl:border-r-2 shadow-default dark:border-strokedark">
+            <div className="hidden min-h-full w-full xl:block xl:w-[65%] xl:border-r-2 shadow-default">
               <div className="px-20 flex flex-col min-h-full text-center justify-evenly hero_login ">
-
                 <div className="mb-10 flex flex-col justify-center items-center relative z-3">
-                  <div className="hidden dark:flex flex-col items-center ">
+                  {/* <div className="hidden dark:flex flex-col items-center ">
                     <Image
                       src={"/images/logo/celer-app-logo-dark.svg"}
                       id="Logo-Dark-Desktop"
@@ -131,25 +130,27 @@ const SignIn: React.FC = () => {
                       width={200}
                       height={32}
                     />
-                  </div>
-                  <div className="dark:hidden flex flex-col items-center gap-3">
-                    <Image
-                      src={"/images/logo/celer-app-logo-dark.svg"}
-                      alt="Logo"
-                      width={160}
-                      height={32}
-                      className="antialiased"
-                      style={{ filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))' }}
-                    />
-                    <Image
-                      src={"/images/logo/celer-app-text-dark.svg"}
-                      alt="Logo"
-                      width={200}
-                      height={32}
-                      style={{ filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.40))' }}
+                  </div> */}
+                  <Fade triggerOnce>
+                    <div className="flex flex-col items-center gap-3">
+                      <Image
+                        src={"/images/logo/celer-app-logo-dark.svg"}
+                        alt="Logo"
+                        width={160}
+                        height={32}
+                        className="antialiased"
+                        style={{ filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))' }}
+                      />
+                      <Image
+                        src={"/images/logo/celer-app-text-dark.svg"}
+                        alt="Logo"
+                        width={200}
+                        height={32}
+                        style={{ filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.40))' }}
 
-                    />
-                  </div>
+                      />
+                    </div>
+                  </Fade>
                 </div>
 
                 <h1 className="text-left translate-x-25 animate-fade-right pt-8 text-5xl font-bold text-snow opacity-0 2xsm:hidden md:block md:text-4xl lg:text-6xl" style={{
@@ -161,81 +162,82 @@ const SignIn: React.FC = () => {
             </div>
             {/* Fim do bloco desktop */}
 
-            {/* Bloco Mobile */}
+            <div className="w-full xl:w-[35%] hero_login xl:bg-none">
+              <div className="relative z-2 border-stroke mx-auto md:my-3 md:rounded-md bg-snow md:w-3/4 lg:w-1/2 xl:w-full xl:my-0 xl:mx-0 xl:rounded-none xl:z-0">
+                <div className="w-full sm:py-12.5 sm:px-8 2xsm:p-8">
 
-            <div className="w-full border-stroke dark:border-strokedark xl:w-1/2">
-              <div className="w-full sm:p-12.5 2xsm:p-8">
-                <div className="block w-full xl:hidden xl:w-1/2">
-                  <div className="sm:px-26 pt-5 text-center">
-                    <Link className="flex flex-col justify-center items-center mb-15" href="/">
-                      <div className="hidden dark:flex flex-col items-center gap-3 bg">
-                        <Image
-                          src={"/images/logo/celer-app-logo-dark.svg"}
-                          id="Logo-Dark"
+                  {/* Bloco Mobile */}
+                  <div className="block w-full xl:hidden xl:w-1/2">
+                    <div className="sm:px-26 pt-5 text-center">
+                      <Link className="flex flex-col justify-center items-center mb-15" href="#">
+                        <div className="hidden dark:flex flex-col items-center gap-3 bg">
+                          <Image
+                            src={"/images/logo/celer-app-logo-dark.svg"}
+                            id="Logo-Dark"
 
-                          alt="Logo"
-                          width={0}
-                          height={0}
-                          className="2xsm:w-20 md:w-28 "
-                        />
-                        <Image
-                          src={"/images/logo/celer-app-text-dark.svg"}
-                          alt="Logo"
-                          width={0}
-                          height={0}
-                          className="2xsm:w-45"
-                        />
-                      </div>
-                      <div className="dark:hidden flex flex-col items-center gap-3 bg">
-                        <Image
-                          src={"/images/logo/celer-app-logo.svg"}
-                          alt="Logo"
-                          width={0}
-                          height={0}
-                          className="2xsm:w-20 md:w-28"
-                        />
-                        <Image
-                          src={"/images/logo/celer-app-text.svg"}
-                          alt="Logo"
-                          width={0}
-                          height={0}
-                          className="2xsm:w-45"
-                        />
-                      </div>
-                    </Link>
+                            alt="Logo"
+                            width={0}
+                            height={0}
+                            className="2xsm:w-20 md:w-28 "
+                          />
+                          <Image
+                            src={"/images/logo/celer-app-text-dark.svg"}
+                            alt="Logo"
+                            width={0}
+                            height={0}
+                            className="2xsm:w-45"
+                          />
+                        </div>
+                        <div className="dark:hidden flex flex-col items-center gap-3 bg">
+                          <Image
+                            src={"/images/logo/celer-app-logo.svg"}
+                            alt="Logo"
+                            width={0}
+                            height={0}
+                            className="2xsm:w-20 md:w-28"
+                          />
+                          <Image
+                            src={"/images/logo/celer-app-text.svg"}
+                            alt="Logo"
+                            width={0}
+                            height={0}
+                            className="2xsm:w-45"
+                          />
+                        </div>
+                      </Link>
+                    </div>
                   </div>
-                </div>
-                {/* <span className="xl:mb-1.5 mb-10 block font-medium xl:text-2xl xl:text-left text-center text-lg">
+                  {/* <span className="xl:mb-1.5 mb-10 block font-medium xl:text-2xl xl:text-left text-center text-lg">
                   Celer App
                 </span> */}
-                <Fade delay={1e2} damping={1e-1} cascade triggerOnce>
-                <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-                  Acesse sua conta
-                </h2>
-                </Fade>
 
-                {/* Fim do Bloco Mobile */}
+                  {/* Fim do Bloco Mobile */}
 
+                  <Fade delay={1e2} damping={1e-1} cascade triggerOnce>
+                    <h2 className="mb-9 text-2xl font-bold text-black sm:text-title-xl2">
+                      Acesse sua conta
+                    </h2>
+                  </Fade>
 
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <div className="mb-11">
-                    <label className="mb-2.5 block font-medium text-black dark:text-white">
-                      Usuário
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        placeholder="Digite o usuário"
-                        className={`${errors.username && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
-                        {
-                        ...register("username", {
-                          required: "Campo obrigatório",
-                        })
-                        }
-                        aria-invalid={errors.username ? "true" : "false"}
-                      />
-                      <ErrorMessage errors={errors} field='username' />
-                      {/* {
+                  <form onSubmit={handleSubmit(onSubmit)}>
+                    <div className="mb-11">
+                      <label className="mb-2.5 block font-medium text-black">
+                        Usuário
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          placeholder="Digite o usuário"
+                          className={`${errors.username && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                          {
+                          ...register("username", {
+                            required: "Campo obrigatório",
+                          })
+                          }
+                          aria-invalid={errors.username ? "true" : "false"}
+                        />
+                        <ErrorMessage errors={errors} field='username' />
+                        {/* {
                       errors.username && (
                         <span role="alert" className="absolute right-4 top-4 text-red pr-8 text-sm">
                           {errors.username.message}
@@ -243,59 +245,59 @@ const SignIn: React.FC = () => {
                       )
                     } */}
 
-                      <span className="absolute right-4 top-4 w-[22px] h-[22px]">
-                        <BiUser style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />
-                      </span>
+                        <span className="absolute right-4 top-4 w-[22px] h-[22px]">
+                          <BiUser style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />
+                        </span>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="mb-11">
-                    <label className="mb-2.5 block font-medium text-black dark:text-white">
-                      Senha
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={hide.password ? "password" : "text"}
-                        placeholder="Digite a sua senha"
-                        className={`${errors.password && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                    <div className="mb-11">
+                      <label className="mb-2.5 block font-medium text-black dark:text-white">
+                        Senha
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={hide.password ? "password" : "text"}
+                          placeholder="Digite a sua senha"
+                          className={`${errors.password && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                          {
+                          ...register("password", {
+                            required: "Campo obrigatório",
+                          })
+                          }
+                          aria-invalid={errors.password ? "true" : "false"}
+                        />
+                        <ErrorMessage errors={errors} field='password' />
+
+                        <span className='absolute top-4 right-10 cursor-pointer'
+                          onClick={() => setHide({
+                            ...hide,
+                            password: !hide.password
+                          })}
+                        >
+                          {!hide.password ? <BsEye style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} /> : <BsEyeSlash style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />}
+                        </span>
+
+                        <span className="absolute right-4 top-4">
+                          <BiLockAlt style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />
+                        </span>
+                      </div>
+                    </div>
+
+                    <p onClick={() => setOpenModal(true)} className="text-blue-700 hover:text-blue-800 max-w-fit text-sm font-medium mb-6 cursor-pointer dark:text-blue-400 dark:hover:text-blue-500">
+                      Esqueci a senha
+                    </p>
+
+                    <div className="mb-5">
+                      <Button className="w-full py-8 flex items-center justify-center transition-all duration-200">
+                        <span className="text-[16px] font-medium" aria-disabled={loading}>
+                          {loading ? "Fazendo login..." : "Acessar"}
+                        </span>
                         {
-                        ...register("password", {
-                          required: "Campo obrigatório",
-                        })
+                          !loading ? (<HiOutlineArrowRight className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
                         }
-                        aria-invalid={errors.password ? "true" : "false"}
-                      />
-                      <ErrorMessage errors={errors} field='password' />
-
-                      <span className='absolute top-4 right-10 cursor-pointer'
-                        onClick={() => setHide({
-                          ...hide,
-                          password: !hide.password
-                        })}
-                      >
-                        {!hide.password ? <BsEye style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} /> : <BsEyeSlash style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />}
-                      </span>
-
-                      <span className="absolute right-4 top-4">
-                        <BiLockAlt style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />
-                      </span>
-                    </div>
-                  </div>
-
-                  <p onClick={() => setOpenModal(true)} className="text-blue-700 hover:text-blue-800 max-w-fit text-sm font-medium mb-6 cursor-pointer dark:text-blue-400 dark:hover:text-blue-500">
-                    Esqueci a senha
-                  </p>
-
-                  <div className="mb-5">
-                    <Button className="w-full py-8 flex items-center justify-center transition-all duration-200">
-                      <span className="text-[16px] font-medium" aria-disabled={loading}>
-                        {loading ? "Fazendo login..." : "Acessar"}
-                      </span>
-                      {
-                        !loading ? (<HiOutlineArrowRight className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
-                      }
-                    </Button>
-                    {/* <button type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-6 text-white bg-blue-700 hover:bg-blue-800 transition-all duration-200'>
+                      </Button>
+                      {/* <button type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-6 text-white bg-blue-700 hover:bg-blue-800 transition-all duration-200'>
                       <span className="text-[16px] font-medium" aria-disabled={loading}>
                         {loading ? "Fazendo login..." : "Acessar"}
                       </span>
@@ -303,25 +305,26 @@ const SignIn: React.FC = () => {
                         !loading ? (<HiOutlineArrowRight className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
                       }
                     </button> */}
-                  </div>
+                    </div>
 
-                  {/* <button data-tooltip-target="tooltip-default" disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50 disabled:cursor-not-allowed disabled:opacity-50">
+                    {/* <button data-tooltip-target="tooltip-default" disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50 disabled:cursor-not-allowed disabled:opacity-50">
                     <span>
                       <FcGoogle style={{ width: '22px', height: '22p' }} />
                     </span>
                     Login com o Google
                   </button> */}
 
-                  <div className="mt-6 text-center">
-                    <p>
-                      Ainda não possui uma conta?{" "}
-                      <Link aria-disabled href="/auth/signup" className="text-blue-700 hover:text-blue-800 font-medium dark:text-blue-400 dark:hover:text-blue-500">
-                        Cadastre-se
-                      </Link>
-                    </p>
-                  </div>
-                </form>
-                <ForgotPassword state={openModal} setState={setOpenModal} />
+                    <div className="mt-6 text-center">
+                      <p>
+                        Ainda não possui uma conta?{" "}
+                        <Link aria-disabled href="/auth/signup" className="text-blue-700 hover:text-blue-800 font-medium dark:text-blue-400 dark:hover:text-blue-500">
+                          Cadastre-se
+                        </Link>
+                      </p>
+                    </div>
+                  </form>
+                  <ForgotPassword state={openModal} setState={setOpenModal} />
+                </div>
               </div>
             </div>
           </div>
