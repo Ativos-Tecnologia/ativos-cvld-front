@@ -41,10 +41,10 @@ const Marketplace: React.FC = () => {
   return (
     <div className='flex flex-col gap-5'>
       <div>
-      <Fade className='text-4xl font-semibold mb-2 dark:text-snow' cascade damping={0.1}>
+      <Fade className='text-4xl font-semibold mb-2 dark:text-snow' cascade damping={0.1} triggerOnce>
         Explore investimentos
       </Fade>
-      <Fade delay={2100} damping={0.1}>
+      <Fade delay={2200} damping={0.1} triggerOnce>
         <p className="font-white">
           Aproveite oportunidades exclusivas de ativos judiciais e maximize seus retornos com segurança e credibilidade.
         </p>
@@ -53,7 +53,7 @@ const Marketplace: React.FC = () => {
 
       <ul className='grid grid-cols-3 my-5'>
         {data.results.length > 0 ? (
-          <Fade cascade damping={0.1}>
+          <Fade cascade damping={0.1} triggerOnce fraction={0.1}>
             {data!.results?.map((oficio) => (
                 <Card key={oficio.id} oficio={oficio} onClickFn={() => handleRedirect(oficio.id)} />
             ))}
