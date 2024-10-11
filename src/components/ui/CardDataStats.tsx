@@ -9,7 +9,6 @@ interface CardDataStatsProps {
   levelDown?: boolean;
   children: ReactNode;
   href?: string;
-
 }
 
 const CardDataStats: React.FC<CardDataStatsProps> = ({
@@ -19,33 +18,26 @@ const CardDataStats: React.FC<CardDataStatsProps> = ({
   levelUp,
   levelDown,
   children,
-  elementHtml
+  elementHtml,
 }) => {
   return (
-    <div className="rounded-sm border border-stroke bg-white px-7.5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark 2xsm:p-5 2xsm:py-3 md:px-7.5 md:py-6">
       <div className="flex h-8.5 w-8.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
         {children}
       </div>
       <div className="mt-2 flex items-end justify-between">
         <div>
-          {
-            total &&
-          <h4 className="text-title-sm font-bold text-black dark:text-white">
-            {total}
-          </h4>
-          }
-          {
-            elementHtml &&
-            <>
-              {elementHtml}
-            </>
-
-          }
-          <span className="text-xs font-medium">{title}</span>
+          {total && (
+            <h4 className="2xsn:text-lg font-bold text-black dark:text-white md:text-title-sm">
+              {total}
+            </h4>
+          )}
+          {elementHtml && <>{elementHtml}</>}
+          <span className="w-fit text-xs font-medium">{title}</span>
         </div>
 
         <span
-          className={`flex items-center gap-1 mb-0.5 text-xs font-medium ${
+          className={`mb-0.5 flex items-center gap-1 text-xs font-medium ${
             levelUp && "text-meta-3"
           } ${levelDown && "text-meta-5"} `}
         >
