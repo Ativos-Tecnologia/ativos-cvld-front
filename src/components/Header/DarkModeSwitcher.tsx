@@ -1,7 +1,13 @@
+import { GeneralUIContext } from "@/context/GeneralUIContext";
 import useColorMode from "@/hooks/useColorMode";
+import { useContext } from "react";
 import { BiSun, BiSolidMoon } from "react-icons/bi";
 
 const DarkModeSwitcher = () => {
+  const {
+    theme,
+    setTheme,
+  } = useContext(GeneralUIContext);
   const [colorMode, setColorMode] = useColorMode();
 
   return (
@@ -15,6 +21,7 @@ const DarkModeSwitcher = () => {
           onChange={() => {
             if (typeof setColorMode === "function") {
               setColorMode(colorMode === "light" ? "dark" : "light");
+              setTheme(colorMode === "light" ? "dark" : "light");
             }
           }}
           className="absolute top-0 z-50 m-0 h-full w-full cursor-pointer opacity-0"

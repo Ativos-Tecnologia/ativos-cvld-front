@@ -2,7 +2,6 @@ import { NotionPage, NotionResponse } from "@/interfaces/INotion";
 import api from "@/utils/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { UserInfoAPIContext } from "./UserInfoContext";
 import statusOficio from "@/enums/statusOficio.enum";
 import tipoOficio from "@/enums/tipoOficio.enum";
 import { IEditableLabels } from "./ExtratosTableContext";

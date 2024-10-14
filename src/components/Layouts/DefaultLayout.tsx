@@ -8,6 +8,7 @@ import { HiInformationCircle } from "react-icons/hi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import UserProduct from "../UserProduct";
 import { TableNotionProvider } from "@/context/NotionTableContext";
+import { GeneralUIProvider } from "@/context/GeneralUIContext";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ export default function DefaultLayout({
   return (
     <>
       {/* <!-- ===== Page Wrapper Start ===== --> */}
+      <GeneralUIProvider>
       <div className="flex h-screen overflow-hidden">
         {/* <!-- ===== Sidebar Start ===== --> */}
         <TableNotionProvider>
@@ -65,6 +67,7 @@ export default function DefaultLayout({
         </div>
         {/* <!-- ===== Content Area End ===== --> */}
       </div>
+      </GeneralUIProvider>
       {/* <!-- ===== Page Wrapper End ===== --> */}
     </>
   );
