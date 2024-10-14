@@ -46,26 +46,9 @@ type NotionTableViewProps = {
     setNotionDrawer: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotionDrawer }: NotionTableViewProps) => {
+const NotionTableView = ({ setExtratosTableToNotionDrawersetId, setNotionDrawer }: NotionTableViewProps) => {
 
     const [currentNotionView, setCurrentNotionView] = useState<string>('geral');
-    // const [checkedList, setCheckedList] = React.useState<NotionPage[]>([]);
-    const [openStatusPopover, setOpenStatusPopover] = useState<boolean>(false);
-    const [openTipoOficioPopover, setOpenTipoOficioPopover] = useState<boolean>(false);
-    const [openUsersPopover, setOpenUsersPopover] = useState<boolean>(false);
-    const [filteredStatusValues, setFilteredStatusValues] = useState<statusOficio[]>(ENUM_OFICIOS_LIST);
-    const [filteredUsersList, setFilteredUsersList] = useState<string[]>(ENUM_OFICIOS_LIST);
-    const [updateState, setUpdateState] = useState<string | null>(null);
-    const [editLock, setEditLock] = useState<boolean>(false);
-    const [archiveStatus, setArchiveStatus] = useState<boolean>(false);
-    const [archivedOficios, setArchivedOficios] = useState<NotionPage[]>([]);
-    const searchStatusRef = useRef<HTMLInputElement | null>(null);
-    const searchUserRef = useRef<HTMLInputElement | null>(null);
-    const selectStatusRef = useRef<any>(null);
-    const selectTipoOficioRef = useRef<any>(null);
-    const selectUserRef = useRef<any>(null);
-
-    const { data: { role } } = useContext(UserInfoAPIContext);
 
     const secondaryDefaultFilterObject = useMemo(() => {
         return {
@@ -927,7 +910,7 @@ const NotionTableView = ({ count, setExtratosTableToNotionDrawersetId, setNotion
     // }
 
     const clearQueries = async () => {
-        existentQueries.forEach((query: string[]) => queryClient.removeQueries({ queryKey: query }))
+        existentQueries.forEach((query: string[]) => queryClient.removeQueries({ queryKey: query }));
     }
 
     const handleChangeViews = (view: string) => {

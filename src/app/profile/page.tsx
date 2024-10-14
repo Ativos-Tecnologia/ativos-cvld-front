@@ -1,41 +1,56 @@
 "use client";
 
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import Image from "next/image";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import React, { useEffect, useState, useContext } from "react";
-import api from "@/utils/api";
-import {
-  useForm,
-  SubmitHandler,
-} from 'react-hook-form';
-import UseMySwal from "@/hooks/useMySwal";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
-import { BiTrashAlt, BiPencil, BiDotsVerticalRounded, BiCheck, BiX } from "react-icons/bi";
-import { Button, CustomFlowbiteTheme, Flowbite, Popover } from "flowbite-react";
+import UseMySwal from "@/hooks/useMySwal";
+import api from "@/utils/api";
+import { CustomFlowbiteTheme, Flowbite, Popover } from "flowbite-react";
+import Image from "next/image";
+import React, { useContext, useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import {
+  BiCheck,
+  BiDotsVerticalRounded,
+  BiPencil,
+  BiTrashAlt,
+  BiX,
+} from "react-icons/bi";
 import { BsExclamation } from "react-icons/bs";
 
 const customTheme: CustomFlowbiteTheme = {
   popover: {
-    "base": "absolute z-20 text-sm inline-block w-max max-w-[100vw] bg-white outline-none border border-stroke rounded-lg shadow-sm dark:border-strokedark dark:bg-boxdark",
-    "content": "z-10 overflow-hidden rounded-[7px]",
-    "arrow": {
-      "base": "absolute h-2 w-2 z-0 rotate-45 mix-blend-lighten bg-white border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:mix-blend-color",
-      "placement": "-4px"
-    }
-  }
+    base: "absolute z-20 text-sm inline-block w-max max-w-[100vw] bg-white outline-none border border-stroke rounded-lg shadow-sm dark:border-strokedark dark:bg-boxdark",
+    content: "z-10 overflow-hidden rounded-[7px]",
+    arrow: {
+      base: "absolute h-2 w-2 z-0 rotate-45 mix-blend-lighten bg-white border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:mix-blend-color",
+      placement: "-4px",
+    },
+  },
 };
 
 const Profile = () => {
-
-  const { data, loading, error, updateProfile, firstLogin, setFirstLogin, updateProfilePicture, removeProfilePicture, updateUserInfo } = useContext(UserInfoAPIContext);
+  const {
+    data,
+    loading,
+    error,
+    updateProfile,
+    firstLogin,
+    setFirstLogin,
+    updateProfilePicture,
+    removeProfilePicture,
+    updateUserInfo,
+  } = useContext(UserInfoAPIContext);
   const auxData = data;
   const [editModeProfile, setEditModeProfile] = useState<boolean>(false);
   const [editModeUser, setEditModeUser] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState("");
-  const [usernameExists, setUsernameExists] = useState<boolean | undefined>(undefined);
-  const [emailExists, setEmailExists] = useState<string>('undefined');
-  const emailRegex = /^[a-z0-9.\-_]{1,64}@[a-z0-9]{3,128}\.[a-z]{3,15}?(\.[a-z]{2,15})?$/;
+  const [usernameExists, setUsernameExists] = useState<boolean | undefined>(
+    undefined,
+  );
+  const [emailExists, setEmailExists] = useState<string>("undefined");
+  const emailRegex =
+    /^[a-z0-9.\-_]{1,64}@[a-z0-9]{3,128}\.[a-z]{3,15}?(\.[a-z]{2,15})?$/;
   const {
     register,
     handleSubmit,
@@ -61,12 +76,18 @@ const Profile = () => {
   }, [data]);
 
   useEffect(() => {
-    if (watch("username") && watch("username")?.length >= 4 && watch("username")?.length <= 30) {
+    if (
+      watch("username") &&
+      watch("username")?.length >= 4 &&
+      watch("username")?.length <= 30
+    ) {
       if (watch("username") !== data?.user) {
         try {
-          api.get(`api/user/check-availability/${watch("username")}/`).then((res) => {
-            setUsernameExists(res.data.available);
-          });
+          api
+            .get(`api/user/check-availability/${watch("username")}/`)
+            .then((res) => {
+              setUsernameExists(res.data.available);
+            });
         } catch (error) {
           console.log(error);
         }
@@ -76,33 +97,38 @@ const Profile = () => {
     }
 
     setUsernameExists(undefined);
-
   }, [watch("username")]);
 
   useEffect(() => {
+    if (!watch("email")) return;
 
-    if (!watch('email')) return;
-
-    if (watch("email") && watch("email")?.length > 4 && emailRegex.test(watch('email'))) {
+    if (
+      watch("email") &&
+      watch("email")?.length > 4 &&
+      emailRegex.test(watch("email"))
+    ) {
       if (watch("email") !== data?.email) {
         try {
-          api.get(`api/user/check-availability/${watch("email")}/`).then((res) => {
-            res.data.available ? setEmailExists('available') : setEmailExists('unavailable');
-          });
+          api
+            .get(`api/user/check-availability/${watch("email")}/`)
+            .then((res) => {
+              res.data.available
+                ? setEmailExists("available")
+                : setEmailExists("unavailable");
+            });
         } catch (error) {
           console.log(error);
         }
       } else {
-        setEmailExists('undefined');
+        setEmailExists("undefined");
       }
     } else {
-      setEmailExists('invalid');
+      setEmailExists("invalid");
     }
-
   }, [watch("email")]);
 
-  const handleImageChange = (e: any) => {
-    const file = e.target.filesdata;
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = async () => {
@@ -117,12 +143,14 @@ const Profile = () => {
   const handleCancelProfileEdit = () => {
     setEditModeUser(!editModeUser);
     setUsernameExists(undefined);
-    setEmailExists('undefined');
-    setValue('email', data?.email);
-    setValue('username', data?.user);
-  }
+    setEmailExists("undefined");
+    setValue("email", data?.email);
+    setValue("username", data?.user);
+  };
 
-  const updateProfileDataSubmit: SubmitHandler<Record<string, any>> = async (data) => {
+  const updateProfileDataSubmit: SubmitHandler<Record<string, any>> = async (
+    data,
+  ) => {
     setEditModeProfile(false);
     try {
       const response = await updateProfile(`${auxData.id}`, data);
@@ -148,21 +176,18 @@ const Profile = () => {
           icon: "error",
         });
       }
-
-
     } catch (error) {
       console.error(error);
-
     }
-  }
+  };
 
-  const updateUserDataSubmit: SubmitHandler<Record<string, any>> = async (data) => {
-
+  const updateUserDataSubmit: SubmitHandler<Record<string, any>> = async (
+    data,
+  ) => {
     try {
       const response = await updateUserInfo(`${auxData.id}`, data);
 
       if (response.status === 200) {
-
         UseMySwal().fire({
           title: "Informações de usuário atualizadas",
           icon: "success",
@@ -170,26 +195,22 @@ const Profile = () => {
 
         setEditModeUser(false);
         setUsernameExists(undefined);
-        setEmailExists('undefined');
-
+        setEmailExists("undefined");
       } else {
         UseMySwal().fire({
-          title: "Informações de usuário não atualizadas. Verifique os campos e tente novamente",
+          title:
+            "Informações de usuário não atualizadas. Verifique os campos e tente novamente",
           icon: "error",
         });
       }
-
     } catch (error) {
       console.error(error);
-
     }
-
-  }
+  };
 
   const handleEditMode = () => {
     setEditModeProfile(!editModeProfile);
-  }
-
+  };
 
   return (
     <DefaultLayout>
@@ -211,11 +232,10 @@ const Profile = () => {
             />
           </div>
           <div className="px-4 pb-6 text-center lg:pb-8 xl:pb-11.5">
-
             {loading ? (
               <div className="relative z-[8] mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
                 <div className="animate-pulse">
-                  <div className="rounded-full sm:max-w-42 sm:max-h-42 max-h-38 max-h-44 object-cover object-center aspect-square bg-slate-200 dark:bg-slate-300"></div>
+                  <div className="sm:max-w-42 sm:max-h-42 max-h-38 aspect-square max-h-44 rounded-full bg-slate-200 object-cover object-center dark:bg-slate-300"></div>
                 </div>
               </div>
             ) : (
@@ -226,12 +246,12 @@ const Profile = () => {
                       src={imageUrl}
                       width={160}
                       height={160}
-                      className="rounded-full sm:max-w-42 sm:max-h-42 max-h-38 max-h-44 object-cover object-center aspect-square"
+                      className="sm:max-w-42 sm:max-h-42 max-h-38 aspect-square max-h-44 rounded-full object-cover object-center"
                       alt={`Imagem de perfil de ${data?.first_name} ${data?.last_name}`}
                       title={`Imagem de perfil de ${data?.first_name} ${data?.last_name}`}
                     />
                   ) : (
-                    <div className="rounded-full flex items-center justify-center text-6xl text-strokedark dark:text-white sm:max-w-42 sm:max-h-42 max-h-38 max-h-44 object-cover object-center aspect-square">
+                    <div className="sm:max-w-42 sm:max-h-42 max-h-38 flex aspect-square max-h-44 items-center justify-center rounded-full object-cover object-center text-6xl text-strokedark dark:text-white">
                       <span>{data?.first_name}</span>
                       <span>{data?.last_name}</span>
                     </div>
@@ -243,10 +263,15 @@ const Profile = () => {
                       arrow={false}
                       content={
                         <div>
-                          <button className="flex items-center p-2 w-full border-b border-stroke dark:border-strokedark hover:bg-black/10 dark:hover:bg-white/10">
-                            <form onSubmit={handleSubmit(updateProfileDataSubmit)}>
-                              <label htmlFor="profile" className="cursor-pointer flex items-center">
-                                <BiPencil className="mr-2 w-4 h-4" />
+                          <button className="flex w-full items-center border-b border-stroke p-2 hover:bg-black/10 dark:border-strokedark dark:hover:bg-white/10">
+                            <form
+                              onSubmit={handleSubmit(updateProfileDataSubmit)}
+                            >
+                              <label
+                                htmlFor="profile"
+                                className="flex cursor-pointer items-center"
+                              >
+                                <BiPencil className="mr-2 h-4 w-4" />
                                 Mudar foto
                               </label>
                               <input
@@ -254,27 +279,32 @@ const Profile = () => {
                                 accept="image/*"
                                 id="profile"
                                 className="sr-only"
-                                {
-                                ...register("profile_picture")
-                                }
+                                {...register("profile_picture")}
                                 onChange={(e) => {
                                   handleImageChange(e);
                                 }}
                               />
                             </form>
                           </button>
-                          <button onClick={() => removeProfilePicture(data?.id as string)} className="flex items-center p-2 w-full hover:bg-black/10 dark:hover:bg-white/10">
-                            <BiTrashAlt className="mr-2 w-4 h-4" />
+                          <button
+                            onClick={() =>
+                              removeProfilePicture(data?.id as string)
+                            }
+                            className="flex w-full items-center p-2 hover:bg-black/10 dark:hover:bg-white/10"
+                          >
+                            <BiTrashAlt className="mr-2 h-4 w-4" />
                             <span>Remover foto</span>
                           </button>
                         </div>
                       }
                     >
-                      <button className="absolute border border-gray-200 bottom-0 right-0 flex w-8 h-8 cursor-pointer items-center justify-center rounded-full bg-blue-700 text-white hover:bg-blue-600 transition duration-200">
-                        <BiDotsVerticalRounded style={{
-                          width: "18px",
-                          height: "18px",
-                        }} />
+                      <button className="absolute bottom-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-gray-200 bg-blue-700 text-white transition duration-200 hover:bg-blue-600">
+                        <BiDotsVerticalRounded
+                          style={{
+                            width: "18px",
+                            height: "18px",
+                          }}
+                        />
                       </button>
                     </Popover>
                   </Flowbite>
@@ -286,14 +316,21 @@ const Profile = () => {
                 <h3 className="mb-1.5 text-2xl font-semibold text-black dark:text-white">
                   {loading ? (
                     <div className="animate-pulse">
-                      <div className="w-[170px] h-[24px] mx-auto bg-slate-200 rounded-full dark:bg-slate-300"></div>
+                      <div className="mx-auto h-[24px] w-[170px] rounded-full bg-slate-200 dark:bg-slate-300"></div>
                     </div>
-                  ) : `${data?.first_name} ${data?.last_name}`}
-                </h3><div className="font-medium">{loading ? (
-                  <div className="animate-pulse">
-                    <div className="w-[280px] h-[18px] mx-auto bg-slate-200 rounded-full dark:bg-slate-300"></div>
-                  </div>
-                ) : data?.title}</div>
+                  ) : (
+                    `${data?.first_name} ${data?.last_name}`
+                  )}
+                </h3>
+                <div className="font-medium">
+                  {loading ? (
+                    <div className="animate-pulse">
+                      <div className="mx-auto h-[18px] w-[280px] rounded-full bg-slate-200 dark:bg-slate-300"></div>
+                    </div>
+                  ) : (
+                    data?.title
+                  )}
+                </div>
               </>
             </div>
           </div>
@@ -317,16 +354,13 @@ const Profile = () => {
                         Nome
                       </label>
                       <div className="relative">
-
                         <input
                           disabled={!editModeProfile}
-                          className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                          className="w-full rounded border border-stroke bg-gray px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                           type="text"
                           id="first_name"
                           defaultValue={data?.first_name}
-                          {
-                          ...register("first_name")
-                          }
+                          {...register("first_name")}
                         />
                       </div>
                     </div>
@@ -344,13 +378,10 @@ const Profile = () => {
                         type="text"
                         id="last_name"
                         defaultValue={data?.last_name}
-                        {
-                        ...register("last_name")
-                        }
+                        {...register("last_name")}
                       />
                     </div>
                   </div>
-
 
                   {/* <div className="mb-5.5">
                     <label
@@ -453,9 +484,7 @@ const Profile = () => {
                         id="title"
                         defaultValue={data?.title}
                         maxLength={50}
-                        {
-                        ...register("title")
-                        }
+                        {...register("title")}
                       />
                     </div>
                   </div>
@@ -505,31 +534,24 @@ const Profile = () => {
                         rows={6}
                         placeholder="Escreva algo sobre você..."
                         defaultValue={data?.bio}
-                        {
-                        ...register("bio", {
+                        {...register("bio", {
                           maxLength: 512,
-                        })
-
-                        }
+                        })}
                       ></textarea>
                     </div>
                   </div>
 
-
-
                   <div className="flex justify-end gap-4.5">
                     <button
-                      className="flex justify-center rounded border border-stroke px-4 py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white dark:bg-white/20 dark:hover:bg-white/30 bg-gray-100 hover:bg-gray-300 transition-all duration-200"
+                      className="flex justify-center rounded border border-stroke bg-gray-100 px-4 py-2 font-medium text-black transition-all duration-200 hover:bg-gray-300 hover:shadow-1 dark:border-strokedark dark:bg-white/20 dark:text-white dark:hover:bg-white/30"
                       type="button"
                       onClick={handleEditMode}
                     >
-                      {
-                        editModeProfile ? "Cancelar" : "Editar"
-                      }
+                      {editModeProfile ? "Cancelar" : "Editar"}
                     </button>
                     <button
                       disabled={!editModeProfile}
-                      className="flex justify-center rounded bg-blue-700 hover:!bg-blue-800 transition-all duration-300 px-4 py-2 font-medium text-gray dark:hover:!bg-blue-800 dark:bg-blue-700 dark:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:!hover-blue-700"
+                      className="disabled:!hover-blue-700 flex justify-center rounded bg-blue-700 px-4 py-2 font-medium text-gray transition-all duration-300 hover:!bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-700 dark:text-white dark:hover:!bg-blue-800"
                       type="submit"
                     >
                       Salvar
@@ -556,30 +578,28 @@ const Profile = () => {
                       Email
                     </label>
                     <input
-                      className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                      className="w-full rounded border border-stroke bg-gray px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                       type="email"
                       id="emailAddress"
                       placeholder="ada@lovelace.com"
                       defaultValue={data?.email}
-                      {
-                      ...register("email")
-                      }
+                      {...register("email")}
                     />
-                    {emailExists !== 'undefined' && (
+                    {emailExists !== "undefined" && (
                       <span className="absolute -bottom-5 flex items-center gap-1 text-xs">
-                        {emailExists === 'available' ? (
+                        {emailExists === "available" ? (
                           <>
-                            <BiCheck className="w-5 h-5 text-green-500" />
+                            <BiCheck className="h-5 w-5 text-green-500" />
                             <span>E-mail disponível</span>
                           </>
-                        ) : emailExists === 'unavailable' ? (
+                        ) : emailExists === "unavailable" ? (
                           <>
-                            <BiX className="w-5 h-5 text-meta-1" />
+                            <BiX className="h-5 w-5 text-meta-1" />
                             <span>E-mail indisponível</span>
                           </>
                         ) : (
                           <>
-                            <BsExclamation className="w-5 h-5 text-yellow-300" />
+                            <BsExclamation className="h-5 w-5 text-yellow-300" />
                             <span>Formato de e-mail-inválido</span>
                           </>
                         )}
@@ -631,7 +651,6 @@ const Profile = () => {
                     )}
                   </div> */}
 
-
                   <div className="flex justify-end gap-4.5">
                     {/* <button
                       className="flex justify-center rounded border border-stroke px-4 py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white dark:bg-white/20 dark:hover:bg-white/30 bg-gray-100 hover:bg-gray-300 transition-all duration-200"
@@ -643,7 +662,7 @@ const Profile = () => {
                       }
                     </button> */}
                     <button
-                      className="flex justify-center rounded bg-blue-700 hover:!bg-blue-800 transition-all duration-300 px-4 py-2 font-medium text-gray dark:hover:!bg-blue-800 dark:bg-blue-700 dark:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:!hover-blue-700"
+                      className="disabled:!hover-blue-700 flex justify-center rounded bg-blue-700 px-4 py-2 font-medium text-gray transition-all duration-300 hover:!bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-700 dark:text-white dark:hover:!bg-blue-800"
                       type="submit"
                     >
                       Salvar
@@ -655,8 +674,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
-
-    </DefaultLayout >
+    </DefaultLayout>
   );
 };
 
