@@ -18,6 +18,7 @@ import OfficeInfo from "../Modals/OfficeInfo";
 import AnimatedNumber from "../ui/AnimatedNumber";
 import CardDataStats from "../ui/CardDataStats";
 import CardDataStatsSkeleton from "../ui/CardDataStatsSkeleton";
+import MarketplaceRecommendations from "./MarketplaceRecommendations";
 
 type MarketplaceItemProps = {
   id: string;
@@ -213,7 +214,10 @@ export default function MarketplaceItem({ id }: MarketplaceItemProps) {
           <ProjectedProfitabilityChart data={updatedVlData} />
         </div>
       </Fade>
-      {data && data.properties["Disponível Para Compra"]?.checkbox && (
+      <div className="py-5">
+        <MarketplaceRecommendations />
+      </div>
+      {data && data.properties["Disponível Para Compra"]?.checkbox && data.properties["Usuário da Wallet"].multi_select[0]?.name !== userData?.user && (
         <Fade cascade damping={0.1} triggerOnce>
           <div className=" mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
             <div className="col-span-12 rounded-sm border shadow-default 2xsm:flex 2xsm:justify-center 2xsm:border-transparent 2xsm:bg-transparent 2xsm:p-0 sm:px-7.5 md:border-stroke md:bg-white md:px-5 md:pb-5 md:pt-7.5 md:dark:border-strokedark md:dark:bg-boxdark xl:col-span-12 xl:justify-normal">
@@ -227,6 +231,7 @@ export default function MarketplaceItem({ id }: MarketplaceItemProps) {
           </div>
         </Fade>
       )}
+
       {userData &&
         data &&
         userData.user ===
@@ -242,6 +247,7 @@ export default function MarketplaceItem({ id }: MarketplaceItemProps) {
             </div>
           </Fade>
         )}
+
 
       <Suspense fallback={null}>
         {/* modal */}
