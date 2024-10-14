@@ -24,9 +24,6 @@ const ECommerce: React.FC = () => {
       {calcStep === 'calculating' ? (
         <ResultCVLDSkeleton />
       ) : <CVLDResult result={data.result} setData={setData} />}
-      {/* <ChartThree /> */}
-      {/* <MapOne /> */}
-      {/* <div className="col-span-12 xl:col-span-8"> */}
       <div className="col-span-12">
         <TableNotionProvider>
           <ExtratosTableProvider>
@@ -34,8 +31,6 @@ const ECommerce: React.FC = () => {
           </ExtratosTableProvider>
         </TableNotionProvider>
       </div>
-      {/*
-        <ChatCard /> */}
     </div>
   );
 };
