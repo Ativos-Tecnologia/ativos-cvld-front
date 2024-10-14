@@ -1,22 +1,21 @@
 "use client";
 
-import React, { use, useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import SidebarLinkGroup from "./SidebarLinkGroup";
-import { BiCalculator, BiChevronDown, BiGridAlt, BiUser } from "react-icons/bi";
-import { CiViewBoard } from "react-icons/ci";
-import { AiOutlineBars, AiOutlineDown, AiOutlineLoading, AiOutlinePlus } from "react-icons/ai";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog";
-import { Button } from "../ui/button";
-import { FiClipboard } from "react-icons/fi";
+import { BiCalculator, BiGridAlt } from "react-icons/bi";
+import { AiOutlineDown, AiOutlineLoading } from "react-icons/ai";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
 import { LuWallet2 } from "react-icons/lu";
 import { TbShoppingCartUp } from "react-icons/tb";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/utils/api";
-import { TableNotionContext } from "@/context/NotionTableContext";
+import { getStorageItem } from "@/utils/localStorage";
+import useColorMode from "@/hooks/useColorMode";
+import { theme } from "flowbite-react";
+import { GeneralUIContext } from "@/context/GeneralUIContext";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -25,10 +24,16 @@ interface SidebarProps {
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
+  const {
+    theme,
+    setTheme,
+  } = useContext(GeneralUIContext);
+
   const pathname = usePathname();
 
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
+  const [logoColorSrc, setLogoColorSrc] = useState<string>("");
 
   const { data: { product } } = useContext(UserInfoAPIContext);
 
@@ -48,12 +53,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     }
   }
 
-  const { data, isPending, isFetching } = useQuery({
+  const { data, isFetching } = useQuery({
     queryKey: ["marketplace_active_items"],
     refetchInterval: 60 * 1000, // sessenta segundos
     staleTime: 50 * 1000, // cinquenta segundos
     queryFn: fetchItems
   });
+
+
+
+  const [themeApplied] = useColorMode();
+
 
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
@@ -88,22 +98,34 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     }
   }, [sidebarExpanded]);
 
+
   return (
     <aside
       ref={sidebar}
-      className={`absolute left-0 top-0 z-10 flex h-screen w-62.5 flex-col overflow-y-hidden bg-blue-900 dark:bg-boxdark lg:static lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+      className={`absolute left-0 top-0 z-10 flex h-screen w-62.5 flex-col overflow-y-hidden bg-white dark:bg-boxdark lg:static lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
     >
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex justify-center gap-5 px-6 py-5.5 lg:py-6.5">
         <Link href="/">
-          <Image
+          {
+            theme !== "light" ? (
+              <Image
             width={196}
             height={32}
-            src={"/images/logo/celer-app-logo-text.svg"}
+            src="/images/logo/celer-app-logo-text.svg"
             alt="Logo"
             priority
           />
+            ) : (
+              <Image
+                width={196}
+                height={32}
+                src="/images/logo/celer-app-logo-text-black.svg"
+                alt="Logo"
+              />
+            )
+          }
         </Link>
 
         <button
@@ -150,9 +172,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     <React.Fragment>
                       <Link
                         href="#"
-                        className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-white hover:bg-blue-300/50 dark:hover:bg-meta-4 ${(pathname === "/" ||
+                        className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-white duration-300 ease-in-out hover:bg-blue-800/50 dark:hover:bg-meta-4 ${(pathname === "/" ||
                           pathname.includes("dashboard")) &&
-                          "bg-blue-300/50 dark:bg-meta-4"
+                          "bg-blue-700/90 dark:bg-meta-4"
                           }`}
                         onClick={(e) => {
                           e.preventDefault();
@@ -175,7 +197,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             <li>
                               <Link
                                 href="/"
-                                className={`group relative flex items-center gap-2.5 px-4 py-2 font-medium rounded-md duration-300 ease-in-out text-bodydark hover:bg-blue-300/50 dark:hover:bg-meta-4 hover:text-white ${pathname === "/" && "bg-blue-300/50 dark:bg-meta-4 text-white"
+                                className={`group relative flex items-center gap-2.5 px-4 py-2 font-medium rounded-md duration-300 ease-in-out text-bodydark2  hover:bg-blue-400 dark:hover:bg-meta-4 hover:text-white ${pathname === "/" && "bg-blue-700/70 dark:bg-meta-4 text-white"
                                   }`}
                               >
                                 <BiCalculator />
@@ -184,38 +206,36 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             </li>
                           )}
                           {product !== 'crm' && (
+                            <>
                             <li>
                               <Link
                                 href="/dashboard/wallet"
-                                className={`group relative flex items-center gap-2.5 px-4 py-2 rounded-md font-medium text-bodydark duration-300 ease-in-out hover:bg-blue-300/50 dark:hover:bg-meta-4 hover:text-white ${pathname === "/dashboard/wallet" && "text-white bg-blue-300/50 dark:bg-meta-4"
-                                  }`}
+                                className={`group relative flex items-center gap-2.5 px-4 py-2 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:bg-zinc-400 dark:hover:bg-meta-4 hover:text-white ${pathname === "/dashboard/wallet" && "bg-blue-700/70 text-white hover:bg-blue-800/50 dark:bg-meta-4"}`}
                               >
                                 <LuWallet2 />
                                 <span>Wallet</span>
                               </Link>
-                            </li>
+                            </li><li>
+                                <Link
+                                  href="/dashboard/marketplace"
+                                  className={`group relative flex items-center gap-2.5 px-4 py-2 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:bg-zinc-400 dark:hover:bg-meta-4 hover:text-white ${pathname.includes("/dashboard/marketplace") && "text-white bg-blue-700/70 dark:bg-meta-4"}`}
+                                >
+                                  <TbShoppingCartUp />
+                                  <span>Marketplace</span>
+                                  {/* counter */}
+                                  <span className="w-4.5 h-4.5 bg-red-500 flex items-center justify-center rounded-full text-xs text-snow">
+                                    {isFetching ? (
+                                      <AiOutlineLoading className="animate-spin text-[10px]" />
+                                    ) : (
+                                      <>
+                                        {data?.count || 0}
+                                      </>
+                                    )}
+                                  </span>
+                                </Link>
+                              </li>
+                              </>
                           )}
-
-                          <li>
-                            <Link
-                              href="/dashboard/marketplace"
-                              className={`group relative flex items-center gap-2.5 px-4 py-2 rounded-md font-medium text-bodydark duration-300 ease-in-out hover:bg-blue-300/50 dark:hover:bg-meta-4 hover:text-white ${pathname.includes("/dashboard/marketplace") && "text-white bg-blue-300/50 dark:bg-meta-4"
-                                }`}
-                            >
-                              <TbShoppingCartUp />
-                              <span>Marketplace</span>
-                              {/* counter */}
-                              <span className="w-4.5 h-4.5 bg-red-500 flex items-center justify-center rounded-full text-xs text-snow">
-                                {isFetching ? (
-                                  <AiOutlineLoading className="animate-spin text-[10px]" />
-                                ) : (
-                                  <>
-                                    {data?.count || 0}
-                                  </>
-                                )}
-                              </span>
-                            </Link>
-                          </li>
                         </ul>
                       </div>
 
