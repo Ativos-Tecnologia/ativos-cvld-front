@@ -3,8 +3,8 @@ import CustomSkeleton from '../CrmUi/CustomSkeleton'
 
 const MarketplaceCardSkeleton = () => {
     return (
-        <li className='px-4 h-65 font-nexa min-w-95 max-w-full'>
-            <div className="px-4 h-55 font-nexa max-w-95 overflow-hidden mb-4 bg-gray-400/10 dark:bg-boxdark/60 rounded-md">
+        <li className='h-65 max-w-full px-0 xsm:min-w-95 xsm:px-2 md:px-3 md:min-w-[350px] lg:px-4 xl:h-65'>
+            <div className="2xsm:px-0 xsm:px-4 h-55 max-w-95 overflow-hidden mb-4 bg-gray-400/10 dark:bg-boxdark/60 rounded-md">
                 <div
                     className='relative group cursor-pointer p-4 h-full bg-center bg-cover flex flex-col justify-between'
                 >
