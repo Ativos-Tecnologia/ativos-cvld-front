@@ -910,7 +910,7 @@ const NotionTableView = ({ setExtratosTableToNotionDrawersetId, setNotionDrawer 
     // }
 
     const clearQueries = async () => {
-        existentQueries.forEach((query: string[]) => queryClient.removeQueries({ queryKey: query })) ?? null;
+        existentQueries.forEach((query: string[]) => queryClient.removeQueries({ queryKey: query }));
     }
 
     const handleChangeViews = (view: string) => {
