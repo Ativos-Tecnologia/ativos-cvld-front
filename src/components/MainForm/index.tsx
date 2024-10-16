@@ -993,8 +993,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
                                         nome_razao_social:
                                           account.nome_razao_social,
                                       });
-
-                                      console.log(selectedAccount);
                                     }}
                                     key={account.id}
                                     rounded

@@ -20,30 +20,15 @@ export default function UnloggedLayout({ children, }: { children: React.ReactNod
   return (
     <>
       {/* <!-- ===== Page Wrapper Start ===== --> */}
-      <div className="flex overflow-hidden 2xl:min-h-screen">
-        {/* <!-- ===== Sidebar Start ===== --> */}
-        {/* <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} /> */}
-        {/* <!-- ===== Sidebar End ===== --> */}
-
-        {/* <!-- ===== Content Area Start ===== --> */}
-        <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
-          {/* <!-- ===== Header Start ===== --> */}
-          {/* <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} /> */}
-          {/* <!-- ===== Header End ===== --> */}
-
-          {/* <!-- ===== Main Content Start ===== --> */}
-          {/* put p-4 md:p-6 2xl:p-10 on the children principal container */}
-          <main>
-            <div className="relative mx-auto overflow-hidden">
+      <div className="flex items-center justify-center overflow-hidden 2xl:min-h-screen">
+          <main className="flex-1 3xl:max-w-[85%] 2xl:h-screen 3xl:h-fit 3xl:rounded-md shadow-2 overflow-hidden">
+            <div className="relative 2xl:h-[85%]">
               {children}
             </div>
         {
           (window.location.pathname === '/auth/signin' || window.location.pathname === '/auth/signup') && <LiteFooter />
         }
           </main>
-          {/* <!-- ===== Main Content End ===== --> */}
-        </div>
-        {/* <!-- ===== Content Area End ===== --> */}
       </div>
       {/* <!-- ===== Page Wrapper End ===== --> */}
     </>

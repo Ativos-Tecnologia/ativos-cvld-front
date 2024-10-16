@@ -20,7 +20,7 @@ const imgPaths: Record<string, string> = {
     "TJSP": "/images/card_TJSP.jpg",
 }
 
-const iconsConfig = {
+export const iconsConfig = {
     "PRECATÓRIO": {
         bgColor: "#0332ac",
         icon: <FaFileAlt className='text-[22px] text-snow' />
@@ -45,8 +45,7 @@ const Card = ({ oficio, onClickFn }: { oficio: NotionPage, onClickFn: () => void
         return response.data;
     }
 
-    const queryClient = useQueryClient()
-    const { isPending, data, error, isFetching, refetch } = useQuery(
+    const { data } = useQuery(
         {
             queryKey: ['notion_marketplace_item', { item_id: oficio.id }],
             staleTime: 5 * 1000,
