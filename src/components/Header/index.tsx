@@ -2,18 +2,13 @@ import Link from "next/link";
 import DarkModeSwitcher from "./DarkModeSwitcher";
 import DropdownUser from "./DropdownUser";
 import Image from "next/image";
-import { useContext } from "react";
-import {
-  UserInfoAPIContext,
-  UserInfoContextType,
-} from "@/context/UserInfoContext";
+
 
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
 }) => {
-  const { subscriptionData, data, loading } =
-    useContext<UserInfoContextType>(UserInfoAPIContext);
+
 
   return (
     <header className="sticky top-0 z-9 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
