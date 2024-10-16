@@ -27,5 +27,5 @@ export default createJestConfig(config);
 
 /**
  * Essa configuração de teste funciona de forma espelhada.
- * Cada pasta de teste deve ter um arquivo de teste com o mesmo nome, mas com a extensão "spec"`.
+ * Cada pasta de teste deve ter um arquivo de teste com o mesmo nome, mas com a extensão ".test ou .tsx"`.
  */
