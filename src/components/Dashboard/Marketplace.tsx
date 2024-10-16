@@ -1,15 +1,16 @@
 "use client"
-import { NotionPage, NotionResponse } from '@/interfaces/INotion';
+import { NotionResponse } from '@/interfaces/INotion';
 import api from '@/utils/api';
 import React, { useEffect, useMemo, useState } from 'react';
 import MarketplaceCardSkeleton from '../Skeletons/MarketplaceCardSkeleton';
 import { Fade } from 'react-awesome-reveal';
 import Card from '../Cards/marketplaceCard';
 import { useRouter } from "next/navigation";
-import { QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import Image from 'next/image';
 import { Button } from '../Button';
 import { AiOutlineLoading } from 'react-icons/ai';
+import queryClient from '@/utils/queryClient';
 
 
 const Marketplace: React.FC = () => {
@@ -35,7 +36,7 @@ const Marketplace: React.FC = () => {
     return response.data;
   };
 
-  const { data, isPending, isFetching } = useQuery<NotionResponse>(
+  const { data, isFetching } = useQuery<NotionResponse>(
     {
       queryKey: ['notion_marketplace_list'],
       refetchOnReconnect: true,

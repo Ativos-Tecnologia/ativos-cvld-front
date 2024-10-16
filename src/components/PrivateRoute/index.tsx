@@ -96,7 +96,7 @@ export default function PrivateRoute({ children }: PropsPrivateRouteProps) {
                 setIsUserAuthenticated(false);
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
             setIsUserAuthenticated(false);
             window.location.href = APP_ROUTES.public.login.name;
         }
