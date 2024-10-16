@@ -27,6 +27,9 @@ const imgPaths: Record<string, string> = {
   STM: "/images/tribunais/card_STM.jpg",
   TJAC: "/images/tribunais/card_TJAC.jpeg", // Fiou uma marca D'agua pequena.
   TJAL: "/images/tribunais/card_TJAL.jpg",
+  TJAP: "/images/tribunais/card_TJAP.jpg",
+  TJAM: "/images/tribunais/card_TJAM.webp",
+  TJBA: "/images/tribunais/card_TJBA.jpg",
   TJSP: "/images/tribunais/card_TJSP.jpg",
 };
 
@@ -75,7 +78,7 @@ const Card = ({
       <div className="group relative h-55">
         <div className="absolute inset-0 z-0 overflow-hidden rounded-md">
           <Image
-            src={imgPaths["TJAL"]}
+            src={imgPaths["TJBA"]}
             // src={
             //   imgPaths[
             //     oficio.properties["Tribunal"].select
