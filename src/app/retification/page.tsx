@@ -99,7 +99,6 @@ const RecalculateTrf1 = () => {
       const response = await api.post("/api/recalculate-trf1/", data);
 
       if (response.status === 200) {
-        console.log(response.data);
         setBackendData(response.data.result);
         setShowResults(true);
       } else {
