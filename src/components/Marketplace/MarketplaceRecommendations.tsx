@@ -93,7 +93,7 @@ function handleMesesAteOPagamento(data_atualizacao: string, data_previsao: strin
     <h3 className="text-center text-black dark:text-snow my-4 tracking-wider uppercase">
       Outras oportunidades de investimento
     </h3>
-      <div className="data-stats-slider-outer relative col-span-12 rounded-sm border border-stroke bg-white py-4 shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div className="data-stats-slider-outer relative col-span-12 rounded-sm border border-stroke bg-white py-4 shadow-default dark:border-strokedark dark:bg-boxdark min-h-47.5">
         <Swiper
           className="dataStatsSlider swiper !-mx-px"
           modules={[Navigation]}
