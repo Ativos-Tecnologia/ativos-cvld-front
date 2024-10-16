@@ -19,10 +19,10 @@ import { AiOutlineLoading } from "react-icons/ai";
 import ForgotPassword from "@/components/Modals/ForgotPassword";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import usePassword from "@/hooks/usePassword";
-import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import "./index.css";
 import useColorMode from "@/hooks/useColorMode";
+import { Button } from "@/components/Button";
 
 
 // export const metadata: Metadata = {
@@ -183,7 +183,7 @@ const SignIn: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Digite o usuário"
-                  className={`${errors.username && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                  className={`${errors.username && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
                   {
                   ...register("username", {
                     required: "Campo obrigatório",
@@ -206,7 +206,7 @@ const SignIn: React.FC = () => {
               </div>
             </div>
 
-            <div className="mb-6">
+            <div className="mb-10">
               <label className="mb-2.5 block font-medium text-black dark:text-white">
                 Senha
               </label>
@@ -214,7 +214,7 @@ const SignIn: React.FC = () => {
                 <input
                   type={hide.password ? "password" : "text"}
                   placeholder="Digite a sua senha"
-                  className={`${errors.password && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                  className={`${errors.password && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
                   {
                   ...register("password", {
                     required: "Campo obrigatório",
@@ -244,7 +244,7 @@ const SignIn: React.FC = () => {
             </p>
 
             <div className="mb-5">
-              <Button className="w-full py-8 flex items-center justify-center transition-all duration-200">
+              <Button type="submit" className="w-full py-3 flex items-center justify-center transition-all duration-200">
                 <span className="text-[16px] font-medium" aria-disabled={loading}>
                   {loading ? "Fazendo login..." : "Acessar"}
                 </span>

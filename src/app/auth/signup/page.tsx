@@ -23,9 +23,9 @@ import { AiOutlineLoading } from "react-icons/ai";
 import usePassword from "@/hooks/usePassword";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import Terms from "@/components/Modals/Terms_and_Conditions";
-import { Button } from "@/components/ui/button";
 import CustomCheckbox from "@/components/CrmUi/Checkbox";
 import { Fade } from "react-awesome-reveal";
+import { Button } from "@/components/Button";
 
 export type SignUpInputs = {
   username: string;
@@ -205,7 +205,7 @@ const SignUp: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Usuário"
-                  className={`${errors.username && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                  className={`${errors.username && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
                   id="username"
                   {
                   ...register("username", {
@@ -242,7 +242,7 @@ const SignUp: React.FC = () => {
                 <input
                   type="email"
                   placeholder="Digite seu email"
-                  className={`${errors.email && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                  className={`${errors.email && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
                   id="email"
                   {
                   ...register("email", {
@@ -268,7 +268,7 @@ const SignUp: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-2">
                 <select
                   id='select'
-                  className={`w-full sm:w-1/4 rounded-lg border border-stroke bg-transparent text-sm py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                  className={`w-full sm:w-1/4 rounded-lg border border-stroke bg-transparent text-sm py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
                   {
                   ...register("select", {
                     required: "Campo obrigatório"
@@ -299,7 +299,7 @@ const SignUp: React.FC = () => {
                             {...field}
                             mask="99.999.999/9999-99"
                             placeholder="Digite seu CNPJ"
-                            className={`${errors.cpf_cnpj && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                            className={`${errors.cpf_cnpj && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
                           />
                         )}
                       />
@@ -324,7 +324,7 @@ const SignUp: React.FC = () => {
                             {...field}
                             mask="999.999.999-99"
                             placeholder="Digite seu CPF"
-                            className={`${errors.cpf_cnpj && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                            className={`${errors.cpf_cnpj && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
                           />
                         )}
                       />
@@ -410,7 +410,7 @@ const SignUp: React.FC = () => {
                   maxLength={30}
                   type={hide.password ? 'password' : 'text'}
                   placeholder="Digite a senha"
-                  className={`${errors.password && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                  className={`${errors.password && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
                   id="password"
                   {
                   ...register("password", {
@@ -503,7 +503,7 @@ const SignUp: React.FC = () => {
               </div>
             </div>
 
-            <div className=" text-sm sm:col-span-2 flex gap-2 items-center">
+            <div className="mt-4 text-sm sm:col-span-2 flex gap-2 items-center">
               <CustomCheckbox
                 check={termsAccepted}
                 callbackFunction={() => setTermsAccepted(!termsAccepted)}
@@ -522,7 +522,7 @@ const SignUp: React.FC = () => {
             </div>
 
             <div className="mb-2 sm:col-span-2">
-              <Button type="submit" disabled={!termsAccepted} className="w-full py-8 flex items-center justify-center bg-blue-700 text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-blue-700 transition-all duration-200">
+              <Button type="submit" disabled={!termsAccepted} className="w-full py-3 flex items-center justify-center bg-blue-700 text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-blue-700 transition-all duration-200">
                 <span className="text-[16px] font-medium" aria-disabled={loading}>
                   {loading ? "Cadastrando usuário..." : "Criar conta"}
                 </span>

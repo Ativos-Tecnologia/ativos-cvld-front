@@ -15,7 +15,7 @@ export function LiteFooter() {
         <div className="w-full justify-between 2xsm:gap-3 sm:flex sm:items-center sm:justify-between md:gap-0">
           <div className="min-w-fit 2xsm:mb-5 sm:flex sm:mb-0 sm:max-w-none">
             <div className="flex items-center space-x-4 2xsm:items-center 2xsm:justify-center">
-              <div className="bg flex flex-col items-center gap-3 dark:hidden">
+              <div className="bg flex flex-col items-center gap-3">
                 <Image
                   src={"/images/logo/ativos_logo_at_default.png"}
                   alt="Logotipo do CelerApp em um fundo branco e na cor azul"
