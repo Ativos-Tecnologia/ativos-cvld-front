@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import Image from 'next/image';
 import { Button } from '../Button';
 import { AiOutlineLoading } from 'react-icons/ai';
+import queryClient from '@/utils/queryClient';
 
 
 const Marketplace: React.FC = () => {

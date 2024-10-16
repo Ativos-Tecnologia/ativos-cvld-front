@@ -485,7 +485,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
       }
 
       if (responseStatus !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
+        console.error('houve um erro ao salvar os dados no notion');
       }
     },
     onMutate: async (paramsObj: any) => {
@@ -584,7 +584,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
         }
       });
       if (response.status !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
+        console.error('houve um erro ao salvar os dados no notion');
       }
       return response.data
     },
@@ -632,7 +632,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
         }
       });
       if (response.status !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
+        console.error('houve um erro ao salvar os dados no notion');
       }
       return response.data;
     },
@@ -722,7 +722,7 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
         }
       });
       if (resNotion.status !== 202) {
-        console.log('houve um erro ao salvar os dados no notion');
+        console.error('houve um erro ao salvar os dados no notion');
       }
       queryClient.invalidateQueries({ queryKey: ['notion_page_data'] });
     },
@@ -817,7 +817,6 @@ export function NotionDrawer({ pageId, setNotionDrawer, openDetailsDrawer }: Not
 
   }, [data]);
 
-  console.log(fupRefs)
 
   return (
     <>

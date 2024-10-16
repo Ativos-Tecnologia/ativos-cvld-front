@@ -19,12 +19,14 @@ import AnimatedNumber from "../ui/AnimatedNumber";
 import CardDataStats from "../ui/CardDataStats";
 import CardDataStatsSkeleton from "../ui/CardDataStatsSkeleton";
 import MarketplaceRecommendations from "./MarketplaceRecommendations";
+import { usePathname } from "next/navigation";
 
 type MarketplaceItemProps = {
   id: string;
 };
 
 export default function MarketplaceItem({ id }: MarketplaceItemProps) {
+  const pathname = usePathname();
   const [confirmPurchaseModalOpen, setConfirmPurchaseModalOpen] =
     useState(false);
 
@@ -214,9 +216,14 @@ export default function MarketplaceItem({ id }: MarketplaceItemProps) {
           <ProjectedProfitabilityChart data={updatedVlData} />
         </div>
       </Fade>
-      <div className="py-5">
-        <MarketplaceRecommendations />
-      </div>
+      {window.location.hostname.includes("localhost") &&
+      (
+        <div className="py-5">
+          <MarketplaceRecommendations id={id} />
+        </div>
+      )
+
+      }
       {data && data.properties["Disponível Para Compra"]?.checkbox && data.properties["Usuário da Wallet"].multi_select[0]?.name !== userData?.user && (
         <Fade cascade damping={0.1} triggerOnce>
           <div className=" mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">

@@ -281,7 +281,6 @@ const MakeFirstContact = ({ handleNotionDrawer }: { handleNotionDrawer: (id: str
 
     }, [data, data?.has_more, data?.next_cursor, firstLoad, hasMore, nextCursor]);
 
-    console.log(updateState)
 
     return (
         <div

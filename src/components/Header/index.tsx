@@ -1,18 +1,12 @@
 import Link from "next/link";
 import DarkModeSwitcher from "./DarkModeSwitcher";
-import DropdownMessage from "./DropdownMessage";
-import DropdownNotification from "./DropdownNotification";
 import DropdownUser from "./DropdownUser";
-import { toast } from "sonner";
 import Image from "next/image";
-import { Balance } from "./Balance";
 import { useContext } from "react";
 import {
   UserInfoAPIContext,
   UserInfoContextType,
 } from "@/context/UserInfoContext";
-import { Button } from "../ui/button";
-import { Toaster } from "../ui/sonner";
 
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
@@ -37,7 +31,7 @@ const Header = (props: {
             <span className="relative block h-5.5 w-5.5 cursor-pointer">
               <span className="du-block absolute right-0 h-full w-full">
                 <span
-                  className={`delay-[0] relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black duration-200 ease-in-out dark:bg-white ${
+                  className={`delay-&lsqb;0&rsqb; relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black duration-200 ease-in-out dark:bg-white ${
                     !props.sidebarOpen && "!w-full delay-300"
                   }`}
                 ></span>
@@ -55,7 +49,7 @@ const Header = (props: {
               <span className="absolute right-0 h-full w-full rotate-45">
                 <span
                   className={`absolute left-2.5 top-0 block h-full w-0.5 rounded-sm bg-black delay-300 duration-200 ease-in-out dark:bg-white ${
-                    !props.sidebarOpen && "!delay-[0] !h-0"
+                    !props.sidebarOpen && "!delay-&lsqb;0&rsqb; !h-0"
                   }`}
                 ></span>
                 <span
