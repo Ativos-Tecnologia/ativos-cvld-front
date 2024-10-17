@@ -62,6 +62,19 @@ const imgPaths: Record<string, string> = {
   TRT8: "/images/tribunais/card_TRT8.jpg",
   TRT10: "/images/tribunais/card_TRT10.jpg",
   TRT11: "/images/tribunais/card_TRT11.jpg",
+  TRT12: "/images/tribunais/card_TRT12.jpg",
+  TRT13: "/images/tribunais/card_TRT13.jpg",
+  TRT14: "/images/tribunais/card_TRT14.jfif",
+  TRT15: "/images/tribunais/card_TRT15.jpg",
+  TRT16: "/images/tribunais/card_TRT16.jpg",
+  TRT17: "/images/tribunais/card_TRT17.jpg",
+  TRT18: "/images/tribunais/card_TRT18.jpg",
+  TRT19: "/images/tribunais/card_TRT19.jpg",
+  TRT20: "/images/tribunais/card_TRT20.jpg",
+  TRT21: "/images/tribunais/card_TRT21.jpg",
+  TRT22: "/images/tribunais/card_TRT22.jpg",
+  TRT23: "/images/tribunais/card_TRT23.jpg",
+  TRT24: "/images/tribunais/card_TRT24.jfif",
 };
 
 const iconsConfig = {
@@ -109,13 +122,14 @@ const Card = ({
       <div className="group relative h-55">
         <div className="absolute inset-0 z-0 overflow-hidden rounded-md">
           <Image
-            src={imgPaths["TRT11"]}
-            // src={
-            //   imgPaths[
-            //     oficio.properties["Tribunal"].select
-            //       ?.name as keyof typeof imgPaths
-            //   ]
-            // }
+            // Para teste de imagem.
+            // src={imgPaths["TRT24"]}
+            src={
+              imgPaths[
+                oficio.properties["Tribunal"].select
+                  ?.name as keyof typeof imgPaths
+              ]
+            }
             alt="Card Image"
             width={380}
             height={220}
