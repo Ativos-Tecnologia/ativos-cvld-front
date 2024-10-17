@@ -137,15 +137,15 @@ const ProfitBarChart: React.FC<newWalletResponse> = ({
 
         {
           name: "Ágio",
-          data: data && data[1].map((item: any) => handleLucro(item[0].valor_liquido_disponivel, item[1].valor_liquido_disponivel)),
+          data: data && data[1].map((item: any) => handleLucro(item[0]?.valor_liquido_disponivel, item[1]?.valor_liquido_disponivel)),
         },
         {
           name: "Investido",
-          data: (data && data[0]?.results.map((item) => item.properties["Valor de Aquisição (Wallet)"]?.number).filter((num): num is number => num !== null && num !== undefined)) || [0],
+          data: (data && data[0]?.results.map((item) => item.properties["Desembolso All-In"]?.formula?.number).filter((num): num is number => num !== null && num !== undefined)) || [0],
         },
         {
           name: "Total atualizado",
-          data: data && data[1].map((item: any) => item[1].valor_liquido_disponivel)
+          data: data && data[1].map((item: any) => item[1]?.valor_liquido_disponivel)
         },
       ],
     })
