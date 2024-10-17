@@ -47,7 +47,21 @@ const imgPaths: Record<string, string> = {
   TJRN: "/images/tribunais/card_TJRN.webp",
   TJRO: "/images/tribunais/card_TJRO.jpg",
   TJRR: "/images/tribunais/card_TJRR.jpg",
+  TJRS: "/images/tribunais/card_TJRS.jpg",
+  TJSC: "/images/tribunais/card_TJSC.jpg",
+  TJSE: "/images/tribunais/card_TJSE.jpg",
   TJSP: "/images/tribunais/card_TJSP.jpg",
+  TJTO: "/images/tribunais/card_TJTO.jpg",
+  TRT1: "/images/tribunais/card_TRT1.png",
+  TRT2: "/images/tribunais/card_TRT2.jpg",
+  TRT3: "/images/tribunais/card_TRT3.jpeg",
+  TRT4: "/images/tribunais/card_TRT4.jpg",
+  TRT5: "/images/tribunais/card_TRT5.jpg",
+  TRT6: "/images/tribunais/card_TRT6.jpg",
+  TRT7: "/images/tribunais/card_TRT7.jpeg",
+  TRT8: "/images/tribunais/card_TRT8.jpg",
+  TRT10: "/images/tribunais/card_TRT10.jpg",
+  TRT11: "/images/tribunais/card_TRT11.jpg",
 };
 
 const iconsConfig = {
@@ -95,7 +109,7 @@ const Card = ({
       <div className="group relative h-55">
         <div className="absolute inset-0 z-0 overflow-hidden rounded-md">
           <Image
-            src={imgPaths["TJRR"]}
+            src={imgPaths["TRT11"]}
             // src={
             //   imgPaths[
             //     oficio.properties["Tribunal"].select
