@@ -7,7 +7,7 @@ import {
 } from "@/functions/wallet/rentability";
 import { NotionPage } from "@/interfaces/INotion";
 import api from "@/utils/api";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { BiSolidCoinStack } from "react-icons/bi";
 import { FaFileAlt, FaFileInvoiceDollar } from "react-icons/fa";
@@ -77,7 +77,7 @@ const imgPaths: Record<string, string> = {
   TRT24: "/images/tribunais/card_TRT24.webp",
 };
 
-const iconsConfig = {
+export const iconsConfig = {
   PRECATÓRIO: {
     bgColor: "#0332ac",
     icon: <FaFileAlt className="text-[22px] text-snow" />,
@@ -107,8 +107,7 @@ const Card = ({
     return response.data;
   };
 
-  const queryClient = useQueryClient();
-  const { isPending, data, error, isFetching, refetch } = useQuery({
+  const { data } = useQuery({
     queryKey: ["notion_marketplace_item", { item_id: oficio.id }],
     staleTime: 5 * 1000,
     queryFn: fetchOficioDataFromWallet,
@@ -116,7 +115,7 @@ const Card = ({
 
   return (
     <li
-      className="mb-4 h-55 max-w-full font-nexa xsm:min-w-95 xsm:px-2 md:min-w-[350px] md:px-3 lg:px-4 xl:h-65"
+      className="mb-4 h-65 max-w-full font-nexa xsm:min-w-95 xsm:px-2 md:min-w-[350px] md:px-3 lg:px-4"
       onClick={onClickFn}
     >
       <div className="group relative h-55">

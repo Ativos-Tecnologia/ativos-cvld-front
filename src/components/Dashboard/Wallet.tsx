@@ -87,8 +87,8 @@ const Wallet: React.FC = () => {
   function handleTotalInvested(data: NotionResponse) {
     let totalInvested = 0;
     data?.results?.forEach((result) => {
-      if (result.properties["Valor de Aquisição (Wallet)"]?.number) {
-        totalInvested += Number(result.properties["Valor de Aquisição (Wallet)"].number) || 0;
+      if (result.properties["Desembolso All-In"]?.formula?.number) {
+        totalInvested += Number(result.properties["Desembolso All-In"]?.formula?.number) || 0
       }
     });
     return totalInvested;
