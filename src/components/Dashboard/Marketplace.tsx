@@ -33,7 +33,7 @@ const Marketplace: React.FC = () => {
     return response.data;
   };
 
-  const { data, isPending, isFetching } = useQuery<NotionResponse>({
+  const { data, isFetching } = useQuery<NotionResponse>({
     queryKey: ["notion_marketplace_list"],
     refetchOnReconnect: true,
     refetchInterval: 60000,
@@ -78,7 +78,7 @@ const Marketplace: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-5">
-      <div>
+      <div className="md:px-3 xl:p-0">
         <Fade
           className="font-semibold dark:text-snow 2xsm:mb-4 2xsm:text-3xl xsm:text-4xl md:mb-2"
           cascade

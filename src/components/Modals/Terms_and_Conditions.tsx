@@ -10,7 +10,7 @@ const Terms = ({ state, setState }: {
 
   return (
     <div className={`${state ? 'opacity-100 visible' : 'opacity-0 invisible'} 
-      fixed top-0 left-0 flex items-center justify-center w-screen h-screen z-1 bg-black/50 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 transition-all duration-300 ease-in-out`}>
+      fixed top-0 left-0 flex items-center justify-center w-screen h-screen z-1 bg-black-2/50 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 transition-all duration-300 ease-in-out`}>
       <div className='relative w-11/12 xsm:w-100 sm:w-150 h-fit rounded-lg bg-white p-10 border border-stroke dark:border-strokedark dark:bg-boxdark'>
         <span className='absolute top-4 right-4 cursor-pointer'>
           <BiX style={{ width: '26px', height: '26px', fill: '#BAC1CB' }} onClick={() => setState(false)} />

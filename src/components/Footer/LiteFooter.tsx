@@ -10,12 +10,12 @@ import Image from "next/image";
 
 export function LiteFooter() {
   return (
-    <div className="bg-snow 2xsm:border-t 2xsm:border-gray-300 text-gray-500 shadow-lg 2xsm:p-4 md:px-6 md:py-3">
+    <div className="bg-snow 2xsm:border-t 2xsm:border-gray-300 text-gray-500 shadow-lg 2xsm:p-4 md:border-none md:px-6 md:py-3">
       <div className="w-full text-center flex flex-col gap-3">
         <div className="w-full justify-between 2xsm:gap-3 sm:flex sm:items-center sm:justify-between md:gap-0">
           <div className="min-w-fit 2xsm:mb-5 sm:flex sm:mb-0 sm:max-w-none">
             <div className="flex items-center space-x-4 2xsm:items-center 2xsm:justify-center">
-              <div className="bg flex flex-col items-center gap-3 dark:hidden">
+              <div className="bg flex flex-col items-center gap-3">
                 <Image
                   src={"/images/logo/ativos_logo_at_default.png"}
                   alt="Logotipo do CelerApp em um fundo branco e na cor azul"

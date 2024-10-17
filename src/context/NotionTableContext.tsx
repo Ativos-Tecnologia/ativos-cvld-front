@@ -485,7 +485,7 @@ export const TableNotionProvider = ({ children }: { children: React.ReactNode })
                 }
             });
             if (response.status !== 202) {
-                console.log('houve um erro ao salvar os dados no notion');
+                console.error('houve um erro ao salvar os dados no notion');
             }
             return response.data
         },
@@ -532,7 +532,7 @@ export const TableNotionProvider = ({ children }: { children: React.ReactNode })
                 }
             });
             if (response.status !== 202) {
-                console.log('houve um erro ao salvar os dados no notion');
+                console.error('houve um erro ao salvar os dados no notion');
             }
             return response.data
         },
@@ -859,7 +859,7 @@ export const TableNotionProvider = ({ children }: { children: React.ReactNode })
             })
 
         } else {
-            console.log('um campo de data precisa de 8 caracteres');
+            console.error('um campo de data precisa de 8 caracteres');
         }
     };
 

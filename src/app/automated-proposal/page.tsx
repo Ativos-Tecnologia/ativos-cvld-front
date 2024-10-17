@@ -303,7 +303,6 @@ E abaixo, uma memória das informações de entrada:
   }, []);
 
   return (
-    <UnloggedLayout>
       <div ref={mainRef} className="bg-boxdark-2">
         <UnloggedHeader
           theme="dark" //tema do header
@@ -906,7 +905,6 @@ E abaixo, uma memória das informações de entrada:
         </div>
         {/* end form */}
       </div>
-    </UnloggedLayout>
   );
 };
 

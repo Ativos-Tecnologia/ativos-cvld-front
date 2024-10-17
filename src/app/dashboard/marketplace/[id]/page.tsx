@@ -1,4 +1,4 @@
-import MarketplaceItem from '@/components/Dashboard/MarketplaceItem';
+import MarketplaceItem from '@/components/Marketplace/MarketplaceItem';
 import DefaultLayout from '@/components/Layouts/DefaultLayout';
 import { Metadata } from 'next';
 import React from 'react'

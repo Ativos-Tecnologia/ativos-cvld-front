@@ -210,7 +210,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             <li>
                               <Link
                                 href="/dashboard/wallet"
-                                className={`group relative flex items-center gap-2.5 px-4 py-2 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:bg-zinc-400 dark:hover:bg-meta-4 hover:text-white ${pathname === "/dashboard/wallet" && "bg-blue-700/70 text-white hover:bg-blue-800/50 dark:bg-meta-4"}`}
+                                className={`group relative flex items-center gap-2.5 px-4 py-2 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 dark:hover:bg-meta-4 hover:text-white ${pathname === "/dashboard/wallet" && "bg-blue-700/70 text-white hover:bg-blue-800/50 dark:bg-meta-4"}`}
                               >
                                 <LuWallet2 />
                                 <span>Wallet</span>
@@ -218,7 +218,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             </li><li>
                                 <Link
                                   href="/dashboard/marketplace"
-                                  className={`group relative flex items-center gap-2.5 px-4 py-2 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:bg-zinc-400 dark:hover:bg-meta-4 hover:text-white ${pathname.includes("/dashboard/marketplace") && "text-white bg-blue-700/70 dark:bg-meta-4"}`}
+                                  className={`group relative flex items-center gap-2.5 px-4 py-2 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 dark:hover:bg-meta-4 hover:text-white ${pathname.includes("/dashboard/marketplace") && "text-white bg-blue-700/70 dark:bg-meta-4"}`}
                                 >
                                   <TbShoppingCartUp />
                                   <span>Marketplace</span>

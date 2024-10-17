@@ -69,7 +69,7 @@ const TableView = ({ count }: { count: number }) => {
             },
             action: {
                 label: "Fechar",
-                onClick: () => console.log('done')
+                onClick: () => {}
             }
         })
     }
