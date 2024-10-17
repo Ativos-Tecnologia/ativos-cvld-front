@@ -16,7 +16,7 @@ import CustomSkeleton from "../CrmUi/CustomSkeleton";
 const imgPaths: Record<string, string> = {
   TRF1: "/images/tribunais/card_TRF1.jpg",
   TRF2: "/images/tribunais/card_TRF2.jpg",
-  TRF3: "/images/tribunais/card_TRF3.jpg", // trocar imagem - imagem com fundo preto
+  TRF3: "/images/tribunais/card_TRF3.jpg",
   TRF4: "/images/tribunais/card_TRF4.jpg",
   TRF5: "/images/tribunais/card_TRF5.jpg",
   TRF6: "/images/tribunais/card_TRF6.jpg",
@@ -25,7 +25,7 @@ const imgPaths: Record<string, string> = {
   TST: "/images/tribunais/card_TST.jpg",
   TSE: "/images/tribunais/card_TSE.webp",
   STM: "/images/tribunais/card_STM.jpg",
-  TJAC: "/images/tribunais/card_TJAC.jpeg", // Fiou uma marca D'agua pequena.
+  TJAC: "/images/tribunais/card_TJAC.jpeg",
   TJAL: "/images/tribunais/card_TJAL.jpg",
   TJAP: "/images/tribunais/card_TJAP.jpg",
   TJAM: "/images/tribunais/card_TJAM.webp",
@@ -122,8 +122,6 @@ const Card = ({
       <div className="group relative h-55">
         <div className="absolute inset-0 z-0 overflow-hidden rounded-md">
           <Image
-            // Para teste de imagem.
-            // src={imgPaths["TRT24"]}
             src={
               imgPaths[
                 oficio.properties["Tribunal"].select
