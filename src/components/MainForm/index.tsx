@@ -178,7 +178,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
   ].sort((a, b) => a.nome.localeCompare(b.nome));
 
   const [oficioForm, setOficioForm] = useState<any>(null);
-
+  const mySwal = UseMySwal();
   const [loading, setLoading] = useState<boolean>(false);
   const [fetchingUsersList, setFetchingUsersList] = useState<boolean>(false);
   const [fetchError, setFetchError] = useState<boolean>(false);
@@ -322,6 +322,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
     data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
     data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
     data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
+    data.percentual_a_ser_adquirido /= 100; 
 
     //#TODO colocar essa condicional dentro de uma função utilitária
     if (!data.data_limite_de_atualizacao_check) {
@@ -387,8 +388,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
 
 
     setLoading(true);
-
-    const mySwal = UseMySwal();
 
     try {
       setCalcStep("calculating");
@@ -714,8 +713,37 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 <ErrorMessage errors={errors} field="data_requisicao" />
               </div>
             </div>
+
+            {/* ====> label PERCENTUAL DE AQUISIÇÃO <==== */}
+            <div className="flex flex-col gap-2 2xsm:col-span-2 md:col-span-1">
+              <label
+                htmlFor="percentual_a_ser_adquirido"
+                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+              >
+                Percentual de aquisição (%)
+              </label>
+              <input
+                type="number"
+                id="percentual_a_ser_adquirido"
+                defaultValue={100}
+                className="w-full rounded-md border bg-white px-3 py-2 text-sm font-medium border-stroke dark:border-strokedark dark:bg-boxdark-2"
+                min={0}
+                {...register("percentual_a_ser_adquirido", {
+                  required: "Campo obrigatório",
+                  setValueAs: (value) => {
+                    return parseInt(value);
+                  },
+                })}
+              />
+            </div>
+            {/* ====> end label PERCENTUAL DE AQUISIÇÃO <==== */}
+
+            <div className="hidden md:block col-span-1">
+
+            </div>
+
             <div
-              className={`flex items-center col-span-1 gap-2 ${watch("data_base") < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
+              className={`flex items-center col-span-2 md:col-span-1 gap-2 ${watch("data_base") < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
             >
 
               <CustomCheckbox
