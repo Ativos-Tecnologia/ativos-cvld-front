@@ -233,8 +233,7 @@ const OfficeInfoModal = ({
                   <p className="font-medium">
                     {data &&
                       numberFormat(
-                        data.properties["Valor de Aquisição (Wallet)"]
-                          ?.number || 0,
+                        data.properties["Desembolso All-In"]?.formula?.number || 0,
                       )}
                   </p>
                 </li>

@@ -356,9 +356,6 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                 <Table>
                     <TableHead>
                         <TableRow>
-                            {/* <TableHeadCell colSpan={2} className='max-w-[50px]'>
-
-                            </TableHeadCell> */}
                             <TableHeadCell colSpan={2} className='min-w-100'>
                                 <div className='flex gap-2'>
                                     <AiOutlineUser className='text-base' />
@@ -366,10 +363,10 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                                 </div>
                             </TableHeadCell>
                             <TableHeadCell className='max-w-50'>
-                                <Title text='Valor de Aquisição (Wallet)'>
+                                <Title text='Valor de Aquisição'>
                                     <div className='flex gap-2'>
                                         <PiHash className='text-base' />
-                                        <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Valor de Aquisição (Wallet)</span>
+                                        <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Valor de Aquisição</span>
                                     </div>
                                 </Title>
                             </TableHeadCell>
@@ -509,7 +506,7 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
 
                                                         {/* valor de aquisição */}
                                                         <TableCell className='text-sm text-right'>
-                                                            {numberFormat(item.properties['Valor de Aquisição (Wallet)']?.number || 0)}
+                                                            {numberFormat(item.properties["Desembolso All-In"]?.formula?.number || 0)}
                                                         </TableCell>
 
                                                         {/* valor projetado */}
