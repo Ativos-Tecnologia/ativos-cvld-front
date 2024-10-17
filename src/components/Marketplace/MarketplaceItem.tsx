@@ -59,9 +59,9 @@ export default function MarketplaceItem({ id }: MarketplaceItemProps) {
 
   function handleTotalInvested(data: NotionPage) {
     let totalInvested = 0;
-    if (data.properties["Valor de Aquisição (Wallet)"].number) {
+    if (data.properties["Desembolso All-In"]?.formula?.number) {
       totalInvested +=
-        Number(data?.properties["Valor de Aquisição (Wallet)"]?.number) || 0;
+        Number(data?.properties["Desembolso All-In"]?.formula?.number) || 0;
     }
     return totalInvested;
   }

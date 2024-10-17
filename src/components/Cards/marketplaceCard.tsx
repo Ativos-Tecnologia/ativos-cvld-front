@@ -179,7 +179,7 @@ const Card = ({ oficio, onClickFn }: { oficio: NotionPage, onClickFn: () => void
                             <div className='col-span-1 uppercase pb-[2px] mb-1 border-b border-snow'>
                                 <p className='text-[10px] text-gray-400'>valor da aquisição</p>
                                 <p className='text-sm text-snow'>
-                                    {numberFormat(oficio.properties["Valor de Aquisição (Wallet)"]?.number || 0)}
+                                    {numberFormat(oficio.properties["Desembolso All-In"]?.formula?.number || 0)}
                                 </p>
                             </div>
                             <div className='col-span-1 uppercase pb-[2px] mb-1 border-b border-snow'>
