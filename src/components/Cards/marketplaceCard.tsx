@@ -54,7 +54,7 @@ const Card = ({ oficio, onClickFn }: { oficio: NotionPage, onClickFn: () => void
     );
 
     return (
-        <li className='h-55 font-nexa mb-4 xsm:min-w-95 xsm:px-2 md:px-3 md:min-w-[350px] lg:px-4 xl:h-65 max-w-full' onClick={onClickFn}>
+        <li className='h-65 mb-4 font-nexa xsm:min-w-95 xsm:px-2 md:px-3 md:min-w-[350px] lg:px-4 max-w-full' onClick={onClickFn}>
             <div className='relative group h-55'>
                 <div className='absolute z-0 inset-0 overflow-hidden rounded-md'>
                     <Image

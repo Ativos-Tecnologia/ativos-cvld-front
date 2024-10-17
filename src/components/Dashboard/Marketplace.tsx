@@ -83,7 +83,7 @@ const Marketplace: React.FC = () => {
 
   return (
     <div className='flex flex-col gap-5'>
-      <div>
+      <div className='md:px-3 xl:p-0'>
         <Fade className='font-semibold 2xsm:text-3xl 2xsm:mb-4 xsm:text-4xl md:mb-2 dark:text-snow' cascade damping={0.1} triggerOnce>
           Explore investimentos
         </Fade>
