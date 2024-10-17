@@ -20,9 +20,9 @@ export default function UnloggedLayout({ children, }: { children: React.ReactNod
   return (
     <>
       {/* <!-- ===== Page Wrapper Start ===== --> */}
-      <div className="flex items-center justify-center overflow-hidden 2xl:min-h-screen">
-          <main className="flex-1 3xl:max-w-[85%] 2xl:h-screen 3xl:h-fit 3xl:rounded-md shadow-2 overflow-hidden">
-            <div className="relative 2xl:h-[85%]">
+      <div className="flex items-center justify-center overflow-hidden xl:min-h-screen">
+          <main className="flex-1 3xl:max-w-[85%] xl:h-screen 3xl:h-fit 3xl:rounded-md shadow-2 overflow-hidden">
+            <div className="relative xl:h-[85%]">
               {children}
             </div>
         {
