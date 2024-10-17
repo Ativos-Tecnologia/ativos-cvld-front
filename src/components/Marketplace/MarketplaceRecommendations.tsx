@@ -10,6 +10,7 @@ import numberFormat from "@/functions/formaters/numberFormat";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/utils/api";
 import { Tooltip } from "flowbite-react";
+import MarketplaceSmallCardSkeleton from "../Skeletons/MarketplaceSmallCardSkeleton";
 
 
 interface Stats {
@@ -46,27 +47,27 @@ const MarketplaceRecommendations: React.FC<MarketplaceRecommendationsProps> = ({
     const response = await api.get(`/api/notion-api/marketplace/recomendations/${id}/`);
 
     return response.data.response
-}
+  }
 
-function handleRedirect(id: string) {
-  push(`/dashboard/marketplace/${id}`);
-}
+  function handleRedirect(id: string) {
+    push(`/dashboard/marketplace/${id}`);
+  }
 
   const { data } = useQuery<Investment[]>(
     {
-        queryKey: ['smart_recomendation', id],
-        staleTime: 1000,
-        queryFn: fetchOficioMktplaceItem
+      queryKey: ['smart_recomendation', id],
+      staleTime: 1000,
+      queryFn: fetchOficioMktplaceItem
     },
   );
 
- function handleRentabilidadeTotal(valor_projetado: number, valor_investido: number) {
+  function handleRentabilidadeTotal(valor_projetado: number, valor_investido: number) {
     const result =
       (valor_projetado - valor_investido) / valor_investido;
     return Number.isNaN(result) ? 0 : result;
   }
 
-function handleMesesAteOPagamento(data_atualizacao: string, data_previsao: string) {
+  function handleMesesAteOPagamento(data_atualizacao: string, data_previsao: string) {
 
     const data_aquisicao = new Date(data_atualizacao);
     const previsao_de_pgto = new Date(data_previsao);
@@ -90,9 +91,9 @@ function handleMesesAteOPagamento(data_atualizacao: string, data_previsao: strin
 
   return (
     <>
-    <h3 className="text-center text-black dark:text-snow my-4 tracking-wider uppercase">
-      Outras oportunidades de investimento
-    </h3>
+      <h3 className="text-center text-black dark:text-snow my-4 tracking-wider uppercase">
+        Outras oportunidades de investimento
+      </h3>
       <div className="data-stats-slider-outer relative col-span-12 rounded-sm border border-stroke bg-white py-4 shadow-default dark:border-strokedark dark:bg-boxdark min-h-47.5">
         <Swiper
           className="dataStatsSlider swiper !-mx-px"
@@ -114,88 +115,102 @@ function handleMesesAteOPagamento(data_atualizacao: string, data_previsao: strin
             },
           }}
         >
-          {data?.map((item, index) => (
-            <SwiperSlide
-            onClick={() => handleRedirect(item.id)}
-              key={index}
-              className="border-r border-stroke px-10 py-4 last:border-r-0 dark:border-strokedark cursor-pointer ease-in-out hover:bg-gray-100 dark:hover:bg-boxdark-2/35 group:hover:bg-boxdark-2/35"
-            >
-              <div className="flex items-center justify-between ">
-                <div className="flex items-center gap-2.5">
-                  <Tooltip
-                      content={item.tipo}
-                      placement='right'
-                      className="flex items-center justify-center"
-                  >
-                  <div className="h-12 w-12 overflow-hidden">
+          {data && data?.length > 0 ? (
+            <>
+              {data?.map((item, index) => (
+                <SwiperSlide
+                  onClick={() => handleRedirect(item.id)}
+                  key={index}
+                  className="border-r border-stroke px-10 py-4 last:border-r-0 dark:border-strokedark cursor-pointer ease-in-out hover:bg-gray-100 dark:hover:bg-boxdark-2/35 group:hover:bg-boxdark-2/35"
+                >
+                  <div className="flex items-center justify-between ">
+                    <div className="flex items-center gap-2.5">
+                      <Tooltip
+                        content={item.tipo}
+                        placement='right'
+                        className="flex items-center justify-center"
+                      >
+                        <div className="h-12 w-12 overflow-hidden">
 
-                  <span 
-                        style={{ backgroundColor: iconsConfig[data[index]?.tipo as keyof typeof iconsConfig].bgColor }}
-                        className='flex items-center justify-center rounded-lg p-3 w-10 h-10'
-                    >
-                        {iconsConfig[data[index]?.tipo as keyof typeof iconsConfig].icon}
-                    </span>
+                          <span
+                            style={{ backgroundColor: iconsConfig[data[index]?.tipo as keyof typeof iconsConfig].bgColor }}
+                            className='flex items-center justify-center rounded-lg p-3 w-10 h-10'
+                          >
+                            {iconsConfig[data[index]?.tipo as keyof typeof iconsConfig].icon}
+                          </span>
+                        </div>
+                      </Tooltip>
+                      <h4 className="text-xl font-bold text-black dark:text-white">
+                        {item.tribunal}
+                      </h4>
+                    </div>
+
+                    <SmallProjectedProfitabilityChart updateValue={item.valor_liquido_disponivel} projectedValue={item.valor_projetado} updateDate={item.data_atualizacao} projectedDate={item.previsao_de_pagamento} monthsToPayment={Math.floor(handleMesesAteOPagamento(item.data_atualizacao, item.previsao_de_pagamento))} investedValue={item.valor_investido} rentabilityPerYer={handleRentabilideAA(handleRentabilidadeTotal(item.valor_projetado, item.valor_investido), handleMesesAteOPagamento(item.data_atualizacao, item.previsao_de_pagamento)) * 100} />
                   </div>
-                </Tooltip>
-                  <h4 className="text-xl font-bold text-black dark:text-white">
-                    {item.tribunal}
-                  </h4>
-                </div>
+                  <div className="mt-5.5 flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between gap-1">
+                      <p className="text-sm font-medium">Total Atualizado</p>
 
-                <SmallProjectedProfitabilityChart updateValue={item.valor_liquido_disponivel} projectedValue={item.valor_projetado} updateDate={item.data_atualizacao} projectedDate={item.previsao_de_pagamento} monthsToPayment={Math.floor(handleMesesAteOPagamento(item.data_atualizacao, item.previsao_de_pagamento))} investedValue={item.valor_investido} rentabilityPerYer={handleRentabilideAA(handleRentabilidadeTotal(item.valor_projetado, item.valor_investido), handleMesesAteOPagamento(item.data_atualizacao, item.previsao_de_pagamento)) * 100} />
-              </div>
-              <div className="mt-5.5 flex flex-col gap-1.5">
-                <div className="flex items-center justify-between gap-1">
-                  <p className="text-sm font-medium">Total Atualizado</p>
+                      <p className="font-medium text-black dark:text-white">
+                        {numberFormat(item.valor_liquido_disponivel)}
+                      </p>
+                    </div>
 
-                  <p className="font-medium text-black dark:text-white">
-                    {numberFormat(item.valor_liquido_disponivel)}
-                  </p>
-                </div>
+                    <div className="flex items-center justify-between gap-1">
+                      <p className="text-sm font-medium">Rentabilidade Ao Ano</p>
 
-                <div className="flex items-center justify-between gap-1">
-                  <p className="text-sm font-medium">Rentabilidade Ao Ano</p>
-
-                  <p
-                    className={`flex items-center gap-1 font-medium ${
-                      handleRentabilideAA(handleRentabilidadeTotal(item.valor_projetado, item.valor_investido), handleMesesAteOPagamento(item.data_atualizacao, item.previsao_de_pagamento)) >= 0 ? "text-meta-3" : "text-red"
-                    }`}
-                  >
-                    {(handleRentabilideAA(handleRentabilidadeTotal(item.valor_projetado, item.valor_investido), handleMesesAteOPagamento(item.data_atualizacao, item.previsao_de_pagamento)) * 100).toFixed(2).replace('.', ',') }%
-                    {handleRentabilideAA(handleRentabilidadeTotal(item.valor_projetado, item.valor_investido), handleMesesAteOPagamento(item.data_atualizacao, item.previsao_de_pagamento)) >= 0 ? (
-                      <svg
-                        className="fill-current"
-                        width="11"
-                        height="8"
-                        viewBox="0 0 11 8"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
+                      <p
+                        className={`flex items-center gap-1 font-medium ${handleRentabilideAA(handleRentabilidadeTotal(item.valor_projetado, item.valor_investido), handleMesesAteOPagamento(item.data_atualizacao, item.previsao_de_pagamento)) >= 0 ? "text-meta-3" : "text-red"
+                          }`}
                       >
-                        <path
-                          d="M5.83258 0.417479L10.8364 7.91748L0.828779 7.91748L5.83258 0.417479Z"
-                          fill=""
-                        />
-                      </svg>
-                    ) : (
-                      <svg
-                        className="fill-current"
-                        width="11"
-                        height="9"
-                        viewBox="0 0 11 9"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M5.83246 8.41748L0.828662 0.91748L10.8363 0.91748L5.83246 8.41748Z"
-                          fill=""
-                        />
-                      </svg>
-                    )}
-                  </p>
-                </div>
-              </div>
-            </SwiperSlide>
-          ))}
+                        {(handleRentabilideAA(handleRentabilidadeTotal(item.valor_projetado, item.valor_investido), handleMesesAteOPagamento(item.data_atualizacao, item.previsao_de_pagamento)) * 100).toFixed(2).replace('.', ',')}%
+                        {handleRentabilideAA(handleRentabilidadeTotal(item.valor_projetado, item.valor_investido), handleMesesAteOPagamento(item.data_atualizacao, item.previsao_de_pagamento)) >= 0 ? (
+                          <svg
+                            className="fill-current"
+                            width="11"
+                            height="8"
+                            viewBox="0 0 11 8"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M5.83258 0.417479L10.8364 7.91748L0.828779 7.91748L5.83258 0.417479Z"
+                              fill=""
+                            />
+                          </svg>
+                        ) : (
+                          <svg
+                            className="fill-current"
+                            width="11"
+                            height="9"
+                            viewBox="0 0 11 9"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M5.83246 8.41748L0.828662 0.91748L10.8363 0.91748L5.83246 8.41748Z"
+                              fill=""
+                            />
+                          </svg>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </SwiperSlide>
+              ))}
+            </>
+          ) : (
+            <>
+              {[...Array(6)].map((_, index: number) => (
+                <SwiperSlide
+                  key={index}
+                  className="border-r border-stroke px-10 py-4 last:border-r-0 dark:border-strokedark cursor-pointer ease-in-out hover:bg-gray-100 dark:hover:bg-boxdark-2/35 group:hover:bg-boxdark-2/35"
+                >
+                  <MarketplaceSmallCardSkeleton key={index} />
+                </SwiperSlide>
+              ))}
+            </>
+          )}
         </Swiper>
         <div className="swiper-button-prev">
           <svg
