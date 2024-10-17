@@ -1,3 +1,4 @@
+import { imgPaths } from "@/constants/tribunais";
 import dateFormater from "@/functions/formaters/dateFormater";
 import numberFormat from "@/functions/formaters/numberFormat";
 import {
@@ -12,70 +13,6 @@ import Image from "next/image";
 import { BiSolidCoinStack } from "react-icons/bi";
 import { FaFileAlt, FaFileInvoiceDollar } from "react-icons/fa";
 import CustomSkeleton from "../CrmUi/CustomSkeleton";
-
-const imgPaths: Record<string, string> = {
-  TRF1: "/images/tribunais/card_TRF1.webp",
-  TRF2: "/images/tribunais/card_TRF2.webp",
-  TRF3: "/images/tribunais/card_TRF3.webp",
-  TRF4: "/images/tribunais/card_TRF4.webp",
-  TRF5: "/images/tribunais/card_TRF5.webp",
-  TRF6: "/images/tribunais/card_TRF6.webp",
-  STF: "/images/tribunais/card_STF.webp",
-  STJ: "/images/tribunais/card_STJ.webp",
-  TST: "/images/tribunais/card_TST.webp",
-  TSE: "/images/tribunais/card_TSE.webp",
-  STM: "/images/tribunais/card_STM.webp",
-  TJAC: "/images/tribunais/card_TJAC.webp",
-  TJAL: "/images/tribunais/card_TJAL.webp",
-  TJAP: "/images/tribunais/card_TJAP.webp",
-  TJAM: "/images/tribunais/card_TJAM.webp",
-  TJBA: "/images/tribunais/card_TJBA.webp",
-  TJCE: "/images/tribunais/card_TJCE.webp",
-  TJDFT: "/images/tribunais/card_TJDFT.webp",
-  TJES: "/images/tribunais/card_TJES.webp",
-  TJGO: "/images/tribunais/card_TJGO.webp",
-  TJMA: "/images/tribunais/card_TJMA.webp",
-  TJMT: "/images/tribunais/card_TJMT.webp",
-  TJMS: "/images/tribunais/card_TJMS.webp",
-  TJMG: "/images/tribunais/card_TJMG.webp",
-  TJPA: "/images/tribunais/card_TJPA.webp",
-  TJPB: "/images/tribunais/card_TJPB.webp",
-  TJPE: "/images/tribunais/card_TJPE.webp",
-  TJPI: "/images/tribunais/card_TJPI.webp",
-  TJPR: "/images/tribunais/card_TJPR.webp",
-  TJRJ: "/images/tribunais/card_TJRJ.webp",
-  TJRN: "/images/tribunais/card_TJRN.webp",
-  TJRO: "/images/tribunais/card_TJRO.webp",
-  TJRR: "/images/tribunais/card_TJRR.webp",
-  TJRS: "/images/tribunais/card_TJRS.webp",
-  TJSC: "/images/tribunais/card_TJSC.webp",
-  TJSE: "/images/tribunais/card_TJSE.webp",
-  TJSP: "/images/tribunais/card_TJSP.webp",
-  TJTO: "/images/tribunais/card_TJTO.webp",
-  TRT1: "/images/tribunais/card_TRT1.webp",
-  TRT2: "/images/tribunais/card_TRT2.webp",
-  TRT3: "/images/tribunais/card_TRT3.webp",
-  TRT4: "/images/tribunais/card_TRT4.webp",
-  TRT5: "/images/tribunais/card_TRT5.webp",
-  TRT6: "/images/tribunais/card_TRT6.webp",
-  TRT7: "/images/tribunais/card_TRT7.webp",
-  TRT8: "/images/tribunais/card_TRT8.webp",
-  TRT10: "/images/tribunais/card_TRT10.webp",
-  TRT11: "/images/tribunais/card_TRT11.webp",
-  TRT12: "/images/tribunais/card_TRT12.webp",
-  TRT13: "/images/tribunais/card_TRT13.webp",
-  TRT14: "/images/tribunais/card_TRT14.webp",
-  TRT15: "/images/tribunais/card_TRT15.webp",
-  TRT16: "/images/tribunais/card_TRT16.webp",
-  TRT17: "/images/tribunais/card_TRT17.webp",
-  TRT18: "/images/tribunais/card_TRT18.webp",
-  TRT19: "/images/tribunais/card_TRT19.webp",
-  TRT20: "/images/tribunais/card_TRT20.webp",
-  TRT21: "/images/tribunais/card_TRT21.webp",
-  TRT22: "/images/tribunais/card_TRT22.webp",
-  TRT23: "/images/tribunais/card_TRT23.webp",
-  TRT24: "/images/tribunais/card_TRT24.webp",
-};
 
 export const iconsConfig = {
   PRECATÓRIO: {
