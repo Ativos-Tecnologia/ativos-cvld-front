@@ -30,6 +30,23 @@ const imgPaths: Record<string, string> = {
   TJAP: "/images/tribunais/card_TJAP.jpg",
   TJAM: "/images/tribunais/card_TJAM.webp",
   TJBA: "/images/tribunais/card_TJBA.jpg",
+  TJCE: "/images/tribunais/card_TJCE.jpg",
+  TJDFT: "/images/tribunais/card_TJDFT.jpg",
+  TJES: "/images/tribunais/card_TJES.jpg",
+  TJGO: "/images/tribunais/card_TJGO.jpg",
+  TJMA: "/images/tribunais/card_TJMA.jpg",
+  TJMT: "/images/tribunais/card_TJMT.jpg",
+  TJMS: "/images/tribunais/card_TJMS.jpg",
+  TJMG: "/images/tribunais/card_TJMG.jpg",
+  TJPA: "/images/tribunais/card_TJPA.jpg",
+  TJPB: "/images/tribunais/card_TJPB.jpg",
+  TJPE: "/images/tribunais/card_TJPE.jpg",
+  TJPI: "/images/tribunais/card_TJPI.png",
+  TJPR: "/images/tribunais/card_TJPR.webp",
+  TJRJ: "/images/tribunais/card_TJRJ.jpg",
+  TJRN: "/images/tribunais/card_TJRN.webp",
+  TJRO: "/images/tribunais/card_TJRO.jpg",
+  TJRR: "/images/tribunais/card_TJRR.jpg",
   TJSP: "/images/tribunais/card_TJSP.jpg",
 };
 
@@ -78,7 +95,7 @@ const Card = ({
       <div className="group relative h-55">
         <div className="absolute inset-0 z-0 overflow-hidden rounded-md">
           <Image
-            src={imgPaths["TJBA"]}
+            src={imgPaths["TJRR"]}
             // src={
             //   imgPaths[
             //     oficio.properties["Tribunal"].select
