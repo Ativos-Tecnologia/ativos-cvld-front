@@ -59,7 +59,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/jest-dom": "^6.6.2",
     "@testing-library/react": "^16.0.1",
     "@types/canvas-confetti": "^1.6.4",
     "@types/cleave.js": "^1.4.12",
@@ -72,10 +72,13 @@
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
     "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.11",
     "tailwindcss": "^3.4.1",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }
