@@ -37,7 +37,7 @@ export default function RootLayout({
     <html lang="pt-br">
       <body suppressHydrationWarning={true} className="2xl:min-h-screen">
         <QueryClientProvider client={queryClient}>
-          <div className="relative bg-[#f0f0f0] dark:bg-boxdark-2 dark:text-bodydark 2xl:min-h-screen">
+          <div className="relative bg-[#f0f0f0] dark:bg-boxdark-2 dark:text-bodydark xl:min-h-screen">
 
             {
               !isPublicRoute ? (

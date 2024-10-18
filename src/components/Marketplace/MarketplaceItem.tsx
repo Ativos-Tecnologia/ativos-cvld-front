@@ -18,12 +18,15 @@ import OfficeInfo from "../Modals/OfficeInfo";
 import AnimatedNumber from "../ui/AnimatedNumber";
 import CardDataStats from "../ui/CardDataStats";
 import CardDataStatsSkeleton from "../ui/CardDataStatsSkeleton";
+import MarketplaceRecommendations from "./MarketplaceRecommendations";
+import { usePathname } from "next/navigation";
 
 type MarketplaceItemProps = {
   id: string;
 };
 
 export default function MarketplaceItem({ id }: MarketplaceItemProps) {
+  const pathname = usePathname();
   const [confirmPurchaseModalOpen, setConfirmPurchaseModalOpen] =
     useState(false);
 
@@ -56,9 +59,9 @@ export default function MarketplaceItem({ id }: MarketplaceItemProps) {
 
   function handleTotalInvested(data: NotionPage) {
     let totalInvested = 0;
-    if (data.properties["Valor de Aquisição (Wallet)"].number) {
+    if (data.properties["Desembolso All-In"]?.formula?.number) {
       totalInvested +=
-        Number(data?.properties["Valor de Aquisição (Wallet)"]?.number) || 0;
+        Number(data?.properties["Desembolso All-In"]?.formula?.number) || 0;
     }
     return totalInvested;
   }
@@ -101,7 +104,7 @@ export default function MarketplaceItem({ id }: MarketplaceItemProps) {
   }
 
   return (
-    <div>
+    <div className="pb-5">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
         <Fade cascade damping={0.1} triggerOnce>
           {data ? (
@@ -213,10 +216,15 @@ export default function MarketplaceItem({ id }: MarketplaceItemProps) {
           <ProjectedProfitabilityChart data={updatedVlData} />
         </div>
       </Fade>
-      {data && data.properties["Disponível Para Compra"]?.checkbox && (
+
+        <div className="py-5">
+          <MarketplaceRecommendations id={id} />
+        </div>
+
+      {data && data.properties["Disponível Para Compra"]?.checkbox && data.properties["Usuário da Wallet"].multi_select[0]?.name !== userData?.user && (
         <Fade cascade damping={0.1} triggerOnce>
           <div className=" mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-            <div className="col-span-12 rounded-sm border shadow-default 2xsm:flex 2xsm:justify-center 2xsm:border-transparent 2xsm:bg-transparent 2xsm:p-0 sm:px-7.5 md:border-stroke md:bg-white md:px-5 md:pb-5 md:pt-7.5 md:dark:border-strokedark md:dark:bg-boxdark xl:col-span-12 xl:justify-normal">
+            <div className="col-span-12 rounded-sm border 2xsm:flex 2xsm:justify-center 2xsm:border-transparent 2xsm:bg-transparent 2xsm:p-0 sm:px-7.5 md:border-stroke md:bg-white md:px-5 md:pb-5 md:pt-7.5 md:dark:border-strokedark md:dark:bg-boxdark xl:col-span-12 xl:justify-normal">
               <Button
                 onClick={() => setConfirmPurchaseModalOpen(true)}
                 className="font-medium uppercase 2xsm:text-base md:text-sm"
@@ -227,6 +235,7 @@ export default function MarketplaceItem({ id }: MarketplaceItemProps) {
           </div>
         </Fade>
       )}
+
       {userData &&
         data &&
         userData.user ===
@@ -242,6 +251,7 @@ export default function MarketplaceItem({ id }: MarketplaceItemProps) {
             </div>
           </Fade>
         )}
+
 
       <Suspense fallback={null}>
         {/* modal */}

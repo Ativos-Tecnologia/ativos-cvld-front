@@ -87,8 +87,8 @@ const Wallet: React.FC = () => {
   function handleTotalInvested(data: NotionResponse) {
     let totalInvested = 0;
     data?.results?.forEach((result) => {
-      if (result.properties["Valor de Aquisição (Wallet)"]?.number) {
-        totalInvested += Number(result.properties["Valor de Aquisição (Wallet)"].number) || 0;
+      if (result.properties["Desembolso All-In"]?.formula?.number) {
+        totalInvested += Number(result.properties["Desembolso All-In"]?.formula?.number) || 0
       }
     });
     return totalInvested;
@@ -199,7 +199,8 @@ const Wallet: React.FC = () => {
                 data && <AnimatedNumber value={data && handleTotalProducts(data?.response[0])} isNotCurrency={true} />
               }>
                 <LuShoppingBag className="w-[18px] h-[18px]" />
-              </CardDataStats> : <CardDataStatsSkeleton />}
+              </CardDataStats> : <CardDataStatsSkeleton />
+            }
         </div>
 
         <div className=" grid grid-cols-12 mt-4 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5"

@@ -160,11 +160,11 @@ const ProjectedProfitabilityChart: React.FC<RentabilityChartProps> = ({ data }) 
     series: [
       {
         name: "Projeção do Precatório",
-        data: data && chartValueArray.map((item) => Number(item.toFixed(2))) || [],
+        data: data && chartValueArray.map((item) => Number(item?.toFixed(2))) || [0],
       },
       {
         name: "Projeção CDI",
-        data: data && cdiProjectedValueArray.map((item) => Number(item.toFixed(2))) || [],
+        data: data && cdiProjectedValueArray.map((item) => Number(item?.toFixed(2))) || [0],
       }
     ],
   });
@@ -174,11 +174,11 @@ const ProjectedProfitabilityChart: React.FC<RentabilityChartProps> = ({ data }) 
       series: [
        {
           name: "Projeção do Precatório",
-          data: data && chartValueArray.map((item) => Number(item.toFixed(2))) || [],
+          data: data && chartValueArray.map((item) => Number(item?.toFixed(2))) || [0],
         },
         {
           name: "Projeção CDI",
-          data: data && cdiProjectedValueArray.map((item) => Number(item.toFixed(2))) || [],
+          data: data && cdiProjectedValueArray.map((item) => Number(item?.toFixed(2))) || [0],
         }
       ],
     });
