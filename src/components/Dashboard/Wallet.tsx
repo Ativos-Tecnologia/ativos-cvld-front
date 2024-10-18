@@ -199,7 +199,8 @@ const Wallet: React.FC = () => {
                 data && <AnimatedNumber value={data && handleTotalProducts(data?.response[0])} isNotCurrency={true} />
               }>
                 <LuShoppingBag className="w-[18px] h-[18px]" />
-              </CardDataStats> : <CardDataStatsSkeleton />}
+              </CardDataStats> : <CardDataStatsSkeleton />
+            }
         </div>
 
         <div className=" grid grid-cols-12 mt-4 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5"
