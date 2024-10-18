@@ -228,7 +228,7 @@ const Card = ({
                 <p className="text-[10px] text-gray-400">valor da aquisição</p>
                 <p className="text-sm text-snow">
                   {numberFormat(
-                    oficio.properties["Valor de Aquisição (Wallet)"]?.number ||
+                    oficio.properties["Desembolso All-In"]?.formula?.number ||
                       0,
                   )}
                 </p>
