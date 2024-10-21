@@ -3,6 +3,7 @@ import { beforeEach } from "@jest/globals";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { FormProvider, useForm } from "react-hook-form";
 
 // Coloca como padrão e sobrescreve cada método de teste.
 jest.mock("next/navigation", () => ({
@@ -72,7 +73,7 @@ describe("Teste dos Headers do registro", () => {
     expect(confirmSenha).toBeInTheDocument();
   });
 
-  it("deve marcar e desmarcar o checkbox", () => {
+  it("Deve marcar e desmarcar o checkbox", () => {
     const checkbox = screen.getByRole("checkbox");
 
     // Verifica se o checkbox está desmarcado inicialmente
@@ -82,6 +83,56 @@ describe("Teste dos Headers do registro", () => {
     fireEvent.click(checkbox);
     expect(checkbox).toBeChecked();
   });
+
+  it("Deve preencher o registro de usuário", async () => {
+    const renderForm = () => {
+      const Wrapper = () => {
+        const methods = useForm();
+        return (
+          <FormProvider {...methods}>
+            <SignUp />
+          </FormProvider>
+        );
+      };
+      return render(<Wrapper />);
+    };
+
+    renderForm();
+
+    const inputUsuario = screen.getByLabelText(
+      /Nome de usuário/i,
+    ) as HTMLInputElement;
+
+    fireEvent.change(inputUsuario, { target: { value: "usuarioTest" } });
+    expect(inputUsuario.value).toBe("usuarioTest");
+
+    const inputEmail = screen.getByLabelText(/Email/i) as HTMLInputElement;
+
+    fireEvent.change(inputEmail, { target: { value: "email@email.com" } });
+    expect(inputEmail.value).toBe("email@email.com");
+
+    const selectOption = screen.getByLabelText(
+      /Selecione uma opção/i,
+    ) as HTMLSelectElement;
+    fireEvent.change(selectOption, { target: { value: "CNPJ" } });
+
+    const inputCNPJ = (await screen.findByPlaceholderText(
+      /Digite seu CNPJ/i,
+    )) as HTMLInputElement;
+
+    fireEvent.change(inputCNPJ, { target: { value: "15486587000142" } });
+    expect(inputCNPJ).toHaveValue("15.486.587/0001-42");
+
+    fireEvent.change(selectOption, { target: { value: "CPF" } });
+
+    const inputCPF = (
+      await screen.findAllByPlaceholderText(/Digite seu CPF/i)
+    )[0] as HTMLInputElement;
+
+    fireEvent.change(inputCPF, { target: { value: "04521478963" } });
+    expect(inputCPF).toHaveValue("045.214.789-63");
+  });
+
   it("Deve registrar o usuário", async () => {
     const createAccount = screen.getByText(/Criar conta/i);
 
