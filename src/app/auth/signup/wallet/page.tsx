@@ -3,16 +3,13 @@ import CustomCheckbox from "@/components/CrmUi/Checkbox";
 import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
 import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
 import Terms from "@/components/Modals/Terms_and_Conditions";
-import { APP_ROUTES } from "@/constants/app-routes";
-import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
 import UseMySwal from "@/hooks/useMySwal";
 import usePassword from "@/hooks/usePassword";
-import api from "@/utils/api";
 import { Button, Popover } from "flowbite-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Fade } from "react-awesome-reveal";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { AiOutlineLoading } from "react-icons/ai";
@@ -22,6 +19,7 @@ import {
   BiIdCard,
   BiInfoCircle,
   BiLockAlt,
+  BiLogoWhatsapp,
   BiQuestionMark,
   BiUser,
   BiX,
@@ -35,6 +33,13 @@ export type SignUpInputs = {
   email: string;
   select: string;
   cpf_cnpj: string;
+  repre_name: string;
+  repre_cpf: string;
+  whatsapp: string;
+  banco: string;
+  agencia: string;
+  conta_corrente: string;
+  pix: string;
   password: string;
   confirm_password: string;
 };
@@ -70,84 +75,85 @@ const SignUp: React.FC = () => {
 
   const onSubmit: SubmitHandler<SignUpInputs> = async (data) => {
     setLoading(true);
-    if (
-      data.password === data.confirm_password &&
-      passwordRequirements.filled
-    ) {
-      const formData = {
-        username: data.username,
-        email: data.email,
-        password: data.password,
-        cpf_cnpj: data.cpf_cnpj,
-      };
+    console.log(data);
+    // if (
+    //   data.password === data.confirm_password &&
+    //   passwordRequirements.filled
+    // ) {
+    //   const formData = {
+    //     username: data.username,
+    //     email: data.email,
+    //     password: data.password,
+    //     cpf_cnpj: data.cpf_cnpj,
+    //   };
 
-      try {
-        const response = await api
-          .post("api/user/register/", formData)
-          .then((res) => {
-            if (res.status === 201) {
-              localStorage.setItem(
-                `ATIVOS_${ACCESS_TOKEN}`,
-                res.data.accessToken,
-              );
-              localStorage.setItem(
-                `ATIVOS_${REFRESH_TOKEN}`,
-                res.data.refreshToken,
-              );
-              MySwal.fire({
-                title: "Sucesso!",
-                text: "Cadastro realizado com sucesso! Em até 5 minutos, um e-mail de confirmação será enviado para o e-mail cadastrado.",
-                icon: "success",
-                showConfirmButton: true,
-                confirmButtonColor: "#1A56DB",
-                confirmButtonText: "Voltar para Login",
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  router.push(APP_ROUTES.public.login.name);
-                }
-              });
-            }
-          });
-      } catch (error) {
-        MySwal.fire({
-          title: "Ok, Houston...Temos um problema!",
-          text: "Email ou usuário já cadastrado. Por favor, tente novamente com outras credenciais.",
-          icon: "error",
-          showConfirmButton: true,
-        });
-        console.error(error);
-      }
-    } else if (data.password !== data.confirm_password) {
-      MySwal.fire({
-        title: "Ok, Houston...Temos um problema!",
-        text: "Suas senhas não coincidem. Por favor, tente novamente.",
-        icon: "error",
-        showConfirmButton: true,
-      });
-    } else if (!passwordRequirements.filled) {
-      MySwal.fire({
-        title: "Ok, Houston...Temos um problema!",
-        text: "Sua senha não corresponde aos requisitos mínimos. Por favor, tente novamente.",
-        icon: "error",
-        showConfirmButton: true,
-      });
-    }
+    //   try {
+    //     const response = await api
+    //       .post("api/user/register/", formData)
+    //       .then((res) => {
+    //         if (res.status === 201) {
+    //           localStorage.setItem(
+    //             `ATIVOS_${ACCESS_TOKEN}`,
+    //             res.data.accessToken,
+    //           );
+    //           localStorage.setItem(
+    //             `ATIVOS_${REFRESH_TOKEN}`,
+    //             res.data.refreshToken,
+    //           );
+    //           MySwal.fire({
+    //             title: "Sucesso!",
+    //             text: "Cadastro realizado com sucesso! Em até 5 minutos, um e-mail de confirmação será enviado para o e-mail cadastrado.",
+    //             icon: "success",
+    //             showConfirmButton: true,
+    //             confirmButtonColor: "#1A56DB",
+    //             confirmButtonText: "Voltar para Login",
+    //           }).then((result) => {
+    //             if (result.isConfirmed) {
+    //               router.push(APP_ROUTES.public.login.name);
+    //             }
+    //           });
+    //         }
+    //       });
+    //   } catch (error) {
+    //     MySwal.fire({
+    //       title: "Ok, Houston...Temos um problema!",
+    //       text: "Email ou usuário já cadastrado. Por favor, tente novamente com outras credenciais.",
+    //       icon: "error",
+    //       showConfirmButton: true,
+    //     });
+    //     console.error(error);
+    //   }
+    // } else if (data.password !== data.confirm_password) {
+    //   MySwal.fire({
+    //     title: "Ok, Houston...Temos um problema!",
+    //     text: "Suas senhas não coincidem. Por favor, tente novamente.",
+    //     icon: "error",
+    //     showConfirmButton: true,
+    //   });
+    // } else if (!passwordRequirements.filled) {
+    //   MySwal.fire({
+    //     title: "Ok, Houston...Temos um problema!",
+    //     text: "Sua senha não corresponde aos requisitos mínimos. Por favor, tente novamente.",
+    //     icon: "error",
+    //     showConfirmButton: true,
+    //   });
+    // }
     setLoading(false);
   };
 
-  useEffect(() => {
-    const localAccess = localStorage.getItem("ATIVOS_access");
-    const localRefresh = localStorage.getItem("ATIVOS_refresh");
+  // useEffect(() => {
+  //   const localAccess = localStorage.getItem("ATIVOS_access");
+  //   const localRefresh = localStorage.getItem("ATIVOS_refresh");
 
-    if (localAccess === "undefined" || localRefresh === "undefined") {
-      localStorage.removeItem("ATIVOS_access");
-      localStorage.removeItem("ATIVOS_refresh");
-    }
-  }, []);
+  //   if (localAccess === "undefined" || localRefresh === "undefined") {
+  //     localStorage.removeItem("ATIVOS_access");
+  //     localStorage.removeItem("ATIVOS_refresh");
+  //   }
+  // }, []);
 
   return (
     <UnloggedLayout>
-      <div className="relative flex h-full lg:max-h-[610] 3xl:max-h-[810px]">
+      <div className="relative flex h-full overflow-y-scroll lg:max-h-[610] 3xl:max-h-[810px]">
         <div className="hero_login hidden w-full flex-col justify-evenly px-20 py-8 text-center md:flex md:min-h-[900px] xl:min-h-full xl:w-[65%]">
           <div className="2xsm:hidden xl:block">
             {/* logo */}
@@ -219,7 +225,7 @@ const SignUp: React.FC = () => {
 
           <Fade delay={1e2} damping={1e-1} cascade triggerOnce>
             <h2 className="mb-9 text-center text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-              Cadastre-se para começar
+              Cadastre-se na Wallet
             </h2>
           </Fade>
 
@@ -249,7 +255,7 @@ const SignUp: React.FC = () => {
                         message: "O nome deve conter no máximo 30 caracteres",
                       },
                       pattern: {
-                        value: /^[a-zA-Z]+$/, // Regex para permitir apenas letras (maiúsculas e minúsculas)
+                        value: /^[a-zA-Z\s]+$/, // Regex para permitir apenas letras (maiúsculas e minúsculas) e espaços.
                         message:
                           "O nome deve conter apenas letras e não deve ter espaços ou caracteres especiais",
                       },
@@ -375,6 +381,316 @@ const SignUp: React.FC = () => {
                   </span>
                 </div>
               </div>
+              {selectOption === "CNPJ" ? (
+                <div className="col-span-3 grid grid-cols-1 p-3">
+                  <h3 className="mb-2.5 block p-3 text-center font-semibold text-black dark:text-white">
+                    Dados do Representante Legal
+                  </h3>
+                  <div className="mb-2 ">
+                    <label
+                      className="mb-2.5 block font-medium text-black dark:text-white"
+                      htmlFor="repre_name"
+                    >
+                      Nome Completo
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Nome Completo"
+                        className={`${errors.repre_name && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary 2xsm:text-sm md:text-base`}
+                        id="repre_name"
+                        {...register("repre_name", {
+                          required: "Campo obrigatório",
+                          minLength: {
+                            value: 4,
+                            message:
+                              "O nome deve conter no mínimo 4 caracteres",
+                          },
+                          maxLength: {
+                            value: 30,
+                            message:
+                              "O nome deve conter no máximo 30 caracteres",
+                          },
+                          pattern: {
+                            value: /^[a-zA-Z\s]+$/, // Regex para permitir apenas letras (maiúsculas e minúsculas) e espaços.
+                            message:
+                              "O nome deve conter apenas letras e não deve ter espaços ou caracteres especiais",
+                          },
+                        })}
+                      />
+
+                      <ErrorMessage errors={errors} field="repre_name" />
+
+                      <span className="absolute right-4 top-2.5">
+                        <BiIdCard
+                          style={{
+                            width: "22px",
+                            height: "22px",
+                            fill: "rgb(186, 193, 203)",
+                          }}
+                        />
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mb-2 ">
+                    <label
+                      className="mb-2.5 block font-medium text-black dark:text-white"
+                      htmlFor="CPF_Repre"
+                    >
+                      CPF
+                    </label>
+                    <div className="relative">
+                      <Controller
+                        name="repre_cpf"
+                        control={control}
+                        defaultValue=""
+                        rules={{
+                          required: "Campo obrigatório",
+                          pattern: {
+                            value: /^\d{3}\.\d{3}\.\d{3}-\d{2}$/,
+                            message: "CPF inválido",
+                          },
+                        }}
+                        render={({ field }) => (
+                          <InputMask
+                            {...field}
+                            mask="999.999.999-99"
+                            placeholder="Digite seu CPF"
+                            className={`${errors.repre_cpf && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary 2xsm:text-sm md:text-base`}
+                          />
+                        )}
+                      />
+
+                      <ErrorMessage errors={errors} field="repre_cpf" />
+
+                      <span className="absolute right-4 top-2.5">
+                        <BiIdCard
+                          style={{
+                            width: "22px",
+                            height: "22px",
+                            fill: "rgb(186, 193, 203)",
+                          }}
+                        />
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mb-2 ">
+                    <label
+                      className="mb-2.5 block font-medium text-black dark:text-white"
+                      htmlFor="whatsapp"
+                    >
+                      Whatsapp
+                    </label>
+                    <div className="relative">
+                      <Controller
+                        name="whatsapp"
+                        control={control}
+                        defaultValue=""
+                        rules={{
+                          required: "Campo obrigatório",
+                          pattern: {
+                            value: /^\d{2}\.\d{5}-\d{4}$/,
+                            message: "Número inválido",
+                          },
+                        }}
+                        render={({ field }) => (
+                          <InputMask
+                            {...field}
+                            mask="99.99999-9999"
+                            placeholder="Whatsapp"
+                            className={`${errors.whatsapp && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary 2xsm:text-sm md:text-base`}
+                          />
+                        )}
+                      />
+
+                      <ErrorMessage errors={errors} field="whatsapp" />
+
+                      <span className="absolute right-4 top-2.5">
+                        <BiLogoWhatsapp
+                          style={{
+                            width: "22px",
+                            height: "22px",
+                            fill: "rgb(186, 193, 203)",
+                          }}
+                        />
+                      </span>
+                    </div>
+                  </div>
+                  {/* Dados Bancários */}
+                  <div className="flex-col-span-2 flex gap-3">
+                    {/* Banco */}
+                    <div>
+                      <div className="mb-2 ">
+                        <label
+                          className="mb-2.5 block font-medium text-black dark:text-white"
+                          htmlFor="banco"
+                        >
+                          Banco
+                        </label>
+                        <div className="relative">
+                          <Controller
+                            name="banco"
+                            control={control}
+                            defaultValue=""
+                            rules={{
+                              required: "Campo obrigatório",
+                              pattern: {
+                                value: /^\d{3}$/,
+                                message: "Número inválido",
+                              },
+                            }}
+                            render={({ field }) => (
+                              <InputMask
+                                {...field}
+                                mask="999"
+                                placeholder="Banco"
+                                className={`${errors.banco && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary 2xsm:text-sm md:text-base`}
+                              />
+                            )}
+                          />
+
+                          <ErrorMessage errors={errors} field="banco" />
+
+                          <span className="absolute right-4 top-2.5">
+                            <BiIdCard
+                              style={{
+                                width: "22px",
+                                height: "22px",
+                                fill: "rgb(186, 193, 203)",
+                              }}
+                            />
+                          </span>
+                        </div>
+                      </div>
+                      {/* Agencia */}
+                      <div className="mb-2 ">
+                        <label
+                          className="mb-2.5 block font-medium text-black dark:text-white"
+                          htmlFor="agencia"
+                        >
+                          Agência
+                        </label>
+                        <div className="relative">
+                          <Controller
+                            name="agencia"
+                            control={control}
+                            defaultValue=""
+                            rules={{
+                              required: "Campo obrigatório",
+                              pattern: {
+                                value: /^\d{4}-\d{1}$/,
+                                message: "Número inválido",
+                              },
+                            }}
+                            render={({ field }) => (
+                              <InputMask
+                                {...field}
+                                mask="9999-9"
+                                placeholder="Agência"
+                                className={`${errors.agencia && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary 2xsm:text-sm md:text-base`}
+                              />
+                            )}
+                          />
+
+                          <ErrorMessage errors={errors} field="agencia" />
+
+                          <span className="absolute right-4 top-2.5">
+                            <BiIdCard
+                              style={{
+                                width: "22px",
+                                height: "22px",
+                                fill: "rgb(186, 193, 203)",
+                              }}
+                            />
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      {/* Conta Corrente */}
+                      <div className="mb-2 ">
+                        <label
+                          className="mb-2.5 block font-medium text-black dark:text-white"
+                          htmlFor="conta_corrente"
+                        >
+                          Conta Corrente
+                        </label>
+                        <div className="relative">
+                          <Controller
+                            name="conta_corrente"
+                            control={control}
+                            defaultValue=""
+                            rules={{
+                              required: "Campo obrigatório",
+                              pattern: {
+                                value: /^\d{7}-\d{1}$/,
+                                message: "Número inválido",
+                              },
+                            }}
+                            render={({ field }) => (
+                              <InputMask
+                                {...field}
+                                mask="9999999-9"
+                                placeholder="Conta Corrente"
+                                className={`${errors.conta_corrente && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary 2xsm:text-sm md:text-base`}
+                              />
+                            )}
+                          />
+
+                          <ErrorMessage
+                            errors={errors}
+                            field="conta_corrente"
+                          />
+
+                          <span className="absolute right-4 top-2.5">
+                            <BiIdCard
+                              style={{
+                                width: "22px",
+                                height: "22px",
+                                fill: "rgb(186, 193, 203)",
+                              }}
+                            />
+                          </span>
+                        </div>
+                      </div>
+                      {/* Pix */}
+                      <div className="mb-2 ">
+                        <label
+                          className="mb-2.5 block font-medium text-black dark:text-white"
+                          htmlFor="pix"
+                        >
+                          Pix
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            placeholder="Pix"
+                            className={`${errors.pix && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary 2xsm:text-sm md:text-base`}
+                            id="pix"
+                            {...register("pix", {
+                              required: "Campo obrigatório",
+                            })}
+                          />
+
+                          <ErrorMessage errors={errors} field="repre_name" />
+
+                          <span className="absolute right-4 top-2.5">
+                            <BiIdCard
+                              style={{
+                                width: "22px",
+                                height: "22px",
+                                fill: "rgb(186, 193, 203)",
+                              }}
+                            />
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </div>
 
             <div className="mb-3">
