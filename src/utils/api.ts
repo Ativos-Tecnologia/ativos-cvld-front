@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ACCESS_TOKEN, DEV_API_URL, LOCAL_DEV_API_URL, PROD_API_URL, REFRESH_TOKEN } from '@/constants/constants';
 
-const activeUrl = DEV_API_URL;
+const activeUrl = PROD_API_URL;
 
 const api = axios.create({
   baseURL: activeUrl,

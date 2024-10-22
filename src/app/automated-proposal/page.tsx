@@ -11,6 +11,7 @@ import tipoOficio from "@/enums/tipoOficio.enum";
 import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
 import numberFormat from "@/functions/formaters/numberFormat";
 import api from "@/utils/api";
+import { AxiosError } from "axios";
 import Cleave from "cleave.js/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -247,9 +248,11 @@ const AutomatedProposal = () => {
         toast.error(response.data.error); // lança toast de erro na tela com mensagem personalizada
       }
     } catch (error) {
-      throw new Error(
-        "houve um erro no servidor ao tentar completar o cálculo",
-      ); // erro para identificação do desenvolvedor
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.error)
+      } else {
+        toast.error(String(error));
+      }
     } finally {
       setLoading(false);
     }
