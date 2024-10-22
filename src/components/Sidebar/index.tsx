@@ -17,6 +17,7 @@ import useColorMode from "@/hooks/useColorMode";
 import { theme } from "flowbite-react";
 import { GeneralUIContext } from "@/context/GeneralUIContext";
 import { DefaultLayoutContext } from "@/context/DefaultLayoutContext";
+import CapaDoBatman from "../CapaDoBatman";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -248,7 +249,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               </SidebarLinkGroup>
 
               {/* <!-- Menu Item Dashboard --> */}
-
+              <CapaDoBatman show={window.location.href.includes('localhost') || window.location.href.includes('dev-')}>
               {/* <--- new precatory button --> */}
               <Link
                 href="#"
@@ -261,6 +262,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 <BiPlus style={{ width: '22px', height: '22px' }} />
                 <span>Novo Precatório</span>
               </Link>
+              </CapaDoBatman>
             </ul>
           </div>
 
