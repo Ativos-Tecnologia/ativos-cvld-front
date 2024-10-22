@@ -1,45 +1,48 @@
 export const APP_ROUTES = {
-    private : {
-        dashboard: {
-            name: "/"
-        },
-        wallet: {
-            name: "/dashboard/wallet"
-        },
-        marketplace: {
-            name: "/dashboard/marketplace"
-        },
-        marketplaceItem: {
-            name: "/dashboard/marketplace/:id"
-        },
-        profile: {
-            name: "/profile"
-        },
-        settings: {
-            name: "/settings"
-        }
+  private: {
+    dashboard: {
+      name: "/",
     },
-    public : {
-        login: {
-            name: "/auth/signin"
-        },
-        register: {
-            name: "/auth/signup"
-        },
-        pricing: {
-            name: '/pricing'
-        },
-        change_password: {
-            name: '/change-password'
-        },
-        two_step_verification: {
-            name: '/auth/two-step-verification'
-        },
-        automated_proposal: {
-            name: "/automated-proposal"
-        },
-        recalculate_trf1: {
-            name: "/retification"
-        }
-    }
+    wallet: {
+      name: "/dashboard/wallet",
+    },
+    marketplace: {
+      name: "/dashboard/marketplace",
+    },
+    marketplaceItem: {
+      name: "/dashboard/marketplace/:id",
+    },
+    profile: {
+      name: "/profile",
+    },
+    settings: {
+      name: "/settings",
+    },
+  },
+  public: {
+    login: {
+      name: "/auth/signin",
+    },
+    register: {
+      name: "/auth/signup",
+    },
+    pricing: {
+      name: "/pricing",
+    },
+    change_password: {
+      name: "/change-password",
+    },
+    two_step_verification: {
+      name: "/auth/two-step-verification",
+    },
+    automated_proposal: {
+      name: "/automated-proposal",
+    },
+    recalculate_trf1: {
+      name: "/retification",
+    },
+    wallet: {
+      name: "/auth/signup/wallet",
+    },
+  },
 };
