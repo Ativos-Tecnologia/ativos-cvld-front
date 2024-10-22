@@ -11,6 +11,7 @@ import { TableNotionProvider } from "@/context/NotionTableContext";
 import { GeneralUIProvider } from "@/context/GeneralUIContext";
 import { DefaultLayoutProvider } from "@/context/DefaultLayoutContext";
 import NewForm from "../Modals/NewForm";
+import CapaDoBatman from "../CapaDoBatman";
 
 const queryClient = new QueryClient();
 
@@ -51,8 +52,8 @@ export default function DefaultLayout({
                 </div>
               </main>
               {/* <!-- ===== Main Content End ===== --> */}
-              {!window.location.href.includes('https://ativoscvld.vercel.app/') && (
-                showAlert && (
+              <CapaDoBatman show={!window.location.href.includes('https://ativoscvld.vercel.app/') && (
+                showAlert)}>
                   <div className="sticky w-full bottom-0 z-9 py-3 px-5 text-white text-center">
                     <Alert color="warning" icon={HiInformationCircle} className="mb-0 transition-all duration-300" onDismiss={() => {
                       setStyleRelated({ opacity: 0 });
@@ -65,8 +66,9 @@ export default function DefaultLayout({
                       Você está usando uma versão em desenvolvimento!
                     </Alert>
                   </div>
-                )
-              )}
+              </CapaDoBatman>
+              
+
             </div>
             <NewForm />
             {/* <!-- ===== Content Area End ===== --> */}
