@@ -1,0 +1,45 @@
+export type CvldFormInputsProps = {
+    tipo_do_oficio: string;
+    natureza: string;
+    esfera: string;
+    regime: string;
+    tribunal: string;
+    valor_principal: number | string;
+    valor_juros: number | string;
+    data_base: string;
+    data_requisicao: string;
+    valor_aquisicao_total: boolean;
+    percentual_a_ser_adquirido: number;
+    ja_possui_destacamento: boolean;
+    percentual_de_honorarios: number;
+    incidencia_juros_moratorios:
+    boolean;
+    nao_incide_selic_no_periodo_db_ate_abril: boolean;
+    incidencia_rra_ir: boolean;
+    ir_incidente_rra: boolean;
+    numero_de_meses: number;
+    incidencia_pss: boolean;
+    valor_pss: number | string;
+    data_limite_de_atualizacao_check: boolean;
+    data_limite_de_atualizacao: string;
+    gerar_cvld: boolean;
+    credor: string;
+    cpf_cnpj: string;
+    especie: string;
+    npu: string;
+    npu_originario: string;
+    ente_devedor: string;
+    estado_ente_devedor: string;
+    juizo_vara: string;
+    status: string;
+    email_contato: string;
+    telefone_contato: string;
+    telefone_contato_2: string;
+    telefone_contato_3: string;
+    vincular_usuario: boolean;
+    novo_usuario: boolean;
+    username: string;
+    conta?: string;
+    test_mode: boolean;
+    upload_notion: boolean;
+}

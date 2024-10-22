@@ -207,6 +207,7 @@ const AutomatedProposal = () => {
     data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
     data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
     data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
+    data.percentual_a_ser_adquirido /= 100; 
 
     if (data.tribunal === "TRF1" || data.tribunal === "TRF6") {
       data.nao_incide_selic_no_periodo_db_ate_abril = true;
@@ -217,7 +218,9 @@ const AutomatedProposal = () => {
     }
 
     if (data.ja_possui_destacamento) {
-      data.percentual_de_honorarios = 30;
+      data.percentual_de_honorarios = 0;
+    } else {
+      data.percentual_de_honorarios /= 100;
     }
 
     try {
@@ -783,12 +786,10 @@ E abaixo, uma memória das informações de entrada:
                       >
                         Percentual{" "}
                         <span className="text-xs text-meta-5">(%)</span>
-                        <span className="text-[7px] text-meta-8">
-                          &nbsp; Dedução feita no Notion
-                        </span>
                       </label>
                       <input
                         type="number"
+                        defaultValue={30}
                         id="percentual_de_honorarios"
                         className="h-[37px] w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark"
                         {...register("percentual_de_honorarios", {})}
