@@ -30,6 +30,7 @@ import {
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import { HiOutlineArrowRight } from "react-icons/hi";
 import InputMask from "react-input-mask";
+import "../../signin/index.css";
 
 export type SignUpInputs = {
   username: string;
@@ -164,7 +165,7 @@ const SignUpWallet: React.FC = () => {
 
   return (
     <UnloggedLayout>
-      <div className=" relative flex h-full overflow-y-scroll 3xl:max-h-[610px]">
+      <div className="relative flex h-full 3xl:max-h-[610px]">
         <div className="hero_wallet hidden w-full flex-col justify-evenly px-20 py-8 text-center md:flex md:min-h-[900px] xl:min-h-full xl:w-[65%]">
           <div className="2xsm:hidden xl:block">
             {/* logo */}
@@ -207,7 +208,7 @@ const SignUpWallet: React.FC = () => {
         </div>
 
         {/* form */}
-        <div className="w-full border-stroke bg-snow 2xsm:p-8 sm:px-8 sm:py-12.5 md:absolute md:left-1/2 md:top-1/2 md:h-fit md:w-3/4 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-md lg:h-fit lg:max-h-[850px] lg:overflow-y-scroll xl:static xl:h-full xl:w-[35%] xl:translate-x-0 xl:translate-y-0 xl:py-5.5">
+        <div className="w-full border-stroke bg-snow 2xsm:p-8 sm:px-8 sm:py-12.5 md:absolute md:left-1/2 md:top-1/2 md:h-fit md:w-3/4 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-md lg:h-fit lg:max-h-[850px] lg:overflow-y-scroll xl:static xl:h-full xl:w-[35%] xl:translate-x-0 xl:translate-y-0 xl:py-5.5 ">
           {/* Mobile visible logo */}
           <div className="block w-full xl:hidden">
             <Link
@@ -241,7 +242,7 @@ const SignUpWallet: React.FC = () => {
           </Fade>
 
           <form
-            className="grid grid-cols-1 gap-5 sm:grid-cols-2"
+            className="grid grid-cols-1 gap-5 2xsm:col-span-1 2xsm:grid-cols-2"
             onSubmit={handleSubmit(onSubmit)}
           >
             <div className="mb-2">
@@ -911,7 +912,7 @@ const SignUpWallet: React.FC = () => {
               </div>
             </div>
 
-            <div className="mb-2">
+            <div className="mb-10">
               <label className="mb-2.5 block font-medium text-black dark:text-white">
                 Confirmar senha
               </label>
@@ -964,7 +965,6 @@ const SignUpWallet: React.FC = () => {
                 </span>
               </div>
             </div>
-            <br />
             <div className="mt-4 flex items-center gap-2 text-sm sm:col-span-2">
               <CustomCheckbox
                 check={termsAccepted}
