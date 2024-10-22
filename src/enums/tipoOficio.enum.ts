@@ -1,7 +1,8 @@
 enum tipoOficio {
     PRECATORIO = 'PRECATÓRIO',
-    RPV = 'R.P.V.',
+    RPV = 'RPV',
     CREDITORIO = 'CREDITÓRIO',
+    PRE_RPV = 'PRE-RPV'
 }
 
 export default tipoOficio;
