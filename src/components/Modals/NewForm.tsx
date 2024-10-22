@@ -273,8 +273,8 @@ const NewForm = () => {
 
         try {
             const response = data.gerar_cvld
-            ? await api.post("/api/lead-magnet/save/", data)
-            : await api.post("/api/lead-magnet/", data)
+                ? await api.post("/api/lead-magnet/save/", data)
+                : await api.post("/api/lead-magnet/", data)
 
             if (response.status === 200 || response.status === 201) {
                 const results = response.data.result; // pega o resultado da requisição
@@ -541,7 +541,7 @@ const NewForm = () => {
                                         </ShadSelect> */}
                                     </div>
 
-                                    <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                    <div className="relative flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                                         <label
                                             htmlFor="valor_principal"
                                             className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -552,25 +552,28 @@ const NewForm = () => {
                                             name="valor_principal"
                                             control={control}
                                             defaultValue={0}
-                                            rules={{required: "Campo obrigatório"}}
-                                            render={({ field }) => (
-                                                <Cleave
-                                                    {...field}
-                                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                                                    options={{
-                                                        numeral: true,
-                                                        numeralThousandsGroupStyle: "thousand",
-                                                        numeralDecimalScale: 2,
-                                                        numeralDecimalMark: ",",
-                                                        delimiter: ".",
-                                                        prefix: "R$ ",
-                                                        rawValueTrimPrefix: true,
-                                                    }}
-                                                />
+                                            rules={{ min: { value: 0.01, message: "O valor deve ser maior que 0" } }}
+                                            render={({ field, fieldState: { error } }) => (
+                                                <>
+                                                    <Cleave
+                                                        {...field}
+                                                        className={`w-full rounded-md border ${error ? "border-red" : "border-strokedark"} bg-boxdark-2 px-3 py-2 text-sm font-medium text-bodydark`}
+                                                        options={{
+                                                            numeral: true,
+                                                            numeralThousandsGroupStyle: "thousand",
+                                                            numeralDecimalScale: 2,
+                                                            numeralDecimalMark: ",",
+                                                            delimiter: ".",
+                                                            prefix: "R$ ",
+                                                            rawValueTrimPrefix: true,
+                                                        }}
+                                                    />
+                                                    {error && <span className="text-xs font-medium text-red absolute right-2 top-8.5">{error.message}</span>}
+                                                </>
                                             )}
                                         />
                                     </div>
-                                    <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                    <div className="relative flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                                         <label
                                             htmlFor="valor_juros"
                                             className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -581,21 +584,25 @@ const NewForm = () => {
                                             name="valor_juros"
                                             control={control}
                                             defaultValue={0}
-                                            render={({ field }) => (
-                                                <Cleave
-                                                    {...field}
-                                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                                                    options={{
-                                                        numeral: true,
-                                                        numeralPositiveOnly: true,
-                                                        numeralThousandsGroupStyle: "thousand",
-                                                        numeralDecimalScale: 2,
-                                                        numeralDecimalMark: ",",
-                                                        delimiter: ".",
-                                                        prefix: "R$ ",
-                                                        rawValueTrimPrefix: true,
-                                                    }}
-                                                />
+                                            rules={{ min: { value: 0.01, message: "O valor deve ser maior que 0" } }}
+                                            render={({ field, fieldState: { error } }) => (
+                                                <>
+                                                    <Cleave
+                                                        {...field}
+                                                        className={`w-full rounded-md border ${error ? "border-red" : "border-strokedark"} bg-boxdark-2 px-3 py-2 text-sm font-medium text-bodydark`}
+                                                        options={{
+                                                            numeral: true,
+                                                            numeralPositiveOnly: true,
+                                                            numeralThousandsGroupStyle: "thousand",
+                                                            numeralDecimalScale: 2,
+                                                            numeralDecimalMark: ",",
+                                                            delimiter: ".",
+                                                            prefix: "R$ ",
+                                                            rawValueTrimPrefix: true,
+                                                        }}
+                                                    />
+                                                    {error && <span className="text-xs font-medium text-red absolute right-2 top-8.5">{error.message}</span>}
+                                                </>
                                             )}
                                         />
                                     </div>
@@ -617,7 +624,7 @@ const NewForm = () => {
                                                 })}
                                                 aria-invalid={errors.data_base ? "true" : "false"}
                                             />
-                                            {errors.data_base && <span className='text-red absolute top-7.5 right-8.5 text-xs'>campo obrigatório</span>}
+                                            {errors.data_base && <span className='text-red font-medium absolute top-7.5 right-8.5 text-xs'>campo obrigatório</span>}
                                         </div>
                                     </div>
 
@@ -638,7 +645,7 @@ const NewForm = () => {
                                                         required: "Campo obrigatório",
                                                     })}
                                                 />
-                                                {errors.data_requisicao && <span className='text-red absolute top-7.5 right-8.5 text-xs'>campo obrigatório</span>}
+                                                {errors.data_requisicao && <span className='text-red font-medium absolute top-7.5 right-8.5 text-xs'>campo obrigatório</span>}
                                             </div>
                                         </div>
                                     ) : (

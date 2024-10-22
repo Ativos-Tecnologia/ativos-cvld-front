@@ -482,7 +482,7 @@ E abaixo, uma memória das informações de entrada:
               {/* ====> end label TRIBUNUAL <==== */}
 
               {/* ====> label VALOR PRINCIPAL <==== */}
-              <div className="mb-4 flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
+              <div className="relative mb-4 flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
                 <label
                   htmlFor="valor_principal"
                   className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -493,27 +493,33 @@ E abaixo, uma memória das informações de entrada:
                   name="valor_principal"
                   control={control}
                   defaultValue={0}
-                  render={({ field }) => (
-                    <Cleave
-                      {...field}
-                      className="w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark"
-                      options={{
-                        numeral: true,
-                        numeralThousandsGroupStyle: "thousand",
-                        numeralDecimalScale: 2,
-                        numeralDecimalMark: ",",
-                        delimiter: ".",
-                        prefix: "R$ ",
-                        rawValueTrimPrefix: true,
-                      }}
-                    />
+                  rules={{
+                    min: { value: 0.01, message: "O valor deve ser maior que 0" }
+                  }}
+                  render={({ field, fieldState: { error } }) => (
+                    <>
+                      <Cleave
+                        {...field}
+                        className={`w-full rounded-md border ${error ? "border-red" : "border-strokedark"} bg-form-input px-3 py-2 text-sm font-medium text-bodydark`}
+                        options={{
+                          numeral: true,
+                          numeralThousandsGroupStyle: "thousand",
+                          numeralDecimalScale: 2,
+                          numeralDecimalMark: ",",
+                          delimiter: ".",
+                          prefix: "R$ ",
+                          rawValueTrimPrefix: true,
+                        }}
+                      />
+                      {error && <span className="text-xs font-medium text-red absolute left-1 top-16">{error.message}</span>}
+                    </>
                   )}
                 />
               </div>
               {/* ====> end label VALOR PRINCIPAL <==== */}
 
               {/* ====> label JUROS <==== */}
-              <div className="mb-4 flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
+              <div className="relative mb-4 flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
                 <label
                   htmlFor="valor_juros"
                   className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -524,21 +530,27 @@ E abaixo, uma memória das informações de entrada:
                   name="valor_juros"
                   control={control}
                   defaultValue={0}
-                  render={({ field }) => (
-                    <Cleave
-                      {...field}
-                      className="w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark"
-                      options={{
-                        numeral: true,
-                        numeralPositiveOnly: true,
-                        numeralThousandsGroupStyle: "thousand",
-                        numeralDecimalScale: 2,
-                        numeralDecimalMark: ",",
-                        delimiter: ".",
-                        prefix: "R$ ",
-                        rawValueTrimPrefix: true,
-                      }}
-                    />
+                  rules={{
+                    min: { value: 0.01, message: "O valor deve ser maior que 0" }
+                  }}
+                  render={({ field, fieldState: { error } }) => (
+                    <>
+                      <Cleave
+                        {...field}
+                        className={`w-full rounded-md border ${error ? "border-red" : "border-strokedark"} bg-form-input px-3 py-2 text-sm font-medium text-bodydark`}
+                        options={{
+                          numeral: true,
+                          numeralPositiveOnly: true,
+                          numeralThousandsGroupStyle: "thousand",
+                          numeralDecimalScale: 2,
+                          numeralDecimalMark: ",",
+                          delimiter: ".",
+                          prefix: "R$ ",
+                          rawValueTrimPrefix: true,
+                        }}
+                      />
+                      {error && <span className="text-xs font-medium text-red absolute left-1 top-16">{error.message}</span>}
+                    </>
                   )}
                 />
               </div>
@@ -556,7 +568,7 @@ E abaixo, uma memória das informações de entrada:
                   <input
                     type="date"
                     id="data_base"
-                    className={`${errors.data_base && "!border-rose-400 !ring-0"} w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark`}
+                    className={`${errors.data_base && "!border-red !ring-0"} w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark`}
                     {...register("data_base", {
                       required: "Campo obrigatório",
                     })}
@@ -579,7 +591,7 @@ E abaixo, uma memória das informações de entrada:
                   <input
                     type="date"
                     id="data_requisicao"
-                    className={`${errors.data_requisicao && "!border-rose-400 !ring-0"} w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark`}
+                    className={`${errors.data_requisicao && "!border-red !ring-0"} w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark`}
                     {...register("data_requisicao", {
                       required: "Campo obrigatório",
                     })}

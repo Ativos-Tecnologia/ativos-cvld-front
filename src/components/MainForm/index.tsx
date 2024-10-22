@@ -634,20 +634,24 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 name="valor_principal"
                 control={control}
                 defaultValue={0}
-                render={({ field }) => (
-                  <Cleave
-                    {...field}
-                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                    options={{
-                      numeral: true,
-                      numeralThousandsGroupStyle: "thousand",
-                      numeralDecimalScale: 2,
-                      numeralDecimalMark: ",",
-                      delimiter: ".",
-                      prefix: "R$ ",
-                      rawValueTrimPrefix: true,
-                    }}
-                  />
+                rules={{ min: { value: 0.01, message: "O valor deve ser maior que 0" } }}
+                render={({ field, fieldState: { error } }) => (
+                  <>
+                    <Cleave
+                      {...field}
+                      className={`w-full rounded-md border ${error ? "border-red" : "border-strokedark"} bg-boxdark-2 px-3 py-2 text-sm font-medium text-bodydark`}
+                      options={{
+                        numeral: true,
+                        numeralThousandsGroupStyle: "thousand",
+                        numeralDecimalScale: 2,
+                        numeralDecimalMark: ",",
+                        delimiter: ".",
+                        prefix: "R$ ",
+                        rawValueTrimPrefix: true,
+                      }}
+                    />
+                    {error && <span className="text-xs font-medium text-red">{error.message}</span>}
+                  </>
                 )}
               />
             </div>
@@ -662,21 +666,25 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 name="valor_juros"
                 control={control}
                 defaultValue={0}
-                render={({ field }) => (
-                  <Cleave
-                    {...field}
-                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                    options={{
-                      numeral: true,
-                      numeralPositiveOnly: true,
-                      numeralThousandsGroupStyle: "thousand",
-                      numeralDecimalScale: 2,
-                      numeralDecimalMark: ",",
-                      delimiter: ".",
-                      prefix: "R$ ",
-                      rawValueTrimPrefix: true,
-                    }}
-                  />
+                rules={{ min: { value: 0.01, message: "O valor deve ser maior que 0" } }}
+                render={({ field, fieldState: { error } }) => (
+                  <>
+                    <Cleave
+                      {...field}
+                      className={`w-full rounded-md border ${error ? "border-red" : "border-strokedark"} bg-boxdark-2 px-3 py-2 text-sm font-medium text-bodydark`}
+                      options={{
+                        numeral: true,
+                        numeralPositiveOnly: true,
+                        numeralThousandsGroupStyle: "thousand",
+                        numeralDecimalScale: 2,
+                        numeralDecimalMark: ",",
+                        delimiter: ".",
+                        prefix: "R$ ",
+                        rawValueTrimPrefix: true,
+                      }}
+                    />
+                    {error && <span className="text-xs font-medium text-red">{error.message}</span>}
+                  </>
                 )}
               />
             </div>
@@ -768,10 +776,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
               <div className='hidden md:block col-span-1'></div>
             )}
             {/* ====> end label PERCENTUAL DE AQUISIÇÃO <==== */}
-
-            <div className="hidden md:block col-span-1">
-
-            </div>
 
             <div
               className={`flex items-center col-span-2 md:col-span-1 gap-2 ${watch("data_base")! < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
