@@ -77,7 +77,9 @@ const MainForm: React.FC<CVLDFormProps> = ({
     formState: { errors },
   } = useForm<Partial<CvldFormInputsProps>>({
     defaultValues: {
-      ja_possui_destacamento: true
+      ja_possui_destacamento: true,
+      percentual_a_ser_adquirido: 100,
+
     }
   });
 
@@ -394,6 +396,10 @@ const MainForm: React.FC<CVLDFormProps> = ({
       data.percentual_de_honorarios /= 100;
     }
 
+    if(data.valor_aquisicao_total){
+      data.percentual_a_ser_adquirido = 1
+    }
+
 
     setLoading(true);
 
@@ -634,20 +640,24 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 name="valor_principal"
                 control={control}
                 defaultValue={0}
-                render={({ field }) => (
-                  <Cleave
-                    {...field}
-                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                    options={{
-                      numeral: true,
-                      numeralThousandsGroupStyle: "thousand",
-                      numeralDecimalScale: 2,
-                      numeralDecimalMark: ",",
-                      delimiter: ".",
-                      prefix: "R$ ",
-                      rawValueTrimPrefix: true,
-                    }}
-                  />
+                rules={{ min: { value: 0.01, message: "O valor deve ser maior que 0" } }}
+                render={({ field, fieldState: { error } }) => (
+                  <>
+                    <Cleave
+                      {...field}
+                      className={`w-full rounded-md border-stroke ${error ? "border-red" : "dark:border-strokedark"} dark:bg-boxdark-2 px-3 py-2 text-sm font-medium dark:text-bodydark`}
+                      options={{
+                        numeral: true,
+                        numeralThousandsGroupStyle: "thousand",
+                        numeralDecimalScale: 2,
+                        numeralDecimalMark: ",",
+                        delimiter: ".",
+                        prefix: "R$ ",
+                        rawValueTrimPrefix: true,
+                      }}
+                    />
+                    {error && <span className="text-xs font-medium text-red">{error.message}</span>}
+                  </>
                 )}
               />
             </div>
@@ -662,21 +672,25 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 name="valor_juros"
                 control={control}
                 defaultValue={0}
-                render={({ field }) => (
-                  <Cleave
-                    {...field}
-                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                    options={{
-                      numeral: true,
-                      numeralPositiveOnly: true,
-                      numeralThousandsGroupStyle: "thousand",
-                      numeralDecimalScale: 2,
-                      numeralDecimalMark: ",",
-                      delimiter: ".",
-                      prefix: "R$ ",
-                      rawValueTrimPrefix: true,
-                    }}
-                  />
+                rules={{ min: { value: 0.01, message: "O valor deve ser maior que 0" } }}
+                render={({ field, fieldState: { error } }) => (
+                  <>
+                    <Cleave
+                      {...field}
+                      className={`w-full rounded-md border-stroke ${error ? "border-red" : "border-stroke dark:border-strokedark"} dark:bg-boxdark-2 px-3 py-2 text-sm font-medium dark:text-bodydark`}
+                      options={{
+                        numeral: true,
+                        numeralPositiveOnly: true,
+                        numeralThousandsGroupStyle: "thousand",
+                        numeralDecimalScale: 2,
+                        numeralDecimalMark: ",",
+                        delimiter: ".",
+                        prefix: "R$ ",
+                        rawValueTrimPrefix: true,
+                      }}
+                    />
+                    {error && <span className="text-xs font-medium text-red">{error.message}</span>}
+                  </>
                 )}
               />
             </div>
@@ -722,33 +736,52 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </div>
             </div>
 
-            {/* ====> label PERCENTUAL DE AQUISIÇÃO <==== */}
-            <div className="flex flex-col gap-2 2xsm:col-span-2 md:col-span-1">
+            <div
+              className={`flex items-center max-h-6 col-span-2 md:col-span-1 gap-2`}
+            >
+
+              <CustomCheckbox
+                check={watch("valor_aquisicao_total")}
+                id={'valor_aquisicao_total'}
+                defaultChecked
+                register={register("valor_aquisicao_total")}
+              />
+
               <label
-                htmlFor="percentual_a_ser_adquirido"
+                htmlFor="valor_aquisicao_total"
                 className="font-nexa text-xs font-semibold uppercase text-meta-5"
               >
-                Percentual de aquisição (%)
+                Aquisição total
               </label>
-              <input
-                type="number"
-                id="percentual_a_ser_adquirido"
-                defaultValue={100}
-                className="w-full rounded-md border bg-white px-3 py-2 text-sm font-medium border-stroke dark:border-strokedark dark:bg-boxdark-2"
-                min={0}
-                {...register("percentual_a_ser_adquirido", {
-                  required: "Campo obrigatório",
-                  setValueAs: (value) => {
-                    return parseInt(value);
-                  },
-                })}
-              />
             </div>
+
+            {/* ====> label PERCENTUAL DE AQUISIÇÃO <==== */}
+            {watch("valor_aquisicao_total") === false ? (
+              <div className="mt-1 flex flex-col gap-2 2xsm:col-span-2 md:col-span-1 overflow-hidden">
+                <label
+                  htmlFor="percentual_a_ser_adquirido"
+                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                >
+                  Percentual de aquisição (%)
+                </label>
+                <input
+                  type="number"
+                  id="percentual_a_ser_adquirido"
+                  defaultValue={100}
+                  className="w-full rounded-md border bg-white px-3 py-2 text-sm font-medium border-stroke dark:border-strokedark dark:bg-boxdark-2"
+                  min={0}
+                  {...register("percentual_a_ser_adquirido", {
+                    required: "Campo obrigatório",
+                    setValueAs: (value) => {
+                      return parseInt(value);
+                    },
+                  })}
+                />
+              </div>
+            ) : (
+              <div className='hidden md:block col-span-1'></div>
+            )}
             {/* ====> end label PERCENTUAL DE AQUISIÇÃO <==== */}
-
-            <div className="hidden md:block col-span-1">
-
-            </div>
 
             <div
               className={`flex items-center col-span-2 md:col-span-1 gap-2 ${watch("data_base")! < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}

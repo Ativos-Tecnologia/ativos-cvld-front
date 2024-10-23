@@ -24,6 +24,7 @@ import backendNumberFormat from '@/functions/formaters/backendNumberFormat';
 import { toast } from 'sonner';
 import numberFormat from '@/functions/formaters/numberFormat';
 import NewFormResultSkeleton from '../Skeletons/NewFormResultSkeleton';
+import { AxiosError } from 'axios';
 
 const NewForm = () => {
 
@@ -217,7 +218,6 @@ const NewForm = () => {
         data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
         data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
         data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
-        data.test_mode = !data.gerar_cvld;
 
         if (data.tipo_do_oficio === "CREDITÓRIO") {
             const dateInSaoPaulo = new Date().toLocaleDateString('pt-BR', {
@@ -241,6 +241,10 @@ const NewForm = () => {
             data.nao_incide_selic_no_periodo_db_ate_abril = true;
         }
 
+        if (!data.regime) {
+            data.regime = "GERAL";
+        }
+
         if (data.data_base > "2021-12-01") {
             data.incidencia_juros_moratorios = false;
         }
@@ -249,6 +253,10 @@ const NewForm = () => {
             data.percentual_de_honorarios = 0;
         } else {
             data.percentual_de_honorarios /= 100;
+        }
+
+        if (data.gerar_cvld) {
+            data.upload_notion = true;
         }
 
         if (!data.data_limite_de_atualizacao_check) {
@@ -263,11 +271,12 @@ const NewForm = () => {
             data.data_limite_de_atualizacao = formattedDate;
         }
 
-        console.log(data);
-
         try {
-            const response = await api.post("/api/lead-magnet/", data);
-            if (response.status === 200) {
+            const response = data.gerar_cvld
+                ? await api.post("/api/lead-magnet/save/", data)
+                : await api.post("/api/lead-magnet/", data)
+
+            if (response.status === 200 || response.status === 201) {
                 const results = response.data.result; // pega o resultado da requisição
                 setProposalValue({
                     min: results.min_proposal,
@@ -282,13 +291,13 @@ const NewForm = () => {
                     rra: results.memoria_de_calculo_rra
                 })
                 setShowResults(true);
-            } else if (response.status === 400) {
-                toast.error(response.data.error); // lança toast de erro na tela com mensagem personalizada
             }
         } catch (error) {
-            throw new Error(
-                "houve um erro no servidor ao tentar completar o cálculo",
-            ); // erro para identificação do desenvolvedor
+            if (error instanceof AxiosError) {
+                toast.error(error.response?.data.error)
+            } else {
+                toast.error(String(error));
+            }
         } finally {
             setLoading(false);
         }
@@ -532,7 +541,7 @@ const NewForm = () => {
                                         </ShadSelect> */}
                                     </div>
 
-                                    <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                    <div className="relative flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                                         <label
                                             htmlFor="valor_principal"
                                             className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -543,24 +552,28 @@ const NewForm = () => {
                                             name="valor_principal"
                                             control={control}
                                             defaultValue={0}
-                                            render={({ field }) => (
-                                                <Cleave
-                                                    {...field}
-                                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                                                    options={{
-                                                        numeral: true,
-                                                        numeralThousandsGroupStyle: "thousand",
-                                                        numeralDecimalScale: 2,
-                                                        numeralDecimalMark: ",",
-                                                        delimiter: ".",
-                                                        prefix: "R$ ",
-                                                        rawValueTrimPrefix: true,
-                                                    }}
-                                                />
+                                            rules={{ min: { value: 0.01, message: "O valor deve ser maior que 0" } }}
+                                            render={({ field, fieldState: { error } }) => (
+                                                <>
+                                                    <Cleave
+                                                        {...field}
+                                                        className={`w-full rounded-md border ${error ? "border-red" : "border-strokedark"} bg-boxdark-2 px-3 py-2 text-sm font-medium text-bodydark`}
+                                                        options={{
+                                                            numeral: true,
+                                                            numeralThousandsGroupStyle: "thousand",
+                                                            numeralDecimalScale: 2,
+                                                            numeralDecimalMark: ",",
+                                                            delimiter: ".",
+                                                            prefix: "R$ ",
+                                                            rawValueTrimPrefix: true,
+                                                        }}
+                                                    />
+                                                    {error && <span className="text-xs font-medium text-red absolute right-2 top-8.5">{error.message}</span>}
+                                                </>
                                             )}
                                         />
                                     </div>
-                                    <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                    <div className="relative flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                                         <label
                                             htmlFor="valor_juros"
                                             className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -571,21 +584,25 @@ const NewForm = () => {
                                             name="valor_juros"
                                             control={control}
                                             defaultValue={0}
-                                            render={({ field }) => (
-                                                <Cleave
-                                                    {...field}
-                                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                                                    options={{
-                                                        numeral: true,
-                                                        numeralPositiveOnly: true,
-                                                        numeralThousandsGroupStyle: "thousand",
-                                                        numeralDecimalScale: 2,
-                                                        numeralDecimalMark: ",",
-                                                        delimiter: ".",
-                                                        prefix: "R$ ",
-                                                        rawValueTrimPrefix: true,
-                                                    }}
-                                                />
+                                            rules={{ min: { value: 0.01, message: "O valor deve ser maior que 0" } }}
+                                            render={({ field, fieldState: { error } }) => (
+                                                <>
+                                                    <Cleave
+                                                        {...field}
+                                                        className={`w-full rounded-md border ${error ? "border-red" : "border-strokedark"} bg-boxdark-2 px-3 py-2 text-sm font-medium text-bodydark`}
+                                                        options={{
+                                                            numeral: true,
+                                                            numeralPositiveOnly: true,
+                                                            numeralThousandsGroupStyle: "thousand",
+                                                            numeralDecimalScale: 2,
+                                                            numeralDecimalMark: ",",
+                                                            delimiter: ".",
+                                                            prefix: "R$ ",
+                                                            rawValueTrimPrefix: true,
+                                                        }}
+                                                    />
+                                                    {error && <span className="text-xs font-medium text-red absolute right-2 top-8.5">{error.message}</span>}
+                                                </>
                                             )}
                                         />
                                     </div>
@@ -607,7 +624,7 @@ const NewForm = () => {
                                                 })}
                                                 aria-invalid={errors.data_base ? "true" : "false"}
                                             />
-                                            {errors.data_base && <span className='text-red absolute top-7.5 right-8.5 text-xs'>campo obrigatório</span>}
+                                            {errors.data_base && <span className='text-red font-medium absolute top-7.5 right-8.5 text-xs'>campo obrigatório</span>}
                                         </div>
                                     </div>
 
@@ -628,7 +645,7 @@ const NewForm = () => {
                                                         required: "Campo obrigatório",
                                                     })}
                                                 />
-                                                {errors.data_requisicao && <span className='text-red absolute top-7.5 right-8.5 text-xs'>campo obrigatório</span>}
+                                                {errors.data_requisicao && <span className='text-red font-medium absolute top-7.5 right-8.5 text-xs'>campo obrigatório</span>}
                                             </div>
                                         </div>
                                     ) : (
@@ -1031,9 +1048,9 @@ const NewForm = () => {
                                                                     className="cursor-pointer flex uppercase font-semibold font-satoshi text-xs w-full items-center justify-between rounded-md border border-stroke dark:border-strokedark bg-background px-2 py-2 h-[37px] ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 dark:bg-boxdark-2 focus-visible:outline-none focus-visible:ring-0"
                                                                     {...register("especie")}
                                                                 >
-                                                                    <option value="PRINCIPAL">principal</option>
-                                                                    <option value="HONORÁRIOS CONTRATUAIS">honorários contratuais</option>
-                                                                    <option value="HONORÁRIOS SUCUMBENCIAIS">honorários sucumbenciais</option>
+                                                                    <option value="Principal">principal</option>
+                                                                    <option value="Honorários Contratuais">honorários contratuais</option>
+                                                                    <option value="Honorários Sucumbenciais">honorários sucumbenciais</option>
                                                                 </select>
 
                                                                 {/* <ShadSelect
@@ -1182,8 +1199,8 @@ const NewForm = () => {
                                                                 className="cursor-pointer flex uppercase font-semibold font-satoshi text-xs w-full items-center justify-between rounded-md border border-stroke dark:border-strokedark bg-background px-2 py-2 h-[37px] ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 dark:bg-boxdark-2 focus-visible:outline-none focus-visible:ring-0"
                                                                 {...register("status")}
                                                             >
-                                                                <option value="negociação em andamento">negociação em andamento</option>
-                                                                <option value="proposta aceita">proposta aceita</option>
+                                                                <option value="Negociação em Andamento">negociação em andamento</option>
+                                                                <option value="Proposta aceita">proposta aceita</option>
                                                             </select>
 
                                                             {/* <ShadSelect
@@ -1409,7 +1426,7 @@ const NewForm = () => {
                                                         )
                                                     } */}
                                                     <li className="text-sm flex w-full">
-                                                        <a href={calculationMemory.simple || ""} className="w-full text-center p-4 flex result.result[0]s-center justify-center text-sm font-semibold dark:text-white rounded-md bg-slate-200 dark:bg-boxdark-2/90 hover:bg-slate-300 dark:hover:bg-boxdark-2 border border-stroke dark:border-strokedark">
+                                                        <a href={calculationMemory.simple || ""} className="w-full text-center p-4 flex items-center justify-center text-sm font-semibold dark:text-white rounded-md bg-slate-200 dark:bg-boxdark-2/90 hover:bg-slate-300 dark:hover:bg-boxdark-2 border border-stroke dark:border-strokedark">
                                                             <span className="font-medium">
                                                                 Memória de Cálculo Simples
                                                             </span>
@@ -1420,7 +1437,7 @@ const NewForm = () => {
                                                         </a>
                                                     </li>
                                                     <li className="text-sm flex w-full">
-                                                        <a href={calculationMemory.rra || ""} className="w-full text-center p-4 flex result.result[0]s-center justify-center text-sm font-semibold dark:text-white rounded-md bg-slate-200 dark:bg-boxdark-2/90 hover:bg-slate-300 dark:hover:bg-boxdark-2 border border-stroke dark:border-strokedark">
+                                                        <a href={calculationMemory.rra || ""} className="w-full text-center p-4 flex items-center justify-center text-sm font-semibold dark:text-white rounded-md bg-slate-200 dark:bg-boxdark-2/90 hover:bg-slate-300 dark:hover:bg-boxdark-2 border border-stroke dark:border-strokedark">
                                                             <span className="font-medium">
                                                                 Memória de Cálculo RRA
                                                             </span>
