@@ -1,31 +1,36 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import InputMask from 'react-input-mask';
-import api from "@/utils/api";
 import { APP_ROUTES } from "@/constants/app-routes";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
 import UseMySwal from "@/hooks/useMySwal";
-import { BiEnvelope, BiUser, BiLockAlt, BiIdCard, BiInfoCircle, BiX, BiCheck, BiQuestionMark } from "react-icons/bi";
-import { FcGoogle } from "react-icons/fc";
+import api from "@/utils/api";
 import { Popover } from "flowbite-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import {
+  BiCheck,
+  BiEnvelope,
+  BiIdCard,
+  BiInfoCircle,
+  BiLockAlt,
+  BiQuestionMark,
+  BiUser,
+  BiX,
+} from "react-icons/bi";
+import InputMask from "react-input-mask";
 
-
-
-import { Metadata } from "next";
-import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
-import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
-import { HiOutlineArrowRight } from "react-icons/hi";
-import { AiOutlineLoading } from "react-icons/ai";
-import usePassword from "@/hooks/usePassword";
-import { BsEye, BsEyeSlash } from "react-icons/bs";
-import Terms from "@/components/Modals/Terms_and_Conditions";
-import CustomCheckbox from "@/components/CrmUi/Checkbox";
-import { Fade } from "react-awesome-reveal";
 import { Button } from "@/components/Button";
+import CustomCheckbox from "@/components/CrmUi/Checkbox";
+import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
+import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
+import Terms from "@/components/Modals/Terms_and_Conditions";
+import usePassword from "@/hooks/usePassword";
+import { Fade } from "react-awesome-reveal";
+import { AiOutlineLoading } from "react-icons/ai";
+import { BsEye, BsEyeSlash } from "react-icons/bs";
+import { HiOutlineArrowRight } from "react-icons/hi";
 
 export type SignUpInputs = {
   username: string;
@@ -37,7 +42,6 @@ export type SignUpInputs = {
 };
 
 const SignUp: React.FC = () => {
-
   const router = useRouter();
   const {
     register,
@@ -46,53 +50,73 @@ const SignUp: React.FC = () => {
     control,
     formState: { errors },
   } = useForm<SignUpInputs>();
-  const passwordInput = watch('password');
-  const confirmPasswordInput = watch('confirm_password');
+  const passwordInput = watch("password");
+  const confirmPasswordInput = watch("confirm_password");
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [termsAccepted, setTermsAccepted] = useState<boolean>(false);
 
-  const { loading, setLoading, passwordsMatch, passwordStr, strengthColor, barWidth, passwordRequirements, hide, setHide } = usePassword(passwordInput, confirmPasswordInput);
+  const {
+    loading,
+    setLoading,
+    passwordsMatch,
+    passwordStr,
+    strengthColor,
+    barWidth,
+    passwordRequirements,
+    hide,
+    setHide,
+  } = usePassword(passwordInput, confirmPasswordInput);
 
   const MySwal = UseMySwal();
-  const selectOption = watch('select');
+  const selectOption = watch("select");
 
   const onSubmit: SubmitHandler<SignUpInputs> = async (data) => {
     setLoading(true);
-    if (data.password === data.confirm_password && passwordRequirements.filled) {
-
+    if (
+      data.password === data.confirm_password &&
+      passwordRequirements.filled
+    ) {
       const formData = {
         username: data.username,
         email: data.email,
         password: data.password,
-        cpf_cnpj: data.cpf_cnpj
-      }
+        cpf_cnpj: data.cpf_cnpj,
+      };
 
       try {
-        const response = await api.post("api/user/register/", formData).then((res) => {
-          if (res.status === 201) {
-            localStorage.setItem(`ATIVOS_${ACCESS_TOKEN}`, res.data.accessToken);
-            localStorage.setItem(`ATIVOS_${REFRESH_TOKEN}`, res.data.refreshToken);
-            MySwal.fire({
-              title: "Sucesso!",
-              text: "Cadastro realizado com sucesso! Em até 5 minutos, um e-mail de confirmação será enviado para o e-mail cadastrado.",
-              icon: "success",
-              showConfirmButton: true,
-              confirmButtonColor: '#1A56DB',
-              confirmButtonText: 'Voltar para Login',
-            }).then((result) => {
-              if (result.isConfirmed) {
-                router.push(APP_ROUTES.public.login.name);
-              }
-            });
-          }
-        })
+        const response = await api
+          .post("api/user/register/", formData)
+          .then((res) => {
+            if (res.status === 201) {
+              localStorage.setItem(
+                `ATIVOS_${ACCESS_TOKEN}`,
+                res.data.accessToken,
+              );
+              localStorage.setItem(
+                `ATIVOS_${REFRESH_TOKEN}`,
+                res.data.refreshToken,
+              );
+              MySwal.fire({
+                title: "Sucesso!",
+                text: "Cadastro realizado com sucesso! Em até 5 minutos, um e-mail de confirmação será enviado para o e-mail cadastrado.",
+                icon: "success",
+                showConfirmButton: true,
+                confirmButtonColor: "#1A56DB",
+                confirmButtonText: "Voltar para Login",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  router.push(APP_ROUTES.public.login.name);
+                }
+              });
+            }
+          });
       } catch (error) {
         MySwal.fire({
           title: "Ok, Houston...Temos um problema!",
           text: "Email ou usuário já cadastrado. Por favor, tente novamente com outras credenciais.",
           icon: "error",
           showConfirmButton: true,
-        })
+        });
         console.error(error);
       }
     } else if (data.password !== data.confirm_password) {
@@ -101,7 +125,6 @@ const SignUp: React.FC = () => {
         text: "Suas senhas não coincidem. Por favor, tente novamente.",
         icon: "error",
         showConfirmButton: true,
-
       });
     } else if (!passwordRequirements.filled) {
       MySwal.fire({
@@ -109,31 +132,28 @@ const SignUp: React.FC = () => {
         text: "Sua senha não corresponde aos requisitos mínimos. Por favor, tente novamente.",
         icon: "error",
         showConfirmButton: true,
-
       });
     }
     setLoading(false);
   };
 
   useEffect(() => {
+    const localAccess = localStorage.getItem("ATIVOS_access");
+    const localRefresh = localStorage.getItem("ATIVOS_refresh");
 
-    const localAccess = localStorage.getItem('ATIVOS_access');
-    const localRefresh = localStorage.getItem('ATIVOS_refresh');
-
-    if (localAccess === 'undefined' || localRefresh === 'undefined') {
-      localStorage.removeItem('ATIVOS_access');
-      localStorage.removeItem('ATIVOS_refresh');
+    if (localAccess === "undefined" || localRefresh === "undefined") {
+      localStorage.removeItem("ATIVOS_access");
+      localStorage.removeItem("ATIVOS_refresh");
     }
-
-  }, [])
+  }, []);
 
   return (
     <UnloggedLayout>
-      <div className="relative flex 3xl:max-h-[610px] h-full">
-        <div className="w-full hidden py-8 px-20 flex-col text-center justify-evenly hero_login md:min-h-[900px] md:flex xl:w-[65%] xl:min-h-full">
+      <div className="relative flex h-full 3xl:max-h-[610px]">
+        <div className="hero_login hidden w-full flex-col justify-evenly px-20 py-8 text-center md:flex md:min-h-[900px] xl:min-h-full xl:w-[65%]">
           <div className="2xsm:hidden xl:block">
             {/* logo */}
-            <div className="mb-10 flex flex-col justify-center items-center relative">
+            <div className="relative mb-10 flex flex-col items-center justify-center">
               <Fade triggerOnce>
                 <div className="flex flex-col items-center gap-3">
                   <Image
@@ -142,35 +162,44 @@ const SignUp: React.FC = () => {
                     width={160}
                     height={32}
                     className="antialiased"
-                    style={{ filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))' }}
+                    style={{
+                      filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))",
+                    }}
                   />
                   <Image
                     src={"/images/logo/celer-app-text-dark.svg"}
                     alt="Logo"
                     width={200}
                     height={32}
-                    style={{ filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.40))' }}
-
+                    style={{
+                      filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.40))",
+                    }}
                   />
                 </div>
               </Fade>
             </div>
             {/* end logo */}
 
-            <h1 className="text-left translate-x-25 animate-fade-right pt-8 text-5xl font-bold text-snow opacity-0 2xsm:hidden md:block md:text-4xl lg:text-6xl" style={{
-              filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.50))',
-            }}>
+            <h1
+              className="translate-x-25 animate-fade-right pt-8 text-left text-5xl font-bold text-snow opacity-0 2xsm:hidden md:block md:text-4xl lg:text-6xl"
+              style={{
+                filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.50))",
+              }}
+            >
               Sua solução <br /> one-stop-shop <br /> em precatórios
             </h1>
           </div>
         </div>
 
         {/* form */}
-        <div className="w-full border-stroke bg-snow sm:py-12.5 sm:px-8 2xsm:p-8 md:top-1/2 md:-translate-y-1/2 md:left-1/2 md:-translate-x-1/2 md:w-3/4 md:absolute md:rounded-md md:h-fit lg:h-fit lg:max-h-[850px] xl:w-[35%] xl:h-full lg:overflow-y-scroll xl:static xl:translate-y-0 xl:translate-x-0 xl:py-5.5">
+        <div className="w-full border-stroke bg-snow 2xsm:p-8 sm:px-8 sm:py-12.5 md:absolute md:left-1/2 md:top-1/2 md:h-fit md:w-3/4 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-md lg:h-fit lg:max-h-[850px] lg:overflow-y-scroll xl:static xl:h-full xl:w-[35%] xl:translate-x-0 xl:translate-y-0 xl:py-5.5">
           {/* Mobile visible logo */}
           <div className="block w-full xl:hidden">
-            <Link className="flex flex-col justify-center items-center mb-8" href="#">
-              <div className="flex flex-col items-center gap-3 bg">
+            <Link
+              className="mb-8 flex flex-col items-center justify-center"
+              href="#"
+            >
+              <div className="bg flex flex-col items-center gap-3">
                 <Image
                   src={"/images/logo/celer-app-logo.svg"}
                   alt="Logo"
@@ -196,19 +225,24 @@ const SignUp: React.FC = () => {
             </h2>
           </Fade>
 
-          <form className="grid grid-cols-1 gap-5 sm:grid-cols-2" onSubmit={handleSubmit(onSubmit)}>
+          <form
+            className="grid grid-cols-1 gap-5 sm:grid-cols-2"
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <div className="mb-2">
-              <label className="mb-2.5 block font-medium text-black dark:text-white">
+              <label
+                className="mb-2.5 block font-medium text-black dark:text-white"
+                htmlFor="username"
+              >
                 Nome de usuário
               </label>
               <div className="relative">
                 <input
                   type="text"
                   placeholder="Usuário"
-                  className={`${errors.username && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                  className={`${errors.username && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
                   id="username"
-                  {
-                  ...register("username", {
+                  {...register("username", {
                     required: "Campo obrigatório",
                     minLength: {
                       value: 4,
@@ -216,64 +250,70 @@ const SignUp: React.FC = () => {
                     },
                     maxLength: {
                       value: 30,
-                      message: "O nome deve conter no máximo 30 caracteres"
+                      message: "O nome deve conter no máximo 30 caracteres",
                     },
                     pattern: {
                       value: /^[a-zA-Z]+$/, // Regex para permitir apenas letras (maiúsculas e minúsculas)
-                      message: "O nome deve conter apenas letras e não deve ter espaços ou caracteres especiais"
-                    }
-                  })
-                  }
+                      message:
+                        "O nome deve conter apenas letras e não deve ter espaços ou caracteres especiais",
+                    },
+                  })}
                 />
 
-                <ErrorMessage errors={errors} field='username' />
+                <ErrorMessage errors={errors} field="username" />
 
                 <span className="absolute right-4 top-2.5">
-                  <BiUser style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />
+                  <BiUser
+                    style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
+                  />
                 </span>
               </div>
             </div>
 
             <div className="mb-2">
-              <label className="mb-2.5 block font-medium text-black dark:text-white">
+              <label
+                className="mb-2.5 block font-medium text-black dark:text-white"
+                htmlFor="email"
+              >
                 Email
               </label>
               <div className="relative">
                 <input
                   type="email"
                   placeholder="Digite seu email"
-                  className={`${errors.email && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                  className={`${errors.email && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
                   id="email"
-                  {
-                  ...register("email", {
+                  {...register("email", {
                     required: "Campo obrigatório",
-                  })
-                  }
+                  })}
                 />
 
-                <ErrorMessage errors={errors} field='email' />
+                <ErrorMessage errors={errors} field="email" />
 
                 <span className="absolute right-4 top-2.5">
-                  <BiEnvelope style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />
+                  <BiEnvelope
+                    style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
+                  />
                 </span>
               </div>
             </div>
 
             {/* cpf/cnpj field */}
             <div className="mb-3 sm:col-span-2">
-              <label className="mb-1 block font-medium text-black dark:text-white">
+              <label
+                className="mb-1 block font-medium text-black dark:text-white"
+                htmlFor="select"
+              >
                 Selecione uma opção abaixo:
               </label>
 
-              <div className="flex flex-col sm:flex-row gap-2">
+              <div className="flex flex-col gap-2 sm:flex-row">
                 <select
-                  id='select'
-                  className={`w-full sm:w-1/4 rounded-lg border border-stroke bg-transparent text-sm py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
-                  {
-                  ...register("select", {
-                    required: "Campo obrigatório"
-                  })
-                  }
+                  id="select"
+                  className={`w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary sm:w-1/4`}
+                  {...register("select", {
+                    required: "Campo obrigatório",
+                  })}
                   defaultValue={"CPF"}
                 >
                   <option value="CPF">CPF</option>
@@ -281,7 +321,7 @@ const SignUp: React.FC = () => {
                 </select>
 
                 <div className="relative flex-1">
-                  {selectOption === 'CNPJ' ? (
+                  {selectOption === "CNPJ" ? (
                     <React.Fragment>
                       <Controller
                         name="cpf_cnpj"
@@ -291,20 +331,20 @@ const SignUp: React.FC = () => {
                           required: "Campo obrigatório",
                           pattern: {
                             value: /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/,
-                            message: "CNPJ inválido"
-                          }
+                            message: "CNPJ inválido",
+                          },
                         }}
                         render={({ field }) => (
                           <InputMask
                             {...field}
                             mask="99.999.999/9999-99"
                             placeholder="Digite seu CNPJ"
-                            className={`${errors.cpf_cnpj && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                            className={`${errors.cpf_cnpj && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
                           />
                         )}
                       />
 
-                      <ErrorMessage errors={errors} field='cpf_cnpj' />
+                      <ErrorMessage errors={errors} field="cpf_cnpj" />
                     </React.Fragment>
                   ) : (
                     <React.Fragment>
@@ -316,26 +356,31 @@ const SignUp: React.FC = () => {
                           required: "Campo obrigatório",
                           pattern: {
                             value: /^\d{3}\.\d{3}\.\d{3}-\d{2}$/,
-                            message: "CPF inválido"
-                          }
+                            message: "CPF inválido",
+                          },
                         }}
                         render={({ field }) => (
                           <InputMask
                             {...field}
                             mask="999.999.999-99"
                             placeholder="Digite seu CPF"
-                            className={`${errors.cpf_cnpj && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                            className={`${errors.cpf_cnpj && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
                           />
                         )}
                       />
 
-                      <ErrorMessage errors={errors} field='cpf_cnpj' />
+                      <ErrorMessage errors={errors} field="cpf_cnpj" />
                     </React.Fragment>
                   )}
 
-
                   <span className="absolute right-4 top-2.5">
-                    <BiIdCard style={{ width: '22px', height: '22px', fill: 'rgb(186, 193, 203)' }} />
+                    <BiIdCard
+                      style={{
+                        width: "22px",
+                        height: "22px",
+                        fill: "rgb(186, 193, 203)",
+                      }}
+                    />
                   </span>
                 </div>
               </div>
@@ -352,53 +397,86 @@ const SignUp: React.FC = () => {
                   content={
                     <div className="w-64 text-sm">
                       <div className="border-b border-stroke bg-gray-100 px-3 py-2 dark:border-strokedark dark:bg-boxdark-2">
-                        <h3 id="default-popover" className="font-semibold text-gray-900 dark:text-white">A senha deve conter:</h3>
+                        <h3
+                          id="default-popover"
+                          className="font-semibold text-gray-900 dark:text-white"
+                        >
+                          A senha deve conter:
+                        </h3>
                       </div>
-                      <div className="px-3 py-2 flex flex-col gap-2 dark:text-white dark:bg-boxdark">
+                      <div className="flex flex-col gap-2 px-3 py-2 dark:bg-boxdark dark:text-white">
                         <div className="flex items-center gap-2">
-                          {passwordRequirements.minLength ?
-                            <BiCheck className="w-6 h-6 fill-meta-3" /> :
-                            <BiX className="w-6 h-6 fill-meta-1" />}
-                          <span className="text-slate-500">No mínimo 6 caracteres</span>
+                          {passwordRequirements.minLength ? (
+                            <BiCheck className="h-6 w-6 fill-meta-3" />
+                          ) : (
+                            <BiX className="h-6 w-6 fill-meta-1" />
+                          )}
+                          <span className="text-slate-500">
+                            No mínimo 6 caracteres
+                          </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          {passwordRequirements.lowercase ?
-                            <BiCheck className="w-6 h-6 fill-meta-3" /> :
-                            <BiX className="w-6 h-6 fill-meta-1" />}
-                          <span className="text-slate-500">Uma letra minúscula</span>
+                          {passwordRequirements.lowercase ? (
+                            <BiCheck className="h-6 w-6 fill-meta-3" />
+                          ) : (
+                            <BiX className="h-6 w-6 fill-meta-1" />
+                          )}
+                          <span className="text-slate-500">
+                            Uma letra minúscula
+                          </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          {passwordRequirements.uppercase ?
-                            <BiCheck className="w-6 h-6 fill-meta-3" /> :
-                            <BiX className="w-6 h-6 fill-meta-1" />}
-                          <span className="text-slate-500">Uma letra maiúscula</span>
+                          {passwordRequirements.uppercase ? (
+                            <BiCheck className="h-6 w-6 fill-meta-3" />
+                          ) : (
+                            <BiX className="h-6 w-6 fill-meta-1" />
+                          )}
+                          <span className="text-slate-500">
+                            Uma letra maiúscula
+                          </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          {passwordRequirements.number ?
-                            <BiCheck className="w-6 h-6 fill-meta-3" /> :
-                            <BiX className="w-6 h-6 fill-meta-1" />}
+                          {passwordRequirements.number ? (
+                            <BiCheck className="h-6 w-6 fill-meta-3" />
+                          ) : (
+                            <BiX className="h-6 w-6 fill-meta-1" />
+                          )}
                           <span className="text-slate-500">Um número</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          {passwordRequirements.specialCharacter ?
-                            <BiCheck className="w-6 h-6 fill-meta-3" /> :
-                            <BiX className="w-6 h-6 fill-meta-1" />}
-                          <span className="text-slate-500">Um caractere especial <br /> (ex: @, $, !, %, *, #, ?, &)</span>
+                          {passwordRequirements.specialCharacter ? (
+                            <BiCheck className="h-6 w-6 fill-meta-3" />
+                          ) : (
+                            <BiX className="h-6 w-6 fill-meta-1" />
+                          )}
+                          <span className="text-slate-500">
+                            Um caractere especial <br /> (ex: @, $, !, %, *, #,
+                            ?, &)
+                          </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          {passwordRequirements.veryStrong ?
-                            <BiCheck className="w-6 h-6 fill-meta-3" /> :
-                            <BiQuestionMark className="w-6 h-6 fill-meta-6" />}
-                          <span className="text-slate-500 text-xs">Mínimo de 12 caracteres para <br /> senha mais forte (opcional)</span>
+                          {passwordRequirements.veryStrong ? (
+                            <BiCheck className="h-6 w-6 fill-meta-3" />
+                          ) : (
+                            <BiQuestionMark className="h-6 w-6 fill-meta-6" />
+                          )}
+                          <span className="text-xs text-slate-500">
+                            Mínimo de 12 caracteres para <br /> senha mais forte
+                            (opcional)
+                          </span>
                         </div>
                       </div>
                     </div>
                   }
                 >
                   <button type="button" className="relative">
-                    {!passwordRequirements.filled && <span className="absolute z-0 inline-flex h-full w-full top-0 left-0 animate-ping rounded-full bg-meta-1 opacity-75"></span>}
+                    {!passwordRequirements.filled && (
+                      <span className="absolute left-0 top-0 z-0 inline-flex h-full w-full animate-ping rounded-full bg-meta-1 opacity-75"></span>
+                    )}
 
-                    <BiInfoCircle className={`${!passwordRequirements.filled && 'text-meta-1'} text-black dark:text-white h-3.5 w-3.5 cursor-pointer`} />
+                    <BiInfoCircle
+                      className={`${!passwordRequirements.filled && "text-meta-1"} h-3.5 w-3.5 cursor-pointer text-black dark:text-white`}
+                    />
                   </button>
                 </Popover>
                 {/* end popover for password hint */}
@@ -408,12 +486,11 @@ const SignUp: React.FC = () => {
                 <input
                   minLength={6}
                   maxLength={30}
-                  type={hide.password ? 'password' : 'text'}
+                  type={hide.password ? "password" : "text"}
                   placeholder="Digite a senha"
-                  className={`${errors.password && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                  className={`${errors.password && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
                   id="password"
-                  {
-                  ...register("password", {
+                  {...register("password", {
                     required: "Campo obrigatório",
                     minLength: {
                       value: 6,
@@ -421,43 +498,63 @@ const SignUp: React.FC = () => {
                     },
                     maxLength: {
                       value: 30,
-                      message: "Máximo de 30 caracteres"
+                      message: "Máximo de 30 caracteres",
                     },
                     // pattern: {
                     //   value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/,
                     //   message: "Mínimo de 6 caracteres, 1 letra (maiúscula e minúscula), 1 número e 1 caractere especial",
                     // }
-                  })
-                  }
+                  })}
                 />
-                {passwordInput?.length <= 0 && <ErrorMessage errors={errors} field='password' />}
+                {passwordInput?.length <= 0 && (
+                  <ErrorMessage errors={errors} field="password" />
+                )}
 
                 {/* password strength message */}
                 {passwordInput && (
-                  <div className="absolute w-full left-0 top-17 text-sm text-slate-400 flex flex-col gap-1">
-                    <div className="w-full h-2 border-none rounded">
-                      <div style={{
-                        backgroundColor: `${strengthColor}`,
-                        width: `${barWidth}`
-                      }} className={`h-full rounded transition-all duration-300`}></div>
+                  <div className="absolute left-0 top-17 flex w-full flex-col gap-1 text-sm text-slate-400">
+                    <div className="h-2 w-full rounded border-none">
+                      <div
+                        style={{
+                          backgroundColor: `${strengthColor}`,
+                          width: `${barWidth}`,
+                        }}
+                        className={`h-full rounded transition-all duration-300`}
+                      ></div>
                     </div>
                     <div>
-                      Força da senha: <span style={{ color: `${strengthColor}` }}>{passwordStr}</span>
+                      Força da senha:{" "}
+                      <span style={{ color: `${strengthColor}` }}>
+                        {passwordStr}
+                      </span>
                     </div>
                   </div>
                 )}
 
-                <span className='absolute top-2.5 right-10 cursor-pointer'
-                  onClick={() => setHide({
-                    ...hide,
-                    password: !hide.password
-                  })}
+                <span
+                  className="absolute right-10 top-2.5 cursor-pointer"
+                  onClick={() =>
+                    setHide({
+                      ...hide,
+                      password: !hide.password,
+                    })
+                  }
                 >
-                  {hide.password ? <BsEyeSlash style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} /> : <BsEye style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />}
+                  {hide.password ? (
+                    <BsEyeSlash
+                      style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
+                    />
+                  ) : (
+                    <BsEye
+                      style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
+                    />
+                  )}
                 </span>
 
                 <span className="absolute right-4 top-2.5">
-                  <BiLockAlt style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />
+                  <BiLockAlt
+                    style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
+                  />
                 </span>
               </div>
             </div>
@@ -470,40 +567,53 @@ const SignUp: React.FC = () => {
                 <input
                   minLength={6}
                   maxLength={30}
-                  type={hide.confirmPassword ? 'password' : 'text'}
+                  type={hide.confirmPassword ? "password" : "text"}
                   placeholder="Confirme sua senha"
-                  className={`${errors.confirm_password && '!border-rose-400 !ring-0 border-2 dark:!border-meta-1'} text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
-                  {
-                  ...register("confirm_password", {
+                  className={`${errors.confirm_password && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                  {...register("confirm_password", {
                     required: "Confirme a sua senha",
-                  })
-                  }
+                  })}
                 />
 
                 {!passwordsMatch && (
-                  <div className="absolute text-red dark:text-meta-1 w-full left-0 top-17 text-sm flex flex-col gap-1">
+                  <div className="absolute left-0 top-17 flex w-full flex-col gap-1 text-sm text-red dark:text-meta-1">
                     As senhas não conferem.
                   </div>
                 )}
 
-                {passwordsMatch && <ErrorMessage errors={errors} field='confirm_password' />}
+                {passwordsMatch && (
+                  <ErrorMessage errors={errors} field="confirm_password" />
+                )}
 
-                <span className='absolute top-2.5 right-10 cursor-pointer'
-                  onClick={() => setHide({
-                    ...hide,
-                    confirmPassword: !hide.confirmPassword
-                  })}
+                <span
+                  className="absolute right-10 top-2.5 cursor-pointer"
+                  onClick={() =>
+                    setHide({
+                      ...hide,
+                      confirmPassword: !hide.confirmPassword,
+                    })
+                  }
                 >
-                  {hide.confirmPassword ? <BsEyeSlash style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} /> : <BsEye style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />}
+                  {hide.confirmPassword ? (
+                    <BsEyeSlash
+                      style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
+                    />
+                  ) : (
+                    <BsEye
+                      style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
+                    />
+                  )}
                 </span>
 
                 <span className="absolute right-4 top-2.5">
-                  <BiLockAlt style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />
+                  <BiLockAlt
+                    style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
+                  />
                 </span>
               </div>
             </div>
 
-            <div className="mt-4 text-sm sm:col-span-2 flex gap-2 items-center">
+            <div className="mt-4 flex items-center gap-2 text-sm sm:col-span-2">
               <CustomCheckbox
                 check={termsAccepted}
                 callbackFunction={() => setTermsAccepted(!termsAccepted)}
@@ -516,19 +626,33 @@ const SignUp: React.FC = () => {
                       onChange={() => setTermsAccepted(!termsAccepted)}
                     /> */}
               <p>
-                Aceitar nossos <span onClick={() => setOpenModal(true)} className="text-blue-700 hover:underline cursor-pointer dark:text-blue-400">
-                  termos e condições</span>
+                Aceitar nossos{" "}
+                <span
+                  onClick={() => setOpenModal(true)}
+                  className="cursor-pointer text-blue-700 hover:underline dark:text-blue-400"
+                >
+                  termos e condições
+                </span>
               </p>
             </div>
 
             <div className="mb-2 sm:col-span-2">
-              <Button type="submit" disabled={!termsAccepted} className="w-full py-3 flex items-center justify-center bg-blue-700 text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-blue-700 transition-all duration-200">
-                <span className="text-[16px] font-medium" aria-disabled={loading}>
+              <Button
+                type="submit"
+                disabled={!termsAccepted}
+                className="flex w-full items-center justify-center bg-blue-700 py-3 text-white transition-all duration-200 hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-blue-700"
+              >
+                <span
+                  className="text-[16px] font-medium"
+                  aria-disabled={loading}
+                >
                   {loading ? "Cadastrando usuário..." : "Criar conta"}
                 </span>
-                {
-                  !loading ? (<HiOutlineArrowRight className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
-                }
+                {!loading ? (
+                  <HiOutlineArrowRight className="ml-2 mt-[0.2rem] h-4 w-4" />
+                ) : (
+                  <AiOutlineLoading className="ml-2 mt-[0.2rem] h-4 w-4 animate-spin" />
+                )}
               </Button>
               {/* <button disabled={!termsAccepted} type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-6 text-white bg-blue-700 hover:bg-blue-800 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-blue-700'>
                       <span className="text-[16px] font-medium" aria-disabled={loading}>
@@ -548,17 +672,20 @@ const SignUp: React.FC = () => {
                     Entrar com o Google
                   </button> */}
 
-            <div className=" text-center sm:col-span-2 text-sm">
+            <div className=" text-center text-sm sm:col-span-2">
               <p>
                 Já tem uma conta?{" "}
-                <Link href="/auth/signin" className="text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-500">
+                <Link
+                  href="/auth/signin"
+                  className="text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-500"
+                >
                   Conecte-se
                 </Link>
               </p>
             </div>
           </form>
         </div>
-          <Terms state={openModal} setState={setOpenModal} />
+        <Terms state={openModal} setState={setOpenModal} />
       </div>
     </UnloggedLayout>
   );
