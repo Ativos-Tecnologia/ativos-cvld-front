@@ -32,7 +32,7 @@ beforeEach(async () => {
 });
 
 describe("Teste dos Headers do registro", () => {
-  it("Carregar o titulo da página", async () => {
+  it("Teste carregar o titulo da página", async () => {
     // Buscando pelo título que tem quebras de linha
     const titulo = await screen.findByText(/Sua solução/i);
     expect(titulo).toBeInTheDocument();
@@ -44,7 +44,7 @@ describe("Teste dos Headers do registro", () => {
     expect(titulo3).toBeInTheDocument();
   });
 
-  it("Carregar o titulo do formulário", async () => {
+  it("Teste carregar o titulo do formulário", async () => {
     const tituloDoFormulário = await screen.findByRole("heading", {
       name: "Cadastre-se para começar",
       level: 2,
@@ -52,7 +52,7 @@ describe("Teste dos Headers do registro", () => {
     expect(tituloDoFormulário).toBeInTheDocument();
   });
 
-  it("Carregar labels do formulário", async () => {
+  it("Teste carregar labels do formulário", async () => {
     const nomeUsuario = await screen.findByText("Nome de usuário");
     expect(nomeUsuario).toBeInTheDocument();
 
@@ -75,7 +75,7 @@ describe("Teste dos Headers do registro", () => {
     expect(confirmSenha).toBeInTheDocument();
   });
 
-  it("Deve marcar e desmarcar o checkbox", () => {
+  it("Teste deve marcar e desmarcar o checkbox", () => {
     const checkbox = screen.getByRole("checkbox");
 
     // Verifica se o checkbox está desmarcado inicialmente
@@ -86,7 +86,7 @@ describe("Teste dos Headers do registro", () => {
     expect(checkbox).toBeChecked();
   });
 
-  it("Deve preencher o registro de usuário", async () => {
+  it("Teste deve preencher o registro de usuário", async () => {
     const renderForm = () => {
       const Wrapper = () => {
         const methods = useForm();
@@ -135,14 +135,14 @@ describe("Teste dos Headers do registro", () => {
     expect(inputCPF).toHaveValue("045.214.789-63");
   });
 
-  it("Deve registrar o usuário", async () => {
+  it("Teste deve registrar o usuário", async () => {
     const createAccount = screen.getByText(/Criar conta/i);
 
     expect(createAccount).toBeInTheDocument();
     await userEvent.click(createAccount);
   });
 
-  it("Deve conectar o usuário", async () => {
+  it("Teste deve conectar o usuário", async () => {
     const conecte = screen.getByText(/Conecte-se/i);
 
     expect(conecte).toBeInTheDocument();

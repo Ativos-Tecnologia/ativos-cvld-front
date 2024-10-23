@@ -43,7 +43,7 @@ describe("Teste de Formulário de Cadastro na Wallet", () => {
     expect(titulo3).toBeInTheDocument();
   })
 
-  it("Verficar titulo do formulário", async () => {
+  it("Teste verficar titulo do formulário", async () => {
     const tituloDoFormulário = await screen.findByRole("heading", {
       name: "Cadastre-se na Wallet",
       level: 2,
@@ -51,7 +51,7 @@ describe("Teste de Formulário de Cadastro na Wallet", () => {
     expect(tituloDoFormulário).toBeInTheDocument();
   })
 
-  it("Carregar labels do formulário", async () => {
+  it("Teste carregar labels do formulário", async () => {
     const nomeUsuario = await screen.findByText("Nome de usuário");
     expect(nomeUsuario).toBeInTheDocument();
 
@@ -133,6 +133,13 @@ describe("Teste de Formulário de Cadastro na Wallet", () => {
     fireEvent.change(inputEmail, { target: { value: "email@email.com" } });
     expect(inputEmail.value).toBe("email@email.com");
 
+    const inpuNomeCompleto =
+      await screen.getByLabelText(/Nome Completo/i);
+    fireEvent.change(inpuNomeCompleto, {
+      target: { value: "John Doe" },
+    });
+    expect(inpuNomeCompleto).toHaveValue("John Doe");
+
     const selectOption = screen.getByLabelText(
       /Selecione uma opção/i,
     ) as HTMLSelectElement;
@@ -153,6 +160,20 @@ describe("Teste de Formulário de Cadastro na Wallet", () => {
 
     fireEvent.change(inputCPF, { target: { value: "04521478963" } });
     expect(inputCPF).toHaveValue("045.214.789-63");
+
+    const inpuNomeCompletoRepresentante = await screen.getByLabelText(/Nome Completo/i);
+    fireEvent.change(inpuNomeCompletoRepresentante, {
+      target: { value: "John Doe" }
+    });
+    expect(inpuNomeCompletoRepresentante).toHaveValue("John Doe");
+
+    const inputCPFRepresentante = (await screen.findAllByPlaceholderText(
+      /Digite seu CPF/i,
+    ))[1] as HTMLInputElement;
+    fireEvent.change(inputCPFRepresentante, {
+      target: { value: "04521478966" }
+    }) 
+    expect(inputCPFRepresentante).toHaveValue("045.214.789-66");
   })
 
   it("Deve registrar o usuário", async () => {
