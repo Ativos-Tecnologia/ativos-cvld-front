@@ -483,7 +483,7 @@ const SignUpWallet: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="mb-2 2xsm:col-span-2 md:col-span-1">
+                  <div className="mb-2 col-span-2 ">
                     <label
                       className="mb-2.5 block font-medium text-black dark:text-white"
                       htmlFor="CPF_Repre"
@@ -525,215 +525,216 @@ const SignUpWallet: React.FC = () => {
                       </span>
                     </div>
                   </div>
-
-                  <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
-                    <label
-                      className="mb-2.5 block font-medium text-black dark:text-white"
-                      htmlFor="whatsapp"
-                    >
-                      Whatsapp
-                    </label>
-                    <div className="relative">
-                      <Controller
-                        name="whatsapp"
-                        control={control}
-                        defaultValue=""
-                        rules={{
-                          required: "Campo obrigatório",
-                          pattern: {
-                            value: /^\d{2}\.\d{5}-\d{4}$/,
-                            message: "Número inválido",
-                          },
-                        }}
-                        render={({ field }) => (
-                          <InputMask
-                            {...field}
-                            mask="99.99999-9999"
-                            placeholder="Whatsapp"
-                            className={`${errors.whatsapp && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
-                          />
-                        )}
-                      />
-
-                      <ErrorMessage errors={errors} field="whatsapp" />
-
-                      <span className="absolute right-4 top-2.5">
-                        <BiLogoWhatsapp
-                          style={{
-                            width: "22px",
-                            height: "22px",
-                            fill: "rgb(186, 193, 203)",
-                          }}
-                        />
-                      </span>
-                    </div>
-                  </div>
-                  {/* Dados Bancários */}
-                  {/* Banco */}
-
-                  <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
-                    <label
-                      className="mb-2.5 block font-medium text-black dark:text-white"
-                      htmlFor="banco"
-                    >
-                      Banco
-                    </label>
-                    <div className="relative">
-                      <Controller
-                        name="banco"
-                        control={control}
-                        defaultValue=""
-                        rules={{
-                          required: "Campo obrigatório",
-                          pattern: {
-                            value: /^\d{3}$/,
-                            message: "Número inválido",
-                          },
-                        }}
-                        render={({ field }) => (
-                          <InputMask
-                            {...field}
-                            mask="999"
-                            placeholder="Banco"
-                            className={`${errors.banco && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
-                          />
-                        )}
-                      />
-
-                      <ErrorMessage errors={errors} field="banco" />
-
-                      <span className="absolute right-4 top-2.5">
-                        <BiIdCard
-                          style={{
-                            width: "22px",
-                            height: "22px",
-                            fill: "rgb(186, 193, 203)",
-                          }}
-                        />
-                      </span>
-                    </div>
-                  </div>
-                  {/* Agencia */}
-                  <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
-                    <label
-                      className="mb-2.5 block font-medium text-black dark:text-white"
-                      htmlFor="agencia"
-                    >
-                      Agência
-                    </label>
-                    <div className="relative">
-                      <Controller
-                        name="agencia"
-                        control={control}
-                        defaultValue=""
-                        rules={{
-                          required: "Campo obrigatório",
-                          pattern: {
-                            value: /^\d{4}-\d{1}$/,
-                            message: "Número inválido",
-                          },
-                        }}
-                        render={({ field }) => (
-                          <InputMask
-                            {...field}
-                            mask="9999-9"
-                            placeholder="Agência"
-                            className={`${errors.agencia && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
-                          />
-                        )}
-                      />
-
-                      <ErrorMessage errors={errors} field="agencia" />
-
-                      <span className="absolute right-4 top-2.5">
-                        <BiIdCard
-                          style={{
-                            width: "22px",
-                            height: "22px",
-                            fill: "rgb(186, 193, 203)",
-                          }}
-                        />
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Conta Corrente */}
-                  <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
-                    <label
-                      className="mb-2.5 block font-medium text-black dark:text-white"
-                      htmlFor="conta_corrente"
-                    >
-                      Conta Corrente
-                    </label>
-                    <div className="relative">
-                      <Controller
-                        name="conta_corrente"
-                        control={control}
-                        defaultValue=""
-                        rules={{
-                          required: "Campo obrigatório",
-                          pattern: {
-                            value: /^\d{7}-\d{1}$/,
-                            message: "Número inválido",
-                          },
-                        }}
-                        render={({ field }) => (
-                          <InputMask
-                            {...field}
-                            mask="9999999-9"
-                            placeholder="Conta Corrente"
-                            className={`${errors.conta_corrente && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
-                          />
-                        )}
-                      />
-
-                      <ErrorMessage errors={errors} field="conta_corrente" />
-
-                      <span className="absolute right-4 top-2.5">
-                        <BiIdCard
-                          style={{
-                            width: "22px",
-                            height: "22px",
-                            fill: "rgb(186, 193, 203)",
-                          }}
-                        />
-                      </span>
-                    </div>
-                  </div>
-                  {/* Pix */}
-                  <div className="mb-2 2xsm:col-span-2 md:col-span-1">
-                    <label
-                      className="mb-2.5 block font-medium text-black dark:text-white"
-                      htmlFor="pix"
-                    >
-                      Pix
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        placeholder="Pix"
-                        className={`${errors.pix && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
-                        id="pix"
-                        {...register("pix", {
-                          required: "Campo obrigatório",
-                        })}
-                      />
-
-                      <ErrorMessage errors={errors} field="repre_name" />
-
-                      <span className="absolute right-4 top-2.5">
-                        <BiIdCard
-                          style={{
-                            width: "22px",
-                            height: "22px",
-                            fill: "rgb(186, 193, 203)",
-                          }}
-                        />
-                      </span>
-                    </div>
-                  </div>
                 </div>
               ) : null}
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mt-5 ">
+                <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
+                  <label
+                    className="mb-2.5 block font-medium text-black dark:text-white"
+                    htmlFor="whatsapp"
+                  >
+                    Whatsapp
+                  </label>
+                  <div className="relative">
+                    <Controller
+                      name="whatsapp"
+                      control={control}
+                      defaultValue=""
+                      rules={{
+                        required: "Campo obrigatório",
+                        pattern: {
+                          value: /^\d{2}\.\d{5}-\d{4}$/,
+                          message: "Número inválido",
+                        },
+                      }}
+                      render={({ field }) => (
+                        <InputMask
+                          {...field}
+                          mask="99.99999-9999"
+                          placeholder="Whatsapp"
+                          className={`${errors.whatsapp && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                        />
+                      )}
+                    />
+
+                    <ErrorMessage errors={errors} field="whatsapp" />
+
+                    <span className="absolute right-4 top-2.5">
+                      <BiLogoWhatsapp
+                        style={{
+                          width: "22px",
+                          height: "22px",
+                          fill: "rgb(186, 193, 203)",
+                        }}
+                      />
+                    </span>
+                  </div>
+                </div>
+                {/* Dados Bancários */}
+                {/* Banco */}
+
+                <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
+                  <label
+                    className="mb-2.5 block font-medium text-black dark:text-white"
+                    htmlFor="banco"
+                  >
+                    Banco
+                  </label>
+                  <div className="relative">
+                    <Controller
+                      name="banco"
+                      control={control}
+                      defaultValue=""
+                      rules={{
+                        required: "Campo obrigatório",
+                        pattern: {
+                          value: /^\d{3}$/,
+                          message: "Número inválido",
+                        },
+                      }}
+                      render={({ field }) => (
+                        <InputMask
+                          {...field}
+                          mask="999"
+                          placeholder="Banco"
+                          className={`${errors.banco && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                        />
+                      )}
+                    />
+
+                    <ErrorMessage errors={errors} field="banco" />
+
+                    <span className="absolute right-4 top-2.5">
+                      <BiIdCard
+                        style={{
+                          width: "22px",
+                          height: "22px",
+                          fill: "rgb(186, 193, 203)",
+                        }}
+                      />
+                    </span>
+                  </div>
+                </div>
+                {/* Agencia */}
+                <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
+                  <label
+                    className="mb-2.5 block font-medium text-black dark:text-white"
+                    htmlFor="agencia"
+                  >
+                    Agência
+                  </label>
+                  <div className="relative">
+                    <Controller
+                      name="agencia"
+                      control={control}
+                      defaultValue=""
+                      rules={{
+                        required: "Campo obrigatório",
+                        pattern: {
+                          value: /^\d{4}-\d{1}$/,
+                          message: "Número inválido",
+                        },
+                      }}
+                      render={({ field }) => (
+                        <InputMask
+                          {...field}
+                          mask="9999-9"
+                          placeholder="Agência"
+                          className={`${errors.agencia && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                        />
+                      )}
+                    />
+
+                    <ErrorMessage errors={errors} field="agencia" />
+
+                    <span className="absolute right-4 top-2.5">
+                      <BiIdCard
+                        style={{
+                          width: "22px",
+                          height: "22px",
+                          fill: "rgb(186, 193, 203)",
+                        }}
+                      />
+                    </span>
+                  </div>
+                </div>
+
+                {/* Conta Corrente */}
+                <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
+                  <label
+                    className="mb-2.5 block font-medium text-black dark:text-white"
+                    htmlFor="conta_corrente"
+                  >
+                    Conta Corrente
+                  </label>
+                  <div className="relative">
+                    <Controller
+                      name="conta_corrente"
+                      control={control}
+                      defaultValue=""
+                      rules={{
+                        required: "Campo obrigatório",
+                        pattern: {
+                          value: /^\d{7}-\d{1}$/,
+                          message: "Número inválido",
+                        },
+                      }}
+                      render={({ field }) => (
+                        <InputMask
+                          {...field}
+                          mask="9999999-9"
+                          placeholder="Conta Corrente"
+                          className={`${errors.conta_corrente && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                        />
+                      )}
+                    />
+
+                    <ErrorMessage errors={errors} field="conta_corrente" />
+
+                    <span className="absolute right-4 top-2.5">
+                      <BiIdCard
+                        style={{
+                          width: "22px",
+                          height: "22px",
+                          fill: "rgb(186, 193, 203)",
+                        }}
+                      />
+                    </span>
+                  </div>
+                </div>
+                {/* Pix */}
+                <div className="mb-2 col-span-2">
+                  <label
+                    className="mb-2.5 block font-medium text-black dark:text-white"
+                    htmlFor="pix"
+                  >
+                    Pix
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Pix"
+                      className={`${errors.pix && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                      id="pix"
+                      {...register("pix", {
+                        required: "Campo obrigatório",
+                      })}
+                    />
+
+                    <ErrorMessage errors={errors} field="repre_name" />
+
+                    <span className="absolute right-4 top-2.5">
+                      <BiIdCard
+                        style={{
+                          width: "22px",
+                          height: "22px",
+                          fill: "rgb(186, 193, 203)",
+                        }}
+                      />
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="mb-3">
@@ -904,7 +905,7 @@ const SignUpWallet: React.FC = () => {
                 </span>
               </div>
             </div>
-            <div className="2xsm:mb-5 2xsm:mt-10 md:mt-0 md:mb-3">
+            <div className="2xsm:mb-5 2xsm:mt-10 md:mb-3 md:mt-0">
               <label className="mb-2.5 block font-medium text-black dark:text-white">
                 Confirmar senha
               </label>
@@ -921,7 +922,7 @@ const SignUpWallet: React.FC = () => {
                 />
 
                 {!passwordsMatch && (
-                  <div className="absolute left-0 2xsm:top-12 md:top-17 flex w-full flex-col gap-1 text-sm text-red dark:text-meta-1">
+                  <div className="absolute left-0 flex w-full flex-col gap-1 text-sm text-red dark:text-meta-1 2xsm:top-12 md:top-17">
                     As senhas não conferem.
                   </div>
                 )}
@@ -957,7 +958,7 @@ const SignUpWallet: React.FC = () => {
                 </span>
               </div>
             </div>
-            <div className="2xsm:mt-4 md:mt-15 flex items-center gap-2 text-sm sm:col-span-2">
+            <div className="flex items-center gap-2 text-sm 2xsm:mt-4 sm:col-span-2 md:mt-15">
               <CustomCheckbox
                 check={termsAccepted}
                 callbackFunction={() => setTermsAccepted(!termsAccepted)}
