@@ -77,7 +77,9 @@ const MainForm: React.FC<CVLDFormProps> = ({
     formState: { errors },
   } = useForm<Partial<CvldFormInputsProps>>({
     defaultValues: {
-      ja_possui_destacamento: true
+      ja_possui_destacamento: true,
+      percentual_a_ser_adquirido: 100,
+
     }
   });
 
@@ -394,6 +396,10 @@ const MainForm: React.FC<CVLDFormProps> = ({
       data.percentual_de_honorarios /= 100;
     }
 
+    if(data.valor_aquisicao_total){
+      data.percentual_a_ser_adquirido = 1
+    }
+
 
     setLoading(true);
 
@@ -639,7 +645,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                   <>
                     <Cleave
                       {...field}
-                      className={`w-full rounded-md border ${error ? "border-red" : "border-strokedark"} bg-boxdark-2 px-3 py-2 text-sm font-medium text-bodydark`}
+                      className={`w-full rounded-md border-stroke ${error ? "border-red" : "dark:border-strokedark"} dark:bg-boxdark-2 px-3 py-2 text-sm font-medium dark:text-bodydark`}
                       options={{
                         numeral: true,
                         numeralThousandsGroupStyle: "thousand",
@@ -671,7 +677,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                   <>
                     <Cleave
                       {...field}
-                      className={`w-full rounded-md border ${error ? "border-red" : "border-strokedark"} bg-boxdark-2 px-3 py-2 text-sm font-medium text-bodydark`}
+                      className={`w-full rounded-md border-stroke ${error ? "border-red" : "border-stroke dark:border-strokedark"} dark:bg-boxdark-2 px-3 py-2 text-sm font-medium dark:text-bodydark`}
                       options={{
                         numeral: true,
                         numeralPositiveOnly: true,
