@@ -32,7 +32,7 @@ beforeEach(async () => {
 });
 
 describe("Teste de Formulário de Cadastro na Wallet", () => {
-  it("Carregar titulos da página de registro", async () => {
+  it("Teste carregar titulos da página de registro", async () => {
     const titulo = await screen.findByText(/Sua solução/i);
     expect(titulo).toBeInTheDocument();
 
@@ -174,16 +174,42 @@ describe("Teste de Formulário de Cadastro na Wallet", () => {
       target: { value: "04521478966" }
     }) 
     expect(inputCPFRepresentante).toHaveValue("045.214.789-66");
+
+    const zap = (
+      await screen.findAllByPlaceholderText(/Whatsapp/i))[0] as HTMLInputElement;
+    fireEvent.change(zap, { target: { value: "81999999999" } });
+    expect(zap).toHaveValue("81.99999-9999");
+
+    const banco = (
+      await screen.findAllByPlaceholderText(/Banco/i))[0] as HTMLInputElement;
+    fireEvent.change(banco, { target: { value: "256" } });
+    expect(banco).toHaveValue("256");
+
+    const agencia = (
+      await screen.findAllByPlaceholderText(/Agência/i))[0] as HTMLInputElement;
+    fireEvent.change(agencia, { target: { value: "42123" } });
+    expect(agencia).toHaveValue("4212-3");
+
+    const contaCorrente = (
+      await screen.findAllByPlaceholderText(/Conta Corrente/i))[0] as HTMLInputElement;
+    fireEvent.change(contaCorrente, { target: { value: "44444444" } });
+    expect(contaCorrente).toHaveValue("4444444-4");
+
+    const pix = (
+      await screen.findAllByPlaceholderText(/Pix/i))[0] as HTMLInputElement;
+    fireEvent.change(pix, { target: { value: "216549846513546846852132" } });
+    expect(pix).toHaveValue("216549846513546846852132");
+
   })
 
-  it("Deve registrar o usuário", async () => {
+  it("Teste deve registrar o usuário", async () => {
     const createAccount = screen.getByText(/Criar conta/i);
 
     expect(createAccount).toBeInTheDocument();
     await userEvent.click(createAccount);
   });
 
-  it("Deve conectar o usuário", async () => {
+  it("Teste deve conectar o usuário", async () => {
     const conecte = screen.getByText(/Conecte-se/i);
 
     expect(conecte).toBeInTheDocument();
