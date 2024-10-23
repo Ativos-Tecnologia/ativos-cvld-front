@@ -202,6 +202,16 @@ describe("Teste de Formulário de Cadastro na Wallet", () => {
 
   })
 
+  it("Teste deve marcar e desmarcar o checkbox", () => {
+    const checkbox = screen.getByRole("checkbox");
+
+    expect(checkbox).not.toBeChecked();
+
+    fireEvent.click(checkbox);
+    
+    expect(checkbox).toBeChecked();
+  });
+
   it("Teste deve registrar o usuário", async () => {
     const createAccount = screen.getByText(/Criar conta/i);
 
