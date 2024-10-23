@@ -536,52 +536,12 @@ const SignUpWallet: React.FC = () => {
                   </div>
                 </div>
               ) : null}
+              <div className="w-full text-center p-3 justify-center text-sm text-red dark:text-meta-1">
+                Atenção!! os dados bancários precisam ser da mesma titularidade do CPF/CNPJ cadastrado.
+              </div>
+              {/* Dados Bancários */}
               <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 ">
-                <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
-                  <label
-                    className="mb-2.5 block font-medium text-black dark:text-white"
-                    htmlFor="whatsapp"
-                  >
-                    Whatsapp
-                  </label>
-                  <div className="relative">
-                    <Controller
-                      name="whatsapp"
-                      control={control}
-                      defaultValue=""
-                      rules={{
-                        required: "Campo obrigatório",
-                        pattern: {
-                          value: /^\d{2}\.\d{5}-\d{4}$/,
-                          message: "Número inválido",
-                        },
-                      }}
-                      render={({ field }) => (
-                        <InputMask
-                          {...field}
-                          mask="99.99999-9999"
-                          placeholder="Whatsapp"
-                          className={`${errors.whatsapp && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
-                        />
-                      )}
-                    />
-
-                    <ErrorMessage errors={errors} field="whatsapp" />
-
-                    <span className="absolute right-4 top-2.5">
-                      <BiLogoWhatsapp
-                        style={{
-                          width: "22px",
-                          height: "22px",
-                          fill: "rgb(186, 193, 203)",
-                        }}
-                      />
-                    </span>
-                  </div>
-                </div>
-                {/* Dados Bancários */}
                 {/* Banco */}
-
                 <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
                   <label
                     className="mb-2.5 block font-medium text-black dark:text-white"
@@ -712,7 +672,7 @@ const SignUpWallet: React.FC = () => {
                   </div>
                 </div>
                 {/* Pix */}
-                <div className="col-span-2 mb-2">
+                <div className="mb-2 2xsm:col-span-2  md:col-span-1">
                   <label
                     className="mb-2.5 block font-medium text-black dark:text-white"
                     htmlFor="pix"
@@ -734,6 +694,48 @@ const SignUpWallet: React.FC = () => {
 
                     <span className="absolute right-4 top-2.5">
                       <BiIdCard
+                        style={{
+                          width: "22px",
+                          height: "22px",
+                          fill: "rgb(186, 193, 203)",
+                        }}
+                      />
+                    </span>
+                  </div>
+                </div>
+                <div className="col-span-2 mb-2 ">
+                  <label
+                    className="mb-2.5 block font-medium text-black dark:text-white"
+                    htmlFor="whatsapp"
+                  >
+                    Whatsapp
+                  </label>
+                  <div className="relative">
+                    <Controller
+                      name="whatsapp"
+                      control={control}
+                      defaultValue=""
+                      rules={{
+                        required: "Campo obrigatório",
+                        pattern: {
+                          value: /^\d{2}\.\d{5}-\d{4}$/,
+                          message: "Número inválido",
+                        },
+                      }}
+                      render={({ field }) => (
+                        <InputMask
+                          {...field}
+                          mask="99.99999-9999"
+                          placeholder="Whatsapp"
+                          className={`${errors.whatsapp && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                        />
+                      )}
+                    />
+
+                    <ErrorMessage errors={errors} field="whatsapp" />
+
+                    <span className="absolute right-4 top-2.5">
+                      <BiLogoWhatsapp
                         style={{
                           width: "22px",
                           height: "22px",
