@@ -246,7 +246,10 @@ const SignUpWallet: React.FC = () => {
             onSubmit={handleSubmit(onSubmit)}
           >
             <div className="mb-2">
-              <label className="mb-2.5 block font-medium text-black dark:text-white">
+              <label
+                className="mb-2.5 block font-medium text-black dark:text-white"
+                htmlFor="username"
+              >
                 Nome de usuário
               </label>
               <div className="relative">
@@ -283,7 +286,10 @@ const SignUpWallet: React.FC = () => {
               </div>
             </div>
             <div className="mb-2 ">
-              <label className="mb-2.5 block font-medium text-black dark:text-white">
+              <label
+                className="mb-2.5 block font-medium text-black dark:text-white"
+                htmlFor="email"
+              >
                 Email
               </label>
               <div className="relative">
@@ -350,7 +356,10 @@ const SignUpWallet: React.FC = () => {
 
             {/* cpf/cnpj field */}
             <div className="mb-3 sm:col-span-2">
-              <label className=" mb-3 block font-medium text-black dark:text-white">
+              <label
+                className=" mb-3 block font-medium text-black dark:text-white"
+                htmlFor="select"
+              >
                 Selecione uma opção abaixo:
               </label>
 
@@ -483,7 +492,7 @@ const SignUpWallet: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="mb-2 col-span-2 ">
+                  <div className="col-span-2 mb-2 ">
                     <label
                       className="mb-2.5 block font-medium text-black dark:text-white"
                       htmlFor="CPF_Repre"
@@ -527,7 +536,7 @@ const SignUpWallet: React.FC = () => {
                   </div>
                 </div>
               ) : null}
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mt-5 ">
+              <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 ">
                 <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
                   <label
                     className="mb-2.5 block font-medium text-black dark:text-white"
@@ -703,7 +712,7 @@ const SignUpWallet: React.FC = () => {
                   </div>
                 </div>
                 {/* Pix */}
-                <div className="mb-2 col-span-2">
+                <div className="col-span-2 mb-2">
                   <label
                     className="mb-2.5 block font-medium text-black dark:text-white"
                     htmlFor="pix"
