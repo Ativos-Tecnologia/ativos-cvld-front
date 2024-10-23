@@ -433,7 +433,7 @@ const SignUpWallet: React.FC = () => {
               </div>
               {selectOption === "CNPJ" ? (
                 <div className="grid grid-cols-2 gap-5">
-                  <h3 className="col-span-2 mb-2.5 mt-3 block text-center font-semibold uppercase text-black dark:text-white">
+                  <h3 className="col-span-2 mt-5 block text-center font-semibold uppercase text-black dark:text-white">
                     Dados do Representante Legal
                   </h3>
                   <div className="col-span-2 mb-2">
@@ -904,8 +904,7 @@ const SignUpWallet: React.FC = () => {
                 </span>
               </div>
             </div>
-
-            <div className="mb-10">
+            <div className="2xsm:mb-5 2xsm:mt-10 md:mt-0 md:mb-3">
               <label className="mb-2.5 block font-medium text-black dark:text-white">
                 Confirmar senha
               </label>
@@ -922,7 +921,7 @@ const SignUpWallet: React.FC = () => {
                 />
 
                 {!passwordsMatch && (
-                  <div className="absolute left-0 top-17 flex w-full flex-col gap-1 text-sm text-red dark:text-meta-1">
+                  <div className="absolute left-0 2xsm:top-12 md:top-17 flex w-full flex-col gap-1 text-sm text-red dark:text-meta-1">
                     As senhas não conferem.
                   </div>
                 )}
@@ -958,7 +957,7 @@ const SignUpWallet: React.FC = () => {
                 </span>
               </div>
             </div>
-            <div className="mt-4 flex items-center gap-2 text-sm sm:col-span-2">
+            <div className="2xsm:mt-4 md:mt-15 flex items-center gap-2 text-sm sm:col-span-2">
               <CustomCheckbox
                 check={termsAccepted}
                 callbackFunction={() => setTermsAccepted(!termsAccepted)}
