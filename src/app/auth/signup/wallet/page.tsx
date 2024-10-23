@@ -197,7 +197,7 @@ const SignUpWallet: React.FC = () => {
             {/* end logo */}
 
             <h1
-              className="translate-x-25 animate-fade-right pt-8 text-left text-5xl font-bold text-snow opacity-0 2xsm:hidden md:block md:text-4xl lg:text-6xl"
+              className="translate-x-25 animate-fade-right text-left text-5xl font-bold text-snow opacity-0 2xsm:hidden md:block md:text-4xl lg:text-6xl"
               style={{
                 filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.50))",
               }}
