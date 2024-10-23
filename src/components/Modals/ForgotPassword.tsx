@@ -1,12 +1,11 @@
 "use client";
-import { Button } from '@/components/ui/button';
-import React, { useEffect, useRef, useState } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
-import { BiEnvelope, BiMailSend, BiX } from 'react-icons/bi';
-import { AiOutlineLoading } from 'react-icons/ai';
-import api from '@/utils/api';
-import UseMySwal from '@/hooks/useMySwal';
+import { Button } from "@/components/ui/button";
+import UseMySwal from "@/hooks/useMySwal";
+import api from "@/utils/api";
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { BiEnvelope, BiX } from "react-icons/bi";
+import { ErrorMessage } from "../ErrorMessage/ErrorMessage";
 
 type ChangePasswordProps = {
   state: boolean;
@@ -14,14 +13,12 @@ type ChangePasswordProps = {
   recovery_email?: string;
 };
 
-
 const ForgotPassword = ({ state, setState }: ChangePasswordProps) => {
-
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors }
+    formState: { errors },
   } = useForm<ChangePasswordProps>();
 
   const [isSending, setIsSending] = useState<boolean>(false);
@@ -37,8 +34,8 @@ const ForgotPassword = ({ state, setState }: ChangePasswordProps) => {
   const onSubmit = async (data: ChangePasswordProps) => {
     setIsSending(true);
 
-    const response = await api.post('/api/reset-password/', {
-      email: data.recovery_email
+    const response = await api.post("/api/reset-password/", {
+      email: data.recovery_email,
     });
 
     if (response.status === 200) {
@@ -48,27 +45,26 @@ const ForgotPassword = ({ state, setState }: ChangePasswordProps) => {
         text: "Em até 5min, um e-mail com o link de alteração de senha será enviado para o e-mail informado.",
         showConfirmButton: true,
         confirmButtonText: "OK",
-        confirmButtonColor: "#1A56DB"
+        confirmButtonColor: "#1A56DB",
       }).then((result) => {
         if (result.isConfirmed) {
           reset();
           setState(false);
         }
-      })
+      });
     } else {
-      console.error('Aconteceu um problema ao enviar a requisição');
+      console.error("Aconteceu um problema ao enviar a requisição");
       MySwal.fire({
         icon: "error",
         title: "Oops!",
         text: "Ocorreu um erro ao enviar a solicitação",
         showConfirmButton: true,
         confirmButtonText: "OK",
-        confirmButtonColor: "#1A56DB"
-      })
+        confirmButtonColor: "#1A56DB",
+      });
     }
 
     setIsSending(false);
-
   };
 
   // close on click outside
@@ -82,18 +78,26 @@ const ForgotPassword = ({ state, setState }: ChangePasswordProps) => {
     return () => document.removeEventListener("click", clickHandler);
   });
 
-
   return (
-    <div className={`${state ? 'opacity-100 visible' : 'opacity-0 invisible'} 
-      fixed top-0 left-0 flex items-center justify-center w-screen h-screen z-1 bg-black-2/50 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 transition-all duration-300 ease-in-out`}>
-      <div ref={modalRef} className='relative w-11/12 xsm:w-100 h-fit rounded-lg bg-white p-10 border border-stroke dark:border-strokedark dark:bg-boxdark'>
-        <span className='absolute top-4 right-4 cursor-pointer'>
-          <BiX style={{ width: '26px', height: '26px', fill: '#BAC1CB' }} onClick={onCloseModal} />
+    <div
+      role="dialog"
+      className={`${state ? "visible opacity-100" : "invisible opacity-0"} 
+      fixed left-0 top-0 z-1 flex h-screen w-screen items-center justify-center bg-black-2/50 bg-opacity-10 bg-clip-padding backdrop-blur-sm backdrop-filter transition-all duration-300 ease-in-out`}
+    >
+      <div
+        ref={modalRef}
+        className="relative h-fit w-11/12 rounded-lg border border-stroke bg-white p-10 dark:border-strokedark dark:bg-boxdark xsm:w-100"
+      >
+        <span className="absolute right-4 top-4 cursor-pointer">
+          <BiX
+            style={{ width: "26px", height: "26px", fill: "#BAC1CB" }}
+            onClick={onCloseModal}
+          />
         </span>
-        <h2 className='text-graydark font-bold text-xl text-center mb-4 dark:text-white'>
+        <h2 className="mb-4 text-center text-xl font-bold text-graydark dark:text-white">
           Informe o e-mail para a recuperação de senha
         </h2>
-        <p className='block mx-auto text-sm  text-center mb-6'>
+        <p className="mx-auto mb-6 block  text-center text-sm">
           Enviaremos um e-mail com um link para definir uma nova senha
         </p>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -102,24 +106,27 @@ const ForgotPassword = ({ state, setState }: ChangePasswordProps) => {
               <input
                 type="email"
                 placeholder="Digite seu email"
-                className={`w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${errors.recovery_email && '!border-rose-400 border-2 !ring-0 dark:!border-meta-1'}`}
+                className={`w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${errors.recovery_email && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"}`}
                 id="email"
-                {
-                ...register("recovery_email", {
+                {...register("recovery_email", {
                   required: "Campo obrigatório",
-                })
-                }
+                })}
               />
 
-              <ErrorMessage errors={errors} field='recovery_email' />
+              <ErrorMessage errors={errors} field="recovery_email" />
 
               <span className="absolute right-4 top-4">
-                <BiEnvelope style={{ width: '22px', height: '22px', fill: '#BAC1CB' }} />
+                <BiEnvelope
+                  style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
+                />
               </span>
             </div>
           </div>
-          <Button type='submit' className={`${status === 'request_success' && 'bg-green-500'} flex items-center justify-center w-full cursor-pointer rounded-lg text-white hover:bg-opacity-90`}>
-            <span className='text-[16px] font-medium'>
+          <Button
+            type="submit"
+            className={`${status === "request_success" && "bg-green-500"} flex w-full cursor-pointer items-center justify-center rounded-lg text-white hover:bg-opacity-90`}
+          >
+            <span className="text-[16px] font-medium">
               {isSending ? "Enviando e-mail" : "Enviar"}
             </span>
           </Button>
@@ -168,7 +175,7 @@ const ForgotPassword = ({ state, setState }: ChangePasswordProps) => {
         </Modal.Body>
       </Modal> */}
     </div>
-  )
-}
+  );
+};
 
-export default ForgotPassword
+export default ForgotPassword;
