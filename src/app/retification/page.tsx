@@ -530,7 +530,7 @@ const RecalculateTrf1 = () => {
                 htmlFor="incidencia_rra_ir"
                 className="mt-1 font-nexa text-xs font-medium uppercase text-black-2"
               >
-                Possui RRA?
+                Possui IR/RRA?
               </label>
             </div>
 

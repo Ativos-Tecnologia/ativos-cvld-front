@@ -191,16 +191,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
   const [fetchingUsersList, setFetchingUsersList] = useState<boolean>(false);
   const [fetchError, setFetchError] = useState<boolean>(false);
   const [toggleNovaConta, setToggleNovaConta] = useState<boolean>(false);
-  const [accountList, setAccountList] = useState<PaginatedResponse<any> | null>(
-    null,
-  );
-  const [selectedAccount, setSelectedAccount] = useState<{
-    id: string;
-    nome_razao_social: string;
-  }>({
-    id: "",
-    nome_razao_social: "",
-  });
+
 
   const [usersList, setUsersList] = useState<any[]>([]);
 
@@ -275,10 +266,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
   useEffect(() => {
     const fetchData = async () => {
       setFetchingUsersList(true);
-      const [accountList] = await Promise.all([api.get("/api/conta/list/")]);
-      if (accountList.status === 200) {
-        setAccountList(accountList.data);
-      }
+     
       if (data.role === "ativos") {
         const [usersList] = await Promise.all([api.get("/api/notion-api/list/users/")]);
         if (usersList.status === 200) {
@@ -294,11 +282,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
     fetchData();
   }, [data.role]);
 
-  useEffect(() => {
-    if (selectedAccount?.id) {
-      setValue("conta", selectedAccount.id);
-    }
-  }, [selectedAccount, setValue]);
+
 
   const isUserAdmin = () => {
     const token = localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`);
