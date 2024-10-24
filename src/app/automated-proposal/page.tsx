@@ -42,6 +42,7 @@ interface IProposalFormStateProps {
   ja_possui_destacamento: boolean;
   percentual_de_honorarios: number;
   percentual_a_ser_adquirido: number;
+  valor_aquisicao_total: boolean;
 }
 
 const whatsAppNumber = "5581998158585"; // número do consultor da Ativos para receber mensagens
@@ -145,6 +146,10 @@ const AutomatedProposal = () => {
     },
   });
 
+  function convertInputIntegerToFloat(data: any) {
+    data.percentual_de_honorarios /= 100;
+  }
+
   const enumTipoOficiosList = Object.values(tipoOficio);
   const [headerColorset, setHeaderColorset] = useState<"smooth" | "glass">(
     "smooth",
@@ -210,7 +215,7 @@ const AutomatedProposal = () => {
     data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
     data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
     data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
-    data.percentual_a_ser_adquirido /= 100;
+    // data.percentual_a_ser_adquirido /= 100;
 
     if (data.tribunal === "TRF1" || data.tribunal === "TRF6") {
       data.nao_incide_selic_no_periodo_db_ate_abril = true;
@@ -223,11 +228,17 @@ const AutomatedProposal = () => {
     if (data.ja_possui_destacamento) {
       data.percentual_de_honorarios = 0;
     } else {
-      data.percentual_de_honorarios /= 100;
+      convertInputIntegerToFloat(data);
     }
 
     if (!data.regime) {
       data.regime = "GERAL";
+    }
+
+    if (data.valor_aquisicao_total) {
+      data.percentual_a_ser_adquirido = 1;
+    } else {
+      convertInputIntegerToFloat(data);
     }
 
     try {
@@ -249,7 +260,7 @@ const AutomatedProposal = () => {
       }
     } catch (error) {
       if (error instanceof AxiosError) {
-        toast.error(error.response?.data.error)
+        toast.error(error.response?.data.error);
       } else {
         toast.error(String(error));
       }
@@ -322,39 +333,41 @@ E abaixo, uma memória das informações de entrada:
       />
 
       {/* image-wrapper */}
-      <div className="relative">
-        <Image
+      <div className="relative min-h-dvh">
+        <div className="shadow-ball"></div>
+        {/* <Image
           src="/images/hero-image.webp"
           alt="homem com terno e notebook"
           className="w-full"
           width={1913}
           height={490}
           quality={100}
-        />
+        /> */}
         <div className="absolute inset-0 flex flex-col items-start justify-center bg-[linear-gradient(to_top,#1A222C_5%,transparent_95%)]">
           <div className="mx-auto md:min-w-[80%] xl:min-w-[1080px]">
-            <h1 className="font-poppins translate-x-25 animate-fade-right pt-15 text-7xl text-snow opacity-0 2xsm:hidden md:block md:text-5xl lg:text-7xl">
+            <h1 className="font-manyChat translate-x-25 animate-fade-right pt-15 text-center text-7xl tracking-wide text-snow opacity-0 2xsm:hidden md:block md:text-5xl lg:text-7xl">
               Gerador de <br /> Propostas <br /> Automáticas
             </h1>
-            <h1 className="font-poppins translate-x-25 animate-fade-right pt-20 text-snow opacity-0 2xsm:mt-8 2xsm:flex 2xsm:flex-col 2xsm:items-center 2xsm:justify-center  2xsm:text-title-sm md:hidden">
+            <h1 className="font-manyChat translate-x-25 animate-fade-right pt-20 text-center text-snow opacity-0 2xsm:mt-8 2xsm:flex 2xsm:flex-col 2xsm:items-center 2xsm:justify-center  2xsm:text-title-xl2 md:hidden">
               <span>Gerador de Propostas</span>
               <span>Automáticas</span>
             </h1>
+            <p className="font-rooftop pt-10 text-center  text-base font-bold text-slate-500 2xsm:text-2xl">
+              Encontre os valores de proposta e <br /> comissão baseados nas
+              informações do ativo
+            </p>
           </div>
         </div>
       </div>
       {/* end image-wrapper */}
 
       {/* form */}
-      <div className="bg-boxdark-2">
+      <div className=" bg-boxdark-2">
         <div className="mx-auto  max-w-[80%] py-10 2xl:min-w-[1080px] 2xl:px-60">
           <div className="mb-10">
             <h2 className="text-xl font-medium uppercase text-bodydark">
               Preencha o formulário abaixo
             </h2>
-            <p className="text-sm text-slate-500">
-              Gere valores de proposta e comissão baseado nos dados do ativo
-            </p>
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="grid grid-cols-2 gap-5 sm:grid-cols-2">
@@ -373,7 +386,7 @@ E abaixo, uma memória das informações de entrada:
                   defaultValue={enumTipoOficiosList[0]}
                   className="border-strokedark bg-form-input text-bodydark"
 
-                // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
+                  // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
                 >
                   {ENUM_TIPO_OFICIOS_LIST.map((status) => (
                     <SelectItem key={status} value={status}>
@@ -399,7 +412,7 @@ E abaixo, uma memória das informações de entrada:
                   defaultValue={"NÃO TRIBUTÁRIA"}
                   className="border-strokedark bg-form-input text-bodydark"
 
-                // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
+                  // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
                 >
                   <SelectItem
                     defaultValue="NÃO TRIBUTÁRIA"
@@ -434,8 +447,9 @@ E abaixo, uma memória das informações de entrada:
               {/* ====> end label ESFERA <==== */}
 
               {/* ====> label REGIME <==== */}
-              {(watch("esfera") !== "FEDERAL" && watch("esfera") !== undefined) ?
-                (<div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+              {watch("esfera") !== "FEDERAL" &&
+              watch("esfera") !== undefined ? (
+                <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                   <label
                     htmlFor="natureza"
                     className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -451,8 +465,8 @@ E abaixo, uma memória das informações de entrada:
                     <SelectItem value="GERAL">GERAL</SelectItem>
                     <SelectItem value="ESPECIAL">ESPECIAL</SelectItem>
                   </ShadSelect>
-                </div>) : null
-              }
+                </div>
+              ) : null}
               {/* ====> end label REGIME <==== */}
 
               {/* ====> label TRIBUNUAL <==== */}
@@ -494,7 +508,10 @@ E abaixo, uma memória das informações de entrada:
                   control={control}
                   defaultValue={0}
                   rules={{
-                    min: { value: 0.01, message: "O valor deve ser maior que 0" }
+                    min: {
+                      value: 0.01,
+                      message: "O valor deve ser maior que 0",
+                    },
                   }}
                   render={({ field, fieldState: { error } }) => (
                     <>
@@ -511,7 +528,11 @@ E abaixo, uma memória das informações de entrada:
                           rawValueTrimPrefix: true,
                         }}
                       />
-                      {error && <span className="text-xs font-medium text-red absolute left-1 top-16">{error.message}</span>}
+                      {error && (
+                        <span className="absolute left-1 top-16 text-xs font-medium text-red">
+                          {error.message}
+                        </span>
+                      )}
                     </>
                   )}
                 />
@@ -531,7 +552,10 @@ E abaixo, uma memória das informações de entrada:
                   control={control}
                   defaultValue={0}
                   rules={{
-                    min: { value: 0.01, message: "O valor deve ser maior que 0" }
+                    min: {
+                      value: 0.01,
+                      message: "O valor deve ser maior que 0",
+                    },
                   }}
                   render={({ field, fieldState: { error } }) => (
                     <>
@@ -549,7 +573,11 @@ E abaixo, uma memória das informações de entrada:
                           rawValueTrimPrefix: true,
                         }}
                       />
-                      {error && <span className="text-xs font-medium text-red absolute left-1 top-16">{error.message}</span>}
+                      {error && (
+                        <span className="absolute left-1 top-16 text-xs font-medium text-red">
+                          {error.message}
+                        </span>
+                      )}
                     </>
                   )}
                 />
@@ -602,27 +630,49 @@ E abaixo, uma memória das informações de entrada:
               {/* ====> endlabel DATA DE REQUISIÇÃO <==== */}
 
               {/* ====> label PERCENTUAL DE AQUISIÇÃO <==== */}
-              <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
+              <div
+                className={`col-span-2 flex max-h-6 items-center gap-2 md:col-span-1`}
+              >
+                <CustomCheckbox
+                  check={watch("valor_aquisicao_total")}
+                  id={"valor_aquisicao_total"}
+                  defaultChecked
+                  register={register("valor_aquisicao_total")}
+                />
+
                 <label
-                  htmlFor="percentual_a_ser_adquirido"
+                  htmlFor="valor_aquisicao_total"
                   className="font-nexa text-xs font-semibold uppercase text-meta-5"
                 >
-                  Percentual de aquisição (%)
+                  Aquisição total
                 </label>
-                <input
-                  type="number"
-                  id="percentual_a_ser_adquirido"
-                  defaultValue={100}
-                  className="w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark"
-                  min={0}
-                  {...register("percentual_a_ser_adquirido", {
-                    required: "Campo obrigatório",
-                    setValueAs: (value) => {
-                      return parseInt(value);
-                    },
-                  })}
-                />
               </div>
+
+              {watch("valor_aquisicao_total") === false ? (
+                <div className="mt-1 flex flex-col gap-2 overflow-hidden 2xsm:col-span-2 md:col-span-1">
+                  <label
+                    htmlFor="percentual_a_ser_adquirido"
+                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                  >
+                    Percentual de aquisição (%)
+                  </label>
+                  <input
+                    type="number"
+                    id="percentual_a_ser_adquirido"
+                    defaultValue={100}
+                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                    min={0}
+                    {...register("percentual_a_ser_adquirido", {
+                      required: "Campo obrigatório",
+                      setValueAs: (value) => {
+                        return parseInt(value);
+                      },
+                    })}
+                  />
+                </div>
+              ) : (
+                <div className="col-span-1 hidden md:block"></div>
+              )}
               {/* ====> end label PERCENTUAL DE AQUISIÇÃO <==== */}
 
               {/* ====> checkbox JUROS DE MORA <==== */}
@@ -687,7 +737,7 @@ E abaixo, uma memória das informações de entrada:
 
               {/* ====> checkbox IR INCIDE RRA <==== */}
               {watch("natureza") === "TRIBUTÁRIA" ||
-                watch("incidencia_rra_ir") === false ? null : (
+              watch("incidencia_rra_ir") === false ? null : (
                 <div
                   className={`flex gap-2 ${watch("ir_incidente_rra") ? "items-start" : "items-center"} 2xsm:col-span-2 sm:col-span-1`}
                 >
@@ -709,7 +759,7 @@ E abaixo, uma memória das informações de entrada:
 
               {/* ====> label NÚMERO DE MESES <==== */}
               {watch("ir_incidente_rra") === true &&
-                watch("natureza") !== "TRIBUTÁRIA" ? (
+              watch("natureza") !== "TRIBUTÁRIA" ? (
                 <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                   <label
                     htmlFor="numero_de_meses"
@@ -733,7 +783,7 @@ E abaixo, uma memória das informações de entrada:
               ) : (
                 <>
                   {watch("natureza") === "TRIBUTÁRIA" ||
-                    watch("incidencia_rra_ir") === false ? null : (
+                  watch("incidencia_rra_ir") === false ? null : (
                     <div className="col-span-1 flex items-center">&nbsp;</div>
                   )}
                 </>
