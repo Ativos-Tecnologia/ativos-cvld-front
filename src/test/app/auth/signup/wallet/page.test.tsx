@@ -1,10 +1,10 @@
-import SignUp from "@/app/auth/signup/page";
+import SignUpWallet from "@/app/auth/signup/wallet/page";
+import { beforeEach } from "@jest/globals";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { FormProvider, useForm } from "react-hook-form";
 
-// Coloca como padrão e sobrescreve cada método de teste.
 jest.mock("next/navigation", () => ({
   useRouter() {
     return {
@@ -26,14 +26,13 @@ jest.mock("next/navigation", () => ({
 beforeEach(async () => {
   render(
     <QueryClientProvider client={(global as any).queryClient}>
-      <SignUp />
+      <SignUpWallet/>
     </QueryClientProvider>,
   );
 });
 
-describe("Teste dos Headers do registro", () => {
-  it("Teste carregar o titulo da página", async () => {
-    // Buscando pelo título que tem quebras de linha
+describe("Teste de Formulário de Cadastro na Wallet", () => {
+  it("Teste carregar titulos da página de registro", async () => {
     const titulo = await screen.findByText(/Sua solução/i);
     expect(titulo).toBeInTheDocument();
 
@@ -42,15 +41,15 @@ describe("Teste dos Headers do registro", () => {
 
     const titulo3 = await screen.findByText(/em precatórios/i);
     expect(titulo3).toBeInTheDocument();
-  });
+  })
 
-  it("Teste carregar o titulo do formulário", async () => {
+  it("Teste verficar titulo do formulário", async () => {
     const tituloDoFormulário = await screen.findByRole("heading", {
-      name: "Cadastre-se para começar",
+      name: "Cadastre-se na Wallet",
       level: 2,
     });
     expect(tituloDoFormulário).toBeInTheDocument();
-  });
+  })
 
   it("Teste carregar labels do formulário", async () => {
     const nomeUsuario = await screen.findByText("Nome de usuário");
@@ -58,6 +57,9 @@ describe("Teste dos Headers do registro", () => {
 
     const email = await screen.findByText("Email");
     expect(email).toBeInTheDocument();
+
+    const nomeCompletoRepresentante1 = await screen.findAllByText(/Nome Completo/i)
+    expect(nomeCompletoRepresentante1[0]).toBeInTheDocument();
 
     const selectElement = await screen.findByRole("combobox");
     expect(selectElement).toBeInTheDocument();
@@ -68,6 +70,35 @@ describe("Teste dos Headers do registro", () => {
     const selectCNPJ = await screen.findByRole("option", { name: "CNPJ" });
     expect(selectCNPJ).toBeInTheDocument();
 
+    // Testa o formulário dinâmico, onde ao selecionar o CNPJ, aparecerá novos campos.
+    fireEvent.change(selectElement, { target: { value: "CNPJ" } });
+
+    const representate = await screen.findByRole("heading", {
+      name: "Dados do Representante Legal", level: 3,
+    });
+    expect(representate).toBeInTheDocument();
+
+    const nomeCompletoRepresentante2 = await screen.findAllByText(/Nome Completo/i)
+    expect(nomeCompletoRepresentante2[1]).toBeInTheDocument();
+
+    const cpfRepresentante = await screen.findAllByText(/CPF/i);
+    expect(cpfRepresentante[1]).toBeInTheDocument();
+
+    const zap = await screen.findByText("Whatsapp");
+    expect(zap).toBeInTheDocument();
+
+    const banco = await screen.findByText("Banco");
+    expect(banco).toBeInTheDocument();
+
+    const agencia = await screen.findByText("Agência");
+    expect(agencia).toBeInTheDocument();
+
+    const contaCorrente = await screen.findByText("Conta Corrente");
+    expect(contaCorrente).toBeInTheDocument();
+
+    const pix = await screen.findByText("Pix");
+    expect(pix).toBeInTheDocument();
+
     const senha = await screen.findAllByText(/Senha/i);
     expect(senha[0]).toBeInTheDocument();
 
@@ -75,24 +106,13 @@ describe("Teste dos Headers do registro", () => {
     expect(confirmSenha).toBeInTheDocument();
   });
 
-  it("Teste deve marcar e desmarcar o checkbox", () => {
-    const checkbox = screen.getByRole("checkbox");
-
-    // Verifica se o checkbox está desmarcado inicialmente
-    expect(checkbox).not.toBeChecked();
-
-    // Simula marcar o checkbox
-    fireEvent.click(checkbox);
-    expect(checkbox).toBeChecked();
-  });
-
-  it("Teste deve preencher o registro de usuário", async () => {
+  it("Teste de Registro na Wallet", async () => {
     const renderForm = () => {
       const Wrapper = () => {
         const methods = useForm();
         return (
           <FormProvider {...methods}>
-            <SignUp />
+            <SignUpWallet />
           </FormProvider>
         );
       };
@@ -112,6 +132,13 @@ describe("Teste dos Headers do registro", () => {
 
     fireEvent.change(inputEmail, { target: { value: "email@email.com" } });
     expect(inputEmail.value).toBe("email@email.com");
+
+    const inpuNomeCompleto =
+      await screen.getByLabelText(/Nome Completo/i);
+    fireEvent.change(inpuNomeCompleto, {
+      target: { value: "John Doe" },
+    });
+    expect(inpuNomeCompleto).toHaveValue("John Doe");
 
     const selectOption = screen.getByLabelText(
       /Selecione uma opção/i,
@@ -133,6 +160,56 @@ describe("Teste dos Headers do registro", () => {
 
     fireEvent.change(inputCPF, { target: { value: "04521478963" } });
     expect(inputCPF).toHaveValue("045.214.789-63");
+
+    const inpuNomeCompletoRepresentante = await screen.getByLabelText(/Nome Completo/i);
+    fireEvent.change(inpuNomeCompletoRepresentante, {
+      target: { value: "John Doe" }
+    });
+    expect(inpuNomeCompletoRepresentante).toHaveValue("John Doe");
+
+    const inputCPFRepresentante = (await screen.findAllByPlaceholderText(
+      /Digite seu CPF/i,
+    ))[1] as HTMLInputElement;
+    fireEvent.change(inputCPFRepresentante, {
+      target: { value: "04521478966" }
+    }) 
+    expect(inputCPFRepresentante).toHaveValue("045.214.789-66");
+
+    const zap = (
+      await screen.findAllByPlaceholderText(/Whatsapp/i))[0] as HTMLInputElement;
+    fireEvent.change(zap, { target: { value: "81999999999" } });
+    expect(zap).toHaveValue("81.99999-9999");
+
+    const banco = (
+      await screen.findAllByPlaceholderText(/Banco/i))[0] as HTMLInputElement;
+    fireEvent.change(banco, { target: { value: "256" } });
+    expect(banco).toHaveValue("256");
+
+    const agencia = (
+      await screen.findAllByPlaceholderText(/Agência/i))[0] as HTMLInputElement;
+    fireEvent.change(agencia, { target: { value: "42123" } });
+    expect(agencia).toHaveValue("4212-3");
+
+    const contaCorrente = (
+      await screen.findAllByPlaceholderText(/Conta Corrente/i))[0] as HTMLInputElement;
+    fireEvent.change(contaCorrente, { target: { value: "44444444" } });
+    expect(contaCorrente).toHaveValue("4444444-4");
+
+    const pix = (
+      await screen.findAllByPlaceholderText(/Pix/i))[0] as HTMLInputElement;
+    fireEvent.change(pix, { target: { value: "216549846513546846852132" } });
+    expect(pix).toHaveValue("216549846513546846852132");
+
+  })
+
+  it("Teste deve marcar e desmarcar o checkbox", () => {
+    const checkbox = screen.getByRole("checkbox");
+
+    expect(checkbox).not.toBeChecked();
+
+    fireEvent.click(checkbox);
+    
+    expect(checkbox).toBeChecked();
   });
 
   it("Teste deve registrar o usuário", async () => {
@@ -148,4 +225,4 @@ describe("Teste dos Headers do registro", () => {
     expect(conecte).toBeInTheDocument();
     await userEvent.click(conecte);
   });
-});
+})

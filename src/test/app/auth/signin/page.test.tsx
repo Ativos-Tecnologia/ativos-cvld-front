@@ -18,6 +18,9 @@ jest.mock("next/navigation", () => ({
   useSearchParams() {
     return new URLSearchParams();
   },
+  usePathname() {
+    return "/";
+  },
 }));
 
 // Antes de cada teste, o componente principal da UI será rendizado

@@ -343,7 +343,7 @@ const config = {
       keyframes: {
         "skeleton-pass": {
           "0%": { transform: "translateX(-400%)" },
-          "100%": { transform: "translateX(500px)" },
+          "100%": { transform: "translateX(1000px)" },
         },
         "fade-up": {
           "0%": {

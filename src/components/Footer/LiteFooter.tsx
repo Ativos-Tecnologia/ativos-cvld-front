@@ -28,11 +28,11 @@ export function LiteFooter() {
           </div>
           <FooterLinkGroup className="grid 2xsm:w-full 2xsm:grid-cols-2 2xsm:items-center 2xsm:justify-center 2xsm:gap-5 2xsm:p-2 2xsm:text-center md:flex md:grid-cols-none md:flex-row md:justify-end">
             <Footer.Link href="/automated-proposal" className="m-0">Lead Magnet</Footer.Link>
-            <Footer.Link href="/recalculate-trf1" className="m-0">
+            <Footer.Link href="/retification" className="m-0">
               Recalculador do TRF1
             </Footer.Link>
             <Footer.Link href="#" className="m-0">Política de Privacidade</Footer.Link>
-            <Footer.Link href="#" className="m-0">Termos e Condições</Footer.Link>
+            <Footer.Link href="/termos-e-condicoes" className="m-0">Termos e Condições</Footer.Link>
           </FooterLinkGroup>
         </div>
         <hr className="border-gray-200" />

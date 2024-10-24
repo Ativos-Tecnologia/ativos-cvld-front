@@ -45,7 +45,7 @@ export function MainFooter() {
                 <Footer.Link href="/automated-proposal">
                   Lead Magnet
                 </Footer.Link>
-                <Footer.Link href="/recalculate-trf1">
+                <Footer.Link href="/retification">
                   Recalculador do TRF1
                 </Footer.Link>
               </Footer.LinkGroup>
@@ -70,7 +70,7 @@ export function MainFooter() {
                 <div>
                   <h3 className="font-medium">Email</h3>
                   <Footer.Link href="mailto:precatoriosativos@gmail.com">
-                    precatoriosativos@gmail.com
+                    contato@ativosprecatorios.com.br
                   </Footer.Link>
                 </div>
 
@@ -92,7 +92,7 @@ export function MainFooter() {
                 <Footer.Link aria-disabled href="#">
                   Política de Privacidade
                 </Footer.Link>
-                <Footer.Link href="#">Termos e Condições</Footer.Link>
+                <Footer.Link href="/termos-e-condicoes">Termos e Condições</Footer.Link>
               </Footer.LinkGroup>
             </div>
           </div>
@@ -128,15 +128,15 @@ export function MainFooter() {
                 <p className="font-satoshi text-bodydark text-justify">
                   Este sistema, é gerido e operado pela Ativos Exchange
                   Tecnologia Ltda, CNPJ 51.221.966/0001-90, sociedade integrante
-                  do grupo Ativos, com atuação EXCLUSIVA em desenvolvimento e
+                  do grupo Ativos, com atuação exclusiva em desenvolvimento e
                   licenciamento de sistemas computacionais bem como a produção e
                   divulgação de conteúdos de cunho informativo e educacional. A
-                  Ativos Exchange Tecnologia NÃO é uma instituição financeira e
-                  NÃO realiza empréstimos empresariais. A Ativos Exchange
-                  Tecnologia NÃO atua como empresa de investimentos e NÃO
+                  Ativos Exchange Tecnologia não é uma instituição financeira e
+                  não realiza empréstimos empresariais. A Ativos Exchange
+                  Tecnologia não atua como empresa de investimentos e não
                   realiza nenhuma espécie de oferta ou recomendação de Títulos e
-                  Valores Mobiliários. A Ativos Exchange Tecnologia NÃO está
-                  autorizada e NÃO atua na administração e gestão de recursos de
+                  Valores Mobiliários. A Ativos Exchange Tecnologia não está
+                  autorizada e não atua na administração e gestão de recursos de
                   terceiros.
                 </p>
               </div>
