@@ -9,7 +9,7 @@ export const AppTerms = () => {
                 </h3>
                 <ul className='flex flex-col gap-3 2xsm:pl-5 sm:pl-10 text-bodydark text-justify list-disc'>
                     <li>
-                        1.1 - Este documento estabelece os Termos e Condições de Uso aplicáveis aos usuários que utilizam a plataforma da Ativos Precatórios para a intermediação de precatórios, Requisições de Pequeno Valor (RPVs) e Pré-requisitórios. O usuário que utilizar a plataforma será doravante denominado "Broker". Ao acessar e utilizar a plataforma, o Broker concorda em cumprir e estar vinculado aos presentes termos.
+                        1.1 - Este documento estabelece os Termos e Condições de Uso aplicáveis aos usuários que utilizam a plataforma da Ativos Precatórios para a intermediação de precatórios, Requisições de Pequeno Valor (RPVs) e Pré-requisitórios. O usuário que utilizar a plataforma será doravante denominado &quot;Broker&quot;. Ao acessar e utilizar a plataforma, o Broker concorda em cumprir e estar vinculado aos presentes termos.
                     </li>
                     <li>
                         1.2 - O presente documento tem por objetivo definir as regras e diretrizes que regem o uso da plataforma pelo Broker, assegurando que todas as partes envolvidas compreendam suas responsabilidades e direitos. Este documento visa proteger tanto a Ativos Precatórios quanto o Broker, garantindo uma relação justa e transparente.
