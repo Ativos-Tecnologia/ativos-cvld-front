@@ -8,80 +8,139 @@ interface IUnloggedHeaderProps {
   theme?: "light" | "dark";
 }
 
+const themeClasses = {
+
+}
+
 const UnloggedHeader = ({ logoPath, theme }: IUnloggedHeaderProps) => {
-  const [headerType, setHeaderType] = useState<"smooth" | "glass" | "solid">(
-    theme === "light" ? "solid" : "smooth",
-  );
+
+  const [isHeaderFixed, setIsHeaderFixed] = useState<boolean>(false);
 
   useEffect(() => {
-    const watchWindowScroll = () => {
-      if (window.scrollY > 200) {
-        setHeaderType("glass");
-      } else {
-        setHeaderType(theme === "light" ? "solid" : "smooth");
-      }
-    };
-    window.addEventListener("scroll", watchWindowScroll);
-    return () => window.removeEventListener("scroll", watchWindowScroll);
-  });
+    const handleScroll = () => {
+      const windowHeight = window.innerHeight;
+      const scrollPosition = window.scrollY;
+      const isFixedPosition = scrollPosition > windowHeight ? true : false;
+      setIsHeaderFixed(isFixedPosition);
+    }
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  })
 
   return (
     <>
-      {/* header */}
-      <div
-        className={`fixed top-0 z-1 w-full ${headerType === "smooth" ? "bg-transparent" : headerType === "solid" ? "bg-gray-200" : "bg-boxdark-2 bg-opacity-10 bg-clip-padding backdrop-blur-sm backdrop-filter"} py-6 transition-colors duration-500 2xsm:px-5 lg:px-10`}
-      >
-        <div className="mx-auto flex max-w-270 items-center justify-between">
+      {/* ----> headers <---- */}
+
+      <div className={`fixed z-10 ${isHeaderFixed ? "translate-y-full" : "-translate-y-full"} -top-11 left-1/2 -translate-x-1/2 rounded-full bg-gray-400 bg-opacity-10 bg-clip-padding backdrop-blur-sm backdrop-filter 2xsm:w-11/12 xl:w-4/5 3xl:w-3/5 py-3 px-5 flex items-center justify-between transition-all duration-500`}>
+        <Link
+          href="/auth/signin"
+          className="overflow-hidden">
+          {/* desktop */}
           <Image
-            className="2xsm:hidden md:block"
             src={logoPath}
-            alt="Logo"
-            width={176}
-            height={32}
+            // src={"/images/logo/new-logo-text-dark.png"}
+            alt="logo do header"
+            width={100}
+            height={100}
           />
-          <Image
-            className="md:hidden"
-            src={"/images/logo/celer-app-logo-dark.svg"}
-            alt="Logo"
-            width={50}
-            height={32}
-          />
-          <div className="flex items-center gap-4 2xsm:text-[13px] md:text-[18px]">
-            {theme === "light" ? (
-              <>
-                <Link
-                  href="/auth/signin/"
-                  className="transition-translate rounded-md border border-black-2 px-6 py-3 text-black-2 duration-300 hover:-translate-y-1 hover:border-black-2 hover:bg-black-2 hover:text-snow"
-                >
-                  <span>Entrar</span>
-                </Link>
-                <Link
-                  href="/auth/signup/"
-                  className="rounded-md border border-black-2 bg-black-2 px-6 py-3 text-snow transition-all duration-300 hover:-translate-y-1 hover:border-black-2"
-                >
-                  <span>Cadastrar</span>
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/auth/signin/"
-                  className="transition-translate rounded-md border border-snow px-6 py-3 font-semibold text-snow duration-300 hover:-translate-y-1 hover:border-snow hover:bg-snow hover:text-black-2"
-                >
-                  <span>Entrar</span>
-                </Link>
-                <Link
-                  href="/auth/signup/"
-                  className="rounded-md border border-snow bg-snow px-6 py-3 font-semibold text-black-2 transition-all duration-300 hover:-translate-y-1 hover:border-snow"
-                >
-                  <span>Cadastrar</span>
-                </Link>
-              </>
-            )}
-          </div>
+        </Link>
+        <nav className="hidden items-center font-nexa text-snow sm:flex sm:gap-5 xl:gap-10">
+          <Link
+            href={"/auth/signup/wallet"}
+            className="relative group hover:text-bodydark1 transition-colors duration-200"
+          >
+            <span>Investir</span>
+            <span className="hidden lg:inline"> em Precatórios</span>
+            <span
+              className="absolute bottom-0 left-0 w-0 h-[2px] bg-blue-600 transition-all duration-300 ease-in-out group-hover:w-full"
+            />
+          </Link>
+          <Link
+            href={"/auth/signup"}
+            className="relative group hover:text-bodydark1 transition-colors duration-200"
+          >
+            <span>Seja Broker</span>
+            <span
+              className="absolute bottom-0 left-0 w-0 h-[2px] bg-blue-600 transition-all duration-300 ease-in-out group-hover:w-full"
+            />
+          </Link>
+        </nav>
+
+        <div className="flex items-center gap-3">
+          <Link
+            href="/auth/signin/"
+            className="transition-translate rounded-full  p-2 font-semibold text-blue-400 duration-300 hover:text-blue-500"
+          >
+            <span>Entrar</span>
+          </Link>
+          <Link
+            href="/auth/signup/"
+            className="rounded-full bg-blue-500 p-2 font-semibold text-snow transition-all duration-300 hover:bg-blue-600"
+          >
+            <span>Cadastrar</span>
+          </Link>
         </div>
       </div>
-      {/* end header */}
+
+      <div className={`absolute z-10 top-5 left-1/2 -translate-x-1/2 rounded-full bg-gray-400 bg-opacity-10 bg-clip-padding backdrop-blur-sm backdrop-filter 2xsm:w-11/12 xl:w-4/5 3xl:w-3/5 py-3 px-5 flex items-center justify-between transition-all duration-200`}>
+        <Link
+          href="/auth/signin"
+          className="overflow-hidden">
+          {/* desktop */}
+          <Image
+            src={"/images/logo/new-logo-text-dark.png"}
+            alt="teste"
+            width={100}
+            height={100}
+          />
+        </Link>
+        <nav className="hidden items-center text-snow sm:flex sm:gap-5 xl:gap-10">
+          {/* <Link
+                                href={"/"}
+                                className="relative group hover:text-bodydark1 transition-colors duration-200"
+                            >
+                                <span>Vender Precatório</span>
+                                <span
+                                    className="absolute bottom-0 left-0 w-0 h-[2px] bg-blue-600 transition-all duration-300 ease-in-out group-hover:w-full"
+                                />
+                            </Link> */}
+          <Link
+            href={"/auth/signup/wallet"}
+            className="relative group hover:text-bodydark1 transition-colors duration-200"
+          >
+            <span>Investir</span>
+            <span className="hidden lg:inline"> em Precatórios</span>
+            <span
+              className="absolute bottom-0 left-0 w-0 h-[2px] bg-blue-600 transition-all duration-300 ease-in-out group-hover:w-full"
+            />
+          </Link>
+          <Link
+            href={"/auth/signup"}
+            className="relative group hover:text-bodydark1 transition-colors duration-200"
+          >
+            <span>Seja Broker</span>
+            <span
+              className="absolute bottom-0 left-0 w-0 h-[2px] bg-blue-600 transition-all duration-300 ease-in-out group-hover:w-full"
+            />
+          </Link>
+        </nav>
+
+        <div className="flex items-center gap-3">
+          <Link
+            href="/auth/signin/"
+            className="transition-translate rounded-full  p-2 font-semibold text-blue-400 duration-300 hover:text-blue-500"
+          >
+            <span>Entrar</span>
+          </Link>
+          <Link
+            href="/auth/signup/"
+            className="rounded-full bg-blue-500 p-2 font-semibold text-snow transition-all duration-300 hover:bg-blue-600"
+          >
+            <span>Cadastrar</span>
+          </Link>
+        </div>
+      </div>
+      {/* ----> end header <---- */}
     </>
   );
 };
