@@ -602,7 +602,11 @@ const RecalculateTrf1 = () => {
                     Valor líquido ilegal
                   </span>
                   <span className="flex h-full basis-39 items-center justify-end px-4 text-sm">
-                    {numberFormat(backendData[1].valor_liquido_disponivel)}
+                   {
+                      watch("natureza") === "TRIBUTÁRIA" || watch("data_base") < "2021-12-01"
+                      ? numberFormat(0)
+                      : numberFormat(backendData[1].valor_liquido_disponivel)
+                   }
                   </span>
                 </div>
                 <div className="flex h-8">
