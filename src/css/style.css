@@ -95,6 +95,12 @@
   }
 }
 
+/* blob rules */
+.blob-element {
+  /* border-radius: 83% 17% 86% 14% / 78% 40% 60% 22%; */
+  border-radius: 83% 17% 86% 14% / 61% 55% 45% 39%;
+}
+
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
   display: none;

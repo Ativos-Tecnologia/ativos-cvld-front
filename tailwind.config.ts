@@ -501,7 +501,7 @@ const config = {
         flip: "flip-vertical-right 3.5s infinite linear",
         wiggle: "wiggle 2.5s infinite",
         downforward: "downforward 1.0s infinite alternate ease-in-out",
-        upforward: "upforward 1.5s infinite alternate ease-in-out",
+        upforward: "upforward 1s infinite alternate ease-in-out",
         typewriter:
           "typewriter 4s steps(10) 1s infinite alternate both, blink 0.7s infinite step-end",
         linspin: "linspin 1568.2353ms linear infinite",

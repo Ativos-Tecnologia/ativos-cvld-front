@@ -40,6 +40,9 @@ export const APP_ROUTES = {
         },
         recalculate_trf1: {
             name: "/retification"
+        },
+        terms_and_conditions: {
+            name: "/termos-e-condicoes"
         }
     }
 };
