@@ -35,15 +35,15 @@ import "../../signin/index.css";
 export type SignUpInputs = {
   username: string;
   email: string;
-  nome_completo: string;
+  complete_name: string;
   select: string;
   cpf_cnpj: string;
-  repre_name: string;
-  repre_cpf: string;
-  whatsapp: string;
+  nome_representante: string;
+  cpf_representante: string;
+  phone: string;
   banco: string;
   agencia: string;
-  conta_corrente: string;
+  conta: string;
   pix: string;
   password: string;
   confirm_password: string;
@@ -87,22 +87,23 @@ const SignUpWallet: React.FC = () => {
       const formData = {
         username: data.username,
         email: data.email,
-        nome_completo: data.nome_completo,
+        complete_name: data.complete_name,
         password: data.password,
         cpf_cnpj: data.cpf_cnpj,
-        repre_name: data.repre_name,
-        repre_cpf: data.repre_cpf,
-        whatsapp: data.whatsapp,
+        nome_representante: data.nome_representante,
+        cpf_representante: data.cpf_representante,
+        phone: data.phone,
         banco: data.banco,
         agencia: data.agencia,
-        conta_corrente: data.conta_corrente,
+        conta: data.conta,
         pix: data.pix,
       };
 
       try {
         const response = await api
-          .post("api/user/register/", formData)
+          .post("/api/user/wallet/register/", formData)
           .then((res) => {
+            console.log(res.data);
             if (res.status === 201) {
               localStorage.setItem(
                 `ATIVOS_${ACCESS_TOKEN}`,
@@ -324,9 +325,9 @@ const SignUpWallet: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Nome Completo"
-                  className={`${errors.nome_completo && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                  className={`${errors.complete_name && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
                   id="nome_completo"
-                  {...register("nome_completo", {
+                  {...register("complete_name", {
                     required: "Campo obrigatório",
                     minLength: {
                       value: 4,
@@ -456,9 +457,9 @@ const SignUpWallet: React.FC = () => {
                       <input
                         type="text"
                         placeholder="Nome Completo"
-                        className={`${errors.repre_name && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                        className={`${errors.nome_representante && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
                         id="repre_name"
-                        {...register("repre_name", {
+                        {...register("nome_representante", {
                           required: "Campo obrigatório",
                           minLength: {
                             value: 4,
@@ -501,7 +502,7 @@ const SignUpWallet: React.FC = () => {
                     </label>
                     <div className="relative">
                       <Controller
-                        name="repre_cpf"
+                        name="cpf_representante"
                         control={control}
                         defaultValue=""
                         rules={{
@@ -516,7 +517,7 @@ const SignUpWallet: React.FC = () => {
                             {...field}
                             mask="999.999.999-99"
                             placeholder="Digite seu CPF"
-                            className={`${errors.repre_cpf && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                            className={`${errors.cpf_representante && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
                           />
                         )}
                       />
@@ -536,8 +537,9 @@ const SignUpWallet: React.FC = () => {
                   </div>
                 </div>
               ) : null}
-              <div className="w-full text-center p-3 justify-center text-sm text-red dark:text-meta-1">
-                Atenção!! os dados bancários precisam ser da mesma titularidade do CPF/CNPJ cadastrado.
+              <div className="w-full justify-center p-3 text-center text-sm text-red dark:text-meta-1">
+                Atenção!! os dados bancários precisam ser da mesma titularidade
+                do CPF/CNPJ cadastrado.
               </div>
               {/* Dados Bancários */}
               <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 ">
@@ -632,13 +634,13 @@ const SignUpWallet: React.FC = () => {
                 <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
                   <label
                     className="mb-2.5 block font-medium text-black dark:text-white"
-                    htmlFor="conta_corrente"
+                    htmlFor="conta"
                   >
                     Conta Corrente
                   </label>
                   <div className="relative">
                     <Controller
-                      name="conta_corrente"
+                      name="conta"
                       control={control}
                       defaultValue=""
                       rules={{
@@ -653,7 +655,7 @@ const SignUpWallet: React.FC = () => {
                           {...field}
                           mask="9999999-9"
                           placeholder="Conta Corrente"
-                          className={`${errors.conta_corrente && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                          className={`${errors.conta && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
                         />
                       )}
                     />
@@ -706,13 +708,13 @@ const SignUpWallet: React.FC = () => {
                 <div className="col-span-2 mb-2 ">
                   <label
                     className="mb-2.5 block font-medium text-black dark:text-white"
-                    htmlFor="whatsapp"
+                    htmlFor="phone"
                   >
                     Whatsapp
                   </label>
                   <div className="relative">
                     <Controller
-                      name="whatsapp"
+                      name="phone"
                       control={control}
                       defaultValue=""
                       rules={{
@@ -727,7 +729,7 @@ const SignUpWallet: React.FC = () => {
                           {...field}
                           mask="99.99999-9999"
                           placeholder="Whatsapp"
-                          className={`${errors.whatsapp && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                          className={`${errors.phone && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
                         />
                       )}
                     />
