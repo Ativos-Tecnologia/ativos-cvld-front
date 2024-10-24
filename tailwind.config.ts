@@ -28,6 +28,8 @@ const config = {
       nexa: ["Nexa", "sans-serif"],
       satoshi: ["Satoshi", "sans-serif"],
       poppins: ["Poppins", "sans-serif"],
+      manyChat: ["ManyChatGravity", "sans-serif"],
+      rooftop: ["Rooftop", "sans-serif"],
       // sans: ["Inter", "sans-serif"],
     },
 
