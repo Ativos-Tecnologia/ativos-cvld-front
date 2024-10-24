@@ -538,7 +538,7 @@ const SignUpWallet: React.FC = () => {
                 </div>
               ) : null}
               <div className="w-full justify-center p-3 text-center text-sm text-red dark:text-meta-1">
-                Atenção!! os dados bancários precisam ser da mesma titularidade
+                Atenção! os dados bancários precisam ser da mesma titularidade
                 do CPF/CNPJ cadastrado.
               </div>
               {/* Dados Bancários */}
