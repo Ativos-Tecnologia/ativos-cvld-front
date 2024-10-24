@@ -1,9 +1,13 @@
 "use client";
 import CustomCheckbox from "@/components/CrmUi/Checkbox";
 import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
+import { MainFooter } from "@/components/Footer";
 import UnloggedHeader from "@/components/Header/UnloggedHeader";
 import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
 import { ShadSelect } from "@/components/ShadSelect";
+import AutomatedProposalSkeleton from "@/components/Skeletons/AutomatedProposalSteketon";
+import AutomatedProposalSteketon from "@/components/Skeletons/AutomatedProposalSteketon";
+import NewFormResultSkeleton from "@/components/Skeletons/NewFormResultSkeleton";
 import { SelectItem } from "@/components/ui/select";
 import { APP_ROUTES } from "@/constants/app-routes";
 import { ENUM_TIPO_OFICIOS_LIST } from "@/constants/constants";
@@ -16,9 +20,11 @@ import Cleave from "cleave.js/react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
+import { Fade } from "react-awesome-reveal";
 import { Controller, useForm } from "react-hook-form";
 import { AiOutlineLoading } from "react-icons/ai";
-import { BiChevronDown } from "react-icons/bi";
+import { BiChevronDown, BiChevronUp } from "react-icons/bi";
+import { BsChevronCompactDown } from "react-icons/bs";
 import { FaWhatsapp } from "react-icons/fa";
 import { toast } from "sonner";
 
@@ -127,7 +133,7 @@ const AutomatedProposal = () => {
       tipo_do_oficio: "PRECATÓRIO",
       esfera: "FEDERAL",
       regime: "",
-      tribunal: "",
+      tribunal: "STJ",
       natureza: "NÃO TRIBUTÁRIA",
       valor_principal: 0,
       valor_juros: 0,
@@ -156,9 +162,12 @@ const AutomatedProposal = () => {
   );
   const [loading, setLoading] = useState<boolean>(false);
   const [showResults, setShowResults] = useState<boolean>(false);
+  const [isFloatingButtonsVisible, setIsFloatingButtonVisible] = useState<boolean>(false);
   const [filledFormData, setFilledFormData] =
     useState<IProposalFormStateProps | null>(null);
   const mainRef = useRef<HTMLDivElement | null>(null);
+  const formRef = useRef<HTMLFormElement | null>(null);
+  const resultsRef = useRef<HTMLDivElement | null>(null);
 
   /* ====> value states <==== */
   const [proposalValue, setProposalValue] = useState({ min: 0, max: 0 });
@@ -211,7 +220,7 @@ const AutomatedProposal = () => {
 
   const onSubmit = async (data: any) => {
     setLoading(true);
-
+    
     data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
     data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
     data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
@@ -255,6 +264,11 @@ const AutomatedProposal = () => {
         });
         setShowResults(true);
         setFilledFormData(data);
+        if (resultsRef.current) {
+          resultsRef.current.scrollIntoView({
+            behavior: "smooth"
+          })
+        }
       } else if (response.status === 400) {
         toast.error(response.data.error); // lança toast de erro na tela com mensagem personalizada
       }
@@ -272,6 +286,14 @@ const AutomatedProposal = () => {
   function dateConverter(date: string): string {
     const convertedDate = date.split("-").reverse().join("/");
     return convertedDate;
+  }
+
+  function scrollTo(ref: HTMLElement | HTMLDivElement | null) {
+    if (ref) {
+      ref.scrollIntoView({
+        behavior: "smooth"
+      })
+    }
   }
 
   const redirectToWhatsApp = () => {
@@ -315,7 +337,16 @@ E abaixo, uma memória das informações de entrada:
 
   useEffect(() => {
     const watchWindowScroll = () => {
-      if (window.scrollY > 100) {
+      const scrollPosition = window.scrollY;
+      // faz o botão do whatsapp surgir
+      if (scrollPosition > 500) {
+        setIsFloatingButtonVisible(true);
+      } else {
+        setIsFloatingButtonVisible(false);
+      }
+
+      // altera o colorset do header
+      if (scrollPosition > 100) {
         setHeaderColorset("glass");
       } else {
         setHeaderColorset("smooth");
@@ -329,7 +360,7 @@ E abaixo, uma memória das informações de entrada:
     <div ref={mainRef} className="bg-boxdark-2">
       <UnloggedHeader
         theme="dark" //tema do header
-        logoPath="/images/logo/celer-app-logo-text.svg" //logo do header
+        logoPath="/images/logo/new-logo-text-dark.png" //logo do header
       />
 
       {/* image-wrapper */}
@@ -343,19 +374,28 @@ E abaixo, uma memória das informações de entrada:
           height={490}
           quality={100}
         /> */}
-        <div className="absolute inset-0 flex flex-col items-start justify-center bg-[linear-gradient(to_top,#1A222C_5%,transparent_95%)]">
-          <div className="mx-auto md:min-w-[80%] xl:min-w-[1080px]">
-            <h1 className="font-manyChat translate-x-25 animate-fade-right pt-15 text-center text-7xl tracking-wide text-snow opacity-0 2xsm:hidden md:block md:text-5xl lg:text-7xl">
-              Gerador de <br /> Propostas <br /> Automáticas
-            </h1>
-            <h1 className="font-manyChat translate-x-25 animate-fade-right pt-20 text-center text-snow opacity-0 2xsm:mt-8 2xsm:flex 2xsm:flex-col 2xsm:items-center 2xsm:justify-center  2xsm:text-title-xl2 md:hidden">
-              <span>Gerador de Propostas</span>
-              <span>Automáticas</span>
-            </h1>
-            <p className="font-rooftop pt-10 text-center  text-base font-bold text-slate-500 2xsm:text-2xl">
-              Encontre os valores de proposta e <br /> comissão baseados nas
-              informações do ativo
-            </p>
+        <div className="absolute inset-0 flex flex-col items-center justify-between bg-[linear-gradient(to_top,#1A222C_5%,transparent_95%)]">
+          <div className="mx-auto md:min-w-[80%] xl:min-w-[1080px] pt-55">
+            <Fade direction="up" triggerOnce>
+              <h1 className="font-manyChat pt-15 text-center text-7xl tracking-wide text-snow 2xsm:hidden md:block md:text-5xl lg:text-7xl">
+                Expanda suas <br /> vendas <br /> de precatórios
+              </h1>
+              <h1 className="font-manyChat pt-20 text-center text-snow opacity-0 2xsm:mt-8 2xsm:flex 2xsm:flex-col 2xsm:items-center 2xsm:justify-center  2xsm:text-title-xl2 md:hidden">
+                <span>Expanda suas vendas</span>
+                <span>de Precatórios</span>
+              </h1>
+            </Fade>
+            <Fade direction="up" delay={700} triggerOnce>
+              <p className="font-rooftop pt-10 text-center  text-base font-bold text-slate-500 2xsm:text-2xl">
+                Conduza mais negociações de precatórios <br /> e converta mais antecipações.
+              </p>
+            </Fade>
+          </div>
+
+          <div className="flex items-end justify-center">
+            <BsChevronCompactDown
+              onClick={() => { scrollTo(formRef.current) }}
+              className="animate-upforward text-7xl text-bodydark2 cursor-pointer" />
           </div>
         </div>
       </div>
@@ -369,7 +409,7 @@ E abaixo, uma memória das informações de entrada:
               Preencha o formulário abaixo
             </h2>
           </div>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form ref={formRef} onSubmit={handleSubmit(onSubmit)} className="scroll-m-25 scroll-p-46">
             <div className="grid grid-cols-2 gap-5 sm:grid-cols-2">
               {/* ====> label TIPO DO OFÍCIO <==== */}
               <div className="mb-4 flex w-full flex-col gap-2 2xsm:col-span-2 md:col-span-1">
@@ -386,7 +426,7 @@ E abaixo, uma memória das informações de entrada:
                   defaultValue={enumTipoOficiosList[0]}
                   className="border-strokedark bg-form-input text-bodydark"
 
-                  // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
+                // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
                 >
                   {ENUM_TIPO_OFICIOS_LIST.map((status) => (
                     <SelectItem key={status} value={status}>
@@ -412,7 +452,7 @@ E abaixo, uma memória das informações de entrada:
                   defaultValue={"NÃO TRIBUTÁRIA"}
                   className="border-strokedark bg-form-input text-bodydark"
 
-                  // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
+                // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
                 >
                   <SelectItem
                     defaultValue="NÃO TRIBUTÁRIA"
@@ -448,7 +488,7 @@ E abaixo, uma memória das informações de entrada:
 
               {/* ====> label REGIME <==== */}
               {watch("esfera") !== "FEDERAL" &&
-              watch("esfera") !== undefined ? (
+                watch("esfera") !== undefined ? (
                 <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                   <label
                     htmlFor="natureza"
@@ -551,17 +591,11 @@ E abaixo, uma memória das informações de entrada:
                   name="valor_juros"
                   control={control}
                   defaultValue={0}
-                  rules={{
-                    min: {
-                      value: 0.01,
-                      message: "O valor deve ser maior que 0",
-                    },
-                  }}
-                  render={({ field, fieldState: { error } }) => (
+                  render={({ field }) => (
                     <>
                       <Cleave
                         {...field}
-                        className={`w-full rounded-md border ${error ? "border-red" : "border-strokedark"} bg-form-input px-3 py-2 text-sm font-medium text-bodydark`}
+                        className={`w-full rounded-md border bg-form-input px-3 py-2 text-sm font-medium text-bodydark`}
                         options={{
                           numeral: true,
                           numeralPositiveOnly: true,
@@ -573,11 +607,6 @@ E abaixo, uma memória das informações de entrada:
                           rawValueTrimPrefix: true,
                         }}
                       />
-                      {error && (
-                        <span className="absolute left-1 top-16 text-xs font-medium text-red">
-                          {error.message}
-                        </span>
-                      )}
                     </>
                   )}
                 />
@@ -737,7 +766,7 @@ E abaixo, uma memória das informações de entrada:
 
               {/* ====> checkbox IR INCIDE RRA <==== */}
               {watch("natureza") === "TRIBUTÁRIA" ||
-              watch("incidencia_rra_ir") === false ? null : (
+                watch("incidencia_rra_ir") === false ? null : (
                 <div
                   className={`flex gap-2 ${watch("ir_incidente_rra") ? "items-start" : "items-center"} 2xsm:col-span-2 sm:col-span-1`}
                 >
@@ -759,7 +788,7 @@ E abaixo, uma memória das informações de entrada:
 
               {/* ====> label NÚMERO DE MESES <==== */}
               {watch("ir_incidente_rra") === true &&
-              watch("natureza") !== "TRIBUTÁRIA" ? (
+                watch("natureza") !== "TRIBUTÁRIA" ? (
                 <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                   <label
                     htmlFor="numero_de_meses"
@@ -783,7 +812,7 @@ E abaixo, uma memória das informações de entrada:
               ) : (
                 <>
                   {watch("natureza") === "TRIBUTÁRIA" ||
-                  watch("incidencia_rra_ir") === false ? null : (
+                    watch("incidencia_rra_ir") === false ? null : (
                     <div className="col-span-1 flex items-center">&nbsp;</div>
                   )}
                 </>
@@ -907,97 +936,124 @@ E abaixo, uma memória das informações de entrada:
             </button>
             {/* end calculate button */}
           </form>
-          {showResults && (
-            <React.Fragment>
-              <div className="flex animate-fade-up flex-col opacity-0 2xsm:p-10 md:my-20 md:gap-10">
-                <div>
-                  <h2 className="text-xl font-medium uppercase">
-                    Tudo pronto!
-                  </h2>
-                  <p className="text-sm text-slate-500">
-                    Abaixo foram gerados os valores mínimos e máximos de
-                    proposta e comissão. Mova os sliders para alterar os valores
-                    proporcionalmente.
-                  </p>
-                </div>
-                <div className="mt-10 grid gap-10">
-                  <div className="flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
-                    <div className="relative flex flex-col items-center">
-                      <h4 className="">Proposta Mínima</h4>
-                      <span>{numberFormat(proposalValue.min)}</span>
+          {loading ? (
+            <AutomatedProposalSkeleton />
+          ) : (
+            <>
+              {showResults && (
+                <React.Fragment>
+                  <div ref={resultsRef} className="flex flex-col 2xsm:p-10 md:my-20 md:gap-10">
+                    <div>
+                      <h2 className="text-2xl font-medium uppercase text-snow">
+                        Tudo pronto!
+                      </h2>
+                      <p className="text-bodydark">
+                        Abaixo foram gerados os valores mínimos e máximos de
+                        proposta e comissão. Mova os sliders para alterar os valores
+                        proporcionalmente.
+                      </p>
                     </div>
-                    <div className="flex flex-1 flex-col items-center gap-1">
-                      <span className="text-sm font-medium">
-                        Proposta Atual: {numberFormat(sliderValues.proposal)}
-                      </span>
-                      <input
-                        type="range"
-                        step="0.01"
-                        min={proposalValue.min}
-                        max={proposalValue.max}
-                        value={sliderValues.proposal}
-                        onChange={handleProposalSliderChange}
-                        className="w-full"
-                      />
-                    </div>
-                    <div className="flex flex-col items-center">
-                      <h4 className="">Proposta Máxima</h4>
-                      <span>{numberFormat(proposalValue.max)}</span>
+                    <div className="mt-10 grid gap-10 text-bodydark">
+                      <div className="flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
+                        <div className="relative flex flex-col items-center">
+                          <h4 className="">Proposta Mínima</h4>
+                          <span>{numberFormat(proposalValue.min)}</span>
+                        </div>
+                        <div className="flex flex-1 flex-col items-center gap-1">
+                          <span className="text-sm font-medium">
+                            Proposta Atual: {numberFormat(sliderValues.proposal)}
+                          </span>
+                          <input
+                            type="range"
+                            step="0.01"
+                            min={proposalValue.min}
+                            max={proposalValue.max}
+                            value={sliderValues.proposal}
+                            onChange={handleProposalSliderChange}
+                            className="w-full"
+                          />
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <h4 className="">Proposta Máxima</h4>
+                          <span>{numberFormat(proposalValue.max)}</span>
+                        </div>
+                      </div>
+
+                      <div className="relative flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
+                        <div className="flex flex-col items-center">
+                          <h4 className="">Comissão Mínima</h4>
+                          <span>{numberFormat(comissionValue.min)}</span>
+                        </div>
+                        <div className="flex flex-1 flex-col items-center gap-1">
+                          <span className="text-sm font-medium">
+                            Comissão Atual: {numberFormat(sliderValues.comission)}
+                          </span>
+                          <input
+                            type="range"
+                            step="0.01"
+                            min={comissionValue.min}
+                            max={comissionValue.max}
+                            value={sliderValues.comission}
+                            onChange={handleComissionSliderChange}
+                            className="w-full"
+                          />
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <h4 className="">Comissão Máxima</h4>
+                          <span>{numberFormat(comissionValue.max)}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="relative flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
-                    <div className="flex flex-col items-center">
-                      <h4 className="">Comissão Mínima</h4>
-                      <span>{numberFormat(comissionValue.min)}</span>
-                    </div>
-                    <div className="flex flex-1 flex-col items-center gap-1">
-                      <span className="text-sm font-medium">
-                        Comissão Atual: {numberFormat(sliderValues.comission)}
-                      </span>
-                      <input
-                        type="range"
-                        step="0.01"
-                        min={comissionValue.min}
-                        max={comissionValue.max}
-                        value={sliderValues.comission}
-                        onChange={handleComissionSliderChange}
-                        className="w-full"
-                      />
-                    </div>
-                    <div className="flex flex-col items-center">
-                      <h4 className="">Comissão Máxima</h4>
-                      <span>{numberFormat(comissionValue.max)}</span>
-                    </div>
+                  <div className="flex items-center justify-center gap-4 2xsm:flex-wrap pb-25">
+                    {/* register button */}
+                    <Link
+                      href={APP_ROUTES.public.register.name}
+                      className="flex h-14 items-center justify-center rounded-md min-w-[305px] bg-blue-700 px-4 py-2 text-snow transition-all duration-300 hover:bg-blue-800 2xsm:w-[295px] md:w-fit font-medium uppercase"
+                    >
+                      Cadastrar este ativo no Celer
+                    </Link>
+                    {/* register button */}
+
+                    {/* whatsapp button */}
+                    <button
+                      className={`${headerColorset === "glass" ? "cursor-pointer opacity-100" : "cursor-default opacity-0"} flex min-w-[305px] place-items-center gap-2 rounded-md bg-green-500 px-4 py-2 text-snow uppercase font-medium transition-all duration-300 hover:bg-green-600`}
+                      onClick={redirectToWhatsApp}
+                    >
+                      <span>Enviar para um consultor Ativos</span>
+                      <FaWhatsapp className="h-10 w-10 text-snow" />
+                    </button>
+                    {/* end whatsapp button */}
                   </div>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-center gap-4 2xsm:flex-wrap">
-                {/* register button */}
-                <Link
-                  href={APP_ROUTES.public.register.name}
-                  className="flex h-14 items-center justify-center rounded-md bg-blue-700 px-4 py-2 text-snow transition-all duration-300 hover:bg-blue-800 2xsm:w-[295px] md:w-fit"
-                >
-                  Cadastrar este ativo no Celer
-                </Link>
-                {/* register button */}
-
-                {/* whatsapp button */}
-                <button
-                  className={`${headerColorset === "glass" ? "cursor-pointer opacity-100" : "cursor-default opacity-0"} flex w-fit place-items-center gap-2 rounded-md bg-green-500 px-4 py-2 text-snow transition-all duration-300 hover:bg-green-600`}
-                  onClick={redirectToWhatsApp}
-                >
-                  <span>Falar com um consultor Ativos</span>
-                  <FaWhatsapp className="h-10 w-10 text-snow" />
-                </button>
-                {/* end whatsapp button */}
-              </div>
-            </React.Fragment>
+                </React.Fragment>
+              )}
+            </>
           )}
         </div>
       </div>
       {/* end form */}
+
+      {/* ----> back to top button <---- */}
+      {/* TODO: criar componente para esse botão */}
+      <button
+        title="ir ao topo da página"
+        onClick={() => scrollTo(mainRef.current)}
+        className={`fixed bottom-28 2xsm:right-5 sm:right-10 lg:right-14 w-12 h-12 rounded-full flex items-center justify-center bg-gray-200 bg-opacity-10 bg-clip-padding backdrop-blur-sm backdrop-filter ${isFloatingButtonsVisible ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"} transition-all duration-500`}>
+        <BiChevronUp className="animate-upforward text-4xl text-snow" />
+      </button>
+
+      {/* floating whatsapp button */}
+      <button
+        title="falar com um consultor Ativos"
+        className={`fixed bottom-10 right-12 w-15 h-15 rounded-full flex items-center justify-center drop-shadow-2 bg-green-400 transition-all duration-500`}>
+        <FaWhatsapp className="h-10 w-10 text-snow" />
+      </button>
+      {/* floating whatsapp button */}
+
+      {/* footer */}
+      <MainFooter />
+
     </div>
   );
 };
