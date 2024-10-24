@@ -1,17 +1,16 @@
 "use client";
-import React, { useState, ReactNode, useEffect } from "react";
-import Sidebar from "@/components/Sidebar";
-import Header from "@/components/Header";
-import useColorMode from "@/hooks/useColorMode";
-import { MainFooter } from "../Footer";
+import React, { useEffect } from "react";
 import { LiteFooter } from "../Footer/LiteFooter";
 
-export default function UnloggedLayout({ children, }: { children: React.ReactNode }) {
-  
+export default function UnloggedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   useEffect(() => {
-    if (localStorage.getItem('ATIVOS_access') === "undefined") {
-      localStorage.removeItem('ATIVOS_access');
-      localStorage.removeItem('ATIVOS_refresh');
+    if (localStorage.getItem("ATIVOS_access") === "undefined") {
+      localStorage.removeItem("ATIVOS_access");
+      localStorage.removeItem("ATIVOS_refresh");
     }
   }, []);
 
@@ -21,14 +20,14 @@ export default function UnloggedLayout({ children, }: { children: React.ReactNod
     <>
       {/* <!-- ===== Page Wrapper Start ===== --> */}
       <div className="flex items-center justify-center overflow-hidden xl:min-h-screen">
-          <main className="flex-1 3xl:max-w-[85%] xl:h-screen 3xl:h-fit 3xl:rounded-md shadow-2 overflow-hidden">
-            <div className="relative xl:h-[85%]">
-              {children}
-            </div>
-        {
-          (window.location.pathname === '/auth/signin' || window.location.pathname === '/auth/signup') && <LiteFooter />
-        }
-          </main>
+        <main className="flex-1 overflow-hidden shadow-2 xl:h-screen 3xl:h-fit 3xl:max-w-[85%] 3xl:rounded-md">
+          <div className="relative xl:h-[85%]">{children}</div>
+          {(window.location.pathname === "/auth/signin" ||
+            window.location.pathname === "/auth/signup" ||
+            window.location.pathname === "/auth/signup/wallet") && (
+            <LiteFooter />
+          )}
+        </main>
       </div>
       {/* <!-- ===== Page Wrapper End ===== --> */}
     </>
