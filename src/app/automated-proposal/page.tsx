@@ -220,7 +220,7 @@ const AutomatedProposal = () => {
 
   const onSubmit = async (data: any) => {
     setLoading(true);
-    
+
     data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
     data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
     data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
@@ -296,7 +296,13 @@ const AutomatedProposal = () => {
     }
   }
 
-  const redirectToWhatsApp = () => {
+  const sendDefaultWhatsAppMessage = () => {
+    const message = "Olá, venho do site do Celer, e gostaria de tirar uma dúvida!";
+    const linkWhatsApp = `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(message)}`;
+    window.open(linkWhatsApp, "_blank", "noopener,noreferrer");
+  }
+
+  const sendProposalToWhatsApp = () => {
     const message = `
         Olá, venho da aplicação CelerApp, onde acabo de fazer um cálculo de proposta.
 Segue abaixo os dados do cálculo:
@@ -357,7 +363,7 @@ E abaixo, uma memória das informações de entrada:
   }, []);
 
   return (
-    <div ref={mainRef} className="bg-boxdark-2">
+    <div ref={mainRef} className="bg-boxdark-2 font-nexa">
       <UnloggedHeader
         theme="dark" //tema do header
         logoPath="/images/logo/new-logo-text-dark.png" //logo do header
@@ -375,12 +381,12 @@ E abaixo, uma memória das informações de entrada:
           quality={100}
         /> */}
         <div className="absolute inset-0 flex flex-col items-center justify-between bg-[linear-gradient(to_top,#1A222C_5%,transparent_95%)]">
-          <div className="mx-auto md:min-w-[80%] xl:min-w-[1080px] pt-55">
+          <div className="mx-auto md:min-w-[80%] xl:min-w-[1080px] pt-20 md:pt-55">
             <Fade direction="up" triggerOnce>
               <h1 className="font-manyChat pt-15 text-center text-7xl tracking-wide text-snow 2xsm:hidden md:block md:text-5xl lg:text-7xl">
                 Expanda suas <br /> vendas <br /> de precatórios
               </h1>
-              <h1 className="font-manyChat pt-20 text-center text-snow opacity-0 2xsm:mt-8 2xsm:flex 2xsm:flex-col 2xsm:items-center 2xsm:justify-center  2xsm:text-title-xl2 md:hidden">
+              <h1 className="font-manyChat pt-20 text-center text-snow 2xsm:mt-8 2xsm:flex 2xsm:flex-col 2xsm:items-center 2xsm:justify-center  2xsm:text-title-xl2 md:hidden">
                 <span>Expanda suas vendas</span>
                 <span>de Precatórios</span>
               </h1>
@@ -392,10 +398,12 @@ E abaixo, uma memória das informações de entrada:
             </Fade>
           </div>
 
-          <div className="flex items-end justify-center">
+          <div className="flex flex-col items-center justify-center pb-3">
             <BsChevronCompactDown
               onClick={() => { scrollTo(formRef.current) }}
-              className="animate-upforward text-7xl text-bodydark2 cursor-pointer" />
+              className="animate-upforward text-6xl text-bodydark2 cursor-pointer" 
+            />
+            <span>clique aqui para ir ao formulário</span>
           </div>
         </div>
       </div>
@@ -813,7 +821,7 @@ E abaixo, uma memória das informações de entrada:
                 <>
                   {watch("natureza") === "TRIBUTÁRIA" ||
                     watch("incidencia_rra_ir") === false ? null : (
-                    <div className="col-span-1 flex items-center">&nbsp;</div>
+                    <div className="col-span-1 hidden items-center md:flex">&nbsp;</div>
                   )}
                 </>
               )}
@@ -873,7 +881,7 @@ E abaixo, uma memória das informações de entrada:
               ) : (
                 <>
                   {watch("natureza") === "TRIBUTÁRIA" ? null : (
-                    <div className="flex items-center">&nbsp;</div>
+                    <div className="hidden sm:flex items-center">&nbsp;</div>
                   )}
                 </>
               )}
@@ -1019,7 +1027,7 @@ E abaixo, uma memória das informações de entrada:
                     {/* whatsapp button */}
                     <button
                       className={`${headerColorset === "glass" ? "cursor-pointer opacity-100" : "cursor-default opacity-0"} flex min-w-[305px] place-items-center gap-2 rounded-md bg-green-500 px-4 py-2 text-snow uppercase font-medium transition-all duration-300 hover:bg-green-600`}
-                      onClick={redirectToWhatsApp}
+                      onClick={sendProposalToWhatsApp}
                     >
                       <span>Enviar para um consultor Ativos</span>
                       <FaWhatsapp className="h-10 w-10 text-snow" />
@@ -1045,8 +1053,9 @@ E abaixo, uma memória das informações de entrada:
 
       {/* floating whatsapp button */}
       <button
+        onClick={sendDefaultWhatsAppMessage}
         title="falar com um consultor Ativos"
-        className={`fixed bottom-10 right-12 w-15 h-15 rounded-full flex items-center justify-center drop-shadow-2 bg-green-400 transition-all duration-500`}>
+        className={`fixed bottom-10 2xsm:right-3.5 md:right-8 xl:right-12 w-15 h-15 rounded-full flex items-center justify-center drop-shadow-2 bg-green-400 ${isFloatingButtonsVisible ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"} transition-all duration-500`}>
         <FaWhatsapp className="h-10 w-10 text-snow" />
       </button>
       {/* floating whatsapp button */}
