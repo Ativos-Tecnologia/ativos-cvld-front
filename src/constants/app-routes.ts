@@ -44,5 +44,9 @@ export const APP_ROUTES = {
     wallet: {
       name: "/auth/signup/wallet",
     },
+    terms_and_conditions: {
+      name: "/termos-e-condicoes",
+    },
   },
 };
+    
