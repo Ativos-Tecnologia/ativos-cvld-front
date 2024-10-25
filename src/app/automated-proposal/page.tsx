@@ -365,8 +365,7 @@ E abaixo, uma memória das informações de entrada:
   return (
     <div ref={mainRef} className="bg-boxdark-2 font-nexa">
       <UnloggedHeader
-        theme="dark" //tema do header
-        logoPath="/images/logo/new-logo-text-dark.png" //logo do header
+        theme="darkMode" //tema do header
       />
 
       {/* image-wrapper */}
