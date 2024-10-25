@@ -31,7 +31,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     setTheme,
   } = useContext(GeneralUIContext);
 
-  const {modalOpen, setModalOpen} = useContext(DefaultLayoutContext);
+  const { modalOpen, setModalOpen } = useContext(DefaultLayoutContext);
 
   const pathname = usePathname();
 
@@ -110,24 +110,43 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         } transition-all duration-200`}
     >
       {/* <!-- SIDEBAR HEADER --> */}
-      <div className="flex justify-center gap-5 px-6 py-5.5 lg:py-6.5">
+      <div className="flex justify-center gap-5 2xsm:px-2 lg:px-6 py-5.5 lg:py-6.5">
         <Link href="/">
           {
             theme !== "light" ? (
-              <Image
-            width={196}
-            height={32}
-            src="/images/logo/celer-app-logo-text.svg"
-            alt="Logo"
-            priority
-          />
+              <div className="flex items-center gap-2">
+                <Image
+                  width={60}
+                  height={32}
+                  src="/images/logo/new-logo-dark.png"
+                  alt="Logo"
+                  priority
+                />
+                <Image
+                  width={120}
+                  height={32}
+                  src="/images/logo/celer-app-text-logo-dark.svg"
+                  alt="Logo"
+                  priority
+                />
+              </div>
             ) : (
-              <Image
-                width={196}
-                height={32}
-                src="/images/logo/celer-app-logo-text-black.svg"
-                alt="Logo"
-              />
+              <div className="flex items-center gap-2">
+                <Image
+                  width={60}
+                  height={32}
+                  src="/images/logo/ativos_logo_at_default.png"
+                  alt="Logo"
+                  priority
+                />
+                <Image
+                  width={120}
+                  height={32}
+                  src="/images/logo/celer-app-text-logo-light.svg"
+                  alt="Logo"
+                  priority
+                />
+              </div>
             )
           }
         </Link>
@@ -137,7 +156,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
           onClick={() => setSidebarOpen(!sidebarOpen)}
           aria-controls="sidebar"
           aria-expanded={sidebarOpen}
-          className="block lg:hidden text-black-2"
+          className={`block lg:hidden ${theme === "light" ? "text-black-2" : "text-snow"}`}
         >
           <svg
             className="fill-current"
@@ -211,15 +230,15 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           )}
                           {product !== 'crm' && (
                             <>
-                            <li>
-                              <Link
-                                href="/dashboard/wallet"
-                                className={`group relative flex items-center gap-2.5 px-4 py-2 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 dark:hover:bg-meta-4 hover:text-white ${pathname === "/dashboard/wallet" && "bg-blue-700/70 text-white hover:bg-blue-800/50 dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
-                              >
-                                <LuWallet2 />
-                                <span>Wallet</span>
-                              </Link>
-                            </li><li>
+                              <li>
+                                <Link
+                                  href="/dashboard/wallet"
+                                  className={`group relative flex items-center gap-2.5 px-4 py-2 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 dark:hover:bg-meta-4 hover:text-white ${pathname === "/dashboard/wallet" && "bg-blue-700/70 text-white hover:bg-blue-800/50 dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
+                                >
+                                  <LuWallet2 />
+                                  <span>Wallet</span>
+                                </Link>
+                              </li><li>
                                 <Link
                                   href="/dashboard/marketplace"
                                   className={`group relative flex items-center gap-2.5 px-4 py-2 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 dark:hover:bg-meta-4 hover:text-white ${pathname.includes("/dashboard/marketplace") && "text-white bg-blue-700/70 dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
@@ -238,7 +257,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                   </span>
                                 </Link>
                               </li>
-                              </>
+                            </>
                           )}
                         </ul>
                       </div>
@@ -250,18 +269,18 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
               {/* <!-- Menu Item Dashboard --> */}
               <CapaDoBatman show={window.location.href.includes('localhost') || window.location.href.includes('dev-')}>
-              {/* <--- new precatory button --> */}
-              <Link
-                href="#"
-                onClickCapture={() => setModalOpen(!modalOpen)}
-                className={`flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 hover:text-white duration-300 ease-in-out hover:bg-blue-400 dark:hover:bg-form-strokedark ${modalOpen &&
-                  "bg-blue-700/90 dark:bg-meta-4 text-white"
-                  }`}
-                onClick={() => {}}
-              >
-                <BiPlus style={{ width: '22px', height: '22px' }} />
-                <span>Novo Precatório</span>
-              </Link>
+                {/* <--- new precatory button --> */}
+                <Link
+                  href="#"
+                  onClickCapture={() => setModalOpen(!modalOpen)}
+                  className={`flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 hover:text-white duration-300 ease-in-out hover:bg-blue-400 dark:hover:bg-form-strokedark ${modalOpen &&
+                    "bg-blue-700/90 dark:bg-meta-4 text-white"
+                    }`}
+                  onClick={() => { }}
+                >
+                  <BiPlus style={{ width: '22px', height: '22px' }} />
+                  <span>Novo Precatório</span>
+                </Link>
               </CapaDoBatman>
             </ul>
           </div>

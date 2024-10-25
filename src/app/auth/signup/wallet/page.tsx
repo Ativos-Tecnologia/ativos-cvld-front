@@ -174,7 +174,7 @@ const SignUpWallet: React.FC = () => {
               <Fade triggerOnce>
                 <div className="flex flex-col items-center gap-3">
                   <Image
-                    src={"/images/logo/celer-app-logo-dark.svg"}
+                    src={"/images/logo/new-logo-dark.png"}
                     alt="Logo"
                     width={160}
                     height={32}

@@ -104,7 +104,7 @@ const SignIn: React.FC = () => {
               <Fade triggerOnce>
                 <div className="flex flex-col items-center gap-3">
                   <Image
-                    src={"/images/logo/celer-app-logo-dark.svg"}
+                    src={"/images/logo/new-logo-dark.png"}
                     alt="Logo"
                     width={160}
                     height={32}
@@ -148,10 +148,10 @@ const SignIn: React.FC = () => {
             >
               <div className="bg flex flex-col items-center gap-3">
                 <Image
-                  src={"/images/logo/celer-app-logo.svg"}
+                  src={"/images/logo/ativos_logo_at_default.png"}
                   alt="Logo"
-                  width={0}
-                  height={0}
+                  width={90}
+                  height={50}
                   className="2xsm:w-20 md:w-28"
                 />
                 <Image
@@ -185,7 +185,7 @@ const SignIn: React.FC = () => {
                   id="usuario"
                   type="text"
                   placeholder="Digite o usuário"
-                  className={`${errors.username && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                  className={`${errors.username && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                   {...register("username", {
                     required: "Campo obrigatório",
                   })}
@@ -210,7 +210,7 @@ const SignIn: React.FC = () => {
 
             <div className="mb-10">
               <label
-                className="mb-2.5 block font-medium text-black dark:text-white"
+                className="mb-2.5 block font-medium text-black"
                 htmlFor="senha"
               >
                 Senha
@@ -220,7 +220,7 @@ const SignIn: React.FC = () => {
                   id="senha"
                   type={hide.password ? "password" : "text"}
                   placeholder="Digite a sua senha"
-                  className={`${errors.password && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                  className={`${errors.password && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                   {...register("password", {
                     required: "Campo obrigatório",
                   })}
@@ -258,7 +258,7 @@ const SignIn: React.FC = () => {
 
             <p
               onClick={() => setOpenModal(true)}
-              className="mb-6 max-w-fit cursor-pointer text-sm font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-500"
+              className="mb-6 max-w-fit cursor-pointer text-sm font-medium text-blue-700 hover:text-blue-800"
             >
               Esqueci a senha
             </p>
@@ -290,7 +290,7 @@ const SignIn: React.FC = () => {
                     </button> */}
             </div>
 
-            {/* <button data-tooltip-target="tooltip-default" disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50 disabled:cursor-not-allowed disabled:opacity-50">
+            {/* <button data-tooltip-target="tooltip-default" disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 disabled:cursor-not-allowed disabled:opacity-50">
                     <span>
                       <FcGoogle style={{ width: '22px', height: '22p' }} />
                     </span>
@@ -298,12 +298,12 @@ const SignIn: React.FC = () => {
                   </button> */}
 
             <div className="mt-6 text-center 2xsm:text-sm xsm:text-base">
-              <p>
+              <p className="text-body">
                 Ainda não possui uma conta?{" "}
                 <Link
                   aria-disabled
                   href="/auth/signup"
-                  className="font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-500"
+                  className="font-medium text-blue-700 hover:text-blue-800"
                 >
                   Cadastre-se
                 </Link>

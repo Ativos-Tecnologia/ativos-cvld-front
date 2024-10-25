@@ -26,7 +26,7 @@ export function LiteFooter() {
               </div>
             </div>
           </div>
-          <FooterLinkGroup className="grid 2xsm:w-full 2xsm:grid-cols-2 2xsm:items-center 2xsm:justify-center 2xsm:gap-5 2xsm:p-2 2xsm:text-center md:flex md:grid-cols-none md:flex-row md:justify-end">
+          <FooterLinkGroup className="grid !text-body 2xsm:w-full 2xsm:grid-cols-2 2xsm:items-center 2xsm:justify-center 2xsm:gap-5 2xsm:p-2 2xsm:text-center md:flex md:grid-cols-none md:flex-row md:justify-end">
             <Footer.Link href="/automated-proposal" className="m-0">Lead Magnet</Footer.Link>
             <Footer.Link href="/retification" className="m-0">
               Recalculador do TRF1
