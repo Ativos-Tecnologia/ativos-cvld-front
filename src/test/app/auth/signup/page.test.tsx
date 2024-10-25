@@ -59,6 +59,10 @@ describe("Teste dos Headers do registro", () => {
     const email = await screen.findByText("Email");
     expect(email).toBeInTheDocument();
 
+    const nomeCompletoRepresentante1 =
+      await screen.findAllByText(/Nome Completo/i);
+    expect(nomeCompletoRepresentante1[0]).toBeInTheDocument();
+
     const selectElement = await screen.findByRole("combobox");
     expect(selectElement).toBeInTheDocument();
 
@@ -124,6 +128,12 @@ describe("Teste dos Headers do registro", () => {
 
     fireEvent.change(inputEmail, { target: { value: "email@email.com" } });
     expect(inputEmail.value).toBe("email@email.com");
+
+    const inpuNomeCompleto = await screen.getByLabelText(/Nome Completo/i);
+    fireEvent.change(inpuNomeCompleto, {
+      target: { value: "John Doe" },
+    });
+    expect(inpuNomeCompleto).toHaveValue("John Doe");
 
     const selectOption = screen.getByLabelText(
       /Selecione uma opção/i,

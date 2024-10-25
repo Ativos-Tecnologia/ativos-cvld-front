@@ -38,6 +38,7 @@ export type SignUpInputs = {
   email: string;
   select: string;
   cpf_cnpj: string;
+  complete_name: string;
   phone: string;
   banco: string;
   agencia: string;
@@ -85,6 +86,7 @@ const SignUp: React.FC = () => {
       const formData = {
         username: data.username,
         email: data.email,
+        complete_name: data.complete_name,
         password: data.password,
         cpf_cnpj: data.cpf_cnpj,
         phone: data.phone,
@@ -303,6 +305,48 @@ const SignUp: React.FC = () => {
 
                 <span className="absolute right-4 top-2.5">
                   <BiEnvelope
+                    style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
+                  />
+                </span>
+              </div>
+            </div>
+
+            {/* Nome Completo */}
+            <div className="mb-2 grid md:col-span-2">
+              <label
+                className="mb-2.5 block font-medium text-black dark:text-white"
+                htmlFor="nome_completo"
+              >
+                Nome Completo
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Nome Completo"
+                  className={`${errors.complete_name && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                  id="nome_completo"
+                  {...register("complete_name", {
+                    required: "Campo obrigatório",
+                    minLength: {
+                      value: 4,
+                      message: "O nome deve conter no mínimo 4 caracteres",
+                    },
+                    maxLength: {
+                      value: 30,
+                      message: "O nome deve conter no máximo 30 caracteres",
+                    },
+                    pattern: {
+                      value: /^[a-zA-Z\s]+$/, // Regex para permitir apenas letras (maiúsculas e minúsculas) e espaços.
+                      message:
+                        "O nome deve conter apenas letras e não deve ter espaços ou caracteres especiais",
+                    },
+                  })}
+                />
+
+                <ErrorMessage errors={errors} field="nome_completo" />
+
+                <span className="absolute right-4 top-2.5">
+                  <BiUser
                     style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
                   />
                 </span>
