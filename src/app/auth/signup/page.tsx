@@ -15,6 +15,7 @@ import {
   BiIdCard,
   BiInfoCircle,
   BiLockAlt,
+  BiLogoWhatsapp,
   BiQuestionMark,
   BiUser,
   BiX,
@@ -37,6 +38,14 @@ export type SignUpInputs = {
   email: string;
   select: string;
   cpf_cnpj: string;
+  complete_name: string;
+  nome_representante: string;
+  cpf_representante: string;
+  phone: string;
+  banco: string;
+  agencia: string;
+  conta: string;
+  pix: string;
   password: string;
   confirm_password: string;
 };
@@ -79,8 +88,16 @@ const SignUp: React.FC = () => {
       const formData = {
         username: data.username,
         email: data.email,
+        complete_name: data.complete_name,
         password: data.password,
         cpf_cnpj: data.cpf_cnpj,
+        nome_representante: data.nome_representante,
+        cpf_representante: data.cpf_representante,
+        phone: data.phone,
+        banco: data.banco,
+        agencia: data.agencia,
+        conta: data.conta,
+        pix: data.pix,
       };
 
       try {
@@ -157,7 +174,7 @@ const SignUp: React.FC = () => {
               <Fade triggerOnce>
                 <div className="flex flex-col items-center gap-3">
                   <Image
-                    src={"/images/logo/celer-app-logo-dark.svg"}
+                    src={"/images/logo/new-logo-dark.png"}
                     alt="Logo"
                     width={160}
                     height={32}
@@ -192,7 +209,7 @@ const SignUp: React.FC = () => {
         </div>
 
         {/* form */}
-        <div className="w-full border-stroke bg-snow 2xsm:p-8 sm:px-8 sm:py-12.5 md:absolute md:left-1/2 md:top-1/2 md:h-fit md:w-3/4 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-md lg:h-fit lg:max-h-[850px] lg:overflow-y-scroll xl:static xl:h-full xl:w-[35%] xl:translate-x-0 xl:translate-y-0 xl:py-5.5">
+        <div className="w-full border-stroke bg-snow 2xsm:p-8 sm:px-8 sm:py-12.5 md:absolute md:left-1/2 md:top-1/2 md:max-h-[850px] md:w-3/4 md:-translate-x-1/2 md:-translate-y-1/2 md:overflow-y-scroll md:rounded-md lg:h-fit lg:max-h-[850px] xl:static xl:h-full xl:w-[35%] xl:translate-x-0 xl:translate-y-0 xl:py-5.5 3xl:max-h-[610px] 3xl:overflow-y-scroll">
           {/* Mobile visible logo */}
           <div className="block w-full xl:hidden">
             <Link
@@ -201,10 +218,10 @@ const SignUp: React.FC = () => {
             >
               <div className="bg flex flex-col items-center gap-3">
                 <Image
-                  src={"/images/logo/celer-app-logo.svg"}
+                  src={"/images/logo/ativos_logo_at_default.png"}
                   alt="Logo"
-                  width={0}
-                  height={0}
+                  width={90}
+                  height={50}
                   className="2xsm:w-20 md:w-28 lg:w-25"
                 />
                 <Image
@@ -220,7 +237,7 @@ const SignUp: React.FC = () => {
           {/* End Mobile visible logo */}
 
           <Fade delay={1e2} damping={1e-1} cascade triggerOnce>
-            <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
+            <h2 className="mb-9 text-2xl font-bold text-black sm:text-title-xl2">
               Cadastre-se para começar
             </h2>
           </Fade>
@@ -231,7 +248,7 @@ const SignUp: React.FC = () => {
           >
             <div className="mb-2">
               <label
-                className="mb-2.5 block font-medium text-black dark:text-white"
+                className="mb-2.5 block font-medium text-black"
                 htmlFor="username"
               >
                 Nome de usuário
@@ -240,7 +257,7 @@ const SignUp: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Usuário"
-                  className={`${errors.username && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                  className={`${errors.username && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                   id="username"
                   {...register("username", {
                     required: "Campo obrigatório",
@@ -272,7 +289,7 @@ const SignUp: React.FC = () => {
 
             <div className="mb-2">
               <label
-                className="mb-2.5 block font-medium text-black dark:text-white"
+                className="mb-2.5 block font-medium text-black"
                 htmlFor="email"
               >
                 Email
@@ -281,7 +298,7 @@ const SignUp: React.FC = () => {
                 <input
                   type="email"
                   placeholder="Digite seu email"
-                  className={`${errors.email && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                  className={`${errors.email && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                   id="email"
                   {...register("email", {
                     required: "Campo obrigatório",
@@ -298,10 +315,52 @@ const SignUp: React.FC = () => {
               </div>
             </div>
 
+            {/* Nome Completo */}
+            <div className="mb-2 grid md:col-span-2">
+              <label
+                className="mb-2.5 block font-medium text-black dark:text-white"
+                htmlFor="nome_completo"
+              >
+                Nome Completo
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Nome Completo"
+                  className={`${errors.complete_name && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                  id="nome_completo"
+                  {...register("complete_name", {
+                    required: "Campo obrigatório",
+                    minLength: {
+                      value: 4,
+                      message: "O nome deve conter no mínimo 4 caracteres",
+                    },
+                    maxLength: {
+                      value: 30,
+                      message: "O nome deve conter no máximo 30 caracteres",
+                    },
+                    pattern: {
+                      value: /^[a-zA-Z\s]+$/, // Regex para permitir apenas letras (maiúsculas e minúsculas) e espaços.
+                      message:
+                        "O nome deve conter apenas letras e não deve ter espaços ou caracteres especiais",
+                    },
+                  })}
+                />
+
+                <ErrorMessage errors={errors} field="nome_completo" />
+
+                <span className="absolute right-4 top-2.5">
+                  <BiUser
+                    style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
+                  />
+                </span>
+              </div>
+            </div>
+
             {/* cpf/cnpj field */}
             <div className="mb-3 sm:col-span-2">
               <label
-                className="mb-1 block font-medium text-black dark:text-white"
+                className="mb-1 block font-medium text-black"
                 htmlFor="select"
               >
                 Selecione uma opção abaixo:
@@ -310,7 +369,7 @@ const SignUp: React.FC = () => {
               <div className="flex flex-col gap-2 sm:flex-row">
                 <select
                   id="select"
-                  className={`w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary sm:w-1/4`}
+                  className={`w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none sm:w-1/4`}
                   {...register("select", {
                     required: "Campo obrigatório",
                   })}
@@ -339,7 +398,7 @@ const SignUp: React.FC = () => {
                             {...field}
                             mask="99.999.999/9999-99"
                             placeholder="Digite seu CNPJ"
-                            className={`${errors.cpf_cnpj && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                            className={`${errors.cpf_cnpj && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                           />
                         )}
                       />
@@ -364,7 +423,7 @@ const SignUp: React.FC = () => {
                             {...field}
                             mask="999.999.999-99"
                             placeholder="Digite seu CPF"
-                            className={`${errors.cpf_cnpj && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                            className={`${errors.cpf_cnpj && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                           />
                         )}
                       />
@@ -384,11 +443,318 @@ const SignUp: React.FC = () => {
                   </span>
                 </div>
               </div>
+              {selectOption === "CNPJ" ? (
+                <div className="grid grid-cols-2 gap-5">
+                  <h3 className="col-span-2 mt-5 block text-center font-semibold uppercase text-black dark:text-white">
+                    Dados do Representante Legal
+                  </h3>
+                  <div className="col-span-2 mb-2">
+                    <label
+                      className="mb-2.5 block font-medium text-black dark:text-white"
+                      htmlFor="repre_name"
+                    >
+                      Nome Completo
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Nome Completo"
+                        className={`${errors.nome_representante && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                        id="repre_name"
+                        {...register("nome_representante", {
+                          required: "Campo obrigatório",
+                          minLength: {
+                            value: 4,
+                            message:
+                              "O nome deve conter no mínimo 4 caracteres",
+                          },
+                          maxLength: {
+                            value: 30,
+                            message:
+                              "O nome deve conter no máximo 30 caracteres",
+                          },
+                          pattern: {
+                            value: /^[a-zA-Z\s]+$/, // Regex para permitir apenas letras (maiúsculas e minúsculas) e espaços.
+                            message:
+                              "O nome deve conter apenas letras e não deve ter espaços ou caracteres especiais",
+                          },
+                        })}
+                      />
+
+                      <ErrorMessage errors={errors} field="repre_name" />
+
+                      <span className="absolute right-4 top-2.5">
+                        <BiIdCard
+                          style={{
+                            width: "22px",
+                            height: "22px",
+                            fill: "rgb(186, 193, 203)",
+                          }}
+                        />
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="col-span-2 mb-2 ">
+                    <label
+                      className="mb-2.5 block font-medium text-black dark:text-white"
+                      htmlFor="CPF_Repre"
+                    >
+                      CPF
+                    </label>
+                    <div className="relative">
+                      <Controller
+                        name="cpf_representante"
+                        control={control}
+                        defaultValue=""
+                        rules={{
+                          required: "Campo obrigatório",
+                          pattern: {
+                            value: /^\d{3}\.\d{3}\.\d{3}-\d{2}$/,
+                            message: "CPF inválido",
+                          },
+                        }}
+                        render={({ field }) => (
+                          <InputMask
+                            {...field}
+                            mask="999.999.999-99"
+                            placeholder="Digite seu CPF"
+                            className={`${errors.cpf_representante && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                          />
+                        )}
+                      />
+
+                      <ErrorMessage errors={errors} field="repre_cpf" />
+
+                      <span className="absolute right-4 top-2.5">
+                        <BiIdCard
+                          style={{
+                            width: "22px",
+                            height: "22px",
+                            fill: "rgb(186, 193, 203)",
+                          }}
+                        />
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+              <div className="w-full justify-center p-3 text-center text-sm text-red dark:text-meta-1">
+                Atenção! os dados bancários precisam ser da mesma titularidade
+                do CPF/CNPJ cadastrado.
+              </div>
+              {/* Dados Bancários */}
+              <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 ">
+                {/* Banco */}
+                <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
+                  <label
+                    className="mb-2.5 block font-medium text-black dark:text-white"
+                    htmlFor="banco"
+                  >
+                    Banco
+                  </label>
+                  <div className="relative">
+                    <Controller
+                      name="banco"
+                      control={control}
+                      defaultValue=""
+                      rules={{
+                        required: "Campo obrigatório",
+                        pattern: {
+                          value: /^\d{3}$/,
+                          message: "Número inválido",
+                        },
+                      }}
+                      render={({ field }) => (
+                        <InputMask
+                          {...field}
+                          mask="999"
+                          placeholder="Banco"
+                          className={`${errors.banco && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                        />
+                      )}
+                    />
+
+                    <ErrorMessage errors={errors} field="banco" />
+
+                    <span className="absolute right-4 top-2.5">
+                      <BiIdCard
+                        style={{
+                          width: "22px",
+                          height: "22px",
+                          fill: "rgb(186, 193, 203)",
+                        }}
+                      />
+                    </span>
+                  </div>
+                </div>
+                {/* Agencia */}
+                <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
+                  <label
+                    className="mb-2.5 block font-medium text-black dark:text-white"
+                    htmlFor="agencia"
+                  >
+                    Agência
+                  </label>
+                  <div className="relative">
+                    <Controller
+                      name="agencia"
+                      control={control}
+                      defaultValue=""
+                      rules={{
+                        required: "Campo obrigatório",
+                        pattern: {
+                          value: /^\d{4}-\d{1}$/,
+                          message: "Número inválido",
+                        },
+                      }}
+                      render={({ field }) => (
+                        <InputMask
+                          {...field}
+                          mask="9999-9"
+                          placeholder="Agência"
+                          className={`${errors.agencia && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                        />
+                      )}
+                    />
+
+                    <ErrorMessage errors={errors} field="agencia" />
+
+                    <span className="absolute right-4 top-2.5">
+                      <BiIdCard
+                        style={{
+                          width: "22px",
+                          height: "22px",
+                          fill: "rgb(186, 193, 203)",
+                        }}
+                      />
+                    </span>
+                  </div>
+                </div>
+
+                {/* Conta Corrente */}
+                <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
+                  <label
+                    className="mb-2.5 block font-medium text-black dark:text-white"
+                    htmlFor="conta"
+                  >
+                    Conta Corrente
+                  </label>
+                  <div className="relative">
+                    <Controller
+                      name="conta"
+                      control={control}
+                      defaultValue=""
+                      rules={{
+                        required: "Campo obrigatório",
+                        pattern: {
+                          value: /^\d{7}-\d{1}$/,
+                          message: "Número inválido",
+                        },
+                      }}
+                      render={({ field }) => (
+                        <InputMask
+                          {...field}
+                          mask="9999999-9"
+                          placeholder="Conta Corrente"
+                          className={`${errors.conta && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                        />
+                      )}
+                    />
+
+                    <ErrorMessage errors={errors} field="conta_corrente" />
+
+                    <span className="absolute right-4 top-2.5">
+                      <BiIdCard
+                        style={{
+                          width: "22px",
+                          height: "22px",
+                          fill: "rgb(186, 193, 203)",
+                        }}
+                      />
+                    </span>
+                  </div>
+                </div>
+                {/* Pix */}
+                <div className="mb-2 2xsm:col-span-2  md:col-span-1">
+                  <label
+                    className="mb-2.5 block font-medium text-black dark:text-white"
+                    htmlFor="pix"
+                  >
+                    Pix
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Pix"
+                      className={`${errors.pix && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                      id="pix"
+                      {...register("pix", {
+                        required: "Campo obrigatório",
+                      })}
+                    />
+
+                    <ErrorMessage errors={errors} field="repre_name" />
+
+                    <span className="absolute right-4 top-2.5">
+                      <BiIdCard
+                        style={{
+                          width: "22px",
+                          height: "22px",
+                          fill: "rgb(186, 193, 203)",
+                        }}
+                      />
+                    </span>
+                  </div>
+                </div>
+                <div className="col-span-2 mb-2 ">
+                  <label
+                    className="mb-2.5 block font-medium text-black dark:text-white"
+                    htmlFor="phone"
+                  >
+                    Whatsapp
+                  </label>
+                  <div className="relative">
+                    <Controller
+                      name="phone"
+                      control={control}
+                      defaultValue=""
+                      rules={{
+                        required: "Campo obrigatório",
+                        pattern: {
+                          value: /^\d{2}\.\d{5}-\d{4}$/,
+                          message: "Número inválido",
+                        },
+                      }}
+                      render={({ field }) => (
+                        <InputMask
+                          {...field}
+                          mask="99.99999-9999"
+                          placeholder="Whatsapp"
+                          className={`${errors.phone && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                        />
+                      )}
+                    />
+
+                    <ErrorMessage errors={errors} field="whatsapp" />
+
+                    <span className="absolute right-4 top-2.5">
+                      <BiLogoWhatsapp
+                        style={{
+                          width: "22px",
+                          height: "22px",
+                          fill: "rgb(186, 193, 203)",
+                        }}
+                      />
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="mb-3">
               <label className="mb-2.5 flex items-center gap-3 font-medium">
-                <span className="text-black dark:text-white">Senha</span>
+                <span className="text-black">Senha</span>
                 {/* popover for password hint */}
                 <Popover
                   aria-labelledby="default-popover"
@@ -396,15 +762,15 @@ const SignUp: React.FC = () => {
                   placement="right"
                   content={
                     <div className="w-64 text-sm">
-                      <div className="border-b border-stroke bg-gray-100 px-3 py-2 dark:border-strokedark dark:bg-boxdark-2">
+                      <div className="border-b border-stroke bg-gray-100 px-3 py-2">
                         <h3
                           id="default-popover"
-                          className="font-semibold text-gray-900 dark:text-white"
+                          className="font-semibold text-gray-900"
                         >
                           A senha deve conter:
                         </h3>
                       </div>
-                      <div className="flex flex-col gap-2 px-3 py-2 dark:bg-boxdark dark:text-white">
+                      <div className="flex flex-col gap-2 px-3 py-2">
                         <div className="flex items-center gap-2">
                           {passwordRequirements.minLength ? (
                             <BiCheck className="h-6 w-6 fill-meta-3" />
@@ -475,7 +841,7 @@ const SignUp: React.FC = () => {
                     )}
 
                     <BiInfoCircle
-                      className={`${!passwordRequirements.filled && "text-meta-1"} h-3.5 w-3.5 cursor-pointer text-black dark:text-white`}
+                      className={`${!passwordRequirements.filled && "text-meta-1"} h-3.5 w-3.5 cursor-pointer text-black`}
                     />
                   </button>
                 </Popover>
@@ -488,7 +854,7 @@ const SignUp: React.FC = () => {
                   maxLength={30}
                   type={hide.password ? "password" : "text"}
                   placeholder="Digite a senha"
-                  className={`${errors.password && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                  className={`${errors.password && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                   id="password"
                   {...register("password", {
                     required: "Campo obrigatório",
@@ -500,10 +866,6 @@ const SignUp: React.FC = () => {
                       value: 30,
                       message: "Máximo de 30 caracteres",
                     },
-                    // pattern: {
-                    //   value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/,
-                    //   message: "Mínimo de 6 caracteres, 1 letra (maiúscula e minúscula), 1 número e 1 caractere especial",
-                    // }
                   })}
                 />
                 {passwordInput?.length <= 0 && (
@@ -560,7 +922,7 @@ const SignUp: React.FC = () => {
             </div>
 
             <div className="mb-2">
-              <label className="mb-2.5 block font-medium text-black dark:text-white">
+              <label className="mb-2.5 block font-medium text-black">
                 Confirmar senha
               </label>
               <div className="relative">
@@ -569,14 +931,14 @@ const SignUp: React.FC = () => {
                   maxLength={30}
                   type={hide.confirmPassword ? "password" : "text"}
                   placeholder="Confirme sua senha"
-                  className={`${errors.confirm_password && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                  className={`${errors.confirm_password && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                   {...register("confirm_password", {
                     required: "Confirme a sua senha",
                   })}
                 />
 
                 {!passwordsMatch && (
-                  <div className="absolute left-0 top-17 flex w-full flex-col gap-1 text-sm text-red dark:text-meta-1">
+                  <div className="absolute left-0 top-17 flex w-full flex-col gap-1 text-sm text-red">
                     As senhas não conferem.
                   </div>
                 )}
@@ -613,7 +975,7 @@ const SignUp: React.FC = () => {
               </div>
             </div>
 
-            <div className="mt-4 flex items-center gap-2 text-sm sm:col-span-2">
+            <div className="flex items-center gap-2 text-sm 2xsm:mt-4 sm:col-span-2 md:mt-15">
               <CustomCheckbox
                 check={termsAccepted}
                 callbackFunction={() => setTermsAccepted(!termsAccepted)}
@@ -625,14 +987,16 @@ const SignUp: React.FC = () => {
                       style={{ width: '14px', height: '14px' }}
                       onChange={() => setTermsAccepted(!termsAccepted)}
                     /> */}
-              <p>
+              <p className="text-body">
                 Aceitar nossos{" "}
-                <span
-                  onClick={() => setOpenModal(true)}
-                  className="cursor-pointer text-blue-700 hover:underline dark:text-blue-400"
+                <Link
+                  href={"/termos-e-condicoes"}
+                  target="_blank"
+                  referrerPolicy="no-referrer"
+                  className="cursor-pointer text-blue-700 hover:underline"
                 >
                   termos e condições
-                </span>
+                </Link>
               </p>
             </div>
 
@@ -664,7 +1028,7 @@ const SignUp: React.FC = () => {
                     </button> */}
             </div>
 
-            {/* <button disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 sm:col-span-2 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50 disabled:opacity-50 cursor-not-allowed">
+            {/* <button disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 sm:col-span-2 hover:bg-opacity-50 disabled:opacity-50 cursor-not-allowed">
 
                     <span>
                       <FcGoogle style={{ width: '22px', height: '22px' }} />
@@ -673,11 +1037,11 @@ const SignUp: React.FC = () => {
                   </button> */}
 
             <div className=" text-center text-sm sm:col-span-2">
-              <p>
+              <p className="text-body">
                 Já tem uma conta?{" "}
                 <Link
                   href="/auth/signin"
-                  className="text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-500"
+                  className="text-blue-700 hover:text-blue-800"
                 >
                   Conecte-se
                 </Link>
@@ -685,7 +1049,6 @@ const SignUp: React.FC = () => {
             </div>
           </form>
         </div>
-        <Terms state={openModal} setState={setOpenModal} />
       </div>
     </UnloggedLayout>
   );

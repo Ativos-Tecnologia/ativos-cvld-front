@@ -67,8 +67,7 @@ export default function Terms() {
             <div ref={containerRef} className="sm:w-10/12 lg:w-3/4 xl:w-8/12 mx-auto">
 
                 <UnloggedHeader
-                    logoPath="/images/logo/new-logo-text-dark.png"
-                    theme="dark"
+                    theme="darkMode"
                 />
 
                 <section className="pt-34 min-h-screen grid justify-between">

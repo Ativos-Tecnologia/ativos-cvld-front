@@ -1,5 +1,6 @@
 "use client";
 import CustomCheckbox from "@/components/CrmUi/Checkbox";
+import { MainFooter } from "@/components/Footer";
 import UnloggedHeader from "@/components/Header/UnloggedHeader";
 import { ShadSelect } from "@/components/ShadSelect";
 import { SelectItem } from "@/components/ui/select";
@@ -129,8 +130,7 @@ const RecalculateTrf1 = () => {
   return (
     <>
       <UnloggedHeader
-        theme="light" //tema do header
-        logoPath="/images/logo/celer-app-logo-text-black.svg" //logo do header
+        theme="lightMode" //tema do header
       />
 
       {/* image-wrapper */}
@@ -625,6 +625,7 @@ const RecalculateTrf1 = () => {
           )}
         </div>
       </div>
+      <MainFooter />
     </>
   );
 };
