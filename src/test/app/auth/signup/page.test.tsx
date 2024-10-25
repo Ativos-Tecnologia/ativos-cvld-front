@@ -72,17 +72,36 @@ describe("Teste dos Headers do registro", () => {
     const selectCNPJ = await screen.findByRole("option", { name: "CNPJ" });
     expect(selectCNPJ).toBeInTheDocument();
 
-     const banco = await screen.findByText("Banco");
-     expect(banco).toBeInTheDocument();
+    // Testa o formulário dinâmico, onde ao selecionar o CNPJ, aparecerá novos campos.
+    fireEvent.change(selectElement, { target: { value: "CNPJ" } });
 
-     const agencia = await screen.findByText("Agência");
-     expect(agencia).toBeInTheDocument();
+    const representate = await screen.findByRole("heading", {
+      name: "Dados do Representante Legal",
+      level: 3,
+    });
+    expect(representate).toBeInTheDocument();
 
-     const contaCorrente = await screen.findByText("Conta Corrente");
-     expect(contaCorrente).toBeInTheDocument();
+    const nomeCompletoRepresentante2 =
+      await screen.findAllByText(/Nome Completo/i);
+    expect(nomeCompletoRepresentante2[1]).toBeInTheDocument();
 
-     const pix = await screen.findByText("Pix");
-     expect(pix).toBeInTheDocument();
+    const cpfRepresentante = await screen.findAllByText(/CPF/i);
+    expect(cpfRepresentante[1]).toBeInTheDocument();
+
+    const banco = await screen.findByText("Banco");
+    expect(banco).toBeInTheDocument();
+
+    const agencia = await screen.findByText("Agência");
+    expect(agencia).toBeInTheDocument();
+
+    const contaCorrente = await screen.findByText("Conta Corrente");
+    expect(contaCorrente).toBeInTheDocument();
+
+    const pix = await screen.findByText("Pix");
+    expect(pix).toBeInTheDocument();
+
+    const zap = await screen.findByText("Whatsapp");
+    expect(zap).toBeInTheDocument();
 
     const senha = await screen.findAllByText(/Senha/i);
     expect(senha[0]).toBeInTheDocument();

@@ -70,20 +70,6 @@ describe("Teste de Formulário de Cadastro na Wallet", () => {
     const selectCNPJ = await screen.findByRole("option", { name: "CNPJ" });
     expect(selectCNPJ).toBeInTheDocument();
 
-    // Testa o formulário dinâmico, onde ao selecionar o CNPJ, aparecerá novos campos.
-    fireEvent.change(selectElement, { target: { value: "CNPJ" } });
-
-    const representate = await screen.findByRole("heading", {
-      name: "Dados do Representante Legal", level: 3,
-    });
-    expect(representate).toBeInTheDocument();
-
-    const nomeCompletoRepresentante2 = await screen.findAllByText(/Nome Completo/i)
-    expect(nomeCompletoRepresentante2[1]).toBeInTheDocument();
-
-    const cpfRepresentante = await screen.findAllByText(/CPF/i);
-    expect(cpfRepresentante[1]).toBeInTheDocument();
-
     const zap = await screen.findByText("Whatsapp");
     expect(zap).toBeInTheDocument();
 
@@ -148,20 +134,6 @@ describe("Teste de Formulário de Cadastro na Wallet", () => {
 
     fireEvent.change(inputCPF, { target: { value: "04521478963" } });
     expect(inputCPF).toHaveValue("045.214.789-63");
-
-    const inpuNomeCompletoRepresentante = await screen.getByLabelText(/Nome Completo/i);
-    fireEvent.change(inpuNomeCompletoRepresentante, {
-      target: { value: "John Doe" }
-    });
-    expect(inpuNomeCompletoRepresentante).toHaveValue("John Doe");
-
-    const inputCPFRepresentante = (await screen.findAllByPlaceholderText(
-      /Digite seu CPF/i,
-    ))[1] as HTMLInputElement;
-    fireEvent.change(inputCPFRepresentante, {
-      target: { value: "04521478966" }
-    }) 
-    expect(inputCPFRepresentante).toHaveValue("045.214.789-66");
 
     const zap = (
       await screen.findAllByPlaceholderText(/Whatsapp/i))[0] as HTMLInputElement;
