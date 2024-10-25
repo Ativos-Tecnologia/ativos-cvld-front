@@ -68,6 +68,18 @@ describe("Teste dos Headers do registro", () => {
     const selectCNPJ = await screen.findByRole("option", { name: "CNPJ" });
     expect(selectCNPJ).toBeInTheDocument();
 
+     const banco = await screen.findByText("Banco");
+     expect(banco).toBeInTheDocument();
+
+     const agencia = await screen.findByText("Agência");
+     expect(agencia).toBeInTheDocument();
+
+     const contaCorrente = await screen.findByText("Conta Corrente");
+     expect(contaCorrente).toBeInTheDocument();
+
+     const pix = await screen.findByText("Pix");
+     expect(pix).toBeInTheDocument();
+
     const senha = await screen.findAllByText(/Senha/i);
     expect(senha[0]).toBeInTheDocument();
 
@@ -133,6 +145,30 @@ describe("Teste dos Headers do registro", () => {
 
     fireEvent.change(inputCPF, { target: { value: "04521478963" } });
     expect(inputCPF).toHaveValue("045.214.789-63");
+
+     const banco = (
+       await screen.findAllByPlaceholderText(/Banco/i)
+     )[0] as HTMLInputElement;
+     fireEvent.change(banco, { target: { value: "256" } });
+     expect(banco).toHaveValue("256");
+
+     const agencia = (
+       await screen.findAllByPlaceholderText(/Agência/i)
+     )[0] as HTMLInputElement;
+     fireEvent.change(agencia, { target: { value: "42123" } });
+     expect(agencia).toHaveValue("4212-3");
+
+     const contaCorrente = (
+       await screen.findAllByPlaceholderText(/Conta Corrente/i)
+     )[0] as HTMLInputElement;
+     fireEvent.change(contaCorrente, { target: { value: "44444444" } });
+     expect(contaCorrente).toHaveValue("4444444-4");
+
+     const pix = (
+       await screen.findAllByPlaceholderText(/Pix/i)
+     )[0] as HTMLInputElement;
+     fireEvent.change(pix, { target: { value: "216549846513546846852132" } });
+     expect(pix).toHaveValue("216549846513546846852132");
   });
 
   it("Teste deve registrar o usuário", async () => {
