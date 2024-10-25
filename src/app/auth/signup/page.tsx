@@ -174,7 +174,7 @@ const SignUp: React.FC = () => {
               <Fade triggerOnce>
                 <div className="flex flex-col items-center gap-3">
                   <Image
-                    src={"/images/logo/celer-app-logo-dark.svg"}
+                    src={"/images/logo/new-logo-dark.png"}
                     alt="Logo"
                     width={160}
                     height={32}
@@ -218,10 +218,10 @@ const SignUp: React.FC = () => {
             >
               <div className="bg flex flex-col items-center gap-3">
                 <Image
-                  src={"/images/logo/celer-app-logo.svg"}
+                  src={"/images/logo/ativos_logo_at_default.png"}
                   alt="Logo"
-                  width={0}
-                  height={0}
+                  width={90}
+                  height={50}
                   className="2xsm:w-20 md:w-28 lg:w-25"
                 />
                 <Image
@@ -237,7 +237,7 @@ const SignUp: React.FC = () => {
           {/* End Mobile visible logo */}
 
           <Fade delay={1e2} damping={1e-1} cascade triggerOnce>
-            <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
+            <h2 className="mb-9 text-2xl font-bold text-black sm:text-title-xl2">
               Cadastre-se para começar
             </h2>
           </Fade>
@@ -248,7 +248,7 @@ const SignUp: React.FC = () => {
           >
             <div className="mb-2">
               <label
-                className="mb-2.5 block font-medium text-black dark:text-white"
+                className="mb-2.5 block font-medium text-black"
                 htmlFor="username"
               >
                 Nome de usuário
@@ -257,7 +257,7 @@ const SignUp: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Usuário"
-                  className={`${errors.username && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                  className={`${errors.username && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                   id="username"
                   {...register("username", {
                     required: "Campo obrigatório",
@@ -289,7 +289,7 @@ const SignUp: React.FC = () => {
 
             <div className="mb-2">
               <label
-                className="mb-2.5 block font-medium text-black dark:text-white"
+                className="mb-2.5 block font-medium text-black"
                 htmlFor="email"
               >
                 Email
@@ -298,7 +298,7 @@ const SignUp: React.FC = () => {
                 <input
                   type="email"
                   placeholder="Digite seu email"
-                  className={`${errors.email && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                  className={`${errors.email && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                   id="email"
                   {...register("email", {
                     required: "Campo obrigatório",
@@ -360,7 +360,7 @@ const SignUp: React.FC = () => {
             {/* cpf/cnpj field */}
             <div className="mb-3 sm:col-span-2">
               <label
-                className="mb-1 block font-medium text-black dark:text-white"
+                className="mb-1 block font-medium text-black"
                 htmlFor="select"
               >
                 Selecione uma opção abaixo:
@@ -369,7 +369,7 @@ const SignUp: React.FC = () => {
               <div className="flex flex-col gap-2 sm:flex-row">
                 <select
                   id="select"
-                  className={`w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary sm:w-1/4`}
+                  className={`w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none sm:w-1/4`}
                   {...register("select", {
                     required: "Campo obrigatório",
                   })}
@@ -398,7 +398,7 @@ const SignUp: React.FC = () => {
                             {...field}
                             mask="99.999.999/9999-99"
                             placeholder="Digite seu CNPJ"
-                            className={`${errors.cpf_cnpj && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                            className={`${errors.cpf_cnpj && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                           />
                         )}
                       />
@@ -423,7 +423,7 @@ const SignUp: React.FC = () => {
                             {...field}
                             mask="999.999.999-99"
                             placeholder="Digite seu CPF"
-                            className={`${errors.cpf_cnpj && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                            className={`${errors.cpf_cnpj && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                           />
                         )}
                       />
@@ -754,7 +754,7 @@ const SignUp: React.FC = () => {
 
             <div className="mb-3">
               <label className="mb-2.5 flex items-center gap-3 font-medium">
-                <span className="text-black dark:text-white">Senha</span>
+                <span className="text-black">Senha</span>
                 {/* popover for password hint */}
                 <Popover
                   aria-labelledby="default-popover"
@@ -762,15 +762,15 @@ const SignUp: React.FC = () => {
                   placement="right"
                   content={
                     <div className="w-64 text-sm">
-                      <div className="border-b border-stroke bg-gray-100 px-3 py-2 dark:border-strokedark dark:bg-boxdark-2">
+                      <div className="border-b border-stroke bg-gray-100 px-3 py-2">
                         <h3
                           id="default-popover"
-                          className="font-semibold text-gray-900 dark:text-white"
+                          className="font-semibold text-gray-900"
                         >
                           A senha deve conter:
                         </h3>
                       </div>
-                      <div className="flex flex-col gap-2 px-3 py-2 dark:bg-boxdark dark:text-white">
+                      <div className="flex flex-col gap-2 px-3 py-2">
                         <div className="flex items-center gap-2">
                           {passwordRequirements.minLength ? (
                             <BiCheck className="h-6 w-6 fill-meta-3" />
@@ -841,7 +841,7 @@ const SignUp: React.FC = () => {
                     )}
 
                     <BiInfoCircle
-                      className={`${!passwordRequirements.filled && "text-meta-1"} h-3.5 w-3.5 cursor-pointer text-black dark:text-white`}
+                      className={`${!passwordRequirements.filled && "text-meta-1"} h-3.5 w-3.5 cursor-pointer text-black`}
                     />
                   </button>
                 </Popover>
@@ -854,7 +854,7 @@ const SignUp: React.FC = () => {
                   maxLength={30}
                   type={hide.password ? "password" : "text"}
                   placeholder="Digite a senha"
-                  className={`${errors.password && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                  className={`${errors.password && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                   id="password"
                   {...register("password", {
                     required: "Campo obrigatório",
@@ -920,8 +920,9 @@ const SignUp: React.FC = () => {
                 </span>
               </div>
             </div>
-            <div className="2xsm:mb-5 2xsm:mt-10 md:mb-3 md:mt-0">
-              <label className="mb-2.5 block font-medium text-black dark:text-white">
+
+            <div className="mb-2">
+              <label className="mb-2.5 block font-medium text-black">
                 Confirmar senha
               </label>
               <div className="relative">
@@ -930,14 +931,14 @@ const SignUp: React.FC = () => {
                   maxLength={30}
                   type={hide.confirmPassword ? "password" : "text"}
                   placeholder="Confirme sua senha"
-                  className={`${errors.confirm_password && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
+                  className={`${errors.confirm_password && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                   {...register("confirm_password", {
                     required: "Confirme a sua senha",
                   })}
                 />
 
                 {!passwordsMatch && (
-                  <div className="absolute left-0 flex w-full flex-col gap-1 text-sm text-red dark:text-meta-1 2xsm:top-12 md:top-17">
+                  <div className="absolute left-0 top-17 flex w-full flex-col gap-1 text-sm text-red">
                     As senhas não conferem.
                   </div>
                 )}
@@ -986,14 +987,16 @@ const SignUp: React.FC = () => {
                       style={{ width: '14px', height: '14px' }}
                       onChange={() => setTermsAccepted(!termsAccepted)}
                     /> */}
-              <p>
+              <p className="text-body">
                 Aceitar nossos{" "}
-                <span
-                  onClick={() => setOpenModal(true)}
-                  className="cursor-pointer text-blue-700 hover:underline dark:text-blue-400"
+                <Link
+                  href={"/termos-e-condicoes"}
+                  target="_blank"
+                  referrerPolicy="no-referrer"
+                  className="cursor-pointer text-blue-700 hover:underline"
                 >
                   termos e condições
-                </span>
+                </Link>
               </p>
             </div>
 
@@ -1025,7 +1028,7 @@ const SignUp: React.FC = () => {
                     </button> */}
             </div>
 
-            {/* <button disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 sm:col-span-2 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50 disabled:opacity-50 cursor-not-allowed">
+            {/* <button disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 sm:col-span-2 hover:bg-opacity-50 disabled:opacity-50 cursor-not-allowed">
 
                     <span>
                       <FcGoogle style={{ width: '22px', height: '22px' }} />
@@ -1034,11 +1037,11 @@ const SignUp: React.FC = () => {
                   </button> */}
 
             <div className=" text-center text-sm sm:col-span-2">
-              <p>
+              <p className="text-body">
                 Já tem uma conta?{" "}
                 <Link
                   href="/auth/signin"
-                  className="text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-500"
+                  className="text-blue-700 hover:text-blue-800"
                 >
                   Conecte-se
                 </Link>
@@ -1046,7 +1049,6 @@ const SignUp: React.FC = () => {
             </div>
           </form>
         </div>
-        <Terms state={openModal} setState={setOpenModal} />
       </div>
     </UnloggedLayout>
   );

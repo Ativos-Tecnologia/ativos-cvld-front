@@ -117,14 +117,14 @@ const Marketplace: React.FC = () => {
                 ))}
               </Fade>
             ) : (
-              <div className="col-span-3 my-10 flex flex-col items-center justify-center gap-5">
+              <div className="md:col-span-2 xl:col-span-3 3xl:col-span-4 my-10 flex flex-col items-center justify-center gap-5">
                 <Image
                   src="/images/empty_cart.svg"
                   alt="homem com lista em mãos e carrinho vazio"
                   width={280}
                   height={280}
                 />
-                <p className="font-medium tracking-wider">
+                <p className="text-center font-medium tracking-wider">
                   Ainda não temos opções de investimentos disponíveis.
                 </p>
               </div>
