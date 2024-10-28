@@ -22,7 +22,7 @@ export const Button: React.FC<SubmitButtonProps> = ({
     ...props
 }) => {
     return (
-        <button type={type} className={cn(`${variants[variant]} w-fit cursor-pointer rounded-lg border px-4 py-2 transition hover:bg-opacity-90`, className)} {...props}>
+        <button type={type} className={cn(`${variants[variant]} w-fit cursor-pointer rounded-lg px-4 py-2 transition hover:bg-opacity-90`, className)} {...props}>
             {children}
         </button>
     )
