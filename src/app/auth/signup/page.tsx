@@ -26,7 +26,6 @@ import { Button } from "@/components/Button";
 import CustomCheckbox from "@/components/CrmUi/Checkbox";
 import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
 import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
-import Terms from "@/components/Modals/Terms_and_Conditions";
 import usePassword from "@/hooks/usePassword";
 import { Fade } from "react-awesome-reveal";
 import { AiOutlineLoading } from "react-icons/ai";
@@ -754,7 +753,7 @@ const SignUp: React.FC = () => {
 
             <div className="mb-3">
               <label className="mb-2.5 flex items-center gap-3 font-medium">
-                <span className="text-black">Senha</span>
+                <span className="text-black dark:text-white">Senha</span>
                 {/* popover for password hint */}
                 <Popover
                   aria-labelledby="default-popover"
@@ -762,15 +761,15 @@ const SignUp: React.FC = () => {
                   placement="right"
                   content={
                     <div className="w-64 text-sm">
-                      <div className="border-b border-stroke bg-gray-100 px-3 py-2">
+                      <div className="border-b border-stroke bg-gray-100 px-3 py-2 dark:border-strokedark dark:bg-boxdark-2">
                         <h3
                           id="default-popover"
-                          className="font-semibold text-gray-900"
+                          className="font-semibold text-gray-900 dark:text-white"
                         >
                           A senha deve conter:
                         </h3>
                       </div>
-                      <div className="flex flex-col gap-2 px-3 py-2">
+                      <div className="flex flex-col gap-2 px-3 py-2 dark:bg-boxdark dark:text-white">
                         <div className="flex items-center gap-2">
                           {passwordRequirements.minLength ? (
                             <BiCheck className="h-6 w-6 fill-meta-3" />
@@ -841,7 +840,7 @@ const SignUp: React.FC = () => {
                     )}
 
                     <BiInfoCircle
-                      className={`${!passwordRequirements.filled && "text-meta-1"} h-3.5 w-3.5 cursor-pointer text-black`}
+                      className={`${!passwordRequirements.filled && "text-meta-1"} h-3.5 w-3.5 cursor-pointer text-black dark:text-white`}
                     />
                   </button>
                 </Popover>
@@ -854,7 +853,7 @@ const SignUp: React.FC = () => {
                   maxLength={30}
                   type={hide.password ? "password" : "text"}
                   placeholder="Digite a senha"
-                  className={`${errors.password && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
+                  className={`${errors.password && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
                   id="password"
                   {...register("password", {
                     required: "Campo obrigatório",
@@ -921,8 +920,8 @@ const SignUp: React.FC = () => {
               </div>
             </div>
 
-            <div className="mb-2">
-              <label className="mb-2.5 block font-medium text-black">
+            <div className="2xsm:mb-5 2xsm:mt-10 md:mb-3 md:mt-0">
+              <label className="mb-2.5 block font-medium text-black dark:text-white">
                 Confirmar senha
               </label>
               <div className="relative">
@@ -931,14 +930,14 @@ const SignUp: React.FC = () => {
                   maxLength={30}
                   type={hide.confirmPassword ? "password" : "text"}
                   placeholder="Confirme sua senha"
-                  className={`${errors.confirm_password && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
+                  className={`${errors.confirm_password && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                   {...register("confirm_password", {
                     required: "Confirme a sua senha",
                   })}
                 />
 
                 {!passwordsMatch && (
-                  <div className="absolute left-0 top-17 flex w-full flex-col gap-1 text-sm text-red">
+                  <div className="absolute left-0 flex w-full flex-col gap-1 text-sm text-red dark:text-meta-1 2xsm:top-12 md:top-17">
                     As senhas não conferem.
                   </div>
                 )}
