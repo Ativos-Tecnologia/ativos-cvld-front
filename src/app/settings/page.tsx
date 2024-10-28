@@ -5,6 +5,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
 import { BiChevronRight } from "react-icons/bi";
 import { LocalShowOptionsProps } from "@/context/ExtratosTableContext";
+import DashbrokersCard from "@/components/Cards/DashbrokersCard";
 
 const defaultOptions: LocalShowOptionsProps[] = [
   {
@@ -119,6 +120,12 @@ const Settings = () => {
           </div>
         </div>
       </div>
+        {/* ----> implementation of new card <---- */}
+        <div className="grid grid-cols-2 gap-5 items-center w-full mt-15">
+        <DashbrokersCard />
+        <DashbrokersCard />
+        </div>
+        {/* ----> implementation of new card <---- */}
     </DefaultLayout>
   );
 };
