@@ -5,11 +5,14 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { Fade } from "react-awesome-reveal";
 import { Controller, useForm } from "react-hook-form";
 import {
+  BiChevronRight,
   BiDownload,
   BiLineChart,
+  BiLoader,
   BiLogoUpwork,
   BiMinus,
   BiPlus,
+  BiSave,
   BiX,
 } from "react-icons/bi";
 import { ShadSelect } from "../ShadSelect";
@@ -39,6 +42,8 @@ import { toast } from "sonner";
 import numberFormat from "@/functions/formaters/numberFormat";
 import NewFormResultSkeleton from "../Skeletons/NewFormResultSkeleton";
 import { AxiosError } from "axios";
+import { Button } from "../Button";
+import { LeadMagnetResposeProps } from "@/types/leadMagnet";
 
 const NewForm = () => {
   const { modalOpen, setModalOpen } = useContext(DefaultLayoutContext);
@@ -49,17 +54,29 @@ const NewForm = () => {
   const [usersList, setUsersList] = useState<any[]>([]);
   const [fetchError, setFetchError] = useState<boolean>(false);
   const enumTipoOficiosList = Object.values(tipoOficio);
-  const [proposalValue, setProposalValue] = useState({ min: 0, max: 0 });
-  const [comissionValue, setComissionValue] = useState({ min: 0, max: 0 });
-  const [calculationMemory, setCalculationMemory] = useState({
-    simple: "",
-    rra: null,
+  // const [proposalValue, setProposalValue] = useState({ min: 0, max: 0 });
+  // const [comissionValue, setComissionValue] = useState({ min: 0, max: 0 });
+  // const [calculationMemory, setCalculationMemory] = useState({
+  //   simple: "",
+  //   rra: null,
+  // });
+  const [backendResponse, setBackendResponse] = useState<LeadMagnetResposeProps>({
+    id: "",
+    min_proposal: 0,
+    max_proposal: 0,
+    min_comission: 0,
+    max_comission: 0,
+    min_proposal_percent: 0,
+    max_proposal_percent: 0,
+    memoria_de_calculo_simples: "",
+    memoria_de_calculo_rra: "",
   });
   const [showResults, setShowResults] = useState<boolean>(false);
   const [sliderValues, setSliderValues] = useState({
     proposal: 0,
     comission: 0,
   });
+  const [savingProposalAndComission, setSavingProposalAndComission] = useState<boolean>(false);
   const { data } = useContext<UserInfoContextType>(UserInfoAPIContext);
   const resultContainerRef = useRef<HTMLDivElement | null>(null);
   const {
@@ -196,11 +213,11 @@ const NewForm = () => {
 
     // Calcular a proporção em relação a proposta e ajustar a comissão
     const proportion =
-      (newProposalSliderValue - proposalValue.min) /
-      (proposalValue.max - proposalValue.min);
+      (newProposalSliderValue - backendResponse.min_proposal) /
+      (backendResponse.max_proposal - backendResponse.min_proposal);
     const newComissionSliderValue =
-      comissionValue.max -
-      proportion * (comissionValue.max - comissionValue.min);
+      backendResponse.max_comission -
+      proportion * (backendResponse.max_comission - backendResponse.min_comission);
     setSliderValues((oldValues) => {
       return { ...oldValues, comission: newComissionSliderValue };
     });
@@ -217,10 +234,10 @@ const NewForm = () => {
 
     // Calcular a proporção em relação a comissão e ajustar a proposta
     const proportion =
-      (newComissionSliderValue - comissionValue.min) /
-      (comissionValue.max - comissionValue.min);
+      (newComissionSliderValue - backendResponse.min_comission) /
+      (backendResponse.max_comission - backendResponse.min_comission);
     const newProposalSliderValue =
-      proposalValue.max - proportion * (proposalValue.max - proposalValue.min);
+      backendResponse.max_proposal - proportion * (backendResponse.max_proposal - backendResponse.min_proposal);
     setSliderValues((oldValues) => {
       return { ...oldValues, proposal: newProposalSliderValue };
     });
@@ -296,18 +313,7 @@ const NewForm = () => {
 
       if (response.status === 200 || response.status === 201) {
         const results = response.data.result; // pega o resultado da requisição
-        setProposalValue({
-          min: results.min_proposal,
-          max: results.max_proposal,
-        });
-        setComissionValue({
-          min: results.min_comission,
-          max: results.max_comission,
-        });
-        setCalculationMemory({
-          simple: results.memoria_de_calculo_simples,
-          rra: results.memoria_de_calculo_rra,
-        });
+        setBackendResponse(results)
         setShowResults(true);
       }
     } catch (error) {
@@ -321,12 +327,31 @@ const NewForm = () => {
     }
   };
 
+  const saveProposalAndComission = async () => {
+    setSavingProposalAndComission(true);
+    const req = await api.patch(`/api/notion-api/broker/negotiation/${backendResponse.id}/`,
+      {
+        proposal: sliderValues.proposal,
+        commission: sliderValues.comission
+      }
+    )
+
+    if (req.status === 200) {
+      toast.success('Proposta e comissão salvas com sucesso!');
+    }
+
+    if (req.status === 400) {
+      toast.error('Erro ao salvar proposta e comissão!');
+    }
+    setSavingProposalAndComission(true);
+  }
+
   useEffect(() => {
     setSliderValues({
-      proposal: proposalValue.min,
-      comission: comissionValue.max,
+      proposal: backendResponse.min_proposal,
+      comission: backendResponse.max_comission,
     });
-  }, [proposalValue, comissionValue]);
+  }, [backendResponse]);
 
   useEffect(() => {
     if (oficioForm) {
@@ -754,45 +779,45 @@ const NewForm = () => {
 
                   {(watch("especie") === "PRINCIPAL" ||
                     watch("especie") === undefined) && (
-                    <div className="col-span-2 flex w-full flex-col justify-between gap-4 sm:flex-row">
-                      <div
-                        className={`flex flex-row ${watch("ja_possui_destacamento") ? "items-center" : "items-start"} w-full gap-2 2xsm:col-span-2 sm:col-span-1`}
-                      >
-                        <CustomCheckbox
-                          check={watch("ja_possui_destacamento")}
-                          id={"ja_possui_destacamento"}
-                          register={register("ja_possui_destacamento")}
-                          defaultChecked
-                        />
-
-                        <label
-                          htmlFor="ja_possui_destacamento"
-                          className={`${!watch("ja_possui_destacamento") && "mt-1"} font-nexa text-xs font-semibold uppercase text-meta-5`}
+                      <div className="col-span-2 flex w-full flex-col justify-between gap-4 sm:flex-row">
+                        <div
+                          className={`flex flex-row ${watch("ja_possui_destacamento") ? "items-center" : "items-start"} w-full gap-2 2xsm:col-span-2 sm:col-span-1`}
                         >
-                          Já possui destacamento de honorários?
-                        </label>
-                      </div>
-                      {watch("ja_possui_destacamento") === false && (
-                        <div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
-                          <div className="flex w-full flex-col gap-2 sm:col-span-1">
-                            <label
-                              htmlFor="percentual_de_honorarios"
-                              className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                            >
-                              Percentual
-                            </label>
-                            <input
-                              type="number"
-                              id="percentual_de_honorarios"
-                              defaultValue={30}
-                              className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                              {...register("percentual_de_honorarios", {})}
-                            />
-                          </div>
+                          <CustomCheckbox
+                            check={watch("ja_possui_destacamento")}
+                            id={"ja_possui_destacamento"}
+                            register={register("ja_possui_destacamento")}
+                            defaultChecked
+                          />
+
+                          <label
+                            htmlFor="ja_possui_destacamento"
+                            className={`${!watch("ja_possui_destacamento") && "mt-1"} font-nexa text-xs font-semibold uppercase text-meta-5`}
+                          >
+                            Já possui destacamento de honorários?
+                          </label>
                         </div>
-                      )}
-                    </div>
-                  )}
+                        {watch("ja_possui_destacamento") === false && (
+                          <div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                            <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                              <label
+                                htmlFor="percentual_de_honorarios"
+                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                              >
+                                Percentual
+                              </label>
+                              <input
+                                type="number"
+                                id="percentual_de_honorarios"
+                                defaultValue={30}
+                                className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                {...register("percentual_de_honorarios", {})}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                   <div
                     className={`col-span-2 flex items-center gap-2 md:col-span-1 ${watch("data_base")! < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
@@ -865,7 +890,7 @@ const NewForm = () => {
                     </label>
                   </div>
                   {watch("natureza") === "TRIBUTÁRIA" ||
-                  watch("incidencia_rra_ir") === false ? (
+                    watch("incidencia_rra_ir") === false ? (
                     <>
                       {/* {watch("natureza") === "TRIBUTÁRIA" && watch("incidencia_rra_ir") === false ? null : (
                   <div className="flex items-center col-span-1">&nbsp;</div>
@@ -896,8 +921,8 @@ const NewForm = () => {
                   )}
 
                   {watch("ir_incidente_rra") &&
-                  watch("incidencia_rra_ir") === true &&
-                  watch("natureza") !== "TRIBUTÁRIA" ? (
+                    watch("incidencia_rra_ir") === true &&
+                    watch("natureza") !== "TRIBUTÁRIA" ? (
                     <div className="mt-1 flex flex-col gap-2 overflow-hidden 2xsm:col-span-2 sm:col-span-1">
                       <label
                         htmlFor="numero_de_meses"
@@ -945,7 +970,7 @@ const NewForm = () => {
                     </div>
                   ) : null}
                   {watch("incidencia_pss") &&
-                  watch("natureza") !== "TRIBUTÁRIA" ? (
+                    watch("natureza") !== "TRIBUTÁRIA" ? (
                     <div className="mt-1 flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                       <label
                         htmlFor="valor_pss"
@@ -1021,7 +1046,7 @@ const NewForm = () => {
                         max={new Date().toISOString().split("T")[0]}
                       />
                       {watch("data_limite_de_atualizacao")! <
-                      watch("data_requisicao")! ? (
+                        watch("data_requisicao")! ? (
                         <span
                           role="alert"
                           className="absolute right-4 top-4 text-sm text-red-500"
@@ -1255,13 +1280,13 @@ const NewForm = () => {
                       ) : null}
                     </div>
                     {(data.role === "ativos" || data.role === "judit") &&
-                    watch("gerar_cvld") ? (
+                      watch("gerar_cvld") ? (
                       <>
                         <hr className="col-span-2 my-8 border border-stroke dark:border-strokedark" />
                         <div className="flex flex-col gap-2">
                           {(data.role === "ativos" &&
                             watch("regime") !== "ESPECIAL") ||
-                          watch("regime") === undefined ? (
+                            watch("regime") === undefined ? (
                             <>
                               <div className="flex justify-between">
                                 <div className="flex items-center gap-2">
@@ -1417,10 +1442,11 @@ const NewForm = () => {
                           valores proporcionalmente.
                         </p>
                       </div>
+
                       <div className="flex items-center justify-between gap-5 p-2 2xsm:flex-col sm:mb-4 md:flex-row">
                         <div className="relative flex flex-col md:items-center">
                           <h4 className="">Proposta Mínima</h4>
-                          <span>{numberFormat(proposalValue.min)}</span>
+                          <span>{numberFormat(backendResponse.min_proposal)}</span>
                         </div>
                         <div className="flex flex-1 flex-col items-center gap-1">
                           <span className="text-sm font-medium">
@@ -1430,8 +1456,8 @@ const NewForm = () => {
                           <input
                             type="range"
                             step="0.01"
-                            min={proposalValue.min}
-                            max={proposalValue.max}
+                            min={backendResponse.min_proposal}
+                            max={backendResponse.max_proposal}
                             value={sliderValues.proposal}
                             onChange={handleProposalSliderChange}
                             className="w-full"
@@ -1439,7 +1465,7 @@ const NewForm = () => {
                         </div>
                         <div className="flex flex-col items-center">
                           <h4 className="">Proposta Máxima</h4>
-                          <span>{numberFormat(proposalValue.max)}</span>
+                          <span>{numberFormat(backendResponse.max_proposal)}</span>
                         </div>
                       </div>
 
@@ -1448,7 +1474,7 @@ const NewForm = () => {
                       <div className="relative flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
                         <div className="flex flex-col items-center">
                           <h4 className="">Comissão Mínima</h4>
-                          <span>{numberFormat(comissionValue.min)}</span>
+                          <span>{numberFormat(backendResponse.min_comission)}</span>
                         </div>
                         <div className="flex flex-1 flex-col items-center gap-1">
                           <span className="text-sm font-medium">
@@ -1458,8 +1484,8 @@ const NewForm = () => {
                           <input
                             type="range"
                             step="0.01"
-                            min={comissionValue.min}
-                            max={comissionValue.max}
+                            min={backendResponse.min_comission}
+                            max={backendResponse.max_comission}
                             value={sliderValues.comission}
                             onChange={handleComissionSliderChange}
                             className="w-full"
@@ -1467,60 +1493,63 @@ const NewForm = () => {
                         </div>
                         <div className="flex flex-col items-center">
                           <h4 className="">Comissão Máxima</h4>
-                          <span>{numberFormat(comissionValue.max)}</span>
+                          <span>{numberFormat(backendResponse.max_comission)}</span>
                         </div>
                       </div>
 
-                      <div className="mt-6 flex flex-col gap-2 md:flex-row md:gap-3">
-                        {/* {
-                                                        result.result[0].link_memoria_de_calculo_rra && (
-                                                            <li className="text-sm flex  w-full py-1">
-                                                                <a href={linkAdapter(result.result[0].link_memoria_de_calculo_rra)} className="w-full text-center p-4 flex items-center justify-center text-sm font-semibold text-white rounded-md bg-blue-700 hover:bg-blue-800">
-                                                                    <span className="text-[16px] font-medium">
-                                                                        Memória de Cálculo RRA
-                                                                    </span>
-                                                                    <BiDownload style={{
-                                                                        width: "22px",
-                                                                        height: "22px",
-                                                                    }} className="ml-2" />
-                                                                </a>
-                                                            </li>
-                                                        )
-                                                    } */}
-                        <li className="flex w-full text-sm">
-                          <a
-                            href={calculationMemory.simple || ""}
-                            className="flex w-full items-center justify-center rounded-md border border-stroke bg-slate-200 p-4 text-center text-sm font-semibold hover:bg-slate-300 dark:border-strokedark dark:bg-boxdark-2/90 dark:text-white dark:hover:bg-boxdark-2"
-                          >
-                            <span className="font-medium">
-                              Memória de Cálculo Simples
-                            </span>
-                            <BiDownload
-                              style={{
-                                width: "20px",
-                                height: "20px",
-                              }}
-                              className="ml-2 self-center"
-                            />
-                          </a>
-                        </li>
-                        <li className="flex w-full text-sm">
-                          <a
-                            href={calculationMemory.rra || ""}
-                            className="flex w-full items-center justify-center rounded-md border border-stroke bg-slate-200 p-4 text-center text-sm font-semibold hover:bg-slate-300 dark:border-strokedark dark:bg-boxdark-2/90 dark:text-white dark:hover:bg-boxdark-2"
-                          >
-                            <span className="font-medium">
-                              Memória de Cálculo RRA
-                            </span>
-                            <BiDownload
-                              style={{
-                                width: "20px",
-                                height: "20px",
-                              }}
-                              className="ml-2 self-center"
-                            />
-                          </a>
-                        </li>
+                      {/* separator */}
+                      <div className="h-px w-full bg-stroke dark:bg-strokedark my-6"></div>
+                      {/* end separator */}
+
+                      <div className="flex flex-col gap-5">
+                        <h4 className="font-medium">Opções disponíveis para esse cálculo:</h4>
+                        <ul className="flex gap-3 2xsm:flex-col md:flex-row">
+                          <li className="group flex w-full text-sm">
+                            <a
+                              href={backendResponse.memoria_de_calculo_simples || ""}
+                              target="_blank"
+                              referrerPolicy="no-referrer"
+                              className="flex gap-2 items-center justify-center rounded-md text-sm font-semibold hover:text-blue-600 transition-colors underline tracking-wider duration-300"
+                            >
+                              <BiChevronRight className="group-hover:translate-x-1 duration-500 transition-transform text-lg" />
+                              <span className="font-medium">
+                                Memória de Cálculo Simples
+                              </span>
+                            </a>
+                          </li>
+                          {backendResponse.memoria_de_calculo_rra && (
+                            <li className="flex w-full text-sm">
+                              <a
+                                href={backendResponse.memoria_de_calculo_rra || ""}
+                                target="_blank"
+                                referrerPolicy="no-referrer"
+                                className="flex gap-2 items-center justify-center rounded-md text-sm font-semibold hover:text-blue-600 transition-colors underline tracking-wider duration-300"
+                              >
+                                <BiChevronRight className="group-hover:translate-x-1 duration-500 transition-transform text-lg" />
+                                <span className="font-medium">
+                                  Memória de Cálculo RRA
+                                </span>
+                              </a>
+                            </li>
+                          )}
+                        </ul>
+                        {backendResponse.id && (
+                          <Button
+                            onClick={saveProposalAndComission}
+                            className="mx-auto mt-4 font-medium flex items-center justify-center gap-2">
+                            {savingProposalAndComission ? (
+                              <>
+                                Salvando dados...
+                                <AiOutlineLoading className="text-lg animate-spin" />
+                              </>
+                            ) : (
+                              <>
+                                Salvar Proposta e Comissão
+                                <BiSave className="text-lg text-white" />
+                              </>
+                            )}
+                          </Button>
+                        )}
                       </div>
                     </div>
                   ) : (
