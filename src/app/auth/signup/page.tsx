@@ -208,7 +208,7 @@ const SignUp: React.FC = () => {
         </div>
 
         {/* form */}
-        <div className="w-full border-stroke bg-snow 2xsm:p-8 sm:px-8 sm:py-12.5 md:absolute md:left-1/2 md:top-1/2 md:max-h-[850px] md:w-3/4 md:-translate-x-1/2 md:-translate-y-1/2 md:overflow-y-scroll md:rounded-md lg:h-fit lg:max-h-[850px] xl:static xl:h-full xl:w-[35%] xl:translate-x-0 xl:translate-y-0 xl:py-5.5 3xl:max-h-[610px] 3xl:overflow-y-scroll">
+        <div className="w-full border-stroke bg-snow 2xsm:p-8 sm:px-8 sm:py-12.5 md:absolute md:left-1/2 md:top-1/2 md:max-h-[850px] md:w-3/4 md:-translate-x-1/2 md:-translate-y-1/2 md:overflow-y-scroll md:rounded-tr-md md:rounded-br-md lg:h-fit lg:max-h-[850px] xl:static xl:h-full xl:w-[35%] xl:translate-x-0 xl:translate-y-0 xl:py-5.5 3xl:max-h-[610px] 3xl:overflow-y-scroll">
           {/* Mobile visible logo */}
           <div className="block w-full xl:hidden">
             <Link
@@ -317,7 +317,7 @@ const SignUp: React.FC = () => {
             {/* Nome Completo */}
             <div className="mb-2 grid md:col-span-2">
               <label
-                className="mb-2.5 block font-medium text-black dark:text-white"
+                className="mb-2.5 block font-medium text-black"
                 htmlFor="nome_completo"
               >
                 Nome Completo
@@ -326,7 +326,7 @@ const SignUp: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Nome Completo"
-                  className={`${errors.complete_name && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                  className={`${errors.complete_name && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                   id="nome_completo"
                   {...register("complete_name", {
                     required: "Campo obrigatório",
@@ -444,12 +444,12 @@ const SignUp: React.FC = () => {
               </div>
               {selectOption === "CNPJ" ? (
                 <div className="grid grid-cols-2 gap-5">
-                  <h3 className="col-span-2 mt-5 block text-center font-semibold uppercase text-black dark:text-white">
+                  <h3 className="col-span-2 mt-5 block text-center font-semibold uppercase text-black">
                     Dados do Representante Legal
                   </h3>
                   <div className="col-span-2 mb-2">
                     <label
-                      className="mb-2.5 block font-medium text-black dark:text-white"
+                      className="mb-2.5 block font-medium text-black"
                       htmlFor="repre_name"
                     >
                       Nome Completo
@@ -458,7 +458,7 @@ const SignUp: React.FC = () => {
                       <input
                         type="text"
                         placeholder="Nome Completo"
-                        className={`${errors.nome_representante && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                        className={`${errors.nome_representante && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                         id="repre_name"
                         {...register("nome_representante", {
                           required: "Campo obrigatório",
@@ -496,7 +496,7 @@ const SignUp: React.FC = () => {
 
                   <div className="col-span-2 mb-2 ">
                     <label
-                      className="mb-2.5 block font-medium text-black dark:text-white"
+                      className="mb-2.5 block font-medium text-black"
                       htmlFor="CPF_Repre"
                     >
                       CPF
@@ -518,7 +518,7 @@ const SignUp: React.FC = () => {
                             {...field}
                             mask="999.999.999-99"
                             placeholder="Digite seu CPF"
-                            className={`${errors.cpf_representante && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                            className={`${errors.cpf_representante && "border-2 !border-rose-400 !ring-0"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                           />
                         )}
                       />
@@ -538,8 +538,8 @@ const SignUp: React.FC = () => {
                   </div>
                 </div>
               ) : null}
-              <div className="w-full justify-center p-3 text-center text-sm text-red dark:text-meta-1">
-                Atenção! os dados bancários precisam ser da mesma titularidade
+              <div className="w-full justify-center p-3 text-center text-sm text-red font-medium">
+                Atenção! Os dados bancários precisam ser da mesma titularidade
                 do CPF/CNPJ cadastrado.
               </div>
               {/* Dados Bancários */}
@@ -547,7 +547,7 @@ const SignUp: React.FC = () => {
                 {/* Banco */}
                 <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
                   <label
-                    className="mb-2.5 block font-medium text-black dark:text-white"
+                    className="mb-2.5 block font-medium text-black"
                     htmlFor="banco"
                   >
                     Banco
@@ -569,7 +569,7 @@ const SignUp: React.FC = () => {
                           {...field}
                           mask="999"
                           placeholder="Banco"
-                          className={`${errors.banco && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                          className={`${errors.banco && "border-2 !border-rose-400 !ring-0"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                         />
                       )}
                     />
@@ -590,7 +590,7 @@ const SignUp: React.FC = () => {
                 {/* Agencia */}
                 <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
                   <label
-                    className="mb-2.5 block font-medium text-black dark:text-white"
+                    className="mb-2.5 block font-medium text-black"
                     htmlFor="agencia"
                   >
                     Agência
@@ -612,7 +612,7 @@ const SignUp: React.FC = () => {
                           {...field}
                           mask="9999-9"
                           placeholder="Agência"
-                          className={`${errors.agencia && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                          className={`${errors.agencia && "border-2 !border-rose-400 !ring-0"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                         />
                       )}
                     />
@@ -634,7 +634,7 @@ const SignUp: React.FC = () => {
                 {/* Conta Corrente */}
                 <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
                   <label
-                    className="mb-2.5 block font-medium text-black dark:text-white"
+                    className="mb-2.5 block font-medium text-black"
                     htmlFor="conta"
                   >
                     Conta Corrente
@@ -656,7 +656,7 @@ const SignUp: React.FC = () => {
                           {...field}
                           mask="9999999-9"
                           placeholder="Conta Corrente"
-                          className={`${errors.conta && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                          className={`${errors.conta && "border-2 !border-rose-400 !ring-0"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                         />
                       )}
                     />
@@ -677,7 +677,7 @@ const SignUp: React.FC = () => {
                 {/* Pix */}
                 <div className="mb-2 2xsm:col-span-2  md:col-span-1">
                   <label
-                    className="mb-2.5 block font-medium text-black dark:text-white"
+                    className="mb-2.5 block font-medium text-black"
                     htmlFor="pix"
                   >
                     Pix
@@ -686,7 +686,7 @@ const SignUp: React.FC = () => {
                     <input
                       type="text"
                       placeholder="Pix"
-                      className={`${errors.pix && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                      className={`${errors.pix && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                       id="pix"
                       {...register("pix", {
                         required: "Campo obrigatório",
@@ -708,7 +708,7 @@ const SignUp: React.FC = () => {
                 </div>
                 <div className="col-span-2 mb-2 ">
                   <label
-                    className="mb-2.5 block font-medium text-black dark:text-white"
+                    className="mb-2.5 block font-medium text-black"
                     htmlFor="phone"
                   >
                     Whatsapp
@@ -730,7 +730,7 @@ const SignUp: React.FC = () => {
                           {...field}
                           mask="99.99999-9999"
                           placeholder="Whatsapp"
-                          className={`${errors.phone && "border-2 !border-rose-400 !ring-0 dark:!border-meta-1"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary`}
+                          className={`${errors.phone && "border-2 !border-rose-400 !ring-0"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                         />
                       )}
                     />
