@@ -12,6 +12,9 @@ export const APP_ROUTES = {
     marketplaceItem: {
       name: "/dashboard/marketplace/:id",
     },
+    broker: {
+      name: "dashboard/broker",
+    },
     profile: {
       name: "/profile",
     },
