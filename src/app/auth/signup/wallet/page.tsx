@@ -329,11 +329,6 @@ const SignUpWallet: React.FC = () => {
                       value: 30,
                       message: "O nome deve conter no máximo 30 caracteres",
                     },
-                    pattern: {
-                      value: /^[a-zA-Z\s]+$/, // Regex para permitir apenas letras (maiúsculas e minúsculas) e espaços.
-                      message:
-                        "O nome deve conter apenas letras e não deve ter espaços ou caracteres especiais",
-                    },
                   })}
                 />
 
