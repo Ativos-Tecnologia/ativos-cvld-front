@@ -70,7 +70,7 @@ export default function Privacy() {
             <div className="flex items-center 3xl:flex-1">
               <Fade direction="left" delay={500} triggerOnce>
                 <h1 className="font-medium uppercase text-snow 2xsm:text-center 2xsm:text-5xl xsm:text-6xl sm:text-7xl xl:text-left">
-                  Politica de Privacidade
+                  POLÍTICA DE PRIVACIDADE
                 </h1>
               </Fade>
             </div>
@@ -105,7 +105,9 @@ export default function Privacy() {
           </Fade>
 
           <div className="mx-auto grid gap-3 pt-17 2xsm:w-10/12 xl:w-2/3">
-            <h3 className="2xsm:text-sm md:text-base">DATA EFETIVA: 29 DE OUTUBRO DE 2024</h3>
+            <h3 className="2xsm:text-sm md:text-base">
+              DATA EFETIVA: 29 DE OUTUBRO DE 2024
+            </h3>
             <Footer.Divider />
             <Politicas />
           </div>
