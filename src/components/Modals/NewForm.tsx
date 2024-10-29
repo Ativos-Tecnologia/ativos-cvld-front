@@ -44,12 +44,6 @@ const NewForm = () => {
   const [usersList, setUsersList] = useState<any[]>([]);
   const [fetchError, setFetchError] = useState<boolean>(false);
   const enumTipoOficiosList = Object.values(tipoOficio);
-  // const [proposalValue, setProposalValue] = useState({ min: 0, max: 0 });
-  // const [comissionValue, setComissionValue] = useState({ min: 0, max: 0 });
-  // const [calculationMemory, setCalculationMemory] = useState({
-  //   simple: "",
-  //   rra: null,
-  // });
   const [backendResponse, setBackendResponse] = useState<LeadMagnetResposeProps>({
     id: "",
     min_proposal: 0,
@@ -79,6 +73,7 @@ const NewForm = () => {
   } = useForm<Partial<CvldFormInputsProps>>({
     defaultValues: {
       numero_de_meses: 0,
+      gerar_cvld: true
     },
   });
 
