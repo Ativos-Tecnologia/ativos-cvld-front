@@ -2,6 +2,7 @@
 import { MainFooter } from "@/components/Footer";
 import UnloggedHeader from "@/components/Header/UnloggedHeader";
 import { Politicas } from "@/components/Politicas";
+import { Footer } from "flowbite-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Fade } from "react-awesome-reveal";
@@ -104,6 +105,8 @@ export default function Privacy() {
           </Fade>
 
           <div className="mx-auto grid gap-3 pt-17 2xsm:w-10/12 xl:w-2/3">
+            <h3 className="2xsm:text-sm md:text-base">DATA EFETIVA: 29 DE OUTUBRO DE 2024</h3>
+            <Footer.Divider />
             <Politicas />
           </div>
         </section>
