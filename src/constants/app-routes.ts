@@ -50,6 +50,9 @@ export const APP_ROUTES = {
     terms_and_conditions: {
       name: "/termos-e-condicoes",
     },
+    privacy_policy:{
+      name: "/politica-de-privacidade",
+    },
   },
 };
     
