@@ -1,23 +1,22 @@
 "use client";
 
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
-import SidebarLinkGroup from "./SidebarLinkGroup";
-import { BiCalculator, BiGridAlt, BiPlus } from "react-icons/bi";
-import { AiOutlineDown, AiOutlineLoading } from "react-icons/ai";
+import { DefaultLayoutContext } from "@/context/DefaultLayoutContext";
+import { GeneralUIContext } from "@/context/GeneralUIContext";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
+import useColorMode from "@/hooks/useColorMode";
+import api from "@/utils/api";
+import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { AiOutlineDown, AiOutlineLoading } from "react-icons/ai";
+import { BiCalculator, BiGridAlt, BiPlus } from "react-icons/bi";
+import { FaBuildingUser } from "react-icons/fa6";
 import { LuWallet2 } from "react-icons/lu";
 import { TbShoppingCartUp } from "react-icons/tb";
-import { useQuery } from "@tanstack/react-query";
-import api from "@/utils/api";
-import { getStorageItem } from "@/utils/localStorage";
-import useColorMode from "@/hooks/useColorMode";
-import { theme } from "flowbite-react";
-import { GeneralUIContext } from "@/context/GeneralUIContext";
-import { DefaultLayoutContext } from "@/context/DefaultLayoutContext";
 import CapaDoBatman from "../CapaDoBatman";
+import SidebarLinkGroup from "./SidebarLinkGroup";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -195,10 +194,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     <React.Fragment>
                       <Link
                         href="#"
-                        className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-white duration-300 ease-in-out hover:bg-blue-400 dark:hover:bg-form-strokedark ${(pathname === "/" ||
-                          pathname.includes("dashboard")) &&
+                        className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-white duration-300 ease-in-out hover:bg-blue-400 dark:hover:bg-form-strokedark ${
+                          (pathname === "/" ||
+                            pathname.includes("dashboard")) &&
                           "bg-blue-700/90 dark:bg-meta-4"
-                          }`}
+                        }`}
                         onClick={(e) => {
                           e.preventDefault();
                           sidebarExpanded
@@ -206,62 +206,72 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             : setSidebarExpanded(true);
                         }}
                       >
-                        <BiGridAlt style={{ width: '22px', height: '22px' }} />
+                        <BiGridAlt style={{ width: "22px", height: "22px" }} />
                         Dashboard
-                        <AiOutlineDown className={`absolute right-4 top-1/2 -translate-y-1/2 transition-all duration-300 fill-current ${open && "rotate-180"}`} />
+                        <AiOutlineDown
+                          className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current transition-all duration-300 ${open && "rotate-180"}`}
+                        />
                       </Link>
-
 
                       <div
                         className={`translate transform overflow-hidden ${!open ? "max-h-0" : "max-h-550"} transition-all duration-200`}
                       >
                         <ul className="mb-5.5 mt-4 flex flex-col gap-2.5 pl-6">
-                          {product !== 'wallet' && (
+                          {product !== "wallet" && (
                             <li>
                               <Link
                                 href="/"
-                                className={`group relative flex items-center gap-2.5 px-4 py-2 font-medium rounded-md duration-300 ease-in-out text-bodydark2  hover:bg-blue-400 dark:hover:bg-meta-4 hover:text-white ${pathname === "/" && "bg-blue-700/70 dark:bg-meta-4 dark:hover:bg-form-strokedark text-white"
-                                  }`}
+                                className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out  hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${
+                                  pathname === "/" &&
+                                  "bg-blue-700/70 text-white dark:bg-meta-4 dark:hover:bg-form-strokedark"
+                                }`}
                               >
                                 <BiCalculator />
                                 <span>Calculadora</span>
                               </Link>
                             </li>
                           )}
-                          {product !== 'crm' && (
+                          {product !== "crm" && (
                             <>
                               <li>
                                 <Link
                                   href="/dashboard/wallet"
-                                  className={`group relative flex items-center gap-2.5 px-4 py-2 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 dark:hover:bg-meta-4 hover:text-white ${pathname === "/dashboard/wallet" && "bg-blue-700/70 text-white hover:bg-blue-800/50 dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
+                                  className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${pathname === "/dashboard/wallet" && "bg-blue-700/70 text-white hover:bg-blue-800/50 dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
                                 >
                                   <LuWallet2 />
                                   <span>Wallet</span>
                                 </Link>
-                              </li><li>
+                              </li>
+                              <li>
                                 <Link
                                   href="/dashboard/marketplace"
-                                  className={`group relative flex items-center gap-2.5 px-4 py-2 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 dark:hover:bg-meta-4 hover:text-white ${pathname.includes("/dashboard/marketplace") && "text-white bg-blue-700/70 dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
+                                  className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${pathname.includes("/dashboard/marketplace") && "bg-blue-700/70 text-white dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
                                 >
                                   <TbShoppingCartUp />
                                   <span>Marketplace</span>
                                   {/* counter */}
-                                  <span className="w-4.5 h-4.5 bg-red-500 flex items-center justify-center rounded-full text-xs text-snow">
+                                  <span className="flex h-4.5 w-4.5 items-center justify-center rounded-full bg-red-500 text-xs text-snow">
                                     {isFetching ? (
                                       <AiOutlineLoading className="animate-spin text-[10px]" />
                                     ) : (
-                                      <>
-                                        {data?.count || 0}
-                                      </>
+                                      <>{data?.count || 0}</>
                                     )}
                                   </span>
+                                </Link>
+                              </li>
+                              <li>
+                                <Link
+                                  href="/dashboard/broker"
+                                  className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${pathname === "/dashboard/wallet" && "bg-blue-700/70 text-white hover:bg-blue-800/50 dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
+                                >
+                                  <FaBuildingUser />
+                                  <span>Broker</span>
                                 </Link>
                               </li>
                             </>
                           )}
                         </ul>
                       </div>
-
                     </React.Fragment>
                   );
                 }}
