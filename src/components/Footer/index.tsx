@@ -20,15 +20,18 @@ export function MainFooter() {
           <div className="md:p-0 lg:col-span-2 lg:p-5">
             <Footer.Title className="text-snow" title="sobre a Ativos" />
             <div className="md:max-w-full xl:max-w-[600px]">
-              <p className="font-satoshi text-bodydark text-justify">
-                Presente em todo Brasil, a Ativos é sua empresa ideal que promove o desenvolvimento de novas tecnologias para compra e venda de precatórios, gestão de ativos judiciais, segurança jurídica e novos negócios.
+              <p className="text-justify font-satoshi text-bodydark">
+                Presente em todo Brasil, a Ativos é sua empresa ideal que
+                promove o desenvolvimento de novas tecnologias para compra e
+                venda de precatórios, gestão de ativos judiciais, segurança
+                jurídica e novos negócios.
               </p>
             </div>
           </div>
           <div className="lg:hidden">
             <Footer.Divider />
           </div>
-          <div className="grid w-full gap-2 2xsm:grid-cols-1 md:mt-4 md:grid-cols-8 lg:grid-cols-8 lg:px-5 lg:gap-3">
+          <div className="grid w-full gap-2 2xsm:grid-cols-1 md:mt-4 md:grid-cols-8 lg:grid-cols-8 lg:gap-3 lg:px-5">
             <div className="md:col-span-1">
               <Footer.Title className="text-snow" title="Sobre" />
               <Footer.LinkGroup className="text-bodydark" col>
@@ -89,10 +92,16 @@ export function MainFooter() {
             <div className="md:col-span-2">
               <Footer.Title className="text-snow" title="Legal" />
               <Footer.LinkGroup className="text-bodydark" col>
-                <Footer.Link aria-disabled href="#">
+                <Footer.Link
+                  aria-disabled
+                  href="/politica-de-privacidade"
+                  target="_blank"
+                >
                   Política de Privacidade
                 </Footer.Link>
-                <Footer.Link href="/termos-e-condicoes">Termos e Condições</Footer.Link>
+                <Footer.Link href="/termos-e-condicoes" target="_blank">
+                  Termos e Condições
+                </Footer.Link>
               </Footer.LinkGroup>
             </div>
           </div>
@@ -104,7 +113,6 @@ export function MainFooter() {
           {/* Versão Laptop e Desktop da Logo */}
           <div className="min-w-fit items-center justify-center 2xsm:hidden sm:hidden sm:max-w-none md:flex">
             <div className="flex items-center space-x-4 md:gap-18">
-
               {/* logo */}
               <div className="bg flex flex-col items-center justify-center gap-3 dark:hidden lg:justify-evenly">
                 <Image
@@ -125,7 +133,7 @@ export function MainFooter() {
               {/* fim da logo */}
 
               <div className="md:mx-auto md:max-w-md lg:max-w-3xl">
-                <p className="font-satoshi text-bodydark text-justify">
+                <p className="text-justify font-satoshi text-bodydark">
                   Este sistema, é gerido e operado pela Ativos Exchange
                   Tecnologia Ltda, CNPJ 51.221.966/0001-90, sociedade integrante
                   do grupo Ativos, com atuação exclusiva em desenvolvimento e
