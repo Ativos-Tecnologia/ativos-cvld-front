@@ -278,20 +278,18 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               </SidebarLinkGroup>
 
               {/* <!-- Menu Item Dashboard --> */}
-              <CapaDoBatman show={window.location.href.includes('localhost') || window.location.href.includes('dev-')}>
-                {/* <--- new precatory button --> */}
-                <Link
-                  href="#"
-                  onClickCapture={() => setModalOpen(!modalOpen)}
-                  className={`flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 hover:text-white duration-300 ease-in-out hover:bg-blue-400 dark:hover:bg-form-strokedark ${modalOpen &&
-                    "bg-blue-700/90 dark:bg-meta-4 text-white"
-                    }`}
-                  onClick={() => { }}
-                >
-                  <BiPlus style={{ width: '22px', height: '22px' }} />
-                  <span>Novo Precatório</span>
-                </Link>
-              </CapaDoBatman>
+              {/* <--- new precatory button --> */}
+              <Link
+                href="#"
+                onClickCapture={() => setModalOpen(!modalOpen)}
+                className={`flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 hover:text-white duration-300 ease-in-out hover:bg-blue-400 dark:hover:bg-form-strokedark ${modalOpen &&
+                  "bg-blue-700/90 dark:bg-meta-4 text-white"
+                  }`}
+                onClick={() => { }}
+              >
+                <BiPlus style={{ width: '22px', height: '22px' }} />
+                <span>Novo Precatório</span>
+              </Link>
             </ul>
           </div>
 
