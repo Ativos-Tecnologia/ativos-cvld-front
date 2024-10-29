@@ -259,15 +259,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                   </span>
                                 </Link>
                               </li>
-                              <li>
-                                <Link
-                                  href="/dashboard/broker"
-                                  className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${pathname === "/dashboard/wallet" && "bg-blue-700/70 text-white hover:bg-blue-800/50 dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
-                                >
-                                  <FaBuildingUser />
-                                  <span>Broker</span>
-                                </Link>
-                              </li>
+                              <CapaDoBatman show={window.location.href.includes("dev-") || window.location.href.includes("localhost:")}>
+                                <li>
+                                  <Link
+                                    href="/dashboard/broker"
+                                    className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${pathname === "/dashboard/wallet" && "bg-blue-700/70 text-white hover:bg-blue-800/50 dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
+                                  >
+                                    <FaBuildingUser />
+                                    <span>Broker</span>
+                                  </Link>
+                                </li>
+                              </CapaDoBatman>
                             </>
                           )}
                         </ul>

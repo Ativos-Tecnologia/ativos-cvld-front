@@ -5,24 +5,14 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { Fade } from "react-awesome-reveal";
 import { Controller, useForm } from "react-hook-form";
 import {
-  BiChevronRight,
-  BiDownload,
+  BiCheck,
   BiLineChart,
-  BiLoader,
   BiLogoUpwork,
-  BiMinus,
-  BiPlus,
   BiSave,
   BiX,
 } from "react-icons/bi";
-import { ShadSelect } from "../ShadSelect";
-import { SelectItem } from "@radix-ui/react-select";
 import Cleave from "cleave.js/react";
-import { ErrorMessage } from "../ErrorMessage/ErrorMessage";
 import CustomCheckbox from "../CrmUi/Checkbox";
-import { Avatar } from "flowbite-react";
-import { PaginatedResponse } from "../TaskElements";
-import statusOficio from "@/enums/statusOficio.enum";
 import tipoOficio from "@/enums/tipoOficio.enum";
 import {
   UserInfoAPIContext,
@@ -245,7 +235,7 @@ const NewForm = () => {
 
   const onSubmit = async (data: any) => {
     setLoading(true);
-
+  
     if (resultContainerRef.current) {
       resultContainerRef.current.scrollIntoView({ behavior: "smooth" });
     }
@@ -315,10 +305,15 @@ const NewForm = () => {
         const results = response.data.result; // pega o resultado da requisição
         setBackendResponse(results)
         setShowResults(true);
+        toast.success('Dados salvos no Notion com Sucesso!', {
+          icon: <BiCheck className="text-lg fill-green-400" />
+        });
       }
     } catch (error) {
       if (error instanceof AxiosError) {
-        toast.error(error.response?.data.error);
+        toast.error((error.response?.data.error || "Erro ao salvar dados no Notion!"), {
+          icon: <BiX className="text-lg fill-red-500"/>
+        });
       } else {
         toast.error(String(error));
       }
@@ -336,14 +331,18 @@ const NewForm = () => {
       }
     )
 
-    if (req.status === 200) {
-      toast.success('Proposta e comissão salvas com sucesso!');
+    if (req.status === 202) {
+      toast.success('Proposta e comissão salvas com sucesso!', {
+        icon: <BiCheck className="text-lg fill-green-400" />
+      });
     }
 
     if (req.status === 400) {
-      toast.error('Erro ao salvar proposta e comissão!');
+      toast.error('Erro ao salvar proposta e comissão!', {
+        icon: <BiX className="text-lg fill-red-500"/>
+      });
     }
-    setSavingProposalAndComission(true);
+    setSavingProposalAndComission(false);
   }
 
   useEffect(() => {
@@ -1502,37 +1501,6 @@ const NewForm = () => {
                       {/* end separator */}
 
                       <div className="flex flex-col gap-5">
-                        <h4 className="font-medium">Opções disponíveis para esse cálculo:</h4>
-                        <ul className="flex gap-3 2xsm:flex-col md:flex-row">
-                          <li className="group flex w-full text-sm">
-                            <a
-                              href={backendResponse.memoria_de_calculo_simples || ""}
-                              target="_blank"
-                              referrerPolicy="no-referrer"
-                              className="flex gap-2 items-center justify-center rounded-md text-sm font-semibold hover:text-blue-600 transition-colors underline tracking-wider duration-300"
-                            >
-                              <BiChevronRight className="group-hover:translate-x-1 duration-500 transition-transform text-lg" />
-                              <span className="font-medium">
-                                Memória de Cálculo Simples
-                              </span>
-                            </a>
-                          </li>
-                          {backendResponse.memoria_de_calculo_rra && (
-                            <li className="flex w-full text-sm">
-                              <a
-                                href={backendResponse.memoria_de_calculo_rra || ""}
-                                target="_blank"
-                                referrerPolicy="no-referrer"
-                                className="flex gap-2 items-center justify-center rounded-md text-sm font-semibold hover:text-blue-600 transition-colors underline tracking-wider duration-300"
-                              >
-                                <BiChevronRight className="group-hover:translate-x-1 duration-500 transition-transform text-lg" />
-                                <span className="font-medium">
-                                  Memória de Cálculo RRA
-                                </span>
-                              </a>
-                            </li>
-                          )}
-                        </ul>
                         {backendResponse.id && (
                           <Button
                             onClick={saveProposalAndComission}
