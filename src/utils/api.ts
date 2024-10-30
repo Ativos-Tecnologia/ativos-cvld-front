@@ -2,7 +2,7 @@ import axios from 'axios';
 import { ACCESS_TOKEN, DEV_API_URL, LOCAL_DEV_API_URL, PROD_API_URL, REFRESH_TOKEN } from '@/constants/constants';
 import { checkIsPublicRoute } from '@/functions/check-is-public-route';
 
-const activeUrl = LOCAL_DEV_API_URL;
+const activeUrl = PROD_API_URL;
 
 
 const api = axios.create({
@@ -35,7 +35,7 @@ api.interceptors.response.use(
       if (!checkIsPublicRoute(window.location.href)) {
         window.location.href = "auth/signin";
       }
-      
+
     }
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
