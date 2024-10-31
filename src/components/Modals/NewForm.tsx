@@ -34,6 +34,7 @@ import NewFormResultSkeleton from "../Skeletons/NewFormResultSkeleton";
 import { AxiosError } from "axios";
 import { Button } from "../Button";
 import { LeadMagnetResposeProps } from "@/types/leadMagnet";
+import { formatCurrency } from "@/functions/formaters/formatCurrency";
 
 const NewForm = () => {
   const { modalOpen, setModalOpen } = useContext(DefaultLayoutContext);
@@ -63,6 +64,9 @@ const NewForm = () => {
   const [savingProposalAndComission, setSavingProposalAndComission] = useState<boolean>(false);
   const { data } = useContext<UserInfoContextType>(UserInfoAPIContext);
   const resultContainerRef = useRef<HTMLDivElement | null>(null);
+  const proposalRef = useRef<HTMLInputElement | null>(null);
+  const comissionRef = useRef<HTMLInputElement | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -189,9 +193,10 @@ const NewForm = () => {
 
   // Função para atualizar a proposta e ajustar a comissão proporcionalmente
   const handleProposalSliderChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    value: string,
+    sliderChange:boolean
   ) => {
-    const newProposalSliderValue = parseFloat(e.target.value);
+    const newProposalSliderValue = parseFloat(value);
     setSliderValues((oldValues) => {
       return { ...oldValues, proposal: newProposalSliderValue };
     });
@@ -200,19 +205,30 @@ const NewForm = () => {
     const proportion =
       (newProposalSliderValue - backendResponse.min_proposal) /
       (backendResponse.max_proposal - backendResponse.min_proposal);
+
     const newComissionSliderValue =
       backendResponse.max_comission -
       proportion * (backendResponse.max_comission - backendResponse.min_comission);
+
     setSliderValues((oldValues) => {
       return { ...oldValues, comission: newComissionSliderValue };
     });
+
+    if (comissionRef.current && proposalRef.current) {
+      comissionRef.current.value = numberFormat(newComissionSliderValue)
+      if (sliderChange) {
+        proposalRef.current.value = numberFormat(newProposalSliderValue)
+      }
+    }
+
   };
 
   // Função para atualizar a comissão e ajustar a proposta proporcionalmente
   const handleComissionSliderChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    value: string,
+    sliderChange:boolean
   ) => {
-    const newComissionSliderValue = parseFloat(e.target.value);
+    const newComissionSliderValue = parseFloat(value);
     setSliderValues((oldValues) => {
       return { ...oldValues, comission: newComissionSliderValue };
     });
@@ -221,16 +237,54 @@ const NewForm = () => {
     const proportion =
       (newComissionSliderValue - backendResponse.min_comission) /
       (backendResponse.max_comission - backendResponse.min_comission);
+
     const newProposalSliderValue =
       backendResponse.max_proposal - proportion * (backendResponse.max_proposal - backendResponse.min_proposal);
+
     setSliderValues((oldValues) => {
       return { ...oldValues, proposal: newProposalSliderValue };
     });
+
+    if (proposalRef.current && comissionRef.current) {
+      proposalRef.current.value = numberFormat(newProposalSliderValue)
+      if (sliderChange) {
+        comissionRef.current.value = numberFormat(newComissionSliderValue)
+      }
+    }
+
   };
+
+  // Função para atualizar proposta/comissão com os dados dos inputs
+  const changeInputValues = (inputField: string, value: string) => {
+    const rawValue = value.replace(/R\$\s*/g, "").replaceAll(".", "").replaceAll(",", ".");
+    switch (inputField) {
+      case "proposal":
+        setSliderValues(old => {
+          return {
+            ...old,
+            proposal: parseFloat(rawValue)
+          }
+        });
+        handleProposalSliderChange(rawValue, false);
+        break;
+      case "comission":
+        setSliderValues(old => {
+          return {
+            ...old,
+            comission: parseFloat(rawValue)
+          }
+        });
+        handleComissionSliderChange(rawValue, false);
+        break;
+      default:
+        break;
+    }
+
+  }
 
   const onSubmit = async (data: any) => {
     setLoading(true);
-  
+
     if (resultContainerRef.current) {
       resultContainerRef.current.scrollIntoView({ behavior: "smooth" });
     }
@@ -297,17 +351,19 @@ const NewForm = () => {
         : await api.post("/api/lead-magnet/", data);
 
       if (response.status === 200 || response.status === 201) {
+        if (response.status === 201) {
+          toast.success('Dados salvos no Notion com Sucesso!', {
+            icon: <BiCheck className="text-lg fill-green-400" />
+          });
+        }
         const results = response.data.result; // pega o resultado da requisição
         setBackendResponse(results)
         setShowResults(true);
-        toast.success('Dados salvos no Notion com Sucesso!', {
-          icon: <BiCheck className="text-lg fill-green-400" />
-        });
       }
     } catch (error) {
       if (error instanceof AxiosError) {
         toast.error((error.response?.data.error || "Erro ao salvar dados no Notion!"), {
-          icon: <BiX className="text-lg fill-red-500"/>
+          icon: <BiX className="text-lg fill-red-500" />
         });
       } else {
         toast.error(String(error));
@@ -334,7 +390,7 @@ const NewForm = () => {
 
     if (req.status === 400) {
       toast.error('Erro ao salvar proposta e comissão!', {
-        icon: <BiX className="text-lg fill-red-500"/>
+        icon: <BiX className="text-lg fill-red-500" />
       });
     }
     setSavingProposalAndComission(false);
@@ -345,6 +401,10 @@ const NewForm = () => {
       proposal: backendResponse.min_proposal,
       comission: backendResponse.max_comission,
     });
+    if (proposalRef.current && comissionRef.current) {
+      proposalRef.current.value = numberFormat(backendResponse.min_proposal)
+      comissionRef.current.value = numberFormat(backendResponse.max_comission)
+    }
   }, [backendResponse]);
 
   useEffect(() => {
@@ -1430,9 +1490,9 @@ const NewForm = () => {
                         <h2 className="text-xl font-medium uppercase">
                           Tudo pronto!
                         </h2>
-                        <p className="text-sm text-slate-400 2xsm:text-center sm:text-left">
+                        <p className="text-sm 2xsm:text-center sm:text-left">
                           Abaixo foram gerados os valores mínimos e máximos de
-                          proposta e comissão. Mova os sliders para alterar os
+                          proposta e comissão. Mova os sliders ou use os campos para alterar os
                           valores proporcionalmente.
                         </p>
                       </div>
@@ -1443,17 +1503,25 @@ const NewForm = () => {
                           <span>{numberFormat(backendResponse.min_proposal)}</span>
                         </div>
                         <div className="flex flex-1 flex-col items-center gap-1">
-                          <span className="text-sm font-medium">
-                            Proposta Atual:{" "}
-                            {numberFormat(sliderValues.proposal)}
-                          </span>
+                          <div className="text-sm font-medium flex items-center">
+                            <p className="w-full">Proposta Atual:</p>
+                            <input
+                              ref={proposalRef}
+                              type="text"
+                              onBlur={e => {
+                                e.target.value = formatCurrency(e.target.value)
+                              }}
+                              onChange={e => changeInputValues("proposal", e.target.value)}
+                              className="max-w-39 text-center rounded-md border-none pr-2 pl-1 ml-2 py-2 text-sm font-medium text-body focus-visible:ring-body dark:focus-visible:ring-snow dark:bg-bodydark1/10 dark:text-bodydark bg-gray-100"
+                            />
+                          </div>
                           <input
                             type="range"
                             step="0.01"
                             min={backendResponse.min_proposal}
                             max={backendResponse.max_proposal}
                             value={sliderValues.proposal}
-                            onChange={handleProposalSliderChange}
+                            onChange={e => handleProposalSliderChange(e.target.value, true)}
                             className="w-full"
                           />
                         </div>
@@ -1471,17 +1539,25 @@ const NewForm = () => {
                           <span>{numberFormat(backendResponse.min_comission)}</span>
                         </div>
                         <div className="flex flex-1 flex-col items-center gap-1">
-                          <span className="text-sm font-medium">
-                            Comissão Atual:{" "}
-                            {numberFormat(sliderValues.comission)}
-                          </span>
+                          <div className="text-sm font-medium flex items-center">
+                            <p className="">Comissão Atual:</p>
+                            <input
+                              ref={comissionRef}
+                              type="text"
+                              onBlur={e => {
+                                e.target.value = formatCurrency(e.target.value)
+                              }}
+                              onChange={e => changeInputValues("comission", e.target.value)}
+                              className="max-w-39 text-center rounded-md border-none pr-2 pl-1 ml-2 py-2 text-sm font-medium text-body focus-visible:ring-body dark:focus-visible:ring-snow dark:bg-bodydark1/10 dark:text-bodydark bg-gray-100"
+                            />
+                          </div>
                           <input
                             type="range"
                             step="0.01"
                             min={backendResponse.min_comission}
                             max={backendResponse.max_comission}
                             value={sliderValues.comission}
-                            onChange={handleComissionSliderChange}
+                            onChange={e => handleComissionSliderChange(e.target.value, true)}
                             className="w-full"
                           />
                         </div>
