@@ -32,9 +32,11 @@ export const iconsConfig = {
 const Card = ({
   oficio,
   onClickFn,
+  disabled = false,
 }: {
   oficio: NotionPage;
   onClickFn: () => void;
+  disabled?: boolean;
 }) => {
   const fetchOficioDataFromWallet = async () => {
     const response = await api.post("/api/extrato/wallet/", {
@@ -52,10 +54,12 @@ const Card = ({
 
   return (
     <li
-      className="mb-4 h-65 max-w-full font-nexa xsm:min-w-95 xsm:px-2 md:min-w-[350px] md:px-3 lg:px-4"
+      className={`mb-4 h-65 max-w-full font-nexa xsm:min-w-95 xsm:px-2 md:min-w-[350px] md:px-3 lg:px-4 ${disabled ? "pointer-events-none opacity-50" : null}`}
       onClick={onClickFn}
     >
-      <div className="group relative h-55">
+      <div
+        className={`group relative h-55 ${disabled ? "pointer-events-none opacity-50" : null}`}
+      >
         <div className="absolute inset-0 z-0 overflow-hidden rounded-md">
           <Image
             src={

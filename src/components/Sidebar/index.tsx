@@ -37,8 +37,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
   const [logoColorSrc, setLogoColorSrc] = useState<string>("");
-
+  
   const { data: { product } } = useContext(UserInfoAPIContext);
+  const [userApprovation, setUserApprovation] = useState<boolean | null>(null);
 
   let storedSidebarExpanded = "true";
 
@@ -63,6 +64,18 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     queryFn: fetchItems
   });
 
+useEffect(() => {
+  async function fetchUserApprovation() {
+    try {
+      const response = await api.get("/api/profile/");
+      setUserApprovation(response.data.staff_approvation);
+    } catch (e) {
+      console.error(`Erro ao tentar verificar aprovação do usuário: ${e}`);
+    }
+  }
+
+  fetchUserApprovation();
+}, []);
 
 
   const [themeApplied] = useColorMode();
@@ -194,10 +207,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     <React.Fragment>
                       <Link
                         href="#"
-                        className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium duration-300 ease-in-out text-bodydark2 hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${
+                        className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${
                           (pathname === "/" ||
                             pathname.includes("dashboard")) &&
-                          "bg-blue-700/90 dark:bg-meta-4 text-white"
+                          "bg-blue-700/90 text-white dark:bg-meta-4"
                         }`}
                         onClick={(e) => {
                           e.preventDefault();
@@ -233,7 +246,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           )}
                           {product !== "crm" && (
                             <>
-                              <li>
+                              <li
+                                className={`${userApprovation === false ? "hidden" : null}`}
+                              >
                                 <Link
                                   href="/dashboard/wallet"
                                   className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${pathname === "/dashboard/wallet" && "bg-blue-700/70 text-white hover:bg-blue-800/50 dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
@@ -259,7 +274,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                   </span>
                                 </Link>
                               </li>
-                              <CapaDoBatman show={window.location.href.includes("dev-") || window.location.href.includes("localhost:")}>
+                              <CapaDoBatman
+                                show={
+                                  window.location.href.includes("dev-") ||
+                                  window.location.href.includes("localhost:")
+                                }
+                              >
                                 <li>
                                   <Link
                                     href="/dashboard/broker"

@@ -13,7 +13,7 @@ import MarketplaceCardSkeleton from "../Skeletons/MarketplaceCardSkeleton";
 
 const Marketplace: React.FC = () => {
   const { push } = useRouter();
-
+  
   const [marketPlaceItems, setMarketPlaceItems] = useState<NotionResponse>({
     object: "list",
     next_cursor: null,
@@ -23,6 +23,7 @@ const Marketplace: React.FC = () => {
   // const [backendResults, setBackendResults] = useState<NotionPage[]>([]);
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
+  const [userApprovation, setUserApprovation] = useState<boolean | null>(null);
 
   function handleRedirect(id: string) {
     push(`/dashboard/marketplace/${id}`);
@@ -76,6 +77,19 @@ const Marketplace: React.FC = () => {
     }
   }, [data]);
 
+  useEffect(() => {
+    async function fetchUserApprovation() {
+      try {
+        const response = await api.get("/api/profile/");
+        setUserApprovation(response.data.staff_approvation);
+      } catch (e) {
+        console.error(`Erro ao tentar verificar aprovação do usuário: ${e}`);
+      }
+    }
+
+    fetchUserApprovation();
+  }, []);
+
   return (
     <div className="flex flex-col gap-5">
       <div className="md:px-3 xl:p-0">
@@ -113,11 +127,12 @@ const Marketplace: React.FC = () => {
                     key={oficio.id}
                     oficio={oficio}
                     onClickFn={() => handleRedirect(oficio.id)}
+                    disabled={userApprovation === true ? true : false}
                   />
                 ))}
               </Fade>
             ) : (
-              <div className="md:col-span-2 xl:col-span-3 3xl:col-span-4 my-10 flex flex-col items-center justify-center gap-5">
+              <div className="my-10 flex flex-col items-center justify-center gap-5 md:col-span-2 xl:col-span-3 3xl:col-span-4">
                 <Image
                   src="/images/empty_cart.svg"
                   alt="homem com lista em mãos e carrinho vazio"
