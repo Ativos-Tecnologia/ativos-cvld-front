@@ -127,7 +127,7 @@ const Marketplace: React.FC = () => {
                     key={oficio.id}
                     oficio={oficio}
                     onClickFn={() => handleRedirect(oficio.id)}
-                    disabled={userApprovation === true ? true : false}
+                    disabled={userApprovation === false ? true : false}
                   />
                 ))}
               </Fade>

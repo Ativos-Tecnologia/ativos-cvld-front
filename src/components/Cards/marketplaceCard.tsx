@@ -52,10 +52,19 @@ const Card = ({
     queryFn: fetchOficioDataFromWallet,
   });
 
+  // Função para desativar a função quando o disable estiver ativado.
+  const handleClick= (e:any) => {
+    if (disabled) {
+      e.preventDefault();
+      return;
+    }
+    onClickFn();
+  };
+
   return (
     <li
-      className={`mb-4 h-65 max-w-full font-nexa xsm:min-w-95 xsm:px-2 md:min-w-[350px] md:px-3 lg:px-4 ${disabled ? "pointer-events-none opacity-50" : null}`}
-      onClick={onClickFn}
+      className={`mb-4 h-65 max-w-full cursor-pointer font-nexa xsm:min-w-95 xsm:px-2 md:min-w-[350px] md:px-3 lg:px-4 ${disabled ? "opacity-50" : ""}`}
+      onClick={handleClick}
     >
       <div
         className={`group relative h-55 ${disabled ? "pointer-events-none opacity-50" : null}`}
