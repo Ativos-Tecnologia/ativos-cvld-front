@@ -13,6 +13,7 @@ import { APP_ROUTES } from "@/constants/app-routes";
 import { ENUM_TIPO_OFICIOS_LIST } from "@/constants/constants";
 import tipoOficio from "@/enums/tipoOficio.enum";
 import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
+import { formatCurrency } from "@/functions/formaters/formatCurrency";
 import numberFormat from "@/functions/formaters/numberFormat";
 import api from "@/utils/api";
 import { AxiosError } from "axios";
@@ -168,6 +169,8 @@ const AutomatedProposal = () => {
   const mainRef = useRef<HTMLDivElement | null>(null);
   const formRef = useRef<HTMLFormElement | null>(null);
   const resultsRef = useRef<HTMLDivElement | null>(null);
+  const proposalRef = useRef<HTMLInputElement | null>(null);
+  const comissionRef = useRef<HTMLInputElement | null>(null);
 
   /* ====> value states <==== */
   const [proposalValue, setProposalValue] = useState({ min: 0, max: 0 });
@@ -179,9 +182,10 @@ const AutomatedProposal = () => {
 
   // Função para atualizar a proposta e ajustar a comissão proporcionalmente
   const handleProposalSliderChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    value: string,
+    sliderChange: boolean
   ) => {
-    const newProposalSliderValue = parseFloat(e.target.value);
+    const newProposalSliderValue = parseFloat(value);
     setSliderValues((oldValues) => {
       return { ...oldValues, proposal: newProposalSliderValue };
     });
@@ -190,19 +194,29 @@ const AutomatedProposal = () => {
     const proportion =
       (newProposalSliderValue - proposalValue.min) /
       (proposalValue.max - proposalValue.min);
+
     const newComissionSliderValue =
       comissionValue.max -
       proportion * (comissionValue.max - comissionValue.min);
+
     setSliderValues((oldValues) => {
       return { ...oldValues, comission: newComissionSliderValue };
     });
+
+    if (comissionRef.current && proposalRef.current) {
+      comissionRef.current.value = numberFormat(newComissionSliderValue)
+      if (sliderChange) {
+        proposalRef.current.value = numberFormat(newProposalSliderValue)
+      }
+    }
   };
 
   // Função para atualizar a comissão e ajustar a proposta proporcionalmente
   const handleComissionSliderChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    value: string,
+    sliderChange: boolean
   ) => {
-    const newComissionSliderValue = parseFloat(e.target.value);
+    const newComissionSliderValue = parseFloat(value);
     setSliderValues((oldValues) => {
       return { ...oldValues, comission: newComissionSliderValue };
     });
@@ -211,11 +225,20 @@ const AutomatedProposal = () => {
     const proportion =
       (newComissionSliderValue - comissionValue.min) /
       (comissionValue.max - comissionValue.min);
+
     const newProposalSliderValue =
       proposalValue.max - proportion * (proposalValue.max - proposalValue.min);
+
     setSliderValues((oldValues) => {
       return { ...oldValues, proposal: newProposalSliderValue };
     });
+
+    if (proposalRef.current && comissionRef.current) {
+      proposalRef.current.value = numberFormat(newProposalSliderValue)
+      if (sliderChange) {
+        comissionRef.current.value = numberFormat(newComissionSliderValue)
+      }
+    }
   };
 
   const onSubmit = async (data: any) => {
@@ -334,11 +357,42 @@ E abaixo, uma memória das informações de entrada:
     window.open(linkWhatsApp, "_blank", "noopener,noreferrer");
   };
 
+  const changeInputValues = (inputField: string, value: string) => {
+    const rawValue = value.replace(/R\$\s*/g, "").replaceAll(".", "").replaceAll(",", ".");
+    switch (inputField) {
+      case "proposal":
+        setSliderValues(old => {
+          return {
+            ...old,
+            proposal: parseFloat(rawValue)
+          }
+        });
+        handleProposalSliderChange(rawValue, false);
+        break;
+      case "comission":
+        setSliderValues(old => {
+          return {
+            ...old,
+            comission: parseFloat(rawValue)
+          }
+        });
+        handleComissionSliderChange(rawValue, false);
+        break;
+      default:
+        break;
+    }
+
+  }
+
   useEffect(() => {
     setSliderValues({
       proposal: proposalValue.min,
       comission: comissionValue.max,
     });
+    if (proposalRef.current && comissionRef.current) {
+      proposalRef.current.value = numberFormat(proposalValue.min)
+      comissionRef.current.value = numberFormat(comissionValue.max)
+    }
   }, [proposalValue, comissionValue]);
 
   useEffect(() => {
@@ -400,7 +454,7 @@ E abaixo, uma memória das informações de entrada:
           <div className="flex flex-col items-center justify-center pb-3">
             <BsChevronCompactDown
               onClick={() => { scrollTo(formRef.current) }}
-              className="animate-upforward text-6xl text-bodydark2 cursor-pointer" 
+              className="animate-upforward text-6xl text-bodydark2 cursor-pointer"
             />
             <span>clique aqui para ir ao formulário</span>
           </div>
@@ -431,7 +485,7 @@ E abaixo, uma memória das informações de entrada:
                   name="tipo_do_oficio"
                   control={control}
                   defaultValue={enumTipoOficiosList[0]}
-                  className="border-strokedark bg-form-input text-bodydark"
+                  className="font-nexa border-strokedark bg-form-input text-bodydark"
 
                 // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
                 >
@@ -457,7 +511,7 @@ E abaixo, uma memória das informações de entrada:
                   name="natureza"
                   control={control}
                   defaultValue={"NÃO TRIBUTÁRIA"}
-                  className="border-strokedark bg-form-input text-bodydark"
+                  className="font-nexa border-strokedark bg-form-input text-bodydark"
 
                 // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
                 >
@@ -484,7 +538,7 @@ E abaixo, uma memória das informações de entrada:
                   defaultValue="FEDERAL"
                   name="esfera"
                   control={control}
-                  className="border-strokedark bg-form-input text-bodydark"
+                  className="font-nexa border-strokedark bg-form-input text-bodydark"
                 >
                   <SelectItem value="FEDERAL">Federal</SelectItem>
                   <SelectItem value="ESTADUAL">Estadual</SelectItem>
@@ -507,7 +561,7 @@ E abaixo, uma memória das informações de entrada:
                     name="regime"
                     control={control}
                     defaultValue="GERAL"
-                    className="border-strokedark bg-form-input text-bodydark"
+                    className="font-nexa border-strokedark bg-form-input text-bodydark"
                   >
                     <SelectItem value="GERAL">GERAL</SelectItem>
                     <SelectItem value="ESPECIAL">ESPECIAL</SelectItem>
@@ -529,7 +583,7 @@ E abaixo, uma memória das informações de entrada:
                   control={control}
                   defaultValue={tribunais[0].nome}
                   required={true}
-                  className="border-strokedark bg-form-input text-bodydark"
+                  className="font-nexa border-strokedark bg-form-input text-bodydark"
                 >
                   {tribunais.map((tribunal) => (
                     <SelectItem key={tribunal.id} value={tribunal.id}>
@@ -956,8 +1010,8 @@ E abaixo, uma memória das informações de entrada:
                       </h2>
                       <p className="text-bodydark">
                         Abaixo foram gerados os valores mínimos e máximos de
-                        proposta e comissão. Mova os sliders para alterar os valores
-                        proporcionalmente.
+                        proposta e comissão. Mova os sliders ou use os campos para alterar os
+                        valores proporcionalmente.
                       </p>
                     </div>
                     <div className="mt-10 grid gap-10 text-bodydark">
@@ -967,16 +1021,25 @@ E abaixo, uma memória das informações de entrada:
                           <span>{numberFormat(proposalValue.min)}</span>
                         </div>
                         <div className="flex flex-1 flex-col items-center gap-1">
-                          <span className="text-sm font-medium">
-                            Proposta Atual: {numberFormat(sliderValues.proposal)}
-                          </span>
+                          <label htmlFor="proposal-slider" className="text-sm font-medium flex items-center">
+                            <p className="flex-1">Proposta Atual:</p>
+                            <input
+                              ref={proposalRef}
+                              type="text"
+                              onBlur={e => {
+                                e.target.value = formatCurrency(e.target.value)
+                              }}
+                              onChange={e => changeInputValues("proposal", e.target.value)}
+                              className="flex-1 text-center rounded-md border-none pr-2 pl-1 ml-2 py-2 text-sm font-medium text-bodydark focus-visible:ring-snow bg-bodydark1/10"
+                            />
+                          </label>
                           <input
                             type="range"
                             step="0.01"
                             min={proposalValue.min}
                             max={proposalValue.max}
                             value={sliderValues.proposal}
-                            onChange={handleProposalSliderChange}
+                            onChange={e => handleProposalSliderChange(e.target.value, true)}
                             className="w-full"
                           />
                         </div>
@@ -992,16 +1055,25 @@ E abaixo, uma memória das informações de entrada:
                           <span>{numberFormat(comissionValue.min)}</span>
                         </div>
                         <div className="flex flex-1 flex-col items-center gap-1">
-                          <span className="text-sm font-medium">
-                            Comissão Atual: {numberFormat(sliderValues.comission)}
-                          </span>
+                          <label htmlFor="proposal-slider" className="text-sm font-medium flex items-center">
+                            <p className="flex-1">Comissão Atual:</p>
+                            <input
+                              ref={comissionRef}
+                              type="text"
+                              onBlur={e => {
+                                e.target.value = formatCurrency(e.target.value)
+                              }}
+                              onChange={e => changeInputValues("comission", e.target.value)}
+                              className="flex-1 text-center rounded-md border-none pr-2 pl-1 ml-2 py-2 text-sm font-medium text-bodydark focus-visible:ring-snow bg-bodydark1/10"
+                            />
+                          </label>
                           <input
                             type="range"
                             step="0.01"
                             min={comissionValue.min}
                             max={comissionValue.max}
                             value={sliderValues.comission}
-                            onChange={handleComissionSliderChange}
+                            onChange={e => handleComissionSliderChange(e.target.value, true)}
                             className="w-full"
                           />
                         </div>
@@ -1017,7 +1089,7 @@ E abaixo, uma memória das informações de entrada:
                     {/* register button */}
                     <Link
                       href={APP_ROUTES.public.register.name}
-                      className="flex h-14 items-center justify-center rounded-md min-w-[305px] bg-blue-700 px-4 py-2 text-snow transition-all duration-300 hover:bg-blue-800 2xsm:w-[295px] md:w-fit font-medium uppercase"
+                      className="flex h-14 text-sm items-center justify-center rounded-md min-w-[305px] bg-blue-700 px-4 py-2 text-snow transition-all duration-300 hover:bg-blue-800 2xsm:w-[295px] md:w-fit font-medium uppercase"
                     >
                       Cadastrar este ativo no Celer
                     </Link>
@@ -1025,7 +1097,7 @@ E abaixo, uma memória das informações de entrada:
 
                     {/* whatsapp button */}
                     <button
-                      className={`${headerColorset === "glass" ? "cursor-pointer opacity-100" : "cursor-default opacity-0"} flex min-w-[305px] place-items-center gap-2 rounded-md bg-green-500 px-4 py-2 text-snow uppercase font-medium transition-all duration-300 hover:bg-green-600`}
+                      className={`${headerColorset === "glass" ? "cursor-pointer opacity-100" : "cursor-default opacity-0"} flex min-w-[305px] text-sm place-items-center gap-2 rounded-md bg-green-500 px-4 py-2 text-snow uppercase font-medium transition-all duration-300 hover:bg-green-600`}
                       onClick={sendProposalToWhatsApp}
                     >
                       <span>Enviar para um consultor Ativos</span>

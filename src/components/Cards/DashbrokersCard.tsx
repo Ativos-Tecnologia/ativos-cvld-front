@@ -1,5 +1,5 @@
 import numberFormat from '@/functions/formaters/numberFormat'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import CustomCheckbox from '../CrmUi/Checkbox';
 import { BiCheck, BiSave, BiX } from 'react-icons/bi';
 import { BsCheckCircleFill } from 'react-icons/bs';
@@ -8,6 +8,7 @@ import { Button } from '../Button';
 import { NotionPage } from '@/interfaces/INotion';
 import api from '@/utils/api';
 import { toast } from 'sonner';
+import { formatCurrency } from '@/functions/formaters/formatCurrency';
 
 const DashbrokersCard = ({ oficio }: { oficio: NotionPage }) => {
 
@@ -17,14 +18,18 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }) => {
         comission: 0,
     });
     const [savingProposalAndComission, setSavingProposalAndComission] = useState<boolean>(false);
+    const proposalRef = useRef<HTMLInputElement | null>(null);
+    const comissionRef = useRef<HTMLInputElement | null>(null);
+    console.log(oficio)
 
     // Função para atualizar a proposta e ajustar a comissão proporcionalmente
     const handleProposalSliderChange = (
-        e: React.ChangeEvent<HTMLInputElement>,
+        value: string,
+        sliderChange: boolean
     ) => {
 
         // seta o valor do slide como o valor atual
-        const newProposalSliderValue = parseFloat(e.target.value);
+        const newProposalSliderValue = parseFloat(value);
         setSliderValues((oldValues) => {
             return { ...oldValues, proposal: newProposalSliderValue };
         });
@@ -42,15 +47,23 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }) => {
         setSliderValues((oldValues) => {
             return { ...oldValues, comission: newComissionSliderValue };
         });
+
+        if (comissionRef.current && proposalRef.current) {
+            comissionRef.current.value = numberFormat(newComissionSliderValue)
+            if (sliderChange) {
+                proposalRef.current.value = numberFormat(newProposalSliderValue)
+            }
+        }
     };
 
     // Função para atualizar a comissão e ajustar a proposta proporcionalmente
     const handleComissionSliderChange = (
-        e: React.ChangeEvent<HTMLInputElement>,
+        value: string,
+        sliderChange: boolean
     ) => {
 
         // seta o valor da slider como o atual
-        const newComissionSliderValue = parseFloat(e.target.value);
+        const newComissionSliderValue = parseFloat(value);
         setSliderValues((oldValues) => {
             return { ...oldValues, comission: newComissionSliderValue };
         });
@@ -67,7 +80,42 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }) => {
         setSliderValues((oldValues) => {
             return { ...oldValues, proposal: newProposalSliderValue };
         });
+
+        if (proposalRef.current && comissionRef.current) {
+            proposalRef.current.value = numberFormat(newProposalSliderValue)
+            if (sliderChange) {
+                comissionRef.current.value = numberFormat(newComissionSliderValue)
+            }
+        }
     };
+
+    // Função para atualizar proposta/comissão com os dados dos inputs
+    const changeInputValues = (inputField: string, value: string) => {
+        const rawValue = value.replace(/R\$\s*/g, "").replaceAll(".", "").replaceAll(",", ".");
+        switch (inputField) {
+            case "proposal":
+                setSliderValues(old => {
+                    return {
+                        ...old,
+                        proposal: parseFloat(rawValue)
+                    }
+                });
+                handleProposalSliderChange(rawValue, false);
+                break;
+            case "comission":
+                setSliderValues(old => {
+                    return {
+                        ...old,
+                        comission: parseFloat(rawValue)
+                    }
+                });
+                handleComissionSliderChange(rawValue, false);
+                break;
+            default:
+                break;
+        }
+
+    }
 
     const saveProposalAndComission = async () => {
         setSavingProposalAndComission(true);
@@ -93,13 +141,21 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }) => {
     };
 
     useEffect(() => {
+
         setSliderValues({
             proposal: oficio.properties["Proposta Escolhida - Celer"].number || oficio.properties["(R$) Proposta Mínima - Celer"].formula?.number || 0,
-            comission: oficio.properties["(R$) Comissão Máxima - Celer"].number || 0,
+            comission: oficio.properties["Comissão - Celer"].number || oficio.properties["(R$) Comissão Máxima - Celer"].number || 0,
         });
-    }, [oficio]);
 
-    console.log(oficio);
+        if (proposalRef.current && comissionRef.current) {
+
+            proposalRef.current.value = numberFormat(oficio.properties["Proposta Escolhida - Celer"].number || oficio.properties["(R$) Proposta Mínima - Celer"].formula?.number || 0)
+
+            comissionRef.current.value = numberFormat(oficio.properties["Comissão - Celer"].number || oficio.properties["(R$) Comissão Máxima - Celer"].number || 0);
+
+        }
+
+    }, [oficio]);
 
     return (
         <div className="col-span-1 grid gap-5 bg-white dark:bg-boxdark p-5 rounded-md border border-stroke dark:border-strokedark">
@@ -173,53 +229,55 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }) => {
                     </div>
                     <div className='flex flex-col gap-5 max-h-fit'>
                         <div className="flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
-                            {/* <div className="relative flex flex-col items-center">
-                                <h4 className="">Proposta Mínima</h4>
-                                <span>{numberFormat(15000)}</span>
-                            </div> */}
                             <div className="flex flex-1 flex-col items-center gap-1">
-                                <span className="text-sm font-medium">
-                                    Proposta Atual: {numberFormat(sliderValues.proposal)}
-                                </span>
+                                <div className="text-sm font-medium flex items-center">
+                                    <p className="w-full">Proposta Atual:</p>
+                                    <input
+                                        ref={proposalRef}
+                                        type="text"
+                                        onBlur={e => {
+                                            e.target.value = formatCurrency(e.target.value)
+                                        }}
+                                        onChange={e => changeInputValues("proposal", e.target.value)}
+                                        className="max-w-39 text-center rounded-md border-none pr-2 pl-1 ml-2 py-2 text-sm font-medium text-body focus-visible:ring-body dark:focus-visible:ring-snow dark:bg-bodydark1/10 dark:text-bodydark bg-gray-100"
+                                    />
+                                </div>
                                 <input
                                     type="range"
                                     step="0.01"
                                     min={oficio.properties["(R$) Proposta Mínima - Celer"].formula?.number || 0}
                                     max={oficio.properties["(R$) Proposta Máxima - Celer"].formula?.number || 0}
                                     value={sliderValues.proposal}
-                                    onChange={handleProposalSliderChange}
+                                    onChange={e => handleProposalSliderChange(e.target.value, true)}
                                     className="w-full"
                                 />
                             </div>
-                            {/* <div className="flex flex-col items-center">
-                                <h4 className="">Proposta Máxima</h4>
-                                <span>{numberFormat(proposalValue.max)}</span>
-                            </div> */}
                         </div>
 
                         <div className="relative flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
-                            {/* <div className="flex flex-col items-center">
-                                <h4 className="">Comissão Mínima</h4>
-                                <span>{numberFormat(comissionValue.min)}</span>
-                            </div> */}
                             <div className="flex flex-1 flex-col items-center gap-1">
-                                <span className="text-sm font-medium">
-                                    Comissão Atual: {numberFormat(sliderValues.comission)}
-                                </span>
+                                <div className="text-sm font-medium flex items-center">
+                                    <p className="">Comissão Atual:</p>
+                                    <input
+                                        ref={comissionRef}
+                                        type="text"
+                                        onBlur={e => {
+                                            e.target.value = formatCurrency(e.target.value)
+                                        }}
+                                        onChange={e => changeInputValues("comission", e.target.value)}
+                                        className="max-w-39 text-center rounded-md border-none pr-2 pl-1 ml-2 py-2 text-sm font-medium text-body focus-visible:ring-body dark:focus-visible:ring-snow dark:bg-bodydark1/10 dark:text-bodydark bg-gray-100"
+                                    />
+                                </div>
                                 <input
                                     type="range"
                                     step="0.01"
                                     min={oficio.properties["(R$) Comissão Mínima - Celer"].number || 0}
                                     max={oficio.properties["(R$) Comissão Máxima - Celer"].number || 0}
                                     value={sliderValues.comission}
-                                    onChange={handleComissionSliderChange}
+                                    onChange={e => handleComissionSliderChange(e.target.value, true)}
                                     className="w-full"
                                 />
                             </div>
-                            {/* <div className="flex flex-col items-center">
-                                <h4 className="">Comissão Máxima</h4>
-                                <span>{numberFormat(comissionValue.max)}</span>
-                            </div> */}
                         </div>
                     </div>
 
