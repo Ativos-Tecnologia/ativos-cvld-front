@@ -152,7 +152,7 @@ input[type="password"]::-webkit-textfield-decoration-container {
   width: 100%;
   min-height: 100dvh;
   flex-shrink: 0;
-  background-image: url("https://www.ativosprecatorios.com.br/wp-content/uploads/2024/10/ativos-palavra.svg");
+  background-image: url("/images/ativos-palavra.svg");
   background-size: cover;
   pointer-events: none;
 }
