@@ -9,7 +9,6 @@ import UseMySwal from "@/hooks/useMySwal";
 import usePassword from "@/hooks/usePassword";
 import api from "@/utils/api";
 import { Button, Popover } from "flowbite-react";
-import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -44,12 +43,6 @@ export type SignUpInputs = {
   password: string;
   confirm_password: string;
   phone: string;
-};
-
-export const metadata: Metadata = {
-  title: "CelerApp | Cadastro da Wallet",
-  description:
-    "Cadastro de usuários na Wallet do CellerApp",
 };
 
 const SignUpWallet: React.FC = () => {

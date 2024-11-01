@@ -5,6 +5,9 @@
 /.pnp
 .pnp.js
 .yarn/install-state.gz
+.idea
+.swc
+.vscode
 
 # testing
 /coverage
