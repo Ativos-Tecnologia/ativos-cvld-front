@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { ACCESS_TOKEN, DEV_API_URL, LOCAL_DEV_API_URL, PROD_API_URL, REFRESH_TOKEN } from '@/constants/constants';
+import { checkIsPublicRoute } from '@/functions/check-is-public-route';
 
 const activeUrl = PROD_API_URL;
+
 
 const api = axios.create({
   baseURL: activeUrl,
@@ -30,7 +32,10 @@ api.interceptors.response.use(
     if (error.response.data.code === "token_not_valid") {
       localStorage.removeItem(`ATIVOS_${ACCESS_TOKEN}`);
       localStorage.removeItem(`ATIVOS_${REFRESH_TOKEN}`);
-      window.location.href = "auth/signin";
+      if (!checkIsPublicRoute(window.location.href)) {
+        window.location.href = "auth/signin";
+      }
+
     }
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
