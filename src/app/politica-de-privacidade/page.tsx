@@ -3,18 +3,11 @@ import { MainFooter } from "@/components/Footer";
 import UnloggedHeader from "@/components/Header/UnloggedHeader";
 import { Politicas } from "@/components/Politicas";
 import { Footer } from "flowbite-react";
-import { Metadata } from "next";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Fade } from "react-awesome-reveal";
 import { BiChevronUp } from "react-icons/bi";
 import { BsChevronCompactDown } from "react-icons/bs";
-
-export const metadata: Metadata = {
-  title: "CelerApp | Política de Privacidade",
-  description:
-    "Política de Privacidade da CelerApp, explicando como coletamos e usamos seus dados.",
-};
 
 export default function Privacy() {
   const [isButtonVisible, setIsButtonVisible] = useState<boolean>(false);
