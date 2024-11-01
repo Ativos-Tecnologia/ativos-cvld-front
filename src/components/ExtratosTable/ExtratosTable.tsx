@@ -1,28 +1,16 @@
-import React, { Suspense, useContext, useEffect, useRef, useState } from "react";
-import UseMySwal from "@/hooks/useMySwal";
-import { AwesomeDrawer } from "../Drawer/Drawer";
-import { CVLDResultProps } from "@/interfaces/IResultCVLD";
-import Loader from "../common/Loader";
-import TableView from "./TableView";
-import CardView from "./CardView";
-import { PiGridFour, PiTable } from "react-icons/pi";
-import Filters from "../Filters";
-import { useFilter } from "@/hooks/useFilter";
-import DeleteExtractAlert from "../Modals/DeleteExtract";
-import { MiniMenu } from "./MiniMenu";
-import { TableTabs } from "../TableTabs";
 import { ExtratosTableContext } from "@/context/ExtratosTableContext";
-import WebPageEmbed from "../WebPageEmbed/WebPageEmbed";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
-import NotionTableView from "./NotionTableView";
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query';
+import { useFilter } from "@/hooks/useFilter";
+import { CVLDResultProps } from "@/interfaces/IResultCVLD";
+import { Suspense, useContext, useEffect, useState } from "react";
+import { PiGridFour, PiTable } from "react-icons/pi";
+import Loader from "../common/Loader";
 import { NotionDrawer } from "../Drawer/NotionDrawer";
+import DeleteExtractAlert from "../Modals/DeleteExtract";
+import { TableTabs } from "../TableTabs";
+import CardView from "./CardView";
+import NotionTableView from "./NotionTableView";
+import TableView from "./TableView";
 
 // const queryClient = new QueryClient();
 
@@ -89,7 +77,7 @@ export function ExtratosTable({ newItem }: ExtratosTableProps) {
               <div className="flex flex-col">
 
                 {/* tabs */}
-                <TableTabs resetFilters={resetFilters} />
+                {/* <TableTabs resetFilters={resetFilters} /> */}
                 {/* end tabs */}
 
 

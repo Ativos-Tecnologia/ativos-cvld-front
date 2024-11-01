@@ -63,11 +63,11 @@ const Card = ({
 
   return (
     <li
-      className={`mb-4 h-65 max-w-full cursor-pointer font-nexa xsm:min-w-95 xsm:px-2 md:min-w-[350px] md:px-3 lg:px-4 ${disabled ? "opacity-50" : ""}`}
+      className={`mb-4 h-65 max-w-full cursor-pointer font-nexa xsm:min-w-95 xsm:px-2 md:min-w-[350px] md:px-3 lg:px-4 ${disabled ? "opacity-50 hover:cursor-not-allowed" : ""}`}
       onClick={handleClick}
     >
       <div
-        className={`group relative h-55 ${disabled ? "pointer-events-none opacity-50" : null}`}
+        className={`group relative h-55 ${disabled ? "pointer-events-none hover:cursor-not-allowed opacity-50" : null}`}
       >
         <div className="absolute inset-0 z-0 overflow-hidden rounded-md">
           <Image
