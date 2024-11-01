@@ -80,7 +80,7 @@ export default function Privacy() {
               className="hidden items-center justify-center xl:flex"
             >
               <div className="blob-element max-h-[467px] max-w-[700px] overflow-hidden">
-                <img
+                <Image
                   src="/images/contract.jpg"
                   alt="teste"
                   className="w-full bg-center"

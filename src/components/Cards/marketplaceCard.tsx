@@ -32,9 +32,11 @@ export const iconsConfig = {
 const Card = ({
   oficio,
   onClickFn,
+  disabled = false,
 }: {
   oficio: NotionPage;
   onClickFn: () => void;
+  disabled?: boolean;
 }) => {
   const fetchOficioDataFromWallet = async () => {
     const response = await api.post("/api/extrato/wallet/", {
@@ -50,12 +52,23 @@ const Card = ({
     queryFn: fetchOficioDataFromWallet,
   });
 
+  // Função para desativar a função quando o disable estiver ativado.
+  const handleClick= (e:any) => {
+    if (disabled) {
+      e.preventDefault();
+      return;
+    }
+    onClickFn();
+  };
+
   return (
     <li
-      className="mb-4 h-65 max-w-full font-nexa xsm:min-w-95 xsm:px-2 md:min-w-[350px] md:px-3 lg:px-4"
-      onClick={onClickFn}
+      className={`mb-4 h-65 max-w-full cursor-pointer font-nexa xsm:min-w-95 xsm:px-2 md:min-w-[350px] md:px-3 lg:px-4 ${disabled ? "opacity-50 hover:cursor-not-allowed" : ""}`}
+      onClick={handleClick}
     >
-      <div className="group relative h-55">
+      <div
+        className={`group relative h-55 ${disabled ? "pointer-events-none hover:cursor-not-allowed opacity-50" : null}`}
+      >
         <div className="absolute inset-0 z-0 overflow-hidden rounded-md">
           <Image
             src={

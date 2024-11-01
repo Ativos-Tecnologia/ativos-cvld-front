@@ -23,11 +23,6 @@ import { BiLockAlt, BiUser } from "react-icons/bi";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import "./index.css";
 
-// export const metadata: Metadata = {
-//   title: "CVLD Simulator - Login",
-//   description: "Faça login para começar a utilizar o CVLD Simulator",
-// };
-
 export type SignInInputs = {
   username: string;
   password: string;
@@ -53,11 +48,19 @@ const SignIn: React.FC = () => {
   async function checkUserProduct(): Promise<string> {
     try {
       const response = await api.get("/api/profile/");
-
       return response.data.product;
     } catch (error) {
       throw new Error("Ocorreu um erro ao tentar buscar o produto do usuário");
       // return 'error';
+    }
+  }
+
+  async function checkStaffApprovation(): Promise<boolean> { 
+    try {
+      const response = await api.get("/api/profile/");
+      return response.data.staff_approvation;
+    } catch (e) {
+      throw new Error(`Erro ao tentar verificar aprovação do usuário ${console.error(e)}`)
     }
   }
 
@@ -71,15 +74,17 @@ const SignIn: React.FC = () => {
         localStorage.setItem(`ATIVOS_${REFRESH_TOKEN}`, res.data.refresh);
 
         const userProduct = await checkUserProduct();
-
+        const userApprovation = await checkStaffApprovation();
+      
         queryClient.removeQueries({ queryKey: ["notion_list"] });
         queryClient.removeQueries({ queryKey: ["user"] });
 
-        if (userProduct === "wallet") {
+        if (userProduct === "wallet" && userApprovation === true) {
           router.push(APP_ROUTES.private.wallet.name);
         } else {
-          router.push(APP_ROUTES.private.dashboard.name);
+          router.push(APP_ROUTES.private.marketplace.name)
         }
+
       } else {
         router.push(APP_ROUTES.public.login.name);
       }
