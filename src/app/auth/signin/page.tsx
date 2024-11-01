@@ -22,12 +22,6 @@ import { AiOutlineLoading } from "react-icons/ai";
 import { BiLockAlt, BiUser } from "react-icons/bi";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import "./index.css";
-import {Metadata} from "next";
-
-export const metadata: Metadata = {
-  title: "CVLD Simulator - Login",
-  description: "Faça login para começar a utilizar o CVLD Simulator",
-};
 
 export type SignInInputs = {
   username: string;
