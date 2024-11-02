@@ -5,10 +5,6 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
 import { BiChevronRight } from "react-icons/bi";
 import { LocalShowOptionsProps } from "@/context/ExtratosTableContext";
-import DashbrokersCard from "@/components/Cards/DashbrokersCard";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import api from "@/utils/api";
-import { toast } from "sonner";
 
 const defaultOptions: LocalShowOptionsProps[] = [
   {
@@ -22,20 +18,6 @@ const Settings = () => {
 
   const { data } = useContext(UserInfoAPIContext);
   const [localShowOptions, setLocalShowOptions] = useState<LocalShowOptionsProps[]>([]);
-  const queryClient = useQueryClient();
-
-  const fetchNotionData = async () => {
-    const req = await api.get("api/notion-api/broker/list");
-
-    if (req.status === 200) return req.data; // if success
-  };
-
-  const { data: notionData, isFetching, isPending, refetch } = useQuery({
-    queryKey: ["notion_brokers_list"],
-    staleTime: 5000, //5 seconds
-    refetchInterval: 10000, //10 seconds
-    queryFn: fetchNotionData,
-  });
 
   const fetchStateFromLocalStorage = () => {
     const configs = localStorage.getItem("dont_show_again_configs");
@@ -137,17 +119,6 @@ const Settings = () => {
           </div>
         </div>
       </div>
-      {/* ----> implementation of new card <---- */}
-      <div className="grid grid-cols-2 gap-5 items-center w-full mt-15">
-        {isPending ? null : (
-          <>
-            {notionData?.results.map((oficio: any, index: number) => (
-              <DashbrokersCard oficio={oficio} key={index} />
-            ))}
-          </>
-        )}
-      </div>
-      {/* ----> implementation of new card <---- */}
     </DefaultLayout>
   );
 };
