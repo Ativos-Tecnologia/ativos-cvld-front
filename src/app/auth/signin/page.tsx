@@ -144,7 +144,7 @@ const SignIn: React.FC = () => {
         </div>
 
         {/* form */}
-        <div className="w-full border-stroke bg-snow 2xsm:p-8 sm:px-8 sm:py-12.5 md:absolute md:left-1/2 md:top-1/2 md:w-3/4 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-md  xl:static xl:w-[35%] xl:translate-x-0 xl:translate-y-0">
+        <div className="w-full border-stroke bg-snow 2xsm:p-8 sm:px-8 sm:py-12.5 md:absolute md:left-1/2 md:top-1/2 md:w-3/4 md:-translate-x-1/2 md:-translate-y-1/2  xl:static xl:w-[35%] xl:translate-x-0 xl:translate-y-0 3xl:rounded-tr-md">
           {/* Mobile visible logo */}
           <div className="block w-full xl:hidden xl:w-1/2">
             <Link
@@ -190,7 +190,7 @@ const SignIn: React.FC = () => {
                   id="usuario"
                   type="text"
                   placeholder="Digite o usuário"
-                  className={`${errors.username && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
+                  className={`${errors.username && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-4 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none`}
                   {...register("username", {
                     required: "Campo obrigatório",
                   })}
@@ -199,13 +199,13 @@ const SignIn: React.FC = () => {
                 <ErrorMessage errors={errors} field="username" />
                 {/* {
                       errors.username && (
-                        <span role="alert" className="absolute right-4 top-4 text-red pr-8 text-sm">
+                        <span role="alert" className="absolute right-4 top-4 text-red pr-8">
                           {errors.username.message}
                         </span>
                       )
                     } */}
 
-                <span className="absolute right-4 top-2.5 h-[22px] w-[22px]">
+                <span className="absolute right-4 top-4 h-[22px] w-[22px]">
                   <BiUser
                     style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
                   />
@@ -225,7 +225,7 @@ const SignIn: React.FC = () => {
                   id="senha"
                   type={hide.password ? "password" : "text"}
                   placeholder="Digite a sua senha"
-                  className={`${errors.password && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
+                  className={`${errors.password && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-4 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none`}
                   {...register("password", {
                     required: "Campo obrigatório",
                   })}
@@ -234,7 +234,7 @@ const SignIn: React.FC = () => {
                 <ErrorMessage errors={errors} field="password" />
 
                 <span
-                  className="absolute right-10 top-2.5 cursor-pointer"
+                  className="absolute right-10 top-4 cursor-pointer"
                   onClick={() =>
                     setHide({
                       ...hide,
@@ -253,7 +253,7 @@ const SignIn: React.FC = () => {
                   )}
                 </span>
 
-                <span className="absolute right-4 top-2.5">
+                <span className="absolute right-4 top-4">
                   <BiLockAlt
                     style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
                   />
