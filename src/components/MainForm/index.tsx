@@ -14,13 +14,10 @@ import { jwtDecode } from "jwt-decode";
 import { Slash } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import InputMask from "react-input-mask";
 import React, {
   useContext,
   useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
+  useState
 } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { AiOutlineLoading, AiOutlineReload, AiOutlineWarning } from "react-icons/ai";
@@ -32,17 +29,15 @@ import {
   BiPlus,
 } from "react-icons/bi";
 
+import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
+import { CvldFormInputsProps } from "@/types/cvldform";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { UpdatePrecatorioButton } from "../Button/UpdatePrecatorioButton";
+import CustomCheckbox from "../CrmUi/Checkbox";
 import { DrawerConta } from "../Drawer/DrawerConta";
 import { ErrorMessage } from "../ErrorMessage/ErrorMessage";
 import { ShadSelect } from "../ShadSelect";
 import { SelectItem } from "../ui/select";
-import { PaginatedResponse } from "../TaskElements";
-import { Avatar } from "flowbite-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import CustomCheckbox from "../CrmUi/Checkbox";
-import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
-import { CvldFormInputsProps } from "@/types/cvldform";
 
 interface ChartTwoState {
   series: {
@@ -79,8 +74,10 @@ const MainForm: React.FC<CVLDFormProps> = ({
     defaultValues: {
       ja_possui_destacamento: true,
       percentual_a_ser_adquirido: 100,
-
-    }
+      esfera: "FEDERAL",
+      tipo_do_oficio: "PRECATÓRIO",
+      especie: "PRINCIPAL",
+    },
   });
 
   const queryClient = useQueryClient();
@@ -309,7 +306,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
     }
   })
 
-
   const onSubmit = async (data: any) => {
     data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
     data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
@@ -383,10 +379,12 @@ const MainForm: React.FC<CVLDFormProps> = ({
     if(data.valor_aquisicao_total){
       data.percentual_a_ser_adquirido = 1
     }
-
+    
+    if (!data.estado_ente_devedor) {
+      data.estado_ente_devedor = null;
+    }
 
     setLoading(true);
-
     try {
       setCalcStep("calculating");
 
@@ -600,7 +598,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 control={control}
                 defaultValue={"NÃO TRIBUTÁRIA"}
 
-              // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
+                // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
               >
                 <SelectItem
                   defaultValue="NÃO TRIBUTÁRIA"
@@ -611,7 +609,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 <SelectItem value="TRIBUTÁRIA">Tributária</SelectItem>
               </ShadSelect>
             </div>
-            <div className="invisible 2xsm:hidden sm:flex w-full flex-col gap-2 sm:col-span-1 "></div>
+            <div className="invisible w-full flex-col gap-2 2xsm:hidden sm:col-span-1 sm:flex "></div>
 
             <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
               <label
@@ -624,12 +622,14 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 name="valor_principal"
                 control={control}
                 defaultValue={0}
-                rules={{ min: { value: 0.01, message: "O valor deve ser maior que 0" } }}
+                rules={{
+                  min: { value: 0.01, message: "O valor deve ser maior que 0" },
+                }}
                 render={({ field, fieldState: { error } }) => (
                   <>
                     <Cleave
                       {...field}
-                      className={`w-full rounded-md border-stroke ${error ? "border-red" : "dark:border-strokedark"} dark:bg-boxdark-2 px-3 py-2 text-sm font-medium dark:text-bodydark`}
+                      className={`w-full rounded-md border-stroke ${error ? "border-red" : "dark:border-strokedark"} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
                       options={{
                         numeral: true,
                         numeralThousandsGroupStyle: "thousand",
@@ -640,7 +640,11 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         rawValueTrimPrefix: true,
                       }}
                     />
-                    {error && <span className="text-xs font-medium text-red">{error.message}</span>}
+                    {error && (
+                      <span className="text-xs font-medium text-red">
+                        {error.message}
+                      </span>
+                    )}
                   </>
                 )}
               />
@@ -656,12 +660,14 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 name="valor_juros"
                 control={control}
                 defaultValue={0}
-                rules={{ min: { value: 0.01, message: "O valor deve ser maior que 0" } }}
+                rules={{
+                  min: { value: 0.01, message: "O valor deve ser maior que 0" },
+                }}
                 render={({ field, fieldState: { error } }) => (
                   <>
                     <Cleave
                       {...field}
-                      className={`w-full rounded-md border-stroke ${error ? "border-red" : "border-stroke dark:border-strokedark"} dark:bg-boxdark-2 px-3 py-2 text-sm font-medium dark:text-bodydark`}
+                      className={`w-full rounded-md border-stroke ${error ? "border-red" : "border-stroke dark:border-strokedark"} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
                       options={{
                         numeral: true,
                         numeralPositiveOnly: true,
@@ -673,7 +679,11 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         rawValueTrimPrefix: true,
                       }}
                     />
-                    {error && <span className="text-xs font-medium text-red">{error.message}</span>}
+                    {error && (
+                      <span className="text-xs font-medium text-red">
+                        {error.message}
+                      </span>
+                    )}
                   </>
                 )}
               />
@@ -690,7 +700,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 <input
                   type="date"
                   id="data_base"
-                  className={`${errors.data_base && "!border-rose-400 !ring-0"} w-full rounded-md border bg-white px-3 py-2 text-sm font-medium border-stroke dark:border-strokedark dark:bg-boxdark-2`}
+                  className={`${errors.data_base && "!border-rose-400 !ring-0"} w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
                   {...register("data_base", {
                     required: "Campo obrigatório",
                   })}
@@ -711,7 +721,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 <input
                   type="date"
                   id="data_requisicao"
-                  className={`${errors.data_requisicao && "!border-rose-400 !ring-0"} w-full rounded-md border bg-white px-3 py-2 text-sm font-medium border-stroke dark:border-strokedark dark:bg-boxdark-2`}
+                  className={`${errors.data_requisicao && "!border-rose-400 !ring-0"} w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
                   {...register("data_requisicao", {
                     required: "Campo obrigatório",
                   })}
@@ -721,12 +731,11 @@ const MainForm: React.FC<CVLDFormProps> = ({
             </div>
 
             <div
-              className={`flex items-center max-h-6 col-span-2 md:col-span-1 gap-2`}
+              className={`col-span-2 flex max-h-6 items-center gap-2 md:col-span-1`}
             >
-
               <CustomCheckbox
                 check={watch("valor_aquisicao_total")}
-                id={'valor_aquisicao_total'}
+                id={"valor_aquisicao_total"}
                 defaultChecked
                 register={register("valor_aquisicao_total")}
               />
@@ -741,7 +750,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
 
             {/* ====> label PERCENTUAL DE AQUISIÇÃO <==== */}
             {watch("valor_aquisicao_total") === false ? (
-              <div className="mt-1 flex flex-col gap-2 2xsm:col-span-2 md:col-span-1 overflow-hidden">
+              <div className="mt-1 flex flex-col gap-2 overflow-hidden 2xsm:col-span-2 md:col-span-1">
                 <label
                   htmlFor="percentual_a_ser_adquirido"
                   className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -752,7 +761,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                   type="number"
                   id="percentual_a_ser_adquirido"
                   defaultValue={100}
-                  className="w-full rounded-md border bg-white px-3 py-2 text-sm font-medium border-stroke dark:border-strokedark dark:bg-boxdark-2"
+                  className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                   min={0}
                   {...register("percentual_a_ser_adquirido", {
                     required: "Campo obrigatório",
@@ -763,17 +772,16 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 />
               </div>
             ) : (
-              <div className='hidden md:block col-span-1'></div>
+              <div className="col-span-1 hidden md:block"></div>
             )}
             {/* ====> end label PERCENTUAL DE AQUISIÇÃO <==== */}
 
             <div
-              className={`flex items-center col-span-2 md:col-span-1 gap-2 ${watch("data_base")! < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
+              className={`col-span-2 flex items-center gap-2 md:col-span-1 ${watch("data_base")! < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
             >
-
               <CustomCheckbox
                 check={watch("incidencia_juros_moratorios")}
-                id={'incidencia_juros_moratorios'}
+                id={"incidencia_juros_moratorios"}
                 defaultChecked
                 register={register("incidencia_juros_moratorios")}
               />
@@ -793,12 +801,11 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </label>
             </div>
             <div
-              className={`flex items-center col-span-2 gap-2 ${watch("data_base")! > "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
+              className={`col-span-2 flex items-center gap-2 ${watch("data_base")! > "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
             >
-
               <CustomCheckbox
                 check={watch("nao_incide_selic_no_periodo_db_ate_abril")}
-                id={'nao_incide_selic_no_periodo_db_ate_abril'}
+                id={"nao_incide_selic_no_periodo_db_ate_abril"}
                 register={register("nao_incide_selic_no_periodo_db_ate_abril")}
               />
 
@@ -816,10 +823,10 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 SELIC somente sobre o principal
               </label>
             </div>
-            <div className="flex items-center gap-2 col-span-2">
+            <div className="col-span-2 flex items-center gap-2">
               <CustomCheckbox
                 check={watch("incidencia_rra_ir")}
-                id={'incidencia_rra_ir'}
+                id={"incidencia_rra_ir"}
                 defaultChecked
                 register={register("incidencia_rra_ir")}
               />
@@ -838,17 +845,19 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </label>
             </div>
             {watch("natureza") === "TRIBUTÁRIA" ||
-              watch("incidencia_rra_ir") === false ? (
+            watch("incidencia_rra_ir") === false ? (
               <>
                 {/* {watch("natureza") === "TRIBUTÁRIA" && watch("incidencia_rra_ir") === false ? null : (
                   <div className="flex items-center col-span-1">&nbsp;</div>
                 )} */}
               </>
             ) : (
-              <div className={`flex gap-2 ${watch("ir_incidente_rra") ? 'items-start' : 'items-center'} 2xsm:col-span-2 sm:col-span-1`}>
+              <div
+                className={`flex gap-2 ${watch("ir_incidente_rra") ? "items-start" : "items-center"} 2xsm:col-span-2 sm:col-span-1`}
+              >
                 <CustomCheckbox
                   check={watch("ir_incidente_rra")}
-                  id={'ir_incidente_rra'}
+                  id={"ir_incidente_rra"}
                   register={register("ir_incidente_rra")}
                 />
                 {/* <input
@@ -866,7 +875,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </div>
             )}
             {watch("ir_incidente_rra") === true &&
-              watch("natureza") !== "TRIBUTÁRIA" ? (
+            watch("natureza") !== "TRIBUTÁRIA" ? (
               <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                 <label
                   htmlFor="numero_de_meses"
@@ -889,16 +898,19 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </div>
             ) : (
               <>
-                {watch('natureza') === 'TRIBUTÁRIA' || watch('incidencia_rra_ir') === false ? null : (
-                  <div className="hidden sm:block col-span-1">&nbsp;</div>
+                {watch("natureza") === "TRIBUTÁRIA" ||
+                watch("incidencia_rra_ir") === false ? null : (
+                  <div className="col-span-1 hidden sm:block">&nbsp;</div>
                 )}
               </>
             )}
             {watch("natureza") !== "TRIBUTÁRIA" ? (
-              <div className={`flex gap-2 ${watch('incidencia_pss') ? 'items-start' : 'items-center'} 2xsm:col-span-2 sm:col-span-1`}>
+              <div
+                className={`flex gap-2 ${watch("incidencia_pss") ? "items-start" : "items-center"} 2xsm:col-span-2 sm:col-span-1`}
+              >
                 <CustomCheckbox
                   check={watch("incidencia_pss")}
-                  id={'incidencia_pss'}
+                  id={"incidencia_pss"}
                   register={register("incidencia_pss")}
                 />
                 {/* <input
@@ -946,15 +958,17 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </div>
             ) : (
               <>
-                {watch('natureza') === 'TRIBUTÁRIA' ? null : (
-                  <div className="hidden sm:block col-span-1">&nbsp;</div>
+                {watch("natureza") === "TRIBUTÁRIA" ? null : (
+                  <div className="col-span-1 hidden sm:block">&nbsp;</div>
                 )}
               </>
             )}
-            <div className={`flex gap-2 ${watch("data_limite_de_atualizacao_check") ? "items-start" : "items-center"} 2xsm:col-span-2 sm:col-span-1`}>
+            <div
+              className={`flex gap-2 ${watch("data_limite_de_atualizacao_check") ? "items-start" : "items-center"} 2xsm:col-span-2 sm:col-span-1`}
+            >
               <CustomCheckbox
                 check={watch("data_limite_de_atualizacao_check")}
-                id={'data_limite_de_atualizacao_check'}
+                id={"data_limite_de_atualizacao_check"}
                 register={register("data_limite_de_atualizacao_check")}
               />
               {/* <input
@@ -971,7 +985,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </label>
             </div>
             {watch("data_limite_de_atualizacao_check") ? (
-              <div className="flex flex-col gap-2 justify-between 2xsm:col-span-2 sm:col-span-1">
+              <div className="flex flex-col justify-between gap-2 2xsm:col-span-2 sm:col-span-1">
                 <label
                   htmlFor="data_limite_de_atualizacao"
                   className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -987,7 +1001,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                   max={new Date().toISOString().split("T")[0]}
                 />
                 {watch("data_limite_de_atualizacao")! <
-                  watch("data_requisicao")! ? (
+                watch("data_requisicao")! ? (
                   <span
                     role="alert"
                     className="absolute right-4 top-4 text-sm text-red-500"
@@ -999,11 +1013,11 @@ const MainForm: React.FC<CVLDFormProps> = ({
             ) : null}
 
             {/* CVLD */}
-            <div className="flex flex-col gap-2 col-span-2">
-              <div className="flex gap-2 items-center ">
+            <div className="col-span-2 flex flex-col gap-2">
+              <div className="flex items-center gap-2 ">
                 <CustomCheckbox
                   check={watch("gerar_cvld")}
-                  id={'gerar_cvld'}
+                  id={"gerar_cvld"}
                   register={register("gerar_cvld")}
                 />
                 {/* <input
@@ -1028,7 +1042,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                     {/* <span className="text-lg font-semibold text-black dark:text-white">Dados do Principal</span> */}
                     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2"></div>
 
-                    <div className="mb-4 flex w-full justify-end gap-2 2xsm:flex-col sm:flex-row sm:col-span-2">
+                    <div className="mb-4 flex w-full justify-end gap-2 2xsm:flex-col sm:col-span-2 sm:flex-row">
                       <span className="text-md w-full self-center font-semibold">
                         Dados de Identificação
                       </span>
@@ -1090,29 +1104,32 @@ const MainForm: React.FC<CVLDFormProps> = ({
                     </div>
                     {(watch("especie") === "PRINCIPAL" ||
                       watch("especie") === undefined) && (
-                        <div className="my-4 flex w-full flex-row justify-between gap-4 sm:col-span-2">
-                          <div className={`flex flex-row ${watch('ja_possui_destacamento') ? 'items-center' : 'items-start'} w-full gap-2 sm:col-span-1`}>
-                            <CustomCheckbox
-                              check={watch("ja_possui_destacamento")}
-                              id={'ja_possui_destacamento'}
-                              register={register("ja_possui_destacamento")}
-                              defaultChecked
-                            />
-                            {/* <input
+                      <div className="my-4 flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                        <div
+                          className={`flex flex-row ${watch("ja_possui_destacamento") ? "items-center" : "items-start"} w-full gap-2 sm:col-span-1`}
+                        >
+                          <CustomCheckbox
+                            check={watch("ja_possui_destacamento")}
+                            id={"ja_possui_destacamento"}
+                            register={register("ja_possui_destacamento")}
+                            defaultChecked
+                          />
+                          {/* <input
                               type="checkbox"
                               id="ja_possui_destacamento"
                               defaultChecked
                               className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                               {...register("ja_possui_destacamento")}
                             /> */}
-                            <label
-                              htmlFor="ja_possui_destacamento"
-                              className={`${!watch('ja_possui_destacamento') && 'mt-1'} font-nexa text-xs font-semibold uppercase text-meta-5`}
-                            >
-                              Já possui destacamento de honorários?
-                            </label>
-                          </div>
-                          {watch('ja_possui_destacamento') === false && (<div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                          <label
+                            htmlFor="ja_possui_destacamento"
+                            className={`${!watch("ja_possui_destacamento") && "mt-1"} font-nexa text-xs font-semibold uppercase text-meta-5`}
+                          >
+                            Já possui destacamento de honorários?
+                          </label>
+                        </div>
+                        {watch("ja_possui_destacamento") === false && (
+                          <div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
                             <div className="flex w-full flex-col gap-2 sm:col-span-1">
                               <label
                                 htmlFor="percentual_de_honorarios"
@@ -1128,20 +1145,15 @@ const MainForm: React.FC<CVLDFormProps> = ({
                                 {...register("percentual_de_honorarios", {})}
                               />
                             </div>
-                          </div>)}
-
-
-
-
-
-                        </div>
-                      )}
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     <span className="text-md w-full self-center font-semibold">
                       Dados do Processo
                     </span>
                     <div className="grid grid-cols-2 gap-4">
-
                       <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                         <label
                           htmlFor="npu"
@@ -1199,27 +1211,57 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         >
                           Esfera
                         </label>
-                        <ShadSelect defaultValue="FEDERAL" name="esfera" control={control}>
+                        <ShadSelect
+                          defaultValue="FEDERAL"
+                          name="esfera"
+                          control={control}
+                        >
                           <SelectItem value="FEDERAL">Federal</SelectItem>
                           <SelectItem value="ESTADUAL">Estadual</SelectItem>
                           <SelectItem value="MUNICIPAL">Municipal</SelectItem>
                         </ShadSelect>
                       </div>
 
-                      {(watch("esfera") !== "FEDERAL" && watch("esfera") !== undefined) ?
-                        (<div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                      {watch("esfera") !== "FEDERAL" &&
+                      watch("esfera") !== undefined ? (
+                        <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                           <label
                             htmlFor="natureza"
                             className="font-nexa text-xs font-semibold uppercase text-meta-5"
                           >
                             Regime
                           </label>
-                          <ShadSelect name="regime" control={control} defaultValue="GERAL">
+                          <ShadSelect
+                            name="regime"
+                            control={control}
+                            defaultValue="GERAL"
+                          >
                             <SelectItem value="GERAL">GERAL</SelectItem>
                             <SelectItem value="ESPECIAL">ESPECIAL</SelectItem>
                           </ShadSelect>
-                        </div>) : null
-                      }
+                        </div>
+                      ) : null}
+                      
+                      {watch("esfera") && watch("esfera") !== "FEDERAL" && (
+                        <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                          <label
+                            htmlFor="estado_ente_devedor"
+                            className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                          >
+                            Estado do Ente Devedor
+                          </label>
+                          <ShadSelect
+                            name="estado_ente_devedor"
+                            control={control}
+                          >
+                            {estados.map((estado) => (
+                              <SelectItem key={estado.id} value={estado.id}>
+                                {estado.nome}
+                              </SelectItem>
+                            ))}
+                          </ShadSelect>
+                        </div>
+                      )}
 
                       <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                         <label
@@ -1234,25 +1276,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                           {...register("ente_devedor", {})}
                         />
-                      </div>
-
-                      <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                        <label
-                          htmlFor="estado_ente_devedor"
-                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                        >
-                          Estado do Ente Devedor
-                        </label>
-                        <ShadSelect
-                          name="estado_ente_devedor"
-                          control={control}
-                        >
-                          {estados.map((estado) => (
-                            <SelectItem key={estado.id} value={estado.id}>
-                              {estado.nome}
-                            </SelectItem>
-                          ))}
-                        </ShadSelect>
                       </div>
 
                       <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
@@ -1330,44 +1353,49 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           ))}
                         </ShadSelect>
                       </div>
-
                     </div>
 
                     {/* campos de e-mail/telefones */}
-                    <span className="text-lg font-semibold mt-8">Contato</span>
-                    <div className="grid grid-cols-2 gap-4 justify-between w-full sm:col-span-2">
-
-                      <div className="flex flex-col gap-2 w-full 2xsm:col-span-2 sm:col-span-1">
-                        <label htmlFor="email_contato" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                    <span className="mt-8 text-lg font-semibold">Contato</span>
+                    <div className="grid w-full grid-cols-2 justify-between gap-4 sm:col-span-2">
+                      <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                        <label
+                          htmlFor="email_contato"
+                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                        >
                           Email de Contato
                         </label>
 
                         <input
                           type="email"
                           id="email_contato"
-                          placeholder='ada@lovelace.com'
+                          placeholder="ada@lovelace.com"
                           className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                           {...register("email_contato", {})}
                         />
                       </div>
 
-                      <div className="relative flex flex-col gap-2 w-full 2xsm:col-span-2 sm:col-span-1">
-                        <label htmlFor="telefone_contato" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                      <div className="relative flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                        <label
+                          htmlFor="telefone_contato"
+                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                        >
                           Telefone de Contato
                         </label>
 
                         <input
                           type="tel"
                           id="telefone_contato"
-                          placeholder='(00) 00000-0000'
+                          placeholder="(00) 00000-0000"
                           className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                           {...register("telefone_contato", {})}
                         />
                         {contatoNumberCount === 1 && (
                           <div
-                            title='Adicionar telefone de contato'
+                            title="Adicionar telefone de contato"
                             onClick={() => setContatoNumberCount(2)}
-                            className='absolute right-2 top-0 w-4 h-4 rounded-sm flex items-center justify-center bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 cursor-pointer'>
+                            className="absolute right-2 top-0 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
+                          >
                             <BiPlus />
                           </div>
                         )}
@@ -1375,62 +1403,69 @@ const MainForm: React.FC<CVLDFormProps> = ({
 
                       {contatoNumberCount > 1 && (
                         <>
-                          <div className="relative flex flex-col gap-2 w-full 2xsm:col-span-2 sm:col-span-1">
-                            <label htmlFor="telefone_contato_2" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                          <div className="relative flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                            <label
+                              htmlFor="telefone_contato_2"
+                              className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                            >
                               Telefone de Contato (2)
                             </label>
 
                             <input
                               type="tel"
                               id="telefone_contato"
-                              placeholder='(00) 00000-0000'
+                              placeholder="(00) 00000-0000"
                               className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                               {...register("telefone_contato_2", {})}
                             />
                             {contatoNumberCount === 2 && (
                               <>
                                 <div
-                                  title='Adicionar telefone de contato'
+                                  title="Adicionar telefone de contato"
                                   onClick={() => setContatoNumberCount(3)}
-                                  className='absolute right-7 top-0 w-4 h-4 rounded-sm flex items-center justify-center bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 cursor-pointer'>
+                                  className="absolute right-7 top-0 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
+                                >
                                   <BiPlus />
                                 </div>
                                 <div
-                                  title='Remover telefone de contato'
+                                  title="Remover telefone de contato"
                                   onClick={() => setContatoNumberCount(1)}
-                                  className='absolute right-2 top-0 w-4 h-4 rounded-sm flex items-center justify-center bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 cursor-pointer'>
+                                  className="absolute right-2 top-0 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
+                                >
                                   <BiMinus />
                                 </div>
                               </>
                             )}
                           </div>
                           {contatoNumberCount > 2 && (
-                            <div className="relative flex flex-col gap-2 w-full 2xsm:col-span-2 sm:col-span-1">
-                              <label htmlFor="telefone_contato_3" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
+                            <div className="relative flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                              <label
+                                htmlFor="telefone_contato_3"
+                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                              >
                                 Telefone de Contato (3)
                               </label>
 
                               <input
                                 type="tel"
                                 id="telefone_contato"
-                                placeholder='(00) 00000-0000'
+                                placeholder="(00) 00000-0000"
                                 className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                                 {...register("telefone_contato_3", {})}
                               />
                               {contatoNumberCount === 3 && (
                                 <div
-                                  title='Remover telefone de contato'
+                                  title="Remover telefone de contato"
                                   onClick={() => setContatoNumberCount(2)}
-                                  className='absolute right-2 top-0 w-4 h-4 rounded-sm flex items-center justify-center bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 cursor-pointer'>
+                                  className="absolute right-2 top-0 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
+                                >
                                   <BiMinus />
                                 </div>
-                              )
-                              }
+                              )}
                             </div>
                           )}
                         </>
                       )}
-
                     </div>
 
                     {/* end campos de e-mail/telefones */}
@@ -1822,22 +1857,20 @@ const MainForm: React.FC<CVLDFormProps> = ({
                               {...register("n_precatorio", {})} />
                           </div>
                         </div> */}
-                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-
-                    </div>
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2"></div>
                   </>
                 ) : null}
               </div>
               {(data.role === "ativos" || data.role === "judit") &&
-                watch("gerar_cvld") ? (
+              watch("gerar_cvld") ? (
                 <>
                   <hr className="col-span-2 my-8 border border-stroke dark:border-strokedark" />
                   <div className="flex flex-col gap-2">
                     <div className="flex flex-col gap-2 sm:col-span-2">
-                      <div className="flex gap-2 invisible">
+                      <div className="invisible flex gap-2">
                         <CustomCheckbox
                           check={watch("upload_notion")}
-                          id={'upload_notion'}
+                          id={"upload_notion"}
                           register={register("upload_notion")}
                         />
                         {/* <input
@@ -1850,19 +1883,29 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         /> */}
                         <label
                           htmlFor="upload_notion"
-                          aria-disabled={watch("regime") === "ESPECIAL" ? true : false}
-                          className="text-sm font-medium text-meta-5 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                          aria-disabled={
+                            watch("regime") === "ESPECIAL" ? true : false
+                          }
+                          className="cursor-pointer text-sm font-medium text-meta-5 disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                          Fazer upload para o Notion <span className="text-meta-7 text-xs">{watch("regime") === "ESPECIAL" ? " - não negociamos ofícios do regime especial" : null}</span>
+                          Fazer upload para o Notion{" "}
+                          <span className="text-xs text-meta-7">
+                            {watch("regime") === "ESPECIAL"
+                              ? " - não negociamos ofícios do regime especial"
+                              : null}
+                          </span>
                         </label>
                       </div>
-                      {watch("upload_notion") === true && data.role === "ativos" && watch("regime") !== "ESPECIAL" || watch('regime') === undefined ? (
+                      {(watch("upload_notion") === true &&
+                        data.role === "ativos" &&
+                        watch("regime") !== "ESPECIAL") ||
+                      watch("regime") === undefined ? (
                         <>
                           <div className="flex justify-between">
-                            <div className="flex gap-2 items-center">
+                            <div className="flex items-center gap-2">
                               <CustomCheckbox
                                 check={watch("vincular_usuario")}
-                                id={'vincular_usuario'}
+                                id={"vincular_usuario"}
                                 register={register("vincular_usuario")}
                               />
                               {/* <input
@@ -1871,69 +1914,91 @@ const MainForm: React.FC<CVLDFormProps> = ({
                                 className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                                 {...register("vincular_usuario")}
                               /> */}
-                              <label htmlFor="vincular_usuario" className="text-sm font-medium text-meta-5 flex flex-row align-self-baseline cursor-pointer">
-                                <BiLogoUpwork className="h-4 w-4 mt-0.5 mr-2" /> Vincular a outro usuário?
+                              <label
+                                htmlFor="vincular_usuario"
+                                className="align-self-baseline flex cursor-pointer flex-row text-sm font-medium text-meta-5"
+                              >
+                                <BiLogoUpwork className="mr-2 mt-0.5 h-4 w-4" />{" "}
+                                Vincular a outro usuário?
                               </label>
                             </div>
-                            {(watch("novo_usuario") === false || watch("novo_usuario") === undefined) && watch("vincular_usuario") === true && (
-                              <div className="flex gap-2 items-center">
-                                <button
-                                  type="button"
-                                  className="py-1 px-2 flex items-center justify-center gap-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-700 opacity-100 group-hover:opacity-100 transition-all duration-200 cursor-pointer"
-                                  onClick={updateUsersList}
-                                >
-                                  {fetchingUsersList ? (
-                                    <>
-                                      <AiOutlineReload className="animate-spin" />
-                                      <span className="text-xs">Atualizando...</span>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <AiOutlineReload />
-                                      <span className="text-xs">Atualizar</span>
-                                    </>
-                                  )}
-                                </button>
-                                {fetchError && (
-                                  <div className='relative group/warning'>
-                                    <AiOutlineWarning className="text-red-600 dark:text-red-400 cursor-pointer" />
-                                    <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 w-60 p-4 bg-white border border-stroke dark:bg-boxdark dark:border-form-strokedark text-sm rounded-md opacity-0 group-hover/warning:opacity-100 transition-opacity duration-300 pointer-events-none">
-                                      <span>
-                                        Erro ao atualizar os dados. Tente novamente mais tarde.
-                                      </span>
+                            {(watch("novo_usuario") === false ||
+                              watch("novo_usuario") === undefined) &&
+                              watch("vincular_usuario") === true && (
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    className="flex cursor-pointer items-center justify-center gap-1 rounded-md bg-slate-100 px-2 py-1 opacity-100 transition-all duration-200 hover:bg-slate-200 group-hover:opacity-100 dark:bg-slate-600 dark:hover:bg-slate-700"
+                                    onClick={updateUsersList}
+                                  >
+                                    {fetchingUsersList ? (
+                                      <>
+                                        <AiOutlineReload className="animate-spin" />
+                                        <span className="text-xs">
+                                          Atualizando...
+                                        </span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <AiOutlineReload />
+                                        <span className="text-xs">
+                                          Atualizar
+                                        </span>
+                                      </>
+                                    )}
+                                  </button>
+                                  {fetchError && (
+                                    <div className="group/warning relative">
+                                      <AiOutlineWarning className="cursor-pointer text-red-600 dark:text-red-400" />
+                                      <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 w-60 -translate-x-1/2 transform rounded-md border border-stroke bg-white p-4 text-sm opacity-0 transition-opacity duration-300 group-hover/warning:opacity-100 dark:border-form-strokedark dark:bg-boxdark">
+                                        <span>
+                                          Erro ao atualizar os dados. Tente
+                                          novamente mais tarde.
+                                        </span>
+                                      </div>
                                     </div>
-                                  </div>
-                                )}
-                              </div>
-                            )}
+                                  )}
+                                </div>
+                              )}
                           </div>
                           {watch("vincular_usuario") === true ? (
                             <div className="flex flex-col gap-2">
-                              {
-                                (watch("novo_usuario") === false || watch("novo_usuario") === undefined) && watch("vincular_usuario") === true && (
-
-                                  <select id="username" className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark" {...register("username")}>
-                                    <option value={data.user}>{
-                                      data.user
-                                    }</option>
-                                    {
-                                      usersList.filter(user => user !== data.user).map((user) => (
-                                        <option key={user} value={user}>{user}</option>
-                                      ))
-                                    }
+                              {(watch("novo_usuario") === false ||
+                                watch("novo_usuario") === undefined) &&
+                                watch("vincular_usuario") === true && (
+                                  <select
+                                    id="username"
+                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                    {...register("username")}
+                                  >
+                                    <option value={data.user}>
+                                      {data.user}
+                                    </option>
+                                    {usersList
+                                      .filter((user) => user !== data.user)
+                                      .map((user) => (
+                                        <option key={user} value={user}>
+                                          {user}
+                                        </option>
+                                      ))}
                                   </select>
-
                                 )}
                               <div className="flex flex-col gap-2">
                                 <div>
-                                  <label htmlFor="novo_usuario" className="text-sm font-medium text-meta-5 cursor-pointer flex items-center gap-1">
+                                  <label
+                                    htmlFor="novo_usuario"
+                                    className="flex cursor-pointer items-center gap-1 text-sm font-medium text-meta-5"
+                                  >
                                     {/* <span className="text-meta-7 text-xs">👤</span> */}
                                     <CustomCheckbox
                                       check={watch("novo_usuario")}
-                                      id={'novo_usuario'}
+                                      id={"novo_usuario"}
                                       register={register("novo_usuario")}
                                     />
-                                    <span>O nome não está na lista? Crie um novo usuário!</span>
+                                    <span>
+                                      O nome não está na lista? Crie um novo
+                                      usuário!
+                                    </span>
                                     {/* <input
                                       type="checkbox"
                                       id="novo_usuario"
@@ -1942,19 +2007,18 @@ const MainForm: React.FC<CVLDFormProps> = ({
                                     /> */}
                                   </label>
                                 </div>
-                                {watch('novo_usuario') === true &&
+                                {watch("novo_usuario") === true && (
                                   <input
                                     type="text"
                                     id="username"
                                     className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                                     {...register("username")}
                                   />
-                                }
+                                )}
                               </div>
                             </div>
                           ) : null}
                         </>
-
                       ) : null}
                     </div>
                   </div>
@@ -1984,7 +2048,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
         setOpen={setToggleNovaConta}
         loading={loading}
       />
-    </div >
+    </div>
   );
 };
 
