@@ -20,7 +20,10 @@ import { AiOutlineLoading } from 'react-icons/ai';
 import { UserInfoAPIContext, UserInfoContextType } from '@/context/UserInfoContext';
 import { AxiosError } from 'axios';
 import backendNumberFormat from '@/functions/formaters/backendNumberFormat';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { IoCloseCircle } from 'react-icons/io5';
+import { MdOutlineCircle } from 'react-icons/md';
+import CRMTooltip from '../CrmUi/Tooltip';
 
 const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     {
@@ -71,7 +74,6 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         }
     })
     const enumTipoOficiosList = Object.values(tipoOficio);
-    const { data } = useContext<UserInfoContextType>(UserInfoAPIContext);
     const queryClient = useQueryClient();
 
     /* ====> value states <==== */
@@ -90,6 +92,22 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const proposalRef = useRef<HTMLInputElement | null>(null);
     const comissionRef = useRef<HTMLInputElement | null>(null);
     const observationRef = useRef<HTMLTextAreaElement | null>(null);
+
+    /* ====> tan stack requests and datas ====> */
+    const { data: precatorioCheck, isPending: precatorioCheckPending } = useQuery<{
+        is_complete: boolean
+    }>({
+        queryKey: ["broker_list_precatorio_check"],
+        staleTime: 13000, // 13 segundos
+        refetchInterval: 60000, // um minuto
+        queryFn: async () => {
+            const req = await api.get(`/api/checker/complete/precatorio/${oficio.id}/`);
+
+            if (req.data === null) return;
+
+            return req.data;
+        }
+    });
 
     // Função para atualizar a proposta e ajustar a comissão proporcionalmente
     const handleProposalSliderChange = (
@@ -431,7 +449,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     }, [oficio, isSavingEdit]);
 
     return (
-        <div className="relative col-span-1 gap-5 bg-white dark:bg-boxdark p-5 rounded-md overflow-hidden border border-stroke dark:border-strokedark">
+        <div className="relative col-span-1 gap-5 bg-white dark:bg-boxdark p-5 rounded-md border border-stroke dark:border-strokedark">
             {/* ----> info <----- */}
             <div className="grid grid-cols-12 gap-2">
                 <div className="col-span-5 grid gap-3">
@@ -484,9 +502,25 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
                     <div className="flex items-center gap-4 justify-between">
                         <div className='flex items-center gap-2'>
-                            <BsCheckCircleFill className='text-green-400' />
-                            <BsCheckCircleFill className='text-green-400' />
-                            <BsCheckCircleFill className='text-green-400' />
+                            {precatorioCheckPending ? (
+                                <AiOutlineLoading className='w-4 h-4 animate-spin' />
+                            ) : (
+                                <>
+                                    {(precatorioCheck && precatorioCheck.is_complete) ? (
+                                        <CRMTooltip text="Precatório Completo">
+                                            <BsCheckCircleFill className='text-green-400' />
+                                        </CRMTooltip>
+                                    ) : (
+                                        <CRMTooltip text="Precatório Incompleto">
+                                            <IoCloseCircle className="text-red w-5 h-5" />
+                                        </CRMTooltip>
+                                    )}
+                                </>
+                            )}
+                            <CRMTooltip text="Info. Cedente Incompleto">
+                                <IoCloseCircle className="text-red w-5 h-5" />
+                            </CRMTooltip>
+                            <MdOutlineCircle className='w-4 h-4' />
                         </div>
 
                         <div
