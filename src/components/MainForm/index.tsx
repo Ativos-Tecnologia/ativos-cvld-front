@@ -380,13 +380,11 @@ const MainForm: React.FC<CVLDFormProps> = ({
       data.percentual_a_ser_adquirido = 1
     }
     
-    if (data.estado_ente_devedor == undefined) {
+    if (!data.estado_ente_devedor) {
       data.estado_ente_devedor = null;
     }
 
     setLoading(true);
-    console.log(data);
-    return;
     try {
       setCalcStep("calculating");
 
