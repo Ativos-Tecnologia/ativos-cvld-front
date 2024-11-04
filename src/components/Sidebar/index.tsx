@@ -263,7 +263,7 @@ useEffect(() => {
                                   className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${pathname.includes("/dashboard/marketplace") && "bg-blue-700/70 text-white dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
                                 >
                                   <TbShoppingCartUp />
-                                  <span>Marketplace</span>
+                                  <span>PrecaShop</span>
                                   {/* counter */}
                                   <span className="flex h-4.5 w-4.5 items-center justify-center rounded-full bg-red-500 text-xs text-snow">
                                     {isFetching ? (
@@ -274,12 +274,6 @@ useEffect(() => {
                                   </span>
                                 </Link>
                               </li>
-                              <CapaDoBatman
-                                show={
-                                  window.location.href.includes("dev-") ||
-                                  window.location.href.includes("localhost:")
-                                }
-                              >
                                 <li>
                                   <Link
                                     href="/dashboard/broker"
@@ -289,7 +283,6 @@ useEffect(() => {
                                     <span>Broker</span>
                                   </Link>
                                 </li>
-                              </CapaDoBatman>
                             </>
                           )}
                         </ul>
