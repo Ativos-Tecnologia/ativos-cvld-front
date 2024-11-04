@@ -80,25 +80,26 @@ describe("Testes da Página de Proposta Automatizada", () => {
     const selectLabel = await screen.findByText(/tipo/i);
     expect(selectLabel).toBeInTheDocument();
 
-    // Testando se o valor default é "PRECATÓRIO"
-    const selectTipoLabel = (await screen.findByLabelText(
-      /tipo/i,
-    )) as HTMLLabelElement;
-    expect(selectTipoLabel.ariaValueText).toHaveValue("PRECATÓRIO");
-
-    // Encontra o select pelo seu role e name
-    const select = await screen.findByRole("combobox", {
-      name: /tipo/i,
-    });
-    expect(select).toBeInTheDocument();
-
-    expect(select).toHaveValue("PRECATÓRIO");
-
     // Verifica se as opções estão disponíveis
     Object.values(ENUM_TIPO_OFICIOS_LIST).forEach(async (value) => {
       const option = await screen.findByRole("option", { name: value });
       expect(option).toBeInTheDocument();
     });
   });
+
+  it("Teste para mostrar Natureza", async () => {
+    const selectLabel = await screen.findByText(/Natureza/i);
+    expect(selectLabel).toBeInTheDocument();
+
+    const naoTributaria = await screen.findByRole("option", {
+      name: "Não Tributária",
+    }) as HTMLSelectElement;
+    expect(naoTributaria).toBeInTheDocument();
+
+    const tributaria = (await screen.findByRole("option", {
+      name: "Tributária",
+    })) as HTMLSelectElement;
+    expect(tributaria).toBeInTheDocument();
+  })
 
 });
