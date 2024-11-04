@@ -1,5 +1,5 @@
+import { Select, SelectContent, SelectGroup, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import * as React from 'react';
-import { Select, SelectTrigger, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectValue } from '@/components/ui/select';
 import { Controller } from 'react-hook-form';
 
 interface ShadSelectProps {
