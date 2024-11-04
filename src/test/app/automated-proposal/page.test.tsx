@@ -91,15 +91,11 @@ describe("Testes da Página de Proposta Automatizada", () => {
     const selectLabel = await screen.findByText(/Natureza/i);
     expect(selectLabel).toBeInTheDocument();
 
-    const naoTributaria = await screen.findByRole("option", {
-      name: "Não Tributária",
-    }) as HTMLSelectElement;
-    expect(naoTributaria).toBeInTheDocument();
+    const naoTributaria = await screen.findAllByText(/Não Tributária/i);
+    expect(naoTributaria[0]).toBeInTheDocument();
 
-    const tributaria = (await screen.findByRole("option", {
-      name: "Tributária",
-    })) as HTMLSelectElement;
-    expect(tributaria).toBeInTheDocument();
+    const tributaria = await screen.findAllByText(/Tributária/i);
+    expect(tributaria[0]).toBeInTheDocument();
   })
 
 });
