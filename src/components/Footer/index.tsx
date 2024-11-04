@@ -2,6 +2,7 @@
 
 import { Footer } from "flowbite-react";
 import Image from "next/image";
+import Link from "next/link";
 import { BsInstagram, BsLinkedin } from "react-icons/bs";
 import { FaWhatsapp } from "react-icons/fa";
 import { GiTakeMyMoney } from "react-icons/gi";
@@ -203,13 +204,16 @@ export function MainFooter() {
               />
             </div>
             <div className="border-gradient-to-r flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border-2 from-boxdark-2 to-boxdark">
-              <Footer.Icon
-                href="https://ativostax.com.br/"
-                icon={GiTakeMyMoney}
-                target="_blank"
-                title="Ativos Tax"
-                className="text-bodydark"
-              />
+              <Link href="https://ativosprecatorios.com.br" target="_blank" referrerPolicy="no-referrer">
+                <Image
+                  src={"/images/logo/new-logo-dark.svg"}
+                  alt="Logo do CelerApp em sua versão somente com o ícone do aplicativo em cor branca"
+                  width={25}
+                  height={25}
+                  title="Ativos precatorios"
+                  className="cursor-pointer"
+                />
+              </Link>
             </div>
           </div>
 
