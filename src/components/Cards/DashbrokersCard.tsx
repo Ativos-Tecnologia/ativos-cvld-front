@@ -455,12 +455,14 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                 <div className="col-span-5 grid gap-3">
                     <div>
                         <p className='text-black dark:text-snow uppercase font-medium'>Nome do Credor:</p>
-                        <p
-                            title={oficio.properties["Credor"].title[0]?.text.content || "Não informado"}
-                            className='max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap'
+                        <CRMTooltip
+                            text={oficio.properties["Credor"].title[0]?.text.content || "Não informado"}
+                            arrow={false}
                         >
-                            {oficio.properties["Credor"].title[0]?.text.content || "Não informado"}
-                        </p>
+                            <p className='max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap'>
+                                {oficio.properties["Credor"].title[0]?.text.content || "Não informado"}
+                            </p>
+                        </CRMTooltip>
                     </div>
 
                     <div>
