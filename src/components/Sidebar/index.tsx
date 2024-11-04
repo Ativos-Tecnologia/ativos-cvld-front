@@ -274,12 +274,6 @@ useEffect(() => {
                                   </span>
                                 </Link>
                               </li>
-                              <CapaDoBatman
-                                show={
-                                  window.location.href.includes("dev-") ||
-                                  window.location.href.includes("localhost:")
-                                }
-                              >
                                 <li>
                                   <Link
                                     href="/dashboard/broker"
@@ -289,7 +283,6 @@ useEffect(() => {
                                     <span>Broker</span>
                                   </Link>
                                 </li>
-                              </CapaDoBatman>
                             </>
                           )}
                         </ul>
