@@ -472,10 +472,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
                     <div>
                         <p className='text-black dark:text-snow uppercase font-medium'>TRIBUNAL</p>
-                        <p
-                            title={oficio.properties["Tribunal"].select?.name || "Não informado"}
-                            className='max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap'
-                        >
+                        <p className='max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap'>
                             {oficio.properties["Tribunal"].select?.name || "Não informado"}
                         </p>
                     </div>
