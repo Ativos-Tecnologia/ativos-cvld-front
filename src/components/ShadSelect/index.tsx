@@ -11,6 +11,7 @@ interface ShadSelectProps {
   defaultValue?: string;
   required?: boolean;
   className?: string;
+  id?:string
 }
 
 export const ShadSelect = ({ className, name, control, children, label, placeholder, defaultValue, required=false}: ShadSelectProps) => {

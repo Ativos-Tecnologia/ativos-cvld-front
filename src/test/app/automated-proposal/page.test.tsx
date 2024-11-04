@@ -69,44 +69,36 @@ describe("Testes da Página de Proposta Automatizada", () => {
    * Esse teste precisa ser revisado com detalhes, pois houve alguns conflitos semânticos de HTML.
    */
 
-  //  it("Teste para mostrar Tipo de Oficio", async () => {
-  //    // verificando se o select tipo está sendo exibido. 
-  //    const selectContainer = await screen.findByText(/tipo/i);
-  //    expect(selectContainer).toBeInTheDocument();
+  it("Teste para mostrar Tipo de Oficio", async () => {
+    const ENUM_TIPO_OFICIOS_LIST = {
+      PRECATÓRIO: "PRECATÓRIO",
+      RPV: "RPV",
+      CREDITÓRIO: "CREDITÓRIO",
+      PRE_RPV: "PRE-RPV",
+    };
 
-  //    // Testando se o valor default é "PRECATÓRIO"
-  //    const selectTipoLabel = await screen.findByLabelText(/tipo/i);
-  //    expect(selectTipoLabel).toHaveValue("PRECATÓRIO");
+    const selectLabel = await screen.findByText(/tipo/i);
+    expect(selectLabel).toBeInTheDocument();
 
-  //    // Teste para selecionar componentes do tipo select
-  //    const selectComponent = await screen.findByRole("combobox", {
-  //      name: /tipo/i,
-  //    });
-  //    expect(selectComponent).toBeInTheDocument();
+    // Testando se o valor default é "PRECATÓRIO"
+    const selectTipoLabel = (await screen.findByLabelText(
+      /tipo/i,
+    )) as HTMLLabelElement;
+    expect(selectTipoLabel.ariaValueText).toHaveValue("PRECATÓRIO");
 
-  //    // Testando os valores enumerados
-  //    const expectedOptions = ["PRECATÓRIO", "RPV", "CREDITÓRIO", "PRE-RPV"];
-  
-  //    expectedOptions.forEach((option) => {
-  //      expect(ENUM_TIPO_OFICIOS_LIST).toContain(option);
-  //    });
-  //    // Testando se o valor do ShadSelect é do tipo oficio
-  //    const selectTipo = await screen.findByLabelText(/tipo/i);
-  //     expect(selectTipo).toBeInTheDocument();
+    // Encontra o select pelo seu role e name
+    const select = await screen.findByRole("combobox", {
+      name: /tipo/i,
+    });
+    expect(select).toBeInTheDocument();
 
-  //    expect(selectTipo).toHaveAttribute("name", "tipo_do_oficio");
-     
-  //    // Testando classes CSS
-  //    expect(selectTipo).toHaveClass(
-  //      "font-nexa",
-  //      "border-strokedark",
-  //      "bg-form-input",
-  //      "text-bodydark",
-  //    );
+    expect(select).toHaveValue("PRECATÓRIO");
 
-  //    const selectTipo2 = screen.getByRole("combobox", { name: /tipo/i });
-  //    expect(selectTipo2).toHaveValue(ENUM_TIPO_OFICIOS_LIST[0]);
-     
-  //  });
+    // Verifica se as opções estão disponíveis
+    Object.values(ENUM_TIPO_OFICIOS_LIST).forEach(async (value) => {
+      const option = await screen.findByRole("option", { name: value });
+      expect(option).toBeInTheDocument();
+    });
+  });
 
 });

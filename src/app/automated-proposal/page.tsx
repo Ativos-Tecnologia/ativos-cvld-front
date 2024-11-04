@@ -479,6 +479,7 @@ E abaixo, uma memória das informações de entrada:
                 </label>
 
                 <ShadSelect
+                  id='tipo_do_oficio'
                   name="tipo_do_oficio"
                   control={control}
                   defaultValue={enumTipoOficiosList[0]}
