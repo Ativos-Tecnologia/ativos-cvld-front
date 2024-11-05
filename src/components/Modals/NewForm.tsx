@@ -1,9 +1,30 @@
+import { estados } from "@/constants/estados";
+import { tribunais } from "@/constants/tribunais";
 import { DefaultLayoutContext } from "@/context/DefaultLayoutContext";
+import {
+  UserInfoAPIContext,
+  UserInfoContextType,
+} from "@/context/UserInfoContext";
+import tipoOficio from "@/enums/tipoOficio.enum";
+import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
+import { formatCurrency } from "@/functions/formaters/formatCurrency";
+import numberFormat from "@/functions/formaters/numberFormat";
+import UseMySwal from "@/hooks/useMySwal";
+import { CvldFormInputsProps } from "@/types/cvldform";
+import { LeadMagnetResposeProps } from "@/types/leadMagnet";
+import api from "@/utils/api";
+import { AxiosError } from "axios";
+import Cleave from "cleave.js/react";
 import { Slash } from "lucide-react";
 import Image from "next/image";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Fade } from "react-awesome-reveal";
 import { Controller, useForm } from "react-hook-form";
+import {
+  AiOutlineLoading,
+  AiOutlineReload,
+  AiOutlineWarning,
+} from "react-icons/ai";
 import {
   BiCheck,
   BiLineChart,
@@ -11,32 +32,11 @@ import {
   BiSave,
   BiX,
 } from "react-icons/bi";
-import Cleave from "cleave.js/react";
-import CustomCheckbox from "../CrmUi/Checkbox";
-import tipoOficio from "@/enums/tipoOficio.enum";
-import {
-  UserInfoAPIContext,
-  UserInfoContextType,
-} from "@/context/UserInfoContext";
-import {
-  AiOutlineLoading,
-  AiOutlineReload,
-  AiOutlineWarning,
-} from "react-icons/ai";
-import UseMySwal from "@/hooks/useMySwal";
-import api from "@/utils/api";
-import { UpdatePrecatorioButton } from "../Button/UpdatePrecatorioButton";
-import { CvldFormInputsProps } from "@/types/cvldform";
-import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
 import { toast } from "sonner";
-import numberFormat from "@/functions/formaters/numberFormat";
-import NewFormResultSkeleton from "../Skeletons/NewFormResultSkeleton";
-import { AxiosError } from "axios";
 import { Button } from "../Button";
-import { LeadMagnetResposeProps } from "@/types/leadMagnet";
-import { formatCurrency } from "@/functions/formaters/formatCurrency";
-import { tribunais } from "@/constants/tribunais";
-import { estados } from "@/constants/estados";
+import { UpdatePrecatorioButton } from "../Button/UpdatePrecatorioButton";
+import CustomCheckbox from "../CrmUi/Checkbox";
+import NewFormResultSkeleton from "../Skeletons/NewFormResultSkeleton";
 
 const NewForm = () => {
   const { modalOpen, setModalOpen } = useContext(DefaultLayoutContext);
@@ -236,6 +236,9 @@ const NewForm = () => {
     if (data.gerar_cvld) {
       data.upload_notion = true;
     }
+     if (!data.estado_ente_devedor) {
+       data.estado_ente_devedor = null;
+     }
 
     if (!data.data_limite_de_atualizacao_check) {
       const dateInSaoPaulo = new Date().toLocaleDateString("pt-BR", {
@@ -248,7 +251,6 @@ const NewForm = () => {
       const formattedDate = dateInSaoPaulo.split("/").reverse().join("-");
       data.data_limite_de_atualizacao = formattedDate;
     }
-
     try {
       const response = data.gerar_cvld
         ? await api.post("/api/lead-magnet/save/", data)
@@ -1175,7 +1177,7 @@ const NewForm = () => {
                                 {...register("ente_devedor", {})}
                               />
                             </div>
-
+                            {watch("esfera") && watch("esfera") !== "FEDERAL" && (
                             <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                               <label
                                 htmlFor="estado_ente_devedor"
@@ -1196,6 +1198,7 @@ const NewForm = () => {
                                 ))}
                               </select>
                             </div>
+                            )}
 
                             <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                               <label
