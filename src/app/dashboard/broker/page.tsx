@@ -1,5 +1,6 @@
 import Broker from "@/components/Dashboard/Broker";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import { BrokersProvider } from "@/context/BrokersContext";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,7 +12,9 @@ export const metadata: Metadata = {
 const BrokerPage = () => {
   return (
     <DefaultLayout>
-      <Broker/>
+      <BrokersProvider>
+        <Broker />
+      </BrokersProvider>
     </DefaultLayout>
   )
 }
