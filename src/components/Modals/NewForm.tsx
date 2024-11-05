@@ -1,9 +1,30 @@
+import { estados } from "@/constants/estados";
+import { tribunais } from "@/constants/tribunais";
 import { DefaultLayoutContext } from "@/context/DefaultLayoutContext";
+import {
+  UserInfoAPIContext,
+  UserInfoContextType,
+} from "@/context/UserInfoContext";
+import tipoOficio from "@/enums/tipoOficio.enum";
+import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
+import { formatCurrency } from "@/functions/formaters/formatCurrency";
+import numberFormat from "@/functions/formaters/numberFormat";
+import UseMySwal from "@/hooks/useMySwal";
+import { CvldFormInputsProps } from "@/types/cvldform";
+import { LeadMagnetResposeProps } from "@/types/leadMagnet";
+import api from "@/utils/api";
+import { AxiosError } from "axios";
+import Cleave from "cleave.js/react";
 import { Slash } from "lucide-react";
 import Image from "next/image";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Fade } from "react-awesome-reveal";
 import { Controller, useForm } from "react-hook-form";
+import {
+  AiOutlineLoading,
+  AiOutlineReload,
+  AiOutlineWarning,
+} from "react-icons/ai";
 import {
   BiCheck,
   BiLineChart,
@@ -11,32 +32,11 @@ import {
   BiSave,
   BiX,
 } from "react-icons/bi";
-import Cleave from "cleave.js/react";
-import CustomCheckbox from "../CrmUi/Checkbox";
-import tipoOficio from "@/enums/tipoOficio.enum";
-import {
-  UserInfoAPIContext,
-  UserInfoContextType,
-} from "@/context/UserInfoContext";
-import {
-  AiOutlineLoading,
-  AiOutlineReload,
-  AiOutlineWarning,
-} from "react-icons/ai";
-import UseMySwal from "@/hooks/useMySwal";
-import api from "@/utils/api";
-import { UpdatePrecatorioButton } from "../Button/UpdatePrecatorioButton";
-import { CvldFormInputsProps } from "@/types/cvldform";
-import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
 import { toast } from "sonner";
-import numberFormat from "@/functions/formaters/numberFormat";
-import NewFormResultSkeleton from "../Skeletons/NewFormResultSkeleton";
-import { AxiosError } from "axios";
 import { Button } from "../Button";
-import { LeadMagnetResposeProps } from "@/types/leadMagnet";
-import { formatCurrency } from "@/functions/formaters/formatCurrency";
-import { tribunais } from "@/constants/tribunais";
-import { estados } from "@/constants/estados";
+import { UpdatePrecatorioButton } from "../Button/UpdatePrecatorioButton";
+import CustomCheckbox from "../CrmUi/Checkbox";
+import NewFormResultSkeleton from "../Skeletons/NewFormResultSkeleton";
 
 const NewForm = () => {
   const { modalOpen, setModalOpen } = useContext(DefaultLayoutContext);
@@ -237,6 +237,10 @@ const NewForm = () => {
       data.upload_notion = true;
     }
 
+    if (!data.estado_ente_devedor) {
+      data.estado_ente_devedor = null;
+    }
+
     if (!data.data_limite_de_atualizacao_check) {
       const dateInSaoPaulo = new Date().toLocaleDateString("pt-BR", {
         timeZone: "America/Sao_Paulo",
@@ -248,7 +252,6 @@ const NewForm = () => {
       const formattedDate = dateInSaoPaulo.split("/").reverse().join("-");
       data.data_limite_de_atualizacao = formattedDate;
     }
-
     try {
       const response = data.gerar_cvld
         ? await api.post("/api/lead-magnet/save/", data)
@@ -382,7 +385,7 @@ const NewForm = () => {
                   draggable={false}
                 />
               </div>
-              <p className="apexcharts-legend-text font-rooftop mt-0 text-center text-sm">
+              <p className="apexcharts-legend-text mt-0 text-center font-rooftop text-sm">
                 Nosso modelo de atualização de valores de precatórios e RPVs
               </p>
             </div>
@@ -737,45 +740,45 @@ const NewForm = () => {
 
                   {(watch("especie") === "PRINCIPAL" ||
                     watch("especie") === undefined) && (
-                      <div className="col-span-2 flex w-full flex-col justify-between gap-4 sm:flex-row">
-                        <div
-                          className={`flex flex-row ${watch("ja_possui_destacamento") ? "items-center" : "items-start"} w-full gap-2 2xsm:col-span-2 sm:col-span-1`}
-                        >
-                          <CustomCheckbox
-                            check={watch("ja_possui_destacamento")}
-                            id={"ja_possui_destacamento"}
-                            register={register("ja_possui_destacamento")}
-                            defaultChecked
-                          />
+                    <div className="col-span-2 flex w-full flex-col justify-between gap-4 sm:flex-row">
+                      <div
+                        className={`flex flex-row ${watch("ja_possui_destacamento") ? "items-center" : "items-start"} w-full gap-2 2xsm:col-span-2 sm:col-span-1`}
+                      >
+                        <CustomCheckbox
+                          check={watch("ja_possui_destacamento")}
+                          id={"ja_possui_destacamento"}
+                          register={register("ja_possui_destacamento")}
+                          defaultChecked
+                        />
 
-                          <label
-                            htmlFor="ja_possui_destacamento"
-                            className={`${!watch("ja_possui_destacamento") && "mt-1"} font-nexa text-xs font-semibold uppercase text-meta-5`}
-                          >
-                            Já possui destacamento de honorários?
-                          </label>
-                        </div>
-                        {watch("ja_possui_destacamento") === false && (
-                          <div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
-                            <div className="flex w-full flex-col gap-2 sm:col-span-1">
-                              <label
-                                htmlFor="percentual_de_honorarios"
-                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                              >
-                                Percentual
-                              </label>
-                              <input
-                                type="number"
-                                id="percentual_de_honorarios"
-                                defaultValue={30}
-                                className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                                {...register("percentual_de_honorarios", {})}
-                              />
-                            </div>
-                          </div>
-                        )}
+                        <label
+                          htmlFor="ja_possui_destacamento"
+                          className={`${!watch("ja_possui_destacamento") && "mt-1"} font-nexa text-xs font-semibold uppercase text-meta-5`}
+                        >
+                          Já possui destacamento de honorários?
+                        </label>
                       </div>
-                    )}
+                      {watch("ja_possui_destacamento") === false && (
+                        <div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                          <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                            <label
+                              htmlFor="percentual_de_honorarios"
+                              className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                            >
+                              Percentual
+                            </label>
+                            <input
+                              type="number"
+                              id="percentual_de_honorarios"
+                              defaultValue={30}
+                              className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                              {...register("percentual_de_honorarios", {})}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   <div
                     className={`col-span-2 flex items-center gap-2 md:col-span-1 ${watch("data_base")! < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
@@ -848,7 +851,7 @@ const NewForm = () => {
                     </label>
                   </div>
                   {watch("natureza") === "TRIBUTÁRIA" ||
-                    watch("incidencia_rra_ir") === false ? (
+                  watch("incidencia_rra_ir") === false ? (
                     <>
                       {/* {watch("natureza") === "TRIBUTÁRIA" && watch("incidencia_rra_ir") === false ? null : (
                   <div className="flex items-center col-span-1">&nbsp;</div>
@@ -879,8 +882,8 @@ const NewForm = () => {
                   )}
 
                   {watch("ir_incidente_rra") &&
-                    watch("incidencia_rra_ir") === true &&
-                    watch("natureza") !== "TRIBUTÁRIA" ? (
+                  watch("incidencia_rra_ir") === true &&
+                  watch("natureza") !== "TRIBUTÁRIA" ? (
                     <div className="mt-1 flex flex-col gap-2 overflow-hidden 2xsm:col-span-2 sm:col-span-1">
                       <label
                         htmlFor="numero_de_meses"
@@ -928,7 +931,7 @@ const NewForm = () => {
                     </div>
                   ) : null}
                   {watch("incidencia_pss") &&
-                    watch("natureza") !== "TRIBUTÁRIA" ? (
+                  watch("natureza") !== "TRIBUTÁRIA" ? (
                     <div className="mt-1 flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                       <label
                         htmlFor="valor_pss"
@@ -1004,7 +1007,7 @@ const NewForm = () => {
                         max={new Date().toISOString().split("T")[0]}
                       />
                       {watch("data_limite_de_atualizacao")! <
-                        watch("data_requisicao")! ? (
+                      watch("data_requisicao")! ? (
                         <span
                           role="alert"
                           className="absolute right-4 top-4 text-sm text-red-500"
@@ -1176,26 +1179,29 @@ const NewForm = () => {
                               />
                             </div>
 
-                            <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                              <label
-                                htmlFor="estado_ente_devedor"
-                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                              >
-                                Estado do Ente Devedor
-                              </label>
+                            {watch("esfera") &&
+                              watch("esfera") !== "FEDERAL" && (
+                                <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                  <label
+                                    htmlFor="estado_ente_devedor"
+                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                  >
+                                    Estado do Ente Devedor
+                                  </label>
 
-                              <select
-                                defaultValue={""}
-                                className="flex h-[37px] w-full cursor-pointer items-center justify-between rounded-md border border-stroke bg-background px-2 py-2 font-satoshi text-xs font-semibold uppercase ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 dark:border-strokedark dark:bg-boxdark-2 [&>span]:line-clamp-1"
-                                {...register("estado_ente_devedor")}
-                              >
-                                {estados.map((estado) => (
-                                  <option key={estado.id} value={estado.id}>
-                                    {estado.nome}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
+                                  <select
+                                    defaultValue={""}
+                                    className="flex h-[37px] w-full cursor-pointer items-center justify-between rounded-md border border-stroke bg-background px-2 py-2 font-satoshi text-xs font-semibold uppercase ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 dark:border-strokedark dark:bg-boxdark-2 [&>span]:line-clamp-1"
+                                    {...register("estado_ente_devedor")}
+                                  >
+                                    {estados.map((estado) => (
+                                      <option key={estado.id} value={estado.id}>
+                                        {estado.nome}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              )}
 
                             <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                               <label
@@ -1238,13 +1244,13 @@ const NewForm = () => {
                       ) : null}
                     </div>
                     {(data.role === "ativos" || data.role === "judit") &&
-                      watch("gerar_cvld") ? (
+                    watch("gerar_cvld") ? (
                       <>
                         <hr className="col-span-2 my-8 border border-stroke dark:border-strokedark" />
                         <div className="flex flex-col gap-2">
                           {(data.role === "ativos" &&
                             watch("regime") !== "ESPECIAL") ||
-                            watch("regime") === undefined ? (
+                          watch("regime") === undefined ? (
                             <>
                               <div className="flex justify-between">
                                 <div className="flex items-center gap-2">
@@ -1396,27 +1402,31 @@ const NewForm = () => {
                         </h2>
                         <p className="text-sm 2xsm:text-center sm:text-left">
                           Abaixo foram gerados os valores mínimos e máximos de
-                          proposta e comissão. Mova os sliders ou use os campos para alterar os
-                          valores proporcionalmente.
+                          proposta e comissão. Mova os sliders ou use os campos
+                          para alterar os valores proporcionalmente.
                         </p>
                       </div>
 
                       <div className="flex items-center justify-between gap-5 p-2 2xsm:flex-col sm:mb-4 md:flex-row">
                         <div className="relative flex flex-col md:items-center">
                           <h4 className="">Proposta Mínima</h4>
-                          <span>{numberFormat(backendResponse.min_proposal)}</span>
+                          <span>
+                            {numberFormat(backendResponse.min_proposal)}
+                          </span>
                         </div>
                         <div className="flex flex-1 flex-col items-center gap-1">
-                          <div className="text-sm font-medium flex items-center">
+                          <div className="flex items-center text-sm font-medium">
                             <p className="w-full">Proposta Atual:</p>
                             <input
                               ref={proposalRef}
                               type="text"
-                              onBlur={e => {
-                                e.target.value = formatCurrency(e.target.value)
+                              onBlur={(e) => {
+                                e.target.value = formatCurrency(e.target.value);
                               }}
-                              onChange={e => changeInputValues("proposal", e.target.value)}
-                              className="max-w-39 text-center rounded-md border-none pr-2 pl-1 ml-2 py-2 text-sm font-medium text-body focus-visible:ring-body dark:focus-visible:ring-snow dark:bg-bodydark1/10 dark:text-bodydark bg-gray-100"
+                              onChange={(e) =>
+                                changeInputValues("proposal", e.target.value)
+                              }
+                              className="ml-2 max-w-39 rounded-md border-none bg-gray-100 py-2 pl-1 pr-2 text-center text-sm font-medium text-body focus-visible:ring-body dark:bg-bodydark1/10 dark:text-bodydark dark:focus-visible:ring-snow"
                             />
                           </div>
                           <input
@@ -1425,13 +1435,17 @@ const NewForm = () => {
                             min={backendResponse.min_proposal}
                             max={backendResponse.max_proposal}
                             value={sliderValues.proposal}
-                            onChange={e => handleProposalSliderChange(e.target.value, true)}
+                            onChange={(e) =>
+                              handleProposalSliderChange(e.target.value, true)
+                            }
                             className="w-full"
                           />
                         </div>
                         <div className="flex flex-col items-center">
                           <h4 className="">Proposta Máxima</h4>
-                          <span>{numberFormat(backendResponse.max_proposal)}</span>
+                          <span>
+                            {numberFormat(backendResponse.max_proposal)}
+                          </span>
                         </div>
                       </div>
 
@@ -1440,19 +1454,23 @@ const NewForm = () => {
                       <div className="relative flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
                         <div className="flex flex-col items-center">
                           <h4 className="">Comissão Mínima</h4>
-                          <span>{numberFormat(backendResponse.min_comission)}</span>
+                          <span>
+                            {numberFormat(backendResponse.min_comission)}
+                          </span>
                         </div>
                         <div className="flex flex-1 flex-col items-center gap-1">
-                          <div className="text-sm font-medium flex items-center">
+                          <div className="flex items-center text-sm font-medium">
                             <p className="">Comissão Atual:</p>
                             <input
                               ref={comissionRef}
                               type="text"
-                              onBlur={e => {
-                                e.target.value = formatCurrency(e.target.value)
+                              onBlur={(e) => {
+                                e.target.value = formatCurrency(e.target.value);
                               }}
-                              onChange={e => changeInputValues("comission", e.target.value)}
-                              className="max-w-39 text-center rounded-md border-none pr-2 pl-1 ml-2 py-2 text-sm font-medium text-body focus-visible:ring-body dark:focus-visible:ring-snow dark:bg-bodydark1/10 dark:text-bodydark bg-gray-100"
+                              onChange={(e) =>
+                                changeInputValues("comission", e.target.value)
+                              }
+                              className="ml-2 max-w-39 rounded-md border-none bg-gray-100 py-2 pl-1 pr-2 text-center text-sm font-medium text-body focus-visible:ring-body dark:bg-bodydark1/10 dark:text-bodydark dark:focus-visible:ring-snow"
                             />
                           </div>
                           <input
@@ -1461,29 +1479,34 @@ const NewForm = () => {
                             min={backendResponse.min_comission}
                             max={backendResponse.max_comission}
                             value={sliderValues.comission}
-                            onChange={e => handleComissionSliderChange(e.target.value, true)}
+                            onChange={(e) =>
+                              handleComissionSliderChange(e.target.value, true)
+                            }
                             className="w-full"
                           />
                         </div>
                         <div className="flex flex-col items-center">
                           <h4 className="">Comissão Máxima</h4>
-                          <span>{numberFormat(backendResponse.max_comission)}</span>
+                          <span>
+                            {numberFormat(backendResponse.max_comission)}
+                          </span>
                         </div>
                       </div>
 
                       {/* separator */}
-                      <div className="h-px w-full bg-stroke dark:bg-strokedark my-6"></div>
+                      <div className="my-6 h-px w-full bg-stroke dark:bg-strokedark"></div>
                       {/* end separator */}
 
                       <div className="flex flex-col gap-5">
                         {backendResponse.id && (
                           <Button
                             onClick={saveProposalAndComission}
-                            className="mx-auto mt-4 font-medium flex items-center justify-center gap-2">
+                            className="mx-auto mt-4 flex items-center justify-center gap-2 font-medium"
+                          >
                             {savingProposalAndComission ? (
                               <>
                                 Salvando dados...
-                                <AiOutlineLoading className="text-lg animate-spin" />
+                                <AiOutlineLoading className="animate-spin text-lg" />
                               </>
                             ) : (
                               <>
