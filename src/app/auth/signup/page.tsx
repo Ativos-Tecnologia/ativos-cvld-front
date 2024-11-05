@@ -330,13 +330,9 @@ const SignUp: React.FC = () => {
                   id="nome_completo"
                   {...register("complete_name", {
                     required: "Campo obrigatório",
-                    minLength: {
-                      value: 4,
-                      message: "O nome deve conter no mínimo 4 caracteres",
-                    },
                     maxLength: {
-                      value: 30,
-                      message: "O nome deve conter no máximo 30 caracteres",
+                      value: 255,
+                      message: "O nome deve conter no máximo 255 caracteres",
                     },
                   })}
                 />
