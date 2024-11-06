@@ -538,6 +538,7 @@ E abaixo, uma memória das informações de entrada:
               >
                 <label
                   htmlFor="esfera"
+                  data-testid="esfera-id"
                   className="font-nexa text-xs font-semibold uppercase text-meta-5"
                 >
                   Esfera
@@ -545,7 +546,7 @@ E abaixo, uma memória das informações de entrada:
                 <ShadSelect
                   defaultValue="FEDERAL"
                   id="esfera"
-                  data-testid="esfera-select"
+                  data-testid="esfera-id"
                   name="esfera"
                   control={control}
                   className="border-strokedark bg-form-input font-nexa text-bodydark"
@@ -616,6 +617,7 @@ E abaixo, uma memória das informações de entrada:
                 </label>
                 <Controller
                   name="valor_principal"
+                  data-testid="valor_principal"
                   control={control}
                   defaultValue={0}
                   rules={{
@@ -695,6 +697,7 @@ E abaixo, uma memória das informações de entrada:
                   </label>
                   <input
                     type="date"
+                    data-testid="data-base"
                     id="data_base"
                     className={`${errors.data_base && "!border-red !ring-0"} w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark`}
                     {...register("data_base", {
@@ -719,6 +722,7 @@ E abaixo, uma memória das informações de entrada:
                   <input
                     type="date"
                     id="data_requisicao"
+                    data-testid="data_requisicao"
                     className={`${errors.data_requisicao && "!border-red !ring-0"} w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark`}
                     {...register("data_requisicao", {
                       required: "Campo obrigatório",
@@ -759,6 +763,7 @@ E abaixo, uma memória das informações de entrada:
                   <input
                     type="number"
                     id="percentual_a_ser_adquirido"
+                    data-testid="percentual-aquisicao"
                     defaultValue={100}
                     className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                     min={0}
@@ -870,6 +875,7 @@ E abaixo, uma memória das informações de entrada:
                   <input
                     type="number"
                     id="numero_de_meses"
+                    data-testid="numero_de_meses"
                     className="w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark"
                     min={0}
                     {...register("numero_de_meses", {
@@ -929,6 +935,7 @@ E abaixo, uma memória das informações de entrada:
                     render={({ field }) => (
                       <Cleave
                         {...field}
+                        id="valor_pss"
                         className="w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark"
                         options={{
                           numeral: true,
@@ -979,12 +986,13 @@ E abaixo, uma memória das informações de entrada:
                       htmlFor="percentual_de_honorarios"
                       className="font-nexa text-xs font-semibold uppercase text-meta-5"
                     >
-                      Percentual{" "}
+                      Percentual
                       <span className="text-xs text-meta-5">(%)</span>
                     </label>
                     <input
                       type="number"
                       defaultValue={30}
+                      data-testid="percentual_de_honorarios"
                       id="percentual_de_honorarios"
                       className="h-[37px] w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark"
                       {...register("percentual_de_honorarios", {})}

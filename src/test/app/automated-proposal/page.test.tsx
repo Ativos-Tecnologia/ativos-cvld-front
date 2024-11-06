@@ -1,6 +1,6 @@
 import AutomatedProposal from "@/app/automated-proposal/page";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 jest.mock("next/navigation", () => ({
@@ -126,19 +126,16 @@ it("Teste para verificar Regime", async () => {
   const esfera = await screen.findByText(/Esfera/i);
   expect(esfera).toBeInTheDocument();
 
-  const selectEsfera = await screen.findByTestId("esfera-select");
-  selectEsfera.click();
+  const selectEsfera = await screen.findByTestId("esfera-id");
+  userEvent.selectOptions(selectEsfera, "ESTADUAL");
 
-  // selectEsfera.click();
-  userEvent.click(screen.getByText("ESTADUAL"));
+  const regime = (await screen.findByLabelText("Regime")) as HTMLInputElement;
+  expect(regime).toBeInTheDocument();
 
-  // const selectLabel = await screen.findByText(/Regime/i);
-  // expect(selectLabel).toBeInTheDocument();
-
-  // for (const value of Object.values(regimeOption)) {
-  //   const option = await screen.findByText(value);
-  //   expect(option).toBeInTheDocument();
-  // }
+  for (const value of Object.values(regimeOption)) {
+    const option = await screen.findByText(value);
+    expect(option).toBeInTheDocument();
+  }
 });
 
   it("Teste para verificar todos os Tribunais", async () => {
@@ -220,6 +217,257 @@ it("Teste para verificar Regime", async () => {
       });
       expect(option).toBeInTheDocument();
     });
-   }) ;
+  });
+  
+  it("Teste para verificar valor principal", async () => {
+    const valorPrincipal = await screen.findByText(/Valor Principal/i);
+    expect(valorPrincipal).toBeInTheDocument();
 
+    const input = await screen.findAllByDisplayValue("R$ 0") as HTMLInputElement[];
+    expect(input[0]).toBeInTheDocument();
+
+    fireEvent.change(input[0], { target: { value: "1000" } });
+    expect(input[0].value).toBe("R$ 1.000");
+  });
+
+  it("Teste para verificar valor de juros", async () => {
+
+    const valorJuros = await screen.findAllByText(/Juros/i);
+    expect(valorJuros[0]).toBeInTheDocument();
+
+    const input = await screen.findAllByDisplayValue("R$ 0") as HTMLInputElement[];
+    expect(input[1]).toBeInTheDocument();
+
+    fireEvent.change(input[1], { target: { value: "1000" } });
+    expect(input[1].value).toBe("R$ 1.000");
+  });
+
+  it("Teste para verificar Data Base", async () => {    
+    const dataBase = await screen.findByLabelText(/Data Base/i) as HTMLInputElement;
+    expect(dataBase).toBeInTheDocument();
+
+    const input = await screen.findByTestId("data-base") as HTMLInputElement;
+    expect(input).toBeInTheDocument();
+
+    fireEvent.change(input, { target: { value: "2022-12-31" } });
+    expect(input.value).toBe("2022-12-31");
+  });
+
+  it("Teste para verificar Data de Requisição / Recebimento", async () => {
+    const dataRequisicaoRecebimento = await screen.getByLabelText(
+      "Data de Requisição / Recebimento",
+    ) as HTMLInputElement;
+    expect(dataRequisicaoRecebimento).toBeInTheDocument();
+
+    const input = (await screen.findByTestId(
+      "data_requisicao",
+    )) as HTMLInputElement;
+    expect(input).toBeInTheDocument();
+
+    fireEvent.change(input, { target: { value: "2022-12-31" } });
+    expect(input.value).toBe("2022-12-31");
+  });
+
+  it("Testar checkbox de Aquisição Total", async () => {
+    const checkbox = (await screen.getByLabelText(
+      "Aquisição total",
+    )) as HTMLInputElement;
+    expect(checkbox).toBeInTheDocument();
+
+    // O checkbox deve estar marcado inicialmente quando carregamos a página.
+    expect(checkbox).toBeChecked();
+
+    //Simulo o click do checkbox desmarcando para analisar a funcionalidade.
+    fireEvent.click(checkbox);
+    expect(checkbox).not.toBeChecked();
+
+    // Marco ele novamente.
+    fireEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
+  })
+
+  it("Testar Percentual de aquisição", async () => { 
+
+     const checkbox = (await screen.getByLabelText(
+       "Aquisição total",
+     )) as HTMLInputElement;
+    expect(checkbox).toBeInTheDocument();
+    
+    fireEvent.click(checkbox);
+    expect(checkbox).not.toBeChecked();
+
+    const percentualAquisicao = await screen.findByText(/Percentual de aquisição/i);
+    expect(percentualAquisicao).toBeInTheDocument();
+
+    const input = await screen.findByTestId("percentual-aquisicao") as HTMLInputElement;
+    expect(input).toBeInTheDocument();
+
+    fireEvent.change(input, { target: { value: "100" } });
+    expect(input.value).toBe("100");
+  });
+
+  it("Testar checkbox de Juros de Mora fixados em sentença", async () => {
+    const checkbox = (await screen.getByLabelText(
+      "Juros de Mora fixados em sentença",
+    )) as HTMLInputElement;
+    expect(checkbox).toBeInTheDocument();
+
+    expect(checkbox).toBeChecked();
+
+    fireEvent.click(checkbox);
+    expect(checkbox).not.toBeChecked();
+
+    fireEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
+  });
+
+  it("Testar checkbox de Incidência de IR", async () => {
+    const checkbox = (await screen.getByLabelText(
+      "Incidência de IR",
+    )) as HTMLInputElement;
+    expect(checkbox).toBeInTheDocument();
+
+    expect(checkbox).toBeChecked();
+
+    fireEvent.click(checkbox);
+    expect(checkbox).not.toBeChecked();
+
+    fireEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
+  });
+
+  it("Testar checkbox de IR incidente sobre RRA?", async () => {
+    const checkbox = (await screen.getByLabelText(
+      "IR incidente sobre RRA?",
+    )) as HTMLInputElement;
+    expect(checkbox).toBeInTheDocument();
+
+    expect(checkbox).not.toBeChecked();
+    
+    fireEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
+  });
+
+   it("Testar Numero de meses", async () => {
+     const checkbox = (await screen.getByLabelText(
+       "IR incidente sobre RRA?",
+     )) as HTMLInputElement;
+     expect(checkbox).toBeInTheDocument();
+
+     fireEvent.click(checkbox);
+     expect(checkbox).toBeChecked();
+
+     const NumeroDeMeses = await screen.findByText(/Número de meses/i);
+     expect(NumeroDeMeses).toBeInTheDocument();
+
+     const input = (await screen.findByTestId(
+       "numero_de_meses",
+     )) as HTMLInputElement;
+     expect(input).toBeInTheDocument();
+
+     fireEvent.change(input, { target: { value: "100" } });
+     expect(input.value).toBe("100");
+   });
+
+
+  it("Testar checkbox de Incide PSS?", async () => {
+    const checkbox = (await screen.getByLabelText(
+      "Incide PSS?",
+    )) as HTMLInputElement;
+    expect(checkbox).toBeInTheDocument();
+
+    expect(checkbox).not.toBeChecked();
+
+    fireEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
+  });
+
+  it("Testar checkbox de Incide ISS?", async () => {
+    const checkbox = (await screen.getByLabelText(
+      "Incide PSS?",
+    )) as HTMLInputElement;
+    expect(checkbox).toBeInTheDocument();
+
+    expect(checkbox).not.toBeChecked();
+
+    fireEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
+  });
+
+  it("Testar PSS", async () => {
+    const checkbox = (await screen.getByLabelText(
+      "Incide PSS?",
+    )) as HTMLInputElement;
+    expect(checkbox).toBeInTheDocument();
+
+    fireEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
+
+    const container = screen.getByLabelText("PSS").closest("div") as HTMLInputElement;
+    const input = within(container).getByRole("textbox") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "1200" } });
+    expect(input.value).toBe("R$ 1.200");
+  });
+
+  it("Teste do Destaque de Honorários", async () => {
+
+    const checkbox = (await screen.getByLabelText(
+      "Já possui destaque de honorários?",
+    )) as HTMLInputElement;
+
+    expect(checkbox).toBeInTheDocument();
+
+    expect(checkbox).toBeChecked();
+
+    fireEvent.click(checkbox);
+    expect(checkbox).not.toBeChecked();
+  })
+
+  it("Teste de Percentual", async () => {
+
+    const checkbox = (await screen.getByLabelText(
+      "Já possui destaque de honorários?",
+    )) as HTMLInputElement;
+
+    expect(checkbox).toBeInTheDocument();
+
+    expect(checkbox).toBeChecked();
+
+    fireEvent.click(checkbox);
+    expect(checkbox).not.toBeChecked();
+
+    const percentual = await screen.findByText(/Percentual/i);
+    expect(percentual).toBeInTheDocument();
+
+    const input = (await screen.findByTestId(
+      "percentual_de_honorarios",
+    )) as HTMLInputElement;
+    expect(input).toBeInTheDocument();
+
+    fireEvent.change(input, { target: { value: "100" } });
+    expect(input.value).toBe("100");
+  })
+  it("Teste para verificar Regime", async () => {
+    const regimeOption = {
+      GERAL: "GERAL",
+      ESPECIAL: "ESPECIAL", 
+    };
+
+    const selectLabel = await screen.findByText(/Esfera/i);
+    expect(selectLabel).toBeInTheDocument();
+
+    // First select ESTADUAL in Esfera to make Regime appear
+    const esferaSelect = await screen.findByTestId("esfera-id");
+    userEvent.selectOptions(esferaSelect, "ESTADUAL");
+
+    // Now look for Regime after Esfera is changed
+    const regimeLabel = await screen.findByText("Regime");
+    expect(regimeLabel).toBeInTheDocument();
+
+    // Verify regime options are present
+    Object.values(regimeOption).forEach(async (value) => {
+      const option = await screen.findByRole("option", { name: value });
+      expect(option).toBeInTheDocument();
+    });
+  });
 });
