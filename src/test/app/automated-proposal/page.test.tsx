@@ -1,6 +1,7 @@
 import AutomatedProposal from "@/app/automated-proposal/page";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("next/navigation", () => ({
   useRouter() {
@@ -65,10 +66,6 @@ describe("Testes da Página de Proposta Automatizada", () => {
     expect(tituloDoFormulario).toBeInTheDocument();
   });
 
-  /**
-   * Esse teste precisa ser revisado com detalhes, pois houve alguns conflitos semânticos de HTML.
-   */
-
   it("Teste para mostrar Tipo de Oficio", async () => {
     const ENUM_TIPO_OFICIOS_LIST = {
       PRECATÓRIO: "PRECATÓRIO",
@@ -88,14 +85,141 @@ describe("Testes da Página de Proposta Automatizada", () => {
   });
 
   it("Teste para mostrar Natureza", async () => {
+
+    const naturezaOption = {
+      naoTributaria: "NÃO TRIBUTÁRIA",
+      tributaria: "TRIBUTÁRIA",
+    };
+
     const selectLabel = await screen.findByText(/Natureza/i);
     expect(selectLabel).toBeInTheDocument();
 
-    const naoTributaria = await screen.findAllByText(/Não Tributária/i);
-    expect(naoTributaria[0]).toBeInTheDocument();
+    Object.values(naturezaOption).forEach(async (value) => {
+      const option = await screen.findByRole("option", { name: value });
+      expect(option).toBeInTheDocument();
+    });
 
-    const tributaria = await screen.findAllByText(/Tributária/i);
-    expect(tributaria[0]).toBeInTheDocument();
   })
+
+  it("Teste para verificar Esfera", async () => { 
+    const esferaOption = {
+      federal: "FEDERAL",
+      estadual: "ESTADUAL",
+      municipal: "MUNICIPAL",
+    };
+
+    const selectLabel = await screen.findByText(/Esfera/i);
+    expect(selectLabel).toBeInTheDocument();
+
+    Object.values(esferaOption).forEach(async (value) => {
+      const option = await screen.findByRole("option", { name: value });
+      expect(option).toBeInTheDocument();
+    });
+  });
+
+it("Teste para verificar Regime", async () => {
+  const regimeOption = {
+    GERAL: "GERAL",
+    ESPECIAL: "ESPECIAL",
+  };
+
+  const esfera = await screen.findByText(/Esfera/i);
+  expect(esfera).toBeInTheDocument();
+
+  const selectEsfera = await screen.findByTestId("esfera-select");
+  selectEsfera.click();
+
+  // selectEsfera.click();
+  userEvent.click(screen.getByText("ESTADUAL"));
+
+  // const selectLabel = await screen.findByText(/Regime/i);
+  // expect(selectLabel).toBeInTheDocument();
+
+  // for (const value of Object.values(regimeOption)) {
+  //   const option = await screen.findByText(value);
+  //   expect(option).toBeInTheDocument();
+  // }
+});
+
+  it("Teste para verificar todos os Tribunais", async () => {
+
+    const tribunais = [
+      { id: "TRF1", nome: "Tribunal Regional Federal - 1ª Região" },
+      { id: "TRF2", nome: "Tribunal Regional Federal - 2ª Região" },
+      { id: "TRF3", nome: "Tribunal Regional Federal - 3ª Região" },
+      { id: "TRF4", nome: "Tribunal Regional Federal - 4ª Região" },
+      { id: "TRF5", nome: "Tribunal Regional Federal - 5ª Região" },
+      { id: "TRF6", nome: "Tribunal Regional Federal - 6ª Região" },
+      { id: "STF", nome: "Supremo Tribunal Federal" },
+      { id: "STJ", nome: "Superior Tribunal de Justiça" },
+      { id: "TST", nome: "Tribunal Superior do Trabalho" },
+      { id: "TSE", nome: "Tribunal Superior Eleitoral" },
+      { id: "STM", nome: "Superior Tribunal Militar" },
+      { id: "TJAC", nome: "Tribunal de Justiça do Acre" },
+      { id: "TJAL", nome: "Tribunal de Justiça de Alagoas" },
+      { id: "TJAP", nome: "Tribunal de Justiça do Amapá" },
+      { id: "TJAM", nome: "Tribunal de Justiça do Amazonas" },
+      { id: "TJBA", nome: "Tribunal de Justiça da Bahia" },
+      { id: "TJCE", nome: "Tribunal de Justiça do Ceará" },
+      {
+        id: "TJDFT",
+        nome: "Tribunal de Justiça do Distrito Federal e dos Territórios",
+      },
+      { id: "TJES", nome: "Tribunal de Justiça do Espírito Santo" },
+      { id: "TJGO", nome: "Tribunal de Justiça de Goiás" },
+      { id: "TJMA", nome: "Tribunal de Justiça do Maranhão" },
+      { id: "TJMT", nome: "Tribunal de Justiça do Mato Grosso" },
+      { id: "TJMS", nome: "Tribunal de Justiça do Mato Grosso do Sul" },
+      { id: "TJMG", nome: "Tribunal de Justiça de Minas Gerais" },
+      { id: "TJPA", nome: "Tribunal de Justiça do Pará" },
+      { id: "TJPB", nome: "Tribunal de Justiça da Paraíba" },
+      { id: "TJPE", nome: "Tribunal de Justiça de Pernambuco" },
+      { id: "TJPI", nome: "Tribunal de Justiça do Piauí" },
+      { id: "TJPR", nome: "Tribunal de Justiça do Paraná" },
+      { id: "TJRJ", nome: "Tribunal de Justiça do Rio de Janeiro" },
+      { id: "TJRN", nome: "Tribunal de Justiça do Rio Grande do Norte" },
+      { id: "TJRO", nome: "Tribunal de Justiça de Rondônia" },
+      { id: "TJRR", nome: "Tribunal de Justiça de Roraima" },
+      { id: "TJRS", nome: "Tribunal de Justiça do Rio Grande do Sul" },
+      { id: "TJSC", nome: "Tribunal de Justiça de Santa Catarina" },
+      { id: "TJSE", nome: "Tribunal de Justiça de Sergipe" },
+      { id: "TJSP", nome: "Tribunal de Justiça de São Paulo" },
+      { id: "TJTO", nome: "Tribunal de Justiça do Tocantins" },
+      { id: "TRT1", nome: "Tribunal Regional do Trabalho da 1ª Região" },
+      { id: "TRT2", nome: "Tribunal Regional do Trabalho da 2ª Região" },
+      { id: "TRT3", nome: "Tribunal Regional do Trabalho da 3ª Região" },
+      { id: "TRT4", nome: "Tribunal Regional do Trabalho da 4ª Região" },
+      { id: "TRT5", nome: "Tribunal Regional do Trabalho da 5ª Região" },
+      { id: "TRT6", nome: "Tribunal Regional do Trabalho da 6ª Região" },
+      { id: "TRT7", nome: "Tribunal Regional do Trabalho da 7ª Região" },
+      { id: "TRT8", nome: "Tribunal Regional do Trabalho da 8ª Região" },
+      { id: "TRT9", nome: "Tribunal Regional do Trabalho da 9ª Região" },
+      { id: "TRT10", nome: "Tribunal Regional do Trabalho da 10ª Região" },
+      { id: "TRT11", nome: "Tribunal Regional do Trabalho da 11ª Região" },
+      { id: "TRT12", nome: "Tribunal Regional do Trabalho da 12ª Região" },
+      { id: "TRT13", nome: "Tribunal Regional do Trabalho da 13ª Região" },
+      { id: "TRT14", nome: "Tribunal Regional do Trabalho da 14ª Região" },
+      { id: "TRT15", nome: "Tribunal Regional do Trabalho da 15ª Região" },
+      { id: "TRT16", nome: "Tribunal Regional do Trabalho da 16ª Região" },
+      { id: "TRT17", nome: "Tribunal Regional do Trabalho da 17ª Região" },
+      { id: "TRT18", nome: "Tribunal Regional do Trabalho da 18ª Região" },
+      { id: "TRT19", nome: "Tribunal Regional do Trabalho da 19ª Região" },
+      { id: "TRT20", nome: "Tribunal Regional do Trabalho da 20ª Região" },
+      { id: "TRT21", nome: "Tribunal Regional do Trabalho da 21ª Região" },
+      { id: "TRT22", nome: "Tribunal Regional do Trabalho da 22ª Região" },
+      { id: "TRT23", nome: "Tribunal Regional do Trabalho da 23ª Região" },
+      { id: "TRT24", nome: "Tribunal Regional do Trabalho da 24ª Região" },
+    ];
+
+    const selectLabel = await screen.findAllByText(/Tribunal/i);
+    expect(selectLabel[0]).toBeInTheDocument();
+
+    Object.values(tribunais).forEach(async (value) => {
+      const option = await screen.findByRole("option", {
+        name: value.nome,
+      });
+      expect(option).toBeInTheDocument();
+    });
+   }) ;
 
 });
