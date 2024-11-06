@@ -24,6 +24,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { IoCloseCircle } from 'react-icons/io5';
 import { MdOutlineCircle } from 'react-icons/md';
 import CRMTooltip from '../CrmUi/Tooltip';
+import { GrDocumentUser } from 'react-icons/gr';
 
 const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     {
@@ -63,7 +64,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             numero_de_meses: 0,
             credor: oficio.properties["Credor"].title[0]?.text.content || "",
             cpf_cnpj: oficio.properties["CPF/CNPJ"].rich_text?.[0].text.content || "",
-            especie: oficio?.properties?.["Espécie"].select?.name || "",
+            especie: oficio?.properties?.["Espécie"].select?.name || "Principal",
             npu: oficio.properties["NPU (Precatório)"].rich_text?.[0].text.content || "",
             npu_originario: oficio?.properties?.["NPU (Originário)"].rich_text?.[0]?.text.content || "",
             ente_devedor: oficio.properties["Ente Devedor"].select?.name || "",
@@ -97,7 +98,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const { data: precatorioCheck, isPending: precatorioCheckPending } = useQuery<{
         is_complete: boolean
     }>({
-        queryKey: ["broker_list_precatorio_check"],
+        queryKey: ["broker_list_precatorio_check", oficio.id],
         staleTime: 13000, // 13 segundos
         refetchInterval: 60000, // um minuto
         queryFn: async () => {
@@ -487,6 +488,13 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                         <button className='flex cursor-not-allowed items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm'>
                             <FaRegFilePdf />
                             Juntar Documento
+                        </button>
+
+                        <button
+                            onClick={() => {}}
+                            className='flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm'>
+                            <GrDocumentUser />
+                            Juntar Cedente
                         </button>
 
                         <button
@@ -1002,7 +1010,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                             )}
                             {/* ====> end label PERCENTUAL DE AQUISIÇÃO <==== */}
 
-                            {(watch("especie") === "PRINCIPAL" ||
+                            {(watch("especie") === "Principal" ||
                                 watch("especie") === undefined) && (
                                     <div className="col-span-2 flex w-full flex-col justify-between gap-4 sm:flex-row">
                                         <div
