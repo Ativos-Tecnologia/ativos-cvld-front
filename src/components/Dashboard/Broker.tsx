@@ -2,18 +2,20 @@
 import api from "@/utils/api";
 import { QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
 import DashbrokersCard from "../Cards/DashbrokersCard";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import BrokerCardSkeleton from "../Skeletons/BrokerCardSkeleton";
 import { Fade } from "react-awesome-reveal";
 import Image from "next/image";
+import { BrokersContext } from "@/context/BrokersContext";
 
 const Broker: React.FC = () => {
 
-  const [editModalId, setEditModalId] = useState<string | null>(null);
+  const {
+    editModalId, setEditModalId
+  } = useContext(BrokersContext);
 
   const fetchBrokerList = async () => {
-    const response = await api.get("api/notion-api/broker/list"
-    );
+    const response = await api.get("api/notion-api/broker/list");
     if (response !== null) {
       return response.data;
     }
@@ -30,7 +32,7 @@ const Broker: React.FC = () => {
   });
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <>
       <div className="grid grid-cols-2 gap-5 items-center w-full mt-15">
         {isPending ? (
           <Fade cascade damping={0.1} triggerOnce>
@@ -65,10 +67,9 @@ const Broker: React.FC = () => {
               </div>
             )}
           </>
-
         )}
       </div>
-    </QueryClientProvider>
+    </>
   );
 };
 export default Broker;
