@@ -592,6 +592,7 @@ E abaixo, uma memória das informações de entrada:
                   name="tribunal"
                   control={control}
                   defaultValue={tribunais[0].nome}
+                  data-testid='tribunal'
                   required={true}
                   className="border-strokedark bg-form-input font-nexa text-bodydark"
                 >
