@@ -1,6 +1,6 @@
 "use client";
-import { createContext, use, useEffect, useState } from "react";
 import api from "@/utils/api";
+import { createContext, useEffect, useState } from "react";
 
 export interface UserInfo {
   id?: number | string | null | undefined;
@@ -152,28 +152,46 @@ export const UserInfoProvider = ({
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const [profileResult, creditsResult] = await Promise.all([
-        api.get("/api/profile/"),
-        api.get("/api/user/get-balance/"),
-      ]);
+      const profileResult = await api.get("/api/profile/");
 
       if (profileResult.status === 200) {
         setData(profileResult.data);
       } else {
         setError("Error fetching profile data");
       }
-
-      if (creditsResult.status === 200) {
-        setCredits(creditsResult.data);
-      } else {
-        setError("Error fetching credits data");
-      }
-
       setLoading(false);
     };
-
     fetchData();
   }, []);
+
+  /***
+   * Como era a implementação anterior quando fazia requisição para o get-balance.
+   */
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     setLoading(true);
+  //     const [profileResult, creditsResult] = await Promise.all([
+  //       api.get("/api/profile/"),
+  //       api.get("/api/user/get-balance/"),
+  //     ]);
+
+  //     if (profileResult.status === 200) {
+  //       setData(profileResult.data);
+  //     } else {
+  //       setError("Error fetching profile data");
+  //     }
+
+  //     if (creditsResult.status === 200) {
+  //       setCredits(creditsResult.data);
+  //     } else {
+  //       setError("Error fetching credits data");
+  //     }
+
+  //     setLoading(false);
+  //   };
+
+  //   fetchData();
+  // }, []);
 
   const updateProfilePicture = async (id: string, data: FormData) => {
     setLoading(true);
