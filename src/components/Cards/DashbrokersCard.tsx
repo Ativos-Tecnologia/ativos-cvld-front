@@ -17,14 +17,15 @@ import { tribunais } from '@/constants/tribunais';
 import Cleave from 'cleave.js/react';
 import { estados } from '@/constants/estados';
 import { AiOutlineLoading } from 'react-icons/ai';
-import { UserInfoAPIContext, UserInfoContextType } from '@/context/UserInfoContext';
-import { AxiosError } from 'axios';
 import backendNumberFormat from '@/functions/formaters/backendNumberFormat';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { IoCloseCircle } from 'react-icons/io5';
 import { MdOutlineCircle } from 'react-icons/md';
 import CRMTooltip from '../CrmUi/Tooltip';
 import { GrDocumentUser } from 'react-icons/gr';
+import { BrokersContext } from '@/context/BrokersContext';
+import { RiErrorWarningFill } from 'react-icons/ri';
+import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
 
 const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     {
@@ -33,6 +34,9 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         setEditModalId: React.Dispatch<React.SetStateAction<string | null>>
     }
 ) => {
+
+    /* ====> context imports <==== */
+    const { setCedenteModal } = useContext(BrokersContext);
 
     /* ====> form imports <==== */
     const {
@@ -99,7 +103,6 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         is_complete: boolean
     }>({
         queryKey: ["broker_list_precatorio_check", oficio.id],
-        staleTime: 13000, // 13 segundos
         refetchInterval: 60000, // um minuto
         queryFn: async () => {
             const req = await api.get(`/api/checker/complete/precatorio/${oficio.id}/`);
@@ -109,6 +112,24 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             return req.data;
         }
     });
+
+    const { data: cedenteCheck, isPending: cedenteCheckPending } = useQuery<{
+        is_complete: boolean
+    }>({
+        queryKey: ["broker_list_cedente_check", oficio.id],
+        refetchInterval: 60000, // um minuto
+        queryFn: async () => {
+            const idCedente = oficio.properties["Cedente PF"].relation?.[0] ?
+                oficio.properties["Cedente PF"].relation?.[0].id :
+                null;
+
+            const req = await api.get(`/api/checker/complete/cedente/pf/${idCedente}/precatorio/${oficio.id}/`);
+
+            if (req.data === null) return;
+
+            return req.data;
+        }
+    })
 
     // Função para atualizar a proposta e ajustar a comissão proporcionalmente
     const handleProposalSliderChange = (
@@ -285,17 +306,21 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         onMutate: async () => {
             setIsSavingEdit(true);
             await queryClient.cancelQueries({ queryKey: ['broker_list'] });
+            await queryClient.cancelQueries({ queryKey: ["broker_list_precatorio_check", oficio.id] });
+            await queryClient.cancelQueries({ queryKey: ["broker_list_cedente_check", oficio.id] });
             const previousData = queryClient.getQueryData(['broker_list']);
             return { previousData }
         },
-        onError: (eror, data, context) => {
+        onError: (error, data, context) => {
             queryClient.setQueryData(['broker_list'], context?.previousData);
             toast.error('Erro ao atualizar o ofício!', {
                 icon: <BiX className="text-lg fill-red-500" />
             });
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["broker_list"] });
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ["broker_list"] });
+            await queryClient.invalidateQueries({ queryKey: ["broker_list_precatorio_check", oficio.id] });
+            await queryClient.invalidateQueries({ queryKey: ["broker_list_cedente_check", oficio.id] });
             toast.success('Dados do ofício atualizados!', {
                 icon: <BiCheck className="text-lg fill-green-400" />
             });
@@ -304,6 +329,12 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             setIsSavingEdit(false);
         }
     });
+
+    // descomentar caso queria trackear as queries existentes
+    // estava dando bug no invalidateQueries quando essa linha de código
+    // foi adicionada
+
+    console.log(queryClient.getQueryCache().getAll())
 
     const updateObservation = useMutation({
         mutationFn: async (message: string) => {
@@ -468,7 +499,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
                     <div>
                         <p className='text-black dark:text-snow uppercase font-medium'>CPF/CNPJ:</p>
-                        <p>{oficio.properties["CPF/CNPJ"].rich_text![0].text.content || "Não informado"}</p>
+                        <p>{applyMaskCpfCnpj(oficio.properties["CPF/CNPJ"].rich_text![0].text.content || "") || "Não informado"}</p>
                     </div>
 
                     <div>
@@ -491,10 +522,19 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                         </button>
 
                         <button
-                            onClick={() => {}}
+                            onClick={() => setCedenteModal(oficio)}
                             className='flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm'>
-                            <GrDocumentUser />
-                            Juntar Cedente
+                            {(cedenteCheck && cedenteCheck.is_complete !== null) ? (
+                                <>
+                                    <BsPencilSquare />
+                                    Editar Cedente
+                                </>
+                            ) : (
+                                <>
+                                    <GrDocumentUser />
+                                    Juntar Cedente
+                                </>
+                            )}
                         </button>
 
                         <button
@@ -524,9 +564,28 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                     )}
                                 </>
                             )}
-                            <CRMTooltip text="Info. Cedente Incompleto">
-                                <IoCloseCircle className="text-red w-5 h-5" />
-                            </CRMTooltip>
+                            {cedenteCheckPending ? (
+                                <AiOutlineLoading className='w-4 h-4 animate-spin' />
+                            ) : (
+                                <>
+                                    {(cedenteCheck && cedenteCheck.is_complete === true) && (
+                                        <CRMTooltip text="Cedente preenchido">
+                                            <BsCheckCircleFill className='text-green-400' />
+                                        </CRMTooltip>
+                                    )}
+                                    {(cedenteCheck && cedenteCheck.is_complete === false) && (
+                                        <CRMTooltip text="Cedente incompleto">
+                                            <IoCloseCircle className="text-red w-5 h-5" />
+                                        </CRMTooltip>
+                                    )}
+                                    {(cedenteCheck && cedenteCheck.is_complete === null) && (
+                                        <CRMTooltip text="Cedente não vinculado">
+                                            <RiErrorWarningFill className="text-amber-300 w-5 h-5" />
+                                        </CRMTooltip>
+                                    )}
+                                </>
+                            )}
+
                             <MdOutlineCircle className='w-4 h-4' />
                         </div>
 

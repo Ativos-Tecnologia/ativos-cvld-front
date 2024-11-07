@@ -37,7 +37,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
   const [logoColorSrc, setLogoColorSrc] = useState<string>("");
-  
+
   const { data: { product } } = useContext(UserInfoAPIContext);
   const [userApprovation, setUserApprovation] = useState<boolean | null>(null);
 
@@ -64,18 +64,18 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     queryFn: fetchItems
   });
 
-useEffect(() => {
-  async function fetchUserApprovation() {
-    try {
-      const response = await api.get("/api/profile/");
-      setUserApprovation(response.data.staff_approvation);
-    } catch (e) {
-      console.error(`Erro ao tentar verificar aprovação do usuário: ${e}`);
+  useEffect(() => {
+    async function fetchUserApprovation() {
+      try {
+        const response = await api.get("/api/profile/");
+        setUserApprovation(response.data.staff_approvation);
+      } catch (e) {
+        console.error(`Erro ao tentar verificar aprovação do usuário: ${e}`);
+      }
     }
-  }
 
-  fetchUserApprovation();
-}, []);
+    fetchUserApprovation();
+  }, []);
 
 
   const [themeApplied] = useColorMode();
@@ -207,11 +207,10 @@ useEffect(() => {
                     <React.Fragment>
                       <Link
                         href="#"
-                        className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${
-                          (pathname === "/" ||
-                            pathname.includes("dashboard")) &&
+                        className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${(pathname === "/" ||
+                          pathname.includes("dashboard")) &&
                           "bg-blue-700/90 text-white dark:bg-meta-4"
-                        }`}
+                          }`}
                         onClick={(e) => {
                           e.preventDefault();
                           sidebarExpanded
@@ -231,18 +230,29 @@ useEffect(() => {
                       >
                         <ul className="mb-5.5 mt-4 flex flex-col gap-2.5 pl-6">
                           {product !== "wallet" && (
-                            <li>
-                              <Link
-                                href="/"
-                                className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out  hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${
-                                  pathname === "/" &&
-                                  "bg-blue-700/70 text-white dark:bg-meta-4 dark:hover:bg-form-strokedark"
-                                }`}
-                              >
-                                <BiCalculator />
-                                <span>Calculadora</span>
-                              </Link>
-                            </li>
+                            <>
+                              <li>
+                                <Link
+                                  href="/"
+                                  className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out  hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${pathname === "/" &&
+                                    "bg-blue-700/70 text-white dark:bg-meta-4 dark:hover:bg-form-strokedark"
+                                    }`}
+                                >
+                                  <BiCalculator />
+                                  <span>Calculadora</span>
+                                </Link>
+                              </li>
+                              <li>
+                                <Link
+                                  href="/dashboard/broker"
+                                  className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${pathname === "/dashboard/broker" && "bg-blue-700/70 text-white hover:bg-blue-800/50 dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
+                                >
+                                  <FaBuildingUser />
+                                  <span>Broker</span>
+                                </Link>
+                              </li>
+                            </>
+
                           )}
                           {product !== "crm" && (
                             <>
@@ -274,15 +284,6 @@ useEffect(() => {
                                   </span>
                                 </Link>
                               </li>
-                                <li>
-                                  <Link
-                                    href="/dashboard/broker"
-                                    className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${pathname === "/dashboard/wallet" && "bg-blue-700/70 text-white hover:bg-blue-800/50 dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
-                                  >
-                                    <FaBuildingUser />
-                                    <span>Broker</span>
-                                  </Link>
-                                </li>
                             </>
                           )}
                         </ul>
