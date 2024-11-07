@@ -24,11 +24,7 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
-
-  const {
-    theme,
-    setTheme,
-  } = useContext(GeneralUIContext);
+  const { theme, setTheme } = useContext(GeneralUIContext);
 
   const { modalOpen, setModalOpen } = useContext(DefaultLayoutContext);
 
@@ -38,7 +34,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const sidebar = useRef<any>(null);
   const [logoColorSrc, setLogoColorSrc] = useState<string>("");
 
-  const { data: { product } } = useContext(UserInfoAPIContext);
+  const {
+    data: { product },
+  } = useContext(UserInfoAPIContext);
   const [userApprovation, setUserApprovation] = useState<boolean | null>(null);
 
   let storedSidebarExpanded = "true";
@@ -48,20 +46,22 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   );
 
   const fetchItems = async () => {
-    const response = await api.post("api/notion-api/marketplace/available/?count/");
+    const response = await api.post(
+      "api/notion-api/marketplace/available/?count/",
+    );
 
     if (response.status === 200) {
-      return response.data
+      return response.data;
     } else {
-      return 0
+      return 0;
     }
-  }
+  };
 
   const { data, isFetching } = useQuery({
     queryKey: ["marketplace_active_items"],
     refetchInterval: 60 * 1000, // sessenta segundos
     staleTime: 50 * 1000, // cinquenta segundos
-    queryFn: fetchItems
+    queryFn: fetchItems,
   });
 
   useEffect(() => {
@@ -77,9 +77,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     fetchUserApprovation();
   }, []);
 
-
   const [themeApplied] = useColorMode();
-
 
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
@@ -114,53 +112,51 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     }
   }, [sidebarExpanded]);
 
-
   return (
     <aside
       ref={sidebar}
-      className={`absolute left-0 top-0 z-10 flex h-screen w-62.5 flex-col overflow-y-hidden bg-white dark:bg-boxdark lg:static lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-all duration-200`}
+      className={`absolute left-0 top-0 z-10 flex h-screen w-62.5 flex-col overflow-y-hidden bg-white dark:bg-boxdark lg:static lg:translate-x-0 ${
+        sidebarOpen ? "translate-x-0" : "-translate-x-full"
+      } transition-all duration-200`}
     >
       {/* <!-- SIDEBAR HEADER --> */}
-      <div className="flex justify-center gap-5 2xsm:px-2 lg:px-6 py-5.5 lg:py-6.5">
+      <div className="flex justify-center gap-5 py-5.5 2xsm:px-2 lg:px-6 lg:py-6.5">
         <Link href="/">
-          {
-            theme !== "light" ? (
-              <div className="flex items-center gap-2">
-                <Image
-                  width={60}
-                  height={32}
-                  src="/images/logo/new-logo-dark.png"
-                  alt="Logo"
-                  priority
-                />
-                <Image
-                  width={120}
-                  height={32}
-                  src="/images/logo/celer-app-text-logo-dark.svg"
-                  alt="Logo"
-                  priority
-                />
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Image
-                  width={60}
-                  height={32}
-                  src="/images/logo/ativos_logo_at_default.png"
-                  alt="Logo"
-                  priority
-                />
-                <Image
-                  width={120}
-                  height={32}
-                  src="/images/logo/celer-app-text-logo-light.svg"
-                  alt="Logo"
-                  priority
-                />
-              </div>
-            )
-          }
+          {theme !== "light" ? (
+            <div className="flex items-center gap-2">
+              <Image
+                width={60}
+                height={32}
+                src="/images/logo/new-logo-dark.png"
+                alt="Logo"
+                priority
+              />
+              <Image
+                width={120}
+                height={32}
+                src="/images/logo/celer-app-text-logo-dark.svg"
+                alt="Logo"
+                priority
+              />
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Image
+                width={60}
+                height={32}
+                src="/images/logo/ativos_logo_at_default.png"
+                alt="Logo"
+                priority
+              />
+              <Image
+                width={120}
+                height={32}
+                src="/images/logo/celer-app-text-logo-light.svg"
+                alt="Logo"
+                priority
+              />
+            </div>
+          )}
         </Link>
 
         <button
@@ -207,10 +203,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     <React.Fragment>
                       <Link
                         href="#"
-                        className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${(pathname === "/" ||
-                          pathname.includes("dashboard")) &&
+                        className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${
+                          (pathname === "/" ||
+                            pathname.includes("dashboard")) &&
                           "bg-blue-700/90 text-white dark:bg-meta-4"
-                          }`}
+                        }`}
                         onClick={(e) => {
                           e.preventDefault();
                           sidebarExpanded
@@ -229,32 +226,36 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         className={`translate transform overflow-hidden ${!open ? "max-h-0" : "max-h-550"} transition-all duration-200`}
                       >
                         <ul className="mb-5.5 mt-4 flex flex-col gap-2.5 pl-6">
-                          {product !== "wallet" && (
+                          {product === "global" && (
                             <>
                               <li>
                                 <Link
                                   href="/"
-                                  className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out  hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${pathname === "/" &&
+                                  className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out  hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${
+                                    pathname === "/" &&
                                     "bg-blue-700/70 text-white dark:bg-meta-4 dark:hover:bg-form-strokedark"
-                                    }`}
+                                  }`}
                                 >
                                   <BiCalculator />
                                   <span>Calculadora</span>
                                 </Link>
                               </li>
-                              <li>
-                                <Link
-                                  href="/dashboard/broker"
-                                  className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${pathname === "/dashboard/broker" && "bg-blue-700/70 text-white hover:bg-blue-800/50 dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
-                                >
-                                  <FaBuildingUser />
-                                  <span>Broker</span>
-                                </Link>
-                              </li>
                             </>
-
                           )}
-                          {product !== "crm" && (
+
+                          {(product === "crm" || product === "global") && (
+                            <li>
+                              <Link
+                                href="/dashboard/broker"
+                                className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${pathname === "/dashboard/broker" && "bg-blue-700/70 text-white hover:bg-blue-800/50 dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
+                              >
+                                <FaBuildingUser />
+                                <span>Broker</span>
+                              </Link>
+                            </li>
+                          )}
+
+                          {(product === "wallet" || product === "global") && (
                             <>
                               <li
                                 className={`${userApprovation === false ? "hidden" : null}`}
@@ -295,17 +296,19 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
               {/* <!-- Menu Item Dashboard --> */}
               {/* <--- new precatory button --> */}
-              <Link
-                href="#"
-                onClickCapture={() => setModalOpen(!modalOpen)}
-                className={`flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 hover:text-white duration-300 ease-in-out hover:bg-blue-400 dark:hover:bg-form-strokedark ${modalOpen &&
-                  "bg-blue-700/90 dark:bg-meta-4 text-white"
+              <CapaDoBatman show={product !== "wallet"}>
+                <Link
+                  href="#"
+                  onClickCapture={() => setModalOpen(!modalOpen)}
+                  className={`flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-form-strokedark ${
+                    modalOpen && "bg-blue-700/90 text-white dark:bg-meta-4"
                   }`}
-                onClick={() => { }}
-              >
-                <BiPlus style={{ width: '22px', height: '22px' }} />
-                <span>Novo Precatório</span>
-              </Link>
+                  onClick={() => {}}
+                >
+                  <BiPlus style={{ width: "22px", height: "22px" }} />
+                  <span>Novo Precatório</span>
+                </Link>
+              </CapaDoBatman>
             </ul>
           </div>
 
