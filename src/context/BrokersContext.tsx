@@ -18,7 +18,12 @@ export const BrokersContext = createContext<BrokersContextProps>({
 
 export const BrokersProvider = ({ children }: { children: React.ReactNode }) => {
 
+    // estado que recebe o id do card que está abrindo o modal
     const [editModalId, setEditModalId] = useState<string | null>(null);
+
+    // estado que recebe o objeto que está sendo renderizado no card
+    // o objeto serve para verificação de campos como identificação
+    // para fins de dinamismo na abertura do modal
     const [cedenteModal, setCedenteModal] = useState<NotionPage | null>(null);
 
     return (
