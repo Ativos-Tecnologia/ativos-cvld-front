@@ -98,7 +98,7 @@ const NewForm = () => {
   // Função para atualizar a proposta e ajustar a comissão proporcionalmente
   const handleProposalSliderChange = (
     value: string,
-    sliderChange:boolean
+    sliderChange: boolean
   ) => {
     const newProposalSliderValue = parseFloat(value);
     setSliderValues((oldValues) => {
@@ -130,7 +130,7 @@ const NewForm = () => {
   // Função para atualizar a comissão e ajustar a proposta proporcionalmente
   const handleComissionSliderChange = (
     value: string,
-    sliderChange:boolean
+    sliderChange: boolean
   ) => {
     const newComissionSliderValue = parseFloat(value);
     setSliderValues((oldValues) => {
@@ -736,49 +736,46 @@ const NewForm = () => {
                   ) : (
                     <div className="col-span-1 hidden md:block"></div>
                   )}
+
                   {/* ====> end label PERCENTUAL DE AQUISIÇÃO <==== */}
+                  <div className="col-span-2 flex w-full flex-col justify-between gap-4 sm:flex-row">
+                    <div
+                      className={`flex flex-row ${watch("ja_possui_destacamento") ? "items-center" : "items-start"} w-full gap-2 2xsm:col-span-2 sm:col-span-1`}
+                    >
+                      <CustomCheckbox
+                        check={watch("ja_possui_destacamento")}
+                        id={"ja_possui_destacamento"}
+                        register={register("ja_possui_destacamento")}
+                        defaultChecked
+                      />
 
-                  {(watch("especie") === "PRINCIPAL" ||
-                    watch("especie") === undefined) && (
-                    <div className="col-span-2 flex w-full flex-col justify-between gap-4 sm:flex-row">
-                      <div
-                        className={`flex flex-row ${watch("ja_possui_destacamento") ? "items-center" : "items-start"} w-full gap-2 2xsm:col-span-2 sm:col-span-1`}
+                      <label
+                        htmlFor="ja_possui_destacamento"
+                        className={`${!watch("ja_possui_destacamento") && "mt-1"} font-nexa text-xs font-semibold uppercase text-meta-5`}
                       >
-                        <CustomCheckbox
-                          check={watch("ja_possui_destacamento")}
-                          id={"ja_possui_destacamento"}
-                          register={register("ja_possui_destacamento")}
-                          defaultChecked
-                        />
-
-                        <label
-                          htmlFor="ja_possui_destacamento"
-                          className={`${!watch("ja_possui_destacamento") && "mt-1"} font-nexa text-xs font-semibold uppercase text-meta-5`}
-                        >
-                          Já possui destacamento de honorários?
-                        </label>
-                      </div>
-                      {watch("ja_possui_destacamento") === false && (
-                        <div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
-                          <div className="flex w-full flex-col gap-2 sm:col-span-1">
-                            <label
-                              htmlFor="percentual_de_honorarios"
-                              className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                            >
-                              Percentual
-                            </label>
-                            <input
-                              type="number"
-                              id="percentual_de_honorarios"
-                              defaultValue={30}
-                              className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                              {...register("percentual_de_honorarios", {})}
-                            />
-                          </div>
-                        </div>
-                      )}
+                        Já possui destacamento de honorários?
+                      </label>
                     </div>
-                  )}
+                    {watch("ja_possui_destacamento") === false && (
+                      <div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                        <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                          <label
+                            htmlFor="percentual_de_honorarios"
+                            className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                          >
+                            Percentual
+                          </label>
+                          <input
+                            type="number"
+                            id="percentual_de_honorarios"
+                            defaultValue={30}
+                            className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                            {...register("percentual_de_honorarios", {})}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
                   <div
                     className={`col-span-2 flex items-center gap-2 md:col-span-1 ${watch("data_base")! < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
@@ -851,7 +848,7 @@ const NewForm = () => {
                     </label>
                   </div>
                   {watch("natureza") === "TRIBUTÁRIA" ||
-                  watch("incidencia_rra_ir") === false ? (
+                    watch("incidencia_rra_ir") === false ? (
                     <>
                       {/* {watch("natureza") === "TRIBUTÁRIA" && watch("incidencia_rra_ir") === false ? null : (
                   <div className="flex items-center col-span-1">&nbsp;</div>
@@ -882,8 +879,8 @@ const NewForm = () => {
                   )}
 
                   {watch("ir_incidente_rra") &&
-                  watch("incidencia_rra_ir") === true &&
-                  watch("natureza") !== "TRIBUTÁRIA" ? (
+                    watch("incidencia_rra_ir") === true &&
+                    watch("natureza") !== "TRIBUTÁRIA" ? (
                     <div className="mt-1 flex flex-col gap-2 overflow-hidden 2xsm:col-span-2 sm:col-span-1">
                       <label
                         htmlFor="numero_de_meses"
@@ -931,7 +928,7 @@ const NewForm = () => {
                     </div>
                   ) : null}
                   {watch("incidencia_pss") &&
-                  watch("natureza") !== "TRIBUTÁRIA" ? (
+                    watch("natureza") !== "TRIBUTÁRIA" ? (
                     <div className="mt-1 flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                       <label
                         htmlFor="valor_pss"
@@ -1007,7 +1004,7 @@ const NewForm = () => {
                         max={new Date().toISOString().split("T")[0]}
                       />
                       {watch("data_limite_de_atualizacao")! <
-                      watch("data_requisicao")! ? (
+                        watch("data_requisicao")! ? (
                         <span
                           role="alert"
                           className="absolute right-4 top-4 text-sm text-red-500"
@@ -1244,13 +1241,13 @@ const NewForm = () => {
                       ) : null}
                     </div>
                     {(data.role === "ativos" || data.role === "judit") &&
-                    watch("gerar_cvld") ? (
+                      watch("gerar_cvld") ? (
                       <>
                         <hr className="col-span-2 my-8 border border-stroke dark:border-strokedark" />
                         <div className="flex flex-col gap-2">
                           {(data.role === "ativos" &&
                             watch("regime") !== "ESPECIAL") ||
-                          watch("regime") === undefined ? (
+                            watch("regime") === undefined ? (
                             <>
                               <div className="flex justify-between">
                                 <div className="flex items-center gap-2">
