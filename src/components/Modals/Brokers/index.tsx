@@ -6,12 +6,13 @@ import { BiTrash, BiX } from 'react-icons/bi';
 import PFform from './PFform';
 import { Fade } from 'react-awesome-reveal';
 import { Button } from '@/components/Button';
+import PJform from './PJform';
 
 export type BrokerModalProps = {
     cardInfo: NotionPage;
 };
 
-type IdentificationType = "CPF" | "CNPJ" | null
+export type IdentificationType = "CPF" | "CNPJ" | null
 
 const BrokerModal = () => {
 
@@ -98,7 +99,13 @@ const BrokerModal = () => {
                     />
                 ) : (
                     <>
-                        {credorIdentificationType === "CNPJ" ? "CNPJ" : (
+                        {credorIdentificationType === "CNPJ" ? (
+                            <PJform
+                                id={cedenteModal!.id}
+                                mode={openingModalMode}
+                                cedenteId={cedenteModal!.properties["Cedente PJ"].relation?.[0]?.id || null}
+                            />
+                        ) : (
                             <Fade duration={700} triggerOnce>
                                 <div className='flex flex-col gap-4 items-center justify-center'>
                                     <TiWarning className='text-amber-300 text-5xl' />
