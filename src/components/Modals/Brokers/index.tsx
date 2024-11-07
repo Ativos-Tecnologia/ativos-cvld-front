@@ -78,8 +78,6 @@ const BrokerModal = () => {
 
     }, [credorIdentificationType])
 
-    console.log(cedenteModal)
-
     return (
         <div
             role="dialog"

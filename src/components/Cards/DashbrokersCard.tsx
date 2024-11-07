@@ -1,7 +1,7 @@
 import numberFormat from '@/functions/formaters/numberFormat'
-import React, { use, useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import CustomCheckbox from '../CrmUi/Checkbox';
-import { BiCheck, BiLineChart, BiLogoUpwork, BiSave, BiX } from 'react-icons/bi';
+import { BiCheck, BiSave, BiX } from 'react-icons/bi';
 import { BsCheckCircleFill, BsPencilSquare } from 'react-icons/bs';
 import { FaRegFilePdf } from 'react-icons/fa';
 import { Button } from '../Button';
@@ -342,7 +342,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     // estava dando bug no invalidateQueries quando essa linha de código
     // foi adicionada
 
-    console.log(queryClient.getQueryCache().getAll())
+    // console.log(queryClient.getQueryCache().getAll())
 
     const updateObservation = useMutation({
         mutationFn: async (message: string) => {
