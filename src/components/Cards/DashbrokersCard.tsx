@@ -1,5 +1,5 @@
 import numberFormat from '@/functions/formaters/numberFormat'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { use, useContext, useEffect, useRef, useState } from 'react'
 import CustomCheckbox from '../CrmUi/Checkbox';
 import { BiCheck, BiLineChart, BiLogoUpwork, BiSave, BiX } from 'react-icons/bi';
 import { BsCheckCircleFill, BsPencilSquare } from 'react-icons/bs';
@@ -26,6 +26,7 @@ import { GrDocumentUser } from 'react-icons/gr';
 import { BrokersContext } from '@/context/BrokersContext';
 import { RiErrorWarningFill } from 'react-icons/ri';
 import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
+import { IdentificationType } from '../Modals/Brokers';
 
 const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     {
@@ -92,6 +93,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const [savingObservation, setSavingObservation] = useState<boolean>(false);
     const [isProposalButtonDisabled, setIsProposalButtonDisabled] = useState<boolean>(true);
     const [errorMessage, setErrorMessage] = useState<boolean>(false);
+    const [credorIdentificationType, setCredorIdentificationType] = useState<IdentificationType>(null)
 
     /* ====> refs <==== */
     const proposalRef = useRef<HTMLInputElement | null>(null);
@@ -103,7 +105,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         is_complete: boolean
     }>({
         queryKey: ["broker_list_precatorio_check", oficio.id],
-        refetchInterval: 60000, // um minuto
+        refetchInterval: 30000, // um minuto
         queryFn: async () => {
             const req = await api.get(`/api/checker/complete/precatorio/${oficio.id}/`);
 
@@ -117,18 +119,24 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         is_complete: boolean
     }>({
         queryKey: ["broker_list_cedente_check", oficio.id],
-        refetchInterval: 60000, // um minuto
+        refetchInterval: 30000, // um minuto
         queryFn: async () => {
-            const idCedente = oficio.properties["Cedente PF"].relation?.[0] ?
-                oficio.properties["Cedente PF"].relation?.[0].id :
+            if (credorIdentificationType === null) return;
+            const cedenteType = credorIdentificationType === "CPF" ? "Cedente PF" : "Cedente PJ";
+
+            const idCedente = oficio.properties[cedenteType].relation?.[0] ?
+                oficio.properties[cedenteType].relation?.[0].id :
                 null;
 
-            const req = await api.get(`/api/checker/complete/cedente/pf/${idCedente}/precatorio/${oficio.id}/`);
+            const req = credorIdentificationType === "CPF" ?
+                await api.get(`/api/checker/complete/cedente/pf/${idCedente}/precatorio/${oficio.id}/`) :
+                await api.get(`/api/checker/complete/cedente/pj/${idCedente}/precatorio/${oficio.id}/`);
 
             if (req.data === null) return;
 
             return req.data;
-        }
+        },
+        enabled: credorIdentificationType !== null
     })
 
     // Função para atualizar a proposta e ajustar a comissão proporcionalmente
@@ -479,6 +487,15 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         }
 
     }, [oficio, isSavingEdit]);
+
+    useEffect(() => {
+        if (oficio === null) return;
+
+        // verifica o tipo de identificação do credor e formata para só obter números na string
+        const credorIdent = oficio.properties["CPF/CNPJ"].rich_text![0].text.content.replace(/\D/g, '');
+
+        setCredorIdentificationType(credorIdent.length === 11 ? "CPF" : credorIdent.length === 14 ? "CNPJ" : null);
+    }, [oficio]);
 
     return (
         <div className="relative col-span-1 gap-5 bg-white dark:bg-boxdark p-5 rounded-md border border-stroke dark:border-strokedark">
