@@ -13,7 +13,7 @@ export const APP_ROUTES = {
       name: "/dashboard/marketplace/:id",
     },
     broker: {
-      name: "dashboard/broker",
+      name: "/dashboard/broker",
     },
     profile: {
       name: "/profile",
