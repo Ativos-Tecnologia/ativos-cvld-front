@@ -18,33 +18,26 @@ import { PiCityFill } from 'react-icons/pi';
 import { RiRoadMapLine } from 'react-icons/ri';
 import { TbBuildingEstate } from 'react-icons/tb';
 import { TiWarning } from 'react-icons/ti';
-import ReactInputMask from 'react-input-mask';
 import { toast } from 'sonner';
 
-type FormValuesForPF = {
-  nome_completo: string;
-  cpf: string;
-  identidade: string;
+type FormValuesForPJ = {
+  razao_social: string;
+  cnpj: string;
   cep: string;
   bairro: string;
   celular: string;
   email: string;
   estado: string;
-  data_nascimento: string;
-  profissao: string;
   logradouro: string;
   numero: number | string;
   complemento?: string;
   municipio: string;
-  orgao_exp: string;
-  nome_pai: string;
-  nome_mae: string;
-  nacionalidade: string;
+  socio_representante: any;
   relacionado_a: string;
 }
 
 
-const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "create", cedenteId: string | null }) => {
+const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "create", cedenteId: string | null }) => {
 
   const {
     register,
@@ -52,11 +45,8 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     control,
     setValue,
     formState: { errors },
-  } = useForm<FormValuesForPF>({
-    shouldFocusError: false,
-    defaultValues: {
-      nacionalidade: "Brasileiro"
-    }
+  } = useForm<FormValuesForPJ>({
+    shouldFocusError: false
   });
 
   const { setCedenteModal } = useContext(BrokersContext);
@@ -66,12 +56,12 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
   const [openUnlinkModal, setOpenUnlinkModal] = useState<boolean>(false);
 
   /* ====> tan stack requests and datas ====> */
-  const { data: cedentePfData, isPending: pendingCedentePfData = false } = useQuery<NotionPage>({
+  const { data: cedentePjData, isPending: pendingCedentePjData = false } = useQuery<NotionPage>({
     queryKey: ["broker_card_cedente_data", cedenteId],
     staleTime: 1000,
     queryFn: async () => {
       if (cedenteId === null) return;
-      const req = await api.get(`/api/cedente/show/pf/${cedenteId}/`)
+      const req = await api.get(`/api/cedente/show/pj/${cedenteId}/`)
 
       if (req.data === null) return;
 
@@ -82,8 +72,8 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
 
   // mutations
   const createCedente = useMutation({
-    mutationFn: async (data: FormValuesForPF) => {
-      const req = await api.post(`/api/cedente/create/pf/`, data);
+    mutationFn: async (data: FormValuesForPJ) => {
+      const req = await api.post(`/api/cedente/create/pj/`, data);
       return req.data;
     },
     onMutate: async () => {
@@ -101,8 +91,8 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
                 ...item,
                 properties: {
                   ...item.properties,
-                  "Cedente PF": {
-                    ...item.properties["Cedente PF"],
+                  "Cedente PJ": {
+                    ...item.properties["Cedente PJ"],
                     relation: [
                       {
                         id: "",
@@ -137,11 +127,11 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     onSettled: () => {
       setIsUpdating(false);
     }
-  });
+  })
 
   const updateCedente = useMutation({
-    mutationFn: async (data: FormValuesForPF) => {
-      const req = await api.patch(`/api/cedente/update/pf/${cedenteId}/`, data);
+    mutationFn: async (data: FormValuesForPJ) => {
+      const req = await api.patch(`/api/cedente/update/pj/${cedenteId}/`, data);
       return req.data;
     },
     onMutate: async () => {
@@ -165,7 +155,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       await queryClient.invalidateQueries({ queryKey: ["broker_list"] });
       await queryClient.invalidateQueries({ queryKey: ["broker_list_cedente_check", id] });
       await queryClient.invalidateQueries({ queryKey: ["broker_list_precatorio_check", id] });
-      setCedenteModal(null)
+      setCedenteModal(null);
     },
     onSettled: () => {
       setIsUpdating(false);
@@ -179,7 +169,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     setIsUnlinking(true);
 
     try {
-      const req = await api.delete(`/api/cedente/unlink/pf/${cedenteId}/precatorio/${id}/`);
+      const req = await api.delete(`/api/cedente/unlink/pj/${cedenteId}/precatorio/${id}/`);
       if (req.status === 204) {
         toast.success("Cedente desvinculado com sucesso", {
           icon: <BiCheck className="text-lg fill-green-400" />
@@ -205,14 +195,6 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
 
     if (data.celular) {
       data.celular = data.celular.replace(/\D/g, ''); // remove tudo que não for dígito
-    }
-
-    if (data.data_nascimento) {
-      data.data_nascimento = data.data_nascimento.split("/").reverse().join("-");
-    }
-
-    if (data.numero) {
-      data.numero = parseInt(data.numero);
     }
 
     if (mode === "edit") {
@@ -243,32 +225,25 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
   };
 
   useEffect(() => {
-    if (mode === "edit" && cedentePfData) {
+    if (mode === "edit" && cedentePjData) {
 
       // valores obrigatórios em um cadastro
-      setValue("nome_completo", cedentePfData.properties["Nome Completo"].title[0].text.content);
-      setValue("cpf", cedentePfData.properties["CPF"].rich_text![0].text.content);
-      setValue("identidade", cedentePfData.properties["Identidade"].rich_text![0].text.content);
-      setValue("cep", cedentePfData.properties["CEP"].rich_text![0].text.content);
+      setValue("razao_social", cedentePjData.properties["Razão Social"].title[0].text.content);
+      setValue("cnpj", cedentePjData.properties["CNPJ"].rich_text![0].text.content);
+      setValue("cep", cedentePjData.properties["CEP"].rich_text![0].text.content);
 
       //valores opcionais
-      setValue("orgao_exp", cedentePfData.properties["Órgão Expedidor"].rich_text?.[0]?.text.content || "");
-      setValue("bairro", cedentePfData.properties["Bairro"].rich_text?.[0]?.text.content || "");
-      setValue("celular", cedentePfData.properties["Celular"].phone_number || "");
-      setValue("email", cedentePfData.properties["Email"].email || "");
-      setValue("estado", cedentePfData.properties["Estado (UF)"].select?.name || "");
-      setValue("data_nascimento", cedentePfData.properties["Nascimento"].date?.start.split("-").reverse().join("/") || "");
-      setValue("profissao", cedentePfData.properties["Profissão"].rich_text?.[0]?.text.content || "");
-      setValue("logradouro", cedentePfData.properties["Rua/Av/Logradouro"].rich_text?.[0]?.text.content || "");
-      setValue("numero", cedentePfData.properties["Número"].number || "");
-      setValue("complemento", cedentePfData.properties["Complemento"].rich_text?.[0]?.text.content || "");
-      setValue("municipio", cedentePfData.properties["Município"].select?.name || "");
-      setValue("nome_pai", cedentePfData.properties["Nome do Pai"].rich_text?.[0]?.text.content || "");
-      setValue("nome_mae", cedentePfData.properties["Nome da Mãe"].rich_text?.[0]?.text.content || "");
-      setValue("nacionalidade", cedentePfData.properties["Nacionalidade"].select?.name || "");
+      setValue("bairro", cedentePjData.properties["Bairro"].rich_text?.[0]?.text.content || "");
+      setValue("celular", cedentePjData.properties["Celular"].phone_number || "");
+      setValue("email", cedentePjData.properties["Email"].email || "");
+      setValue("estado", cedentePjData.properties["Estado (UF)"].select?.name || "");
+      setValue("logradouro", cedentePjData.properties["Rua/Av/Logradouro"].rich_text?.[0]?.text.content || "");
+      setValue("numero", cedentePjData.properties["Número"].rich_text?.[0]?.text.content || "");
+      setValue("complemento", cedentePjData.properties["Complemento"].rich_text?.[0]?.text.content || "");
+      setValue("municipio", cedentePjData.properties["Município"].select?.name || "");
 
     }
-  }, [cedentePfData]);
+  }, [cedentePjData]);
 
   return (
     <div className='max-h-[480px] overflow-y-scroll px-3'>
@@ -303,32 +278,32 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
 
         {/* nome completo */}
         <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
-          <label htmlFor="nome_completo" className='flex items-center justify-center gap-2'>
+          <label htmlFor="razao_social" className='flex items-center justify-center gap-2'>
             <FaUserLarge />
-            <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Nome Completo</span>
+            <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Razão Social</span>
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
-            {...register("nome_completo", {
+            placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            {...register("razao_social", {
               required: {
                 value: true,
                 message: "Campo obrigatório"
               }
             })}
-            className={`${errors.nome_completo ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
+            className={`${errors.razao_social ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
           />
-          {errors.nome_completo && <span className='absolute top-1/2 -translate-y-1/2 right-3 text-red text-xs font-medium'>{errors.nome_completo.message}</span>}
+          {errors.razao_social && <span className='absolute top-1/2 -translate-y-1/2 right-3 text-red text-xs font-medium'>{errors.razao_social.message}</span>}
         </div>
 
         {/* CPF */}
         <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
           <label htmlFor="cpf" className='flex items-center justify-center gap-2'>
             <HiMiniIdentification className='text-lg' />
-            <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>CPF</span>
+            <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>CNPJ</span>
           </label>
           <Controller
-            name="cpf"
+            name="cnpj"
             control={control}
             rules={{
               required: "Campo obrigatório",
@@ -337,59 +312,16 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
               <>
                 <Cleave
                   {...field}
-                  placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+                  placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
                   className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
                   options={{
-                    delimiters: [".", ".", "-"],
-                    blocks: [3, 3, 3, 2]
+                    delimiters: [".", ".", "/", "-"],
+                    blocks: [2, 3, 3, 4, 2]
                   }}
                 />
                 {error && <span className='absolute top-1/2 -translate-y-1/2 right-3 text-red text-xs font-medium'>{error.message}</span>}
               </>
             )}
-          />
-        </div>
-
-        {/* Identidade */}
-        <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
-          <label htmlFor="identidade" className='flex items-center justify-center gap-2'>
-            <HiMiniIdentification className='text-lg' />
-            <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Identidade</span>
-          </label>
-          <Controller
-            name="identidade"
-            control={control}
-            rules={{
-              required: "Campo obrigatório",
-            }}
-            render={({ field, fieldState: { error } }) => (
-              <>
-                <Cleave
-                  {...field}
-                  placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
-                  className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
-                  options={{
-                    delimiters: [".", "."],
-                    blocks: [1, 3, 3]
-                  }}
-                />
-                {error && <span className='absolute top-1/2 -translate-y-1/2 right-3 text-red text-xs font-medium'>{error.message}</span>}
-              </>
-            )}
-          />
-        </div>
-
-        {/* Órgão expedidor */}
-        <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
-          <label htmlFor="orgao_exp" className='flex items-center justify-center gap-2'>
-            <FaUniversity />
-            <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Órgão expedidor</span>
-          </label>
-          <input
-            type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
-            {...register("orgao_exp")}
-            className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
         </div>
 
@@ -409,7 +341,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
               <>
                 <Cleave
                   {...field}
-                  placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+                  placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
                   className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
                   options={{
                     delimiter: "-",
@@ -430,7 +362,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("bairro")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -449,7 +381,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
               <>
                 <Cleave
                   {...field}
-                  placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+                  placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
                   className="border-stroke dark:border-strokedark flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
                   options={{
                     delimiters: [" ", " ", "-"],
@@ -469,7 +401,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("email")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -483,47 +415,8 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("estado")}
-            className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
-          />
-        </div>
-
-        {/* data de nascimento */}
-        <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
-          <label htmlFor="data_nascimento" className='flex items-center justify-center gap-2'>
-            <BsFillCalendar2WeekFill className='text-sm' />
-            <span title='Data de nascimento' className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Data de nascimento</span>
-          </label>
-          <Controller
-            name="data_nascimento"
-            control={control}
-            render={({ field }) => (
-              <>
-                <Cleave
-                  {...field}
-                  placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
-                  className="border-stroke dark:border-strokedark flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
-                  options={{
-                    delimiters: ["/", "/"],
-                    blocks: [2, 2, 4]
-                  }}
-                />
-              </>
-            )}
-          />
-        </div>
-
-        {/* Profissão */}
-        <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
-          <label htmlFor="profissao" className='flex items-center justify-center gap-2'>
-            <FaBriefcase className='text-sm' />
-            <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Profissão</span>
-          </label>
-          <input
-            type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
-            {...register("profissao")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
         </div>
@@ -536,7 +429,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("logradouro")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -550,7 +443,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("numero")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -564,7 +457,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("complemento")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -578,50 +471,8 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("municipio")}
-            className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
-          />
-        </div>
-
-        {/* Nome do pai */}
-        <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
-          <label htmlFor="nome_pai" className='flex items-center justify-center gap-2'>
-            <FaMale />
-            <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Nome do Pai</span>
-          </label>
-          <input
-            type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
-            {...register("nome_pai")}
-            className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
-          />
-        </div>
-
-        {/* Nome da mãe */}
-        <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
-          <label htmlFor="nome_mae" className='flex items-center justify-center gap-2'>
-            <FaFemale />
-            <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Nome da Mãe</span>
-          </label>
-          <input
-            type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
-            {...register("nome_mae")}
-            className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
-          />
-        </div>
-
-        {/* Nacionalidade */}
-        <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
-          <label htmlFor="nacionalidade" className='flex items-center justify-center gap-2'>
-            <FaFlag />
-            <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Nacionalidade</span>
-          </label>
-          <input
-            type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
-            {...register("nacionalidade")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
         </div>
@@ -674,4 +525,4 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
   )
 }
 
-export default PFform;
+export default PJform;
