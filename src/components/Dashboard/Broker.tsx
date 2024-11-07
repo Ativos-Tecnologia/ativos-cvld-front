@@ -7,11 +7,13 @@ import BrokerCardSkeleton from "../Skeletons/BrokerCardSkeleton";
 import { Fade } from "react-awesome-reveal";
 import Image from "next/image";
 import { BrokersContext } from "@/context/BrokersContext";
+import BrokerModal from "../Modals/Brokers";
 
 const Broker: React.FC = () => {
 
   const {
-    editModalId, setEditModalId
+    editModalId, setEditModalId,
+    cedenteModal, setCedenteModal
   } = useContext(BrokersContext);
 
   const fetchBrokerList = async () => {
@@ -27,7 +29,7 @@ const Broker: React.FC = () => {
     refetchOnReconnect: true,
     refetchOnWindowFocus: true,
     refetchInterval: 60000,
-    staleTime: 13000,
+    staleTime: 1000,
     queryFn: fetchBrokerList,
   });
 
@@ -69,6 +71,9 @@ const Broker: React.FC = () => {
           </>
         )}
       </div>
+      {cedenteModal !== null && (
+        <BrokerModal/>
+      )}
     </>
   );
 };
