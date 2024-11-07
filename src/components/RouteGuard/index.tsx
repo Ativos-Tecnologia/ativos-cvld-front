@@ -48,8 +48,6 @@ export default function RouteGuard({
           router.push("/dashboard/broker");
         } else if (product === "wallet") {
           router.push("/dashboard/wallet");
-        } else {
-          router.push("/");
         }
       }
     }
