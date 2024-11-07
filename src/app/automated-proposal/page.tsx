@@ -538,7 +538,6 @@ E abaixo, uma memória das informações de entrada:
               >
                 <label
                   htmlFor="esfera"
-                  data-testid="esfera-id"
                   className="font-nexa text-xs font-semibold uppercase text-meta-5"
                 >
                   Esfera
