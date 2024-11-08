@@ -12,16 +12,16 @@ import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 import { Fade } from "react-awesome-reveal";
-import { HiOutlineArrowRight } from "react-icons/hi";
 
 import { Button } from "@/components/Button";
 import ForgotPassword from "@/components/Modals/ForgotPassword";
 import usePassword from "@/hooks/usePassword";
 import { useQueryClient } from "@tanstack/react-query";
 import { AiOutlineLoading } from "react-icons/ai";
-import { BiLockAlt, BiUser } from "react-icons/bi";
+import { BiLockAlt, BiUser, BiX } from "react-icons/bi";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import "./index.css";
+import { set } from "date-fns";
 
 export type SignInInputs = {
   username: string;
@@ -108,13 +108,12 @@ const SignIn: React.FC = () => {
   return (
     <>
       {/* <!-- ===== Page Wrapper Start ===== --> */}
-      <div className="relative flex font-nexa items-center justify-center overflow-hidden xl:min-h-screen">
+      <div className="relative flex items-center justify-center overflow-hidden font-nexa xl:min-h-screen">
         <main className="flex-1 overflow-hidden shadow-2 xl:h-screen 3xl:h-[700px] 3xl:max-w-[75%] 3xl:rounded-md">
           <Fade className="h-full">
-            <div className="new_hero_login h-full overflow-hidden flex">
-
+            <div className="new_hero_login flex h-full overflow-hidden">
               {/* ornaments */}
-              <div className="absolute z-2 inset-0 w-full h-full bg-cover bg-center">
+              <div className="absolute inset-0 z-2 h-full w-full bg-cover bg-center">
                 <Image
                   src={"/images/ornaments/vector-1.svg"}
                   alt="ornamento inferior direito de faixas azuis"
@@ -144,21 +143,30 @@ const SignIn: React.FC = () => {
               </div>
 
               {/* container */}
-              <div className="relative z-[4] container-grid ml-50 w-115  3xl:ml-40">
+              <div className="container-grid relative z-[4] ml-50 w-115  3xl:ml-40">
                 <Image
                   src="/images/logo/celer-app-text-dark.svg"
                   alt="logo da ativos"
                   width={300}
                   height={32}
-                  className="self-end mb-5 mx-auto"
+                  className="mx-auto mb-5 self-end"
                 />
 
                 {showLoginForm ? (
                   <Fade>
-                    <div className="p-5 bg-snow rounded-lg w-115 mt-5">
-                      <h2 className="text-2xl font-semibold text-[#083b88] mb-6">Acesse sua conta</h2>
+                    <div className="mt-5 w-115 rounded-lg bg-snow p-5">
+                      <div className="flex items-center justify-between rounded-lg">
+                        <h2 className="mb-6 text-2xl font-semibold text-[#083b88]">
+                          Acesse sua conta
+                        </h2>
+                        <button className="group mb-6 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 hover:bg-slate-700">
+                          <BiX
+                            className="text-2xl transition-colors duration-300 group-hover:text-white"
+                            onClick={() => setShowLoginForm(false)}
+                          />
+                        </button>
+                      </div>
                       <form onSubmit={handleSubmit(onSubmit)}>
-
                         <div className="relative mb-5">
                           <input
                             id="usuario"
@@ -172,15 +180,22 @@ const SignIn: React.FC = () => {
                           />
                           {/* <ErrorMessage errors={errors} field="username" /> */}
 
-                          {errors.username && <span className="absolute left-1 -bottom-4.5 text-red text-xs">Campo obrigatório</span>}
+                          {errors.username && (
+                            <span className="absolute -bottom-4.5 left-1 text-xs text-red">
+                              Campo obrigatório
+                            </span>
+                          )}
 
                           <span className="absolute right-4 top-2.5 h-[22px] w-[22px]">
                             <BiUser
-                              style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
+                              style={{
+                                width: "22px",
+                                height: "22px",
+                                fill: "#BAC1CB",
+                              }}
                             />
                           </span>
                         </div>
-
 
                         <div className="relative mb-5">
                           <input
@@ -195,7 +210,11 @@ const SignIn: React.FC = () => {
                           />
                           {/* <ErrorMessage errors={errors} field="password" /> */}
 
-                          {errors.password && <span className="absolute left-1 -bottom-4.5 text-red text-xs">Campo obrigatório</span>}
+                          {errors.password && (
+                            <span className="absolute -bottom-4.5 left-1 text-xs text-red">
+                              Campo obrigatório
+                            </span>
+                          )}
 
                           <span
                             className="absolute right-11 top-2.5 cursor-pointer"
@@ -208,36 +227,50 @@ const SignIn: React.FC = () => {
                           >
                             {!hide.password ? (
                               <BsEye
-                                style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
+                                style={{
+                                  width: "22px",
+                                  height: "22px",
+                                  fill: "#BAC1CB",
+                                }}
                               />
                             ) : (
                               <BsEyeSlash
-                                style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
+                                style={{
+                                  width: "22px",
+                                  height: "22px",
+                                  fill: "#BAC1CB",
+                                }}
                               />
                             )}
                           </span>
 
                           <span className="absolute right-4 top-2.5">
                             <BiLockAlt
-                              style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
+                              style={{
+                                width: "22px",
+                                height: "22px",
+                                fill: "#BAC1CB",
+                              }}
                             />
                           </span>
                         </div>
 
-                        <div className="flex gap-3 mb-4">
-
+                        <div className="mb-4 flex gap-3">
                           <Button
                             type="submit"
                             style={{
-                              boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.35)"
+                              boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.35)",
                             }}
-                            className="text-lg flex-1 tracking-widest uppercase flex gap-2 items-center justify-center">
+                            className="flex flex-1 items-center justify-center gap-2 text-lg uppercase tracking-widest"
+                          >
                             {loading ? (
                               <>
                                 <AiOutlineLoading className="animate-spin" />
                                 <span>Entrando...</span>
                               </>
-                            ) : "Acessar"}
+                            ) : (
+                              "Acessar"
+                            )}
                           </Button>
 
                           <Button
@@ -247,28 +280,22 @@ const SignIn: React.FC = () => {
                           >
                             Esqueci a senha
                           </Button>
-
                         </div>
 
-                        <div className="flex gap-2 items-center justify-center">
-
+                        <div className="flex items-center justify-center gap-2">
                           <p>Ainda não possui conta?</p>
 
-                          <Link
-                            href="/auth/signup"
-                            className="text-[#0838bb]"
-                          >
+                          <Link href="/auth/signup" className="text-[#0838bb]">
                             Crie uma conta agora
                           </Link>
-
                         </div>
                       </form>
                     </div>
                   </Fade>
                 ) : (
-                  <div className="grid gap-10 self-start mt-10">
+                  <div className="mt-10 grid gap-10 self-start">
                     <h1
-                      className="translate-x-25 animate-fade-right delay-500 text-left text-5xl font-bold text-snow opacity-0 2xsm:hidden md:block"
+                      className="translate-x-25 animate-fade-right text-left text-5xl font-bold text-snow opacity-0 delay-500 2xsm:hidden md:block"
                       style={{
                         filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.50))",
                       }}
@@ -276,20 +303,20 @@ const SignIn: React.FC = () => {
                       Sua solução <br /> one-stop-shop <br /> em precatórios
                     </h1>
 
-                    <button onClick={() => setShowLoginForm(true)} className="group text-2xl relative overflow-hidden w-fit cursor-pointer rounded-lg px-4 py-2 bg-blue-700">
-                      <p
-                        className="relative z-20 text-white"
-                      >
+                    <button
+                      onClick={() => setShowLoginForm(true)}
+                      className="group relative w-fit cursor-pointer overflow-hidden rounded-lg bg-blue-700 px-4 py-2 text-2xl"
+                    >
+                      <p className="relative z-20 text-white">
                         Acesse sua conta
                       </p>
-                      <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-5 h-5 scale-0 bg-blue-800 rounded-full group-hover:scale-[20] transition-all duration-500 ease-in-out"></span>
+                      <span className="absolute left-1/2 top-1/2 z-10 h-5 w-5 -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full bg-blue-800 transition-all duration-500 ease-in-out group-hover:scale-[20]"></span>
                     </button>
                   </div>
                 )}
 
                 {/* footer */}
-                <div className="flex flex-col gap-8 mt-5">
-
+                <div className="mt-5 flex flex-col gap-8">
                   <Image
                     src={"/images/logo/new-logo-text-dark.svg"}
                     alt={"logo da ativos (texto)"}
@@ -297,32 +324,51 @@ const SignIn: React.FC = () => {
                     height={50}
                   />
 
-                  <ul className="flex flex-wrap max-w-[362px] text-sm font text-snow gap-5">
+                  <ul className="font flex max-w-[362px] flex-wrap gap-5 text-sm text-snow">
                     <li>
-                      <Link href={"#"}>
+                      <Link
+                        target="_blank"
+                        href={"/automated-proposal"}
+                        className="group relative transition-colors duration-200 hover:text-bodydark1"
+                      >
                         Lead Magnet
+                        <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-snow transition-all duration-300 ease-in-out group-hover:w-full" />
                       </Link>
                     </li>
                     <li>
-                      <Link href={"#"}>
+                      <Link
+                        target="_blank"
+                        href={"/retification"}
+                        className="group relative transition-colors duration-200 hover:text-bodydark1"
+                      >
                         Recalculador do TRF1
+                        <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-snow transition-all duration-300 ease-in-out group-hover:w-full" />
                       </Link>
                     </li>
                     <li>
-                      <Link href={"#"}>
+                      <Link
+                        target="_blank"
+                        href={"/politica-de-privacidade"}
+                        className="group relative transition-colors duration-200 hover:text-bodydark1"
+                      >
                         Política de Privacidade
+                        <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-snow transition-all duration-300 ease-in-out group-hover:w-full" />
                       </Link>
                     </li>
                     <li>
-                      <Link href={"#"}>
+                      <Link
+                        target="_blank"
+                        href={"/termos-e-condicoes"}
+                        className="group relative transition-colors duration-200 hover:text-bodydark1"
+                      >
                         Termos e Condições
+                        <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-snow transition-all duration-300 ease-in-out group-hover:w-full" />
                       </Link>
                     </li>
                   </ul>
                 </div>
               </div>
               {/* end container */}
-
             </div>
           </Fade>
           {/* {(window.location.pathname === "/auth/signin" ||
