@@ -19,4 +19,5 @@ export type LabelProps = {
     barWidth?: string;
     passwordStr?: string;
     passwordRequirements?: PasswordRequirements;
+    htmlFor?: string;
 }
