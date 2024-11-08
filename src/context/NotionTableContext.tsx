@@ -548,7 +548,7 @@ export const TableNotionProvider = ({
       queryClient.setQueryData(["notion_list"], (old: any) => {
         return {
           ...old,
-          results: old.results.map((item: any) => {
+          results: old?.results?.map((item: any) => {
             if (item.id === paramsObj.page_id) {
               item.properties.Credor.title[0].text.content = paramsObj.value;
             }

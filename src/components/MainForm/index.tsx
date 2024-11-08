@@ -14,13 +14,13 @@ import { jwtDecode } from "jwt-decode";
 import { Slash } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, {
-  useContext,
-  useEffect,
-  useState
-} from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { AiOutlineLoading, AiOutlineReload, AiOutlineWarning } from "react-icons/ai";
+import {
+  AiOutlineLoading,
+  AiOutlineReload,
+  AiOutlineWarning,
+} from "react-icons/ai";
 import {
   BiChevronRight,
   BiLineChart,
@@ -84,8 +84,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
   const enumOficiosList = Object.values(statusOficio);
   const enumTipoOficiosList = Object.values(tipoOficio);
 
-  const { data } =
-    useContext<UserInfoContextType>(UserInfoAPIContext);
+  const { data } = useContext<UserInfoContextType>(UserInfoAPIContext);
 
   const estados = [
     { id: "AC", nome: "Acre" },
@@ -135,7 +134,10 @@ const MainForm: React.FC<CVLDFormProps> = ({
     { id: "TJAM", nome: "Tribunal de Justiça do Amazonas" },
     { id: "TJBA", nome: "Tribunal de Justiça da Bahia" },
     { id: "TJCE", nome: "Tribunal de Justiça do Ceará" },
-    { id: "TJDFT", nome: "Tribunal de Justiça do Distrito Federal e dos Territórios" },
+    {
+      id: "TJDFT",
+      nome: "Tribunal de Justiça do Distrito Federal e dos Territórios",
+    },
     { id: "TJES", nome: "Tribunal de Justiça do Espírito Santo" },
     { id: "TJGO", nome: "Tribunal de Justiça de Goiás" },
     { id: "TJMA", nome: "Tribunal de Justiça do Maranhão" },
@@ -189,7 +191,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
   const [fetchError, setFetchError] = useState<boolean>(false);
   const [toggleNovaConta, setToggleNovaConta] = useState<boolean>(false);
 
-
   const [usersList, setUsersList] = useState<any[]>([]);
 
   const [contatoNumberCount, setContatoNumberCount] = useState<number>(1);
@@ -210,12 +211,14 @@ const MainForm: React.FC<CVLDFormProps> = ({
   /* função que atualiza lista de usuários (somente na role ativos) */
   const updateUsersList = async () => {
     setFetchingUsersList(true);
-    const [usersList] = await Promise.all([api.get("/api/notion-api/list/users/")]);
+    const [usersList] = await Promise.all([
+      api.get("/api/notion-api/list/users/"),
+    ]);
     if (usersList.status === 200) {
       setUsersList(usersList.data);
     }
     setFetchingUsersList(false);
-  }
+  };
 
   useEffect(() => {
     if (oficioForm) {
@@ -263,23 +266,23 @@ const MainForm: React.FC<CVLDFormProps> = ({
   useEffect(() => {
     const fetchData = async () => {
       setFetchingUsersList(true);
-     
+
       if (data.role === "ativos") {
-        const [usersList] = await Promise.all([api.get("/api/notion-api/list/users/")]);
+        const [usersList] = await Promise.all([
+          api.get("/api/notion-api/list/users/"),
+        ]);
         if (usersList.status === 200) {
           setUsersList(usersList.data);
           setFetchError(false);
         } else {
           setFetchError(true);
         }
-      };
+      }
       setFetchingUsersList(false);
     };
 
     fetchData();
   }, [data.role]);
-
-
 
   const isUserAdmin = () => {
     const token = localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`);
@@ -288,23 +291,26 @@ const MainForm: React.FC<CVLDFormProps> = ({
   };
 
   const postNotionData = async (data: any) => {
-    const response = await api.post("/api/extrato/create/", data)
+    const response = await api.post("/api/extrato/create/", data);
     return response;
-  }
+  };
 
   const mutation = useMutation({
     mutationFn: (newData) => {
       return postNotionData(newData);
     },
     onMutate: async (newData) => {
-      queryClient.cancelQueries({ queryKey: ['notion_list'] });
+      queryClient.cancelQueries({ queryKey: ["notion_list"] });
     },
     onSuccess: (data) => {
       queryClient.setQueryData(["notion_list"], (oldData: any) => {
-        return { ...oldData, results: [data.data.result[1], ...oldData.results] };
+        return {
+          ...oldData,
+          results: [data.data.result[1], ...oldData.results],
+        };
       });
-    }
-  })
+    },
+  });
 
   const onSubmit = async (data: any) => {
     data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
@@ -314,21 +320,20 @@ const MainForm: React.FC<CVLDFormProps> = ({
 
     //#TODO colocar essa condicional dentro de uma função utilitária
     if (!data.data_limite_de_atualizacao_check) {
-      const dateInSaoPaulo = new Date().toLocaleDateString('pt-BR', {
-        timeZone: 'America/Sao_Paulo',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
+      const dateInSaoPaulo = new Date().toLocaleDateString("pt-BR", {
+        timeZone: "America/Sao_Paulo",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
       });
 
-      const formattedDate = dateInSaoPaulo.split('/').reverse().join('-');
+      const formattedDate = dateInSaoPaulo.split("/").reverse().join("-");
       data.data_limite_de_atualizacao = formattedDate;
     }
 
     if (!data.status) {
       data.status = "Realizar Primeiro Contato";
     }
-
 
     if (!data.natureza) {
       data.natureza = "NÃO TRIBUTÁRIA";
@@ -376,10 +381,10 @@ const MainForm: React.FC<CVLDFormProps> = ({
       data.percentual_de_honorarios /= 100;
     }
 
-    if(data.valor_aquisicao_total){
-      data.percentual_a_ser_adquirido = 1
+    if (data.valor_aquisicao_total) {
+      data.percentual_a_ser_adquirido = 1;
     }
-    
+
     if (!data.estado_ente_devedor) {
       data.estado_ente_devedor = null;
     }
@@ -388,15 +393,13 @@ const MainForm: React.FC<CVLDFormProps> = ({
     try {
       setCalcStep("calculating");
 
-
       const response = data.gerar_cvld
         ? await mutation.mutateAsync(data)
-        : await api.post("/api/extrato/query/", data)
+        : await api.post("/api/extrato/query/", data);
 
       response.status === 200
         ? dataCallback(response.data)
         : (setDataToAppend(response.data), dataCallback(response.data));
-
 
       if (response.status === 201 || response.status === 200) {
         // setCredits({
@@ -405,8 +408,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
         //     credits.available_credits - response.data.result[0].price,
         // });
 
-        dataCallback(response.data)
-
+        dataCallback(response.data);
 
         setCalcStep("done");
 
@@ -661,7 +663,10 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 control={control}
                 defaultValue={0}
                 rules={{
-                  min: { value: 0.01, message: "O valor deve ser maior que 0" },
+                  min: {
+                    value: 0,
+                    message: "O valor deve ser maior ou igual a 0",
+                  },
                 }}
                 render={({ field, fieldState: { error } }) => (
                   <>
@@ -1241,7 +1246,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           </ShadSelect>
                         </div>
                       ) : null}
-                      
+
                       {watch("esfera") && watch("esfera") !== "FEDERAL" && (
                         <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                           <label

@@ -41,29 +41,30 @@ import NewFormResultSkeleton from "../Skeletons/NewFormResultSkeleton";
 const NewForm = () => {
   const { modalOpen, setModalOpen } = useContext(DefaultLayoutContext);
   const [oficioForm, setOficioForm] = useState<any>(null);
-  const mySwal = UseMySwal();
   const [loading, setLoading] = useState<boolean>(false);
   const [fetchingUsersList, setFetchingUsersList] = useState<boolean>(false);
   const [usersList, setUsersList] = useState<any[]>([]);
   const [fetchError, setFetchError] = useState<boolean>(false);
   const enumTipoOficiosList = Object.values(tipoOficio);
-  const [backendResponse, setBackendResponse] = useState<LeadMagnetResposeProps>({
-    id: "",
-    min_proposal: 0,
-    max_proposal: 0,
-    min_comission: 0,
-    max_comission: 0,
-    min_proposal_percent: 0,
-    max_proposal_percent: 0,
-    memoria_de_calculo_simples: "",
-    memoria_de_calculo_rra: "",
-  });
+  const [backendResponse, setBackendResponse] =
+    useState<LeadMagnetResposeProps>({
+      id: "",
+      min_proposal: 0,
+      max_proposal: 0,
+      min_comission: 0,
+      max_comission: 0,
+      min_proposal_percent: 0,
+      max_proposal_percent: 0,
+      memoria_de_calculo_simples: "",
+      memoria_de_calculo_rra: "",
+    });
   const [showResults, setShowResults] = useState<boolean>(false);
   const [sliderValues, setSliderValues] = useState({
     proposal: 0,
     comission: 0,
   });
-  const [savingProposalAndComission, setSavingProposalAndComission] = useState<boolean>(false);
+  const [savingProposalAndComission, setSavingProposalAndComission] =
+    useState<boolean>(false);
   const { data } = useContext<UserInfoContextType>(UserInfoAPIContext);
   const resultContainerRef = useRef<HTMLDivElement | null>(null);
   const proposalRef = useRef<HTMLInputElement | null>(null);
@@ -79,7 +80,7 @@ const NewForm = () => {
   } = useForm<Partial<CvldFormInputsProps>>({
     defaultValues: {
       numero_de_meses: 0,
-      gerar_cvld: true
+      gerar_cvld: true,
     },
   });
 
@@ -96,10 +97,7 @@ const NewForm = () => {
   };
 
   // Função para atualizar a proposta e ajustar a comissão proporcionalmente
-  const handleProposalSliderChange = (
-    value: string,
-    sliderChange: boolean
-  ) => {
+  const handleProposalSliderChange = (value: string, sliderChange: boolean) => {
     const newProposalSliderValue = parseFloat(value);
     setSliderValues((oldValues) => {
       return { ...oldValues, proposal: newProposalSliderValue };
@@ -112,25 +110,25 @@ const NewForm = () => {
 
     const newComissionSliderValue =
       backendResponse.max_comission -
-      proportion * (backendResponse.max_comission - backendResponse.min_comission);
+      proportion *
+        (backendResponse.max_comission - backendResponse.min_comission);
 
     setSliderValues((oldValues) => {
       return { ...oldValues, comission: newComissionSliderValue };
     });
 
     if (comissionRef.current && proposalRef.current) {
-      comissionRef.current.value = numberFormat(newComissionSliderValue)
+      comissionRef.current.value = numberFormat(newComissionSliderValue);
       if (sliderChange) {
-        proposalRef.current.value = numberFormat(newProposalSliderValue)
+        proposalRef.current.value = numberFormat(newProposalSliderValue);
       }
     }
-
   };
 
   // Função para atualizar a comissão e ajustar a proposta proporcionalmente
   const handleComissionSliderChange = (
     value: string,
-    sliderChange: boolean
+    sliderChange: boolean,
   ) => {
     const newComissionSliderValue = parseFloat(value);
     setSliderValues((oldValues) => {
@@ -143,48 +141,51 @@ const NewForm = () => {
       (backendResponse.max_comission - backendResponse.min_comission);
 
     const newProposalSliderValue =
-      backendResponse.max_proposal - proportion * (backendResponse.max_proposal - backendResponse.min_proposal);
+      backendResponse.max_proposal -
+      proportion *
+        (backendResponse.max_proposal - backendResponse.min_proposal);
 
     setSliderValues((oldValues) => {
       return { ...oldValues, proposal: newProposalSliderValue };
     });
 
     if (proposalRef.current && comissionRef.current) {
-      proposalRef.current.value = numberFormat(newProposalSliderValue)
+      proposalRef.current.value = numberFormat(newProposalSliderValue);
       if (sliderChange) {
-        comissionRef.current.value = numberFormat(newComissionSliderValue)
+        comissionRef.current.value = numberFormat(newComissionSliderValue);
       }
     }
-
   };
 
   // Função para atualizar proposta/comissão com os dados dos inputs
   const changeInputValues = (inputField: string, value: string) => {
-    const rawValue = value.replace(/R\$\s*/g, "").replaceAll(".", "").replaceAll(",", ".");
+    const rawValue = value
+      .replace(/R\$\s*/g, "")
+      .replaceAll(".", "")
+      .replaceAll(",", ".");
     switch (inputField) {
       case "proposal":
-        setSliderValues(old => {
+        setSliderValues((old) => {
           return {
             ...old,
-            proposal: parseFloat(rawValue)
-          }
+            proposal: parseFloat(rawValue),
+          };
         });
         handleProposalSliderChange(rawValue, false);
         break;
       case "comission":
-        setSliderValues(old => {
+        setSliderValues((old) => {
           return {
             ...old,
-            comission: parseFloat(rawValue)
-          }
+            comission: parseFloat(rawValue),
+          };
         });
         handleComissionSliderChange(rawValue, false);
         break;
       default:
         break;
     }
-
-  }
+  };
 
   const onSubmit = async (data: any) => {
     setLoading(true);
@@ -259,19 +260,22 @@ const NewForm = () => {
 
       if (response.status === 200 || response.status === 201) {
         if (response.status === 201) {
-          toast.success('Dados salvos no Notion com Sucesso!', {
-            icon: <BiCheck className="text-lg fill-green-400" />
+          toast.success("Dados salvos no Notion com Sucesso!", {
+            icon: <BiCheck className="fill-green-400 text-lg" />,
           });
         }
         const results = response.data.result; // pega o resultado da requisição
-        setBackendResponse(results)
+        setBackendResponse(results);
         setShowResults(true);
       }
     } catch (error) {
       if (error instanceof AxiosError) {
-        toast.error((error.response?.data.error || "Erro ao salvar dados no Notion!"), {
-          icon: <BiX className="text-lg fill-red-500" />
-        });
+        toast.error(
+          error.response?.data.error || "Erro ao salvar dados no Notion!",
+          {
+            icon: <BiX className="fill-red-500 text-lg" />,
+          },
+        );
       } else {
         toast.error(String(error));
       }
@@ -282,26 +286,27 @@ const NewForm = () => {
 
   const saveProposalAndComission = async () => {
     setSavingProposalAndComission(true);
-    const req = await api.patch(`/api/notion-api/broker/negotiation/${backendResponse.id}/`,
+    const req = await api.patch(
+      `/api/notion-api/broker/negotiation/${backendResponse.id}/`,
       {
         proposal: sliderValues.proposal,
-        commission: sliderValues.comission
-      }
-    )
+        commission: sliderValues.comission,
+      },
+    );
 
     if (req.status === 202) {
-      toast.success('Proposta e comissão salvas com sucesso!', {
-        icon: <BiCheck className="text-lg fill-green-400" />
+      toast.success("Proposta e comissão salvas com sucesso!", {
+        icon: <BiCheck className="fill-green-400 text-lg" />,
       });
     }
 
     if (req.status === 400) {
-      toast.error('Erro ao salvar proposta e comissão!', {
-        icon: <BiX className="text-lg fill-red-500" />
+      toast.error("Erro ao salvar proposta e comissão!", {
+        icon: <BiX className="fill-red-500 text-lg" />,
       });
     }
     setSavingProposalAndComission(false);
-  }
+  };
 
   useEffect(() => {
     setSliderValues({
@@ -309,8 +314,8 @@ const NewForm = () => {
       comission: backendResponse.max_comission,
     });
     if (proposalRef.current && comissionRef.current) {
-      proposalRef.current.value = numberFormat(backendResponse.min_proposal)
-      comissionRef.current.value = numberFormat(backendResponse.max_comission)
+      proposalRef.current.value = numberFormat(backendResponse.min_proposal);
+      comissionRef.current.value = numberFormat(backendResponse.max_comission);
     }
   }, [backendResponse]);
 
@@ -604,7 +609,7 @@ const NewForm = () => {
                       defaultValue={0}
                       rules={{
                         min: {
-                          value: 0.01,
+                          value: 0,
                           message: "O valor deve ser maior que 0",
                         },
                       }}
@@ -848,7 +853,7 @@ const NewForm = () => {
                     </label>
                   </div>
                   {watch("natureza") === "TRIBUTÁRIA" ||
-                    watch("incidencia_rra_ir") === false ? (
+                  watch("incidencia_rra_ir") === false ? (
                     <>
                       {/* {watch("natureza") === "TRIBUTÁRIA" && watch("incidencia_rra_ir") === false ? null : (
                   <div className="flex items-center col-span-1">&nbsp;</div>
@@ -879,8 +884,8 @@ const NewForm = () => {
                   )}
 
                   {watch("ir_incidente_rra") &&
-                    watch("incidencia_rra_ir") === true &&
-                    watch("natureza") !== "TRIBUTÁRIA" ? (
+                  watch("incidencia_rra_ir") === true &&
+                  watch("natureza") !== "TRIBUTÁRIA" ? (
                     <div className="mt-1 flex flex-col gap-2 overflow-hidden 2xsm:col-span-2 sm:col-span-1">
                       <label
                         htmlFor="numero_de_meses"
@@ -928,7 +933,7 @@ const NewForm = () => {
                     </div>
                   ) : null}
                   {watch("incidencia_pss") &&
-                    watch("natureza") !== "TRIBUTÁRIA" ? (
+                  watch("natureza") !== "TRIBUTÁRIA" ? (
                     <div className="mt-1 flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                       <label
                         htmlFor="valor_pss"
@@ -1004,7 +1009,7 @@ const NewForm = () => {
                         max={new Date().toISOString().split("T")[0]}
                       />
                       {watch("data_limite_de_atualizacao")! <
-                        watch("data_requisicao")! ? (
+                      watch("data_requisicao")! ? (
                         <span
                           role="alert"
                           className="absolute right-4 top-4 text-sm text-red-500"
@@ -1241,13 +1246,13 @@ const NewForm = () => {
                       ) : null}
                     </div>
                     {(data.role === "ativos" || data.role === "judit") &&
-                      watch("gerar_cvld") ? (
+                    watch("gerar_cvld") ? (
                       <>
                         <hr className="col-span-2 my-8 border border-stroke dark:border-strokedark" />
                         <div className="flex flex-col gap-2">
                           {(data.role === "ativos" &&
                             watch("regime") !== "ESPECIAL") ||
-                            watch("regime") === undefined ? (
+                          watch("regime") === undefined ? (
                             <>
                               <div className="flex justify-between">
                                 <div className="flex items-center gap-2">
