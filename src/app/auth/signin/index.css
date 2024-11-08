@@ -1,8 +1,7 @@
 .new_hero_login {
   position: relative;
-  top: 0;
-  left: 0;
-  background: url(../../../../public/images/hero_login_image.png) no-repeat;
+  background: url(../../../../public/images/hero_login_image.webp) no-repeat;
+  background-position: calc(50% + 60px) calc(50% + 70px);
   background-size: cover;
 
   @media screen and (min-width: 375px) and (max-width: 1023px) {
@@ -35,8 +34,8 @@
 .new_hero_login_overlap {
   position: absolute;
   inset: 0;
-  background: url(../../../../public/images/hero_login_man_smiling_full.png)
-    no-repeat;
+  background: url(../../../../public/images/hero_login_man_smiling_full.webp) no-repeat;
+  background-position: calc(50% + 60px) calc(50% + 70px);
   background-size: cover;
 
   @media screen and (min-width: 375px) and (max-width: 1023px) {
