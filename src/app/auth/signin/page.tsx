@@ -61,7 +61,9 @@ const SignIn: React.FC = () => {
       const response = await api.get("/api/profile/");
       return response.data.staff_approvation;
     } catch (e) {
-      throw new Error(`Erro ao tentar verificar aprovação do usuário ${console.error(e)}`)
+      throw new Error(
+        `Erro ao tentar verificar aprovação do usuário ${console.error(e)}`,
+      );
     }
   }
 
@@ -82,10 +84,13 @@ const SignIn: React.FC = () => {
 
         if (userProduct === "wallet" && userApprovation === true) {
           router.push(APP_ROUTES.private.wallet.name);
+        } else if (userProduct === "wallet" && userApprovation === false) {
+          router.push(APP_ROUTES.private.marketplace.name);
+        } else if (userProduct === "crm") {
+          router.push(APP_ROUTES.private.broker.name);
         } else {
-          router.push(APP_ROUTES.private.marketplace.name)
+          router.push(APP_ROUTES.private.dashboard.name);
         }
-
       } else {
         router.push(APP_ROUTES.public.login.name);
       }
