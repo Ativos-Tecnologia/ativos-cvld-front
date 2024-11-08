@@ -55,7 +55,24 @@ describe("Teste dos Headers do Formulário", () => {
 		expect(subtitulo).toBeInTheDocument();
     expect(subtitulo).toHaveClass(
       "apexcharts-legend-text", "mt-0", "text-center", "text-sm", "font-normal"
-    );
+		);
+	});
+	
+	it("Teste das labels do formulário", async () => { 
+		
+		const natureza = await screen.findAllByText("Natureza");
+		expect(natureza[0]).toBeInTheDocument();
+		expect(natureza[0]).toHaveClass(
+      "font-nexa", "text-xs", "font-semibold", "uppercase", "text-meta-5"
+		);
+		expect(natureza[0]).toHaveAttribute("for", "natureza");
 
-  });
+		const valorPrincipal = await screen.findByText("Valor Principal");
+		expect(valorPrincipal).toBeInTheDocument();
+		expect(valorPrincipal).toHaveClass(
+			"font-nexa", "text-xs", "font-semibold", "uppercase", "text-meta-5"
+		);
+		expect(valorPrincipal).toHaveAttribute("for", "valor_principal");
+
+	});
 });
