@@ -41,6 +41,7 @@ const SignIn: React.FC = () => {
   const { loading, setLoading, hide, setHide } = usePassword(passwordInput);
 
   const [openModal, setOpenModal] = useState<boolean>(false);
+  const [showLoginForm, setShowLoginForm] = useState<boolean>(false);
 
   const router = useRouter();
   const MySwal = UseMySwal();
@@ -105,225 +106,235 @@ const SignIn: React.FC = () => {
   };
 
   return (
-    <UnloggedLayout>
-      <div className="relative flex h-full">
-        <div className="hero_login hidden w-full flex-col justify-evenly px-20 py-8 text-center md:flex md:min-h-[900px] xl:min-h-full xl:w-[65%]">
-          <div className="2xsm:hidden xl:block">
-            {/* logo */}
-            <div className="relative mb-10 flex flex-col items-center justify-center">
-              <Fade triggerOnce>
-                <div className="flex flex-col items-center gap-3">
-                  <Image
-                    src={"/images/logo/new-logo-dark.png"}
-                    alt="Logo"
-                    width={160}
-                    height={32}
-                    className="antialiased"
-                    style={{
-                      filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))",
-                    }}
-                  />
-                  <Image
-                    src={"/images/logo/celer-app-text-dark.svg"}
-                    alt="Logo"
-                    width={200}
-                    height={32}
-                    style={{
-                      filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.40))",
-                    }}
-                  />
-                </div>
-              </Fade>
-            </div>
-            {/* end logo */}
+    <>
+      {/* <!-- ===== Page Wrapper Start ===== --> */}
+      <div className="relative flex font-nexa items-center justify-center overflow-hidden xl:min-h-screen">
+        <main className="flex-1 overflow-hidden shadow-2 xl:h-screen 3xl:h-[700px] 3xl:max-w-[75%] 3xl:rounded-md">
+          <Fade className="h-full">
+            <div className="new_hero_login h-full overflow-hidden flex">
 
-            <h1
-              className="translate-x-25 animate-fade-right pt-8 text-left text-5xl font-bold text-snow opacity-0 2xsm:hidden md:block md:text-4xl lg:text-6xl"
-              style={{
-                filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.50))",
-              }}
-            >
-              Sua solução <br /> one-stop-shop <br /> em precatórios
-            </h1>
-          </div>
-        </div>
-
-        {/* form */}
-        <div className="w-full border-stroke bg-snow 2xsm:p-8 sm:px-8 sm:py-12.5 md:absolute md:left-1/2 md:top-1/2 md:w-3/4 md:-translate-x-1/2 md:-translate-y-1/2  xl:static xl:w-[35%] xl:translate-x-0 xl:translate-y-0 3xl:rounded-tr-md">
-          {/* Mobile visible logo */}
-          <div className="block w-full xl:hidden xl:w-1/2">
-            <Link
-              className="mb-15 flex flex-col items-center justify-center"
-              href="#"
-            >
-              <div className="bg flex flex-col items-center gap-3">
+              {/* ornaments */}
+              <div className="absolute z-2 inset-0 w-full h-full bg-cover bg-center">
                 <Image
-                  src={"/images/logo/ativos_logo_at_default.png"}
-                  alt="Logo"
-                  width={90}
-                  height={50}
-                  className="2xsm:w-20 md:w-28"
+                  src={"/images/ornaments/vector-1.svg"}
+                  alt="ornamento inferior direito de faixas azuis"
+                  width={900}
+                  height={200}
+                  className="absolute bottom-0 right-0"
                 />
+
                 <Image
-                  src={"/images/logo/celer-app-text.svg"}
-                  alt="Logo"
-                  width={0}
-                  height={0}
-                  className="2xsm:w-45"
+                  src={"/images/ornaments/vector-2.svg"}
+                  alt="ornamento inferior direito de faixas azuis"
+                  width={950}
+                  height={200}
+                  className="absolute -top-10 left-0"
                 />
               </div>
-            </Link>
-          </div>
-          {/* End Mobile visible logo */}
+              {/* end ornaments */}
 
-          <Fade delay={1e2} damping={1e-1} cascade triggerOnce>
-            <h2 className="mb-9 text-2xl font-bold text-black sm:text-title-xl2">
-              Acesse sua conta
-            </h2>
-          </Fade>
-
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="mb-6">
-              <label
-                className="mb-2.5 block font-medium text-black"
-                htmlFor="usuario"
-              >
-                Usuário
-              </label>
-              <div className="relative">
-                <input
-                  id="usuario"
-                  type="text"
-                  placeholder="Digite o usuário"
-                  className={`${errors.username && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-4 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none`}
-                  {...register("username", {
-                    required: "Campo obrigatório",
-                  })}
-                  aria-invalid={errors.username ? "true" : "false"}
-                />
-                <ErrorMessage errors={errors} field="username" />
-                {/* {
-                      errors.username && (
-                        <span role="alert" className="absolute right-4 top-4 text-red pr-8">
-                          {errors.username.message}
-                        </span>
-                      )
-                    } */}
-
-                <span className="absolute right-4 top-4 h-[22px] w-[22px]">
-                  <BiUser
-                    style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
-                  />
-                </span>
+              {/* other image */}
+              <div className="new_hero_login_overlap z-3">
+                {/* <Image
+                src={"/images/hero_login_man_smiling.png"}
+                alt="homem com celular sorrindo"
+                width={1060}
+                height={500}
+              /> */}
               </div>
-            </div>
 
-            <div className="mb-10">
-              <label
-                className="mb-2.5 block font-medium text-black"
-                htmlFor="senha"
-              >
-                Senha
-              </label>
-              <div className="relative">
-                <input
-                  id="senha"
-                  type={hide.password ? "password" : "text"}
-                  placeholder="Digite a sua senha"
-                  className={`${errors.password && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-4 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none`}
-                  {...register("password", {
-                    required: "Campo obrigatório",
-                  })}
-                  aria-invalid={errors.password ? "true" : "false"}
+              {/* container */}
+              <div className="relative z-[4] container-grid ml-50 w-115  3xl:ml-40">
+                <Image
+                  src="/images/logo/celer-app-text-dark.svg"
+                  alt="logo da ativos"
+                  width={300}
+                  height={32}
+                  className="self-end mb-5 mx-auto"
                 />
-                <ErrorMessage errors={errors} field="password" />
 
-                <span
-                  className="absolute right-10 top-4 cursor-pointer"
-                  onClick={() =>
-                    setHide({
-                      ...hide,
-                      password: !hide.password,
-                    })
-                  }
-                >
-                  {!hide.password ? (
-                    <BsEye
-                      style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
-                    />
-                  ) : (
-                    <BsEyeSlash
-                      style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
-                    />
-                  )}
-                </span>
+                {showLoginForm ? (
+                  <Fade>
+                    <div className="p-5 bg-snow rounded-lg w-115 mt-5">
+                      <h2 className="text-2xl font-semibold text-[#083b88] mb-6">Acesse sua conta</h2>
+                      <form onSubmit={handleSubmit(onSubmit)}>
 
-                <span className="absolute right-4 top-4">
-                  <BiLockAlt
-                    style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
-                  />
-                </span>
-              </div>
-            </div>
+                        <div className="relative mb-5">
+                          <input
+                            id="usuario"
+                            type="text"
+                            placeholder="Digite o usuário"
+                            className={`${errors.username && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2.5 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none`}
+                            {...register("username", {
+                              required: "Campo obrigatório",
+                            })}
+                            aria-invalid={errors.username ? "true" : "false"}
+                          />
+                          {/* <ErrorMessage errors={errors} field="username" /> */}
 
-            <p
-              onClick={() => setOpenModal(true)}
-              className="mb-6 max-w-fit cursor-pointer text-sm font-medium text-blue-700 hover:text-blue-800"
-            >
-              Esqueci a senha
-            </p>
+                          {errors.username && <span className="absolute left-1 -bottom-4.5 text-red text-xs">Campo obrigatório</span>}
 
-            <div className="mb-5">
-              <Button
-                type="submit"
-                className="flex w-full items-center justify-center py-3 transition-all duration-200"
-              >
-                <span
-                  className="text-[16px] font-medium"
-                  aria-disabled={loading}
-                >
-                  {loading ? "Fazendo login..." : "Acessar"}
-                </span>
-                {!loading ? (
-                  <HiOutlineArrowRight className="ml-2 mt-[0.2rem] h-4 w-4" />
+                          <span className="absolute right-4 top-2.5 h-[22px] w-[22px]">
+                            <BiUser
+                              style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
+                            />
+                          </span>
+                        </div>
+
+
+                        <div className="relative mb-5">
+                          <input
+                            id="senha"
+                            type={hide.password ? "password" : "text"}
+                            placeholder="Digite a sua senha"
+                            className={`${errors.password && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2.5 pl-4 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none`}
+                            {...register("password", {
+                              required: "Campo obrigatório",
+                            })}
+                            aria-invalid={errors.password ? "true" : "false"}
+                          />
+                          {/* <ErrorMessage errors={errors} field="password" /> */}
+
+                          {errors.password && <span className="absolute left-1 -bottom-4.5 text-red text-xs">Campo obrigatório</span>}
+
+                          <span
+                            className="absolute right-11 top-2.5 cursor-pointer"
+                            onClick={() =>
+                              setHide({
+                                ...hide,
+                                password: !hide.password,
+                              })
+                            }
+                          >
+                            {!hide.password ? (
+                              <BsEye
+                                style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
+                              />
+                            ) : (
+                              <BsEyeSlash
+                                style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
+                              />
+                            )}
+                          </span>
+
+                          <span className="absolute right-4 top-2.5">
+                            <BiLockAlt
+                              style={{ width: "22px", height: "22px", fill: "#BAC1CB" }}
+                            />
+                          </span>
+                        </div>
+
+                        <div className="flex gap-3 mb-4">
+
+                          <Button
+                            type="submit"
+                            style={{
+                              boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.35)"
+                            }}
+                            className="text-lg flex-1 tracking-widest uppercase flex gap-2 items-center justify-center">
+                            {loading ? (
+                              <>
+                                <AiOutlineLoading className="animate-spin" />
+                                <span>Entrando...</span>
+                              </>
+                            ) : "Acessar"}
+                          </Button>
+
+                          <Button
+                            onClick={() => setOpenModal(true)}
+                            variant="ghost"
+                            className="text-[#0838bb]"
+                          >
+                            Esqueci a senha
+                          </Button>
+
+                        </div>
+
+                        <div className="flex gap-2 items-center justify-center">
+
+                          <p>Ainda não possui conta?</p>
+
+                          <Link
+                            href="/auth/signup"
+                            className="text-[#0838bb]"
+                          >
+                            Crie uma conta agora
+                          </Link>
+
+                        </div>
+                      </form>
+                    </div>
+                  </Fade>
                 ) : (
-                  <AiOutlineLoading className="ml-2 mt-[0.2rem] h-4 w-4 animate-spin" />
+                  <div className="grid gap-10 self-start mt-10">
+                    <h1
+                      className="translate-x-25 animate-fade-right delay-500 text-left text-5xl font-bold text-snow opacity-0 2xsm:hidden md:block"
+                      style={{
+                        filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.50))",
+                      }}
+                    >
+                      Sua solução <br /> one-stop-shop <br /> em precatórios
+                    </h1>
+
+                    <button onClick={() => setShowLoginForm(true)} className="group text-2xl relative overflow-hidden w-fit cursor-pointer rounded-lg px-4 py-2 bg-blue-700">
+                      <p
+                        className="relative z-20 text-white"
+                      >
+                        Acesse sua conta
+                      </p>
+                      <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-5 h-5 scale-0 bg-blue-800 rounded-full group-hover:scale-[20] transition-all duration-500 ease-in-out"></span>
+                    </button>
+                  </div>
                 )}
-              </Button>
-              {/* <button type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-6 text-white bg-blue-700 hover:bg-blue-800 transition-all duration-200'>
-                      <span className="text-[16px] font-medium" aria-disabled={loading}>
-                        {loading ? "Fazendo login..." : "Acessar"}
-                      </span>
-                      {
-                        !loading ? (<HiOutlineArrowRight className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
-                      }
-                    </button> */}
-            </div>
 
-            {/* <button data-tooltip-target="tooltip-default" disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 disabled:cursor-not-allowed disabled:opacity-50">
-                    <span>
-                      <FcGoogle style={{ width: '22px', height: '22p' }} />
-                    </span>
-                    Login com o Google
-                  </button> */}
+                {/* footer */}
+                <div className="flex flex-col gap-8 mt-5">
 
-            <div className="mt-6 text-center 2xsm:text-sm xsm:text-base">
-              <p className="text-body">
-                Ainda não possui uma conta?{" "}
-                <Link
-                  aria-disabled
-                  href="/auth/signup"
-                  className="font-medium text-blue-700 hover:text-blue-800"
-                >
-                  Cadastre-se
-                </Link>
-              </p>
+                  <Image
+                    src={"/images/logo/new-logo-text-dark.svg"}
+                    alt={"logo da ativos (texto)"}
+                    width={100}
+                    height={50}
+                  />
+
+                  <ul className="flex flex-wrap max-w-[362px] text-sm font text-snow gap-5">
+                    <li>
+                      <Link href={"#"}>
+                        Lead Magnet
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href={"#"}>
+                        Recalculador do TRF1
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href={"#"}>
+                        Política de Privacidade
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href={"#"}>
+                        Termos e Condições
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              {/* end container */}
+
             </div>
-          </form>
-        </div>
+          </Fade>
+          {/* {(window.location.pathname === "/auth/signin" ||
+            window.location.pathname === "/auth/signup" ||
+            window.location.pathname === "/auth/signup/wallet") && (
+            <LiteFooter />
+          )} */}
+        </main>
         <ForgotPassword state={openModal} setState={setOpenModal} />
       </div>
-    </UnloggedLayout>
+      {/* <!-- ===== Page Wrapper End ===== --> */}
+    </>
   );
 };
 
