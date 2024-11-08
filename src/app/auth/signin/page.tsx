@@ -1,6 +1,4 @@
 "use client";
-import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
-import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
 import { APP_ROUTES } from "@/constants/app-routes";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
 import UseMySwal from "@/hooks/useMySwal";
@@ -21,7 +19,6 @@ import { AiOutlineLoading } from "react-icons/ai";
 import { BiLockAlt, BiUser, BiX } from "react-icons/bi";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import "./index.css";
-import { set } from "date-fns";
 
 export type SignInInputs = {
   username: string;
@@ -109,9 +106,9 @@ const SignIn: React.FC = () => {
     <>
       {/* <!-- ===== Page Wrapper Start ===== --> */}
       <div className="relative flex items-center justify-center overflow-hidden font-nexa xl:min-h-screen">
-        <main className="flex-1 overflow-hidden shadow-2 xl:h-screen 3xl:h-[700px] 3xl:max-w-[75%] 3xl:rounded-md">
+        <main className="flex-1 overflow-hidden shadow-2 h-screen 3xl:h-[700px] 3xl:max-w-[75%] 3xl:rounded-md">
           <Fade className="h-full">
-            <div className="new_hero_login flex h-full overflow-hidden">
+            <div className="new_hero_login flex h-full w-full overflow-hidden">
               {/* ornaments */}
               <div className="absolute inset-0 z-2 h-full w-full bg-cover bg-center">
                 <Image
@@ -119,15 +116,15 @@ const SignIn: React.FC = () => {
                   alt="ornamento inferior direito de faixas azuis"
                   width={900}
                   height={200}
-                  className="absolute bottom-0 right-0"
+                  className="absolute 2xsm:bottom-0 2xsm:-right-5 2xsm:opacity-30 md:w-[700px] md:right-10 md:-bottom-5 lg:opacity-100 lg:bottom-0 lg:-right-10 xl:w-[900px]"
                 />
 
                 <Image
                   src={"/images/ornaments/vector-2.svg"}
-                  alt="ornamento inferior direito de faixas azuis"
+                  alt="ornamento superior esquerdo gradiente azul"
                   width={950}
                   height={200}
-                  className="absolute -top-10 left-0"
+                  className="absolute 2xsm:h-[200px] 2xsm:-top-10 2xsm:-left-12 md:h-fit md:-top-10 md:-left-15 md:w-[620px] lg:w-[750px] lg:-top-10 lg:left-0 xl:w-[950px] xl:-left-5"
                 />
               </div>
               {/* end ornaments */}
@@ -143,23 +140,24 @@ const SignIn: React.FC = () => {
               </div>
 
               {/* container */}
-              <div className="container-grid relative z-[4] ml-50 w-115  3xl:ml-40">
+              <div className="container-grid min-h-screen relative z-[4] 2xsm:w-full 2xsm:p-3 md:p-0 md:w-115 md:ml-10 lg:ml-20 xl:ml-50 3xl:ml-40">
                 <Image
                   src="/images/logo/celer-app-text-dark.svg"
                   alt="logo da ativos"
                   width={300}
                   height={32}
-                  className="mx-auto mb-5 self-end"
+                  draggable={false}
+                  className="self-end 2xsm:w-[150px] 2xsm:mb-5 2xsm:ml-5 md:w-[230px] md:mb-0 md:mx-15 lg:w-[280px] lg:mx-auto lg:mb-2 xl:mb-5 xl:w-[300px]"
                 />
 
                 {showLoginForm ? (
-                  <Fade>
-                    <div className="mt-5 w-115 rounded-lg bg-snow p-5">
-                      <div className="flex items-center justify-between rounded-lg">
-                        <h2 className="mb-6 text-2xl font-semibold text-[#083b88]">
+                  <Fade className="self-center">
+                    <div className="rounded-lg bg-snow p-5 2xsm:w-94 2xsm:mx-auto 2xsm:mb-5 md:mb-0 md:mx-0 md:w-100 md:mt-8 lg:w-115 lg:mt-5">
+                      <div className="flex items-center justify-between rounded-lg mb-6">
+                        <h2 className="text-2xl font-semibold text-[#083b88]">
                           Acesse sua conta
                         </h2>
-                        <button className="group mb-6 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 hover:bg-slate-700">
+                        <button className="group flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 hover:bg-slate-700">
                           <BiX
                             className="text-2xl transition-colors duration-300 group-hover:text-white"
                             onClick={() => setShowLoginForm(false)}
@@ -197,7 +195,7 @@ const SignIn: React.FC = () => {
                           </span>
                         </div>
 
-                        <div className="relative mb-5">
+                        <div className="relative mb-7">
                           <input
                             id="senha"
                             type={hide.password ? "password" : "text"}
@@ -255,13 +253,13 @@ const SignIn: React.FC = () => {
                           </span>
                         </div>
 
-                        <div className="mb-4 flex gap-3">
+                        <div className="flex flex-col items-center justify-center md:flex-row gap-3 mb-5">
                           <Button
                             type="submit"
                             style={{
                               boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.35)",
                             }}
-                            className="flex flex-1 items-center justify-center gap-2 text-lg uppercase tracking-widest"
+                            className="flex flex-1 items-center justify-center w-full gap-2 text-lg uppercase tracking-widest"
                           >
                             {loading ? (
                               <>
@@ -282,7 +280,7 @@ const SignIn: React.FC = () => {
                           </Button>
                         </div>
 
-                        <div className="flex items-center justify-center gap-2">
+                        <div className="flex items-center justify-center gap-2 text-[13px] md:text-sm">
                           <p>Ainda não possui conta?</p>
 
                           <Link href="/auth/signup" className="text-[#0838bb]">
@@ -293,9 +291,9 @@ const SignIn: React.FC = () => {
                     </div>
                   </Fade>
                 ) : (
-                  <div className="mt-10 grid gap-10 self-start">
+                  <div className="flex flex-col 2xsm:gap-15 md:mt-10 md:gap-10 self-center">
                     <h1
-                      className="translate-x-25 animate-fade-right text-left text-5xl font-bold text-snow opacity-0 delay-500 2xsm:hidden md:block"
+                      className="translate-x-25 animate-fade-right text-left font-bold text-snow opacity-0 delay-300 2xsm:text-4xl md:text-5xl"
                       style={{
                         filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.50))",
                       }}
@@ -305,7 +303,7 @@ const SignIn: React.FC = () => {
 
                     <button
                       onClick={() => setShowLoginForm(true)}
-                      className="group relative w-fit cursor-pointer overflow-hidden rounded-lg bg-blue-700 px-4 py-2 text-2xl"
+                      className="group relative animate-fade-right opacity-0 delay-700 w-fit cursor-pointer overflow-hidden rounded-lg bg-blue-700 px-4 py-2 text-xl md:text-2xl"
                     >
                       <p className="relative z-20 text-white">
                         Acesse sua conta
@@ -316,16 +314,18 @@ const SignIn: React.FC = () => {
                 )}
 
                 {/* footer */}
-                <div className="mt-5 flex flex-col gap-8">
+                <div className="flex flex-col 2xsm:justify-end 2xsm:gap-8 md:gap-5 md:mt-7 xl:gap-8">
                   <Image
                     src={"/images/logo/new-logo-text-dark.svg"}
                     alt={"logo da ativos (texto)"}
                     width={100}
                     height={50}
+                    draggable={false}
+                    className="2xsm:w-[90px] md:w-25"
                   />
 
-                  <ul className="font flex max-w-[362px] flex-wrap gap-5 text-sm text-snow">
-                    <li>
+                  <ul className="font grid gap-x-5 gap-y-2 max-w-[362px] text-sm text-snow 2xsm:grid-cols-2 md:grid-cols-2 xl:gap-y-5">
+                    <li className="col-span-1">
                       <Link
                         target="_blank"
                         href={"/automated-proposal"}
@@ -335,7 +335,7 @@ const SignIn: React.FC = () => {
                         <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-snow transition-all duration-300 ease-in-out group-hover:w-full" />
                       </Link>
                     </li>
-                    <li>
+                    <li className="col-span-1">
                       <Link
                         target="_blank"
                         href={"/retification"}
@@ -345,7 +345,7 @@ const SignIn: React.FC = () => {
                         <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-snow transition-all duration-300 ease-in-out group-hover:w-full" />
                       </Link>
                     </li>
-                    <li>
+                    <li className="col-span-1">
                       <Link
                         target="_blank"
                         href={"/politica-de-privacidade"}
@@ -355,7 +355,7 @@ const SignIn: React.FC = () => {
                         <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-snow transition-all duration-300 ease-in-out group-hover:w-full" />
                       </Link>
                     </li>
-                    <li>
+                    <li className="col-span-1">
                       <Link
                         target="_blank"
                         href={"/termos-e-condicoes"}
