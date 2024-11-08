@@ -101,7 +101,7 @@ const ForgotPassword = ({ state, setState }: ChangePasswordProps) => {
           Enviaremos um e-mail com um link para definir uma nova senha
         </p>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="mb-10">
+          <div className="mb-8">
             <div className="relative">
               <input
                 type="email"
@@ -113,7 +113,9 @@ const ForgotPassword = ({ state, setState }: ChangePasswordProps) => {
                 })}
               />
 
-              <ErrorMessage errors={errors} field="recovery_email" />
+              {/* <ErrorMessage errors={errors} field="recovery_email" /> */}
+
+              {errors.recovery_email && <span className="absolute left-1 -bottom-4.5 text-red text-xs">Campo obrigatório</span>}
 
               <span className="absolute right-4 top-4">
                 <BiEnvelope
@@ -124,7 +126,7 @@ const ForgotPassword = ({ state, setState }: ChangePasswordProps) => {
           </div>
           <Button
             type="submit"
-            className={`${status === "request_success" && "bg-green-500"} flex w-full cursor-pointer items-center justify-center rounded-lg text-white hover:bg-opacity-90`}
+            className={`${status === "request_success" && "bg-green-500"} flex w-full cursor-pointer items-center justify-center rounded-lg text-white hover:bg-opacity-90 uppercase tracking-wider`}
           >
             <span className="text-[16px] font-medium">
               {isSending ? "Enviando e-mail" : "Enviar"}

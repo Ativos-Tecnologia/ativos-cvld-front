@@ -1,3 +1,38 @@
+.new_hero_login {
+  position: relative;
+  background: url(../../../../public/images/hero_login_image.png) no-repeat;
+  background-position: calc(50% + 60px) calc(50% + 70px);
+  background-size: cover;
+}
+
+.new_hero_login::before {
+  position: absolute;
+  content: "";
+  inset: 0;
+  background-image: linear-gradient(to right, #0058dd 0%, transparent 100%);
+  
+}
+
+.new_hero_login::after {
+  position: absolute;
+  content: "";
+  inset: 0;
+  background-image: linear-gradient(to right, #003585 0%, transparent 100%);
+}
+
+.new_hero_login_overlap {
+  position: absolute;
+  inset: 0;
+  background: url(../../../../public/images/hero_login_man_smiling_full.png) no-repeat;
+  background-position: calc(50% + 60px) calc(50% + 70px);
+  background-size: cover;
+}
+
+.container-grid {
+  display: grid;
+  grid-template-rows: 200px 340px minmax(0px, 1fr);
+}
+
 .hero_login {
   position: relative;
   background: url(../../../../public/images/login_image_1.webp) no-repeat center;
