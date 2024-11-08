@@ -84,6 +84,8 @@ export default function Privacy() {
                   src="/images/contract.jpg"
                   alt="teste"
                   className="w-full bg-center"
+                  width={700}
+                  height={467}
                 />
               </div>
             </Fade>
