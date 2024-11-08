@@ -40,3 +40,6 @@ next-env.d.ts
 .env
 src/utils/api.ts
 ativos-cvld-front.code-workspace
+
+#others
+/src/app/auth/signin/bkp.tsx

@@ -159,7 +159,8 @@ const AutomatedProposal = () => {
   );
   const [loading, setLoading] = useState<boolean>(false);
   const [showResults, setShowResults] = useState<boolean>(false);
-  const [isFloatingButtonsVisible, setIsFloatingButtonVisible] = useState<boolean>(false);
+  const [isFloatingButtonsVisible, setIsFloatingButtonVisible] =
+    useState<boolean>(false);
   const [filledFormData, setFilledFormData] =
     useState<IProposalFormStateProps | null>(null);
   const mainRef = useRef<HTMLDivElement | null>(null);
@@ -177,10 +178,7 @@ const AutomatedProposal = () => {
   });
 
   // Função para atualizar a proposta e ajustar a comissão proporcionalmente
-  const handleProposalSliderChange = (
-    value: string,
-    sliderChange: boolean
-  ) => {
+  const handleProposalSliderChange = (value: string, sliderChange: boolean) => {
     const newProposalSliderValue = parseFloat(value);
     setSliderValues((oldValues) => {
       return { ...oldValues, proposal: newProposalSliderValue };
@@ -200,9 +198,9 @@ const AutomatedProposal = () => {
     });
 
     if (comissionRef.current && proposalRef.current) {
-      comissionRef.current.value = numberFormat(newComissionSliderValue)
+      comissionRef.current.value = numberFormat(newComissionSliderValue);
       if (sliderChange) {
-        proposalRef.current.value = numberFormat(newProposalSliderValue)
+        proposalRef.current.value = numberFormat(newProposalSliderValue);
       }
     }
   };
@@ -210,7 +208,7 @@ const AutomatedProposal = () => {
   // Função para atualizar a comissão e ajustar a proposta proporcionalmente
   const handleComissionSliderChange = (
     value: string,
-    sliderChange: boolean
+    sliderChange: boolean,
   ) => {
     const newComissionSliderValue = parseFloat(value);
     setSliderValues((oldValues) => {
@@ -230,9 +228,9 @@ const AutomatedProposal = () => {
     });
 
     if (proposalRef.current && comissionRef.current) {
-      proposalRef.current.value = numberFormat(newProposalSliderValue)
+      proposalRef.current.value = numberFormat(newProposalSliderValue);
       if (sliderChange) {
-        comissionRef.current.value = numberFormat(newComissionSliderValue)
+        comissionRef.current.value = numberFormat(newComissionSliderValue);
       }
     }
   };
@@ -242,8 +240,8 @@ const AutomatedProposal = () => {
 
     if (resultsRef.current) {
       resultsRef.current.scrollIntoView({
-        behavior: "smooth"
-      })
+        behavior: "smooth",
+      });
     }
 
     data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
@@ -311,20 +309,21 @@ const AutomatedProposal = () => {
   function scrollTo(ref: HTMLElement | HTMLDivElement | null) {
     if (ref) {
       ref.scrollIntoView({
-        behavior: "smooth"
-      })
+        behavior: "smooth",
+      });
     }
   }
 
   const sendDefaultWhatsAppMessage = () => {
-    const message = "Olá, venho do site do Celer, e gostaria de tirar uma dúvida!";
+    const message =
+      "Olá, venho do site do Celer, e gostaria de tirar uma dúvida!";
     const linkWhatsApp = `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(message)}`;
     window.open(linkWhatsApp, "_blank", "noopener,noreferrer");
-  }
+  };
 
   const sendProposalToWhatsApp = () => {
     const message = `
-        Olá, venho da aplicação CelerApp, onde acabo de fazer um cálculo de proposta.
+        Olá, venho do Celer, onde acabo de fazer um cálculo de proposta.
 Segue abaixo os dados do cálculo:
 
     - Valor de proposta: ${numberFormat(sliderValues.proposal)}
@@ -355,31 +354,33 @@ E abaixo, uma memória das informações de entrada:
   };
 
   const changeInputValues = (inputField: string, value: string) => {
-    const rawValue = value.replace(/R\$\s*/g, "").replaceAll(".", "").replaceAll(",", ".");
+    const rawValue = value
+      .replace(/R\$\s*/g, "")
+      .replaceAll(".", "")
+      .replaceAll(",", ".");
     switch (inputField) {
       case "proposal":
-        setSliderValues(old => {
+        setSliderValues((old) => {
           return {
             ...old,
-            proposal: parseFloat(rawValue)
-          }
+            proposal: parseFloat(rawValue),
+          };
         });
         handleProposalSliderChange(rawValue, false);
         break;
       case "comission":
-        setSliderValues(old => {
+        setSliderValues((old) => {
           return {
             ...old,
-            comission: parseFloat(rawValue)
-          }
+            comission: parseFloat(rawValue),
+          };
         });
         handleComissionSliderChange(rawValue, false);
         break;
       default:
         break;
     }
-
-  }
+  };
 
   useEffect(() => {
     setSliderValues({
@@ -387,8 +388,8 @@ E abaixo, uma memória das informações de entrada:
       comission: comissionValue.max,
     });
     if (proposalRef.current && comissionRef.current) {
-      proposalRef.current.value = numberFormat(proposalValue.min)
-      comissionRef.current.value = numberFormat(comissionValue.max)
+      proposalRef.current.value = numberFormat(proposalValue.min);
+      comissionRef.current.value = numberFormat(comissionValue.max);
     }
   }, [proposalValue, comissionValue]);
 
