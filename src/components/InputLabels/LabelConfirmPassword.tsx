@@ -1,10 +1,10 @@
 'use client'
-import React, { useState } from 'react'
 import { LabelProps } from '@/types/form';
+import { useState } from 'react';
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
 
-const LabelConfirmPassword = ({ title, errors, register, field, passwordsMatch }: LabelProps) => {
+const LabelConfirmPassword = ({ title, errors, register, field, passwordsMatch, htmlFor }: LabelProps) => {
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
 
@@ -14,7 +14,7 @@ const LabelConfirmPassword = ({ title, errors, register, field, passwordsMatch }
 
     return (
         <div className="mb-11">
-            <label className="mb-2.5 block font-medium text-graydark dark:text-white">
+            <label className="mb-2.5 block font-medium text-graydark dark:text-white" htmlFor={htmlFor}>
                 {title}
             </label>
             <div className="relative">
