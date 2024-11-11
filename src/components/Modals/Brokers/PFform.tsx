@@ -126,12 +126,12 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       });
     },
     onSuccess: async () => {
+      await queryClient.refetchQueries({ queryKey: ["broker_list"] });
+      await queryClient.refetchQueries({ queryKey: ["broker_list_cedente_check"] });
+      await queryClient.refetchQueries({ queryKey: ["broker_list_precatorio_check"] });
       toast.success("Cadastro realizado com sucesso", {
         icon: <BiCheck className="text-lg fill-green-400" />
       });
-      await queryClient.invalidateQueries({ queryKey: ["broker_list"] });
-      await queryClient.invalidateQueries({ queryKey: ["broker_list_cedente_check", id] });
-      await queryClient.invalidateQueries({ queryKey: ["broker_list_precatorio_check", id] });
       setCedenteModal(null);
     },
     onSettled: () => {
@@ -159,12 +159,12 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       });
     },
     onSuccess: async () => {
+      await queryClient.refetchQueries({ queryKey: ["broker_list"] });
+      await queryClient.refetchQueries({ queryKey: ["broker_list_cedente_check"] });
+      await queryClient.refetchQueries({ queryKey: ["broker_list_precatorio_check"] });
       toast.success("Cedente atualizado com sucesso", {
         icon: <BiCheck className="text-lg fill-green-400" />
       });
-      await queryClient.invalidateQueries({ queryKey: ["broker_list"] });
-      await queryClient.invalidateQueries({ queryKey: ["broker_list_cedente_check", id] });
-      await queryClient.invalidateQueries({ queryKey: ["broker_list_precatorio_check", id] });
       setCedenteModal(null)
     },
     onSettled: () => {
@@ -185,8 +185,8 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           icon: <BiCheck className="text-lg fill-green-400" />
         })
         setCedenteModal(null);
-        queryClient.invalidateQueries({ queryKey: ["broker_list"] });
-        queryClient.invalidateQueries({ queryKey: ["broker_list_cedente_check", id] });
+        await queryClient.refetchQueries({ queryKey: ["broker_list"] });
+        await queryClient.refetchQueries({ queryKey: ["broker_list_cedente_check"] });
       }
     } catch (error) {
       toast.error('Erro ao desvincular cedente', {
@@ -195,6 +195,22 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     } finally {
       setIsUnlinking(false);
     }
+
+  };
+
+  // função que atualiza dados do formulário pelo CEP digitado
+  const searchCep = async (cep: string) => {
+
+    const formattedCep = cep.replace(/\D/g, '');
+
+    if (formattedCep.length !== 8) return;
+
+    const request = (await fetch(`https://brasilapi.com.br/api/cep/v1/${cep}`)).json()
+    const result = await request;
+    setValue("municipio", result.city);
+    setValue("estado", result.state);
+    setValue("bairro", result.neighborhood);
+    setValue("logradouro", result.street);
 
   };
 
@@ -409,6 +425,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
               <>
                 <Cleave
                   {...field}
+                  onBlur={(e) => searchCep(e.target.value)}
                   placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
                   className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
                   options={{

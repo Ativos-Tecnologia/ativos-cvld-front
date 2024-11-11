@@ -343,6 +343,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     // foi adicionada
 
     // console.log(queryClient.getQueryCache().getAll())
+    console.log(oficio)
 
     const updateObservation = useMutation({
         mutationFn: async (message: string) => {
@@ -399,7 +400,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             queryClient.setQueryData(['broker_list'], (old: NotionResponse) => {
                 return {
                     ...old,
-                    results: old.results.map((item: NotionPage) => {
+                    results: old?.results.map((item: NotionPage) => {
                         if (item.id === oficio.id) {
                             return {
                                 ...item,
@@ -533,6 +534,13 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
                     <div className='flex flex-col'>
 
+                        <button
+                            onClick={() => setEditModalId(oficio.id)}
+                            className='flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm'>
+                            <BsPencilSquare />
+                            Editar Precatório
+                        </button>
+
                         <button className='flex cursor-not-allowed items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm'>
                             <FaRegFilePdf />
                             Juntar Documento
@@ -552,13 +560,6 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                     Juntar Cedente
                                 </>
                             )}
-                        </button>
-
-                        <button
-                            onClick={() => setEditModalId(oficio.id)}
-                            className='flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm'>
-                            <BsPencilSquare />
-                            Editar Info
                         </button>
 
                     </div>

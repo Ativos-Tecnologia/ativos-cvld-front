@@ -61,6 +61,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     staleTime: 1000,
     queryFn: async () => {
       if (cedenteId === null) return;
+      
       const req = await api.get(`/api/cedente/show/pj/${cedenteId}/`)
 
       if (req.data === null) return;
@@ -116,12 +117,12 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       });
     },
     onSuccess: async () => {
-      toast.success("Cadastro realizado com sucesso", {
-        icon: <BiCheck className="text-lg fill-green-400" />
-      });
       await queryClient.invalidateQueries({ queryKey: ["broker_list"] });
       await queryClient.invalidateQueries({ queryKey: ["broker_list_cedente_check", id] });
       await queryClient.invalidateQueries({ queryKey: ["broker_list_precatorio_check", id] });
+      toast.success("Cadastro realizado com sucesso", {
+        icon: <BiCheck className="text-lg fill-green-400" />
+      });
       setCedenteModal(null);
     },
     onSettled: () => {
@@ -140,7 +141,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       await queryClient.cancelQueries({ queryKey: ["broker_list_cedente_check", id] });
       await queryClient.cancelQueries({ queryKey: ["broker_list_precatorio_check", id] });
       const previousData = queryClient.getQueryData(["broker_card_cedente_data"]);
-      return {previousData}
+      return { previousData }
     },
     onError: async (error, data, context) => {
       await queryClient.setQueryData(["broker_card_cedente_data"], context?.previousData);
@@ -149,12 +150,12 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       });
     },
     onSuccess: async () => {
-      toast.success("Cedente atualizado com sucesso", {
-        icon: <BiCheck className="text-lg fill-green-400" />
-      });
       await queryClient.invalidateQueries({ queryKey: ["broker_list"] });
       await queryClient.invalidateQueries({ queryKey: ["broker_list_cedente_check", id] });
       await queryClient.invalidateQueries({ queryKey: ["broker_list_precatorio_check", id] });
+      toast.success("Cedente atualizado com sucesso", {
+        icon: <BiCheck className="text-lg fill-green-400" />
+      });
       setCedenteModal(null);
     },
     onSettled: () => {
@@ -185,6 +186,22 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     } finally {
       setIsUnlinking(false);
     }
+
+  };
+
+  // função que atualiza dados do formulário pelo CEP digitado
+  const searchCep = async (cep: string) => {
+
+    const formattedCep = cep.replace(/\D/g, '');
+
+    if (formattedCep.length !== 8) return;
+
+    const request = (await fetch(`https://brasilapi.com.br/api/cep/v1/${cep}`)).json()
+    const result = await request;
+    setValue("municipio", result.city);
+    setValue("estado", result.state);
+    setValue("bairro", result.neighborhood);
+    setValue("logradouro", result.street);
 
   };
 
@@ -341,6 +358,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
               <>
                 <Cleave
                   {...field}
+                  onBlur={(e) => searchCep(e.target.value)}
                   placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
                   className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
                   options={{
