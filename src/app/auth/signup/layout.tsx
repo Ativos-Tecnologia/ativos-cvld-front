@@ -4,11 +4,11 @@ import React from "react";
 // Esse layout foi uma solução para uso do metadata em páginas que não precisam de um layout específico.
 
 export const metadata: Metadata = {
-  title: "Celer | Comece",
+  title: "Celer | Cadastro",
   applicationName: "CelerApp",
   description:
     "Sua solução one-stop-shop para precatórios. Acompanhe, gerencie e invista em precatórios de forma simples e segura.",
-  category: "Login Page",
+  category: "SignUp Page",
   openGraph: {
     title: "Celer | Comece",
     description:
@@ -18,12 +18,12 @@ export const metadata: Metadata = {
         url: "https://i.ibb.co/fC9QRJx/Captura-de-tela-2024-11-08-100409.png",
         width: 1200,
         height: 630,
-        alt: "Tela de login do CelerApp",
+        alt: "Tela de cadastro do CelerApp",
       },
     ],
   },
   twitter: {
-    title: "Celer | Comece",
+    title: "Celer | Cadastro",
     description:
       "Sua solução one-stop-shop para precatórios. Acompanhe, gerencie e invista em precatórios de forma simples e segura.",
     images: [
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
         url: "https://i.ibb.co/fC9QRJx/Captura-de-tela-2024-11-08-100409.png",
         width: 1200,
         height: 630,
-        alt: "Tela de login do CelerApp",
+        alt: "Tela de cadastro do CelerApp",
       },
     ],
   },

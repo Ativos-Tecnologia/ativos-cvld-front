@@ -1,19 +1,17 @@
 "use client";
-import React, { useState } from 'react'
-import Image from 'next/image'
-import { BsCheck2 } from "react-icons/bs";
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
-import { AiOutlineLoading } from 'react-icons/ai';
-import LabelPassword from '@/components/InputLabels/LabelPassword';
-import { ChangePasswordProps } from '@/types/form';
 import LabelConfirmPassword from '@/components/InputLabels/LabelConfirmPassword';
-import usePassword from '@/hooks/usePassword';
-import { BiArrowBack } from 'react-icons/bi';
-import { useRouter } from 'next/navigation';
+import LabelPassword from '@/components/InputLabels/LabelPassword';
+import { Button } from '@/components/ui/button';
 import useColorMode from '@/hooks/useColorMode';
-import api from '@/utils/api';
 import UseMySwal from '@/hooks/useMySwal';
+import usePassword from '@/hooks/usePassword';
+import { ChangePasswordProps } from '@/types/form';
+import api from '@/utils/api';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { BiArrowBack } from 'react-icons/bi';
 
 const ChangePassword = () => {
 
@@ -80,67 +78,78 @@ const ChangePassword = () => {
     }
 
     return (
-        <div className='bg-gray dark:bg-boxdark-2 mx-auto flex justify-center items-center min-h-screen max-w-screen-2xl p-4 md:p-6 2xl:p-10'>
-            <div className='relative min-w-96 w-[500px] min-h-[550px] py-5 px-6 flex flex-col items-center rounded-md bg-white dark:bg-boxdark border border-stroke dark:border-strokedark shadow-1'>
-                <div className='absolute top-8 left-5 transition-all duration-200 hover:text-primary'>
-                    <span onClick={redirectToLogin} title='Voltar para o login'>
-                        <BiArrowBack className='h-6 w-6 dark:text-white cursor-pointer' />
-                    </span>
-                </div>
-                <span className="mb-12 flex flex-col justify-center
-               items-center">
-                    <div className="hidden dark:flex items-center gap-3 bg">
-                        <Image
-                            src={"/images/logo/celer-app-text-dark.svg"}
-                            alt="Logo"
-                            width={180}
-                            height={32}
-                        />
-                    </div>
-                    <div className="dark:hidden flex flex-col items-center gap-3 bg">
-                        <Image
-                            src={"/images/logo/celer-app-text.svg"}
-                            alt="Logo"
-                            width={180}
-                            height={32}
-                        />
-                    </div>
-                    <h2 className="2xsm:px-20 mt-6 text-2xl text-graydark font-bold dark:text-white" aria-selected="false">
-                        Redefinição de senha
-                    </h2>
-                </span>
-                <form className='w-10/12' onSubmit={handleSubmit(onSubmit)}>
-                    <LabelPassword
-                        title='Nova senha'
-                        errors={errors}
-                        register={register}
-                        clearErrors={clearErrors}
-                        field='password'
-                        passwordInput={passwordInput}
-                        passwordStr={passwordStr}
-                        strengthColor={strengthColor}
-                        barWidth={barWidth}
-                        passwordRequirements={passwordRequirements}
-                    />
-
-                    <LabelConfirmPassword
-                        title='Repita a nova senha'
-                        errors={errors}
-                        register={register}
-                        clearErrors={clearErrors}
-                        field='confirm_password'
-                        passwordsMatch={passwordsMatch}
-                    />
-
-                    <Button disabled={!passwordsMatch} type='submit' className={`${status === 'request_success' && 'bg-green-500 hover:bg-green-600'} flex items-center justify-center w-full cursor-pointer rounded-lg py-8 text-white hover:bg-opacity-90 disabled:opacity-50`}>
-                        <span className="text-[16px] font-medium">
-                            {loading ? "Alterando senha" : "Confirmar"}
-                        </span>
-                    </Button>
-                </form>
+      <div className="mx-auto flex min-h-screen max-w-screen-2xl items-center justify-center bg-gray p-4 dark:bg-boxdark-2 md:p-6 2xl:p-10">
+        <div className="relative flex min-h-[550px] w-[500px] min-w-96 flex-col items-center rounded-md border border-stroke bg-white px-6 py-5 shadow-1 dark:border-strokedark dark:bg-boxdark">
+          <div className="absolute left-5 top-8 transition-all duration-200 hover:text-primary">
+            <span onClick={redirectToLogin} title="Voltar para o login">
+              <BiArrowBack className="h-6 w-6 cursor-pointer dark:text-white" />
+            </span>
+          </div>
+          <span
+            className="mb-12 flex flex-col items-center
+               justify-center"
+          >
+            <div className="bg hidden items-center gap-3 dark:flex">
+              <Image
+                src={"/images/logo/celer-app-text-dark.svg"}
+                alt="Logo"
+                width={180}
+                height={32}
+              />
             </div>
+            <div className="bg flex flex-col items-center gap-3 dark:hidden">
+              <Image
+                src={"/images/logo/celer-app-text.svg"}
+                alt="Logo"
+                width={180}
+                height={32}
+              />
+            </div>
+            <h2
+              className="mt-6 text-2xl font-bold text-graydark dark:text-white 2xsm:px-20"
+              aria-selected="false"
+            >
+              Redefinição de senha
+            </h2>
+          </span>
+          <form className="w-10/12" onSubmit={handleSubmit(onSubmit)}>
+            <LabelPassword
+              title="Nova senha"
+              errors={errors}
+              register={register}
+              clearErrors={clearErrors}
+              field="password"
+              passwordInput={passwordInput}
+              passwordStr={passwordStr}
+              strengthColor={strengthColor}
+              barWidth={barWidth}
+              passwordRequirements={passwordRequirements}
+              htmlFor="password"
+            />
+
+            <LabelConfirmPassword
+              title="Repita a nova senha"
+              errors={errors}
+              register={register}
+              clearErrors={clearErrors}
+              field="confirm_password"
+              passwordsMatch={passwordsMatch}
+              htmlFor="confirm_password"
+            />
+
+            <Button
+              disabled={!passwordsMatch}
+              type="submit"
+              className={`${status === "request_success" && "bg-green-500 hover:bg-green-600"} flex w-full cursor-pointer items-center justify-center rounded-lg py-8 text-white hover:bg-opacity-90 disabled:opacity-50`}
+            >
+              <span className="text-[16px] font-medium">
+                {loading ? "Alterando senha" : "Confirmar"}
+              </span>
+            </Button>
+          </form>
         </div>
-    )
+      </div>
+    );
 }
 
 export default ChangePassword
