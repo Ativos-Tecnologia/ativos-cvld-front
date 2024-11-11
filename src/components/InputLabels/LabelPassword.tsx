@@ -1,13 +1,13 @@
 "use client";
-import React, { useState } from 'react'
 import { LabelProps } from '@/types/form';
+import { Popover } from 'flowbite-react';
+import { useState } from 'react';
+import { BiCheck, BiInfoCircle, BiX } from 'react-icons/bi';
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
-import { Popover } from 'flowbite-react';
-import { BiCheck, BiInfoCircle, BiLockAlt, BiX } from 'react-icons/bi';
 
 
-const LabelPassword = ({ title, errors, register, field, passwordInput, strengthColor, barWidth, passwordStr, passwordRequirements }: LabelProps) => {
+const LabelPassword = ({ title, errors, register, field, passwordInput, strengthColor, barWidth, passwordStr, passwordRequirements, htmlFor }: LabelProps) => {
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
 
@@ -17,7 +17,7 @@ const LabelPassword = ({ title, errors, register, field, passwordInput, strength
 
     return (
         <div className='mb-11'>
-            <label className="mb-2.5 flex items-center gap-3 font-medium">
+            <label className="mb-2.5 flex items-center gap-3 font-medium" htmlFor={htmlFor}>
                 <span className="text-black dark:text-white">{title}</span>
                 {/* popover for password hint */}
                 {passwordRequirements && (
