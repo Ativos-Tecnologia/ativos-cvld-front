@@ -1,6 +1,7 @@
 import MainForm from "@/components/MainForm";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { FormProvider, useForm } from "react-hook-form";
 
 jest.mock("next/navigation", () => ({
   useRouter() {
@@ -22,9 +23,10 @@ jest.mock("next/navigation", () => ({
 
 
 beforeEach(async () => {
-  const dataCallback = jest.fn();
-  const setCalcStep = jest.fn();
-  const setDataToAppend = jest.fn();
+  //Dificilmente voce verá uma variavel global sendo usada em um teste, mas aqui é um caso especial.
+  var dataCallback = jest.fn();
+  var setCalcStep = jest.fn();
+  var setDataToAppend = jest.fn();
 
   render(
     <QueryClientProvider client={(global as any).queryClient}>
@@ -72,7 +74,183 @@ describe("Teste dos Headers do Formulário", () => {
 		expect(valorPrincipal).toHaveClass(
 			"font-nexa", "text-xs", "font-semibold", "uppercase", "text-meta-5"
 		);
-		expect(valorPrincipal).toHaveAttribute("for", "valor_principal");
+    expect(valorPrincipal).toHaveAttribute("for", "valor_principal");
+    
+    const juros = await screen.findByText("Juros");
+    expect(juros).toBeInTheDocument();
+    expect(juros).toHaveClass(
+      "font-nexa", "text-xs", "font-semibold", "uppercase", "text-meta-5"
+    );
+    expect(juros).toHaveAttribute("for", "valor_juros");
 
-	});
+    const database = await screen.findByText("Data Base");
+    expect(database).toBeInTheDocument();
+    expect(database).toHaveClass(
+      "font-nexa", "text-xs", "font-semibold", "uppercase", "text-meta-5"
+    );
+    expect(database).toHaveAttribute("for", "data_base");
+
+    const datareq = await screen.findByText("Data de Requisição / Recebimento");
+    expect(datareq).toBeInTheDocument();
+    expect(datareq).toHaveClass(
+      "font-nexa", "text-xs", "font-semibold", "uppercase", "text-meta-5"
+    );
+    expect(datareq).toHaveAttribute("for", "data_requisicao");
+  });
+
+  it("Teste dos checkboxes do Formulário", async () => {
+    const dataCallback = jest.fn();
+    const setCalcStep = jest.fn();
+    const setDataToAppend = jest.fn();
+    const Wrapper = () => {
+      const methods = useForm();
+      return (
+        <FormProvider {...methods}>
+          <MainForm
+            dataCallback={dataCallback}
+            setCalcStep={setCalcStep}
+            setDataToAppend={setDataToAppend}
+          />
+        </FormProvider>
+      );
+    };
+    render(
+      <QueryClientProvider client={(global as any).queryClient}>
+        <Wrapper />
+      </QueryClientProvider>
+    );
+    
+    const aquisicaoTotalLabel = await screen.findAllByText("Aquisição total");
+    const aquisicaoTotal = await screen.findByLabelText("Aquisição total") as HTMLInputElement;
+    expect(aquisicaoTotal).toBeInTheDocument();
+    expect(aquisicaoTotal).toBeChecked();
+    fireEvent.click(aquisicaoTotal);
+    expect(aquisicaoTotal).not.toBeChecked();
+    expect(aquisicaoTotalLabel[0]).toHaveAttribute("for", "valor_aquisicao_total");
+    expect(aquisicaoTotal).toHaveAttribute("id", "valor_aquisicao_total");
+    expect(aquisicaoTotalLabel[0]).toHaveClass(
+      "font-nexa", "text-xs", "font-semibold", "uppercase", "text-meta-5"
+    );
+
+    const jurosDeMoraLabel = await screen.findAllByText("Juros de Mora fixados em sentença");
+    const jurosDeMora = (await screen.findByLabelText(
+      "Juros de Mora fixados em sentença",
+    )) as HTMLInputElement;
+    expect(jurosDeMora).toBeInTheDocument();
+    expect(jurosDeMora).toBeChecked();
+    fireEvent.click(jurosDeMora);
+    expect(jurosDeMora).not.toBeChecked();
+    expect(jurosDeMoraLabel[0]).toHaveAttribute("for", "incidencia_juros_moratorios");
+    expect(jurosDeMora).toHaveAttribute("id", "incidencia_juros_moratorios");
+    expect(jurosDeMoraLabel[0]).toHaveClass(
+      "font-nexa", "text-xs", "font-semibold", "uppercase", "text-meta-5"
+    );
+
+    const incidenciaIrLabel = await screen.findAllByText("Incidência de IR");
+    const incidenciaIr = await screen.findByLabelText("Incidência de IR") as HTMLInputElement;
+    expect(incidenciaIr).toBeInTheDocument();
+    expect(incidenciaIr).toBeChecked();
+    fireEvent.click(incidenciaIr);
+    expect(incidenciaIr).not.toBeChecked();
+    expect(incidenciaIrLabel[0]).toHaveAttribute("for", "incidencia_rra_ir");
+    expect(incidenciaIr).toHaveAttribute("id", "incidencia_rra_ir");
+    expect(incidenciaIrLabel[0]).toHaveClass(
+      "font-nexa", "text-xs", "font-semibold", "uppercase", "text-meta-5"
+    );
+
+    const irIncidentesSobreRraLabel = await screen.findAllByText("IR incidente sobre RRA?");
+    const irIncidentesSobreRra = (await screen.findByLabelText(
+      "IR incidente sobre RRA?",
+    )) as HTMLInputElement;
+    expect(irIncidentesSobreRra).toBeInTheDocument();
+    expect(irIncidentesSobreRra).not.toBeChecked();
+    fireEvent.click(irIncidentesSobreRra);
+    expect(irIncidentesSobreRra).toBeChecked();
+    expect(irIncidentesSobreRraLabel[0]).toHaveAttribute(
+      "for",
+      "ir_incidente_rra",
+    );
+    expect(irIncidentesSobreRra).toHaveAttribute("id", "ir_incidente_rra");
+    expect(irIncidentesSobreRraLabel[0]).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+
+    const incidePss = await screen.findByLabelText("Incide PSS?") as HTMLInputElement;
+    expect(incidePss).toBeInTheDocument();
+    expect(incidePss).not.toBeChecked();
+    fireEvent.click(incidePss);
+    expect(incidePss).toBeChecked();
+    const incidePssLabel = await screen.findAllByText("Incide PSS?");
+    expect(incidePssLabel[0]).toHaveAttribute("for", "incidencia_pss");
+    expect(incidePss).toHaveAttribute("id", "incidencia_pss");
+    expect(incidePssLabel[0]).toHaveClass(
+      "font-nexa", "text-xs", "font-semibold", "uppercase", "text-meta-5"
+    );
+
+    const atualizarDataPassada = await screen.findByLabelText("Atualizar para data passada?") as HTMLInputElement;
+    expect(atualizarDataPassada).toBeInTheDocument();
+    expect(atualizarDataPassada).not.toBeChecked();
+    fireEvent.click(atualizarDataPassada);
+    expect(atualizarDataPassada).toBeChecked();
+    const atualizarDataPassadaLabel = await screen.findAllByText("Atualizar para data passada?");
+    expect(atualizarDataPassadaLabel[0]).toHaveAttribute("for", "data_limite_de_atualizacao_check");
+    expect(atualizarDataPassada).toHaveAttribute("id", "data_limite_de_atualizacao_check");
+    expect(atualizarDataPassadaLabel[0]).toHaveClass(
+      "font-nexa", "text-xs", "font-semibold", "uppercase", "text-meta-5");
+
+    const salvarInfoOficio = (await screen.findByLabelText(
+      "Salvar informações de ofício e recálculo?",
+    )) as HTMLInputElement;
+    expect(salvarInfoOficio).toBeInTheDocument();
+    expect(salvarInfoOficio).not.toBeChecked();
+    fireEvent.click(salvarInfoOficio);
+    expect(salvarInfoOficio).toBeChecked();
+    const salvarInfoOficioLabel = await screen.findAllByText("Salvar informações de ofício e recálculo?");
+    expect(salvarInfoOficioLabel[0]).toHaveAttribute("for", "gerar_cvld");
+    expect(salvarInfoOficio).toHaveAttribute("id", "gerar_cvld");
+    expect(salvarInfoOficioLabel[0]).toHaveClass(
+      "font-nexa", "text-xs", "font-semibold", "uppercase", "text-meta-5"
+    );
+  })
+  
+  // it("Teste dos inputs do formulário", async () => { 
+  //   const natureza = await screen.findByRole("combobox", {
+  //     name: "Natureza",
+  //   });
+  //   expect(natureza).toBeInTheDocument();
+  //   expect(natureza).toHaveClass(
+  //     "form-select", "mt-1", "block", "w-full", "py-2", "px-3", "border", "border-gray-300", "bg-white", "rounded-md", "shadow-sm", "focus:outline-none", "focus:ring-indigo-500", "focus:border-indigo-500", "sm:text-sm"
+  //   );
+  //   expect(natureza).toHaveAttribute("id", "natureza");
+
+  //   const valorPrincipal = await screen.findByRole("textbox", {
+  //     name: "Valor Principal",
+  //   });
+  //   expect(valorPrincipal).toBeInTheDocument();
+  //   expect(valorPrincipal).toHaveClass(
+  //     "form-input", "mt-1", "block", "w-full", "py-2", "px-3", "border", "border-gray-300", "bg-white", "rounded-md", "shadow-sm", "focus:outline-none", "focus:ring-indigo-500", "focus:border-indigo-500", "sm:text-sm"
+  //   );
+  //   expect(valorPrincipal).toHaveAttribute("id", "valor_principal");
+
+  //   const juros = await screen.findByRole("textbox", {
+  //     name: "Juros",
+  //   });
+  //   expect(juros).toBeInTheDocument();
+  //   expect(juros).toHaveClass(
+  //     "form-input", "mt-1", "block", "w-full", "py-2", "px-3", "border", "border-gray-300", "bg-white", "rounded-md", "shadow-sm", "focus:outline-none", "focus:ring-indigo-500", "focus:border-indigo-500", "sm:text-sm"
+  //   );
+  //   expect(juros).toHaveAttribute("id", "valor_juros");
+
+  //   const database = await screen.findByRole("textbox", {
+  //     name: "Data Base",
+  //   });
+  //   expect(database).toBeInTheDocument();
+  //   expect(database).toHaveClass(
+  //     "form-input", "mt-1", "block", "w-full", "py-2", "px-3", "border", "border-gray-300", "bg-white", "rounded-md", "shadow-sm", "focus:outline-none", "focus:ring-indigo-500", "focus:border-indigo-500", "sm"
+  //   );
+  //   });
 });
