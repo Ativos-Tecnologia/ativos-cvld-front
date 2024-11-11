@@ -596,6 +596,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </label>
 
               <ShadSelect
+                aria-labelledby="natureza"
                 name="natureza"
                 control={control}
                 defaultValue={"NÃO TRIBUTÁRIA"}
