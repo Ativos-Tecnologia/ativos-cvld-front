@@ -1,8 +1,6 @@
 "use client";
-import api from "@/utils/api";
-import { QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
 import DashbrokersCard from "../Cards/DashbrokersCard";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import BrokerCardSkeleton from "../Skeletons/BrokerCardSkeleton";
 import { Fade } from "react-awesome-reveal";
 import Image from "next/image";
@@ -13,30 +11,22 @@ const Broker: React.FC = () => {
 
   const {
     editModalId, setEditModalId,
-    cedenteModal, setCedenteModal
+    cedenteModal, cardsData
   } = useContext(BrokersContext);
 
-  const fetchBrokerList = async () => {
-    const response = await api.get("api/notion-api/broker/list");
-    if (response !== null) {
-      return response.data;
-    }
-  };
-  const queryClient = useQueryClient();
+  // estado para verificar se é o primeiro carregamento da view
+  const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
 
-  const { isPending, data: notionData, error, isFetching, refetch } = useQuery({
-    queryKey: ["broker_list"],
-    refetchOnReconnect: true,
-    refetchOnWindowFocus: true,
-    refetchInterval: 60000,
-    staleTime: 1000,
-    queryFn: fetchBrokerList,
-  });
+  useEffect(() => {
+    if (isFirstLoad && cardsData) {
+      setIsFirstLoad(false);
+    }
+  }, [isFirstLoad, cardsData]);
 
   return (
     <>
       <div className="grid grid-cols-2 gap-5 items-center w-full mt-15">
-        {isPending ? (
+        {isFirstLoad ? (
           <Fade cascade damping={0.1} triggerOnce>
             {[...Array(4)].map((_, index: number) =>
               <BrokerCardSkeleton key={index} />
@@ -44,9 +34,9 @@ const Broker: React.FC = () => {
           </Fade>
         ) : (
           <>
-            {notionData?.results.length > 0 ? (
+            {(cardsData && cardsData?.results.length > 0) ? (
               <Fade cascade damping={0.1} triggerOnce>
-                {notionData?.results.map((oficio: any, index: number) => (
+                {cardsData?.results.map((oficio: any, index: number) => (
                   <DashbrokersCard
                     oficio={oficio}
                     key={index}
@@ -72,7 +62,7 @@ const Broker: React.FC = () => {
         )}
       </div>
       {cedenteModal !== null && (
-        <BrokerModal/>
+        <BrokerModal />
       )}
     </>
   );
