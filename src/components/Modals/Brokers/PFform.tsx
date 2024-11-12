@@ -3,7 +3,7 @@ import { BrokersContext } from '@/context/BrokersContext';
 import { NotionPage, NotionResponse } from '@/interfaces/INotion';
 import api from '@/utils/api';
 import queryClient from '@/utils/queryClient';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import Cleave from 'cleave.js/react';
 import React, { useContext, useEffect, useState } from 'react'
 import { Fade } from 'react-awesome-reveal';
@@ -18,8 +18,8 @@ import { PiCityFill } from 'react-icons/pi';
 import { RiRoadMapLine } from 'react-icons/ri';
 import { TbBuildingEstate } from 'react-icons/tb';
 import { TiWarning } from 'react-icons/ti';
-import ReactInputMask from 'react-input-mask';
 import { toast } from 'sonner';
+import { CedenteProps } from './PJform';
 
 type FormValuesForPF = {
   nome_completo: string;
@@ -59,26 +59,15 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     }
   });
 
-  const { setCedenteModal } = useContext(BrokersContext);
+  const { setCedenteModal, fetchCardData, setIsFetchAllowed } = useContext(BrokersContext);
 
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [isUnlinking, setIsUnlinking] = useState<boolean>(false);
   const [openUnlinkModal, setOpenUnlinkModal] = useState<boolean>(false);
-
-  /* ====> tan stack requests and datas ====> */
-  const { data: cedentePfData, isPending: pendingCedentePfData = false } = useQuery<NotionPage>({
-    queryKey: ["broker_card_cedente_data", cedenteId],
-    staleTime: 1000,
-    queryFn: async () => {
-      if (cedenteId === null) return;
-      const req = await api.get(`/api/cedente/show/pf/${cedenteId}/`)
-
-      if (req.data === null) return;
-
-      return req.data;
-    },
-    enabled: cedenteId !== null
-  })
+  const [cedentePfData, setCedentePfData] = useState<CedenteProps>({
+    data: null,
+    isFetching: true
+  });
 
   // mutations
   const createCedente = useMutation({
@@ -88,54 +77,23 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     },
     onMutate: async () => {
       setIsUpdating(true);
-      await queryClient.cancelQueries({ queryKey: ["broker_list"] });
-      await queryClient.cancelQueries({ queryKey: ["broker_list_cedente_check", id] });
-      await queryClient.cancelQueries({ queryKey: ["broker_list_precatorio_check", id] });
-      const previousData = queryClient.getQueryData(["broker_list"]);
-      queryClient.setQueryData(['broker_list'], (old: NotionResponse) => {
-        return {
-          ...old,
-          results: old?.results.map((item: NotionPage) => {
-            if (item.id === id) {
-              return {
-                ...item,
-                properties: {
-                  ...item.properties,
-                  "Cedente PF": {
-                    ...item.properties["Cedente PF"],
-                    relation: [
-                      {
-                        id: "",
-                      }
-                    ]
-                  }
-                }
-              }
-            } else {
-              return item
-            }
-          })
-        }
-      })
-      return { previousData };
+      setIsFetchAllowed(false);
     },
-    onError: async (error, data, context) => {
-      await queryClient.setQueryData(["broker_list"], context?.previousData);
+    onError: () => {
       toast.error('Erro ao realizar cadastro', {
         icon: <BiX className="text-lg fill-red-500" />
       });
     },
     onSuccess: async () => {
+      await fetchCardData();
       toast.success("Cadastro realizado com sucesso", {
         icon: <BiCheck className="text-lg fill-green-400" />
       });
-      await queryClient.invalidateQueries({ queryKey: ["broker_list"] });
-      await queryClient.invalidateQueries({ queryKey: ["broker_list_cedente_check", id] });
-      await queryClient.invalidateQueries({ queryKey: ["broker_list_precatorio_check", id] });
       setCedenteModal(null);
     },
     onSettled: () => {
       setIsUpdating(false);
+      setIsFetchAllowed(true);
     }
   });
 
@@ -146,29 +104,23 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     },
     onMutate: async () => {
       setIsUpdating(true);
-      await queryClient.cancelQueries({ queryKey: ["broker_list"] });
-      await queryClient.cancelQueries({ queryKey: ["broker_list_cedente_check", id] });
-      await queryClient.cancelQueries({ queryKey: ["broker_list_precatorio_check", id] });
-      const previousData = queryClient.getQueryData(["broker_card_cedente_data"]);
-      return {previousData}
+      setIsFetchAllowed(false);
     },
-    onError: async (error, data, context) => {
-      await queryClient.setQueryData(["broker_card_cedente_data"], context?.previousData);
+    onError: () => {
       toast.error('Erro ao atualizar dados', {
         icon: <BiX className="text-lg fill-red-500" />
       });
     },
     onSuccess: async () => {
+      await fetchCardData();
       toast.success("Cedente atualizado com sucesso", {
         icon: <BiCheck className="text-lg fill-green-400" />
       });
-      await queryClient.invalidateQueries({ queryKey: ["broker_list"] });
-      await queryClient.invalidateQueries({ queryKey: ["broker_list_cedente_check", id] });
-      await queryClient.invalidateQueries({ queryKey: ["broker_list_precatorio_check", id] });
       setCedenteModal(null)
     },
     onSettled: () => {
       setIsUpdating(false);
+      setIsFetchAllowed(true);
     }
   });
 
@@ -177,6 +129,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     if (!cedenteId) return;
 
     setIsUnlinking(true);
+    setIsFetchAllowed(false);
 
     try {
       const req = await api.delete(`/api/cedente/unlink/pf/${cedenteId}/precatorio/${id}/`);
@@ -184,9 +137,8 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
         toast.success("Cedente desvinculado com sucesso", {
           icon: <BiCheck className="text-lg fill-green-400" />
         })
+        await fetchCardData();
         setCedenteModal(null);
-        queryClient.invalidateQueries({ queryKey: ["broker_list"] });
-        queryClient.invalidateQueries({ queryKey: ["broker_list_cedente_check", id] });
       }
     } catch (error) {
       toast.error('Erro ao desvincular cedente', {
@@ -194,9 +146,36 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       });
     } finally {
       setIsUnlinking(false);
+      setIsFetchAllowed(true);
     }
 
   };
+
+  // função que atualiza dados do formulário pelo CEP digitado
+  const searchCep = async (cep: string) => {
+
+    const formattedCep = cep.replace(/\D/g, '');
+
+    if (formattedCep.length !== 8) return;
+
+    const request = (await fetch(`https://brasilapi.com.br/api/cep/v1/${cep}`)).json()
+    const result = await request;
+    setValue("municipio", result.city);
+    setValue("estado", result.state);
+    setValue("bairro", result.neighborhood);
+    setValue("logradouro", result.street);
+
+  };
+
+  // função de fetch para pegar dados do cedente cadastrado
+  const fetchCedente = async () => {
+    const req = await api.get(`/api/cedente/show/pf/${cedenteId}/`);
+    if (req.data === null) return
+    setCedentePfData(old => ({
+      data: req.data,
+      isFetching: false
+    }))
+  }
 
   // função de submit para o formulário
   const onSubmit = async (data: any) => {
@@ -221,51 +200,39 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       await createCedente.mutateAsync(data);
     }
 
-    // try {
-    //   const req = await api.post("/api/cedente/create/pf/", data)
-
-    //   if (req.status === 200 || req.status === 201) {
-    //     toast.success("Cadastro realizado com sucesso", {
-    //       icon: <BiCheck className="text-lg fill-green-400" />
-    //     })
-    //     queryClient.invalidateQueries({ queryKey: ["broker_list"] });
-    //     queryClient.invalidateQueries({ queryKey: ["broker_list_cedente_check", id] });
-    //   }
-
-    // } catch (error) {
-    //   toast.error('Erro ao realizar cadastro', {
-    //     icon: <BiX className="text-lg fill-red-500" />
-    //   });
-    // } finally {
-    //   setIsUpdating(false)
-    // }
-
   };
+
+  useEffect(() => {
+
+    if (!cedenteId) return;
+    fetchCedente();
+
+  }, [cedenteId]);
 
   useEffect(() => {
     if (mode === "edit" && cedentePfData) {
 
       // valores obrigatórios em um cadastro
-      setValue("nome_completo", cedentePfData.properties["Nome Completo"].title[0].text.content);
-      setValue("cpf", cedentePfData.properties["CPF"].rich_text![0].text.content);
-      setValue("identidade", cedentePfData.properties["Identidade"].rich_text![0].text.content);
-      setValue("cep", cedentePfData.properties["CEP"].rich_text![0].text.content);
+      setValue("nome_completo", cedentePfData.data?.properties["Nome Completo"].title[0].text.content);
+      setValue("cpf", cedentePfData.data!.properties["CPF"].rich_text![0].text.content);
+      setValue("identidade", cedentePfData.data!.properties["Identidade"].rich_text![0].text.content);
+      setValue("cep", cedentePfData.data!.properties["CEP"].rich_text![0].text.content);
 
       //valores opcionais
-      setValue("orgao_exp", cedentePfData.properties["Órgão Expedidor"].rich_text?.[0]?.text.content || "");
-      setValue("bairro", cedentePfData.properties["Bairro"].rich_text?.[0]?.text.content || "");
-      setValue("celular", cedentePfData.properties["Celular"].phone_number || "");
-      setValue("email", cedentePfData.properties["Email"].email || "");
-      setValue("estado", cedentePfData.properties["Estado (UF)"].select?.name || "");
-      setValue("data_nascimento", cedentePfData.properties["Nascimento"].date?.start.split("-").reverse().join("/") || "");
-      setValue("profissao", cedentePfData.properties["Profissão"].rich_text?.[0]?.text.content || "");
-      setValue("logradouro", cedentePfData.properties["Rua/Av/Logradouro"].rich_text?.[0]?.text.content || "");
-      setValue("numero", cedentePfData.properties["Número"].number || "");
-      setValue("complemento", cedentePfData.properties["Complemento"].rich_text?.[0]?.text.content || "");
-      setValue("municipio", cedentePfData.properties["Município"].select?.name || "");
-      setValue("nome_pai", cedentePfData.properties["Nome do Pai"].rich_text?.[0]?.text.content || "");
-      setValue("nome_mae", cedentePfData.properties["Nome da Mãe"].rich_text?.[0]?.text.content || "");
-      setValue("nacionalidade", cedentePfData.properties["Nacionalidade"].select?.name || "");
+      setValue("orgao_exp", cedentePfData.data?.properties["Órgão Expedidor"].rich_text?.[0]?.text.content || "");
+      setValue("bairro", cedentePfData.data?.properties["Bairro"].rich_text?.[0]?.text.content || "");
+      setValue("celular", cedentePfData.data?.properties["Celular"].phone_number || "");
+      setValue("email", cedentePfData.data?.properties["Email"].email || "");
+      setValue("estado", cedentePfData.data?.properties["Estado (UF)"].select?.name || "");
+      setValue("data_nascimento", cedentePfData.data?.properties["Nascimento"].date?.start.split("-").reverse().join("/") || "");
+      setValue("profissao", cedentePfData.data?.properties["Profissão"].rich_text?.[0]?.text.content || "");
+      setValue("logradouro", cedentePfData.data?.properties["Rua/Av/Logradouro"].rich_text?.[0]?.text.content || "");
+      setValue("numero", cedentePfData.data?.properties["Número"].number || "");
+      setValue("complemento", cedentePfData.data?.properties["Complemento"].rich_text?.[0]?.text.content || "");
+      setValue("municipio", cedentePfData.data?.properties["Município"].select?.name || "");
+      setValue("nome_pai", cedentePfData.data?.properties["Nome do Pai"].rich_text?.[0]?.text.content || "");
+      setValue("nome_mae", cedentePfData.data?.properties["Nome da Mãe"].rich_text?.[0]?.text.content || "");
+      setValue("nacionalidade", cedentePfData.data?.properties["Nacionalidade"].select?.name || "");
 
     }
   }, [cedentePfData]);
@@ -309,7 +276,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("nome_completo", {
               required: {
                 value: true,
@@ -337,7 +304,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
               <>
                 <Cleave
                   {...field}
-                  placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+                  placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
                   className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
                   options={{
                     delimiters: [".", ".", "-"],
@@ -366,7 +333,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
               <>
                 <Cleave
                   {...field}
-                  placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+                  placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
                   className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
                   options={{
                     delimiters: [".", "."],
@@ -387,7 +354,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("orgao_exp")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -409,7 +376,8 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
               <>
                 <Cleave
                   {...field}
-                  placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+                  onBlur={(e) => searchCep(e.target.value)}
+                  placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
                   className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
                   options={{
                     delimiter: "-",
@@ -430,7 +398,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("bairro")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -449,7 +417,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
               <>
                 <Cleave
                   {...field}
-                  placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+                  placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
                   className="border-stroke dark:border-strokedark flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
                   options={{
                     delimiters: [" ", " ", "-"],
@@ -469,7 +437,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("email")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -483,7 +451,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("estado")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -502,7 +470,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
               <>
                 <Cleave
                   {...field}
-                  placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+                  placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
                   className="border-stroke dark:border-strokedark flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
                   options={{
                     delimiters: ["/", "/"],
@@ -522,7 +490,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("profissao")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -536,7 +504,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("logradouro")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -550,7 +518,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("numero")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -564,7 +532,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("complemento")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -578,7 +546,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("municipio")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -592,7 +560,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("nome_pai")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -606,7 +574,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("nome_mae")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -620,7 +588,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePfData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("nacionalidade")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
