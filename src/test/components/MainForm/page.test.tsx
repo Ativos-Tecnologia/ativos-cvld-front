@@ -637,6 +637,48 @@ describe("Teste dos Headers do Formulário", () => {
      );
   });
 
+  it("Teste se o checkbox de Aquisição Total foi clicado", async () => { 
+
+    const aquisicaoTotalLabel = await screen.findAllByText("Aquisição total");
+    const aquisicaoTotal = (await screen.findByLabelText(
+      "Aquisição total",
+    )) as HTMLInputElement;
+    expect(aquisicaoTotal).toBeInTheDocument();
+    expect(aquisicaoTotal).toBeChecked();
+    fireEvent.click(aquisicaoTotal);
+    expect(aquisicaoTotal).not.toBeChecked();
+    expect(aquisicaoTotalLabel[0]).toHaveAttribute(
+      "for",
+      "valor_aquisicao_total",
+    );
+    expect(aquisicaoTotal).toHaveAttribute("id", "valor_aquisicao_total");
+    expect(aquisicaoTotalLabel[0]).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+
+    const percentual = await screen.findByText("Percentual de aquisição (%)");
+    expect(percentual).toBeInTheDocument();
+    expect(percentual).toHaveAttribute("for", "percentual_a_ser_adquirido");
+    expect(percentual).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+    const percentualInput = await screen.findByTestId(
+      "percentual_a_ser_adquirido",
+    );
+    expect(percentualInput).toBeInTheDocument();
+    fireEvent.change(percentualInput, { target: { value: 100 } });
+    expect(percentualInput).toHaveValue(100);
+
+  });
+
   it("Teste se o valor de checkbox foi Ir Incidente Sobre RRA?", async () => {
     const irIncidentesSobreRraLabel = await screen.findAllByText(
       "IR incidente sobre RRA?",
@@ -675,6 +717,151 @@ describe("Teste dos Headers do Formulário", () => {
     expect(numeroMesesInput).toBeInTheDocument();
     fireEvent.change(numeroMesesInput, { target: { value: 12 } });
     expect(numeroMesesInput).toHaveValue(12);
+  });
+  
+  it("Teste se o checkbox se IR incidente sobre RRA for marcado. ", async () => {
+    const irIncidentesSobreRraLabel = await screen.findAllByText(
+      "IR incidente sobre RRA?",
+    );
+    const irIncidentesSobreRra = (await screen.findByLabelText(
+      "IR incidente sobre RRA?",
+    )) as HTMLInputElement;
+    expect(irIncidentesSobreRra).toBeInTheDocument();
+    expect(irIncidentesSobreRra).not.toBeChecked();
+    fireEvent.click(irIncidentesSobreRra);
+    expect(irIncidentesSobreRra).toBeChecked();
+    expect(irIncidentesSobreRraLabel[0]).toHaveAttribute(
+      "for",
+      "ir_incidente_rra",
+    );
+    expect(irIncidentesSobreRra).toHaveAttribute("id", "ir_incidente_rra");
+    expect(irIncidentesSobreRraLabel[0]).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
 
-   });
+    const numeroMesesLabel = await screen.findByText("Número de meses");
+    expect(numeroMesesLabel).toBeInTheDocument();
+    expect(numeroMesesLabel).toHaveAttribute("for", "numero_de_meses");
+    expect(numeroMesesLabel).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+    const numeroMesesInput = await screen.findByTestId("numero_de_meses");
+    expect(numeroMesesInput).toBeInTheDocument();
+    fireEvent.change(numeroMesesInput, { target: { value: 12 } });
+    expect(numeroMesesInput).toHaveValue(12);
+  });
+
+  it("Teste se o checkbox de Incide PSS foi clicado", async () => { 
+    const incidePss = (await screen.findByLabelText(
+      "Incide PSS?",
+    )) as HTMLInputElement;
+    expect(incidePss).toBeInTheDocument();
+    expect(incidePss).not.toBeChecked();
+    fireEvent.click(incidePss);
+    expect(incidePss).toBeChecked();
+    const incidePssLabel = await screen.findAllByText("Incide PSS?");
+    expect(incidePssLabel[0]).toHaveAttribute("for", "incidencia_pss");
+    expect(incidePss).toHaveAttribute("id", "incidencia_pss");
+    expect(incidePssLabel[0]).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+
+    const pss = await screen.findByText("PSS");
+    expect(pss).toBeInTheDocument();
+    expect(pss).toHaveAttribute("for", "valor_pss");
+    expect(pss).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+    const pssInput = await screen.findByTestId("valor_pss");
+    expect(pssInput).toBeInTheDocument();
+    fireEvent.change(pssInput, { target: { value: "R$ 1.000" } });
+    expect(pssInput).toHaveValue("R$ 1.000");
+  });
+
+  it("Teste se o checkbox de Atualizar para data passada foi clicado", async () => { 
+
+    const atualizarDataPassada = (await screen.findByLabelText(
+      "Atualizar para data passada?",
+    )) as HTMLInputElement;
+    expect(atualizarDataPassada).toBeInTheDocument();
+    expect(atualizarDataPassada).not.toBeChecked();
+    fireEvent.click(atualizarDataPassada);
+    expect(atualizarDataPassada).toBeChecked();
+    const atualizarDataPassadaLabel = await screen.findAllByText(
+      "Atualizar para data passada?",
+    );
+    expect(atualizarDataPassadaLabel[0]).toHaveAttribute(
+      "for",
+      "data_limite_de_atualizacao_check",
+    );
+    expect(atualizarDataPassada).toHaveAttribute(
+      "id",
+      "data_limite_de_atualizacao_check",
+    );
+    expect(atualizarDataPassadaLabel[0]).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+
+    const dataAtualizadaAte = await screen.findByText("Atualizado até:");
+    expect(dataAtualizadaAte).toBeInTheDocument();
+    expect(dataAtualizadaAte).toHaveAttribute("for", "data_limite_de_atualizacao");
+    expect(dataAtualizadaAte).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+
+    const dataAtualizadaAteInput = await screen.findByTestId("data_limite_de_atualizacao");
+    expect(dataAtualizadaAteInput).toBeInTheDocument();
+    fireEvent.change(dataAtualizadaAteInput, { target: { value: "2024-01-01" } });
+    expect(dataAtualizadaAteInput).toHaveValue("2024-01-01");
+  });
+
+  it("Teste do botão de Calcular", async () => { 
+    const botaoCalcular = await screen.findByRole("button", {
+      name: "Calcular",
+    }) as HTMLButtonElement;
+    expect(botaoCalcular).toBeInTheDocument();
+    expect(botaoCalcular).toHaveClass(
+      "my-8",
+      "flex",
+      "cursor-pointer",
+      "items-center",
+      "justify-center",
+      "rounded-lg",
+      "bg-blue-700",
+      "px-5",
+      "py-3",
+      "text-sm",
+      "text-white",
+      "transition-all",
+      "duration-200",
+      "hover:bg-blue-800",
+      "focus:z-0"
+    );
+    fireEvent.click(botaoCalcular);
+  });
+
 });

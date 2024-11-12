@@ -771,6 +771,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 <input
                   type="number"
                   id="percentual_a_ser_adquirido"
+                  data-testid="percentual_a_ser_adquirido"
                   defaultValue={100}
                   className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                   min={0}
@@ -949,11 +950,13 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 </label>
                 <Controller
                   name="valor_pss"
+                  data-testid="valor_pss"
                   control={control}
                   defaultValue={0}
                   render={({ field }) => (
                     <Cleave
                       {...field}
+                      data-testid="valor_pss"
                       className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                       options={{
                         numeral: true,
@@ -1007,6 +1010,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 <input
                   type="date"
                   id="data_limite_de_atualizacao"
+                  data-testid="data_limite_de_atualizacao"
                   className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                   {...register("data_limite_de_atualizacao", {})}
                   min={watch("data_requisicao")}
