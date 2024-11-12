@@ -335,7 +335,8 @@ describe("Teste dos Headers do Formulário", () => {
       document.querySelector('[aria-labelledby="natureza"]') ||
       document.querySelector('[name="natureza"]');
     expect(select).toBeInTheDocument();
-
+    
+    // Condicional necessária para garantir que o select foi encontrado
     if (!select) {
       throw new Error("Select não encontrado.");
     }
@@ -350,5 +351,330 @@ describe("Teste dos Headers do Formulário", () => {
     fireEvent.mouseDown(select);
     fireEvent.change(select, { target: { value: "NÃO TRIBUTÁRIA" } });
     expect(select).toHaveValue("NÃO TRIBUTÁRIA");
+
+    const valorPrincipal = await screen.findAllByText(/Valor Principal/i);
+    expect(valorPrincipal[0]).toBeInTheDocument();
+    expect(valorPrincipal[0]).toHaveAttribute("for", "valor_principal");
+    expect(valorPrincipal[0]).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+
+    const valorPrincipalInput = await screen.findAllByTestId("valor_principal");
+    expect(valorPrincipalInput[0]).toBeInTheDocument();
+
+    fireEvent.change(valorPrincipalInput[0], {
+      target: { value: "R$ 1.000" },
+    });
+    expect(valorPrincipalInput[0]).toHaveValue("R$ 1.000");
+
+    const juros = await screen.findAllByText(/Juros/i);
+    expect(juros[0]).toBeInTheDocument();
+    expect(juros[0]).toHaveAttribute("for", "valor_juros");
+    expect(juros[0]).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+
+    const jurosInput = await screen.findAllByTestId("valor_juros");
+    expect(jurosInput[0]).toBeInTheDocument();
+    fireEvent.change(jurosInput[0], { target: { value: "R$ 1.000" } });
+    expect(jurosInput[0]).toHaveValue("R$ 1.000");
+
+    const database = await screen.findAllByText(/Data Base/i);
+    expect(database[0]).toBeInTheDocument();
+    expect(database[0]).toHaveAttribute("for", "data_base");
+    expect(database[0]).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+
+    const databaseInput = await screen.findAllByTestId("data_base") as HTMLInputElement[];
+    expect(databaseInput[0]).toBeInTheDocument();
+    fireEvent.change(databaseInput[0], { target: { value: "2024-01-01" } });
+    expect(databaseInput[0]).toHaveValue("2024-01-01");
+
+    const datareq = await screen.findAllByText(/Data de Requisição \/ Recebimento/i);
+    expect(datareq[0]).toBeInTheDocument();
+    expect(datareq[0]).toHaveAttribute("for", "data_requisicao");
+    expect(datareq[0]).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+
+    const datareqInput = await screen.findAllByTestId("data_requisicao") as HTMLInputElement[];
+    expect(datareqInput[0]).toBeInTheDocument();
+    fireEvent.change(datareqInput[0], { target: { value: "2024-01-01" } });
+    expect(datareqInput[0]).toHaveValue("2024-01-01");
+
   });
+
+  it("Teste se o valor de Natureza for Tributária", async () => { 
+    const dataCallback = jest.fn();
+    const setCalcStep = jest.fn();
+    const setDataToAppend = jest.fn();
+    const Wrapper = () => {
+      const methods = useForm();
+      return (
+        <FormProvider {...methods}>
+          <MainForm
+            dataCallback={dataCallback}
+            setCalcStep={setCalcStep}
+            setDataToAppend={setDataToAppend}
+          />
+        </FormProvider>
+      );
+    };
+
+    render(
+      <QueryClientProvider client={(global as any).queryClient}>
+        <Wrapper />
+      </QueryClientProvider>,
+    );
+
+    const select =
+      document.querySelector('[aria-labelledby="natureza"]') ||
+      document.querySelector('[name="natureza"]');
+    expect(select).toBeInTheDocument();
+    
+    if (!select) {
+      throw new Error("Select não encontrado.");
+    }
+
+    fireEvent.mouseDown(select as HTMLElement);
+    fireEvent.change(select, { target: { value: "TRIBUTÁRIA" } });
+
+    const valorPrincipal = await screen.findAllByText(/Valor Principal/i);
+    expect(valorPrincipal[0]).toBeInTheDocument();
+    expect(valorPrincipal[0]).toHaveAttribute("for", "valor_principal");
+    expect(valorPrincipal[0]).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+
+    const valorPrincipalInput = await screen.findAllByTestId("valor_principal");
+    expect(valorPrincipalInput[0]).toBeInTheDocument();
+
+    fireEvent.change(valorPrincipalInput[0], {
+      target: { value: "R$ 1.000" },
+    });
+    expect(valorPrincipalInput[0]).toHaveValue("R$ 1.000");
+
+    const juros = await screen.findAllByText(/Juros/i);
+    expect(juros[0]).toBeInTheDocument();
+    expect(juros[0]).toHaveAttribute("for", "valor_juros");
+    expect(juros[0]).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+
+    const jurosInput = await screen.findAllByTestId("valor_juros");
+    expect(jurosInput[0]).toBeInTheDocument();
+    fireEvent.change(jurosInput[0], { target: { value: "R$ 1.000" } });
+    expect(jurosInput[0]).toHaveValue("R$ 1.000");
+
+    const database = await screen.findAllByText(/Data Base/i);
+    expect(database[0]).toBeInTheDocument();
+    expect(database[0]).toHaveAttribute("for", "data_base");
+    expect(database[0]).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+    const databaseInput = (await screen.findAllByTestId(
+      "data_base",
+    )) as HTMLInputElement[];
+    expect(databaseInput[0]).toBeInTheDocument();
+    fireEvent.change(databaseInput[0], { target: { value: "2024-01-01" } });
+    expect(databaseInput[0]).toHaveValue("2024-01-01");
+
+    const datareq = await screen.findAllByText(
+      /Data de Requisição \/ Recebimento/i,
+    );
+    expect(datareq[0]).toBeInTheDocument();
+    expect(datareq[0]).toHaveAttribute("for", "data_requisicao");
+    expect(datareq[0]).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+
+    const datareqInput = (await screen.findAllByTestId(
+      "data_requisicao",
+    )) as HTMLInputElement[];
+    expect(datareqInput[0]).toBeInTheDocument();
+    fireEvent.change(datareqInput[0], { target: { value: "2024-01-01" } });
+    expect(datareqInput[0]).toHaveValue("2024-01-01");
+
+     const aquisicaoTotalLabel = await screen.findAllByText("Aquisição total");
+     const aquisicaoTotal = (await screen.findByLabelText(
+       "Aquisição total",
+     )) as HTMLInputElement;
+     expect(aquisicaoTotal).toBeInTheDocument();
+     expect(aquisicaoTotal).toBeChecked();
+     fireEvent.click(aquisicaoTotal);
+     expect(aquisicaoTotal).not.toBeChecked();
+     expect(aquisicaoTotalLabel[0]).toHaveAttribute(
+       "for",
+       "valor_aquisicao_total",
+     );
+     expect(aquisicaoTotal).toHaveAttribute("id", "valor_aquisicao_total");
+     expect(aquisicaoTotalLabel[0]).toHaveClass(
+       "font-nexa",
+       "text-xs",
+       "font-semibold",
+       "uppercase",
+       "text-meta-5",
+    );
+    
+    const incidenciaIrLabel = await screen.findAllByText("Incidência de IR");
+    const incidenciaIr = (await screen.findByLabelText(
+      "Incidência de IR",
+    )) as HTMLInputElement;
+    expect(incidenciaIr).toBeInTheDocument();
+    expect(incidenciaIr).toBeChecked();
+    fireEvent.click(incidenciaIr);
+    expect(incidenciaIr).not.toBeChecked();
+    expect(incidenciaIrLabel[0]).toHaveAttribute("for", "incidencia_rra_ir");
+    expect(incidenciaIr).toHaveAttribute("id", "incidencia_rra_ir");
+    expect(incidenciaIrLabel[0]).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+
+    const irIncidentesSobreRraLabel = await screen.findAllByText(
+      "IR incidente sobre RRA?",
+    );
+    const irIncidentesSobreRra = (await screen.findByLabelText(
+      "IR incidente sobre RRA?",
+    )) as HTMLInputElement;
+    expect(irIncidentesSobreRra).toBeInTheDocument();
+    expect(irIncidentesSobreRra).not.toBeChecked();
+    fireEvent.click(irIncidentesSobreRra);
+    expect(irIncidentesSobreRra).toBeChecked();
+    expect(irIncidentesSobreRraLabel[0]).toHaveAttribute(
+      "for",
+      "ir_incidente_rra",
+    );
+    expect(irIncidentesSobreRra).toHaveAttribute("id", "ir_incidente_rra");
+    expect(irIncidentesSobreRraLabel[0]).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+
+    const atualizarDataPassada = (await screen.findByLabelText(
+      "Atualizar para data passada?",
+    )) as HTMLInputElement;
+    expect(atualizarDataPassada).toBeInTheDocument();
+    expect(atualizarDataPassada).not.toBeChecked();
+    fireEvent.click(atualizarDataPassada);
+    expect(atualizarDataPassada).toBeChecked();
+    const atualizarDataPassadaLabel = await screen.findAllByText(
+      "Atualizar para data passada?",
+    );
+    expect(atualizarDataPassadaLabel[0]).toHaveAttribute(
+      "for",
+      "data_limite_de_atualizacao_check",
+    );
+    expect(atualizarDataPassada).toHaveAttribute(
+      "id",
+      "data_limite_de_atualizacao_check",
+    );
+    expect(atualizarDataPassadaLabel[0]).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+
+     const salvarInfoOficio = (await screen.findByLabelText(
+       "Salvar informações de ofício e recálculo?",
+     )) as HTMLInputElement;
+     expect(salvarInfoOficio).toBeInTheDocument();
+     expect(salvarInfoOficio).not.toBeChecked();
+     fireEvent.click(salvarInfoOficio);
+     expect(salvarInfoOficio).toBeChecked();
+     const salvarInfoOficioLabel = await screen.findAllByText(
+       "Salvar informações de ofício e recálculo?",
+     );
+     expect(salvarInfoOficioLabel[0]).toHaveAttribute("for", "gerar_cvld");
+     expect(salvarInfoOficio).toHaveAttribute("id", "gerar_cvld");
+     expect(salvarInfoOficioLabel[0]).toHaveClass(
+       "font-nexa",
+       "text-xs",
+       "font-semibold",
+       "uppercase",
+       "text-meta-5",
+     );
+  });
+
+  it("Teste se o valor de checkbox foi Ir Incidente Sobre RRA?", async () => {
+    const irIncidentesSobreRraLabel = await screen.findAllByText(
+      "IR incidente sobre RRA?",
+    );
+    const irIncidentesSobreRra = (await screen.findByLabelText(
+      "IR incidente sobre RRA?",
+    )) as HTMLInputElement;
+    expect(irIncidentesSobreRra).toBeInTheDocument();
+    expect(irIncidentesSobreRra).not.toBeChecked();
+    fireEvent.click(irIncidentesSobreRra);
+    expect(irIncidentesSobreRra).toBeChecked();
+    expect(irIncidentesSobreRraLabel[0]).toHaveAttribute(
+      "for",
+      "ir_incidente_rra",
+    );
+    expect(irIncidentesSobreRra).toHaveAttribute("id", "ir_incidente_rra");
+    expect(irIncidentesSobreRraLabel[0]).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+
+    const numeroMesesLabel = await screen.findByText("Número de meses");
+    expect(numeroMesesLabel).toBeInTheDocument();
+    expect(numeroMesesLabel).toHaveAttribute("for", "numero_de_meses");
+    expect(numeroMesesLabel).toHaveClass(
+      "font-nexa",
+      "text-xs",
+      "font-semibold",
+      "uppercase",
+      "text-meta-5",
+    );
+    const numeroMesesInput = await screen.findByTestId("numero_de_meses");
+    expect(numeroMesesInput).toBeInTheDocument();
+    fireEvent.change(numeroMesesInput, { target: { value: 12 } });
+    expect(numeroMesesInput).toHaveValue(12);
+
+   });
 });

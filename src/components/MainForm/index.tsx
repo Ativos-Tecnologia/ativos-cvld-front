@@ -623,6 +623,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </label>
               <Controller
                 name="valor_principal"
+                data-testid="valor_principal"
                 control={control}
                 defaultValue={0}
                 rules={{
@@ -632,6 +633,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                   <>
                     <Cleave
                       {...field}
+                      data-testid="valor_principal"
                       className={`w-full rounded-md border-stroke ${error ? "border-red" : "dark:border-strokedark"} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
                       options={{
                         numeral: true,
@@ -673,6 +675,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                   <>
                     <Cleave
                       {...field}
+                      data-testid="valor_juros"
                       className={`w-full rounded-md border-stroke ${error ? "border-red" : "border-stroke dark:border-strokedark"} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
                       options={{
                         numeral: true,
@@ -706,6 +709,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 <input
                   type="date"
                   id="data_base"
+                  data-testid="data_base"
                   className={`${errors.data_base && "!border-rose-400 !ring-0"} w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
                   {...register("data_base", {
                     required: "Campo obrigatório",
@@ -727,6 +731,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 <input
                   type="date"
                   id="data_requisicao"
+                  data-testid="data_requisicao"
                   className={`${errors.data_requisicao && "!border-rose-400 !ring-0"} w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
                   {...register("data_requisicao", {
                     required: "Campo obrigatório",
@@ -892,6 +897,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 <input
                   type="number"
                   id="numero_de_meses"
+                  data-testid="numero_de_meses"
                   className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                   min={0}
                   {...register("numero_de_meses", {
