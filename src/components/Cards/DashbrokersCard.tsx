@@ -28,6 +28,11 @@ import { RiErrorWarningFill } from 'react-icons/ri';
 import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
 import { IdentificationType } from '../Modals/Brokers';
 
+export type ChecksProps = {
+    is_complete: boolean;
+    isFetching: boolean;
+}
+
 const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     {
         oficio: NotionPage,
@@ -37,7 +42,10 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 ) => {
 
     /* ====> context imports <==== */
-    const { setCedenteModal } = useContext(BrokersContext);
+    const { fetchCardData, setCardsData,
+        cardsData, setCedenteModal,
+        isFetchAllowed, setIsFetchAllowed
+    } = useContext(BrokersContext);
 
     /* ====> form imports <==== */
     const {
@@ -68,13 +76,13 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             valor_pss: oficio.properties["PSS"].number || 0,
             numero_de_meses: 0,
             credor: oficio.properties["Credor"].title[0]?.text.content || "",
-            cpf_cnpj: oficio.properties["CPF/CNPJ"].rich_text?.[0].text.content || "",
+            cpf_cnpj: oficio.properties["CPF/CNPJ"].rich_text?.[0]?.text.content || "",
             especie: oficio?.properties?.["Espécie"].select?.name || "Principal",
-            npu: oficio.properties["NPU (Precatório)"].rich_text?.[0].text.content || "",
+            npu: oficio.properties["NPU (Precatório)"].rich_text?.[0]?.text.content || "",
             npu_originario: oficio?.properties?.["NPU (Originário)"].rich_text?.[0]?.text.content || "",
             ente_devedor: oficio.properties["Ente Devedor"].select?.name || "",
             estado_ente_devedor: oficio.properties["Estado do Ente Devedor"].select?.name || "",
-            juizo_vara: oficio.properties["Juízo"].rich_text?.[0].text.content || "",
+            juizo_vara: oficio.properties["Juízo"].rich_text?.[0]?.text.content || "",
             status: oficio.properties["Status"].status?.name || "",
             upload_notion: true,
         }
@@ -93,51 +101,59 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const [savingObservation, setSavingObservation] = useState<boolean>(false);
     const [isProposalButtonDisabled, setIsProposalButtonDisabled] = useState<boolean>(true);
     const [errorMessage, setErrorMessage] = useState<boolean>(false);
-    const [credorIdentificationType, setCredorIdentificationType] = useState<IdentificationType>(null)
+    const [credorIdentificationType, setCredorIdentificationType] = useState<IdentificationType>(null);
+    const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
+    const [precatorioCheck, setPrecatorioCheck] = useState<ChecksProps>({
+        is_complete: false,
+        isFetching: false
+    });
+    const [cedenteCheck, setCedenteCheck] = useState<ChecksProps>({
+        is_complete: false,
+        isFetching: false
+    });
 
     /* ====> refs <==== */
     const proposalRef = useRef<HTMLInputElement | null>(null);
     const comissionRef = useRef<HTMLInputElement | null>(null);
     const observationRef = useRef<HTMLTextAreaElement | null>(null);
 
-    /* ====> tan stack requests and datas ====> */
-    const { data: precatorioCheck, isPending: precatorioCheckPending } = useQuery<{
-        is_complete: boolean
-    }>({
-        queryKey: ["broker_list_precatorio_check", oficio.id],
-        refetchInterval: 30000, // um minuto
-        queryFn: async () => {
-            const req = await api.get(`/api/checker/complete/precatorio/${oficio.id}/`);
+    // Função responsável por fazer fetch do estado do check precatório
+    const fetchPrecatorioCheck = async () => {
+        setPrecatorioCheck((old) => (
+            { ...old, isFetching: true }
+        ))
+        const req = await api.get(`/api/checker/complete/precatorio/${oficio.id}/`);
 
-            if (req.data === null) return;
+        if (req.data === null) return;
 
-            return req.data;
-        }
-    });
+        setPrecatorioCheck({
+            is_complete: req.data.is_complete,
+            isFetching: false
+        });
+    }
 
-    const { data: cedenteCheck, isPending: cedenteCheckPending } = useQuery<{
-        is_complete: boolean
-    }>({
-        queryKey: ["broker_list_cedente_check", oficio.id],
-        refetchInterval: 30000, // um minuto
-        queryFn: async () => {
-            if (credorIdentificationType === null) return;
-            const cedenteType = credorIdentificationType === "CPF" ? "Cedente PF" : "Cedente PJ";
+    // Função responsável por fazer fetch do estado do check cedente
+    const fetchCedenteCheck = async () => {
+        setCedenteCheck((old) => (
+            { ...old, isFetching: true }
+        ))
+        const cedenteType = credorIdentificationType === "CPF" ? "Cedente PF" : "Cedente PJ";
 
-            const idCedente = oficio.properties[cedenteType].relation?.[0] ?
-                oficio.properties[cedenteType].relation?.[0].id :
-                null;
+        const idCedente = oficio.properties[cedenteType].relation?.[0] ?
+            oficio.properties[cedenteType].relation?.[0].id :
+            null;
 
-            const req = credorIdentificationType === "CPF" ?
-                await api.get(`/api/checker/complete/cedente/pf/${idCedente}/precatorio/${oficio.id}/`) :
-                await api.get(`/api/checker/complete/cedente/pj/${idCedente}/precatorio/${oficio.id}/`);
+        const req = credorIdentificationType === "CPF" ?
+            await api.get(`/api/checker/complete/cedente/pf/${idCedente}/precatorio/${oficio.id}/`) :
+            await api.get(`/api/checker/complete/cedente/pj/${idCedente}/precatorio/${oficio.id}/`);
 
-            if (req.data === null) return;
+        if (req.data === null) return;
 
-            return req.data;
-        },
-        enabled: credorIdentificationType !== null
-    })
+        setCedenteCheck({
+            is_complete: req.data.is_complete,
+            isFetching: false
+        });
+    }
 
     // Função para atualizar a proposta e ajustar a comissão proporcionalmente
     const handleProposalSliderChange = (
@@ -313,37 +329,25 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         },
         onMutate: async () => {
             setIsSavingEdit(true);
-            await queryClient.cancelQueries({ queryKey: ['broker_list'] });
-            await queryClient.cancelQueries({ queryKey: ["broker_list_precatorio_check", oficio.id] });
-            await queryClient.cancelQueries({ queryKey: ["broker_list_cedente_check", oficio.id] });
-            const previousData = queryClient.getQueryData(['broker_list']);
-            return { previousData }
+            setIsFetchAllowed(false);
         },
-        onError: (error, data, context) => {
-            queryClient.setQueryData(['broker_list'], context?.previousData);
+        onError: () => {
             toast.error('Erro ao atualizar o ofício!', {
                 icon: <BiX className="text-lg fill-red-500" />
             });
         },
         onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: ["broker_list"] });
-            await queryClient.invalidateQueries({ queryKey: ["broker_list_precatorio_check", oficio.id] });
-            await queryClient.invalidateQueries({ queryKey: ["broker_list_cedente_check", oficio.id] });
+            await fetchCardData();
+            setEditModalId(null);
             toast.success('Dados do ofício atualizados!', {
                 icon: <BiCheck className="text-lg fill-green-400" />
             });
         },
         onSettled: () => {
             setIsSavingEdit(false);
+            setIsFetchAllowed(true);
         }
     });
-
-    // descomentar caso queria trackear as queries existentes
-    // estava dando bug no invalidateQueries quando essa linha de código
-    // foi adicionada
-
-    // console.log(queryClient.getQueryCache().getAll())
-    console.log(oficio)
 
     const updateObservation = useMutation({
         mutationFn: async (message: string) => {
@@ -362,24 +366,24 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         },
         onMutate: async (message: string) => {
             setSavingObservation(true);
-            queryClient.cancelQueries({ queryKey: ["broker_list"] });
-            const previousData = queryClient.getQueryData(['broker_list']);
+            setIsFetchAllowed(false);
+            const previousData = cardsData;
             return { previousData }
         },
         onError: (error, message, context) => {
-            queryClient.setQueryData(['broker_list'], context?.previousData);
+            setCardsData(context?.previousData as NotionResponse);
             toast.error('Erro ao atualizar a observação!', {
                 icon: <BiX className="text-lg fill-red-500" />
             });
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["broker_list"] });
             toast.success('Campo atualizado!', {
                 icon: <BiCheck className="text-lg fill-green-400" />
             });
         },
         onSettled: () => {
             setSavingObservation(false);
+            setIsFetchAllowed(true);
         }
     });
 
@@ -395,9 +399,9 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             return req.status
         },
         onMutate: async (status: string) => {
-            queryClient.cancelQueries({ queryKey: ["broker_list"] });
-            const previousData = queryClient.getQueryData(['broker_list']);
-            queryClient.setQueryData(['broker_list'], (old: NotionResponse) => {
+            setIsFetchAllowed(false);
+            const previousData = cardsData
+            setCardsData((old: any) => {
                 return {
                     ...old,
                     results: old?.results.map((item: NotionPage) => {
@@ -424,16 +428,19 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             return { previousData }
         },
         onError: (error, message, context) => {
-            queryClient.setQueryData(['broker_list'], context?.previousData);
+            setCardsData(context?.previousData as NotionResponse);
             toast.error('Erro ao atualizar o status!', {
                 icon: <BiX className="text-lg fill-red-500" />
             });
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["broker_list"] });
+        onSuccess: async () => {
+            await fetchCardData();
             toast.success('Status atualizado!', {
                 icon: <BiCheck className="text-lg fill-green-400" />
             });
+        },
+        onSettled: () => {
+            setIsFetchAllowed(true);
         }
     });
 
@@ -467,6 +474,27 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
         await updateOficio.mutateAsync(data);
     }
+
+    useEffect(() => {
+        if (credorIdentificationType === null || !isFetchAllowed) return;
+
+        async function refetchChecks() {
+            await Promise.allSettled([
+                fetchCedenteCheck(),
+                fetchPrecatorioCheck()
+            ])
+            setIsFirstLoad(false);
+        }
+
+        refetchChecks();
+
+        // const interval = setInterval(async () => {
+        //     if (credorIdentificationType === null || !isFetchAllowed) return;
+        //     await refetchChecks();
+        // }, 30000);
+
+        // return () => { clearInterval(interval) }
+    }, [credorIdentificationType, cardsData]);
 
     useEffect(() => {
 
@@ -567,7 +595,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
                     <div className="flex items-center gap-4 justify-between">
                         <div className='flex items-center gap-2'>
-                            {precatorioCheckPending ? (
+                            {(precatorioCheck.isFetching && isFirstLoad) ? (
                                 <AiOutlineLoading className='w-4 h-4 animate-spin' />
                             ) : (
                                 <>
@@ -582,7 +610,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                     )}
                                 </>
                             )}
-                            {cedenteCheckPending ? (
+                            {(cedenteCheck.isFetching && isFirstLoad) ? (
                                 <AiOutlineLoading className='w-4 h-4 animate-spin' />
                             ) : (
                                 <>

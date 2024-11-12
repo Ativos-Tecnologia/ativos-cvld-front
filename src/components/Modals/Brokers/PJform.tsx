@@ -36,6 +36,11 @@ type FormValuesForPJ = {
   relacionado_a: string;
 }
 
+export type CedenteProps = {
+  data: NotionPage | null;
+  isFetching: boolean;
+}
+
 
 const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "create", cedenteId: string | null }) => {
 
@@ -49,27 +54,31 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     shouldFocusError: false
   });
 
-  const { setCedenteModal } = useContext(BrokersContext);
+  const { setCedenteModal, fetchCardData, setIsFetchAllowed } = useContext(BrokersContext);
 
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [isUnlinking, setIsUnlinking] = useState<boolean>(false);
   const [openUnlinkModal, setOpenUnlinkModal] = useState<boolean>(false);
+  const [cedentePjData, setCedentePjData] = useState<CedenteProps>({
+    data: null,
+    isFetching: true
+  });
 
   /* ====> tan stack requests and datas ====> */
-  const { data: cedentePjData, isPending: pendingCedentePjData = false } = useQuery<NotionPage>({
-    queryKey: ["broker_card_cedente_data", cedenteId],
-    staleTime: 1000,
-    queryFn: async () => {
-      if (cedenteId === null) return;
-      
-      const req = await api.get(`/api/cedente/show/pj/${cedenteId}/`)
+  // const { data: cedentePjData, isPending: pendingCedentePjData = false } = useQuery<NotionPage>({
+  //   queryKey: ["broker_card_cedente_data", cedenteId],
+  //   staleTime: 1000,
+  //   queryFn: async () => {
+  //     if (cedenteId === null) return;
 
-      if (req.data === null) return;
+  //     const req = await api.get(`/api/cedente/show/pj/${cedenteId}/`)
 
-      return req.data;
-    },
-    enabled: cedenteId !== null
-  })
+  //     if (req.data === null) return;
+
+  //     return req.data;
+  //   },
+  //   enabled: cedenteId !== null
+  // })
 
   // mutations
   const createCedente = useMutation({
@@ -79,47 +88,15 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     },
     onMutate: async () => {
       setIsUpdating(true);
-      await queryClient.cancelQueries({ queryKey: ["broker_list"] });
-      await queryClient.cancelQueries({ queryKey: ["broker_list_cedente_check", id] });
-      await queryClient.cancelQueries({ queryKey: ["broker_list_precatorio_check", id] });
-      const previousData = queryClient.getQueryData(["broker_list"]);
-      queryClient.setQueryData(['broker_list'], (old: NotionResponse) => {
-        return {
-          ...old,
-          results: old?.results.map((item: NotionPage) => {
-            if (item.id === id) {
-              return {
-                ...item,
-                properties: {
-                  ...item.properties,
-                  "Cedente PJ": {
-                    ...item.properties["Cedente PJ"],
-                    relation: [
-                      {
-                        id: "",
-                      }
-                    ]
-                  }
-                }
-              }
-            } else {
-              return item
-            }
-          })
-        }
-      })
-      return { previousData };
+      setIsFetchAllowed(false);
     },
-    onError: async (error, data, context) => {
-      await queryClient.setQueryData(["broker_list"], context?.previousData);
+    onError: () => {
       toast.error('Erro ao realizar cadastro', {
         icon: <BiX className="text-lg fill-red-500" />
       });
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["broker_list"] });
-      await queryClient.invalidateQueries({ queryKey: ["broker_list_cedente_check", id] });
-      await queryClient.invalidateQueries({ queryKey: ["broker_list_precatorio_check", id] });
+      await fetchCardData();
       toast.success("Cadastro realizado com sucesso", {
         icon: <BiCheck className="text-lg fill-green-400" />
       });
@@ -127,6 +104,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     },
     onSettled: () => {
       setIsUpdating(false);
+      setIsFetchAllowed(true);
     }
   })
 
@@ -168,6 +146,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     if (!cedenteId) return;
 
     setIsUnlinking(true);
+    setIsFetchAllowed(false);
 
     try {
       const req = await api.delete(`/api/cedente/unlink/pj/${cedenteId}/precatorio/${id}/`);
@@ -175,9 +154,8 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
         toast.success("Cedente desvinculado com sucesso", {
           icon: <BiCheck className="text-lg fill-green-400" />
         })
+        await fetchCardData();
         setCedenteModal(null);
-        queryClient.invalidateQueries({ queryKey: ["broker_list"] });
-        queryClient.invalidateQueries({ queryKey: ["broker_list_cedente_check", id] });
       }
     } catch (error) {
       toast.error('Erro ao desvincular cedente', {
@@ -185,6 +163,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       });
     } finally {
       setIsUnlinking(false);
+      setIsFetchAllowed(true);
     }
 
   };
@@ -205,6 +184,16 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
 
   };
 
+  // função de fetch para pegar dados do cedente cadastrado
+  const fetchCedente = async () => {
+    const req = await api.get(`/api/cedente/show/pj/${cedenteId}/`);
+    if (req.data === null) return
+    setCedentePjData(old => ({
+      data: req.data,
+      isFetching: false
+    }))
+  }
+
   // função de submit para o formulário
   const onSubmit = async (data: any) => {
 
@@ -220,44 +209,32 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       await createCedente.mutateAsync(data);
     }
 
-    // try {
-    //   const req = await api.post("/api/cedente/create/pf/", data)
-
-    //   if (req.status === 200 || req.status === 201) {
-    //     toast.success("Cadastro realizado com sucesso", {
-    //       icon: <BiCheck className="text-lg fill-green-400" />
-    //     })
-    //     queryClient.invalidateQueries({ queryKey: ["broker_list"] });
-    //     queryClient.invalidateQueries({ queryKey: ["broker_list_cedente_check", id] });
-    //   }
-
-    // } catch (error) {
-    //   toast.error('Erro ao realizar cadastro', {
-    //     icon: <BiX className="text-lg fill-red-500" />
-    //   });
-    // } finally {
-    //   setIsUpdating(false)
-    // }
-
   };
+
+  useEffect(() => {
+
+    if (!cedenteId) return;
+    fetchCedente();
+
+  }, [cedenteId]);
 
   useEffect(() => {
     if (mode === "edit" && cedentePjData) {
 
       // valores obrigatórios em um cadastro
-      setValue("razao_social", cedentePjData.properties["Razão Social"].title[0].text.content);
-      setValue("cnpj", cedentePjData.properties["CNPJ"].rich_text![0].text.content);
-      setValue("cep", cedentePjData.properties["CEP"].rich_text![0].text.content);
+      setValue("razao_social", cedentePjData.data?.properties["Razão Social"].title[0].text.content);
+      setValue("cnpj", cedentePjData.data!.properties["CNPJ"].rich_text![0].text.content);
+      setValue("cep", cedentePjData.data!.properties["CEP"].rich_text![0].text.content);
 
       //valores opcionais
-      setValue("bairro", cedentePjData.properties["Bairro"].rich_text?.[0]?.text.content || "");
-      setValue("celular", cedentePjData.properties["Celular"].phone_number || "");
-      setValue("email", cedentePjData.properties["Email"].email || "");
-      setValue("estado", cedentePjData.properties["Estado (UF)"].select?.name || "");
-      setValue("logradouro", cedentePjData.properties["Rua/Av/Logradouro"].rich_text?.[0]?.text.content || "");
-      setValue("numero", cedentePjData.properties["Número"].rich_text?.[0]?.text.content || "");
-      setValue("complemento", cedentePjData.properties["Complemento"].rich_text?.[0]?.text.content || "");
-      setValue("municipio", cedentePjData.properties["Município"].select?.name || "");
+      setValue("bairro", cedentePjData.data?.properties["Bairro"].rich_text?.[0]?.text.content || "");
+      setValue("celular", cedentePjData.data?.properties["Celular"].phone_number || "");
+      setValue("email", cedentePjData.data?.properties["Email"].email || "");
+      setValue("estado", cedentePjData.data?.properties["Estado (UF)"].select?.name || "");
+      setValue("logradouro", cedentePjData.data?.properties["Rua/Av/Logradouro"].rich_text?.[0]?.text.content || "");
+      setValue("numero", cedentePjData.data?.properties["Número"].rich_text?.[0]?.text.content || "");
+      setValue("complemento", cedentePjData.data?.properties["Complemento"].rich_text?.[0]?.text.content || "");
+      setValue("municipio", cedentePjData.data?.properties["Município"].select?.name || "");
 
     }
   }, [cedentePjData]);
@@ -301,7 +278,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("razao_social", {
               required: {
                 value: true,
@@ -329,7 +306,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
               <>
                 <Cleave
                   {...field}
-                  placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+                  placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
                   className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
                   options={{
                     delimiters: [".", ".", "/", "-"],
@@ -359,7 +336,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
                 <Cleave
                   {...field}
                   onBlur={(e) => searchCep(e.target.value)}
-                  placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+                  placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
                   className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
                   options={{
                     delimiter: "-",
@@ -380,7 +357,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("bairro")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -399,7 +376,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
               <>
                 <Cleave
                   {...field}
-                  placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+                  placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
                   className="border-stroke dark:border-strokedark flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
                   options={{
                     delimiters: [" ", " ", "-"],
@@ -419,7 +396,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("email")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -433,7 +410,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("estado")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -447,7 +424,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("logradouro")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -461,7 +438,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("numero")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -475,7 +452,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("complemento")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
@@ -489,7 +466,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </label>
           <input
             type="text"
-            placeholder={(pendingCedentePjData && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+            placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
             {...register("municipio")}
             className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
           />
