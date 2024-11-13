@@ -77,6 +77,7 @@ export interface NotionProperties {
       name: string;
       color: string;
     };
+    url?: string;
   };
 }
 
