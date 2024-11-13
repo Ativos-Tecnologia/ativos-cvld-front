@@ -26,7 +26,8 @@ import { GrDocumentUser } from 'react-icons/gr';
 import { BrokersContext } from '@/context/BrokersContext';
 import { RiErrorWarningFill } from 'react-icons/ri';
 import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
-import { IdentificationType } from '../Modals/Brokers';
+import { IdentificationType } from '../Modals/BrokersCedente';
+import { NotionNumberFormater } from '@/functions/formaters/notionNumberFormater';
 
 export type ChecksProps = {
     is_complete: boolean;
@@ -44,7 +45,8 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     /* ====> context imports <==== */
     const { fetchCardData, setCardsData,
         cardsData, setCedenteModal,
-        isFetchAllowed, setIsFetchAllowed
+        isFetchAllowed, setIsFetchAllowed,
+        setDocModalInfo
     } = useContext(BrokersContext);
 
     /* ====> form imports <==== */
@@ -62,19 +64,19 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             esfera: oficio.properties["Esfera"].select?.name || "FEDERAL",
             regime: oficio.properties["Regime"].select?.name || "GERAL",
             tribunal: oficio.properties["Tribunal"].select?.name || "STJ",
-            valor_principal: oficio.properties["Valor Principal"].number || 0,
-            valor_juros: oficio.properties["Valor Juros"].number || 0,
+            valor_principal: NotionNumberFormater(oficio.properties["Valor Principal"].number || 0),
+            valor_juros: NotionNumberFormater(oficio.properties["Valor Juros"].number || 0),
             data_base: oficio.properties["Data Base"].date?.start || "",
             data_requisicao: oficio.properties["Data do Recebimento"].date?.start || "",
             valor_aquisicao_total: oficio.properties["Percentual a ser adquirido"].number === 1,
             percentual_a_ser_adquirido: oficio.properties["Percentual a ser adquirido"].number! * 100 || 0,
             ja_possui_destacamento: oficio.properties["Honorários já destacados?"].checkbox,
-            percentual_de_honorarios: oficio.properties["Percentual de Honorários Não destacados"].number || 0,
+            percentual_de_honorarios: oficio.properties["Percentual de Honorários Não destacados"].number! * 100 || 0,
             incidencia_rra_ir: oficio.properties["Incidencia RRA/IR"].checkbox,
             ir_incidente_rra: oficio.properties["IR Incidente sobre RRA"].checkbox,
             incidencia_pss: oficio.properties["PSS"].number! > 0,
             valor_pss: oficio.properties["PSS"].number || 0,
-            numero_de_meses: 0,
+            numero_de_meses: oficio.properties["Meses RRA"].number || 0,
             credor: oficio.properties["Credor"].title[0]?.text.content || "",
             cpf_cnpj: oficio.properties["CPF/CNPJ"].rich_text?.[0]?.text.content || "",
             especie: oficio?.properties?.["Espécie"].select?.name || "Principal",
@@ -89,6 +91,8 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     })
     const enumTipoOficiosList = Object.values(tipoOficio);
     const queryClient = useQueryClient();
+
+    console.log(oficio)
 
     /* ====> value states <==== */
     const [auxProposalValue, setAuxProposalValue] = useState<number>(0);
@@ -456,6 +460,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const onSubmit = async (data: any) => {
 
         data.percentual_a_ser_adquirido /= 100;
+        data.percentual_de_honorarios /= 100;
 
         if (typeof data.valor_principal === "string") {
             data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
@@ -569,7 +574,9 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                             Editar Precatório
                         </button>
 
-                        <button className='flex cursor-not-allowed items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm'>
+                        <button
+                            onClick={() => setDocModalInfo(oficio)}
+                            className={`${cedenteCheck.is_complete !== null ? "opacity-100" : "opacity-50 cursor-not-allowed"} flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm`}>
                             <FaRegFilePdf />
                             Juntar Documento
                         </button>
@@ -621,12 +628,12 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                     )}
                                     {(cedenteCheck && cedenteCheck.is_complete === false) && (
                                         <CRMTooltip text="Cedente incompleto">
-                                            <IoCloseCircle className="text-red w-5 h-5" />
+                                            <RiErrorWarningFill className="text-amber-300 w-5 h-5" />
                                         </CRMTooltip>
                                     )}
                                     {(cedenteCheck && cedenteCheck.is_complete === null) && (
                                         <CRMTooltip text="Cedente não vinculado">
-                                            <RiErrorWarningFill className="text-amber-300 w-5 h-5" />
+                                            <IoCloseCircle className="text-red w-5 h-5" />
                                         </CRMTooltip>
                                     )}
                                 </>
@@ -766,7 +773,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             {/* ----> end info <----- */}
 
             {/* ----> edit info modal <---- */}
-            <div className={`absolute top-0 left-0 z-3 bg-boxdark w-full ${editModalId === oficio.id ? "max-h-full overflow-y-scroll border border-snow rounded-md" : "max-h-0 overflow-hidden"} grid grid-cols-2 gap-2 transition-all duration-300`}>
+            <div className={`absolute top-0 left-0 z-3 bg-white dark:bg-boxdark w-full ${editModalId === oficio.id ? "max-h-full overflow-y-scroll border border-snow rounded-md" : "max-h-0 overflow-hidden"} grid grid-cols-2 gap-2 transition-all duration-300`}>
                 <div className='p-5 col-span-2'>
 
                     <h2 className='text-xl font-medium text-center'>Edite as informações do ofício</h2>
