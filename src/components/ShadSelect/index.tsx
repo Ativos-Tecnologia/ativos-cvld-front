@@ -1,5 +1,5 @@
+import { Select, SelectContent, SelectGroup, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import * as React from 'react';
-import { Select, SelectTrigger, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectValue } from '@/components/ui/select';
 import { Controller } from 'react-hook-form';
 
 interface ShadSelectProps {
@@ -11,6 +11,7 @@ interface ShadSelectProps {
   defaultValue?: string;
   required?: boolean;
   className?: string;
+  id?:string
 }
 
 export const ShadSelect = ({ className, name, control, children, label, placeholder, defaultValue, required=false}: ShadSelectProps) => {

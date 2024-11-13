@@ -3,11 +3,8 @@ import CustomCheckbox from "@/components/CrmUi/Checkbox";
 import { ErrorMessage } from "@/components/ErrorMessage/ErrorMessage";
 import { MainFooter } from "@/components/Footer";
 import UnloggedHeader from "@/components/Header/UnloggedHeader";
-import UnloggedLayout from "@/components/Layouts/UnloggedLayout";
 import { ShadSelect } from "@/components/ShadSelect";
 import AutomatedProposalSkeleton from "@/components/Skeletons/AutomatedProposalSteketon";
-import AutomatedProposalSteketon from "@/components/Skeletons/AutomatedProposalSteketon";
-import NewFormResultSkeleton from "@/components/Skeletons/NewFormResultSkeleton";
 import { SelectItem } from "@/components/ui/select";
 import { APP_ROUTES } from "@/constants/app-routes";
 import { ENUM_TIPO_OFICIOS_LIST } from "@/constants/constants";
@@ -18,13 +15,12 @@ import numberFormat from "@/functions/formaters/numberFormat";
 import api from "@/utils/api";
 import { AxiosError } from "axios";
 import Cleave from "cleave.js/react";
-import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import { Fade } from "react-awesome-reveal";
 import { Controller, useForm } from "react-hook-form";
 import { AiOutlineLoading } from "react-icons/ai";
-import { BiChevronDown, BiChevronUp } from "react-icons/bi";
+import { BiChevronUp } from "react-icons/bi";
 import { BsChevronCompactDown } from "react-icons/bs";
 import { FaWhatsapp } from "react-icons/fa";
 import { toast } from "sonner";
@@ -491,6 +487,7 @@ E abaixo, uma memória das informações de entrada:
                 </label>
 
                 <ShadSelect
+                  id="tipo_do_oficio"
                   name="tipo_do_oficio"
                   control={control}
                   defaultValue={enumTipoOficiosList[0]}
@@ -536,7 +533,10 @@ E abaixo, uma memória das informações de entrada:
               {/* ====>  end label NATUREZA DO OFÍCIO <==== */}
 
               {/* ====> label ESFERA <==== */}
-              <div className="mb-4 flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1">
+              <div
+                className="mb-4 flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1 md:col-span-1"
+                data-testid="esfera-select-container"
+              >
                 <label
                   htmlFor="esfera"
                   className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -545,6 +545,8 @@ E abaixo, uma memória das informações de entrada:
                 </label>
                 <ShadSelect
                   defaultValue="FEDERAL"
+                  id="esfera"
+                  data-testid="esfera-id"
                   name="esfera"
                   control={control}
                   className="border-strokedark bg-form-input font-nexa text-bodydark"
@@ -591,6 +593,7 @@ E abaixo, uma memória das informações de entrada:
                   name="tribunal"
                   control={control}
                   defaultValue={tribunais[0].nome}
+                  data-testid='tribunal'
                   required={true}
                   className="border-strokedark bg-form-input font-nexa text-bodydark"
                 >
@@ -615,6 +618,7 @@ E abaixo, uma memória das informações de entrada:
                 </label>
                 <Controller
                   name="valor_principal"
+                  data-testid="valor_principal"
                   control={control}
                   defaultValue={0}
                   rules={{
@@ -705,6 +709,7 @@ E abaixo, uma memória das informações de entrada:
                   </label>
                   <input
                     type="date"
+                    data-testid="data-base"
                     id="data_base"
                     className={`${errors.data_base && "!border-red !ring-0"} w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark`}
                     {...register("data_base", {
@@ -729,6 +734,7 @@ E abaixo, uma memória das informações de entrada:
                   <input
                     type="date"
                     id="data_requisicao"
+                    data-testid="data_requisicao"
                     className={`${errors.data_requisicao && "!border-red !ring-0"} w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark`}
                     {...register("data_requisicao", {
                       required: "Campo obrigatório",
@@ -769,6 +775,7 @@ E abaixo, uma memória das informações de entrada:
                   <input
                     type="number"
                     id="percentual_a_ser_adquirido"
+                    data-testid="percentual-aquisicao"
                     defaultValue={100}
                     className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                     min={0}
@@ -880,6 +887,7 @@ E abaixo, uma memória das informações de entrada:
                   <input
                     type="number"
                     id="numero_de_meses"
+                    data-testid="numero_de_meses"
                     className="w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark"
                     min={0}
                     {...register("numero_de_meses", {
@@ -939,6 +947,7 @@ E abaixo, uma memória das informações de entrada:
                     render={({ field }) => (
                       <Cleave
                         {...field}
+                        id="valor_pss"
                         className="w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark"
                         options={{
                           numeral: true,
@@ -989,12 +998,13 @@ E abaixo, uma memória das informações de entrada:
                       htmlFor="percentual_de_honorarios"
                       className="font-nexa text-xs font-semibold uppercase text-meta-5"
                     >
-                      Percentual{" "}
+                      Percentual
                       <span className="text-xs text-meta-5">(%)</span>
                     </label>
                     <input
                       type="number"
                       defaultValue={30}
+                      data-testid="percentual_de_honorarios"
                       id="percentual_de_honorarios"
                       className="h-[37px] w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark"
                       {...register("percentual_de_honorarios", {})}
