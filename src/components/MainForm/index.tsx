@@ -1074,6 +1074,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                       <input
                         type="text"
                         id="credor"
+                        data-testid="credor"
                         className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                         {...register("credor", {})}
                       />
@@ -1089,6 +1090,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <input
                           type="text"
                           id="cpf_cnpj"
+                          data-testid="cpf_cnpj"
                           className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                           {...register("cpf_cnpj", {})}
                         />
@@ -1157,6 +1159,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                                 type="number"
                                 defaultValue={30}
                                 id="percentual_de_honorarios"
+                                data-testid="percentual_de_honorarios"
                                 className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                                 {...register("percentual_de_honorarios", {})}
                               />

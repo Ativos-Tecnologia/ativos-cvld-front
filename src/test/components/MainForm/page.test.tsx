@@ -971,4 +971,87 @@ describe("Teste do Formulário da Calculadora", () => {
       })
     });
   });
+
+  describe("Teste do input do Formulário Dados de Identificação", () => {
+
+    beforeEach(async () => {
+      const salvarInfoOficio = (await screen.findByLabelText(
+        "Salvar informações de ofício e recálculo?",
+      )) as HTMLInputElement;
+      expect(salvarInfoOficio).toBeInTheDocument();
+      expect(salvarInfoOficio).not.toBeChecked();
+      fireEvent.click(salvarInfoOficio);
+      expect(salvarInfoOficio).toBeChecked();
+    });
+    
+     it("Teste do input de Nome/Razão Social", async () => { 
+       const nomeRazaoSocial = await screen.findByText("Nome/Razão Social");
+       expect(nomeRazaoSocial).toBeInTheDocument();
+
+       const input = await screen.findByTestId("credor");
+       fireEvent.change(input, { target: { value: "Paul Di'Anno" } });
+       expect(input).toHaveValue("Paul Di'Anno");
+     });
+    
+    it("Teste do input de CPF/CNPJ", async () => {
+      const cpfCnpj = await screen.findByText("CPF/CNPJ");
+      expect(cpfCnpj).toBeInTheDocument();
+
+      const input = await screen.findByTestId("cpf_cnpj");
+      fireEvent.change(input, { target: { value: "123.456.789-10" } });
+      expect(input).toHaveValue("123.456.789-10");
+    });
+    
+    it("Teste do Select de Espécie", async () => {
+      const especie = await screen.findByText("Espécie");
+      expect(especie).toBeInTheDocument();
+
+      const select = document.querySelector('[name="especie"]') 
+       expect(select).toBeInTheDocument();
+
+      if (!select || select === undefined) throw new Error("Select não encontrado.");
+
+       expect(select).toHaveValue("PRINCIPAL");
+
+       fireEvent.mouseDown(select as HTMLElement);
+       fireEvent.change(select, {
+         target: { value: "HONORARIOS_CONTRATUAIS" },
+       });
+
+      expect(select).toHaveValue("HONORARIOS_CONTRATUAIS");
+      
+      fireEvent.mouseDown(select as HTMLElement);
+      fireEvent.change(select, {
+        target: { value: "HONORARIOS_SUCUMBENCIAs" },
+      });
+
+      expect(select).toHaveValue("HONORARIOS_SUCUMBENCIAs");
+    });
+
+    it("Teste do checbox de Dados de Identificação", async () => {
+      const checkbox = await screen.findByLabelText(
+        "Já possui destacamento de honorários?",
+      );
+      expect(checkbox).toBeInTheDocument();
+      expect(checkbox).toBeChecked();
+      fireEvent.click(checkbox);
+      expect(checkbox).not.toBeChecked();
+
+      const percentual = await screen.findByText("Percentual");
+      expect(percentual).toBeInTheDocument();
+      expect(percentual).toHaveAttribute("for", "percentual_de_honorarios");
+      expect(percentual).toHaveClass(
+        "font-nexa",
+        "text-xs",
+        "font-semibold",
+        "uppercase",
+        "text-meta-5",
+      );
+
+      const input = await screen.findByTestId("percentual_de_honorarios");
+      expect(input).toBeInTheDocument();
+      fireEvent.change(input, { target: { value: 30 } });
+      expect(input).toHaveValue(30);
+    });
+  });
 });
