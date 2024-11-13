@@ -661,8 +661,33 @@ describe("Teste do Formulário da Calculadora", () => {
     });
   });
 
+   describe("Teste de habilitar o salvamento do oficio", () => {
+     it("Teste para abrir o formulário para salvar dados do oficio", async () => {
+       const salvarInfoOficio = (await screen.findByLabelText(
+         "Salvar informações de ofício e recálculo?",
+       )) as HTMLInputElement;
+       expect(salvarInfoOficio).toBeInTheDocument();
+       expect(salvarInfoOficio).not.toBeChecked();
+       fireEvent.click(salvarInfoOficio);
+       expect(salvarInfoOficio).toBeChecked();
+       const salvarInfoOficioLabel = await screen.findAllByText(
+         "Salvar informações de ofício e recálculo?",
+       );
+       expect(salvarInfoOficioLabel[0]).toHaveAttribute("for", "gerar_cvld");
+       expect(salvarInfoOficio).toHaveAttribute("id", "gerar_cvld");
+       expect(salvarInfoOficioLabel[0]).toHaveClass(
+         "font-nexa",
+         "text-xs",
+         "font-semibold",
+         "uppercase",
+         "text-meta-5",
+       );
+     });
+   });
+
   describe("Teste do formulário para salvar dados do oficio", () => {
-    it("Teste para abrir o formulário para salvar dados do oficio", async () => {
+    
+    beforeEach(async () => {
       const salvarInfoOficio = (await screen.findByLabelText(
         "Salvar informações de ofício e recálculo?",
       )) as HTMLInputElement;
@@ -670,92 +695,47 @@ describe("Teste do Formulário da Calculadora", () => {
       expect(salvarInfoOficio).not.toBeChecked();
       fireEvent.click(salvarInfoOficio);
       expect(salvarInfoOficio).toBeChecked();
-      const salvarInfoOficioLabel = await screen.findAllByText(
-        "Salvar informações de ofício e recálculo?",
-      );
-      expect(salvarInfoOficioLabel[0]).toHaveAttribute("for", "gerar_cvld");
-      expect(salvarInfoOficio).toHaveAttribute("id", "gerar_cvld");
-      expect(salvarInfoOficioLabel[0]).toHaveClass(
-        "font-nexa",
-        "text-xs",
-        "font-semibold",
-        "uppercase",
-        "text-meta-5",
-      );
     });
 
-    it("Teste verificar o titulo do Formulário", async () => {
-      const salvarInfoOficio = (await screen.findByLabelText(
-        "Salvar informações de ofício e recálculo?",
-      )) as HTMLInputElement;
-      expect(salvarInfoOficio).toBeInTheDocument();
-      expect(salvarInfoOficio).not.toBeChecked();
-      fireEvent.click(salvarInfoOficio);
-      expect(salvarInfoOficio).toBeChecked();
-      const salvarInfoOficioLabel = await screen.findAllByText(
-        "Salvar informações de ofício e recálculo?",
-      );
-      expect(salvarInfoOficioLabel[0]).toHaveAttribute("for", "gerar_cvld");
-      expect(salvarInfoOficio).toHaveAttribute("id", "gerar_cvld");
-      expect(salvarInfoOficioLabel[0]).toHaveClass(
-        "font-nexa",
-        "text-xs",
-        "font-semibold",
-        "uppercase",
-        "text-meta-5",
-      );
-      const titulo = await screen.findByText("Dados de Identificação");
-      expect(titulo).toBeInTheDocument();
-      expect(titulo).toHaveClass(
-        "text-md",
-        "w-full",
-        "self-center",
-        "font-semibold",
-      );
+    describe("Teste para verificar campos do segundo Formulário", () => {
+      it("Teste verificar o titulo do Formulário", async () => {
+        const titulo = await screen.findByText("Dados de Identificação");
+        expect(titulo).toBeInTheDocument();
+        expect(titulo).toHaveClass(
+          "text-md",
+          "w-full",
+          "self-center",
+          "font-semibold",
+        );
+      });
     });
 
-    it("Teste das labels do Formulário de salvamento do Oficio", async () => {
-      const salvarInfoOficio = (await screen.findByLabelText(
-        "Salvar informações de ofício e recálculo?",
-      )) as HTMLInputElement;
-      expect(salvarInfoOficio).toBeInTheDocument();
-      expect(salvarInfoOficio).not.toBeChecked();
-      fireEvent.click(salvarInfoOficio);
-      expect(salvarInfoOficio).toBeChecked();
-      const salvarInfoOficioLabel = await screen.findAllByText(
-        "Salvar informações de ofício e recálculo?",
-      );
-      expect(salvarInfoOficioLabel[0]).toHaveAttribute("for", "gerar_cvld");
-      expect(salvarInfoOficio).toHaveAttribute("id", "gerar_cvld");
-      expect(salvarInfoOficioLabel[0]).toHaveClass(
-        "font-nexa",
-        "text-xs",
-        "font-semibold",
-        "uppercase",
-        "text-meta-5",
-      );
+    describe("Teste das labels do Formulário de salvamento do Oficio", () => {
+      it("Teste da label de formulário de Nome/Razão Social", async () => {
+        const nome = await screen.findByText("Nome/Razão Social");
+        expect(nome).toBeInTheDocument();
+        expect(nome).toHaveAttribute("for", "credor");
+        expect(nome).toHaveClass(
+          "font-nexa",
+          "text-xs",
+          "font-semibold",
+          "uppercase",
+          "text-meta-5",
+        );
+      });
 
-      const nome = await screen.findByText("Nome/Razão Social");
-      expect(nome).toBeInTheDocument();
-      expect(nome).toHaveAttribute("for", "credor");
-      expect(nome).toHaveClass(
-        "font-nexa",
-        "text-xs",
-        "font-semibold",
-        "uppercase",
-        "text-meta-5",
-      );
-
-      const cpfCnpj = await screen.findByText("CPF/CNPJ");
-      expect(cpfCnpj).toBeInTheDocument();
-      expect(cpfCnpj).toHaveAttribute("for", "cpf_cnpj");
-      expect(cpfCnpj).toHaveClass(
-        "font-nexa",
-        "text-xs",
-        "font-semibold",
-        "uppercase",
-        "text-meta-5",
-      );
+      it("Teste da label de formulário de CPF/CNPJ", async () => {
+        const cpfCnpj = await screen.findByText("CPF/CNPJ");
+        expect(cpfCnpj).toBeInTheDocument();
+        expect(cpfCnpj).toHaveAttribute("for", "cpf_cnpj");
+        expect(cpfCnpj).toHaveClass(
+          "font-nexa",
+          "text-xs",
+          "font-semibold",
+          "uppercase",
+          "text-meta-5",
+        );
+      });
     });
   });
 });
