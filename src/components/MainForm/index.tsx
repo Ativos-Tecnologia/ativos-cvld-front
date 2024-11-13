@@ -1187,6 +1187,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           render={({ field }) => (
                             <Cleave
                               {...field}
+                              data-testid="npu"
                               className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                               options={{
                                 blocks: [7, 2, 4, 1, 2, 4],
@@ -1212,6 +1213,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           render={({ field }) => (
                             <Cleave
                               {...field}
+                              data-testid="npu_originario"
                               className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                               options={{
                                 blocks: [7, 2, 4, 1, 2, 4],
@@ -1294,6 +1296,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <input
                           type="text"
                           id="ente_devedor"
+                          data-testid="ente_devedor"
                           className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                           {...register("ente_devedor", {})}
                         />
@@ -1309,6 +1312,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <input
                           type="text"
                           id="juizo_vara"
+                          data-testid="juizo_vara"
                           className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                           {...register("juizo_vara", {})}
                         />
@@ -1324,6 +1328,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <ShadSelect
                           name="tribunal"
                           control={control}
+                          data-testid="tribunal"
                           defaultValue={tribunais[0].nome}
                         >
                           {tribunais.map((tribunal) => (

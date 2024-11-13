@@ -1,6 +1,7 @@
 import MainForm from "@/components/MainForm";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { FormProvider, useForm } from "react-hook-form";
 
 jest.mock("next/navigation", () => ({
@@ -1053,5 +1054,197 @@ describe("Teste do Formulário da Calculadora", () => {
       fireEvent.change(input, { target: { value: 30 } });
       expect(input).toHaveValue(30);
     });
+  });
+
+  describe("Teste do input do Formulário Dados do Processo", () => { 
+
+    beforeEach(async () => {
+      const salvarInfoOficio = (await screen.findByLabelText(
+        "Salvar informações de ofício e recálculo?",
+      )) as HTMLInputElement;
+      expect(salvarInfoOficio).toBeInTheDocument();
+      expect(salvarInfoOficio).not.toBeChecked();
+      fireEvent.click(salvarInfoOficio);
+      expect(salvarInfoOficio).toBeChecked();
+    });
+
+    it("Teste do input de NPU Requisitório", async () => {
+      
+      const npu = await screen.findByText("NPU (requisitório)");
+      expect(npu).toBeInTheDocument();
+
+      const input = await screen.findByTestId("npu");
+      await userEvent.type(input, "0000000000000000000000");
+
+      // Verifica se o valor foi formatado corretamente
+      expect(input).toHaveValue("0000000-00.0000.0.00.0000");
+    });
+
+    it("Teste do input de NPU Originário", async () => {
+
+      const npu = await screen.findByText("NPU (originario)");
+      expect(npu).toBeInTheDocument();
+
+      const input = await screen.findByTestId("npu_originario");
+      await userEvent.type(input, "0000000000000000000000");
+
+      expect(input).toHaveValue("0000000-00.0000.0.00.0000");
+    });
+
+    it("Teste do Select de Esfera", async () => {
+      const esfera = await screen.findByText("Esfera");
+      expect(esfera).toBeInTheDocument();
+
+      const select = document.querySelector('[name="esfera"]');
+      expect(select).toBeInTheDocument();
+
+      if (!select || select === undefined)
+        throw new Error("Select não encontrado.");
+
+      expect(select).toHaveValue("FEDERAL");
+
+      fireEvent.mouseDown(select as HTMLElement);
+      fireEvent.change(select, {
+        target: { value: "ESTADUAL" },
+      });
+
+      expect(select).toHaveValue("ESTADUAL");
+
+      fireEvent.mouseDown(select as HTMLElement);
+      fireEvent.change(select, {
+        target: { value: "MUNICIPAL" },
+      });
+
+      expect(select).toHaveValue("MUNICIPAL");
+    });
+
+    it("Teste do select de Regime", async () => {
+      const esfera = await screen.findByText("Esfera");
+      expect(esfera).toBeInTheDocument();
+
+      const select = document.querySelector('[name="esfera"]');
+      expect(select).toBeInTheDocument();
+
+      if (!select || select === undefined)
+        throw new Error("Select não encontrado.");
+
+      expect(select).toHaveValue("FEDERAL");
+
+      fireEvent.mouseDown(select as HTMLElement);
+      fireEvent.change(select, {
+        target: { value: "ESTADUAL" },
+      });
+
+      expect(select).toHaveValue("ESTADUAL");
+
+      const regime = await screen.findByText("Regime");
+      expect(regime).toBeInTheDocument();
+
+      const regimeSelect = document.querySelector('[name="regime"]');
+      expect(regimeSelect).toBeInTheDocument();
+
+      if (!regimeSelect || regimeSelect === undefined)
+        throw new Error("Select não encontrado.");
+
+      expect(regimeSelect).toHaveValue("GERAL");
+
+      fireEvent.mouseDown(regimeSelect as HTMLElement);
+      fireEvent.change(regimeSelect, {
+        target: { value: "ESPECIAL" },
+      });
+    })
+
+    it("Teste de input do Estado do Ente Devedor", async () => {
+      
+      const esfera = await screen.findByText("Esfera");
+      expect(esfera).toBeInTheDocument();
+
+      const select = document.querySelector('[name="esfera"]');
+      expect(select).toBeInTheDocument();
+
+      if (!select || select === undefined)
+        throw new Error("Select não encontrado.");
+
+      expect(select).toHaveValue("FEDERAL");
+
+      fireEvent.mouseDown(select as HTMLElement);
+      fireEvent.change(select, {
+        target: { value: "ESTADUAL" },
+      });
+
+      expect(select).toHaveValue("ESTADUAL");
+
+      const estadoEnteDevedor = await screen.findByText(
+        "Estado do Ente Devedor",
+      );
+      expect(estadoEnteDevedor).toBeInTheDocument();
+
+      const selectEnteDevedor = document.querySelector(
+        '[name="estado_ente_devedor"]',
+      );
+      expect(selectEnteDevedor).toBeInTheDocument();
+
+      if (!selectEnteDevedor || selectEnteDevedor === undefined)
+        throw new Error("Select não encontrado.");
+      
+      fireEvent.mouseDown(selectEnteDevedor as HTMLElement);
+      fireEvent.change(selectEnteDevedor, {
+        target: { value: "PE" },
+      });
+
+      expect(selectEnteDevedor).toHaveValue("PE");
+
+      fireEvent.mouseDown(selectEnteDevedor as HTMLElement);
+      fireEvent.change(selectEnteDevedor, {
+        target: { value: "SP" },
+      });
+
+      expect(selectEnteDevedor).toHaveValue("SP");
+    });
+
+    it("Teste do input Ente Devedor", async () => {
+      const enteDevedor = await screen.findByText("Ente Devedor");
+      expect(enteDevedor).toBeInTheDocument();
+
+      const input = await screen.findByTestId("ente_devedor");
+      fireEvent.change(input, { target: { value: "Governo do Estado de São Paulo" } });
+      expect(input).toHaveValue("Governo do Estado de São Paulo");
+    });
+
+    it("Teste do input de Juízo/Vara", async () => {
+      const juizoVara = await screen.findByText("Juízo/Vara");
+      expect(juizoVara).toBeInTheDocument();
+
+      const input = await screen.findByTestId("juizo_vara");
+      fireEvent.change(input, { target: { value: "Vara de Execução Fiscal" } });
+      expect(input).toHaveValue("Vara de Execução Fiscal");
+    });
+    
+    it("Teste do input de Tribunal", async () => {
+      const tribunal = await screen.findByText("Tribunal");
+      expect(tribunal).toBeInTheDocument();
+
+       const selectTribunal = document.querySelector(
+         '[name="tribunal"]',
+       );
+       expect(selectTribunal).toBeInTheDocument();
+
+       if (!selectTribunal || selectTribunal === undefined)
+        throw new Error("Select não encontrado.");
+      
+      fireEvent.mouseDown(selectTribunal as HTMLElement);
+      fireEvent.change(selectTribunal, {
+        target: { value: "TRF1" },
+      });
+
+      expect(selectTribunal).toHaveValue("TRF1");
+
+      fireEvent.mouseDown(selectTribunal as HTMLElement);
+      fireEvent.change(selectTribunal, {
+        target: { value: "STF" },
+      });
+      expect(selectTribunal).toHaveValue("STF");
+    });
+
   });
 });
