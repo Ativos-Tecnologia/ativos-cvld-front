@@ -8,6 +8,8 @@ export type BrokersContextProps = {
     setEditModalId: React.Dispatch<React.SetStateAction<string | null>>;
     cedenteModal: NotionPage | null;
     setCedenteModal: React.Dispatch<React.SetStateAction<NotionPage | null>>;
+    docModalInfo: NotionPage | null;
+    setDocModalInfo: React.Dispatch<React.SetStateAction<NotionPage | null>>;
     cardsData: NotionResponse | null;
     setCardsData: React.Dispatch<React.SetStateAction<NotionResponse | null>>;
     fetchCardData: () => Promise<number>;
@@ -20,6 +22,8 @@ export const BrokersContext = createContext<BrokersContextProps>({
     setEditModalId: () => { },
     cedenteModal: null,
     setCedenteModal: () => { },
+    docModalInfo: null,
+    setDocModalInfo: () => { },
     cardsData: null,
     setCardsData: () => {},
     fetchCardData: () => Promise.resolve(200),
@@ -36,6 +40,10 @@ export const BrokersProvider = ({ children }: { children: React.ReactNode }) => 
     // o objeto serve para verificação de campos como identificação
     // para fins de dinamismo na abertura do modal
     const [cedenteModal, setCedenteModal] = useState<NotionPage | null>(null);
+
+    // estado que recebe o objeto do cedente, para controle das documentações
+    // já cadastradas
+    const [docModalInfo, setDocModalInfo] = useState<NotionPage | null>(null);
 
     // estado responsável por receber as informações (array) dos cards
     const [cardsData, setCardsData] = useState<NotionResponse | null>(null);
@@ -74,7 +82,8 @@ export const BrokersProvider = ({ children }: { children: React.ReactNode }) => 
     return (
         <BrokersContext.Provider value={{
             editModalId, setEditModalId, cedenteModal, setCedenteModal,
-            cardsData, setCardsData, fetchCardData, isFetchAllowed, setIsFetchAllowed
+            cardsData, setCardsData, fetchCardData, isFetchAllowed, setIsFetchAllowed,
+            docModalInfo, setDocModalInfo
         }}>
             {children}
         </BrokersContext.Provider>
