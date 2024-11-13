@@ -1230,6 +1230,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <ShadSelect
                           defaultValue="FEDERAL"
                           name="esfera"
+                          aria-labelledby="esfera"
                           control={control}
                         >
                           <SelectItem value="FEDERAL">Federal</SelectItem>
@@ -1268,6 +1269,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           </label>
                           <ShadSelect
                             name="estado_ente_devedor"
+                            aria-labelledby="estado_ente_devedor"
                             control={control}
                           >
                             {estados.map((estado) => (

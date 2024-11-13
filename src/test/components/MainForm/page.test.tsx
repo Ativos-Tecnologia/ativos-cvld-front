@@ -661,32 +661,31 @@ describe("Teste do Formulário da Calculadora", () => {
     });
   });
 
-   describe("Teste de habilitar o salvamento do oficio", () => {
-     it("Teste para abrir o formulário para salvar dados do oficio", async () => {
-       const salvarInfoOficio = (await screen.findByLabelText(
-         "Salvar informações de ofício e recálculo?",
-       )) as HTMLInputElement;
-       expect(salvarInfoOficio).toBeInTheDocument();
-       expect(salvarInfoOficio).not.toBeChecked();
-       fireEvent.click(salvarInfoOficio);
-       expect(salvarInfoOficio).toBeChecked();
-       const salvarInfoOficioLabel = await screen.findAllByText(
-         "Salvar informações de ofício e recálculo?",
-       );
-       expect(salvarInfoOficioLabel[0]).toHaveAttribute("for", "gerar_cvld");
-       expect(salvarInfoOficio).toHaveAttribute("id", "gerar_cvld");
-       expect(salvarInfoOficioLabel[0]).toHaveClass(
-         "font-nexa",
-         "text-xs",
-         "font-semibold",
-         "uppercase",
-         "text-meta-5",
-       );
-     });
-   });
+  describe("Teste de habilitar o salvamento do oficio", () => {
+    it("Teste para abrir o formulário para salvar dados do oficio", async () => {
+      const salvarInfoOficio = (await screen.findByLabelText(
+        "Salvar informações de ofício e recálculo?",
+      )) as HTMLInputElement;
+      expect(salvarInfoOficio).toBeInTheDocument();
+      expect(salvarInfoOficio).not.toBeChecked();
+      fireEvent.click(salvarInfoOficio);
+      expect(salvarInfoOficio).toBeChecked();
+      const salvarInfoOficioLabel = await screen.findAllByText(
+        "Salvar informações de ofício e recálculo?",
+      );
+      expect(salvarInfoOficioLabel[0]).toHaveAttribute("for", "gerar_cvld");
+      expect(salvarInfoOficio).toHaveAttribute("id", "gerar_cvld");
+      expect(salvarInfoOficioLabel[0]).toHaveClass(
+        "font-nexa",
+        "text-xs",
+        "font-semibold",
+        "uppercase",
+        "text-meta-5",
+      );
+    });
+  });
 
   describe("Teste do formulário para salvar dados do oficio", () => {
-    
     beforeEach(async () => {
       const salvarInfoOficio = (await screen.findByLabelText(
         "Salvar informações de ofício e recálculo?",
@@ -697,7 +696,7 @@ describe("Teste do Formulário da Calculadora", () => {
       expect(salvarInfoOficio).toBeChecked();
     });
 
-    describe("Teste para verificar campos do segundo Formulário", () => {
+    describe("Teste para verificar titulos do segundo Formulário", () => {
       it("Teste verificar o titulo do Formulário", async () => {
         const titulo = await screen.findByText("Dados de Identificação");
         expect(titulo).toBeInTheDocument();
@@ -708,9 +707,31 @@ describe("Teste do Formulário da Calculadora", () => {
           "font-semibold",
         );
       });
+
+      it("Teste para verificar titulo Dados do Processo", async () => {
+        const dadosProcesso = await screen.findByText("Dados do Processo");
+        expect(dadosProcesso).toBeInTheDocument();
+        expect(dadosProcesso).toHaveClass(
+          "text-md",
+          "w-full",
+          "self-center",
+          "font-semibold",
+        );
+      })
+
+      it("Teste para verificar titulo do Contato", async () => {
+        const contato = await screen.findByText("Contato");
+        expect(contato).toBeInTheDocument();
+        expect(contato).toHaveClass(
+          "mt-8",
+          "text-lg",
+          "font-semibold"
+        );
+      })
+
     });
 
-    describe("Teste das labels do Formulário de salvamento do Oficio", () => {
+    describe("Teste das labels do Formulário Dados de Identificação", () => {
       it("Teste da label de formulário de Nome/Razão Social", async () => {
         const nome = await screen.findByText("Nome/Razão Social");
         expect(nome).toBeInTheDocument();
@@ -729,6 +750,190 @@ describe("Teste do Formulário da Calculadora", () => {
         expect(cpfCnpj).toBeInTheDocument();
         expect(cpfCnpj).toHaveAttribute("for", "cpf_cnpj");
         expect(cpfCnpj).toHaveClass(
+          "font-nexa",
+          "text-xs",
+          "font-semibold",
+          "uppercase",
+          "text-meta-5",
+        );
+      });
+
+      it("Teste para verificar se a label Espécie está corretamente no formulário", async () => {
+        const especie = await screen.findByText("Espécie");
+        expect(especie).toBeInTheDocument();
+        expect(especie).toHaveAttribute("for", "especie");
+        expect(especie).toHaveClass(
+          "text-xs",
+          "font-semibold",
+          "uppercase",
+          "text-meta-5",
+        );
+      });
+    });
+
+    describe("Teste das labels do Formulário Dados do Processo", () => {
+      it("Teste da label do formulário de NPU Requisitório", async () => {
+        const npu = await screen.findByText("NPU (requisitório)");
+        expect(npu).toBeInTheDocument();
+        expect(npu).toHaveAttribute("for", "npu");
+        expect(npu).toHaveClass(
+          "font-nexa",
+          "text-xs",
+          "font-semibold",
+          "uppercase",
+          "text-meta-5",
+        );
+      });
+
+      it("Teste da label do formulário NPU Originario", async () => {
+        const npuOriginario = await screen.findByText("NPU (originario)");
+        expect(npuOriginario).toBeInTheDocument();
+        expect(npuOriginario).toHaveAttribute("for", "npu_originario");
+        expect(npuOriginario).toHaveClass(
+          "font-nexa",
+          "text-xs",
+          "font-semibold",
+          "uppercase",
+          "text-meta-5",
+        );
+      })
+
+      it("Teste da label do formulário de Esfera", async () => { 
+        const esfera = await screen.findByText("Esfera");
+        expect(esfera).toBeInTheDocument();
+        expect(esfera).toHaveAttribute("for", "esfera");
+        expect(esfera).toHaveClass(
+          "font-nexa",
+          "text-xs",
+          "font-semibold",
+          "uppercase",
+          "text-meta-5",
+        );
+      });
+
+      it("Teste da label do formulário Ente Devedor", async () => {
+        const enteDevedor = await screen.findByText("Ente Devedor");
+        expect(enteDevedor).toBeInTheDocument();
+        expect(enteDevedor).toHaveAttribute("for", "ente_devedor");
+        expect(enteDevedor).toHaveClass(
+          "font-nexa",
+          "text-xs",
+          "font-semibold",
+          "uppercase",
+          "text-meta-5",
+        );
+      })
+
+      it("Teste da label do formulário de Juízo/Vara", async () => {
+        const juizoVara = await screen.findByText("Juízo/Vara");
+        expect(juizoVara).toBeInTheDocument();
+        expect(juizoVara).toHaveAttribute("for", "juizo_vara");
+        expect(juizoVara).toHaveClass(
+          "font-nexa",
+          "text-xs",
+          "font-semibold",
+          "uppercase",
+          "text-meta-5",
+        );
+      })
+
+      it("Teste da label do formulário do Tribunal", async () => {
+        const tribunal = await screen.findByText("Tribunal");
+        expect(tribunal).toBeInTheDocument();
+        expect(tribunal).toHaveAttribute("for", "tribunal");
+        expect(tribunal).toHaveClass(
+          "font-nexa",
+          "text-xs",
+          "font-semibold",
+          "uppercase",
+          "text-meta-5",
+        );
+      })
+
+      it("Teste da label do tipo de Precatório", async () => { 
+        const tipoPrecatorio = await screen.findByText("Tipo");
+        expect(tipoPrecatorio).toBeInTheDocument();
+        expect(tipoPrecatorio).toHaveAttribute("for", "tipo");
+        expect(tipoPrecatorio).toHaveClass(
+          "font-nexa",
+          "text-xs",
+          "font-semibold",
+          "uppercase",
+          "text-meta-5",
+        );
+      });
+
+      it("Teste da label do tipo de Status", async () => {
+        const status = await screen.findByText("Status");
+        expect(status).toBeInTheDocument();
+        expect(status).toHaveAttribute("for", "status");
+        expect(status).toHaveClass(
+          "font-nexa",
+          "text-xs",
+          "font-semibold",
+          "uppercase",
+          "text-meta-5",
+        );
+      })
+
+      it("Teste da label do formulário de Regime", async () => {
+
+        const esfera = await screen.findByText("Esfera");
+        expect(esfera).toBeInTheDocument();
+        fireEvent.click(esfera);
+
+        const select =
+          document.querySelector('[aria-labelledby="natureza"]') ||
+          document.querySelector('[name="esfera"]');
+        expect(select).toBeInTheDocument();
+
+        if (!select) {
+          throw new Error("Select não encontrado.");
+        }
+        expect(select).toHaveValue("FEDERAL");
+
+        fireEvent.mouseDown(select as HTMLElement);
+        fireEvent.change(select, { target: { value: "ESTADUAL" } });
+
+        expect(select).toHaveValue("ESTADUAL");
+
+        const regime = await screen.findByText("Regime");
+        expect(regime).toBeInTheDocument();
+        expect(regime).toHaveAttribute("for", "natureza");
+        expect(regime).toHaveClass(
+          "font-nexa",
+          "text-xs",
+          "font-semibold",
+          "uppercase",
+          "text-meta-5",
+        );
+      })
+
+      it("Teste da label do formulário de Estado do Ente Devedor", async () => {
+
+         const esfera = await screen.findByText("Esfera");
+         expect(esfera).toBeInTheDocument();
+         fireEvent.click(esfera);
+
+         const select =
+           document.querySelector('[aria-labelledby="natureza"]') ||
+           document.querySelector('[name="esfera"]');
+         expect(select).toBeInTheDocument();
+
+         if (!select) {
+           throw new Error("Select não encontrado.");
+         }
+         expect(select).toHaveValue("FEDERAL");
+
+         fireEvent.mouseDown(select as HTMLElement);
+         fireEvent.change(select, { target: { value: "ESTADUAL" } });
+
+         expect(select).toHaveValue("ESTADUAL");
+
+        const estadoEnteDevedor = await screen.findByText("Estado do Ente Devedor");
+        expect(estadoEnteDevedor).toBeInTheDocument();
+        expect(estadoEnteDevedor).toHaveAttribute("for", "estado_ente_devedor");
+        expect(estadoEnteDevedor).toHaveClass(
           "font-nexa",
           "text-xs",
           "font-semibold",
