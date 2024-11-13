@@ -31,7 +31,7 @@ beforeEach(async () => {
   );
 });
 
-describe("Teste dos Headers do registro", () => {
+describe("Testes da Página de Login ", () => {
   it("Teste carregar o titulo da página", async () => {
     // Buscando pelo título que tem quebras de linha
     const titulo = await screen.findByText(/Sua solução/i);
