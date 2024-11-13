@@ -942,5 +942,33 @@ describe("Teste do Formulário da Calculadora", () => {
         );
       });
     });
+
+    describe("Teste das labels do Formulário Contato", () => {
+      it("Teste da label de formulário de Email de Contato", async () => {
+        const email = await screen.findByText("Email de Contato");
+        expect(email).toBeInTheDocument();
+        expect(email).toHaveAttribute("for", "email_contato");
+        expect(email).toHaveClass(
+          "font-nexa",
+          "text-xs",
+          "font-semibold",
+          "uppercase",
+          "text-meta-5",
+        );
+      });
+
+      it("Teste da label de formulário de Telefone", async () => {
+        const telefone = await screen.findByText("Telefone de Contato");
+        expect(telefone).toBeInTheDocument();
+        expect(telefone).toHaveAttribute("for", "telefone_contato");
+        expect(telefone).toHaveClass(
+          "font-nexa",
+          "text-xs",
+          "font-semibold",
+          "uppercase",
+          "text-meta-5",
+        );
+      })
+    });
   });
 });
