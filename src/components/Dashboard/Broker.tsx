@@ -5,13 +5,15 @@ import BrokerCardSkeleton from "../Skeletons/BrokerCardSkeleton";
 import { Fade } from "react-awesome-reveal";
 import Image from "next/image";
 import { BrokersContext } from "@/context/BrokersContext";
-import BrokerModal from "../Modals/Brokers";
+import BrokerModal from "../Modals/BrokersCedente";
+import DocForm from "../Modals/BrokersDocs";
 
 const Broker: React.FC = () => {
 
   const {
     editModalId, setEditModalId,
-    cedenteModal, cardsData
+    cedenteModal, cardsData,
+    docModalInfo
   } = useContext(BrokersContext);
 
   // estado para verificar se é o primeiro carregamento da view
@@ -63,6 +65,9 @@ const Broker: React.FC = () => {
       </div>
       {cedenteModal !== null && (
         <BrokerModal />
+      )}
+      {docModalInfo !== null && (
+        <DocForm />
       )}
     </>
   );
