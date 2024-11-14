@@ -6,6 +6,7 @@ import { BiX } from 'react-icons/bi'
 import { TiWarning } from 'react-icons/ti'
 import { IdentificationType } from '../BrokersCedente';
 import PFdocs from './PFdocs';
+import PJdocs from './PJdocs';
 
 const DocForm = () => {
 
@@ -53,7 +54,9 @@ const DocForm = () => {
                 ) : (
                     <>
                         {credorIdentificationType === "CNPJ" ? (
-                            "CNPJ"
+                            <PJdocs
+                            cedenteId={docModalInfo!.properties["Cedente PJ"].relation?.[0]?.id || null}
+                            />
                         ) : (
                             <Fade duration={700} triggerOnce>
                                 <div className='flex flex-col gap-4 items-center justify-center'>
