@@ -9,7 +9,7 @@ interface SubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement
 
 const variants = {
     "default": "bg-blue-600 hover:bg-blue-700 text-white",
-    "danger": "bg-red-400 hover:bg-red-500 text-white",
+    "danger": "bg-red-500 hover:bg-red-600 text-white",
     "outlined": "bg-transparent border border-blue-700 text-blue-700 hover:border-blue-800 hover:text-blue-800 dark:border-snow dark:text-snow dark:hover:border-gray-200 dark:hover:text-gray-200",
     "ghost": "bg-transparent border-transparent"
 }
@@ -22,7 +22,7 @@ export const Button: React.FC<SubmitButtonProps> = ({
     ...props
 }) => {
     return (
-        <button type={type} className={cn(`${variants[variant]} w-fit cursor-pointer rounded-lg px-4 py-2 transition hover:bg-opacity-90`, className)} {...props}>
+        <button type={type} className={cn(`${variants[variant]} w-fit cursor-pointer rounded-lg px-4 py-2 transition-all hover:bg-opacity-90`, className)} {...props}>
             {children}
         </button>
     )
