@@ -1350,6 +1350,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <ShadSelect
                           name="tipo_do_oficio"
                           control={control}
+                          data-testid="tipo_do_oficio"
                           defaultValue={enumTipoOficiosList[0]}
                         >
                           {enumTipoOficiosList.map((status) => (
@@ -1419,6 +1420,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         {contatoNumberCount === 1 && (
                           <div
                             title="Adicionar telefone de contato"
+                            data-testid="add-telefone-contato"
                             onClick={() => setContatoNumberCount(2)}
                             className="absolute right-2 top-0 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
                           >
@@ -1455,6 +1457,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                                 </div>
                                 <div
                                   title="Remover telefone de contato"
+                                  data-testid="remove-telefone-contato"
                                   onClick={() => setContatoNumberCount(1)}
                                   className="absolute right-2 top-0 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
                                 >
@@ -1942,6 +1945,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                               /> */}
                               <label
                                 htmlFor="vincular_usuario"
+                                data-testid="vincular_usuario"
                                 className="align-self-baseline flex cursor-pointer flex-row text-sm font-medium text-meta-5"
                               >
                                 <BiLogoUpwork className="mr-2 mt-0.5 h-4 w-4" />{" "}

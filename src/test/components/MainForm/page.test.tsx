@@ -1246,5 +1246,245 @@ describe("Teste do Formulário da Calculadora", () => {
       expect(selectTribunal).toHaveValue("STF");
     });
 
+    it("Teste de Tipo de Precatório", async () => { 
+      const tipoPrecatorio = await screen.findByText("Tipo");
+      expect(tipoPrecatorio).toBeInTheDocument();
+
+      const select = document.querySelector('[name="tipo_do_oficio"]');
+      expect(select).toBeInTheDocument();
+
+      if (!select || select === undefined) throw new Error("Select não encontrado.");
+
+      expect(select).toHaveValue("PRECATÓRIO");
+
+      fireEvent.mouseDown(select as HTMLElement);
+      fireEvent.change(select, {
+        target: { value: "RPV" },
+      });
+
+      expect(select).toHaveValue("RPV");
+
+      fireEvent.mouseDown(select as HTMLElement);
+      fireEvent.change(select, {
+        target: { value: "CREDITÓRIO" },
+      });
+
+      expect(select).toHaveValue("CREDITÓRIO");
+
+      fireEvent.mouseDown(select as HTMLElement);
+      fireEvent.change(select, {
+        target: { value: "PRE-RPV" },
+      });
+
+      expect(select).toHaveValue("PRE-RPV");
+    });
+
+    it("Teste do input de Status", async () => {
+      const status = await screen.findByText("Status");
+      expect(status).toBeInTheDocument();
+
+      const select = document.querySelector('[name="status"]');
+      expect(select).toBeInTheDocument();
+
+
+      if (!select || select === undefined)
+        throw new Error("Select não encontrado.");
+
+      expect(select).toHaveValue("Realizar Primeiro Contato");
+
+      fireEvent.mouseDown(select as HTMLElement);
+      fireEvent.change(select, {
+        target: { value: "1º Contato não alcançado" },
+      });
+
+      expect(select).toHaveValue("1º Contato não alcançado");
+
+      fireEvent.mouseDown(select as HTMLElement);
+      fireEvent.change(select, {
+        target: { value: "2º Contato não alcançado" },
+      });
+
+      expect(select).toHaveValue("2º Contato não alcançado");
+
+      fireEvent.mouseDown(select as HTMLElement);
+      fireEvent.change(select, {
+        target: { value: "3º Contato não alcançado" },
+      });
+
+      expect(select).toHaveValue("3º Contato não alcançado");
+
+      fireEvent.mouseDown(select as HTMLElement);
+      fireEvent.change(select, {
+        target: { value: "Calcular Valor Líquido" },
+      });
+
+      expect(select).toHaveValue("Calcular Valor Líquido");
+
+      fireEvent.mouseDown(select as HTMLElement);
+      fireEvent.change(select, {
+        target: { value: "Juntar Ofício ou Memória de Cálculo" },
+      });
+
+      expect(select).toHaveValue("Juntar Ofício ou Memória de Cálculo");
+
+      fireEvent.mouseDown(select as HTMLElement);
+      fireEvent.change(select, {
+        target: { value: "Enviar proposta" },
+      });
+
+      expect(select).toHaveValue("Enviar proposta");
+
+      fireEvent.mouseDown(select as HTMLElement);
+      fireEvent.change(select, {
+        target: { value: "Negociação em Andamento" },
+      });
+
+      expect(select).toHaveValue("Negociação em Andamento");
+
+      fireEvent.mouseDown(select as HTMLElement);
+      fireEvent.change(select, {
+        target: { value: "Proposta aceita" },
+      });
+
+      expect(select).toHaveValue("Proposta aceita");
+
+      fireEvent.mouseDown(select as HTMLElement);
+      fireEvent.change(select, {
+        target: { value: "Já vendido" },
+      });
+
+      expect(select).toHaveValue("Já vendido");
+
+      fireEvent.mouseDown(select as HTMLElement);
+      fireEvent.change(select, {
+        target: { value: "Contato inexistente" },
+      });
+
+      expect(select).toHaveValue("Contato inexistente");
+
+      fireEvent.mouseDown(select as HTMLElement);
+      fireEvent.change(select, {
+        target: { value: "Ausência de resposta" },
+      });
+
+      expect(select).toHaveValue("Ausência de resposta");
+
+      fireEvent.mouseDown(select as HTMLElement);
+      fireEvent.change(select, {
+        target: { value: "Demonstrou falta de interesse" },
+      });
+
+      expect(select).toHaveValue("Demonstrou falta de interesse");
+
+    });
+
   });
+
+  describe("Teste do input do Formulário Contato", () => { 
+
+    beforeEach(async () => {
+      const salvarInfoOficio = (await screen.findByLabelText(
+        "Salvar informações de ofício e recálculo?",
+      )) as HTMLInputElement;
+      expect(salvarInfoOficio).toBeInTheDocument();
+      expect(salvarInfoOficio).not.toBeChecked();
+      fireEvent.click(salvarInfoOficio);
+      expect(salvarInfoOficio).toBeChecked();
+    });
+
+    it("Teste do input de Email de Contato", async () => { 
+      const email = await screen.findByText("Email de Contato");
+      expect(email).toBeInTheDocument();
+
+      const input = await screen.findByPlaceholderText("ada@lovelace.com");
+      expect(input).toBeInTheDocument();
+
+      fireEvent.change(input, { target: { value: "jameshetfield@email.com" } });
+      expect(input).toHaveValue("jameshetfield@email.com");
+    });
+
+    it("Teste do input de Telefone de Contato", async () => {
+      const telefone = await screen.findByText("Telefone de Contato");
+      expect(telefone).toBeInTheDocument();
+
+      const input = await screen.findByPlaceholderText("(00) 00000-0000");
+      expect(input).toBeInTheDocument();
+
+      fireEvent.change(input, { target: { value: "(11) 99999-9999" } });
+      expect(input).toHaveValue("(11) 99999-9999");
+    });
+
+    it("Teste do botão de adicionar Telefone de Contato", async () => {
+      const adicionarTelefone = await screen.findByTestId(
+        "add-telefone-contato",
+      );
+      expect(adicionarTelefone).toBeInTheDocument();
+      expect(adicionarTelefone).toHaveClass(
+        "absolute",
+        "right-2",
+        "top-0",
+        "flex",
+        "h-4",
+        "w-4",
+        "cursor-pointer",
+        "items-center",
+        "justify-center",
+        "rounded-sm",
+        "bg-slate-200",
+        "hover:bg-slate-300",
+        "dark:bg-slate-600",
+        "dark:hover:bg-slate-700",
+      );
+      fireEvent.click(adicionarTelefone);
+    });
+
+    it("Teste do botão de remover Telefone de Contato", async () => { 
+      const adicionarTelefone = await screen.findByTestId(
+        "add-telefone-contato",
+      );
+      expect(adicionarTelefone).toBeInTheDocument();
+      expect(adicionarTelefone).toHaveClass(
+        "absolute",
+        "right-2",
+        "top-0",
+        "flex",
+        "h-4",
+        "w-4",
+        "cursor-pointer",
+        "items-center",
+        "justify-center",
+        "rounded-sm",
+        "bg-slate-200",
+        "hover:bg-slate-300",
+        "dark:bg-slate-600",
+        "dark:hover:bg-slate-700",
+      );
+      fireEvent.click(adicionarTelefone);
+
+      const removerTelefone = await screen.findByTestId(
+        "remove-telefone-contato",
+      );
+      expect(removerTelefone).toBeInTheDocument();
+      expect(removerTelefone).toHaveClass(
+        "absolute",
+        "right-2",
+        "top-0",
+        "flex",
+        "h-4",
+        "w-4",
+        "cursor-pointer",
+        "items-center",
+        "justify-center",
+        "rounded-sm",
+        "bg-slate-200",
+        "hover:bg-slate-300",
+        "dark:bg-slate-600",
+        "dark:hover:bg-slate-700",
+      );
+      fireEvent.click(removerTelefone);
+
+    });
+
+  });
+
 });
