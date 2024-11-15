@@ -26,11 +26,16 @@ import { GrDocumentUser } from 'react-icons/gr';
 import { BrokersContext } from '@/context/BrokersContext';
 import { RiErrorWarningFill } from 'react-icons/ri';
 import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
-import { IdentificationType } from '../Modals/Brokers';
+import { IdentificationType } from '../Modals/BrokersCedente';
+import { NotionNumberFormater } from '@/functions/formaters/notionNumberFormater';
+
+type ChecksTypes = "precatorio" | "cedente" | "documentos"
 
 export type ChecksProps = {
-    is_complete: boolean;
-    isFetching: boolean;
+    [key in ChecksTypes]: {
+        is_complete: boolean;
+        isFetching: boolean;
+    }
 }
 
 const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
@@ -44,7 +49,8 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     /* ====> context imports <==== */
     const { fetchCardData, setCardsData,
         cardsData, setCedenteModal,
-        isFetchAllowed, setIsFetchAllowed
+        isFetchAllowed, setIsFetchAllowed,
+        setDocModalInfo
     } = useContext(BrokersContext);
 
     /* ====> form imports <==== */
@@ -62,19 +68,19 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             esfera: oficio.properties["Esfera"].select?.name || "FEDERAL",
             regime: oficio.properties["Regime"].select?.name || "GERAL",
             tribunal: oficio.properties["Tribunal"].select?.name || "STJ",
-            valor_principal: oficio.properties["Valor Principal"].number || 0,
-            valor_juros: oficio.properties["Valor Juros"].number || 0,
+            valor_principal: NotionNumberFormater(oficio.properties["Valor Principal"].number || 0),
+            valor_juros: NotionNumberFormater(oficio.properties["Valor Juros"].number || 0),
             data_base: oficio.properties["Data Base"].date?.start || "",
             data_requisicao: oficio.properties["Data do Recebimento"].date?.start || "",
             valor_aquisicao_total: oficio.properties["Percentual a ser adquirido"].number === 1,
             percentual_a_ser_adquirido: oficio.properties["Percentual a ser adquirido"].number! * 100 || 0,
             ja_possui_destacamento: oficio.properties["Honorários já destacados?"].checkbox,
-            percentual_de_honorarios: oficio.properties["Percentual de Honorários Não destacados"].number || 0,
+            percentual_de_honorarios: oficio.properties["Percentual de Honorários Não destacados"].number! * 100 || 0,
             incidencia_rra_ir: oficio.properties["Incidencia RRA/IR"].checkbox,
             ir_incidente_rra: oficio.properties["IR Incidente sobre RRA"].checkbox,
             incidencia_pss: oficio.properties["PSS"].number! > 0,
             valor_pss: oficio.properties["PSS"].number || 0,
-            numero_de_meses: 0,
+            numero_de_meses: oficio.properties["Meses RRA"].number || 0,
             credor: oficio.properties["Credor"].title[0]?.text.content || "",
             cpf_cnpj: oficio.properties["CPF/CNPJ"].rich_text?.[0]?.text.content || "",
             especie: oficio?.properties?.["Espécie"].select?.name || "Principal",
@@ -88,7 +94,6 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         }
     })
     const enumTipoOficiosList = Object.values(tipoOficio);
-    const queryClient = useQueryClient();
 
     /* ====> value states <==== */
     const [auxProposalValue, setAuxProposalValue] = useState<number>(0);
@@ -103,14 +108,22 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const [errorMessage, setErrorMessage] = useState<boolean>(false);
     const [credorIdentificationType, setCredorIdentificationType] = useState<IdentificationType>(null);
     const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
-    const [precatorioCheck, setPrecatorioCheck] = useState<ChecksProps>({
-        is_complete: false,
-        isFetching: false
+    const [checks, setChecks] = useState<ChecksProps>({
+        precatorio: {
+            is_complete: false,
+            isFetching: false
+        },
+        cedente: {
+            is_complete: false,
+            isFetching: false
+        },
+        documentos: {
+            is_complete: false,
+            isFetching: false
+        }
     });
-    const [cedenteCheck, setCedenteCheck] = useState<ChecksProps>({
-        is_complete: false,
-        isFetching: false
-    });
+
+    console.log(checks.documentos.is_complete)
 
     /* ====> refs <==== */
     const proposalRef = useRef<HTMLInputElement | null>(null);
@@ -119,23 +132,40 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
     // Função responsável por fazer fetch do estado do check precatório
     const fetchPrecatorioCheck = async () => {
-        setPrecatorioCheck((old) => (
-            { ...old, isFetching: true }
+        setChecks((old) => (
+            {
+                ...old,
+                precatorio: {
+                    ...old.precatorio,
+                    isFetching: true
+                }
+            }
         ))
         const req = await api.get(`/api/checker/complete/precatorio/${oficio.id}/`);
 
         if (req.data === null) return;
 
-        setPrecatorioCheck({
-            is_complete: req.data.is_complete,
-            isFetching: false
-        });
+        setChecks((old) => (
+            {
+                ...old,
+                precatorio: {
+                    is_complete: req.data.is_complete,
+                    isFetching: false
+                }
+            }
+        ));
     }
 
     // Função responsável por fazer fetch do estado do check cedente
     const fetchCedenteCheck = async () => {
-        setCedenteCheck((old) => (
-            { ...old, isFetching: true }
+        setChecks((old) => (
+            {
+                ...old,
+                cedente: {
+                    ...old.cedente,
+                    isFetching: true
+                }
+            }
         ))
         const cedenteType = credorIdentificationType === "CPF" ? "Cedente PF" : "Cedente PJ";
 
@@ -149,11 +179,54 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
         if (req.data === null) return;
 
-        setCedenteCheck({
-            is_complete: req.data.is_complete,
-            isFetching: false
-        });
+        setChecks((old) => (
+            {
+                ...old,
+                cedente: {
+                    is_complete: req.data.is_complete,
+                    isFetching: false
+                }
+            }
+        ));
     }
+
+    // Funcão responsável por fazer fetch do estado do check documentos
+    const fetchDocData = async () => {
+        setChecks((old) => (
+            {
+                ...old,
+                documentos: {
+                    ...old.documentos,
+                    isFetching: true
+                }
+            }
+        ));
+
+        const cedenteType = credorIdentificationType === "CPF" ? "Cedente PF" : "Cedente PJ";
+
+        const idCedente = oficio.properties[cedenteType].relation?.[0] ?
+            oficio.properties[cedenteType].relation?.[0].id :
+            null;
+
+        // console.log(cedenteType, idCedente)
+        // return;
+
+        const req = credorIdentificationType === "CPF" ?
+            await api.get(`/api/checker/complete/cedente/pf/${idCedente}/docs`) :
+            await api.get(`/api/checker/complete/cedente/pj/${idCedente}/docs`);
+
+        if (req.data === null) return;
+
+        setChecks((old) => (
+            {
+                ...old,
+                documentos: {
+                    is_complete: req.data.is_complete,
+                    isFetching: true
+                }
+            }
+        ));
+    };
 
     // Função para atualizar a proposta e ajustar a comissão proporcionalmente
     const handleProposalSliderChange = (
@@ -456,6 +529,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const onSubmit = async (data: any) => {
 
         data.percentual_a_ser_adquirido /= 100;
+        data.percentual_de_honorarios /= 100;
 
         if (typeof data.valor_principal === "string") {
             data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
@@ -481,7 +555,8 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         async function refetchChecks() {
             await Promise.allSettled([
                 fetchCedenteCheck(),
-                fetchPrecatorioCheck()
+                fetchPrecatorioCheck(),
+                fetchDocData()
             ])
             setIsFirstLoad(false);
         }
@@ -569,7 +644,9 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                             Editar Precatório
                         </button>
 
-                        <button className='flex cursor-not-allowed items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm'>
+                        <button
+                            onClick={() => setDocModalInfo(oficio)}
+                            className={`${checks.cedente.is_complete !== null ? "opacity-100" : "opacity-50 cursor-not-allowed"} flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm`}>
                             <FaRegFilePdf />
                             Juntar Documento
                         </button>
@@ -577,7 +654,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                         <button
                             onClick={() => setCedenteModal(oficio)}
                             className='flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm'>
-                            {(cedenteCheck && cedenteCheck.is_complete !== null) ? (
+                            {(checks.cedente.is_complete !== null) ? (
                                 <>
                                     <BsPencilSquare />
                                     Editar Cedente
@@ -595,11 +672,12 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
                     <div className="flex items-center gap-4 justify-between">
                         <div className='flex items-center gap-2'>
-                            {(precatorioCheck.isFetching && isFirstLoad) ? (
+
+                            {(checks.precatorio.isFetching && isFirstLoad) ? (
                                 <AiOutlineLoading className='w-4 h-4 animate-spin' />
                             ) : (
                                 <>
-                                    {(precatorioCheck && precatorioCheck.is_complete) ? (
+                                    {(checks.precatorio.is_complete) ? (
                                         <CRMTooltip text="Precatório Completo">
                                             <BsCheckCircleFill className='text-green-400' />
                                         </CRMTooltip>
@@ -610,22 +688,45 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                     )}
                                 </>
                             )}
-                            {(cedenteCheck.isFetching && isFirstLoad) ? (
+
+                            {(checks.cedente.isFetching && isFirstLoad) ? (
                                 <AiOutlineLoading className='w-4 h-4 animate-spin' />
                             ) : (
                                 <>
-                                    {(cedenteCheck && cedenteCheck.is_complete === true) && (
+                                    {(checks.cedente.is_complete === true) && (
                                         <CRMTooltip text="Cedente preenchido">
                                             <BsCheckCircleFill className='text-green-400' />
                                         </CRMTooltip>
                                     )}
-                                    {(cedenteCheck && cedenteCheck.is_complete === false) && (
+                                    {(checks.cedente.is_complete === false) && (
                                         <CRMTooltip text="Cedente incompleto">
+                                            <RiErrorWarningFill className="text-amber-300 w-5 h-5" />
+                                        </CRMTooltip>
+                                    )}
+                                    {(checks.cedente.is_complete === null) && (
+                                        <CRMTooltip text="Cedente não vinculado">
                                             <IoCloseCircle className="text-red w-5 h-5" />
                                         </CRMTooltip>
                                     )}
-                                    {(cedenteCheck && cedenteCheck.is_complete === null) && (
-                                        <CRMTooltip text="Cedente não vinculado">
+                                </>
+                            )}
+
+                            {(checks.documentos.isFetching && isFirstLoad) ? (
+                                <AiOutlineLoading className='w-4 h-4 animate-spin' />
+                            ) : (
+                                <>
+                                    {(checks.documentos.is_complete === true) && (
+                                        <CRMTooltip text="Dcumentos preenchidos">
+                                            <BsCheckCircleFill className='text-green-400' />
+                                        </CRMTooltip>
+                                    )}
+                                    {(checks.documentos.is_complete === false) && (
+                                        <CRMTooltip text="Documentos não vinculados">
+                                            <IoCloseCircle className="text-red w-5 h-5" />
+                                        </CRMTooltip>
+                                    )}
+                                    {(checks.documentos.is_complete === null) && (
+                                        <CRMTooltip text="Documentos incompletos">
                                             <RiErrorWarningFill className="text-amber-300 w-5 h-5" />
                                         </CRMTooltip>
                                     )}
@@ -766,7 +867,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             {/* ----> end info <----- */}
 
             {/* ----> edit info modal <---- */}
-            <div className={`absolute top-0 left-0 z-3 bg-boxdark w-full ${editModalId === oficio.id ? "max-h-full overflow-y-scroll border border-snow rounded-md" : "max-h-0 overflow-hidden"} grid grid-cols-2 gap-2 transition-all duration-300`}>
+            <div className={`absolute top-0 left-0 z-3 bg-white dark:bg-boxdark w-full ${editModalId === oficio.id ? "max-h-full overflow-y-scroll border border-snow rounded-md" : "max-h-0 overflow-hidden"} grid grid-cols-2 gap-2 transition-all duration-300`}>
                 <div className='p-5 col-span-2'>
 
                     <h2 className='text-xl font-medium text-center'>Edite as informações do ofício</h2>
