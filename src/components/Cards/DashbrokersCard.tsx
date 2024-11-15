@@ -614,33 +614,41 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             {/* ----> info <----- */}
             <div className="grid grid-cols-12 gap-2">
                 <div className="col-span-5 grid gap-3">
-                    <div>
-                        <p className='text-black dark:text-snow uppercase font-medium'>Nome do Credor:</p>
+                <div className='text-sm'>
+                <p className='text-black dark:text-snow uppercase font-medium'>Nome do Credor:</p>
                         <CRMTooltip
                             text={oficio.properties["Credor"].title[0]?.text.content || "Não informado"}
                             arrow={false}
                         >
-                            <p className='max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap'>
+                            <p className='max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap uppercase text-xs font-semibold'>
                                 {oficio.properties["Credor"].title[0]?.text.content || "Não informado"}
                             </p>
                         </CRMTooltip>
                     </div>
 
-                    <div>
+                    <div className='text-sm'>
                         <p className='text-black dark:text-snow uppercase font-medium'>CPF/CNPJ:</p>
-                        <p>{applyMaskCpfCnpj(oficio.properties["CPF/CNPJ"].rich_text![0].text.content || "") || "Não informado"}</p>
+                        <p className='uppercase text-xs font-semibold'>{applyMaskCpfCnpj(oficio.properties["CPF/CNPJ"].rich_text![0].text.content || "") || "Não informado"}</p>
                     </div>
 
-                    <div>
+                    <div className='text-sm'>
                         <p className='text-black dark:text-snow uppercase font-medium'>TRIBUNAL</p>
-                        <p className='max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap'>
+                        <p className='max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap uppercase text-xs font-semibold'>
                             {oficio.properties["Tribunal"].select?.name || "Não informado"}
                         </p>
                     </div>
 
-                    <div>
+                    <div className='text-sm'>
                         <p className='text-black dark:text-snow uppercase font-medium'>esfera:</p>
-                        <p>{oficio.properties["Esfera"].select?.name || "Não informado"}</p>
+                        <p className='uppercase text-xs font-semibold'>{oficio.properties["Esfera"].select?.name || "Não informado"}</p>
+                    </div>
+                    <div className='text-sm'>
+                        <p className='text-black dark:text-snow uppercase font-medium'>status:</p>
+                        <p className='uppercase text-xs font-semibold'>{oficio.properties["Status"].status?.name || "Não informado"}</p>
+                    </div>
+                    <div className='text-sm'>
+                        <p className='text-black dark:text-snow uppercase font-medium'>status diligência:</p>
+                        <p className='uppercase text-xs font-semibold'>{oficio.properties["Status Diligência"].select?.name || "Não informado"}</p>
                     </div>
 
                     <div className='flex flex-col'>
@@ -761,13 +769,24 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
                 <div className="col-span-6 grid gap-5">
                     <div className='flex justify-between'>
-                        <div className='flex gap-1 items-center justify-center w-fit'>
+                        {
+                            
+                            checks.cedente.is_complete !== null ? (<div className='flex gap-1 items-center justify-center w-fit disabled:cursor-not-allowed' >
                             <CustomCheckbox
                                 check={oficio.properties["Status"].status?.name === "Proposta aceita"}
                                 callbackFunction={handleUpdateStatus}
+                                disabled={checks.cedente.is_complete === null}
+                                className={
+                                    checks.cedente.is_complete === null ?
+                                        "cursor-not-allowed opacity-50" :
+                                        "cursor-pointer"
+                                }
                             />
                             <span className='text-sm font-medium'>Proposta Aceita</span>
-                        </div>
+                        </div>) : (<></>)
+
+                        
+                        }
                     </div>
                     <div className='relative flex flex-col gap-5 max-h-fit'>
                         <div className="flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
