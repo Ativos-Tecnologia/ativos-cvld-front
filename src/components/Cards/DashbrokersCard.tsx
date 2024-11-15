@@ -123,7 +123,6 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         }
     });
 
-    console.log(checks.documentos.is_complete)
 
     /* ====> refs <==== */
     const proposalRef = useRef<HTMLInputElement | null>(null);
@@ -606,33 +605,41 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             {/* ----> info <----- */}
             <div className="grid grid-cols-12 gap-2">
                 <div className="col-span-5 grid gap-3">
-                    <div>
-                        <p className='text-black dark:text-snow uppercase font-medium'>Nome do Credor:</p>
+                <div className='text-sm'>
+                <p className='text-black dark:text-snow uppercase font-medium'>Nome do Credor:</p>
                         <CRMTooltip
                             text={oficio.properties["Credor"].title[0]?.text.content || "Não informado"}
                             arrow={false}
                         >
-                            <p className='max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap'>
+                            <p className='max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap uppercase text-xs font-semibold'>
                                 {oficio.properties["Credor"].title[0]?.text.content || "Não informado"}
                             </p>
                         </CRMTooltip>
                     </div>
 
-                    <div>
+                    <div className='text-sm'>
                         <p className='text-black dark:text-snow uppercase font-medium'>CPF/CNPJ:</p>
-                        <p>{applyMaskCpfCnpj(oficio.properties["CPF/CNPJ"].rich_text![0].text.content || "") || "Não informado"}</p>
+                        <p className='uppercase text-xs font-semibold'>{applyMaskCpfCnpj(oficio.properties["CPF/CNPJ"].rich_text![0].text.content || "") || "Não informado"}</p>
                     </div>
 
-                    <div>
+                    <div className='text-sm'>
                         <p className='text-black dark:text-snow uppercase font-medium'>TRIBUNAL</p>
-                        <p className='max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap'>
+                        <p className='max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap uppercase text-xs font-semibold'>
                             {oficio.properties["Tribunal"].select?.name || "Não informado"}
                         </p>
                     </div>
 
-                    <div>
+                    <div className='text-sm'>
                         <p className='text-black dark:text-snow uppercase font-medium'>esfera:</p>
-                        <p>{oficio.properties["Esfera"].select?.name || "Não informado"}</p>
+                        <p className='uppercase text-xs font-semibold'>{oficio.properties["Esfera"].select?.name || "Não informado"}</p>
+                    </div>
+                    <div className='text-sm'>
+                        <p className='text-black dark:text-snow uppercase font-medium'>status:</p>
+                        <p className='uppercase text-xs font-semibold'>{oficio.properties["Status"].status?.name || "Não informado"}</p>
+                    </div>
+                    <div className='text-sm'>
+                        <p className='text-black dark:text-snow uppercase font-medium'>status diligência:</p>
+                        <p className='uppercase text-xs font-semibold'>{oficio.properties["Status Diligência"].select?.name || "Não informado"}</p>
                     </div>
 
                     <div className='flex flex-col'>

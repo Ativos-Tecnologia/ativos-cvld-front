@@ -7,7 +7,6 @@ import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { AiOutlineLoading } from "react-icons/ai";
 import AnimatedNumber from "../ui/AnimatedNumber";
-import CRMTooltip from "../CrmUi/Tooltip";
 import Title from "../CrmUi/Title";
 
 interface ChartThreeState {
@@ -20,15 +19,17 @@ interface IBrokerDistributionData {
   response: NotionResponse | null;
 }
 
-interface ICredorAndComission {
-  [credorName: string]: string;
+interface StatusCount  {
+  [credorName: string]: number;
 }
 
-const BrokerComissionDistribution: React.FC<IBrokerDistributionData> = ({
+type StatusCountArray = StatusCount[];
+
+const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
   title,
   response: data,
 }) => {
-  const [chartData, setChartData] = useState<Array<ICredorAndComission>>([]);
+  const [chartData, setChartData] = useState<Array<StatusCount>>([]);
   const [state, setState] = useState<ChartThreeState>({
     series: [],
   });
@@ -86,7 +87,7 @@ const BrokerComissionDistribution: React.FC<IBrokerDistributionData> = ({
       show: true,
       position: "right",
       formatter(legendName, opts) {
-        return `${legendName}: ${numberFormat(opts.w.globals.series[opts.seriesIndex])}`;
+        return `${legendName}: ${opts.w.globals.series[opts.seriesIndex]}`;
       },
       
     },
@@ -157,7 +158,7 @@ const BrokerComissionDistribution: React.FC<IBrokerDistributionData> = ({
         breakpoint: 2600,
         options: {
           chart: {
-            width: 470,
+            width: 400,
           },
         },
       },
@@ -173,27 +174,32 @@ const BrokerComissionDistribution: React.FC<IBrokerDistributionData> = ({
   };
 
   function handleSeries(data: NotionResponse) {
-    const result: Array<{ [key: string]: string }> = [];
-    const KKK: Array<number> = [];
+    const statusCount: { [key: string]: number } = {};
 
-    data.results.forEach((page) => {
-      const credor = {
-        id: page.properties.Credor.id,
-        name: page.properties.Credor.title[0]?.text.content || "Desconhecido",
-        comission: page.properties["Comissão - Celer"]?.number || 0,
-      };
+    data.results.forEach(page => {
+        const status = page.properties.Status.status?.name;
+        const statusDiligencia = page.properties["Status Diligência"].select?.name;
 
-      result.push({ [credor.name]: numberFormat(credor.comission) });
-      KKK.push(credor.comission)
+        if (status) {
+            statusCount[status] = (statusCount[status] || 0) + 1;
+        }
+
+        if (statusDiligencia) {
+            statusCount[statusDiligencia] = (statusCount[statusDiligencia] || 0) + 1;
+        }
     });
 
-    setChartData(result);
-    setState((prevState) => ({
-
-      ...prevState,
-     series: KKK
+    // Transformar o objeto de contagem em um array de objetos
+    const results: StatusCountArray = Object.entries(statusCount).map(([name, count]) => ({
+        [name]: count
     }));
 
+
+    setChartData(results);
+    setState((prevState) => ({
+      ...prevState,
+      series: Object.values(statusCount)
+    }));
         
 
 
@@ -233,15 +239,15 @@ const BrokerComissionDistribution: React.FC<IBrokerDistributionData> = ({
           )}
         </div>
       <div className="flex flex-wrap items-start justify-end gap-3 sm:flex-nowrap">        
-          <Title text="Total de comissões com base nas propostas cadastradas" className="cursor-pointer font-semibold">
+          <Title text="Esse é o total de ofícios que você prospecta" className="cursor-pointer font-semibold">
             
           <div className="flex items-center justify-between gap-2 w-full">
             <p className="text-sm font-semibold text-black dark:text-white">
-              Total de Comissões
+              Total de Ofícios
             </p>
             <p className="text-sm font-medium min-w-22.5 text-center">
             {
-               data ? (<AnimatedNumber value={state.series.reduce((a: any, b: any) => {
+               data ? (<AnimatedNumber isNotCurrency value={state.series.reduce((a: any, b: any) => {
                   return a + b;
                 }, 0)} />
               ) : (
@@ -258,4 +264,4 @@ const BrokerComissionDistribution: React.FC<IBrokerDistributionData> = ({
   );
 };
 
-export default BrokerComissionDistribution;
+export default BrokerQuantityDistributedChart;
