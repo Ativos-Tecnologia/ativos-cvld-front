@@ -123,8 +123,6 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         }
     });
 
-    console.log(checks.documentos.is_complete)
-
     /* ====> refs <==== */
     const proposalRef = useRef<HTMLInputElement | null>(null);
     const comissionRef = useRef<HTMLInputElement | null>(null);
@@ -207,9 +205,19 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         const idCedente = oficio.properties[cedenteType].relation?.[0] ?
             oficio.properties[cedenteType].relation?.[0].id :
             null;
-
-        // console.log(cedenteType, idCedente)
-        // return;
+        
+        if (idCedente === null) {
+            setChecks((old) => (
+                {
+                    ...old,
+                    documentos: {
+                        is_complete: false,
+                        isFetching: false
+                    }
+                }
+            ));
+            return;
+        }
 
         const req = credorIdentificationType === "CPF" ?
             await api.get(`/api/checker/complete/cedente/pf/${idCedente}/docs`) :
