@@ -413,8 +413,8 @@ describe("Teste do Login", () => {
 
       await userEvent.click(acessarSuaConta);
 
-      const modalLogin = await waitFor(() => screen.getByRole("dialog"));
-      expect(modalLogin).toBeInTheDocument();
+      const modalLogin = await waitFor(() => screen.getAllByRole("dialog"));
+      expect(modalLogin[0]).toBeInTheDocument();
 
       const termos = screen.getByText(/Termos e Condições/i);
       expect(termos).toBeInTheDocument();
