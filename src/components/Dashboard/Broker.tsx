@@ -7,8 +7,11 @@ import Image from "next/image";
 import { BrokersContext } from "@/context/BrokersContext";
 import BrokerModal from "../Modals/BrokersCedente";
 import DocForm from "../Modals/BrokersDocs";
+import BrokerComissionDistribution from "../Charts/BrokerComissionDistributionChart";
+import BrokerQuantityDistributedChart from "../Charts/BrokerQuantityDistributedChart";
 
 const Broker: React.FC = () => {
+  
 
   const {
     editModalId, setEditModalId,
@@ -27,7 +30,11 @@ const Broker: React.FC = () => {
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-5 items-center w-full mt-15">
+    <div className="grid grid-cols-1  gap-5 items-center  xl:grid-cols-12">
+      <BrokerQuantityDistributedChart title="Distribuição" response={cardsData} />
+      <BrokerComissionDistribution title="Previsão de Comissão" response={cardsData} />
+      </div>
+      <div className="grid grid-cols-2 gap-5 items-center w-full mt-4">
         {isFirstLoad ? (
           <Fade cascade damping={0.1} triggerOnce>
             {[...Array(4)].map((_, index: number) =>
