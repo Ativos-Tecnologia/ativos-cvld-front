@@ -760,13 +760,24 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
                 <div className="col-span-6 grid gap-5">
                     <div className='flex justify-between'>
-                        <div className='flex gap-1 items-center justify-center w-fit'>
+                        {
+                            
+                            checks.cedente.is_complete !== null ? (<div className='flex gap-1 items-center justify-center w-fit disabled:cursor-not-allowed' >
                             <CustomCheckbox
                                 check={oficio.properties["Status"].status?.name === "Proposta aceita"}
                                 callbackFunction={handleUpdateStatus}
+                                disabled={checks.cedente.is_complete === null}
+                                className={
+                                    checks.cedente.is_complete === null ?
+                                        "cursor-not-allowed opacity-50" :
+                                        "cursor-pointer"
+                                }
                             />
                             <span className='text-sm font-medium'>Proposta Aceita</span>
-                        </div>
+                        </div>) : (<></>)
+
+                        
+                        }
                     </div>
                     <div className='relative flex flex-col gap-5 max-h-fit'>
                         <div className="flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
