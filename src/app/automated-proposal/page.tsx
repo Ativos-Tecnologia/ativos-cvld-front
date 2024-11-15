@@ -280,7 +280,6 @@ const AutomatedProposal = () => {
     try {
       const response = await api.post("/api/lead-magnet/", data);
       if (response.status === 200) {
-        console.log(`Dados com status 200: ${JSON.stringify(response.data.result,null,4)}`) // Dados da requisição.
         const results = response.data.result; // pega o resultado da requisição
         setProposalValue({
           min: results.min_proposal,
@@ -293,7 +292,6 @@ const AutomatedProposal = () => {
         setShowResults(true);
         setFilledFormData(data);
       } else if (response.status === 400) {
-        console.error(JSON.stringify(response.data.error,null,4))
         toast.error(response.data.error); // lança toast de erro na tela com mensagem personalizada
       }
     } catch (error) {
