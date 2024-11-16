@@ -81,7 +81,7 @@ const BrokerModal = () => {
     return (
         <div
             role="dialog"
-            className="visible opacity-100 fixed left-0 top-0 z-999 flex h-screen w-screen items-center justify-center bg-black-2/50 bg-opacity-10 bg-clip-padding backdrop-blur-sm backdrop-filter transition-all duration-300 ease-in-out"
+            className="animate-fade fixed left-0 top-0 z-999 flex h-screen w-screen items-center justify-center bg-black-2/50 bg-opacity-10 bg-clip-padding backdrop-blur-sm backdrop-filter transition-all duration-300"
         >
             <div
                 ref={modalRef}
