@@ -1,6 +1,6 @@
 "use client";
 import DashbrokersCard from "../Cards/DashbrokersCard";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import BrokerCardSkeleton from "../Skeletons/BrokerCardSkeleton";
 import { Fade } from "react-awesome-reveal";
 import Image from "next/image";
@@ -9,18 +9,36 @@ import BrokerModal from "../Modals/BrokersCedente";
 import DocForm from "../Modals/BrokersDocs";
 import BrokerComissionDistribution from "../Charts/BrokerComissionDistributionChart";
 import BrokerQuantityDistributedChart from "../Charts/BrokerQuantityDistributedChart";
+import { LucideChevronsUpDown } from "lucide-react";
+import { AiOutlineLoading, AiOutlineSearch } from "react-icons/ai";
+import api from "@/utils/api";
+import CapaDoBatman from "../CapaDoBatman";
+import { UserInfoAPIContext } from "@/context/UserInfoContext";
 
 const Broker: React.FC = () => {
-  
-
   const {
-    editModalId, setEditModalId,
-    cedenteModal, cardsData,
-    docModalInfo
+    editModalId,
+    setEditModalId,
+    cedenteModal,
+    cardsData,
+    docModalInfo,
+    setSelectedUser,
+    selectedUser,
+    loadingCardData,
   } = useContext(BrokersContext);
+
+
+  const { 
+    data: {role, user}
+  }  = useContext(UserInfoAPIContext);
 
   // estado para verificar se é o primeiro carregamento da view
   const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
+  const [openUsersPopover, setOpenUsersPopover] = useState<boolean>(false);
+  const [usersList, setUsersList] = useState<string[]>([]);
+  const [filteredUsersList, setFilteredUsersList] = useState<string[]>([]);
+  const selectUserRef = React.useRef<HTMLDivElement>(null);
+  const searchUserRef = React.useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isFirstLoad && cardsData) {
@@ -28,22 +46,110 @@ const Broker: React.FC = () => {
     }
   }, [isFirstLoad, cardsData]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const [usersList] = await Promise.all([
+        api.get("/api/notion-api/list/users/"),
+      ]);
+
+
+      if (usersList.status === 200) {
+        setUsersList(usersList.data);
+        setFilteredUsersList(usersList.data);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const searchUser = (value: string) => {
+    // quero que o filtro seja feito no array de usersList e o resultado seja setado no filteredUsersList
+    const filteredUsers = usersList.filter((user) =>
+      user.toLowerCase().includes(value.toLowerCase()),
+    );
+    setFilteredUsersList(filteredUsers);
+  };
+
   return (
     <>
-    <div className="grid grid-cols-1  gap-5 items-center  xl:grid-cols-12">
-      <BrokerQuantityDistributedChart title="Distribuição" response={cardsData} />
-      <BrokerComissionDistribution title="Previsão de Comissão" response={cardsData} />
+      <React.Fragment>
+        <CapaDoBatman show={role === "ativos"}>
+        {/* ====== select de user ====== */}
+        <div className="flex items-start gap-1 mb-4">
+          <div className="relative">
+            <div className="flex items-center justify-center">
+              <div
+                onClick={() => setOpenUsersPopover(!openUsersPopover)}
+                className={`flex min-w-48 items-center justify-between gap-1 border border-stroke px-2 py-1 text-xs font-semibold uppercase hover:bg-slate-100 dark:border-strokedark dark:hover:bg-slate-700 ${openUsersPopover && "bg-slate-100 dark:bg-slate-700"} cursor-pointer rounded-md transition-colors duration-200`}
+              >
+                <span>{selectedUser || user}</span>
+                <LucideChevronsUpDown className="h-4 w-4" />
+              </div>
+              {
+                loadingCardData && <AiOutlineLoading className="ml-4 animate-spin" />
+              }
+            </div>
+            {/* ==== popover ==== */}
+
+            {openUsersPopover && (
+              <div
+                ref={selectUserRef}
+                className={`absolute z-20 mt-3 w-[230px] rounded-md border border-stroke bg-white p-3 shadow-1 dark:border-strokedark dark:bg-form-strokedark ${openUsersPopover ? "visible opacity-100 animate-in fade-in-0 zoom-in-95" : " invisible opacity-0 animate-out fade-out-0 zoom-out-95"} transition-opacity duration-500`}
+              >
+                <div className="flex items-center justify-center gap-1 border-b border-stroke dark:border-bodydark2">
+                  <AiOutlineSearch className="text-lg" />
+                  <input
+                    ref={searchUserRef}
+                    type="text"
+                    placeholder="Pesquisar usuário..."
+                    className="w-full border-none bg-transparent focus-within:ring-0 dark:placeholder:text-bodydark2"
+                    onKeyUp={(e) => searchUser(e.currentTarget.value)}
+                  />
+                </div>
+
+                <div className="mt-3 flex max-h-49 flex-col gap-1 overflow-y-scroll">
+                  {filteredUsersList.length > 0 &&
+                    filteredUsersList.map((user) => (
+                      <span
+                        key={user}
+                        className="cursor-pointer rounded-sm p-1 text-sm hover:bg-slate-100 dark:hover:bg-slate-700"
+                        onClick={() => {
+                          setOpenUsersPopover(false);
+                          setSelectedUser(user);
+                        }}
+                      >
+                        {user}
+                      </span>
+                    ))}
+                </div>
+              </div>
+            )}
+            {/* ==== end popover ==== */}
+          </div>
+        </div>
+        {/* ====== finaliza select de user ====== */}
+        </CapaDoBatman>
+      </React.Fragment>
+      <div className="grid grid-cols-1  items-center gap-5  xl:grid-cols-12">
+        <BrokerQuantityDistributedChart
+          title="Distribuição"
+          response={cardsData}
+        />
+        <BrokerComissionDistribution
+          title="Previsão de Comissão"
+          response={cardsData}
+        />
       </div>
-      <div className="grid grid-cols-2 gap-5 items-center w-full mt-4">
+      <div className="mt-4 grid w-full grid-cols-2 items-center gap-5">
         {isFirstLoad ? (
           <Fade cascade damping={0.1} triggerOnce>
-            {[...Array(4)].map((_, index: number) =>
+            {[...Array(4)].map((_, index: number) => (
               <BrokerCardSkeleton key={index} />
-            )}
+            ))}
           </Fade>
         ) : (
           <>
-            {(cardsData && cardsData?.results.length > 0) ? (
+            {cardsData && cardsData?.results.length > 0 ? (
               <Fade cascade damping={0.1} triggerOnce>
                 {cardsData?.results.map((oficio: any, index: number) => (
                   <DashbrokersCard
@@ -55,7 +161,7 @@ const Broker: React.FC = () => {
                 ))}
               </Fade>
             ) : (
-              <div className="my-10 flex flex-col items-center justify-center gap-5 col-span-2">
+              <div className="col-span-2 my-10 flex flex-col items-center justify-center gap-5">
                 <Image
                   src="/images/documents.svg"
                   alt="documentos com botão de adicionar"
@@ -70,12 +176,8 @@ const Broker: React.FC = () => {
           </>
         )}
       </div>
-      {cedenteModal !== null && (
-        <BrokerModal />
-      )}
-      {docModalInfo !== null && (
-        <DocForm />
-      )}
+      {cedenteModal !== null && <BrokerModal />}
+      {docModalInfo !== null && <DocForm />}
     </>
   );
 };

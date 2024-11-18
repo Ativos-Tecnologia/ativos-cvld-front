@@ -11,13 +11,16 @@ export type BrokersContextProps = {
     docModalInfo: NotionPage | null;
     setDocModalInfo: React.Dispatch<React.SetStateAction<NotionPage | null>>;
     cardsData: NotionResponse | null;
+    loadingCardData: boolean;
     setCardsData: React.Dispatch<React.SetStateAction<NotionResponse | null>>;
-    fetchCardData: () => Promise<any>;
+    fetchCardData: (username?: string) => Promise<any>;
     fetchDetailCardData: (id: string) => Promise<any>;
     isFetchAllowed: boolean;
     setIsFetchAllowed: React.Dispatch<React.SetStateAction<boolean>>;
     specificCardData: NotionPage | null;
     setSpecificCardData: React.Dispatch<React.SetStateAction<NotionPage | null>>;
+    selectedUser: string | null;
+    setSelectedUser: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 export const BrokersContext = createContext<BrokersContextProps>({
@@ -29,12 +32,15 @@ export const BrokersContext = createContext<BrokersContextProps>({
     setDocModalInfo: () => { },
     cardsData: null,
     setCardsData: () => {},
-    fetchCardData: () => Promise.resolve(200),
+    fetchCardData: (username?: string) => Promise.resolve(200),
     fetchDetailCardData: () => Promise.resolve(200),
     isFetchAllowed: false,
     setIsFetchAllowed: () => { },
     specificCardData: null,
-    setSpecificCardData: () => { }
+    setSpecificCardData: () => { },
+    selectedUser: null,
+    setSelectedUser: () => { },
+    loadingCardData: false,
 });
 
 export const BrokersProvider = ({ children }: { children: React.ReactNode }) => {
@@ -62,13 +68,22 @@ export const BrokersProvider = ({ children }: { children: React.ReactNode }) => 
     // operação de edição ou exclusão de dados. Default = true.
     const [isFetchAllowed, setIsFetchAllowed] = useState<boolean>(true);
 
-    // função responsável por fazer a request para a API
-    async function fetchCardData() {
+    // estado que recebe o username do usuário selecionado
+    const [selectedUser, setSelectedUser] = useState<string | null>(null);
 
-        const response = await api.get("api/notion-api/broker/list");
+    // estado que define se o loading do card está ativo
+    const [loadingCardData, setLoadingCardData] = useState<boolean>(false);
+
+
+    // função responsável por fazer a request para a API
+    async function fetchCardData(username?: string) {
+
+        setLoadingCardData(true);
+        const response = await api.get(`api/notion-api/broker/list${username ? "?user=" + username : ''}`);
         if (response !== null) {
             setCardsData(response.data);
         }
+        setLoadingCardData(false);
 
         return response.status;
 
@@ -89,20 +104,20 @@ export const BrokersProvider = ({ children }: { children: React.ReactNode }) => 
     // efeito disparado a cada 60 segundos para refetch dos dados do card
     useEffect(() => {
         if (!isFetchAllowed) return
-        fetchCardData();
+        fetchCardData(selectedUser ?? undefined);
         const interval = setInterval(() => {
             if (!isFetchAllowed) return;
-            fetchCardData();
+            fetchCardData(selectedUser ?? undefined);
         }, 120000); // Refatch a cada 2 minutos
         return () => clearInterval(interval);
 
-    }, []);
+    }, [selectedUser]);
 
     return (
         <BrokersContext.Provider value={{
             editModalId, setEditModalId, cedenteModal, setCedenteModal,
             cardsData, setCardsData, fetchCardData, isFetchAllowed, setIsFetchAllowed,
-            docModalInfo, setDocModalInfo, fetchDetailCardData, specificCardData, setSpecificCardData
+            docModalInfo, setDocModalInfo, fetchDetailCardData, specificCardData, setSpecificCardData, selectedUser, setSelectedUser, loadingCardData
         }}>
             {children}
         </BrokersContext.Provider>
