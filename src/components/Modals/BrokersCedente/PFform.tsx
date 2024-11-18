@@ -123,7 +123,7 @@ const FormForCedentePfList = ({ registeredCedentesList, idPrecatorio }:
             {...register("cedente_a_vincular")}
             className="flex h-[37px] w-full cursor-pointer items-center justify-between rounded-md border border-stroke bg-background px-2 py-2 font-satoshi text-xs font-semibold uppercase ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 dark:border-strokedark dark:bg-boxdark-2 [&>span]:line-clamp-1"
           >
-            {registeredCedentesList.list.map((cedente) => (
+            {registeredCedentesList.listPf && registeredCedentesList.listPf.map((cedente) => (
               <option key={cedente.id} value={cedente.id}>{cedente.name}</option>
             ))}
           </select>
@@ -165,7 +165,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
   const [openRegisterForm, setOpenRegisterForm] = useState<boolean>(false);
   const [registeredCedentesList, setRegisteredCedentesList] = useState<CedenteListResponse>({
     isFetching: true,
-    list: []
+    listPf: []
   });
   const [cedentePfData, setCedentePfData] = useState<CedenteProps>({
     data: null,
@@ -191,7 +191,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
         const filteredPjList = list.filter((cedente: CedenteListProps) => cedente.type === "PF");
         setRegisteredCedentesList(old => ({
           ...old,
-          list: filteredPjList,
+          listPf: filteredPjList,
         }));
       }
 
@@ -387,7 +387,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
   }, [cedentePfData]);
 
   return (
-    <div className='max-h-[480px] px-3'>
+    <div className='w-full max-h-[480px] px-3'>
 
       {mode === "edit" && (
         <Button
@@ -414,7 +414,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
               <CedenteModalSkeleton />
             ) : (
               <>
-                {registeredCedentesList.list.length > 0 ? (
+                {registeredCedentesList.listPf && registeredCedentesList.listPf.length > 0 ? (
                   <>
                     <div className='flex flex-col gap-1'>
                       <FormForCedentePfList
@@ -448,7 +448,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       )}
 
       {(mode === "edit" || cedentePfData.data !== null || openRegisterForm) && (
-        <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-2 gap-2 w-full max-h-100 overflow-y-auto'>
+        <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-2 gap-2 w-full max-h-100 pr-5 overflow-y-auto'>
 
           {/* relacionado ao oficio */}
           <input

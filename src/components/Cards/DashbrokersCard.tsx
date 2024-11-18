@@ -757,7 +757,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                 background: `${notionColorResolver(oficio.properties["Tipo"].select?.color || "")}`
                             }}
                             className='py-1 px-2 uppercase rounded-md text-black-2 font-medium text-xs'>
-                            precatório
+                            {oficio.properties["Tipo"].select?.name || "Não informado"}
                         </div>
                     </div>
 
