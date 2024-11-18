@@ -257,6 +257,10 @@ const AutomatedProposal = () => {
       data.incidencia_juros_moratorios = false;
     }
 
+    if (new Date(data.data_requisicao) < new Date("2024-04-02")) {
+      throw new Error('A data de recebimento não pode ser anterior a 02/04/2024');
+    }
+
     if (data.ja_possui_destacamento) {
       data.percentual_de_honorarios = 0;
     } else {
@@ -725,21 +729,27 @@ E abaixo, uma memória das informações de entrada:
               {/* ====> label DATA DE REQUISIÇÃO <==== */}
               <div className="flex flex-col gap-2 2xsm:col-span-2 2xsm:mt-3 sm:col-span-1 sm:mt-0 md:col-span-1">
                 <div className="relative mb-4 flex flex-col justify-between">
-                  <label
+                    <label
                     htmlFor="data_requisicao"
                     className="mb-1 font-nexa text-xs font-semibold uppercase text-meta-5"
-                  >
+                    >
                     Data de Requisição / Recebimento
-                  </label>
-                  <input
+                    </label>
+                    <input
                     type="date"
                     id="data_requisicao"
                     data-testid="data_requisicao"
                     className={`${errors.data_requisicao && "!border-red !ring-0"} w-full rounded-md border border-strokedark bg-form-input px-3 py-2 text-sm font-medium text-bodydark`}
                     {...register("data_requisicao", {
                       required: "Campo obrigatório",
+                      validate: (data_requisicao) => {
+                      if (new Date(data_requisicao) < new Date("2024-04-02")) {
+                        return "A data de recebimento não pode ser anterior a 02/04/2024";
+                      }
+                      return true;
+                      },
                     })}
-                  />
+                    />
                   <ErrorMessage errors={errors} field="data_requisicao" />
                 </div>
               </div>
