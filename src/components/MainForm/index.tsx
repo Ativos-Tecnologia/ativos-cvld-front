@@ -596,6 +596,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </label>
 
               <ShadSelect
+                aria-labelledby="natureza"
                 name="natureza"
                 control={control}
                 defaultValue={"NÃO TRIBUTÁRIA"}
@@ -622,6 +623,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </label>
               <Controller
                 name="valor_principal"
+                data-testid="valor_principal"
                 control={control}
                 defaultValue={0}
                 rules={{
@@ -631,6 +633,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                   <>
                     <Cleave
                       {...field}
+                      data-testid="valor_principal"
                       className={`w-full rounded-md border-stroke ${error ? "border-red" : "dark:border-strokedark"} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
                       options={{
                         numeral: true,
@@ -672,6 +675,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                   <>
                     <Cleave
                       {...field}
+                      data-testid="valor_juros"
                       className={`w-full rounded-md border-stroke ${error ? "border-red" : "border-stroke dark:border-strokedark"} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
                       options={{
                         numeral: true,
@@ -705,6 +709,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 <input
                   type="date"
                   id="data_base"
+                  data-testid="data_base"
                   className={`${errors.data_base && "!border-rose-400 !ring-0"} w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
                   {...register("data_base", {
                     required: "Campo obrigatório",
@@ -726,6 +731,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 <input
                   type="date"
                   id="data_requisicao"
+                  data-testid="data_requisicao"
                   className={`${errors.data_requisicao && "!border-rose-400 !ring-0"} w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
                   {...register("data_requisicao", {
                     required: "Campo obrigatório",
@@ -765,6 +771,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 <input
                   type="number"
                   id="percentual_a_ser_adquirido"
+                  data-testid="percentual_a_ser_adquirido"
                   defaultValue={100}
                   className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                   min={0}
@@ -891,6 +898,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 <input
                   type="number"
                   id="numero_de_meses"
+                  data-testid="numero_de_meses"
                   className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                   min={0}
                   {...register("numero_de_meses", {
@@ -942,11 +950,13 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 </label>
                 <Controller
                   name="valor_pss"
+                  data-testid="valor_pss"
                   control={control}
                   defaultValue={0}
                   render={({ field }) => (
                     <Cleave
                       {...field}
+                      data-testid="valor_pss"
                       className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                       options={{
                         numeral: true,
@@ -1000,6 +1010,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                 <input
                   type="date"
                   id="data_limite_de_atualizacao"
+                  data-testid="data_limite_de_atualizacao"
                   className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                   {...register("data_limite_de_atualizacao", {})}
                   min={watch("data_requisicao")}
@@ -1063,6 +1074,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                       <input
                         type="text"
                         id="credor"
+                        data-testid="credor"
                         className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                         {...register("credor", {})}
                       />
@@ -1078,6 +1090,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <input
                           type="text"
                           id="cpf_cnpj"
+                          data-testid="cpf_cnpj"
                           className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                           {...register("cpf_cnpj", {})}
                         />
@@ -1146,6 +1159,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                                 type="number"
                                 defaultValue={30}
                                 id="percentual_de_honorarios"
+                                data-testid="percentual_de_honorarios"
                                 className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                                 {...register("percentual_de_honorarios", {})}
                               />
@@ -1173,6 +1187,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           render={({ field }) => (
                             <Cleave
                               {...field}
+                              data-testid="npu"
                               className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                               options={{
                                 blocks: [7, 2, 4, 1, 2, 4],
@@ -1198,6 +1213,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           render={({ field }) => (
                             <Cleave
                               {...field}
+                              data-testid="npu_originario"
                               className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                               options={{
                                 blocks: [7, 2, 4, 1, 2, 4],
@@ -1219,6 +1235,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <ShadSelect
                           defaultValue="FEDERAL"
                           name="esfera"
+                          aria-labelledby="esfera"
                           control={control}
                         >
                           <SelectItem value="FEDERAL">Federal</SelectItem>
@@ -1257,6 +1274,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           </label>
                           <ShadSelect
                             name="estado_ente_devedor"
+                            aria-labelledby="estado_ente_devedor"
                             control={control}
                           >
                             {estados.map((estado) => (
@@ -1278,6 +1296,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <input
                           type="text"
                           id="ente_devedor"
+                          data-testid="ente_devedor"
                           className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                           {...register("ente_devedor", {})}
                         />
@@ -1293,6 +1312,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <input
                           type="text"
                           id="juizo_vara"
+                          data-testid="juizo_vara"
                           className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                           {...register("juizo_vara", {})}
                         />
@@ -1308,6 +1328,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <ShadSelect
                           name="tribunal"
                           control={control}
+                          data-testid="tribunal"
                           defaultValue={tribunais[0].nome}
                         >
                           {tribunais.map((tribunal) => (
@@ -1329,6 +1350,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <ShadSelect
                           name="tipo_do_oficio"
                           control={control}
+                          data-testid="tipo_do_oficio"
                           defaultValue={enumTipoOficiosList[0]}
                         >
                           {enumTipoOficiosList.map((status) => (
@@ -1398,6 +1420,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         {contatoNumberCount === 1 && (
                           <div
                             title="Adicionar telefone de contato"
+                            data-testid="add-telefone-contato"
                             onClick={() => setContatoNumberCount(2)}
                             className="absolute right-2 top-0 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
                           >
@@ -1434,6 +1457,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                                 </div>
                                 <div
                                   title="Remover telefone de contato"
+                                  data-testid="remove-telefone-contato"
                                   onClick={() => setContatoNumberCount(1)}
                                   className="absolute right-2 top-0 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
                                 >
@@ -1921,6 +1945,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                               /> */}
                               <label
                                 htmlFor="vincular_usuario"
+                                data-testid="vincular_usuario"
                                 className="align-self-baseline flex cursor-pointer flex-row text-sm font-medium text-meta-5"
                               >
                                 <BiLogoUpwork className="mr-2 mt-0.5 h-4 w-4" />{" "}

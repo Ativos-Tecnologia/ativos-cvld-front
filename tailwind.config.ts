@@ -345,6 +345,14 @@ const config = {
           "0%": { transform: "translateX(-400%)" },
           "100%": { transform: "translateX(1000px)" },
         },
+        "fade": {
+          "0%" : {
+            opacity: "0"
+          },
+          "100%": {
+            opacity: "1"
+          }
+        },
         "fade-up": {
           "0%": {
             opacity: "0",
@@ -491,6 +499,7 @@ const config = {
         },
       },
       animation: {
+        fade: "fade 1.2s linear",
         "skeleton-pass": "skeleton-pass 1s ease-in-out infinite",
         "fade-up": "fade-up 1s ease-out forwards",
         "fade-right": "fade-right 1s ease-out forwards",
