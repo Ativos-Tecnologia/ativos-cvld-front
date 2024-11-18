@@ -698,12 +698,14 @@ const SignUpWallet: React.FC = () => {
               />
               <p>
                 Aceitar nossos{" "}
-                <span
-                  onClick={() => setOpenModal(true)}
-                  className="cursor-pointer text-blue-700 hover:underline dark:text-blue-400"
+                <Link
+                  href={"/termos-e-condicoes"}
+                  target="_blank"
+                  referrerPolicy="no-referrer"
+                  className="cursor-pointer text-blue-700 hover:underline"
                 >
                   termos e condições
-                </span>
+                </Link>
               </p>
             </div>
 
