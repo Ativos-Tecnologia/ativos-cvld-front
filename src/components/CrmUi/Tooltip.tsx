@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 type TooltipProps = {
     children: React.ReactNode,
@@ -28,6 +28,29 @@ const tooltipPlacement: Record<string, { container: string, arrow: string }> = {
 }
 
 const CRMTooltip = ({ children, text, arrow = true, placement = "top", animationDelay = "300" }: TooltipProps) => {
+
+    // Esse código aqui é de uma tentativa de fazer o tooltip se reposicionar caso ele ultrapasse a borda do sidebar. Ainda não está funcionando.
+    const tooltipRef = useRef<HTMLDivElement | null>(null);
+
+    // useEffect(() => {
+    //     const handleResize = () => {
+    //         if (tooltipRef.current) {
+    //             const tooltip = tooltipRef.current;
+    //             const rect = tooltip.getBoundingClientRect();
+    //             const sidebar = document.querySelector('.sidebar-expanded');
+    //             console.log(rect.right, sidebar);
+
+    //             if (sidebar) {
+    //                 const sidebarRect = sidebar.getBoundingClientRect();
+    //                 console.log(rect.right, sidebarRect.left);
+    //                 if (rect.right > sidebarRect.left) {
+    //                     tooltip.style.left = `${sidebarRect.left - rect.width}px`;
+    //                 }
+    //             }
+    //         }
+    //     };
+
+    // }, []);
 
     return (
         <div

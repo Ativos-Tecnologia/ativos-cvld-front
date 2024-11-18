@@ -50,7 +50,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const { fetchCardData, setCardsData,
         cardsData, setCedenteModal,
         isFetchAllowed, setIsFetchAllowed,
-        setDocModalInfo
+        setDocModalInfo, fetchDetailCardData, specificCardData
     } = useContext(BrokersContext);
 
     /* ====> form imports <==== */
@@ -205,7 +205,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         const idCedente = oficio.properties[cedenteType].relation?.[0] ?
             oficio.properties[cedenteType].relation?.[0].id :
             null;
-        
+
         if (idCedente === null) {
             setChecks((old) => (
                 {
@@ -418,7 +418,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             });
         },
         onSuccess: async () => {
-            await fetchCardData();
+            await fetchDetailCardData(oficio.id);
             setEditModalId(null);
             toast.success('Dados do ofício atualizados!', {
                 icon: <BiCheck className="text-lg fill-green-400" />
@@ -525,13 +525,71 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         }
     });
 
+    const proposalTrigger = useMutation({
+        mutationFn: async (status: string) => {
+            const req = status === "Proposta aceita" ? await api.patch(`api/notion-api/broker/accept-proposal/${oficio.id}/`) : await api.patch(`api/notion-api/broker/decline-proposal/${oficio.id}/`);
+            return req.status
+        },
+        onMutate: async (status: string) => {
+            setIsFetchAllowed(false);
+            const previousData = cardsData
+            setCardsData((old: any) => {
+                return {
+                    ...old,
+                    results: old?.results.map((item: NotionPage) => {
+                        if (item.id === oficio.id) {
+                            return {
+                                ...item,
+                                properties: {
+                                    ...item.properties,
+                                    Status: {
+                                        ...item.properties.Status,
+                                        status: {
+                                            ...item.properties.Status.status,
+                                            name: status
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            return item
+                        }
+                    })
+                }
+            })
+            return { previousData }
+        },
+        onError: (error, message, context) => {
+            setCardsData(context?.previousData as NotionResponse);
+            toast.error('Erro ao aceitar proposta! Contate a Ativos para verificar o motivo.', {
+                icon: <BiX className="text-lg fill-red-500" />
+            });
+        },
+        onSuccess: async () => {
+            await fetchCardData();
+            if (oficio.properties["Status"].status?.name === "Proposta aceita") {
+                toast.success('Proposta aceita. Verifique o status da diligência para mais informações!', {
+                    icon: <BiCheck className="text-lg fill-green-400" />
+                });
+            } else {
+                toast.success('Proposta cancelada! Você pode registrar o motivo no campo de observação.', {
+                    icon: <BiCheck className="text-lg fill-green-400" />
+                });
+                
+            }
+        },
+        onSettled: () => {
+            setIsFetchAllowed(true);
+        }
+    });
+
     const handleUpdateObservation = async (message: string) => {
         await updateObservation.mutateAsync(message)
     };
 
     const handleUpdateStatus = async () => {
         const status = oficio.properties["Status"].status?.name === "Proposta aceita" ? "Negociação em Andamento" : "Proposta aceita";
-        await updateStatus.mutateAsync(status);
+        await proposalTrigger.mutateAsync(status);
     }
 
     const onSubmit = async (data: any) => {
@@ -577,7 +635,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         // }, 30000);
 
         // return () => { clearInterval(interval) }
-    }, [credorIdentificationType, cardsData]);
+    }, [credorIdentificationType, specificCardData]);
 
     useEffect(() => {
 

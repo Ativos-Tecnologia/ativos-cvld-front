@@ -12,9 +12,12 @@ export type BrokersContextProps = {
     setDocModalInfo: React.Dispatch<React.SetStateAction<NotionPage | null>>;
     cardsData: NotionResponse | null;
     setCardsData: React.Dispatch<React.SetStateAction<NotionResponse | null>>;
-    fetchCardData: () => Promise<number>;
+    fetchCardData: () => Promise<any>;
+    fetchDetailCardData: (id: string) => Promise<any>;
     isFetchAllowed: boolean;
     setIsFetchAllowed: React.Dispatch<React.SetStateAction<boolean>>;
+    specificCardData: NotionPage | null;
+    setSpecificCardData: React.Dispatch<React.SetStateAction<NotionPage | null>>;
 };
 
 export const BrokersContext = createContext<BrokersContextProps>({
@@ -27,8 +30,11 @@ export const BrokersContext = createContext<BrokersContextProps>({
     cardsData: null,
     setCardsData: () => {},
     fetchCardData: () => Promise.resolve(200),
+    fetchDetailCardData: () => Promise.resolve(200),
     isFetchAllowed: false,
     setIsFetchAllowed: () => { },
+    specificCardData: null,
+    setSpecificCardData: () => { }
 });
 
 export const BrokersProvider = ({ children }: { children: React.ReactNode }) => {
@@ -48,6 +54,9 @@ export const BrokersProvider = ({ children }: { children: React.ReactNode }) => 
     // estado responsável por receber as informações (array) dos cards
     const [cardsData, setCardsData] = useState<NotionResponse | null>(null);
 
+    // estado que recebe as informações de um card específico
+    const [specificCardData, setSpecificCardData] = useState<NotionPage | null>(null);
+
     // estado que define se alguma request pode ser feita dentro da view
     // para evitar problemas de requisições em tempo real durante alguma
     // operação de edição ou exclusão de dados. Default = true.
@@ -65,16 +74,26 @@ export const BrokersProvider = ({ children }: { children: React.ReactNode }) => 
 
     };
 
+    async function fetchDetailCardData(id: string) {
+
+        const response = await api.get(`api/notion-api/list/page/${id}/`);
+
+        if (response !== null) {
+            setSpecificCardData(response.data);
+        }
+
+        return response.data;
+
+    }
+
     // efeito disparado a cada 60 segundos para refetch dos dados do card
     useEffect(() => {
         if (!isFetchAllowed) return
-
         fetchCardData();
-
         const interval = setInterval(() => {
             if (!isFetchAllowed) return;
             fetchCardData();
-        }, 60000);
+        }, 120000); // Refatch a cada 2 minutos
         return () => clearInterval(interval);
 
     }, []);
@@ -83,7 +102,7 @@ export const BrokersProvider = ({ children }: { children: React.ReactNode }) => 
         <BrokersContext.Provider value={{
             editModalId, setEditModalId, cedenteModal, setCedenteModal,
             cardsData, setCardsData, fetchCardData, isFetchAllowed, setIsFetchAllowed,
-            docModalInfo, setDocModalInfo
+            docModalInfo, setDocModalInfo, fetchDetailCardData, specificCardData, setSpecificCardData
         }}>
             {children}
         </BrokersContext.Provider>

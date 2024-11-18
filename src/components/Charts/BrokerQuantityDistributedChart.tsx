@@ -247,9 +247,9 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
             </p>
             <p className="text-sm font-medium min-w-22.5 text-center">
             {
-               data ? (<AnimatedNumber isNotCurrency value={state.series.reduce((a: any, b: any) => {
-                  return a + b;
-                }, 0)} />
+               data ? (<AnimatedNumber isNotCurrency value={
+                data.results.length
+               } />
               ) : (
                 <AiOutlineLoading className="mr-2 animate-spin" />
               )
