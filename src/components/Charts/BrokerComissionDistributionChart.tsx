@@ -157,7 +157,7 @@ const BrokerComissionDistribution: React.FC<IBrokerDistributionData> = ({
         breakpoint: 2600,
         options: {
           chart: {
-            width: 470,
+            width: 400,
           },
         },
       },
@@ -183,7 +183,8 @@ const BrokerComissionDistribution: React.FC<IBrokerDistributionData> = ({
         comission: page.properties["Comissão - Celer"]?.number || 0,
       };
 
-      result.push({ [credor.name]: numberFormat(credor.comission) });
+  
+      result.push({ [credor.name.slice(0, 10).concat('...')]: numberFormat(credor.comission) });
       KKK.push(credor.comission)
     });
 
