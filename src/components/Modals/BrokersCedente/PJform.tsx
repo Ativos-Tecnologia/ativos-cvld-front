@@ -164,7 +164,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     shouldFocusError: false
   });
 
-  const { setCedenteModal, fetchCardData, setIsFetchAllowed } = useContext(BrokersContext);
+  const { setCedenteModal, fetchDetailCardData, setIsFetchAllowed } = useContext(BrokersContext);
 
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [isUnlinking, setIsUnlinking] = useState<boolean>(false);
@@ -228,7 +228,6 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
   // função de retorno do representante legal (caso haja)
   const getRepresentanteLegal = (socioID: string | null): string => {
     if (registeredCedentesList.listPf!.length > 0) {
-      console.log(socioID)
       const socioRepresentanteInfo = registeredCedentesList.listPf?.filter(cedente => cedente.id === socioID);
       return socioRepresentanteInfo ? socioRepresentanteInfo?.[0]?.name : "Não Informado"
     }
@@ -307,7 +306,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       });
     },
     onSuccess: async () => {
-      await fetchCardData();
+      await fetchDetailCardData(id);
       toast.success("Cadastro realizado com sucesso.", {
         classNames: {
           toast: "bg-white dark:bg-boxdark",
@@ -395,7 +394,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     try {
       const req = await api.delete(`/api/cedente/unlink/pj/${cedenteId}/precatorio/${id}/`);
       if (req.status === 204) {
-        toast.success("Cedente cadastrado com sucesso.", {
+        toast.success("Cedente desvinculado com sucesso!", {
           classNames: {
             toast: "bg-white dark:bg-boxdark",
             title: "text-black-2 dark:text-white",
@@ -409,7 +408,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
             },
           }
         });
-        await fetchCardData();
+        await fetchDetailCardData(id);
         setCedenteModal(null);
       }
     } catch (error) {
@@ -511,8 +510,6 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
 
     }
   }, [cedentePjData, registeredCedentesList]);
-
-  console.log(cedentePjData)
 
   return (
     <div className='max-h-[480px] px-3'>

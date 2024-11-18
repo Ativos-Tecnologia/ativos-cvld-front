@@ -37,6 +37,7 @@ import { Button } from "../Button";
 import { UpdatePrecatorioButton } from "../Button/UpdatePrecatorioButton";
 import CustomCheckbox from "../CrmUi/Checkbox";
 import NewFormResultSkeleton from "../Skeletons/NewFormResultSkeleton";
+import { applyMaskCpfCnpj } from "@/functions/formaters/maskCpfCnpj";
 
 const NewForm = () => {
   const { modalOpen, setModalOpen } = useContext(DefaultLayoutContext);
@@ -253,6 +254,9 @@ const NewForm = () => {
       const formattedDate = dateInSaoPaulo.split("/").reverse().join("-");
       data.data_limite_de_atualizacao = formattedDate;
     }
+
+    data.cpf_cnpj = applyMaskCpfCnpj(data.cpf_cnpj);
+
     try {
       const response = data.gerar_cvld
         ? await api.post("/api/lead-magnet/save/", data)
