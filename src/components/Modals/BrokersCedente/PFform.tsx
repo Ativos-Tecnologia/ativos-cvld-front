@@ -58,7 +58,7 @@ const FormForCedentePfList = ({ registeredCedentesList, idPrecatorio }:
     handleSubmit
   } = useForm<{ cedente_a_vincular: string }>();
 
-  const { setCedenteModal, fetchCardData } = useContext(BrokersContext);
+  const { setCedenteModal, fetchDetailCardData } = useContext(BrokersContext);
   const [isLinkingRegisteredCedente, setIsLinkingRegisteredCedente] = useState<boolean>(false);
 
   const onSubmit = async (data: { cedente_a_vincular: string }) => {
@@ -85,7 +85,7 @@ const FormForCedentePfList = ({ registeredCedentesList, idPrecatorio }:
           }
         });
 
-        await fetchCardData();
+        await fetchDetailCardData(idPrecatorio);
         setCedenteModal(null);
       }
 
@@ -157,7 +157,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     }
   });
 
-  const { setCedenteModal, fetchCardData, setIsFetchAllowed } = useContext(BrokersContext);
+  const { setCedenteModal, fetchDetailCardData, setIsFetchAllowed } = useContext(BrokersContext);
 
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [isUnlinking, setIsUnlinking] = useState<boolean>(false);
@@ -223,14 +223,36 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       setIsFetchAllowed(false);
     },
     onError: () => {
-      toast.error('Erro ao realizar cadastro', {
-        icon: <BiX className="text-lg fill-red-500" />
+      toast.error('Erro ao atualizar cadastro', {
+        classNames: {
+          toast: "bg-white dark:bg-boxdark",
+          title: "text-black-2 dark:text-white",
+          actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+        },
+        icon: <BiX className="text-lg fill-red-500" />,
+        action: {
+          label: "OK",
+          onClick() {
+            toast.dismiss();
+          },
+        }
       });
     },
     onSuccess: async () => {
-      await fetchCardData();
-      toast.success("Cadastro realizado com sucesso", {
-        icon: <BiCheck className="text-lg fill-green-400" />
+      await fetchDetailCardData(id);
+      toast.success("Cadastro realizado com sucesso!", {
+        classNames: {
+          toast: "bg-white dark:bg-boxdark",
+          title: "text-black-2 dark:text-white",
+          actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+        },
+        icon: <BiCheck className="text-lg fill-green-400" />,
+        action: {
+          label: "OK",
+          onClick() {
+            toast.dismiss();
+          },
+        }
       });
       setCedenteModal(null);
     },
@@ -251,13 +273,35 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     },
     onError: () => {
       toast.error('Erro ao atualizar dados', {
-        icon: <BiX className="text-lg fill-red-500" />
+        classNames: {
+          toast: "bg-white dark:bg-boxdark",
+          title: "text-black-2 dark:text-white",
+          actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+        },
+        icon: <BiX className="text-lg fill-red-500" />,
+        action: {
+          label: "OK",
+          onClick() {
+            toast.dismiss();
+          },
+        }
       });
     },
     onSuccess: async () => {
-      await fetchCardData();
-      toast.success("Cedente atualizado com sucesso", {
-        icon: <BiCheck className="text-lg fill-green-400" />
+      await fetchDetailCardData(id);
+      toast.success("Cedente atualizado com sucesso!", {
+        classNames: {
+          toast: "bg-white dark:bg-boxdark",
+          title: "text-black-2 dark:text-white",
+          actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+        },
+        icon: <BiCheck className="text-lg fill-green-400" />,
+        action: {
+          label: "OK",
+          onClick() {
+            toast.dismiss();
+          },
+        }
       });
       setCedenteModal(null)
     },
@@ -277,15 +321,37 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     try {
       const req = await api.delete(`/api/cedente/unlink/pf/${cedenteId}/precatorio/${id}/`);
       if (req.status === 204) {
-        toast.success("Cedente desvinculado com sucesso", {
-          icon: <BiCheck className="text-lg fill-green-400" />
-        })
-        await fetchCardData();
+        toast.success("Cedente desvinculado com sucesso!", {
+          classNames: {
+            toast: "bg-white dark:bg-boxdark",
+            title: "text-black-2 dark:text-white",
+            actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+          },
+          icon: <BiCheck className="text-lg fill-green-400" />,
+          action: {
+            label: "OK",
+            onClick() {
+              toast.dismiss();
+            },
+          }
+        });
+        await fetchDetailCardData(id);
         setCedenteModal(null);
       }
     } catch (error) {
       toast.error('Erro ao desvincular cedente', {
-        icon: <BiX className="text-lg fill-red-500" />
+        classNames: {
+          toast: "bg-white dark:bg-boxdark",
+          title: "text-black-2 dark:text-white",
+          actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+        },
+        icon: <BiX className="text-lg fill-red-500" />,
+        action: {
+          label: "OK",
+          onClick() {
+            toast.dismiss();
+          },
+        }
       });
     } finally {
       setIsUnlinking(false);
