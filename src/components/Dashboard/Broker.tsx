@@ -71,6 +71,8 @@ const Broker: React.FC = () => {
     setFilteredUsersList(filteredUsers);
   };
 
+  console.log(cardsData)
+
   return (
     <>
       <React.Fragment>
