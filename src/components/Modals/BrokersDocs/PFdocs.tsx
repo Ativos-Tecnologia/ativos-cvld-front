@@ -27,7 +27,7 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
     control
   } = useForm();
 
-  const { fetchDetailCardData } = useContext(BrokersContext)
+  const { fetchDetailCardData, setDocModalInfo } = useContext(BrokersContext)
 
   const [cedenteInfo, setCedenteInfo] = useState<NotionPage | null>(null);
   const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
@@ -443,8 +443,16 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
 
         {/* botão que desvincula todos os documentos */}
         {(cedenteInfo?.properties["Doc. RG"].url || cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"].url || cedenteInfo?.properties["Doc. Comprovante de Residência"].url) && (
-          <fieldset className='col-span-2 border-t border-stroke dark:border-form-strokedark flex items-center justify-center py-3'>
+          <fieldset className='col-span-2 border-t border-stroke dark:border-form-strokedark flex items-center gap-5 justify-center py-3'>
             <legend className='text-xs px-2 uppercase'>Outras opções</legend>
+
+            <Button
+              onClick={() => setDocModalInfo(null)}
+              className='bg-green-500 hover:bg-green-600'
+            >
+              OK
+            </Button>
+
             <Button
               variant='danger'
               onClick={() => handleRemoveDocument("todos")}

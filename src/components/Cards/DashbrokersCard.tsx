@@ -641,9 +641,9 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
                         <button
                             onClick={() => setDocModalInfo(mainData)}
-                            className={`${checks.is_cedente_complete !== null ? "opacity-100" : "opacity-50 cursor-not-allowed"} flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm`}>
+                            className={`${checks.is_cedente_complete !== null ? "opacity-100" : "opacity-50 cursor-not-allowed pointer-events-none"} flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm`}>
                             <FaRegFilePdf />
-                            Juntar Documento
+                            Cadastrar Documentos
                         </button>
 
                         <button
@@ -657,7 +657,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                             ) : (
                                 <>
                                     <GrDocumentUser />
-                                    Juntar Cedente
+                                    Cadastrar Cedente
                                 </>
                             )}
                         </button>
@@ -748,9 +748,8 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
                 <div className="col-span-6 grid gap-5">
                     <div className='flex justify-between'>
-                        {
-
-                            checks.is_cedente_complete !== null ? (<div className='flex gap-1 items-center justify-center w-fit disabled:cursor-not-allowed' >
+                        
+                            <div className='flex gap-1 items-center justify-center w-fit disabled:cursor-not-allowed' >
                                 <CustomCheckbox
                                     check={mainData.properties["Status"].status?.name === "Proposta aceita"}
                                     callbackFunction={handleUpdateStatus}
@@ -762,10 +761,8 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                     }
                                 />
                                 <span className='text-sm font-medium'>Proposta Aceita</span>
-                            </div>) : (<></>)
-
-
-                        }
+                            </div>
+                            
                     </div>
                     <div className='relative flex flex-col gap-5 max-h-fit'>
                         <div className="flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
