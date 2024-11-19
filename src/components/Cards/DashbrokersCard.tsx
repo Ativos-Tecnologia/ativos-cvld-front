@@ -1,5 +1,5 @@
 import numberFormat from '@/functions/formaters/numberFormat'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import CustomCheckbox from '../CrmUi/Checkbox';
 import { BiCheck, BiSave, BiX } from 'react-icons/bi';
 import { BsCheckCircleFill, BsPencilSquare } from 'react-icons/bs';
@@ -18,7 +18,7 @@ import Cleave from 'cleave.js/react';
 import { estados } from '@/constants/estados';
 import { AiOutlineLoading } from 'react-icons/ai';
 import backendNumberFormat from '@/functions/formaters/backendNumberFormat';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { IoCloseCircle } from 'react-icons/io5';
 import { MdOutlineCircle } from 'react-icons/md';
 import CRMTooltip from '../CrmUi/Tooltip';
@@ -28,7 +28,6 @@ import { RiErrorWarningFill } from 'react-icons/ri';
 import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
 import { IdentificationType } from '../Modals/BrokersCedente';
 import { NotionNumberFormater } from '@/functions/formaters/notionNumberFormater';
-import { error } from 'console';
 
 export type ChecksProps = {
     is_precatorio_complete: boolean | null;
@@ -46,7 +45,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 ) => {
 
     /* ====> context imports <==== */
-    const { fetchCardData, setCardsData,
+    const { setCardsData,
         cardsData, setCedenteModal,
         isFetchAllowed, setIsFetchAllowed,
         setDocModalInfo, fetchDetailCardData, specificCardData
@@ -119,6 +118,9 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const comissionRef = useRef<HTMLInputElement | null>(null);
     const observationRef = useRef<HTMLTextAreaElement | null>(null);
 
+    //* ====> Principal Data <==== */
+    const [mainData, setMainData] = useState<NotionPage>(oficio);
+
     // Função responsável por fazer fetch em todos os estados dos checks
     const fetchAllChecks = async () => {
 
@@ -131,15 +133,15 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
         const cedenteType = credorIdentificationType === "CPF" ? "Cedente PF" : "Cedente PJ";
 
-        const idCedente = oficio.properties[cedenteType].relation?.[0] ?
-            oficio.properties[cedenteType].relation?.[0].id :
+        const idCedente = mainData.properties[cedenteType].relation?.[0] ?
+            mainData.properties[cedenteType].relation?.[0].id :
             null;
 
         try {
 
             const req = credorIdentificationType === "CPF" ?
-                await api.get(`/api/checker/pf/complete/precatorio/${oficio.id}/cedente/${idCedente}/`) :
-                await api.get(`/api/checker/pj/complete/precatorio/${oficio.id}/cedente/${idCedente}/`);
+                await api.get(`/api/checker/pf/complete/precatorio/${mainData.id}/cedente/${idCedente}/`) :
+                await api.get(`/api/checker/pj/complete/precatorio/${mainData.id}/cedente/${idCedente}/`);
 
             if (req.status === 200) {
                 setChecks((old) => ({
@@ -345,7 +347,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
     const updateOficio = useMutation({
         mutationFn: async (data) => {
-            const req = await api.patch(`/api/lead-magnet/update/${oficio.id}/`, data);
+            const req = await api.patch(`/api/lead-magnet/update/${mainData.id}/`, data);
             return req.status;
         },
         onMutate: async () => {
@@ -369,7 +371,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             });
         },
         onSuccess: async () => {
-            await fetchDetailCardData(oficio.id);
+            await fetchDetailCardData(mainData.id);
             setEditModalId(null);
             toast.success("Dados do ofício atualizados.", {
                 classNames: {
@@ -394,7 +396,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
     const updateObservation = useMutation({
         mutationFn: async (message: string) => {
-            const req = await api.patch(`api/notion-api/update/${oficio.id}/`, {
+            const req = await api.patch(`api/notion-api/update/${mainData.id}/`, {
                 "Observação": {
                     "rich_text": [
                         {
@@ -410,11 +412,11 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         onMutate: async (message: string) => {
             setSavingObservation(true);
             setIsFetchAllowed(false);
-            const previousData = cardsData;
+            const previousData = mainData;
             return { previousData }
         },
         onError: (error, message, context) => {
-            setCardsData(context?.previousData as NotionResponse);
+            setMainData(context?.previousData as NotionPage);
             toast.error('Erro ao atualizar a observação!', {
                 classNames: {
                     toast: "bg-white dark:bg-boxdark",
@@ -454,47 +456,42 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
     const proposalTrigger = useMutation({
         mutationFn: async (status: string) => {
-            const req = status === "Proposta aceita" ? await api.patch(`api/notion-api/broker/accept-proposal/${oficio.id}/`) : await api.patch(`api/notion-api/broker/decline-proposal/${oficio.id}/`);
+            const req = status === "Proposta aceita" ? 
+                await api.patch(`api/notion-api/broker/accept-proposal/${mainData.id}/`) : 
+                await api.patch(`api/notion-api/broker/decline-proposal/${mainData.id}/`);
             return req.status
         },
         onMutate: async (status: string) => {
             setIsFetchAllowed(false);
-            const previousData = cardsData
-            setCardsData((old: any) => {
+            const previousData = mainData
+            setMainData((old: any) => {
                 return {
                     ...old,
-                    results: old?.results.map((item: NotionPage) => {
-                        if (item.id === oficio.id) {
-                            return {
-                                ...item,
-                                properties: {
-                                    ...item.properties,
-                                    Status: {
-                                        ...item.properties.Status,
-                                        status: {
-                                            ...item.properties.Status.status,
-                                            name: status
-                                        }
-                                    }
-                                }
+                    properties: {
+                        ...old.properties,
+                        Status: {
+                            ...old.properties.Status,
+                            status: {
+                                ...old.properties.Status.status,
+                                name: status
                             }
-                        } else {
-                            return item
                         }
-                    })
+                    }
                 }
             })
             return { previousData }
         },
-        onError: (error, message, context) => {
-            setCardsData(context?.previousData as NotionResponse);
+        onError: async (error, message, context) => {
+            setIsFetchAllowed(true);
+            setMainData(context?.previousData as NotionPage);
             toast.error('Erro ao aceitar proposta! Contate a Ativos para verificar o motivo.', {
                 icon: <BiX className="text-lg fill-red-500" />
             });
         },
         onSuccess: async () => {
-            await fetchCardData();
-            if (oficio.properties["Status"].status?.name === "Proposta aceita") {
+            setIsFetchAllowed(true);
+            await fetchDetailCardData(mainData.id);
+            if (mainData.properties["Status"].status?.name === "Proposta aceita") {
                 toast.success('Proposta aceita. Verifique o status da diligência para mais informações!', {
                     icon: <BiCheck className="text-lg fill-green-400" />
                 });
@@ -504,9 +501,6 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                 });
 
             }
-        },
-        onSettled: () => {
-            setIsFetchAllowed(true);
         }
     });
 
@@ -515,7 +509,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     };
 
     const handleUpdateStatus = async () => {
-        const status = oficio.properties["Status"].status?.name === "Proposta aceita" ? "Negociação em Andamento" : "Proposta aceita";
+        const status = mainData.properties["Status"].status?.name === "Proposta aceita" ? "Negociação em Andamento" : "Proposta aceita";
         await proposalTrigger.mutateAsync(status);
     }
 
@@ -543,6 +537,14 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     }
 
     useEffect(() => {
+
+        if (specificCardData !== null && specificCardData.id === mainData.id) {
+            setMainData(specificCardData);
+        }
+
+    }, [specificCardData])
+
+    useEffect(() => {
         if (credorIdentificationType === null || !isFetchAllowed) return;
 
         async function refetchChecks() {
@@ -554,7 +556,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
         refetchChecks();
 
-    }, [credorIdentificationType, specificCardData]);
+    }, [credorIdentificationType, mainData]);
 
     useEffect(() => {
 
@@ -586,8 +588,6 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         setCredorIdentificationType(credorIdent.length === 11 ? "CPF" : credorIdent.length === 14 ? "CNPJ" : null);
     }, [oficio]);
 
-    console.log(oficio)
-
     return (
         <div className="relative col-span-1 gap-5 bg-white dark:bg-boxdark p-5 rounded-md border border-stroke dark:border-strokedark">
             {/* ----> info <----- */}
@@ -596,58 +596,58 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                     <div className='text-sm'>
                         <p className='text-black dark:text-snow uppercase font-medium'>Nome do Credor:</p>
                         <CRMTooltip
-                            text={oficio.properties["Credor"].title[0]?.text.content || "Não informado"}
+                            text={mainData.properties["Credor"].title[0]?.text.content || "Não informado"}
                             arrow={false}
                         >
                             <p className='max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap uppercase text-xs font-semibold'>
-                                {oficio.properties["Credor"].title[0]?.text.content || "Não informado"}
+                                {mainData.properties["Credor"].title[0]?.text.content || "Não informado"}
                             </p>
                         </CRMTooltip>
                     </div>
 
                     <div className='text-sm'>
                         <p className='text-black dark:text-snow uppercase font-medium'>CPF/CNPJ:</p>
-                        <p className='uppercase text-xs font-semibold'>{applyMaskCpfCnpj(oficio.properties["CPF/CNPJ"].rich_text![0].text.content || "") || "Não informado"}</p>
+                        <p className='uppercase text-xs font-semibold'>{applyMaskCpfCnpj(mainData.properties["CPF/CNPJ"].rich_text![0].text.content || "") || "Não informado"}</p>
                     </div>
 
                     <div className='text-sm'>
                         <p className='text-black dark:text-snow uppercase font-medium'>TRIBUNAL</p>
                         <p className='max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap uppercase text-xs font-semibold'>
-                            {oficio.properties["Tribunal"].select?.name || "Não informado"}
+                            {mainData.properties["Tribunal"].select?.name || "Não informado"}
                         </p>
                     </div>
 
                     <div className='text-sm'>
                         <p className='text-black dark:text-snow uppercase font-medium'>esfera:</p>
-                        <p className='uppercase text-xs font-semibold'>{oficio.properties["Esfera"].select?.name || "Não informado"}</p>
+                        <p className='uppercase text-xs font-semibold'>{mainData.properties["Esfera"].select?.name || "Não informado"}</p>
                     </div>
                     <div className='text-sm'>
                         <p className='text-black dark:text-snow uppercase font-medium'>status:</p>
-                        <p className='uppercase text-xs font-semibold'>{oficio.properties["Status"].status?.name || "Não informado"}</p>
+                        <p className='uppercase text-xs font-semibold'>{mainData.properties["Status"].status?.name || "Não informado"}</p>
                     </div>
                     <div className='text-sm'>
                         <p className='text-black dark:text-snow uppercase font-medium'>status diligência:</p>
-                        <p className='uppercase text-xs font-semibold'>{oficio.properties["Status Diligência"].select?.name || "Não informado"}</p>
+                        <p className='uppercase text-xs font-semibold'>{mainData.properties["Status Diligência"].select?.name || "Não informado"}</p>
                     </div>
 
                     <div className='flex flex-col'>
 
                         <button
-                            onClick={() => setEditModalId(oficio.id)}
+                            onClick={() => setEditModalId(mainData.id)}
                             className='flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm'>
                             <BsPencilSquare />
                             Editar Precatório
                         </button>
 
                         <button
-                            onClick={() => setDocModalInfo(oficio)}
+                            onClick={() => setDocModalInfo(mainData)}
                             className={`${checks.is_cedente_complete !== null ? "opacity-100" : "opacity-50 cursor-not-allowed"} flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm`}>
                             <FaRegFilePdf />
                             Juntar Documento
                         </button>
 
                         <button
-                            onClick={() => setCedenteModal(oficio)}
+                            onClick={() => setCedenteModal(mainData)}
                             className='flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm'>
                             {(checks.is_cedente_complete !== null) ? (
                                 <>
@@ -733,10 +733,10 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
                         <div
                             style={{
-                                background: `${notionColorResolver(oficio.properties["Tipo"].select?.color || "")}`
+                                background: `${notionColorResolver(mainData.properties["Tipo"].select?.color || "")}`
                             }}
                             className='py-1 px-2 uppercase rounded-md text-black-2 font-medium text-xs'>
-                            {oficio.properties["Tipo"].select?.name || "Não informado"}
+                            {mainData.properties["Tipo"].select?.name || "Não informado"}
                         </div>
                     </div>
 
@@ -752,7 +752,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
                             checks.is_cedente_complete !== null ? (<div className='flex gap-1 items-center justify-center w-fit disabled:cursor-not-allowed' >
                                 <CustomCheckbox
-                                    check={oficio.properties["Status"].status?.name === "Proposta aceita"}
+                                    check={mainData.properties["Status"].status?.name === "Proposta aceita"}
                                     callbackFunction={handleUpdateStatus}
                                     disabled={checks.is_cedente_complete === null}
                                     className={
@@ -785,8 +785,8 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                 <input
                                     type="range"
                                     step="0.01"
-                                    min={oficio.properties["(R$) Proposta Mínima - Celer"].number || 0}
-                                    max={oficio.properties["(R$) Proposta Máxima - Celer"].number || 0}
+                                    min={mainData.properties["(R$) Proposta Mínima - Celer"].number || 0}
+                                    max={mainData.properties["(R$) Proposta Máxima - Celer"].number || 0}
                                     value={sliderValues.proposal}
                                     onChange={e => handleProposalSliderChange(e.target.value, true)}
                                     className="w-full"
@@ -811,8 +811,8 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                 <input
                                     type="range"
                                     step="0.01"
-                                    min={oficio.properties["(R$) Comissão Mínima - Celer"].number || 0}
-                                    max={oficio.properties["(R$) Comissão Máxima - Celer"].number || 0}
+                                    min={mainData.properties["(R$) Comissão Mínima - Celer"].number || 0}
+                                    max={mainData.properties["(R$) Comissão Máxima - Celer"].number || 0}
                                     value={sliderValues.comission}
                                     onChange={e => handleComissionSliderChange(e.target.value, true)}
                                     className="w-full"
@@ -859,21 +859,13 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                             </Button>
                         </div>
                     </div>
-                    {/* <div className='flex items-center justify-center'>
-                        <button
-                            title='Inserir uma observação'
-                            className='flex items-center justify-center gap-2 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300'>
-                            <BiPlus className='text-xl' />
-                            Observação
-                        </button>
-                    </div> */}
                     {/* ----> end observations field <----- */}
                 </div>
             </div>
             {/* ----> end info <----- */}
 
             {/* ----> edit info modal <---- */}
-            <div className={`absolute top-0 left-0 z-3 bg-white dark:bg-boxdark w-full ${editModalId === oficio.id ? "max-h-full overflow-y-scroll border border-snow rounded-md" : "max-h-0 overflow-hidden"} grid grid-cols-2 gap-2 transition-all duration-300`}>
+            <div className={`absolute top-0 left-0 z-3 bg-white dark:bg-boxdark w-full ${editModalId === mainData.id ? "max-h-full overflow-y-scroll border border-snow rounded-md" : "max-h-0 overflow-hidden"} grid grid-cols-2 gap-2 transition-all duration-300`}>
                 <div className='p-5 col-span-2'>
 
                     <h2 className='text-xl font-medium text-center'>Edite as informações do ofício</h2>

@@ -452,6 +452,9 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     }
   }, [cedentePfData]);
 
+  console.log(cedentePfData)
+  console.log(openRegisterForm)
+
   return (
     <div className='w-full max-h-[480px] px-3'>
 

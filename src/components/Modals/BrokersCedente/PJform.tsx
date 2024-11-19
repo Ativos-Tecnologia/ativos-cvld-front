@@ -68,12 +68,13 @@ const FormForCedentePjList = ({ registeredCedentesList, idPrecatorio }:
     handleSubmit
   } = useForm<{ cedente_a_vincular: string }>();
 
-  const { setCedenteModal, fetchCardData } = useContext(BrokersContext);
+  const { setCedenteModal, fetchDetailCardData, setIsFetchAllowed } = useContext(BrokersContext);
   const [isLinkingRegisteredCedente, setIsLinkingRegisteredCedente] = useState<boolean>(false);
 
   const onSubmit = async (data: { cedente_a_vincular: string }) => {
 
     setIsLinkingRegisteredCedente(true);
+    setIsFetchAllowed(false);
 
     try {
 
@@ -95,7 +96,8 @@ const FormForCedentePjList = ({ registeredCedentesList, idPrecatorio }:
           }
         });
 
-        await fetchCardData();
+        setIsFetchAllowed(true);
+        await fetchDetailCardData(idPrecatorio);
         setCedenteModal(null);
       }
 
@@ -115,6 +117,8 @@ const FormForCedentePjList = ({ registeredCedentesList, idPrecatorio }:
           },
         }
       });
+
+      setIsFetchAllowed(true);
 
     } finally {
 
@@ -408,6 +412,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
             },
           }
         });
+        setIsFetchAllowed(true);
         await fetchDetailCardData(id);
         setCedenteModal(null);
       }
@@ -426,9 +431,9 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           },
         }
       });
+      setIsFetchAllowed(true);
     } finally {
       setIsUnlinking(false);
-      setIsFetchAllowed(true);
     }
 
   };

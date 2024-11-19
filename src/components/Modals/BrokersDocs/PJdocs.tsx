@@ -18,7 +18,7 @@ import { toast } from 'sonner';
   onde é fetcheado os dados do cedente cadastrado no ofício em questão
 */
 
-const PJdocs = ({ cedenteId }: { cedenteId: string | null }) => {
+const PJdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPrecatorio: string }) => {
 
   const {
     register,
@@ -27,7 +27,7 @@ const PJdocs = ({ cedenteId }: { cedenteId: string | null }) => {
     control
   } = useForm();
 
-  const { fetchCardData } = useContext(BrokersContext)
+  const { fetchDetailCardData } = useContext(BrokersContext)
 
   const [cedenteInfo, setCedenteInfo] = useState<NotionPage | null>(null);
   const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
@@ -71,7 +71,7 @@ const PJdocs = ({ cedenteId }: { cedenteId: string | null }) => {
           }
         });
         await fetchCedenteData();
-        await fetchCardData();
+        await fetchDetailCardData(idPrecatorio);
       }
 
     } catch (error) {
@@ -129,7 +129,7 @@ const PJdocs = ({ cedenteId }: { cedenteId: string | null }) => {
           }
         });
         await fetchCedenteData();
-        await fetchCardData();
+        await fetchDetailCardData(idPrecatorio);
       }
 
     } catch (error) {

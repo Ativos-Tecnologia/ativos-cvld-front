@@ -20,7 +20,7 @@ const DocForm = () => {
         os estados podem ser CPF/CNPJ/NULL
     
     */
-        const [credorIdentificationType, setCredorIdentificationType] = useState<IdentificationType>(null);
+    const [credorIdentificationType, setCredorIdentificationType] = useState<IdentificationType>(null);
 
 
     // useEffect que dispara o conteúdo do modal (formulário)
@@ -49,13 +49,15 @@ const DocForm = () => {
 
                 {credorIdentificationType === "CPF" ? (
                     <PFdocs
-                    cedenteId={docModalInfo!.properties["Cedente PF"].relation?.[0]?.id || null}
+                        cedenteId={docModalInfo!.properties["Cedente PF"].relation?.[0]?.id || null}
+                        idPrecatorio={docModalInfo!.id}
                     />
                 ) : (
                     <>
                         {credorIdentificationType === "CNPJ" ? (
                             <PJdocs
-                            cedenteId={docModalInfo!.properties["Cedente PJ"].relation?.[0]?.id || null}
+                                idPrecatorio={docModalInfo!.id}
+                                cedenteId={docModalInfo!.properties["Cedente PJ"].relation?.[0]?.id || null}
                             />
                         ) : (
                             <Fade duration={700} triggerOnce>
