@@ -86,6 +86,8 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
     legend: {
       show: true,
       position: "right",
+      width: 360,
+      offsetY: -10,
       formatter(legendName, opts) {
         return `${legendName}: ${opts.w.globals.series[opts.seriesIndex]}`;
       },
@@ -159,7 +161,7 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
         breakpoint: 2600,
         options: {
           chart: {
-            width: 450,
+            width: 600,
             
           },
         },
@@ -233,14 +235,15 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
           overflowY: "visible"
         }}>
           {data ? (
+            <div className="mb-8">
             <ReactApexChart
               options={options}
               series={state.series}
               type="donut"
               height="95%"
-              width={800}
 
             />
+            </div>
           ) : (
             <div className="flex max-h-73 w-full items-center justify-center">
               <p className="text-black dark:text-white">

@@ -85,7 +85,8 @@ const BrokerComissionDistribution: React.FC<IBrokerDistributionData> = ({
 
     legend: {
       show: true,
-      width: 220,
+      width: 360,
+      offsetY: -10,
       position: "right",
       formatter(legendName, opts) {
         return `${legendName}: ${numberFormat(opts.w.globals.series[opts.seriesIndex])}`;
@@ -156,7 +157,7 @@ const BrokerComissionDistribution: React.FC<IBrokerDistributionData> = ({
         breakpoint: 2600,
         options: {
           chart: {
-            width: 450,
+            width: 600,
 
           },
 
@@ -185,7 +186,7 @@ const BrokerComissionDistribution: React.FC<IBrokerDistributionData> = ({
       };
 
   
-      result.push({ [credor.name.slice(0, 20).concat('...')]: numberFormat(credor.comission) });
+      result.push({ [credor.name.length > 30 ? credor.name.slice(0, 30).concat('...') : credor.name ]: numberFormat(credor.comission) });
       KKK.push(credor.comission)
     });
 
@@ -229,7 +230,6 @@ const BrokerComissionDistribution: React.FC<IBrokerDistributionData> = ({
               series={state.series}
               type="donut"
               height="95%"
-              width={800}
 
             />
           ) : (
