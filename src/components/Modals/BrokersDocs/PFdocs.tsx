@@ -18,7 +18,7 @@ import { toast } from 'sonner';
   onde é fetcheado os dados do cedente cadastrado no ofício em questão
 */
 
-const PFdocs = ({ cedenteId }: { cedenteId: string | null }) => {
+const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPrecatorio: string }) => {
 
   const {
     register,
@@ -27,7 +27,7 @@ const PFdocs = ({ cedenteId }: { cedenteId: string | null }) => {
     control
   } = useForm();
 
-  const { fetchCardData, selectedUser } = useContext(BrokersContext)
+  const { fetchDetailCardData, setDocModalInfo } = useContext(BrokersContext)
 
   const [cedenteInfo, setCedenteInfo] = useState<NotionPage | null>(null);
   const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
@@ -84,7 +84,8 @@ const PFdocs = ({ cedenteId }: { cedenteId: string | null }) => {
           }
         });
         await fetchCedenteData();
-        await fetchCardData(selectedUser ?? undefined);      }
+        await fetchDetailCardData(idPrecatorio);
+      }
 
     } catch (error) {
 
@@ -156,7 +157,7 @@ const PFdocs = ({ cedenteId }: { cedenteId: string | null }) => {
           }
         });
         await fetchCedenteData();
-        await fetchCardData();
+        await fetchDetailCardData(idPrecatorio);
       }
 
     } catch (error) {
@@ -442,8 +443,16 @@ const PFdocs = ({ cedenteId }: { cedenteId: string | null }) => {
 
         {/* botão que desvincula todos os documentos */}
         {(cedenteInfo?.properties["Doc. RG"].url || cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"].url || cedenteInfo?.properties["Doc. Comprovante de Residência"].url) && (
-          <fieldset className='col-span-2 border-t border-stroke dark:border-form-strokedark flex items-center justify-center py-3'>
+          <fieldset className='col-span-2 border-t border-stroke dark:border-form-strokedark flex items-center gap-5 justify-center py-3'>
             <legend className='text-xs px-2 uppercase'>Outras opções</legend>
+
+            <Button
+              onClick={() => setDocModalInfo(null)}
+              className='bg-green-500 hover:bg-green-600'
+            >
+              OK
+            </Button>
+
             <Button
               variant='danger'
               onClick={() => handleRemoveDocument("todos")}

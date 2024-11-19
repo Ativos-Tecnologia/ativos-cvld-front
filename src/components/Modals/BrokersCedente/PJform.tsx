@@ -68,12 +68,13 @@ const FormForCedentePjList = ({ registeredCedentesList, idPrecatorio }:
     handleSubmit
   } = useForm<{ cedente_a_vincular: string }>();
 
-  const { setCedenteModal, fetchCardData, selectedUser } = useContext(BrokersContext);
+  const { setCedenteModal, fetchDetailCardData, setIsFetchAllowed } = useContext(BrokersContext);
   const [isLinkingRegisteredCedente, setIsLinkingRegisteredCedente] = useState<boolean>(false);
 
   const onSubmit = async (data: { cedente_a_vincular: string }) => {
 
     setIsLinkingRegisteredCedente(true);
+    setIsFetchAllowed(false);
 
     try {
 
@@ -95,7 +96,8 @@ const FormForCedentePjList = ({ registeredCedentesList, idPrecatorio }:
           }
         });
 
-        await fetchCardData(selectedUser ?? undefined);
+        setIsFetchAllowed(true);
+        await fetchDetailCardData(idPrecatorio);
         setCedenteModal(null);
       }
 
@@ -115,6 +117,8 @@ const FormForCedentePjList = ({ registeredCedentesList, idPrecatorio }:
           },
         }
       });
+
+      setIsFetchAllowed(true);
 
     } finally {
 
@@ -164,7 +168,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     shouldFocusError: false
   });
 
-  const { setCedenteModal, fetchDetailCardData, setIsFetchAllowed } = useContext(BrokersContext);
+  const { setCedenteModal, fetchDetailCardData, setIsFetchAllowed, specificCardData } = useContext(BrokersContext);
 
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [isUnlinking, setIsUnlinking] = useState<boolean>(false);
@@ -408,6 +412,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
             },
           }
         });
+        setIsFetchAllowed(true);
         await fetchDetailCardData(id);
         setCedenteModal(null);
       }
@@ -426,9 +431,9 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           },
         }
       });
+      setIsFetchAllowed(true);
     } finally {
       setIsUnlinking(false);
-      setIsFetchAllowed(true);
     }
 
   };
@@ -488,6 +493,13 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       fetchRegisteredCedentesList();
     }
   }, [mode])
+  
+  useEffect(() => {
+    if (specificCardData !== null) {
+      console.log("fetching list...")
+      fetchRegisteredCedentesList();
+    }
+  }, [specificCardData])
 
   useEffect(() => {
     if (mode === "edit" && cedentePjData.data) {
@@ -866,6 +878,8 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
             id={id}
             mode="create"
             cedenteId={cedenteId}
+            fromFormPJ={true}
+            openModal={setOpenRegisterPfModal}
           />
         </div>
       )}
