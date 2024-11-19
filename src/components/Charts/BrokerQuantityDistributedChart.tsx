@@ -237,7 +237,7 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
 
       <div className="grid grid-cols-1">
         <div className="mx-auto flex h-[200px]" style={{
-          height: 240,
+          height: 220,
           overflowY: "visible"
         }}>
           {data ? (
