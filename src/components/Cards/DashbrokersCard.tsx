@@ -28,14 +28,13 @@ import { RiErrorWarningFill } from 'react-icons/ri';
 import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
 import { IdentificationType } from '../Modals/BrokersCedente';
 import { NotionNumberFormater } from '@/functions/formaters/notionNumberFormater';
-
-type ChecksTypes = "precatorio" | "cedente" | "documentos"
+import { error } from 'console';
 
 export type ChecksProps = {
-    [key in ChecksTypes]: {
-        is_complete: boolean;
-        isFetching: boolean;
-    }
+    is_precatorio_complete: boolean | null;
+    is_cedente_complete: boolean | null;
+    are_docs_complete: boolean | null;
+    isFetching: boolean;
 }
 
 const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
@@ -50,7 +49,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const { fetchCardData, setCardsData,
         cardsData, setCedenteModal,
         isFetchAllowed, setIsFetchAllowed,
-        setDocModalInfo
+        setDocModalInfo, fetchDetailCardData, specificCardData
     } = useContext(BrokersContext);
 
     /* ====> form imports <==== */
@@ -109,18 +108,10 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const [credorIdentificationType, setCredorIdentificationType] = useState<IdentificationType>(null);
     const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
     const [checks, setChecks] = useState<ChecksProps>({
-        precatorio: {
-            is_complete: false,
-            isFetching: false
-        },
-        cedente: {
-            is_complete: false,
-            isFetching: false
-        },
-        documentos: {
-            is_complete: false,
-            isFetching: false
-        }
+        is_precatorio_complete: false,
+        is_cedente_complete: false,
+        are_docs_complete: false,
+        isFetching: false
     });
 
     /* ====> refs <==== */
@@ -128,75 +119,13 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const comissionRef = useRef<HTMLInputElement | null>(null);
     const observationRef = useRef<HTMLTextAreaElement | null>(null);
 
-    // Função responsável por fazer fetch do estado do check precatório
-    const fetchPrecatorioCheck = async () => {
-        setChecks((old) => (
-            {
-                ...old,
-                precatorio: {
-                    ...old.precatorio,
-                    isFetching: true
-                }
-            }
-        ))
-        const req = await api.get(`/api/checker/complete/precatorio/${oficio.id}/`);
-
-        if (req.data === null) return;
+    // Função responsável por fazer fetch em todos os estados dos checks
+    const fetchAllChecks = async () => {
 
         setChecks((old) => (
             {
                 ...old,
-                precatorio: {
-                    is_complete: req.data.is_complete,
-                    isFetching: false
-                }
-            }
-        ));
-    }
-
-    // Função responsável por fazer fetch do estado do check cedente
-    const fetchCedenteCheck = async () => {
-        setChecks((old) => (
-            {
-                ...old,
-                cedente: {
-                    ...old.cedente,
-                    isFetching: true
-                }
-            }
-        ))
-        const cedenteType = credorIdentificationType === "CPF" ? "Cedente PF" : "Cedente PJ";
-
-        const idCedente = oficio.properties[cedenteType].relation?.[0] ?
-            oficio.properties[cedenteType].relation?.[0].id :
-            null;
-
-        const req = credorIdentificationType === "CPF" ?
-            await api.get(`/api/checker/complete/cedente/pf/${idCedente}/precatorio/${oficio.id}/`) :
-            await api.get(`/api/checker/complete/cedente/pj/${idCedente}/precatorio/${oficio.id}/`);
-
-        if (req.data === null) return;
-
-        setChecks((old) => (
-            {
-                ...old,
-                cedente: {
-                    is_complete: req.data.is_complete,
-                    isFetching: false
-                }
-            }
-        ));
-    }
-
-    // Funcão responsável por fazer fetch do estado do check documentos
-    const fetchDocData = async () => {
-        setChecks((old) => (
-            {
-                ...old,
-                documentos: {
-                    ...old.documentos,
-                    isFetching: true
-                }
+                isFetching: true
             }
         ));
 
@@ -205,35 +134,46 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         const idCedente = oficio.properties[cedenteType].relation?.[0] ?
             oficio.properties[cedenteType].relation?.[0].id :
             null;
-        
-        if (idCedente === null) {
+
+        try {
+
+            const req = credorIdentificationType === "CPF" ?
+                await api.get(`/api/checker/pf/complete/precatorio/${oficio.id}/cedente/${idCedente}/`) :
+                await api.get(`/api/checker/pj/complete/precatorio/${oficio.id}/cedente/${idCedente}/`);
+
+            if (req.status === 200) {
+                setChecks((old) => ({
+                    ...old,
+                    is_precatorio_complete: req.data.is_precatorio_complete,
+                    is_cedente_complete: req.data.is_cedente_complete,
+                    are_docs_complete: req.data.are_docs_complete
+                }))
+            }
+
+        } catch (error) {
+            toast.error('Erro ao buscar info dos checks', {
+                classNames: {
+                    toast: "bg-white dark:bg-boxdark",
+                    title: "text-black-2 dark:text-white",
+                    actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+                },
+                icon: <BiX className="text-lg fill-red-500" />,
+                action: {
+                    label: "OK",
+                    onClick() {
+                        toast.dismiss();
+                    },
+                }
+            });
+        } finally {
             setChecks((old) => (
                 {
                     ...old,
-                    documentos: {
-                        is_complete: false,
-                        isFetching: false
-                    }
+                    isFetching: false
                 }
             ));
-            return;
         }
 
-        const req = credorIdentificationType === "CPF" ?
-            await api.get(`/api/checker/complete/cedente/pf/${idCedente}/docs`) :
-            await api.get(`/api/checker/complete/cedente/pj/${idCedente}/docs`);
-
-        if (req.data === null) return;
-
-        setChecks((old) => (
-            {
-                ...old,
-                documentos: {
-                    is_complete: req.data.is_complete,
-                    isFetching: true
-                }
-            }
-        ));
     };
 
     // Função para atualizar a proposta e ajustar a comissão proporcionalmente
@@ -413,15 +353,37 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             setIsFetchAllowed(false);
         },
         onError: () => {
-            toast.error('Erro ao atualizar o ofício!', {
-                icon: <BiX className="text-lg fill-red-500" />
+            toast.error('Erro ao atualizar ofício', {
+                classNames: {
+                    toast: "bg-white dark:bg-boxdark",
+                    title: "text-black-2 dark:text-white",
+                    actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+                },
+                icon: <BiX className="text-lg fill-red-500" />,
+                action: {
+                    label: "OK",
+                    onClick() {
+                        toast.dismiss();
+                    },
+                }
             });
         },
         onSuccess: async () => {
-            await fetchCardData();
+            await fetchDetailCardData(oficio.id);
             setEditModalId(null);
-            toast.success('Dados do ofício atualizados!', {
-                icon: <BiCheck className="text-lg fill-green-400" />
+            toast.success("Dados do ofício atualizados.", {
+                classNames: {
+                    toast: "bg-white dark:bg-boxdark",
+                    title: "text-black-2 dark:text-white",
+                    actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+                },
+                icon: <BiCheck className="text-lg fill-green-400" />,
+                action: {
+                    label: "OK",
+                    onClick() {
+                        toast.dismiss();
+                    },
+                }
             });
         },
         onSettled: () => {
@@ -454,12 +416,34 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         onError: (error, message, context) => {
             setCardsData(context?.previousData as NotionResponse);
             toast.error('Erro ao atualizar a observação!', {
-                icon: <BiX className="text-lg fill-red-500" />
+                classNames: {
+                    toast: "bg-white dark:bg-boxdark",
+                    title: "text-black-2 dark:text-white",
+                    actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+                },
+                icon: <BiX className="text-lg fill-red-500" />,
+                action: {
+                    label: "OK",
+                    onClick() {
+                        toast.dismiss();
+                    },
+                }
             });
         },
         onSuccess: () => {
-            toast.success('Campo atualizado!', {
-                icon: <BiCheck className="text-lg fill-green-400" />
+            toast.success("Campo atualizado!", {
+                classNames: {
+                    toast: "bg-white dark:bg-boxdark",
+                    title: "text-black-2 dark:text-white",
+                    actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+                },
+                icon: <BiCheck className="text-lg fill-green-400" />,
+                action: {
+                    label: "OK",
+                    onClick() {
+                        toast.dismiss();
+                    },
+                }
             });
         },
         onSettled: () => {
@@ -468,15 +452,9 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         }
     });
 
-    const updateStatus = useMutation({
+    const proposalTrigger = useMutation({
         mutationFn: async (status: string) => {
-            const req = await api.patch(`api/notion-api/update/${oficio.id}/`, {
-                "Status": {
-                    "status": {
-                        "name": status
-                    }
-                }
-            });
+            const req = status === "Proposta aceita" ? await api.patch(`api/notion-api/broker/accept-proposal/${oficio.id}/`) : await api.patch(`api/notion-api/broker/decline-proposal/${oficio.id}/`);
             return req.status
         },
         onMutate: async (status: string) => {
@@ -510,15 +488,22 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         },
         onError: (error, message, context) => {
             setCardsData(context?.previousData as NotionResponse);
-            toast.error('Erro ao atualizar o status!', {
+            toast.error('Erro ao aceitar proposta! Contate a Ativos para verificar o motivo.', {
                 icon: <BiX className="text-lg fill-red-500" />
             });
         },
         onSuccess: async () => {
             await fetchCardData();
-            toast.success('Status atualizado!', {
-                icon: <BiCheck className="text-lg fill-green-400" />
-            });
+            if (oficio.properties["Status"].status?.name === "Proposta aceita") {
+                toast.success('Proposta aceita. Verifique o status da diligência para mais informações!', {
+                    icon: <BiCheck className="text-lg fill-green-400" />
+                });
+            } else {
+                toast.success('Proposta cancelada! Você pode registrar o motivo no campo de observação.', {
+                    icon: <BiCheck className="text-lg fill-green-400" />
+                });
+
+            }
         },
         onSettled: () => {
             setIsFetchAllowed(true);
@@ -531,7 +516,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
     const handleUpdateStatus = async () => {
         const status = oficio.properties["Status"].status?.name === "Proposta aceita" ? "Negociação em Andamento" : "Proposta aceita";
-        await updateStatus.mutateAsync(status);
+        await proposalTrigger.mutateAsync(status);
     }
 
     const onSubmit = async (data: any) => {
@@ -562,22 +547,14 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
         async function refetchChecks() {
             await Promise.allSettled([
-                fetchCedenteCheck(),
-                fetchPrecatorioCheck(),
-                fetchDocData()
+                fetchAllChecks()
             ])
             setIsFirstLoad(false);
         }
 
         refetchChecks();
 
-        // const interval = setInterval(async () => {
-        //     if (credorIdentificationType === null || !isFetchAllowed) return;
-        //     await refetchChecks();
-        // }, 30000);
-
-        // return () => { clearInterval(interval) }
-    }, [credorIdentificationType, cardsData]);
+    }, [credorIdentificationType, specificCardData]);
 
     useEffect(() => {
 
@@ -609,13 +586,15 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         setCredorIdentificationType(credorIdent.length === 11 ? "CPF" : credorIdent.length === 14 ? "CNPJ" : null);
     }, [oficio]);
 
+    console.log(oficio)
+
     return (
         <div className="relative col-span-1 gap-5 bg-white dark:bg-boxdark p-5 rounded-md border border-stroke dark:border-strokedark">
             {/* ----> info <----- */}
             <div className="grid grid-cols-12 gap-2">
                 <div className="col-span-5 grid gap-3">
-                <div className='text-sm'>
-                <p className='text-black dark:text-snow uppercase font-medium'>Nome do Credor:</p>
+                    <div className='text-sm'>
+                        <p className='text-black dark:text-snow uppercase font-medium'>Nome do Credor:</p>
                         <CRMTooltip
                             text={oficio.properties["Credor"].title[0]?.text.content || "Não informado"}
                             arrow={false}
@@ -662,7 +641,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
                         <button
                             onClick={() => setDocModalInfo(oficio)}
-                            className={`${checks.cedente.is_complete !== null ? "opacity-100" : "opacity-50 cursor-not-allowed"} flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm`}>
+                            className={`${checks.is_cedente_complete !== null ? "opacity-100" : "opacity-50 cursor-not-allowed"} flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm`}>
                             <FaRegFilePdf />
                             Juntar Documento
                         </button>
@@ -670,7 +649,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                         <button
                             onClick={() => setCedenteModal(oficio)}
                             className='flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm'>
-                            {(checks.cedente.is_complete !== null) ? (
+                            {(checks.is_cedente_complete !== null) ? (
                                 <>
                                     <BsPencilSquare />
                                     Editar Cedente
@@ -689,11 +668,11 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                     <div className="flex items-center gap-4 justify-between">
                         <div className='flex items-center gap-2'>
 
-                            {(checks.precatorio.isFetching && isFirstLoad) ? (
+                            {(checks.isFetching && isFirstLoad) ? (
                                 <AiOutlineLoading className='w-4 h-4 animate-spin' />
                             ) : (
                                 <>
-                                    {(checks.precatorio.is_complete) ? (
+                                    {(checks.is_precatorio_complete) ? (
                                         <CRMTooltip text="Precatório Completo">
                                             <BsCheckCircleFill className='text-green-400' />
                                         </CRMTooltip>
@@ -705,21 +684,21 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                 </>
                             )}
 
-                            {(checks.cedente.isFetching && isFirstLoad) ? (
+                            {(checks.isFetching && isFirstLoad) ? (
                                 <AiOutlineLoading className='w-4 h-4 animate-spin' />
                             ) : (
                                 <>
-                                    {(checks.cedente.is_complete === true) && (
+                                    {(checks.is_cedente_complete === true) && (
                                         <CRMTooltip text="Cedente preenchido">
                                             <BsCheckCircleFill className='text-green-400' />
                                         </CRMTooltip>
                                     )}
-                                    {(checks.cedente.is_complete === false) && (
+                                    {(checks.is_cedente_complete === false) && (
                                         <CRMTooltip text="Cedente incompleto">
                                             <RiErrorWarningFill className="text-amber-300 w-5 h-5" />
                                         </CRMTooltip>
                                     )}
-                                    {(checks.cedente.is_complete === null) && (
+                                    {(checks.is_cedente_complete === null) && (
                                         <CRMTooltip text="Cedente não vinculado">
                                             <IoCloseCircle className="text-red w-5 h-5" />
                                         </CRMTooltip>
@@ -727,21 +706,21 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                 </>
                             )}
 
-                            {(checks.documentos.isFetching && isFirstLoad) ? (
+                            {(checks.isFetching && isFirstLoad) ? (
                                 <AiOutlineLoading className='w-4 h-4 animate-spin' />
                             ) : (
                                 <>
-                                    {(checks.documentos.is_complete === true) && (
+                                    {(checks.are_docs_complete === true) && (
                                         <CRMTooltip text="Dcumentos preenchidos">
                                             <BsCheckCircleFill className='text-green-400' />
                                         </CRMTooltip>
                                     )}
-                                    {(checks.documentos.is_complete === false) && (
+                                    {(checks.are_docs_complete === null) && (
                                         <CRMTooltip text="Documentos não vinculados">
                                             <IoCloseCircle className="text-red w-5 h-5" />
                                         </CRMTooltip>
                                     )}
-                                    {(checks.documentos.is_complete === null) && (
+                                    {(checks.are_docs_complete === false) && (
                                         <CRMTooltip text="Documentos incompletos">
                                             <RiErrorWarningFill className="text-amber-300 w-5 h-5" />
                                         </CRMTooltip>
@@ -757,7 +736,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                 background: `${notionColorResolver(oficio.properties["Tipo"].select?.color || "")}`
                             }}
                             className='py-1 px-2 uppercase rounded-md text-black-2 font-medium text-xs'>
-                            precatório
+                            {oficio.properties["Tipo"].select?.name || "Não informado"}
                         </div>
                     </div>
 
@@ -770,22 +749,22 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                 <div className="col-span-6 grid gap-5">
                     <div className='flex justify-between'>
                         {
-                            
-                            checks.cedente.is_complete !== null ? (<div className='flex gap-1 items-center justify-center w-fit disabled:cursor-not-allowed' >
-                            <CustomCheckbox
-                                check={oficio.properties["Status"].status?.name === "Proposta aceita"}
-                                callbackFunction={handleUpdateStatus}
-                                disabled={checks.cedente.is_complete === null}
-                                className={
-                                    checks.cedente.is_complete === null ?
-                                        "cursor-not-allowed opacity-50" :
-                                        "cursor-pointer"
-                                }
-                            />
-                            <span className='text-sm font-medium'>Proposta Aceita</span>
-                        </div>) : (<></>)
 
-                        
+                            checks.is_cedente_complete !== null ? (<div className='flex gap-1 items-center justify-center w-fit disabled:cursor-not-allowed' >
+                                <CustomCheckbox
+                                    check={oficio.properties["Status"].status?.name === "Proposta aceita"}
+                                    callbackFunction={handleUpdateStatus}
+                                    disabled={checks.is_cedente_complete === null}
+                                    className={
+                                        checks.is_cedente_complete === null ?
+                                            "cursor-not-allowed opacity-50" :
+                                            "cursor-pointer"
+                                    }
+                                />
+                                <span className='text-sm font-medium'>Proposta Aceita</span>
+                            </div>) : (<></>)
+
+
                         }
                     </div>
                     <div className='relative flex flex-col gap-5 max-h-fit'>

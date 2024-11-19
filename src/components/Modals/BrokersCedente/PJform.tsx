@@ -11,17 +11,18 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Fade } from 'react-awesome-reveal';
 import { Controller, useForm } from 'react-hook-form';
 import { AiOutlineLoading } from 'react-icons/ai';
-import { BiCheck, BiTrash, BiX } from 'react-icons/bi';
+import { BiCheck, BiPlus, BiTrash, BiX } from 'react-icons/bi';
 import { FaHome } from 'react-icons/fa';
 import { FaUserLarge } from 'react-icons/fa6';
 import { HiMiniIdentification } from 'react-icons/hi2';
 import { LuLink } from 'react-icons/lu';
 import { MdAlternateEmail, MdPhone, MdPinDrop } from 'react-icons/md';
-import { PiCityFill } from 'react-icons/pi';
+import { PiCityFill, PiScalesFill } from 'react-icons/pi';
 import { RiRoadMapLine } from 'react-icons/ri';
 import { TbBuildingEstate } from 'react-icons/tb';
 import { TiWarning } from 'react-icons/ti';
 import { toast } from 'sonner';
+import PFform from './PFform';
 
 type FormValuesForPJ = {
   razao_social: string;
@@ -46,7 +47,8 @@ export type CedenteProps = {
 
 export type CedenteListResponse = {
   isFetching: boolean;
-  list: CedenteListProps[];
+  listPf?: CedenteListProps[];
+  listPj?: CedenteListProps[];
 }
 
 export type CedenteListProps = {
@@ -131,7 +133,7 @@ const FormForCedentePjList = ({ registeredCedentesList, idPrecatorio }:
             {...register("cedente_a_vincular")}
             className="flex h-[37px] w-full cursor-pointer items-center justify-between rounded-md border border-stroke bg-background px-2 py-2 font-satoshi text-xs font-semibold uppercase ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 dark:border-strokedark dark:bg-boxdark-2 [&>span]:line-clamp-1"
           >
-            {registeredCedentesList.list.map((cedente) => (
+            {registeredCedentesList.listPj && registeredCedentesList.listPj.map((cedente) => (
               <option key={cedente.id} value={cedente.id}>{cedente.name}</option>
             ))}
           </select>
@@ -162,15 +164,17 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     shouldFocusError: false
   });
 
-  const { setCedenteModal, fetchCardData, setIsFetchAllowed } = useContext(BrokersContext);
+  const { setCedenteModal, fetchDetailCardData, setIsFetchAllowed } = useContext(BrokersContext);
 
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [isUnlinking, setIsUnlinking] = useState<boolean>(false);
   const [openUnlinkModal, setOpenUnlinkModal] = useState<boolean>(false);
   const [openRegisterForm, setOpenRegisterForm] = useState<boolean>(false);
+  const [openRegisterPfModal, setOpenRegisterPfModal] = useState<boolean>(false);
   const [registeredCedentesList, setRegisteredCedentesList] = useState<CedenteListResponse>({
     isFetching: true,
-    list: []
+    listPf: [],
+    listPj: []
   });
   const [cedentePjData, setCedentePjData] = useState<CedenteProps>({
     data: null,
@@ -193,10 +197,14 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       const req = await api.get(`api/cedente/list/`);
       if (req.status === 200) {
         const list = req.data.response;
+
         const filteredPjList = list.filter((cedente: CedenteListProps) => cedente.type === "PJ");
+        const filteredPfList = list.filter((cedente: CedenteListProps) => cedente.type === "PF");
+
         setRegisteredCedentesList(old => ({
           ...old,
-          list: filteredPjList,
+          listPj: filteredPjList,
+          listPf: filteredPfList,
         }));
       }
 
@@ -215,6 +223,60 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
 
     }
 
+  };
+
+  // função de retorno do representante legal (caso haja)
+  const getRepresentanteLegal = (socioID: string | null): string => {
+    if (registeredCedentesList.listPf!.length > 0) {
+      const socioRepresentanteInfo = registeredCedentesList.listPf?.filter(cedente => cedente.id === socioID);
+      return socioRepresentanteInfo ? socioRepresentanteInfo?.[0]?.name : "Não Informado"
+    }
+
+    return "Não Informado"
+
+  };
+
+  // função para desvicular o representante legal
+  const handleUnlinkRepresentante = async () => {
+    setIsUnlinking(true);
+
+    try {
+      const req = await api.delete(`/api/cedente/unlink/socio-representante/pj/${cedenteId}/`);
+      if (req.status === 204) {
+        toast.success("Representante desvinculado.", {
+          classNames: {
+            toast: "bg-white dark:bg-boxdark",
+            title: "text-black-2 dark:text-white",
+            actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+          },
+          icon: <BiCheck className="text-lg fill-green-400" />,
+          action: {
+            label: "OK",
+            onClick() {
+              toast.dismiss();
+            },
+          }
+        });
+        setCedenteModal(null);
+      }
+    } catch (error) {
+      toast.error('Erro ao desvincular representante', {
+        classNames: {
+          toast: "bg-white dark:bg-boxdark",
+          title: "text-black-2 dark:text-white",
+          actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+        },
+        icon: <BiX className="text-lg fill-red-500" />,
+        action: {
+          label: "OK",
+          onClick() {
+            toast.dismiss();
+          },
+        }
+      });
+    } finally {
+      setIsUnlinking(false);
+    }
   };
 
   // mutations
@@ -244,7 +306,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       });
     },
     onSuccess: async () => {
-      await fetchCardData();
+      await fetchDetailCardData(id);
       toast.success("Cadastro realizado com sucesso.", {
         classNames: {
           toast: "bg-white dark:bg-boxdark",
@@ -332,7 +394,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     try {
       const req = await api.delete(`/api/cedente/unlink/pj/${cedenteId}/precatorio/${id}/`);
       if (req.status === 204) {
-        toast.success("Cedente cadastrado com sucesso.", {
+        toast.success("Cedente desvinculado com sucesso!", {
           classNames: {
             toast: "bg-white dark:bg-boxdark",
             title: "text-black-2 dark:text-white",
@@ -346,7 +408,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
             },
           }
         });
-        await fetchCardData();
+        await fetchDetailCardData(id);
         setCedenteModal(null);
       }
     } catch (error) {
@@ -428,11 +490,12 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
   }, [mode])
 
   useEffect(() => {
-    if (mode === "edit" && cedentePjData) {
+    if (mode === "edit" && cedentePjData.data) {
 
       // valores obrigatórios em um cadastro
       setValue("razao_social", cedentePjData.data?.properties["Razão Social"].title[0].text.content);
       setValue("cnpj", cedentePjData.data!.properties["CNPJ"].rich_text![0].text.content);
+      setValue("socio_representante", getRepresentanteLegal(cedentePjData.data?.properties["Sócio Representante"].relation?.[0]?.id || null))
       setValue("cep", cedentePjData.data!.properties["CEP"].rich_text![0].text.content);
 
       //valores opcionais
@@ -446,7 +509,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       setValue("municipio", cedentePjData.data?.properties["Município"].select?.name || "");
 
     }
-  }, [cedentePjData]);
+  }, [cedentePjData, registeredCedentesList]);
 
   return (
     <div className='max-h-[480px] px-3'>
@@ -476,7 +539,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
               <CedenteModalSkeleton />
             ) : (
               <>
-                {registeredCedentesList.list.length > 0 ? (
+                {registeredCedentesList.listPj && registeredCedentesList.listPj.length > 0 ? (
                   <>
                     <div className='flex flex-col gap-1'>
                       <FormForCedentePjList
@@ -510,7 +573,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       )}
 
       {(mode === "edit" || cedentePjData.data !== null || openRegisterForm) && (
-        <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-2 gap-2 w-full max-h-100 overflow-y-auto'>
+        <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-2 gap-2 w-full max-h-100 overflow-y-auto pr-5'>
 
           {/* relacionado ao oficio */}
           <input
@@ -524,7 +587,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
             <label htmlFor="razao_social" className='flex items-center justify-center gap-2'>
               <FaUserLarge />
-              <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Razão Social</span>
+              <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Razão Social</span>
             </label>
             <input
               type="text"
@@ -540,11 +603,11 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
             {errors.razao_social && <span className='absolute top-1/2 -translate-y-1/2 right-3 text-red text-xs font-medium'>{errors.razao_social.message}</span>}
           </div>
 
-          {/* CPF */}
+          {/* CNPJ */}
           <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
-            <label htmlFor="cpf" className='flex items-center justify-center gap-2'>
+            <label htmlFor="cnpj" className='flex items-center justify-center gap-2'>
               <HiMiniIdentification className='text-lg' />
-              <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>CNPJ</span>
+              <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>CNPJ</span>
             </label>
             <Controller
               name="cnpj"
@@ -569,11 +632,66 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
             />
           </div>
 
+          {/* Representante Legal */}
+          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+            <label htmlFor="socio_representante" className='flex items-center justify-center gap-2'>
+              <PiScalesFill className='text-lg' />
+              <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Representante Legal</span>
+            </label>
+            <div className='flex items-center gap-3 flex-1'>
+              {cedentePjData.data?.properties["Sócio Representante"].relation?.[0]?.id ? (
+                <input
+                  type="text"
+                  placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
+                  {...register("socio_representante", {
+                    required: {
+                      value: true,
+                      message: "Campo obrigatório"
+                    }
+                  })}
+                  className={`border-stroke dark:border-strokedark flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
+                />
+              ) : (
+                <select
+                  {...register("socio_representante")}
+                  className="w-full border-b border-l-0 border-t-0 border-r-0 bg-white dark:bg-boxdark border-stroke dark:border-strokedark py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
+                >
+                  {registeredCedentesList.listPf && registeredCedentesList.listPf.map((cedente) => (
+                    <option key={cedente.id} value={cedente.id}>{cedente.name}</option>
+                  ))}
+                </select>
+              )}
+
+              {(cedentePjData.data && cedentePjData.data.properties["Sócio Representante"].relation!.length > 0) ? (
+                <button
+                  type='button'
+                  title='Desvincular representante'
+                  onClick={handleUnlinkRepresentante}
+                  className='p-1 flex bg-red-500 items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors duration-300 rounded-md'>
+                  {isUnlinking ? (
+                    <AiOutlineLoading className='text-lg text-snow animate-spin' />
+                  ) : (
+                    <BiTrash className='text-lg text-snow' />
+                  )}
+                </button>
+              ) : (
+                <button
+                  type='button'
+                  title='Cadastrar novo representante'
+                  onClick={() => setOpenRegisterPfModal(true)}
+                  className='p-1 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors duration-300 rounded-md'>
+                  <BiPlus className='text-lg' />
+                </button>
+              )}
+
+            </div>
+          </div>
+
           {/* CEP */}
           <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
             <label htmlFor="cep" className='flex items-center justify-center gap-2'>
               <MdPinDrop />
-              <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>CEP</span>
+              <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>CEP</span>
             </label>
             <Controller
               name="cep"
@@ -603,7 +721,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
             <label htmlFor="bairro" className='flex items-center justify-center gap-2'>
               <PiCityFill />
-              <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Bairro</span>
+              <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Bairro</span>
             </label>
             <input
               type="text"
@@ -617,7 +735,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
             <label htmlFor="celular" className='flex items-center justify-center gap-2'>
               <MdPhone />
-              <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Celular</span>
+              <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Celular</span>
             </label>
             <Controller
               name="celular"
@@ -642,7 +760,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
             <label htmlFor="email" className='flex items-center justify-center gap-2'>
               <MdAlternateEmail />
-              <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Email</span>
+              <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Email</span>
             </label>
             <input
               type="text"
@@ -656,7 +774,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
             <label htmlFor="estado" className='flex items-center justify-center gap-2'>
               <MdPinDrop />
-              <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Estado</span>
+              <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Estado</span>
             </label>
             <input
               type="text"
@@ -670,7 +788,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
             <label htmlFor="logradouro" className='flex items-center justify-center gap-2'>
               <RiRoadMapLine />
-              <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Logradouro</span>
+              <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Logradouro</span>
             </label>
             <input
               type="text"
@@ -684,7 +802,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
             <label htmlFor="numero" className='flex items-center justify-center gap-2'>
               <FaHome />
-              <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Número</span>
+              <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Número</span>
             </label>
             <input
               type="text"
@@ -698,7 +816,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
             <label htmlFor="complemento" className='flex items-center justify-center gap-2'>
               <FaHome />
-              <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Complemento</span>
+              <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Complemento</span>
             </label>
             <input
               type="text"
@@ -712,7 +830,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
             <label htmlFor="municipio" className='flex items-center justify-center gap-2'>
               <TbBuildingEstate />
-              <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Municipio</span>
+              <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Municipio</span>
             </label>
             <input
               type="text"
@@ -734,6 +852,22 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
             )}
           </div>
         </form>
+      )}
+
+      {/* ====> link representante legal modal <==== */}
+      {openRegisterPfModal && (
+        <div className='absolute bg-boxdark flex flex-col items-center w-full h-full p-10 top-0 left-0 rounded-md'>
+
+          <button className='group absolute right-2 top-2 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-700 transition-colors duration-300 cursor-pointer'>
+            <BiX className="group-hover:text-white transition-colors duration-300 text-2xl" onClick={() => setOpenRegisterPfModal(false)} />
+          </button>
+
+          <PFform
+            id={id}
+            mode="create"
+            cedenteId={cedenteId}
+          />
+        </div>
       )}
 
       {/* ====> unlink modal <==== */}

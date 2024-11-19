@@ -2,7 +2,6 @@
 import numberFormat from "@/functions/formaters/numberFormat";
 import { NotionResponse } from "@/interfaces/INotion";
 import { ApexOptions } from "apexcharts";
-import { set } from "date-fns";
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { AiOutlineLoading } from "react-icons/ai";
@@ -159,6 +158,8 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
         options: {
           chart: {
             width: 400,
+            height: 400,
+            
           },
         },
       },
@@ -247,9 +248,9 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
             </p>
             <p className="text-sm font-medium min-w-22.5 text-center">
             {
-               data ? (<AnimatedNumber isNotCurrency value={state.series.reduce((a: any, b: any) => {
-                  return a + b;
-                }, 0)} />
+               data ? (<AnimatedNumber isNotCurrency value={
+                data.results.length
+               } />
               ) : (
                 <AiOutlineLoading className="mr-2 animate-spin" />
               )

@@ -111,7 +111,7 @@ const Filters = ({ currentNotionView, notionViews }: { currentNotionView: string
 
                             <div
                                 ref={selectStatusRef}
-                                className={`absolute mt-3 w-[230px] z-20 p-3 -left-4 rounded-md bg-white dark:bg-form-strokedark shadow-1 border border-stroke dark:border-strokedark ${openStatusPopover ? 'opacity-100 visible animate-in fade-in-0 zoom-in-95' : ' animate-out fade-out-0 zoom-out-95 invisible opacity-0'} transition-opacity duration-500`}>
+                                className={`absolute border border-red mt-3 w-[230px] z-20 p-3 -left-4 rounded-md bg-white dark:bg-form-strokedark shadow-1  dark:border-strokedark ${openStatusPopover ? 'opacity-100 visible animate-in fade-in-0 zoom-in-95' : ' animate-out fade-out-0 zoom-out-95 invisible opacity-0'} transition-opacity duration-500`}>
                                 <div className='flex gap-1 items-center justify-center border-b border-stroke dark:border-bodydark2'>
                                     <AiOutlineSearch className='text-lg' />
                                     <input

@@ -58,7 +58,7 @@ const FormForCedentePfList = ({ registeredCedentesList, idPrecatorio }:
     handleSubmit
   } = useForm<{ cedente_a_vincular: string }>();
 
-  const { setCedenteModal, fetchCardData } = useContext(BrokersContext);
+  const { setCedenteModal, fetchDetailCardData } = useContext(BrokersContext);
   const [isLinkingRegisteredCedente, setIsLinkingRegisteredCedente] = useState<boolean>(false);
 
   const onSubmit = async (data: { cedente_a_vincular: string }) => {
@@ -85,7 +85,7 @@ const FormForCedentePfList = ({ registeredCedentesList, idPrecatorio }:
           }
         });
 
-        await fetchCardData();
+        await fetchDetailCardData(idPrecatorio);
         setCedenteModal(null);
       }
 
@@ -123,7 +123,7 @@ const FormForCedentePfList = ({ registeredCedentesList, idPrecatorio }:
             {...register("cedente_a_vincular")}
             className="flex h-[37px] w-full cursor-pointer items-center justify-between rounded-md border border-stroke bg-background px-2 py-2 font-satoshi text-xs font-semibold uppercase ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 dark:border-strokedark dark:bg-boxdark-2 [&>span]:line-clamp-1"
           >
-            {registeredCedentesList.list.map((cedente) => (
+            {registeredCedentesList.listPf && registeredCedentesList.listPf.map((cedente) => (
               <option key={cedente.id} value={cedente.id}>{cedente.name}</option>
             ))}
           </select>
@@ -157,7 +157,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     }
   });
 
-  const { setCedenteModal, fetchCardData, setIsFetchAllowed } = useContext(BrokersContext);
+  const { setCedenteModal, fetchDetailCardData, setIsFetchAllowed } = useContext(BrokersContext);
 
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [isUnlinking, setIsUnlinking] = useState<boolean>(false);
@@ -165,7 +165,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
   const [openRegisterForm, setOpenRegisterForm] = useState<boolean>(false);
   const [registeredCedentesList, setRegisteredCedentesList] = useState<CedenteListResponse>({
     isFetching: true,
-    list: []
+    listPf: []
   });
   const [cedentePfData, setCedentePfData] = useState<CedenteProps>({
     data: null,
@@ -191,7 +191,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
         const filteredPjList = list.filter((cedente: CedenteListProps) => cedente.type === "PF");
         setRegisteredCedentesList(old => ({
           ...old,
-          list: filteredPjList,
+          listPf: filteredPjList,
         }));
       }
 
@@ -223,14 +223,36 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       setIsFetchAllowed(false);
     },
     onError: () => {
-      toast.error('Erro ao realizar cadastro', {
-        icon: <BiX className="text-lg fill-red-500" />
+      toast.error('Erro ao atualizar cadastro', {
+        classNames: {
+          toast: "bg-white dark:bg-boxdark",
+          title: "text-black-2 dark:text-white",
+          actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+        },
+        icon: <BiX className="text-lg fill-red-500" />,
+        action: {
+          label: "OK",
+          onClick() {
+            toast.dismiss();
+          },
+        }
       });
     },
     onSuccess: async () => {
-      await fetchCardData();
-      toast.success("Cadastro realizado com sucesso", {
-        icon: <BiCheck className="text-lg fill-green-400" />
+      await fetchDetailCardData(id);
+      toast.success("Cadastro realizado com sucesso!", {
+        classNames: {
+          toast: "bg-white dark:bg-boxdark",
+          title: "text-black-2 dark:text-white",
+          actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+        },
+        icon: <BiCheck className="text-lg fill-green-400" />,
+        action: {
+          label: "OK",
+          onClick() {
+            toast.dismiss();
+          },
+        }
       });
       setCedenteModal(null);
     },
@@ -251,13 +273,35 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     },
     onError: () => {
       toast.error('Erro ao atualizar dados', {
-        icon: <BiX className="text-lg fill-red-500" />
+        classNames: {
+          toast: "bg-white dark:bg-boxdark",
+          title: "text-black-2 dark:text-white",
+          actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+        },
+        icon: <BiX className="text-lg fill-red-500" />,
+        action: {
+          label: "OK",
+          onClick() {
+            toast.dismiss();
+          },
+        }
       });
     },
     onSuccess: async () => {
-      await fetchCardData();
-      toast.success("Cedente atualizado com sucesso", {
-        icon: <BiCheck className="text-lg fill-green-400" />
+      await fetchDetailCardData(id);
+      toast.success("Cedente atualizado com sucesso!", {
+        classNames: {
+          toast: "bg-white dark:bg-boxdark",
+          title: "text-black-2 dark:text-white",
+          actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+        },
+        icon: <BiCheck className="text-lg fill-green-400" />,
+        action: {
+          label: "OK",
+          onClick() {
+            toast.dismiss();
+          },
+        }
       });
       setCedenteModal(null)
     },
@@ -277,15 +321,37 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     try {
       const req = await api.delete(`/api/cedente/unlink/pf/${cedenteId}/precatorio/${id}/`);
       if (req.status === 204) {
-        toast.success("Cedente desvinculado com sucesso", {
-          icon: <BiCheck className="text-lg fill-green-400" />
-        })
-        await fetchCardData();
+        toast.success("Cedente desvinculado com sucesso!", {
+          classNames: {
+            toast: "bg-white dark:bg-boxdark",
+            title: "text-black-2 dark:text-white",
+            actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+          },
+          icon: <BiCheck className="text-lg fill-green-400" />,
+          action: {
+            label: "OK",
+            onClick() {
+              toast.dismiss();
+            },
+          }
+        });
+        await fetchDetailCardData(id);
         setCedenteModal(null);
       }
     } catch (error) {
       toast.error('Erro ao desvincular cedente', {
-        icon: <BiX className="text-lg fill-red-500" />
+        classNames: {
+          toast: "bg-white dark:bg-boxdark",
+          title: "text-black-2 dark:text-white",
+          actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+        },
+        icon: <BiX className="text-lg fill-red-500" />,
+        action: {
+          label: "OK",
+          onClick() {
+            toast.dismiss();
+          },
+        }
       });
     } finally {
       setIsUnlinking(false);
@@ -387,7 +453,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
   }, [cedentePfData]);
 
   return (
-    <div className='max-h-[480px] px-3'>
+    <div className='w-full max-h-[480px] px-3'>
 
       {mode === "edit" && (
         <Button
@@ -414,7 +480,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
               <CedenteModalSkeleton />
             ) : (
               <>
-                {registeredCedentesList.list.length > 0 ? (
+                {registeredCedentesList.listPf && registeredCedentesList.listPf.length > 0 ? (
                   <>
                     <div className='flex flex-col gap-1'>
                       <FormForCedentePfList
@@ -448,7 +514,7 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       )}
 
       {(mode === "edit" || cedentePfData.data !== null || openRegisterForm) && (
-        <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-2 gap-2 w-full max-h-100 overflow-y-auto'>
+        <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-2 gap-2 w-full max-h-100 pr-5 overflow-y-auto'>
 
           {/* relacionado ao oficio */}
           <input
