@@ -49,7 +49,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const { fetchCardData, setCardsData,
         cardsData, setCedenteModal,
         isFetchAllowed, setIsFetchAllowed,
-        setDocModalInfo, fetchDetailCardData, specificCardData
+        setDocModalInfo, fetchDetailCardData, specificCardData, selectedUser
     } = useContext(BrokersContext);
 
     /* ====> form imports <==== */
@@ -493,7 +493,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             });
         },
         onSuccess: async () => {
-            await fetchCardData();
+            await fetchCardData(selectedUser ?? undefined);
             if (oficio.properties["Status"].status?.name === "Proposta aceita") {
                 toast.success('Proposta aceita. Verifique o status da diligência para mais informações!', {
                     icon: <BiCheck className="text-lg fill-green-400" />

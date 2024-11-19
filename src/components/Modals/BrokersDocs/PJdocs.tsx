@@ -27,7 +27,7 @@ const PJdocs = ({ cedenteId }: { cedenteId: string | null }) => {
     control
   } = useForm();
 
-  const { fetchCardData } = useContext(BrokersContext)
+  const { fetchCardData, selectedUser } = useContext(BrokersContext)
 
   const [cedenteInfo, setCedenteInfo] = useState<NotionPage | null>(null);
   const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
@@ -71,8 +71,7 @@ const PJdocs = ({ cedenteId }: { cedenteId: string | null }) => {
           }
         });
         await fetchCedenteData();
-        await fetchCardData();
-      }
+        await fetchCardData(selectedUser ?? undefined);      }
 
     } catch (error) {
 
@@ -129,8 +128,7 @@ const PJdocs = ({ cedenteId }: { cedenteId: string | null }) => {
           }
         });
         await fetchCedenteData();
-        await fetchCardData();
-      }
+        await fetchCardData(selectedUser ?? undefined);      }
 
     } catch (error) {
 
