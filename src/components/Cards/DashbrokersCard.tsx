@@ -1,7 +1,7 @@
 import numberFormat from '@/functions/formaters/numberFormat'
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import CustomCheckbox from '../CrmUi/Checkbox';
-import { BiCheck, BiSave, BiX } from 'react-icons/bi';
+import { BiCheck, BiSave, BiTrash, BiX } from 'react-icons/bi';
 import { BsCheckCircleFill, BsPencilSquare } from 'react-icons/bs';
 import { FaRegFilePdf } from 'react-icons/fa';
 import { Button } from '../Button';
@@ -28,6 +28,7 @@ import { RiErrorWarningFill } from 'react-icons/ri';
 import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
 import { IdentificationType } from '../Modals/BrokersCedente';
 import { NotionNumberFormater } from '@/functions/formaters/notionNumberFormater';
+import { Fade } from 'react-awesome-reveal';
 
 export type ChecksProps = {
     is_precatorio_complete: boolean | null;
@@ -45,7 +46,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 ) => {
 
     /* ====> context imports <==== */
-    const { setCardsData,
+    const { setCardsData, fetchCardData,
         cardsData, setCedenteModal,
         isFetchAllowed, setIsFetchAllowed,
         setDocModalInfo, fetchDetailCardData, specificCardData, selectedUser
@@ -101,6 +102,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     });
     const [savingProposalAndComission, setSavingProposalAndComission] = useState<boolean>(false);
     const [isSavingEdit, setIsSavingEdit] = useState<boolean>(false);
+    const [isDeleting, setIsDeleting] = useState<boolean>(false);
     const [savingObservation, setSavingObservation] = useState<boolean>(false);
     const [isProposalButtonDisabled, setIsProposalButtonDisabled] = useState<boolean>(true);
     const [errorMessage, setErrorMessage] = useState<boolean>(false);
@@ -456,8 +458,8 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
     const proposalTrigger = useMutation({
         mutationFn: async (status: string) => {
-            const req = status === "Proposta aceita" ? 
-                await api.patch(`api/notion-api/broker/accept-proposal/${mainData.id}/`) : 
+            const req = status === "Proposta aceita" ?
+                await api.patch(`api/notion-api/broker/accept-proposal/${mainData.id}/`) :
                 await api.patch(`api/notion-api/broker/decline-proposal/${mainData.id}/`);
             return req.status
         },
@@ -503,6 +505,66 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             }
         }
     });
+
+    const deleteOficio = useMutation({
+        mutationFn: async (id: string) => {
+            const response = await api.patch(
+                "api/notion-api/page/bulk-action/visibility/",
+                {
+                    page_ids: [id],
+                    archived: true,
+                },
+            );
+
+            if (response.status !== 202) {
+                throw new Error("Houve um erro ao excluir o ofício");
+            }
+            return response.data;
+        },
+        onMutate: async (id: string) => {
+            setIsDeleting(true);
+        },
+        onError: (err, paramsObj, context) => {
+            toast.error('Erro ao arquivar o ofício!', {
+                classNames: {
+                    toast: "bg-white dark:bg-boxdark",
+                    title: "text-black-2 dark:text-white",
+                    actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+                },
+                icon: <BiX className="text-lg fill-red-500" />,
+                action: {
+                    label: "OK",
+                    onClick() {
+                        toast.dismiss();
+                    },
+                }
+            });
+        },
+        onSuccess: async () => {
+            toast.success("Ofício deletado!", {
+                classNames: {
+                    toast: "bg-white dark:bg-boxdark",
+                    title: "text-black-2 dark:text-white",
+                    actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+                },
+                icon: <BiCheck className="text-lg fill-green-400" />,
+                action: {
+                    label: "OK",
+                    onClick() {
+                        toast.dismiss();
+                    },
+                }
+            });
+            await fetchCardData(selectedUser ?? undefined)
+        },
+        onSettled: () => {
+            setIsDeleting(false);
+        }
+    });
+
+    const handleDeleteOficio = async (id: string) => {
+        await deleteOficio.mutateAsync(id);
+    }
 
     const handleUpdateObservation = async (message: string) => {
         await updateObservation.mutateAsync(message)
@@ -747,21 +809,36 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                 {/* ----> end divider <---- */}
 
                 <div className="col-span-6 grid gap-5">
-                    <div className='flex justify-between'>
-                        
-                            <div className='flex gap-1 items-center justify-center w-fit disabled:cursor-not-allowed' >
-                                <CustomCheckbox
-                                    check={mainData.properties["Status"].status?.name === "Proposta aceita"}
-                                    callbackFunction={handleUpdateStatus}
-                                    disabled={checks.is_cedente_complete === null}
-                                    className={
-                                        checks.is_cedente_complete === null ?
-                                            "cursor-not-allowed opacity-50" :
-                                            "cursor-pointer"
-                                    }
-                                />
-                                <span className='text-sm font-medium'>Proposta Aceita</span>
-                            </div>
+                    <div className='flex justify-between items-center'>
+
+                        <div className='flex gap-1 items-center justify-center w-fit' >
+                            <CustomCheckbox
+                                check={mainData.properties["Status"].status?.name === "Proposta aceita"}
+                                callbackFunction={handleUpdateStatus}
+                            />
+                            <span className='text-sm font-medium'>Proposta Aceita</span>
+                        </div>
+
+                        {/* <Button
+                            variant="danger"
+                            className="group flex items-center justify-center overflow-hidden rounded-full px-0 py-0 w-[28px] h-[28px] hover:w-[100px] transition-all duration-300 ease-in-out"
+                            onClick={() => handleDeleteOficio(mainData.id)}
+                        >
+                            {isDeleting ? (
+                                <AiOutlineLoading className='animate-spin' />
+                            ) : (
+                                <>
+                                    <Fade className="group-hover:hidden">
+                                        <BiTrash />
+                                    </Fade>
+                                    <Fade className="hidden group-hover:block whitespace-nowrap text-sm">
+                                        <div >
+                                            Deletar Ofício
+                                        </div>
+                                    </Fade>
+                                </>
+                            )}
+                        </Button> */}
 
                     </div>
                     <div className='relative flex flex-col gap-5 max-h-fit'>
