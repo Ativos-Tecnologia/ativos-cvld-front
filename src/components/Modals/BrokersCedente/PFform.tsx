@@ -142,7 +142,15 @@ const FormForCedentePfList = ({ registeredCedentesList, idPrecatorio }:
   )
 };
 
-const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "create", cedenteId: string | null }) => {
+const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
+  {
+    id: string,
+    mode: "edit" | "create",
+    cedenteId: string | null,
+    fromFormPJ?: boolean,
+    openModal?: React.Dispatch<React.SetStateAction<boolean>>,
+  }
+) => {
 
   const {
     register,
@@ -254,7 +262,12 @@ const PFform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           },
         }
       });
-      setCedenteModal(null);
+
+      if (fromFormPJ) {
+        openModal && openModal(false);
+      } else {
+        setCedenteModal(null);
+      }
     },
     onSettled: () => {
       setIsUpdating(false);
