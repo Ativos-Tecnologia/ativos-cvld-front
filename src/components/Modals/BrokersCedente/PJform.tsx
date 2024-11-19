@@ -68,7 +68,7 @@ const FormForCedentePjList = ({ registeredCedentesList, idPrecatorio }:
     handleSubmit
   } = useForm<{ cedente_a_vincular: string }>();
 
-  const { setCedenteModal, fetchCardData } = useContext(BrokersContext);
+  const { setCedenteModal, fetchCardData, selectedUser } = useContext(BrokersContext);
   const [isLinkingRegisteredCedente, setIsLinkingRegisteredCedente] = useState<boolean>(false);
 
   const onSubmit = async (data: { cedente_a_vincular: string }) => {
@@ -95,7 +95,7 @@ const FormForCedentePjList = ({ registeredCedentesList, idPrecatorio }:
           }
         });
 
-        await fetchCardData();
+        await fetchCardData(selectedUser ?? undefined);
         setCedenteModal(null);
       }
 
