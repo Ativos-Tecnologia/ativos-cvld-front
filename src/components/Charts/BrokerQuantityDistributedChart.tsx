@@ -139,11 +139,9 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
               fontFamily: "Rooftop, sans-serif",
               color: "#637381",
               formatter: function (w) {
-                return w.globals.seriesTotals.reduce((a: any, b: any) => {
-                  return a + b
-                }, 0)
-              }
+                return String(data?.results.length || 0)
             }
+          },
 
             
       
