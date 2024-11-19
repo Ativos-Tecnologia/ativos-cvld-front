@@ -240,6 +240,14 @@ input:-webkit-autofill:focus-visible {
 
 /* third-party libraries CSS */
 
+.apexcharts-canvas {
+  /* @apply border border-red-500; */
+
+  display: flex;
+  justify-content: space-around;
+  min-width: 100%;
+}
+
 .tableCheckbox:checked ~ div span {
   @apply opacity-100;
 }

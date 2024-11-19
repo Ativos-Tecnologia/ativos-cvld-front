@@ -30,7 +30,7 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
 }) => {
   const [chartData, setChartData] = useState<Array<StatusCount>>([]);
   const [state, setState] = useState<ChartThreeState>({
-    series: [],
+    series: [100, 100, 100, 100, 100],
   });
 
   const options: ApexOptions = {
@@ -47,6 +47,7 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
     chart: {
       fontFamily: "Satoshi, sans-serif",
       type: "donut",
+      height: 400,
       // events: {
       //   dataPointSelection: function (_event, _chartContext, config) {
       //     //TODO: Aqui será implementada a lógica de clique no gráfico para filtrar os dados
@@ -85,6 +86,8 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
     legend: {
       show: true,
       position: "right",
+      width: 360,
+      offsetY: -10,
       formatter(legendName, opts) {
         return `${legendName}: ${opts.w.globals.series[opts.seriesIndex]}`;
       },
@@ -111,17 +114,18 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
           background: "transparent",
           
           labels: {
-            name: {
-
-              show: true,
-              fontSize: "22px",
-              fontFamily: "Rooftop, sans-serif",
-              color: "#637381",
-              offsetY: 10,
-            },
+            show: true,
+            name: { show: true,
+              formatter: function (val: any) {
+                return val.length > 20 ? val.slice(0, 15).concat('...') : val
+              },
+              offsetY: -4,
+              fontSize: "14px",
+              fontFamily: "Satoshi, sans-serif",
+             },
             value: {
               show: true,
-              fontSize: "22px",
+              fontSize: "16px",
               fontFamily: "Rooftop, sans-serif",
               color: "#637381",
               offsetY: 8,
@@ -130,11 +134,10 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
             total: {
               show: true,
               showAlways: true,
-              label: 'Total',
-              fontSize: '22px',
-              fontFamily: 'Rooftop, Arial, sans-serif',
-              fontWeight: 600,
-              color: '#373d3f',
+              label: 'Ofícios',
+              fontSize: '18px',
+              fontFamily: "Rooftop, sans-serif",
+              color: "#637381",
               formatter: function (w) {
                 return w.globals.seriesTotals.reduce((a: any, b: any) => {
                   return a + b
@@ -156,18 +159,27 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
       {
         breakpoint: 2600,
         options: {
-          chart: {
-            width: 400,
-            height: 400,
-            
-          },
+            chart: {
+              width: 600,
+              
+            },
+            legend: {
+              position: "right",
+              offsetY: -10,
+              width: 360,
+            },
+
         },
       },
       {
         breakpoint: 640,
         options: {
           chart: {
-            width: 200,
+            width: 300,
+            height: 200,
+            },
+            legend: {
+              show: false
           },
         },
       },
@@ -209,27 +221,34 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
 
   useEffect(() => {
     if (data) {
-      handleSeries(data);
+      handleSeries(
+        data
+      );
     }
   }, [data]);
 
   return (
     <div className="col-span-6 rounded-sm border border-stroke bg-white py-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-4 xl:col-span-6 max-h-73">
-      <div className="mb-3 justify-between gap-4 sm:flex">
+      <div className="mb-3 justify-between gap-4 sm:flex ml-2">
         <div>
-          <h5 className="mt-4 text-xl font-semibold text-black dark:text-white">
+          <h5 className="mt-4 text-xl text-black dark:text-white tracking-wider font-rooftop">
             {title}
           </h5>
         </div>
       </div>
 
       <div className="grid grid-cols-1">
-        <div className="mx-auto flex min-h-[166px]">
+        <div className="mx-auto flex h-[200px]" style={{
+          height: 240,
+          overflowY: "visible"
+        }}>
           {data ? (
             <ReactApexChart
               options={options}
               series={state.series}
               type="donut"
+              height="95%"
+
             />
           ) : (
             <div className="flex max-h-73 w-full items-center justify-center">
@@ -239,27 +258,6 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
             </div>
           )}
         </div>
-      <div className="flex flex-wrap items-start justify-end gap-3 sm:flex-nowrap">        
-          <Title text="Esse é o total de ofícios que você prospecta" className="cursor-pointer font-semibold">
-            
-          <div className="flex items-center justify-between gap-2 w-full">
-            <p className="text-sm font-semibold text-black dark:text-white">
-              Total de Ofícios
-            </p>
-            <p className="text-sm font-medium min-w-22.5 text-center">
-            {
-               data ? (<AnimatedNumber isNotCurrency value={
-                data.results.length
-               } />
-              ) : (
-                <AiOutlineLoading className="mr-2 animate-spin" />
-              )
-                }
-              
-            </p>
-          </div>
-          </Title>
-      </div>
     </div>
   </div>
   );
