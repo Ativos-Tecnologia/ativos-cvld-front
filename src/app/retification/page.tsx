@@ -9,7 +9,7 @@ import numberFormat from "@/functions/formaters/numberFormat";
 import api from "@/utils/api";
 import Cleave from "cleave.js/react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { AiOutlineLoading } from "react-icons/ai";
 import ReactInputMask from "react-input-mask";
@@ -173,6 +173,7 @@ const RecalculateTrf1 = () => {
 
                 <ShadSelect
                   name="natureza"
+                  data-testid="natureza"
                   control={control}
                   defaultValue={"NÃO TRIBUTÁRIA"}
                   className="h-7 w-40 border-transparent bg-transparent py-1 text-slate-700 hover:border-gray-700 hover:bg-slate-500 hover:text-slate-50 focus:border-slate-600 focus:bg-slate-600 focus:text-slate-50 active:bg-slate-600"
@@ -198,6 +199,7 @@ const RecalculateTrf1 = () => {
                   render={({ field: { onChange, value, ...field } }) => (
                     <ReactInputMask
                       {...field}
+                      data-testid="data_requisicao"
                       mask="99/99/9999"
                       placeholder="dd/mm/yyyy"
                       className={`${errors.data_requisicao && "border-red"} ml-2 w-22 border-none border-slate-600 bg-slate-300 bg-transparent p-1 text-center text-xs text-slate-700 placeholder:text-sm focus-within:ring-0 hover:border-gray-700 hover:bg-slate-300  focus:border-slate-800 focus:bg-slate-300 active:bg-slate-300 `}
@@ -602,11 +604,10 @@ const RecalculateTrf1 = () => {
                     Valor líquido ilegal
                   </span>
                   <span className="flex h-full basis-39 items-center justify-end px-4 text-sm">
-                   {
-                      watch("natureza") === "TRIBUTÁRIA" || watch("data_base") < "2021-12-01"
+                    {watch("natureza") === "TRIBUTÁRIA" ||
+                    watch("data_base") < "2021-12-01"
                       ? numberFormat(0)
-                      : numberFormat(backendData[1].valor_liquido_disponivel)
-                   }
+                      : numberFormat(backendData[1].valor_liquido_disponivel)}
                   </span>
                 </div>
                 <div className="flex h-8">
