@@ -48,7 +48,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const { setCardsData,
         cardsData, setCedenteModal,
         isFetchAllowed, setIsFetchAllowed,
-        setDocModalInfo, fetchDetailCardData, specificCardData
+        setDocModalInfo, fetchDetailCardData, specificCardData, selectedUser
     } = useContext(BrokersContext);
 
     /* ====> form imports <==== */
@@ -762,7 +762,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                 />
                                 <span className='text-sm font-medium'>Proposta Aceita</span>
                             </div>
-                            
+
                     </div>
                     <div className='relative flex flex-col gap-5 max-h-fit'>
                         <div className="flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
