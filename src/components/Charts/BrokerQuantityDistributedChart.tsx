@@ -30,7 +30,7 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
 }) => {
   const [chartData, setChartData] = useState<Array<StatusCount>>([]);
   const [state, setState] = useState<ChartThreeState>({
-    series: [],
+    series: [100, 100, 100, 100, 100],
   });
 
   const options: ApexOptions = {
@@ -47,6 +47,7 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
     chart: {
       fontFamily: "Satoshi, sans-serif",
       type: "donut",
+      height: 400,
       // events: {
       //   dataPointSelection: function (_event, _chartContext, config) {
       //     //TODO: Aqui será implementada a lógica de clique no gráfico para filtrar os dados
@@ -111,6 +112,7 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
           background: "transparent",
           
           labels: {
+            show: true,
             name: {
 
               show: true,
@@ -121,7 +123,7 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
             },
             value: {
               show: true,
-              fontSize: "22px",
+              fontSize: "14px",
               fontFamily: "Rooftop, sans-serif",
               color: "#637381",
               offsetY: 8,
@@ -130,8 +132,8 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
             total: {
               show: true,
               showAlways: true,
-              label: 'Total',
-              fontSize: '22px',
+              label: 'Ofícios',
+              fontSize: '18px',
               fontFamily: 'Rooftop, Arial, sans-serif',
               fontWeight: 600,
               color: '#373d3f',
@@ -157,8 +159,7 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
         breakpoint: 2600,
         options: {
           chart: {
-            width: 400,
-            height: 400,
+            width: 450,
             
           },
         },
@@ -209,7 +210,9 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
 
   useEffect(() => {
     if (data) {
-      handleSeries(data);
+      handleSeries(
+        data
+      );
     }
   }, [data]);
 
@@ -224,12 +227,19 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
       </div>
 
       <div className="grid grid-cols-1">
-        <div className="mx-auto flex min-h-[166px]">
+        <div className="mx-auto flex h-[200px]" style={{
+          height: 400,
+          width: 600,
+          overflowY: "visible"
+        }}>
           {data ? (
             <ReactApexChart
               options={options}
               series={state.series}
               type="donut"
+              height="95%"
+              width={800}
+
             />
           ) : (
             <div className="flex max-h-73 w-full items-center justify-center">
@@ -239,27 +249,6 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
             </div>
           )}
         </div>
-      <div className="flex flex-wrap items-start justify-end gap-3 sm:flex-nowrap">        
-          <Title text="Esse é o total de ofícios que você prospecta" className="cursor-pointer font-semibold">
-            
-          <div className="flex items-center justify-between gap-2 w-full">
-            <p className="text-sm font-semibold text-black dark:text-white">
-              Total de Ofícios
-            </p>
-            <p className="text-sm font-medium min-w-22.5 text-center">
-            {
-               data ? (<AnimatedNumber isNotCurrency value={
-                data.results.length
-               } />
-              ) : (
-                <AiOutlineLoading className="mr-2 animate-spin" />
-              )
-                }
-              
-            </p>
-          </div>
-          </Title>
-      </div>
     </div>
   </div>
   );
