@@ -168,7 +168,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     shouldFocusError: false
   });
 
-  const { setCedenteModal, fetchDetailCardData, setIsFetchAllowed } = useContext(BrokersContext);
+  const { setCedenteModal, fetchDetailCardData, setIsFetchAllowed, specificCardData } = useContext(BrokersContext);
 
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [isUnlinking, setIsUnlinking] = useState<boolean>(false);
@@ -493,6 +493,13 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       fetchRegisteredCedentesList();
     }
   }, [mode])
+  
+  useEffect(() => {
+    if (specificCardData !== null) {
+      console.log("fetching list...")
+      fetchRegisteredCedentesList();
+    }
+  }, [specificCardData])
 
   useEffect(() => {
     if (mode === "edit" && cedentePjData.data) {
@@ -871,6 +878,8 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
             id={id}
             mode="create"
             cedenteId={cedenteId}
+            fromFormPJ={true}
+            openModal={setOpenRegisterPfModal}
           />
         </div>
       )}
