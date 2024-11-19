@@ -115,17 +115,17 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
           
           labels: {
             show: true,
-            name: {
-
-              show: true,
-              fontSize: "22px",
-              fontFamily: "Rooftop, sans-serif",
-              color: "#637381",
-              offsetY: 10,
-            },
+            name: { show: true,
+              formatter: function (val: any) {
+                return val.length > 20 ? val.slice(0, 15).concat('...') : val
+              },
+              offsetY: -4,
+              fontSize: "14px",
+              fontFamily: "Satoshi, sans-serif",
+             },
             value: {
               show: true,
-              fontSize: "14px",
+              fontSize: "16px",
               fontFamily: "Rooftop, sans-serif",
               color: "#637381",
               offsetY: 8,
@@ -136,9 +136,8 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
               showAlways: true,
               label: 'Ofícios',
               fontSize: '18px',
-              fontFamily: 'Rooftop, Arial, sans-serif',
-              fontWeight: 600,
-              color: '#373d3f',
+              fontFamily: "Rooftop, sans-serif",
+              color: "#637381",
               formatter: function (w) {
                 return w.globals.seriesTotals.reduce((a: any, b: any) => {
                   return a + b
@@ -160,17 +159,27 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
       {
         breakpoint: 2600,
         options: {
-          chart: {
-            width: 600,
-            
-          },
+            chart: {
+              width: 600,
+              
+            },
+            legend: {
+              position: "right",
+              offsetY: -10,
+              width: 360,
+            },
+
         },
       },
       {
         breakpoint: 640,
         options: {
           chart: {
-            width: 200,
+            width: 300,
+            height: 200,
+            },
+            legend: {
+              show: false
           },
         },
       },
@@ -220,9 +229,9 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
 
   return (
     <div className="col-span-6 rounded-sm border border-stroke bg-white py-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-4 xl:col-span-6 max-h-73">
-      <div className="mb-3 justify-between gap-4 sm:flex">
+      <div className="mb-3 justify-between gap-4 sm:flex ml-2">
         <div>
-          <h5 className="mt-4 text-xl font-semibold text-black dark:text-white">
+          <h5 className="mt-4 text-xl text-black dark:text-white tracking-wider font-rooftop">
             {title}
           </h5>
         </div>
@@ -230,12 +239,10 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
 
       <div className="grid grid-cols-1">
         <div className="mx-auto flex h-[200px]" style={{
-          height: 400,
-          width: 600,
+          height: 240,
           overflowY: "visible"
         }}>
           {data ? (
-            <div className="mb-8">
             <ReactApexChart
               options={options}
               series={state.series}
@@ -243,7 +250,6 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
               height="95%"
 
             />
-            </div>
           ) : (
             <div className="flex max-h-73 w-full items-center justify-center">
               <p className="text-black dark:text-white">
