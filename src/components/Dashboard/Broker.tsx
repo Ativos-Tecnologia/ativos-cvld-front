@@ -14,6 +14,7 @@ import { AiOutlineLoading, AiOutlineSearch } from "react-icons/ai";
 import api from "@/utils/api";
 import CapaDoBatman from "../CapaDoBatman";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
+import { BiUser } from "react-icons/bi";
 
 const Broker: React.FC = () => {
   const {
@@ -77,6 +78,9 @@ const Broker: React.FC = () => {
         {/* ====== select de user ====== */}
         <div className="flex items-start gap-1 mb-4">
           <div className="relative">
+            <label className="text-sm mb-2 font-semibold text-bodydark2 dark:text-bodydark flex">
+              <BiUser className="w-5 h-5 mr-2" /> <p className="uppercase">Filtro por usuário</p>
+            </label>
             <div className="flex items-center justify-center">
               <div
                 onClick={() => setOpenUsersPopover(!openUsersPopover)}
