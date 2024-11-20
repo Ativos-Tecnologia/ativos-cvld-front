@@ -636,8 +636,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
                     placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
                     className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
                     options={{
-                      delimiters: [".", "."],
-                      blocks: [1, 3, 3]
+                      
                     }}
                   />
                   {error && <span className='absolute top-1/2 -translate-y-1/2 right-3 text-red text-xs font-medium'>{error.message}</span>}
