@@ -63,6 +63,28 @@ const Broker: React.FC = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (openUsersPopover && searchUserRef.current) {
+      searchUserRef.current.focus();
+    }
+  }, [openUsersPopover]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: any) => {
+      if (selectUserRef.current && !selectUserRef.current.contains(event.target)) {
+        setOpenUsersPopover(false);
+      }
+    };
+
+    // Adiciona o listener de evento
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    // Limpa o listener ao desmontar o componente
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const searchUser = (value: string) => {
     // quero que o filtro seja feito no array de usersList e o resultado seja setado no filteredUsersList
     const filteredUsers = usersList.filter((user) =>
@@ -77,7 +99,7 @@ const Broker: React.FC = () => {
     <>
       <React.Fragment>
         <CapaDoBatman show={role === "ativos"}>
-        {/* ====== select de user ====== */}
+        {/* ====== select de user merece um componente próprio ====== */}
         <div className="flex items-start gap-1 mb-4">
           <div className="relative">
             <label className="text-sm mb-2 font-semibold text-bodydark2 dark:text-bodydark flex">
