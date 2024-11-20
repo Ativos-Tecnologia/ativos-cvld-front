@@ -157,6 +157,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
     handleSubmit,
     control,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<FormValuesForPF>({
     shouldFocusError: false,
@@ -179,6 +180,10 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
     data: null,
     isFetching: true
   });
+  const pfFormModal = React.useRef<HTMLDivElement>(null);
+  const formValues = watch();
+  const isFormModified = Object.values(formValues).some(value => value !== '' && value !== 'Brasileiro');
+
 
   // função que faz fetch na lista de cedentes
   // OBS: é chamada somente se o mode for create
@@ -465,8 +470,34 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
     }
   }, [cedentePfData]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        confirmClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isFormModified]);
+
+  const confirmClose = () => {
+    if (isFormModified && mode === "create") {
+      const confirmClose = window.confirm("Você tem alterações não salvas. Tem certeza de que deseja fechar?");
+      if (confirmClose) {
+        setCedenteModal(null);
+      }
+    } else {
+      setCedenteModal(null);}
+  };
+
+  
+
   return (
-    <div className='w-full max-h-[480px] px-3'>
+    <div className='w-full max-h-[480px] px-3' ref={pfFormModal}>
 
       {mode === "edit" && (
         <Button
@@ -605,8 +636,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
                     placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Campo Vazio"}
                     className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
                     options={{
-                      delimiters: [".", "."],
-                      blocks: [1, 3, 3]
+                      
                     }}
                   />
                   {error && <span className='absolute top-1/2 -translate-y-1/2 right-3 text-red text-xs font-medium'>{error.message}</span>}
@@ -879,13 +909,13 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
 
       {/* ====> unlink modal <==== */}
       {openUnlinkModal && (
-        <div className='absolute bg-black-2/50 flex flex-col items-center justify-center w-full h-full top-0 left-0 rounded-md'>
+        <div className='absolute bg-black-2/50 flex flex-col items-center justify-center w-full h-full top-0 left-0 rounded-md border bo'>
           <div className="relative h-fit w-3/5 rounded-lg border border-stroke bg-white p-5 dark:border-strokedark dark:bg-boxdark">
             {/* close buttom */}
             <button className='group absolute right-2 top-2 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-700 transition-colors duration-300 cursor-pointer'>
               <BiX
                 className="group-hover:text-white transition-colors duration-300 text-2xl"
-                onClick={() => setOpenUnlinkModal(false)}
+                onClick={() => confirmClose()}
               />
             </button>
 

@@ -70,16 +70,24 @@ const Broker: React.FC = () => {
   }, [openUsersPopover]);
 
   useEffect(() => {
-    const handleClickOutside = (event: any) => {
-      if (selectUserRef.current && !selectUserRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (selectUserRef.current && !selectUserRef.current.contains(event.target as Node)) {
+        setOpenUsersPopover(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
         setOpenUsersPopover(false);
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    
+    document.addEventListener('keydown', handleKeyDown);
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
