@@ -76,24 +76,20 @@ const Broker: React.FC = () => {
       }
     };
 
-    // Adiciona o listener de evento
     document.addEventListener('mousedown', handleClickOutside);
     
-    // Limpa o listener ao desmontar o componente
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
   const searchUser = (value: string) => {
-    // quero que o filtro seja feito no array de usersList e o resultado seja setado no filteredUsersList
     const filteredUsers = usersList.filter((user) =>
       user.toLowerCase().includes(value.toLowerCase()),
     );
     setFilteredUsersList(filteredUsers);
   };
 
-  console.log(cardsData)
 
   return (
     <>
