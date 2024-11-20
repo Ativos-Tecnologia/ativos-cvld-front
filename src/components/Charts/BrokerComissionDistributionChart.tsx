@@ -167,6 +167,7 @@ const BrokerComissionDistribution: React.FC<IBrokerDistributionData> = ({
             offsetY: -10,
             width: 360,
             
+            
           }
           
         },
@@ -231,7 +232,7 @@ const BrokerComissionDistribution: React.FC<IBrokerDistributionData> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1">
+      <div className="grid grid-cols-1 overflow-clip">
         <div className="mx-auto flex h-[200px]" style={{
           height: 220,
           overflowY: "visible",

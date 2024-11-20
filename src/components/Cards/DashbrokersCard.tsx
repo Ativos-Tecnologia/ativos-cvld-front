@@ -705,7 +705,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                             onClick={() => setDocModalInfo(mainData)}
                             className={`${checks.is_cedente_complete !== null ? "opacity-100" : "opacity-50 cursor-not-allowed pointer-events-none"} flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm`}>
                             <FaRegFilePdf />
-                            Cadastrar Documentos
+                            Juntar Documentos
                         </button>
 
                         <button
@@ -735,11 +735,11 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                             ) : (
                                 <>
                                     {(checks.is_precatorio_complete) ? (
-                                        <CRMTooltip text="Precatório Completo">
+                                        <CRMTooltip text="Precatório completo">
                                             <BsCheckCircleFill className='text-green-400' />
                                         </CRMTooltip>
                                     ) : (
-                                        <CRMTooltip text="Precatório Incompleto">
+                                        <CRMTooltip text="Precatório incompleto">
                                             <IoCloseCircle className="text-red w-5 h-5" />
                                         </CRMTooltip>
                                     )}
