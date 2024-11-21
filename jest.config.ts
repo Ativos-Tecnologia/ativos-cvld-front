@@ -15,9 +15,36 @@ const config: Config = {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
   testMatch: [
-    "**/__tests__/**/*.ts?(x)",
     "<rootDir>/src/**/*.test.ts",
     "<rootDir>/src/**/*.test.tsx",
+  ],
+
+  // Cobertura de teste
+  collectCoverage: true,
+  collectCoverageFrom: [
+    "<rootDir>/src/**/*.{ts,tsx}", // Inclui todos os arquivos de código da pasta src
+    "!<rootDir>/src/**/index.ts", // Exclui index.ts
+    "!<rootDir>/src/**/index.tsx", // Exclui index.tsx
+    "!<rootDir>/src/**/*.d.ts", // Exclui definições de tipo
+    "!<rootDir>/src/test/**/*", // Exclui a pasta de testes
+  ],
+  coverageThreshold: {
+    global: {
+      lines: 85, // Percentual mínimo global de linhas cobertas que devemos atingir.
+    },
+  },
+  coveragePathIgnorePatterns: [
+    "/node_modules/",
+    "/.next/",
+    "/.vercel/",
+    "/coverage/",
+    "/public/",
+    "/.vscode/",
+    "/.github/",
+    "/.git/",
+    "/.idea/",
+    "/utils/",
+    "/styles/",
   ],
 };
 
