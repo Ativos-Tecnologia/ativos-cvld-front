@@ -119,6 +119,7 @@ export default function Privacy() {
         <button
           onClick={() => scrollTo(containerRef.current)}
           className={`fixed bottom-10 flex h-12 w-12 items-center justify-center rounded-full bg-gray-200 bg-opacity-10 bg-clip-padding backdrop-blur-sm backdrop-filter 2xsm:right-5 sm:right-10 lg:right-20 ${isButtonVisible ? "visible opacity-100" : "invisible pointer-events-none opacity-0"} transition-all duration-500`}
+          data-testid="back-to-top-button"
         >
           <BiChevronUp className="animate-upforward text-4xl text-snow" />
         </button>
