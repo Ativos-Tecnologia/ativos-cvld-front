@@ -87,13 +87,10 @@ const BrokerModal = () => {
                 ref={modalRef}
                 className="relative h-fit w-1/2 rounded-lg border border-stroke bg-white p-10 dark:border-strokedark dark:bg-boxdark"
             >
-                <button className='group absolute right-2 top-2 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-700 transition-colors duration-300 cursor-pointer'>
-                    <BiX className="group-hover:text-white transition-colors duration-300 text-2xl" onClick={() => setCedenteModal(null)} />
-                </button>
 
-                {credorIdentificationType === "CPF" ? (
+                {(credorIdentificationType === "CPF" && cedenteModal) ? (
                     <PFform
-                        id={cedenteModal!.id}
+                        id={cedenteModal.id}
                         mode={openingModalMode}
                         cedenteId={cedenteModal!.properties["Cedente PF"].relation?.[0]?.id || null}
                     />
