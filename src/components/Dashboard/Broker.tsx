@@ -12,7 +12,7 @@ import BrokerQuantityDistributedChart from "../Charts/BrokerQuantityDistributedC
 import { LucideChevronsUpDown } from "lucide-react";
 import { AiOutlineLoading, AiOutlineSearch } from "react-icons/ai";
 import api from "@/utils/api";
-import CapaDoBatman from "../CapaDoBatman";
+import Show from "../Show";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
 import { BiUser } from "react-icons/bi";
 
@@ -102,7 +102,7 @@ const Broker: React.FC = () => {
   return (
     <>
       <React.Fragment>
-        <CapaDoBatman show={role === "ativos"}>
+        <Show when={role === "ativos"}>
         {/* ====== select de user merece um componente próprio ====== */}
         <div className="flex items-start gap-1 mb-4">
           <div className="relative">
@@ -160,7 +160,7 @@ const Broker: React.FC = () => {
           </div>
         </div>
         {/* ====== finaliza select de user ====== */}
-        </CapaDoBatman>
+        </Show>
       </React.Fragment>
       <div className="grid grid-cols-1  items-center gap-5  xl:grid-cols-12">
         <BrokerQuantityDistributedChart

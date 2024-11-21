@@ -29,6 +29,9 @@ import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
 import { IdentificationType } from '../Modals/BrokersCedente';
 import { NotionNumberFormater } from '@/functions/formaters/notionNumberFormater';
 import { Fade } from 'react-awesome-reveal';
+import { TiWarning } from 'react-icons/ti';
+import Show from '../Show';
+import ConfirmModal from '../CrmUi/ConfirmModal';
 
 export type ChecksProps = {
     is_precatorio_complete: boolean | null;
@@ -109,6 +112,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const [errorMessage, setErrorMessage] = useState<boolean>(false);
     const [credorIdentificationType, setCredorIdentificationType] = useState<IdentificationType>(null);
     const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
+    const [confirmModal, setOpenConfirmModal] = useState<boolean>(false);
     const [checks, setChecks] = useState<ChecksProps>({
         is_precatorio_complete: false,
         is_cedente_complete: false,
@@ -570,9 +574,9 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         }
     });
 
-    const handleDeleteOficio = async (id: string) => {
-        await deleteOficio.mutateAsync(id);
-    }
+    // const handleDeleteOficio = async (id: string) => {
+    //     await deleteOficio.mutateAsync(id);
+    // }
 
     const handleUpdateObservation = async (message: string) => {
         await updateObservation.mutateAsync(message)
@@ -604,6 +608,12 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         }
 
         await updateOficio.mutateAsync(data);
+    }
+
+
+    const handleDeleteOficio = async (id: string) => {
+        await deleteOficio.mutateAsync(id);
+        setOpenConfirmModal(false);
     }
 
     useEffect(() => {
@@ -713,7 +723,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
                         <button
                             onClick={() => setDocModalInfo(mainData)}
-                            className={`${checks.is_cedente_complete !== null ? "opacity-100" : "opacity-50 cursor-not-allowed pointer-events-none"} flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm`}>
+                            className={`${checks.is_cedente_complete !== false ? "opacity-100" : "opacity-50 cursor-not-allowed pointer-events-none"} flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm`}>
                             <FaRegFilePdf />
                             Juntar Documentos
                         </button>
@@ -721,7 +731,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                         <button
                             onClick={() => setCedenteModal(mainData)}
                             className='flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm'>
-                            {(checks.is_cedente_complete !== null) ? (
+                            {(checks.is_cedente_complete !== false) ? (
                                 <>
                                     <BsPencilSquare />
                                     Editar Cedente
@@ -765,12 +775,12 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                             <BsCheckCircleFill className='text-green-400' />
                                         </CRMTooltip>
                                     )}
-                                    {(checks.is_cedente_complete === false) && (
+                                    {(checks.is_cedente_complete === null) && (
                                         <CRMTooltip text="Cedente incompleto">
                                             <RiErrorWarningFill className="text-amber-300 w-5 h-5" />
                                         </CRMTooltip>
                                     )}
-                                    {(checks.is_cedente_complete === null) && (
+                                    {(checks.is_cedente_complete === false) && (
                                         <CRMTooltip text="Cedente não vinculado">
                                             <IoCloseCircle className="text-red w-5 h-5" />
                                         </CRMTooltip>
@@ -783,24 +793,25 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                             ) : (
                                 <>
                                     {(checks.are_docs_complete === true) && (
-                                        <CRMTooltip text="Dcumentos preenchidos">
+                                        <CRMTooltip text="Documentos preenchidos">
                                             <BsCheckCircleFill className='text-green-400' />
                                         </CRMTooltip>
                                     )}
                                     {(checks.are_docs_complete === null) && (
+                                        <CRMTooltip text="Documentos em análise">
+                                            <RiErrorWarningFill className="text-amber-300 w-5 h-5" />
+                                        </CRMTooltip>
+                                    )}
+                                    {(checks.are_docs_complete === false) && (
                                         <CRMTooltip text="Documentos não vinculados">
                                             <IoCloseCircle className="text-red w-5 h-5" />
                                         </CRMTooltip>
                                     )}
-                                    {(checks.are_docs_complete === false) && (
-                                        <CRMTooltip text="Documentos incompletos">
-                                            <RiErrorWarningFill className="text-amber-300 w-5 h-5" />
-                                        </CRMTooltip>
-                                    )}
                                 </>
                             )}
-
-                            <MdOutlineCircle className='w-4 h-4' />
+                            
+                            {/* TODO: Esse aqui será o check para verificação do anuente quando a implementação for desenvolvida */}
+                            {/* <MdOutlineCircle className='w-4 h-4' /> */}
                         </div>
 
                         <div
@@ -811,8 +822,10 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                             {mainData?.properties["Tipo"].select?.name || "Não informado"}
                         </div>
                     </div>
-
                 </div>
+                    <ConfirmModal isOpen={confirmModal} onClose={() => setOpenConfirmModal(false)} onConfirm={() => handleDeleteOficio(mainData!.id)} isLoading={
+                        isDeleting
+                    } />
 
                 {/* ----> divider <---- */}
                 <div className='col-span-1 max-h-full w-[1px] bg-stroke dark:bg-strokedark ml-6'></div>
@@ -830,20 +843,20 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                         </div>
 
                         <Button
-                            variant="danger"
-                            className="group flex items-center justify-center overflow-hidden rounded-full px-0 py-0 w-[28px] h-[28px] hover:w-[100px] transition-all duration-300 ease-in-out"
-                            onClick={() => handleDeleteOficio(mainData!.id)}
+                            variant="ghost"
+                            className="group flex items-center justify-center overflow-hidden rounded-full px-0 py-0 w-[28px] h-[28px] hover:w-[100px] bg-slate-500 dark:bg-slate-700 dark:hover:bg-slate-700 transition-all duration-300 cursor-pointer ease-in-out"
+                            onClick={() => setOpenConfirmModal(true)}
                         >
                             {isDeleting ? (
                                 <AiOutlineLoading className='animate-spin' />
                             ) : (
                                 <>
                                     <Fade className="group-hover:hidden">
-                                        <BiTrash />
+                                        <BiTrash className='text-white' />
                                     </Fade>
                                     <Fade className="hidden group-hover:block whitespace-nowrap text-sm">
-                                        <div >
-                                            Deletar Ofício
+                                        <div className='text-white'>
+                                            Excluir Ativo
                                         </div>
                                     </Fade>
                                 </>
@@ -931,8 +944,9 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                 placeholder='Insira uma observação'
                             />
                             <Button
+                            variant='ghost'
                                 onClick={() => handleUpdateObservation(observationRef.current?.value || "")}
-                                className='absolute z-2 bottom-3 right-2 py-1 text-sm px-2'>
+                                className='absolute z-2 bottom-3 right-2 py-1 text-sm px-1 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70'>
                                 {
                                     savingObservation ? (
                                         <AiOutlineLoading className="text-lg animate-spin" />
