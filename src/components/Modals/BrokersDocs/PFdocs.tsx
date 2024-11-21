@@ -32,11 +32,13 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
   const [cedenteInfo, setCedenteInfo] = useState<NotionPage | null>(null);
   const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
   const [isFetchingDoc, setIsFetchingDoc] = useState<Record<string, boolean>>({
+    oficio_requisitorio: false,
     rg: false,
     certidao_nasc_cas: false,
     comprovante_de_residencia: false
   });
   const [isUnlinkingDoc, setIsUnlinkingDoc] = useState<Record<string, boolean>>({
+    oficio_requisitorio: false,
     rg: false,
     certidao_nasc_cas: false,
     comprovante_de_residencia: false,
@@ -212,16 +214,88 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
   // preenche os valores dos inputs que já possuirem documento cadastrado
   useEffect(() => {
     if (cedenteInfo === null) return;
-
     setValue("rg", cedenteInfo.properties["Doc. RG"].url || "");
     setValue("certidao_nasc_cas", cedenteInfo.properties["Doc. Certidão Nascimento/Casamento"].url || "");
     setValue("comprovante_de_residencia", cedenteInfo?.properties["Doc. Comprovante de Residência"].url || "");
+    setValue("oficio_requisitorio", cedenteInfo?.properties["Doc. Ofício Requisitório"].url || "");
   }, [cedenteInfo])
 
   return (
-    <div className='max-h-[480px] px-3'>
+    <div className='max-h-[480px] px-3 overflow-y-auto overflow-x-hidden'>
       <h2 className='text-center text-2xl font-medium mb-10'>Gestão de documentos</h2>
       <div className='grid grid-cols-2 gap-10 w-full'>
+        {/* doc div rg */}
+        <div className='flex flex-col gap-3 col-span-2'>
+          <div className='flex gap-3 items-center justify-center'>
+            <label className='min-w-[211px]' htmlFor="rg">Ofício Requisitório:</label>
+            <input
+              type="text"
+              placeholder={isFirstLoad ? "Carregando..." : "Nenhum documento vinculado"}
+              disabled={true}
+              {...register("rg", { required: true })}
+              className='flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic'
+            />
+          </div>
+          {isFirstLoad ? (
+            <PFdocsSkeleton />
+          ) : (
+            <div className='flex items-center justify-between'>
+              <div className='flex gap-3 items-center justify-start'>
+                <Button variant='outlined' className='flex items-center justify-center py-1 px-3'>
+                  <form onSubmit={handleSubmit(submitDocument)}>
+                    <label htmlFor='rg' className='cursor-pointer font-medium text-sm'>
+                      {cedenteInfo?.properties["Doc. Ofício Requisitório"].url ? "Alterar Documento" : "Selecionar Documento"}
+                    </label>
+                    <input
+                      type="file"
+                      id='rg'
+                      accept='.jpg, .jpeg, .png, .pdf'
+                      className='sr-only'
+                      onChange={(e) => handleDocument(e, "rg")}
+                    />
+                  </form>
+                </Button>
+                {isFetchingDoc.oficio_requisitorio && (
+                  <div className='flex items-center justify-center w-8 h-8 rounded-full'>
+                    <AiOutlineLoading className='animate-spin' />
+                  </div>
+                )}
+                {cedenteInfo?.properties["Doc. Ofício Requisitório"].url && (
+                  <>
+                    <CRMTooltip text='Baixar Ofício Requisitório' placement='right'>
+                      <Link
+                        href={cedenteInfo.properties["Doc. Ofício Requisitório"].url || ""}
+                        className='flex items-center justify-center w-8 h-8 rounded-md cursor-pointer bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 transition-colors duration-300'>
+                        <FaFileDownload className='text-xl' />
+                      </Link>
+                    </CRMTooltip>
+
+                    <CRMTooltip text="Desvincular documento" placement="right">
+                      <Button
+                        variant='ghost'
+                        className='w-8 h-8 p-0 rounded-md flex items-center justify-center bg-red-500 hover:bg-red-600 transition-colors duration-300'
+                        onClick={() => handleRemoveDocument("Ofício Requisitório")}
+                      >
+                        {isUnlinkingDoc.o ? <AiOutlineLoading className='text-xl text-snow animate-spin' /> : <BiTrash className='text-xl text-snow' />}
+                      </Button>
+                    </CRMTooltip>
+                  </>
+                )}
+              </div>
+              {cedenteInfo?.properties["Doc. Ofício Requisitório Status"]?.select?.name && (
+                <CRMTooltip text="Status do documento" placement="right">
+                  <div
+                    style={{
+                      background: `${notionColorResolver(cedenteInfo?.properties["Doc. Ofício Requisitório Status"].select?.color || "")}`
+                    }}
+                    className='py-1 px-3 text-black-2 rounded-md text-sm font-medium'>
+                    {cedenteInfo?.properties["Doc. Ofício Requisitório Status"].select?.name || ""}
+                  </div>
+                </CRMTooltip>
+              )}
+            </div>
+          )}
+        </div>
         {/* doc div rg */}
         <div className='flex flex-col gap-3 col-span-2'>
           <div className='flex gap-3 items-center justify-center'>
@@ -442,7 +516,7 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
         </div>
 
         {/* botão que desvincula todos os documentos */}
-        {(cedenteInfo?.properties["Doc. RG"].url || cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"].url || cedenteInfo?.properties["Doc. Comprovante de Residência"].url) && (
+        {(cedenteInfo?.properties["Doc. Ofício Requisitório"].url || cedenteInfo?.properties["Doc. RG"].url || cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"].url || cedenteInfo?.properties["Doc. Comprovante de Residência"].url) && (
           <fieldset className='col-span-2 border-t border-stroke dark:border-form-strokedark flex items-center gap-5 justify-center py-3'>
             <legend className='text-xs px-2 uppercase'>Outras opções</legend>
 
@@ -454,7 +528,7 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
             </Button>
 
             <Button
-              variant='danger'
+              variant='outlined'
               onClick={() => handleRemoveDocument("todos")}
             >
               {isUnlinkingDoc.todos ? "Desvinculando documentos..." : "Desvincular todos os documentos"}
