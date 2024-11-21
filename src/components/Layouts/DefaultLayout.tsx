@@ -9,7 +9,7 @@ import { TableNotionProvider } from "@/context/NotionTableContext";
 import { GeneralUIProvider } from "@/context/GeneralUIContext";
 import { DefaultLayoutProvider } from "@/context/DefaultLayoutContext";
 import NewForm from "../Modals/NewForm";
-import CapaDoBatman from "../CapaDoBatman";
+import Show from "../Show";
 
 export default function DefaultLayout({
   children,
@@ -51,8 +51,8 @@ export default function DefaultLayout({
                 </div>
               </main>
               {/* <!-- ===== Main Content End ===== --> */}
-              <CapaDoBatman
-                show={
+              <Show
+                when={
                   !window.location.href.includes(
                     "https://ativoscvld.vercel.app/",
                   ) && showAlert
@@ -74,7 +74,7 @@ export default function DefaultLayout({
                     Você está usando uma versão em desenvolvimento!
                   </Alert>
                 </div>
-              </CapaDoBatman>
+              </Show>
             </div>
             <NewForm />
             {/* <!-- ===== Content Area End ===== --> */}

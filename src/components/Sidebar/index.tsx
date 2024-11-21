@@ -15,7 +15,7 @@ import { BiCalculator, BiGridAlt, BiPlus } from "react-icons/bi";
 import { FaBuildingUser } from "react-icons/fa6";
 import { LuWallet2 } from "react-icons/lu";
 import { TbShoppingCartUp } from "react-icons/tb";
-import CapaDoBatman from "../CapaDoBatman";
+import Show from "../Show";
 import SidebarLinkGroup from "./SidebarLinkGroup";
 
 interface SidebarProps {
@@ -297,7 +297,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
               {/* <!-- Menu Item Dashboard --> */}
               {/* <--- new precatory button --> */}
-              <CapaDoBatman show={product !== "wallet"}>
+              <Show when={product !== "wallet"}>
                 <Link
                   href="#"
                   onClickCapture={() => setModalOpen(!modalOpen)}
@@ -309,7 +309,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   <BiPlus style={{ width: "22px", height: "22px" }} />
                   <span>Novo Precatório</span>
                 </Link>
-              </CapaDoBatman>
+              </Show>
             </ul>
           </div>
 

@@ -29,6 +29,9 @@ import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
 import { IdentificationType } from '../Modals/BrokersCedente';
 import { NotionNumberFormater } from '@/functions/formaters/notionNumberFormater';
 import { Fade } from 'react-awesome-reveal';
+import { TiWarning } from 'react-icons/ti';
+import Show from '../Show';
+import ConfirmModal from '../CrmUi/ConfirmModal';
 
 export type ChecksProps = {
     is_precatorio_complete: boolean | null;
@@ -109,6 +112,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const [errorMessage, setErrorMessage] = useState<boolean>(false);
     const [credorIdentificationType, setCredorIdentificationType] = useState<IdentificationType>(null);
     const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
+    const [confirmModal, setOpenConfirmModal] = useState<boolean>(false);
     const [checks, setChecks] = useState<ChecksProps>({
         is_precatorio_complete: false,
         is_cedente_complete: false,
@@ -570,9 +574,9 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         }
     });
 
-    const handleDeleteOficio = async (id: string) => {
-        await deleteOficio.mutateAsync(id);
-    }
+    // const handleDeleteOficio = async (id: string) => {
+    //     await deleteOficio.mutateAsync(id);
+    // }
 
     const handleUpdateObservation = async (message: string) => {
         await updateObservation.mutateAsync(message)
@@ -604,6 +608,12 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         }
 
         await updateOficio.mutateAsync(data);
+    }
+
+
+    const handleDeleteOficio = async (id: string) => {
+        await deleteOficio.mutateAsync(id);
+        setOpenConfirmModal(false);
     }
 
     useEffect(() => {
@@ -812,8 +822,10 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                             {mainData?.properties["Tipo"].select?.name || "Não informado"}
                         </div>
                     </div>
-
                 </div>
+                    <ConfirmModal isOpen={confirmModal} onClose={() => setOpenConfirmModal(false)} onConfirm={() => handleDeleteOficio(mainData!.id)} isLoading={
+                        isDeleting
+                    } />
 
                 {/* ----> divider <---- */}
                 <div className='col-span-1 max-h-full w-[1px] bg-stroke dark:bg-strokedark ml-6'></div>
@@ -833,7 +845,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                         <Button
                             variant="ghost"
                             className="group flex items-center justify-center overflow-hidden rounded-full px-0 py-0 w-[28px] h-[28px] hover:w-[100px] bg-slate-500 dark:bg-slate-700 dark:hover:bg-slate-700 transition-all duration-300 cursor-pointer ease-in-out"
-                            onClick={() => handleDeleteOficio(mainData!.id)}
+                            onClick={() => setOpenConfirmModal(true)}
                         >
                             {isDeleting ? (
                                 <AiOutlineLoading className='animate-spin' />
