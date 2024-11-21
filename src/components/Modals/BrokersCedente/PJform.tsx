@@ -163,9 +163,24 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     handleSubmit,
     control,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<FormValuesForPJ>({
-    shouldFocusError: false
+    shouldFocusError: false,
+    defaultValues: {
+      celular: "",
+      cep: "",
+      cnpj: "",
+      razao_social: "",
+      socio_representante: "",
+      bairro: "",
+      email: "",
+      estado: "",
+      logradouro: "",
+      numero: "",
+      complemento: "",
+      municipio: ""
+    }
   });
 
   const { setCedenteModal, fetchDetailCardData, setIsFetchAllowed, specificCardData } = useContext(BrokersContext);
@@ -184,6 +199,12 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     data: null,
     isFetching: true
   });
+
+  const formValues = watch();
+  const isFormModified: boolean = Object.values(formValues).some(value => (
+    value !== '' &&
+    value !== id
+  ));
 
   // função que faz fetch na lista de cedentes
   // OBS: é chamada somente se o mode for create
@@ -464,6 +485,18 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     }))
   }
 
+  // função de mostrar confirm para fechar modal no modo create
+  const confirmClose = () => {
+    if (isFormModified && mode === "create") {
+      const confirmClose = window.confirm("Você tem alterações não salvas. Tem certeza de que deseja fechar?");
+      if (confirmClose) {
+        setCedenteModal(null);
+      }
+    } else {
+      setCedenteModal(null);
+    }
+  };
+
   // função de submit para o formulário de criação de cedente
   const onSubmit = async (data: any) => {
 
@@ -493,7 +526,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       fetchRegisteredCedentesList();
     }
   }, [mode])
-  
+
   useEffect(() => {
     if (specificCardData !== null) {
       console.log("fetching list...")
@@ -505,6 +538,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     if (mode === "edit" && cedentePjData.data) {
 
       // valores obrigatórios em um cadastro
+      setValue("relacionado_a", id);
       setValue("razao_social", cedentePjData.data?.properties["Razão Social"].title[0].text.content);
       setValue("cnpj", cedentePjData.data!.properties["CNPJ"].rich_text![0].text.content);
       setValue("socio_representante", getRepresentanteLegal(cedentePjData.data?.properties["Sócio Representante"].relation?.[0]?.id || null))
@@ -520,8 +554,24 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       setValue("complemento", cedentePjData.data?.properties["Complemento"].rich_text?.[0]?.text.content || "");
       setValue("municipio", cedentePjData.data?.properties["Município"].select?.name || "");
 
+    } else {
+      setValue("relacionado_a", id);
     }
   }, [cedentePjData, registeredCedentesList]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        confirmClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isFormModified]);
 
   return (
     <div className='max-h-[480px] px-3'>
@@ -542,6 +592,10 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </Fade>
         </Button>
       )}
+
+      <button className='group absolute right-2 top-2 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-700 transition-colors duration-300 cursor-pointer'>
+        <BiX className="group-hover:text-white transition-colors duration-300 text-2xl" onClick={() => confirmClose()} />
+      </button>
 
       <h2 className='text-center text-2xl font-medium mb-10'>Cadastro de Cedente</h2>
       {(mode === "create" && !cedentePjData.data && !openRegisterForm) && (
@@ -590,7 +644,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           {/* relacionado ao oficio */}
           <input
             type="hidden"
-            value={id}
+            value={id ? id : ""}
             {...register("relacionado_a", {
               required: true,
             })} />
@@ -668,6 +722,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
                   {...register("socio_representante")}
                   className="w-full border-b border-l-0 border-t-0 border-r-0 bg-white dark:bg-boxdark border-stroke dark:border-strokedark py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
                 >
+                  <option value="">Selecione</option>
                   {registeredCedentesList.listPf && registeredCedentesList.listPf.map((cedente) => (
                     <option key={cedente.id} value={cedente.id}>{cedente.name}</option>
                   ))}
@@ -886,7 +941,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
 
       {/* ====> unlink modal <==== */}
       {openUnlinkModal && (
-        <div className='absolute bg-black-2/50 flex flex-col items-center justify-center w-full h-full top-0 left-0 rounded-md'>
+        <div className='absolute bg-black-2/20 flex flex-col items-center justify-center w-full h-full top-0 left-0 rounded-md'>
           <div className="relative h-fit w-3/5 rounded-lg border border-stroke bg-white p-5 dark:border-strokedark dark:bg-boxdark">
             {/* close buttom */}
             <button className='group absolute right-2 top-2 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-700 transition-colors duration-300 cursor-pointer'>
