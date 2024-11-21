@@ -78,7 +78,6 @@ export const BrokersProvider = ({ children }: { children: React.ReactNode }) => 
     // função responsável por fazer a request para a API
     async function fetchCardData(username?: string) {
 
-        console.log("fetching data")
         setLoadingCardData(true);
         const response = await api.get(`api/notion-api/broker/list${username ? "?user=" + username : ''}`);
         if (response !== null) {
