@@ -257,8 +257,8 @@ const AutomatedProposal = () => {
       data.incidencia_juros_moratorios = false;
     }
 
-    if (new Date(data.data_requisicao) < new Date("2024-04-02")) {
-      throw new Error('A data de recebimento não pode ser anterior a 02/04/2024');
+    if (new Date(data.data_requisicao) < new Date("2023-04-02")) {
+      throw new Error('A data de recebimento não pode ser anterior a 02/04/2023');
     }
 
     if (data.ja_possui_destacamento) {
@@ -743,8 +743,8 @@ E abaixo, uma memória das informações de entrada:
                     {...register("data_requisicao", {
                       required: "Campo obrigatório",
                       validate: (data_requisicao) => {
-                      if (new Date(data_requisicao) < new Date("2024-04-02")) {
-                        return "A data de recebimento não pode ser anterior a 02/04/2024";
+                      if (new Date(data_requisicao) < new Date("2023-04-02")) {
+                        return "A data de recebimento não pode ser anterior a 02/04/2023";
                       }
                       return true;
                       },

@@ -375,6 +375,7 @@ const RecalculateTrf1 = () => {
                     render={({ field }) => (
                       <Cleave
                         {...field}
+                        data-testid="valor_principal"
                         className="border-none bg-transparent py-0 text-xs placeholder:text-xs focus-within:ring-0"
                         options={{
                           numeral: true,
@@ -397,6 +398,7 @@ const RecalculateTrf1 = () => {
                     render={({ field }) => (
                       <Cleave
                         {...field}
+                        data-testid="valor_juros"
                         className="border-none bg-transparent py-0 text-xs placeholder:text-xs focus-within:ring-0"
                         options={{
                           numeral: true,
@@ -420,6 +422,7 @@ const RecalculateTrf1 = () => {
                     render={({ field }) => (
                       <Cleave
                         {...field}
+                        data-testid="valor_juros_compensatorio"
                         className="border-none bg-transparent py-0 text-xs placeholder:text-xs focus-within:ring-0"
                         options={{
                           numeral: true,
@@ -443,6 +446,7 @@ const RecalculateTrf1 = () => {
                     render={({ field }) => (
                       <Cleave
                         {...field}
+                        data-testid="encargo_legal"
                         className="border-none bg-transparent py-0 text-xs placeholder:text-xs focus-within:ring-0"
                         options={{
                           numeral: true,

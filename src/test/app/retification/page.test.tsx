@@ -400,4 +400,50 @@ describe("Teste da Página de Retificação de Valor Disponível nos TRF's 1 e 6
       userEvent.click(button);
     });
   });
+
+  describe("Teste de inputs do formulário", () => {
+    describe("Teste do input de dados da Requisição de Cadastro", () => {
+      it("Teste de input de Natureza", async () => {
+        const select = await screen.findByRole("combobox");
+        expect(select).toBeInTheDocument();
+        fireEvent.change(select, { target: { value: "NÃO TRIBUTÁRIA" } });
+        expect(select).toHaveValue("NÃO TRIBUTÁRIA");
+      });
+
+      it("Teste de input de Data de Cadastro da Requisição", async () => {
+        const inputDataBase =
+          await screen.findAllByPlaceholderText("dd/mm/yyyy");
+        fireEvent.change(inputDataBase[0], { target: { value: "19-11-2024" } });
+        expect(inputDataBase[0]).toHaveValue("19/11/2024");
+      });
+    });
+    describe("Teste dos inputs do formulário de beneficiário", () => {
+      it("Teste para inserir valores nos inputs do formulário de beneficiário", async () => {
+        const inputDataBase =
+          await screen.findAllByPlaceholderText("dd/mm/yyyy");
+
+        fireEvent.change(inputDataBase[1], { target: { value: "19-11-2024" } });
+        expect(inputDataBase[1]).toHaveValue("19/11/2024");
+
+        const inputPrincipal = await screen.findByTestId("valor_principal");
+        
+        fireEvent.change(inputPrincipal, { target: { value: "1000" } });
+        expect(inputPrincipal).toHaveValue("R$ 1.000");
+
+        const inputJurosSelic = await screen.findByTestId("valor_juros");
+        fireEvent.change(inputJurosSelic, { target: { value: "100" } });
+        expect(inputJurosSelic).toHaveValue("R$ 100");
+
+        const inputJurosCompensatorio = await screen.findByTestId(
+          "valor_juros_compensatorio",
+        );
+        fireEvent.change(inputJurosCompensatorio, { target: { value: "100" } });
+        expect(inputJurosCompensatorio).toHaveValue("R$ 100");
+
+        const inputEncargoLegal = await screen.findByTestId("encargo_legal");
+        fireEvent.change(inputEncargoLegal, { target: { value: "100" } });
+        expect(inputEncargoLegal).toHaveValue("R$ 100");
+      });
+    });
+  });
 });
