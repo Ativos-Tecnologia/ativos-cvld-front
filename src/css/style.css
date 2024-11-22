@@ -656,6 +656,43 @@ input[type="search"]::-webkit-search-cancel-button {
   @apply appearance-none;
 }
 
+.range-slider {
+  @apply appearance-none;
+
+  border-radius: 0.5rem;
+  height: 0.7rem;
+  background: linear-gradient(
+    to right,
+    #93d3b5 0%,
+    #29d987 100%
+  );
+}
+
+.range-slider-reverse {
+  @apply appearance-none;
+
+  border-radius: 0.5rem;
+  height: 0.7rem;
+  background: linear-gradient(
+    to right,
+    #29d987 0%, /* Verde no início */
+    #93d3b5 100% /* Vermelho no final */
+  );
+}
+
+
+input[type="range"]::-webkit-slider-thumb {
+  @apply appearance-none;
+
+  background-color: #fff;
+  border: 1px solid #3c3d40aa;
+  border-radius: 0.5rem;
+  cursor: grab;
+  height: 1.2rem;
+  width: 1.2rem;
+}
+
+
 .custom-input-date::-webkit-calendar-picker-indicator {
   background-position: center;
   background-repeat: no-repeat;

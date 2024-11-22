@@ -32,6 +32,7 @@ import { Fade } from 'react-awesome-reveal';
 import { TiWarning } from 'react-icons/ti';
 import Show from '../Show';
 import ConfirmModal from '../CrmUi/ConfirmModal';
+import Badge from '../CrmUi/ui/Badge/Badge';
 
 export type ChecksProps = {
     is_precatorio_complete: boolean | null;
@@ -123,6 +124,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const proposalRef = useRef<HTMLInputElement | null>(null);
     const comissionRef = useRef<HTMLInputElement | null>(null);
     const observationRef = useRef<HTMLTextAreaElement | null>(null);
+    const proposalRangeRef = useRef<HTMLInputElement | null>(null);
 
     //* ====> Principal Data <==== */
     const [mainData, setMainData] = useState<NotionPage | null>(null);
@@ -223,6 +225,10 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                 proposalRef.current.value = numberFormat(newProposalSliderValue)
             }
         }
+
+        // if (proposalRangeRef.current) {
+        //     proposalRangeRef.current!.style.background = `linear-gradient(to right, ${getColor(newProposalSliderValue)} 0%, ${getColor(newProposalSliderValue)} ${proportion * 100}%, #E5E7EB ${proportion * 100}%, #E5E7EB 100%)`;
+        // }
     };
 
     // Função para atualizar a comissão e ajustar a proposta proporcionalmente
@@ -664,18 +670,59 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         setCredorIdentificationType(credorIdent.length === 11 ? "CPF" : credorIdent.length === 14 ? "CNPJ" : null);
     }, [oficio]);
 
+    const getColor = (proportion: number) => {
+        const red = Math.round(255 * (1 - proportion)); // De vermelho para verde
+        const green = Math.round(255 * proportion); // De vermelho para verde
+        return `rgb(${red}, ${green}, 0)`; // Cor de transição de vermelho para verde
+    };
+
     return (
         <div className="relative col-span-1 gap-5 bg-white dark:bg-boxdark p-5 rounded-md border border-stroke dark:border-strokedark">
             {/* ----> info <----- */}
-            <div className="grid grid-cols-12 gap-2">
-                <div className="col-span-5 grid gap-3">
+            <div className='flex justify-between items-center mb-2'>
+                <div className='flex gap-1 items-center justify-center w-fit' >
+                    <CustomCheckbox
+                        check={mainData?.properties["Status"].status?.name === "Proposta aceita"}
+                        callbackFunction={handleUpdateStatus}
+                    />
+                    <span className='text-sm font-medium'>Proposta Aceita</span>
+                </div>
+
+                <Button
+                    variant="ghost"
+                    disabled={deleteModalLock}
+                    className="group flex items-center opacity-100 disabled:opacity-0 disabled:pointer-events-none justify-center overflow-hidden rounded-full px-0 py-0 w-[28px] h-[28px] hover:w-[100px] bg-slate-500 dark:bg-slate-700 dark:hover:bg-slate-700 transition-all duration-300 cursor-pointer ease-in-out"
+                    onClick={() => {
+                        setOpenConfirmModal(true);
+                        setDeleteModalLock(true);
+                    }}
+                >
+                    {isDeleting ? (
+                        <AiOutlineLoading className='animate-spin' />
+                    ) : (
+                        <>
+                            <Fade className="group-hover:hidden">
+                                <BiTrash className='text-white' />
+                            </Fade>
+                            <Fade className="hidden group-hover:block whitespace-nowrap text-sm">
+                                <div className='text-white'>
+                                    Excluir Ativo
+                                </div>
+                            </Fade>
+                        </>
+                    )}
+                </Button>
+            </div>
+            <hr className='border border-stroke dark:border-strokedark mb-4' />
+            <div className="grid grid-cols-12">
+                <div className="col-span-12 md:col-span-6 grid gap-3 min-w-[248px] md:min-w-fit">
                     <div className='text-sm'>
                         <p className='text-black dark:text-snow uppercase font-medium'>Nome do Credor:</p>
                         <CRMTooltip
                             text={mainData?.properties["Credor"].title[0]?.text.content || "Não informado"}
                             arrow={false}
                         >
-                            <p className='max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap uppercase text-xs font-semibold'>
+                            <p className='md:max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap uppercase text-xs font-semibold'>
                                 {mainData?.properties["Credor"].title[0]?.text.content || "Não informado"}
                             </p>
                         </CRMTooltip>
@@ -693,10 +740,12 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                         </p>
                     </div>
 
-                    <div className='text-sm'>
+                    {
+                    /* <div className='text-sm'>
                         <p className='text-black dark:text-snow uppercase font-medium'>esfera:</p>
                         <p className='uppercase text-xs font-semibold'>{mainData?.properties["Esfera"].select?.name || "Não informado"}</p>
-                    </div>
+                    </div> */
+                    }
                     <div className='text-sm'>
                         <p className='text-black dark:text-snow uppercase font-medium'>status:</p>
                         <p className='uppercase text-xs font-semibold'>{mainData?.properties["Status"].status?.name || "Não informado"}</p>
@@ -706,7 +755,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                         <p className='uppercase text-xs font-semibold'>{mainData?.properties["Status Diligência"].select?.name || "Não informado"}</p>
                     </div>
 
-                    <div className='flex flex-col'>
+                    <div className='flex flex-col min-w-fit'>
 
                         <button
                             onClick={() => setEditModalId(mainData!.id)}
@@ -737,11 +786,10 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                 </>
                             )}
                         </button>
-
                     </div>
 
 
-                    <div className="flex items-center gap-4 justify-between">
+                    <div className="flex items-center gap-2 justify-between">
                         <div className='flex items-center gap-2'>
 
                             {(checks.isFetching && isFirstLoad) ? (
@@ -803,17 +851,16 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                     )}
                                 </>
                             )}
-
                             {/* TODO: Esse aqui será o check para verificação do anuente quando a implementação for desenvolvida */}
                             {/* <MdOutlineCircle className='w-4 h-4' /> */}
                         </div>
-
-                        <div
-                            style={{
-                                background: `${notionColorResolver(mainData?.properties["Tipo"].select?.color || "")}`
-                            }}
-                            className='py-1 px-2 uppercase rounded-md text-black-2 font-medium text-xs'>
-                            {mainData?.properties["Tipo"].select?.name || "Não informado"}
+                        <div className='flex items-center gap-2'>
+                        <Badge isANotionPage color={mainData?.properties["Tipo"].select?.color}>
+                            <Badge.Label label={mainData?.properties["Tipo"].select?.name ?? 'Não informado'} />
+                        </Badge>
+                        <Badge isANotionPage color={mainData?.properties["Esfera"].select?.color}>
+                            <Badge.Label label={mainData?.properties["Esfera"].select?.name ?? 'Não informado'} />
+                        </Badge>
                         </div>
                     </div>
                 </div>
@@ -827,51 +874,16 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                 />
 
                 {/* ----> divider <---- */}
-                <div className='col-span-1 max-h-full w-[1px] bg-stroke dark:bg-strokedark ml-6'></div>
+                {/* <div className='col-span-12 md:col-span-1 max-h-full w-[1px] bg-stroke dark:bg-strokedark ml-6 md:ml-0'></div> */}
                 {/* ----> end divider <---- */}
 
-                <div className="col-span-6 grid gap-5">
-                    <div className='flex justify-between items-center'>
-
-                        <div className='flex gap-1 items-center justify-center w-fit' >
-                            <CustomCheckbox
-                                check={mainData?.properties["Status"].status?.name === "Proposta aceita"}
-                                callbackFunction={handleUpdateStatus}
-                            />
-                            <span className='text-sm font-medium'>Proposta Aceita</span>
-                        </div>
-
-                        <Button
-                            variant="ghost"
-                            disabled={deleteModalLock}
-                            className="group flex items-center opacity-100 disabled:opacity-0 disabled:pointer-events-none justify-center overflow-hidden rounded-full px-0 py-0 w-[28px] h-[28px] hover:w-[100px] bg-slate-500 dark:bg-slate-700 dark:hover:bg-slate-700 transition-all duration-300 cursor-pointer ease-in-out"
-                            onClick={() => {
-                                setOpenConfirmModal(true);
-                                setDeleteModalLock(true);
-                            }}
-                        >
-                            {isDeleting ? (
-                                <AiOutlineLoading className='animate-spin' />
-                            ) : (
-                                <>
-                                    <Fade className="group-hover:hidden">
-                                        <BiTrash className='text-white' />
-                                    </Fade>
-                                    <Fade className="hidden group-hover:block whitespace-nowrap text-sm">
-                                        <div className='text-white'>
-                                            Excluir Ativo
-                                        </div>
-                                    </Fade>
-                                </>
-                            )}
-                        </Button>
-
-                    </div>
-                    <div className='relative flex flex-col gap-5 max-h-fit'>
-                        <div className="flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
-                            <div className="flex flex-1 flex-col items-center gap-1">
+                <div className="mx-2 col-span-12 md:col-span-6 grid gap-5 border-t-2 md:border-t-0 pt-5 md:pt-0 mt-5 md:mt-0 border-l-0 md:border-l-2 border-stroke dark:border-strokedark pl-0 md:pl-3">
+                    
+                    <div className='relative flex flex-col gap-5 max-h-fit pb-8 sm:pb-0'>
+                        <div className="flex items-center justify-between gap-6 2xsm:flex-col md:flex-row">
+                            <div className="flex flex-1 flex-col items-center gap-4 pb-2 2xsm:pb-0 md:pb-2">
                                 <div className="text-sm font-medium flex items-center">
-                                    <p className="w-full text-sm">Proposta Atual:</p>
+                                    <p className="w-full text-sm">Proposta:</p>
                                     <input
                                         ref={proposalRef}
                                         type="text"
@@ -883,21 +895,23 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                     />
                                 </div>
                                 <input
+                                    // ref={proposalRangeRef}
                                     type="range"
                                     step="0.01"
                                     min={mainData?.properties["(R$) Proposta Mínima - Celer"].number || 0}
                                     max={mainData?.properties["(R$) Proposta Máxima - Celer"].number || 0}
                                     value={sliderValues.proposal}
                                     onChange={e => handleProposalSliderChange(e.target.value, true)}
-                                    className="w-full"
+                                    className="w-full range-slider"
                                 />
+                               
                             </div>
                         </div>
 
                         <div className="relative flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
-                            <div className="flex flex-1 flex-col items-center gap-1">
+                            <div className="flex flex-1 flex-col items-center gap-4">
                                 <div className="text-sm font-medium flex items-center">
-                                    <p className="text-sm">Comissão Atual:</p>
+                                    <p className="text-sm">Comissão:</p>
                                     <input
                                         ref={comissionRef}
                                         type="text"
@@ -907,6 +921,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                         onChange={e => changeInputValues("comission", e.target.value)}
                                         className="max-w-35 text-center rounded-md border-none pr-2 pl-1 ml-2 py-2 text-sm font-medium text-body focus-visible:ring-body dark:focus-visible:ring-snow dark:bg-boxdark-2/50 dark:text-bodydark bg-gray-100"
                                     />
+                                    
                                 </div>
                                 <input
                                     type="range"
@@ -915,8 +930,9 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                     max={mainData?.properties["(R$) Comissão Máxima - Celer"].number || 0}
                                     value={sliderValues.comission}
                                     onChange={e => handleComissionSliderChange(e.target.value, true)}
-                                    className="w-full"
+                                    className="w-full range-slider-reverse"
                                 />
+                                
                             </div>
                         </div>
 
@@ -933,7 +949,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                     </Button>
 
                     {/* separator */}
-                    <div className="h-px w-full bg-stroke dark:bg-strokedark"></div>
+
                     {/* end separator */}
 
                     {/* ----> observations field <----- */}

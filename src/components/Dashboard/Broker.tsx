@@ -172,7 +172,7 @@ const Broker: React.FC = () => {
           response={cardsData}
         />
       </div>
-      <div className="mt-4 grid w-full grid-cols-2 items-center gap-5">
+      <div className="mt-4 grid w-full grid-cols-1 md:grid-cols-2 items-center gap-5">
         {isFirstLoad ? (
           <Fade cascade damping={0.1} triggerOnce>
             {[...Array(4)].map((_, index: number) => (
