@@ -937,36 +937,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
         onConfirm={unlinkCedente}
         isLoading={isUnlinking}
       />
-      {/* {openUnlinkModal && (
-        <div className='absolute bg-black-2/20 flex flex-col items-center justify-center w-full h-full top-0 left-0 rounded-md'>
-          <div className="relative h-fit w-3/5 rounded-lg border border-stroke bg-white p-5 dark:border-strokedark dark:bg-boxdark">
-            
-            <button className='group absolute right-2 top-2 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-700 transition-colors duration-300 cursor-pointer'>
-              <BiX
-                className="group-hover:text-white transition-colors duration-300 text-2xl"
-                onClick={() => setOpenUnlinkModal(false)}
-              />
-            </button>
-
-            <div className='flex flex-col gap-4 items-center justify-center'>
-              <TiWarning className='text-amber-300 text-5xl' />
-
-              <p className='text-center'>Tem certeza? Essa ação não pode ser desfeita.</p>
-
-              <div className='flex gap-4 items-center justify-center my-5'>
-                <Button onClick={unlinkCedente}>
-                  {isUnlinking ? "Desvinculando..." : "Desvincular"}
-                </Button>
-
-                <Button onClick={() => setOpenUnlinkModal(false)} variant='danger'>
-                  Cancelar
-                </Button>
-
-              </div>
-            </div>
-          </div>
-        </div>
-      )} */}
+      
     </div>
   )
 }

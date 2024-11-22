@@ -362,6 +362,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     },
     onMutate: async () => {
       setIsUpdating(true);
+      setIsFetchAllowed(false);
       await queryClient.cancelQueries({ queryKey: ["broker_list"] });
       await queryClient.cancelQueries({ queryKey: ["broker_list_cedente_check", id] });
       await queryClient.cancelQueries({ queryKey: ["broker_list_precatorio_check", id] });
@@ -407,6 +408,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     },
     onSettled: () => {
       setIsUpdating(false);
+      setIsFetchAllowed(true);
     }
   });
 
