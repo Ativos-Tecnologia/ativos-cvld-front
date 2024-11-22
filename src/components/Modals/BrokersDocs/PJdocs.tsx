@@ -27,7 +27,7 @@ const PJdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
     control
   } = useForm();
 
-  const { fetchDetailCardData } = useContext(BrokersContext)
+  const { fetchDetailCardData, setIsFetchAllowed } = useContext(BrokersContext)
 
   const [cedenteInfo, setCedenteInfo] = useState<NotionPage | null>(null);
   const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
@@ -46,6 +46,7 @@ const PJdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
       ...old,
       [documentType]: true
     }));
+    setIsFetchAllowed(false);
 
     try {
 
@@ -97,6 +98,7 @@ const PJdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
         ...old,
         [documentType]: false
       }));
+      setIsFetchAllowed(true);
 
     }
 
@@ -109,6 +111,8 @@ const PJdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
       ...old,
       [documentType]: true
     }));
+
+    setIsFetchAllowed(false);
 
     try {
 
@@ -155,6 +159,7 @@ const PJdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
         ...old,
         [documentType]: false
       }));
+      setIsFetchAllowed(true);
 
     }
 
