@@ -336,6 +336,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
     const saveProposalAndComission = async () => {
         setSavingProposalAndComission(true);
+        setIsFetchAllowed(false);
         const req = await api.patch(`/api/notion-api/broker/negotiation/${oficio.id}/`,
             {
                 proposal: sliderValues.proposal,
@@ -354,6 +355,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                 icon: <BiX className="text-lg fill-red-500" />
             });
         }
+        setIsFetchAllowed(true);
         setSavingProposalAndComission(false);
     };
 
@@ -534,12 +536,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         onMutate: async (id: string) => {
             setIsDeleting(true);
             setSpecificCardData(null);
-            // setCardsData((old: any) => {
-            //     return {
-            //         ...old,
-            //         results: old.results.filter((item: any) => item.id !== id),
-            //       };
-            // })
+            setIsFetchAllowed(false);
         },
         onError: (err, paramsObj, context) => {
             toast.error('Erro ao arquivar o ofício!', {
@@ -577,12 +574,9 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         onSettled: () => {
             setIsDeleting(false);
             setDeleteModalLock(false);
+            setIsFetchAllowed(true);
         }
     });
-
-    // const handleDeleteOficio = async (id: string) => {
-    //     await deleteOficio.mutateAsync(id);
-    // }
 
     const handleUpdateObservation = async (message: string) => {
         await updateObservation.mutateAsync(message)
