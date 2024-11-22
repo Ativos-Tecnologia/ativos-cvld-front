@@ -168,6 +168,19 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
       cpf: "",
       data_nascimento: "",
       identidade: "",
+      bairro: "",
+      municipio: "",
+      estado: "",
+      complemento: "",
+      email: "",
+      logradouro: "",
+      nome_completo: "",
+      nome_mae: "",
+      nome_pai: "",
+      numero: "",
+      orgao_exp: "",
+      profissao: "",
+      relacionado_a: id,
     }
   });
 
