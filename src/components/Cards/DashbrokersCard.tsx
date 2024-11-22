@@ -825,6 +825,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                 </div>
 
                 <ConfirmModal
+                    size='lg'
                     isOpen={confirmModal}
                     onClose={() => { setOpenConfirmModal(false); setDeleteModalLock(false) }}
                     onConfirm={() => handleDeleteOficio(mainData!.id)}
@@ -849,7 +850,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                         <Button
                             variant="ghost"
                             disabled={deleteModalLock}
-                            className="group flex items-center justify-center overflow-hidden rounded-full px-0 py-0 w-[28px] h-[28px] hover:w-[100px] bg-slate-500 dark:bg-slate-700 dark:hover:bg-slate-700 transition-all duration-300 cursor-pointer ease-in-out"
+                            className="group flex items-center opacity-100 disabled:opacity-0 disabled:pointer-events-none justify-center overflow-hidden rounded-full px-0 py-0 w-[28px] h-[28px] hover:w-[100px] bg-slate-500 dark:bg-slate-700 dark:hover:bg-slate-700 transition-all duration-300 cursor-pointer ease-in-out"
                             onClick={() => {
                                 setOpenConfirmModal(true);
                                 setDeleteModalLock(true);
