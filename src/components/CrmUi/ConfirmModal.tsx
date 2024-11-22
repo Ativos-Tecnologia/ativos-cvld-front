@@ -8,11 +8,12 @@ interface ConfirmModalProps {
     onClose: () => void;
     onConfirm: () => void;
     isLoading?: boolean;
+    size: "sm" | "md" | "lg";
 }
 
-const ConfirmModal: React.FC<ConfirmModalProps> = ({ isOpen, onClose, onConfirm, isLoading }) => {
+const ConfirmModal: React.FC<ConfirmModalProps> = ({ isOpen, onClose, onConfirm, isLoading, size }) => {
     return (
-        <Modal isOpen={isOpen} onClose={onClose}>
+        <Modal isOpen={isOpen} size={size}>
             <ModalHeader onClose={onClose} />
             <ModalBody>Tem certeza? Essa ação não pode ser desfeita.</ModalBody>
             <ModalFooter onConfirm={onConfirm} onCancel={onClose} isLoading={isLoading} />
