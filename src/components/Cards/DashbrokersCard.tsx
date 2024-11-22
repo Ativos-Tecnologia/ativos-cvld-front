@@ -675,14 +675,14 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         <div className="relative col-span-1 gap-5 bg-white dark:bg-boxdark p-5 rounded-md border border-stroke dark:border-strokedark">
             {/* ----> info <----- */}
             <div className="grid grid-cols-12 gap-2">
-                <div className="col-span-5 grid gap-3 min-w-[248px]">
+                <div className="col-span-12 md:col-span-5 grid gap-3 min-w-[248px]">
                     <div className='text-sm'>
                         <p className='text-black dark:text-snow uppercase font-medium'>Nome do Credor:</p>
                         <CRMTooltip
                             text={mainData?.properties["Credor"].title[0]?.text.content || "Não informado"}
                             arrow={false}
                         >
-                            <p className='max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap uppercase text-xs font-semibold'>
+                            <p className='md:max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap uppercase text-xs font-semibold'>
                                 {mainData?.properties["Credor"].title[0]?.text.content || "Não informado"}
                             </p>
                         </CRMTooltip>
@@ -827,10 +827,10 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                     <ConfirmModal isOpen={confirmModal} onClose={() => setOpenConfirmModal(false)} onConfirm={() => handleDeleteOficio(mainData!.id)} />
 
                 {/* ----> divider <---- */}
-                <div className='col-span-1 max-h-full w-[1px] bg-stroke dark:bg-strokedark ml-6'></div>
+                <div className='col-span-12 md:col-span-1 max-h-full w-[1px] bg-stroke dark:bg-strokedark ml-6 md:ml-0'></div>
                 {/* ----> end divider <---- */}
 
-                <div className="col-span-6 grid gap-5">
+                <div className="col-span-12 md:col-span-6 grid gap-5 border-t-2 md:border-t-0 pt-5 md:pt-0">
                     <div className='flex justify-between items-center'>
 
                         <div className='flex gap-1 items-center justify-center w-fit' >
