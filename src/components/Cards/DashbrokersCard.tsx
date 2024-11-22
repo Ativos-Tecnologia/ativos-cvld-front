@@ -823,9 +823,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                         </div>
                     </div>
                 </div>
-                    <ConfirmModal isOpen={confirmModal} onClose={() => setOpenConfirmModal(false)} onConfirm={() => handleDeleteOficio(mainData!.id)} isLoading={
-                        isDeleting
-                    } />
+                    <ConfirmModal isOpen={confirmModal} onClose={() => setOpenConfirmModal(false)} onConfirm={() => handleDeleteOficio(mainData!.id)} />
 
                 {/* ----> divider <---- */}
                 <div className='col-span-1 max-h-full w-[1px] bg-stroke dark:bg-strokedark ml-6'></div>
