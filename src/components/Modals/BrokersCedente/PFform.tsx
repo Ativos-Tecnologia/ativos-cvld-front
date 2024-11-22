@@ -24,6 +24,7 @@ import CRMTooltip from '@/components/CrmUi/Tooltip';
 import { LuLink } from 'react-icons/lu';
 import { AiOutlineLoading } from 'react-icons/ai';
 import CedenteModalSkeleton from '@/components/Skeletons/CedenteModalSkeleton';
+import ConfirmModal from '@/components/CrmUi/ConfirmModal';
 
 type FormValuesForPF = {
   nome_completo: string;
@@ -929,10 +930,17 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
       )}
 
       {/* ====> unlink modal <==== */}
-      {openUnlinkModal && (
+      <ConfirmModal
+        size='md'
+        isOpen={openUnlinkModal}
+        onClose={() => setOpenUnlinkModal(false)}
+        onConfirm={unlinkCedente}
+        isLoading={isUnlinking}
+      />
+      {/* {openUnlinkModal && (
         <div className='absolute bg-black-2/20 flex flex-col items-center justify-center w-full h-full top-0 left-0 rounded-md'>
           <div className="relative h-fit w-3/5 rounded-lg border border-stroke bg-white p-5 dark:border-strokedark dark:bg-boxdark">
-            {/* close buttom */}
+            
             <button className='group absolute right-2 top-2 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-700 transition-colors duration-300 cursor-pointer'>
               <BiX
                 className="group-hover:text-white transition-colors duration-300 text-2xl"
@@ -958,7 +966,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   )
 }

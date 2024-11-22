@@ -80,7 +80,6 @@ export const BrokersProvider = ({ children }: { children: React.ReactNode }) => 
 
     // estado que define uma trava para não abrir mais de um modal de delete
     const [deleteModalLock, setDeleteModalLock] = useState<boolean>(false);
-    console.log(deleteModalLock)
 
 
     // função responsável por fazer a request para a API
