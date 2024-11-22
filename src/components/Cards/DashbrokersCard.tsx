@@ -671,11 +671,54 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         setCredorIdentificationType(credorIdent.length === 11 ? "CPF" : credorIdent.length === 14 ? "CNPJ" : null);
     }, [oficio]);
 
+    const getColor = (value: number) => {
+        console.log(value);
+        const percentage = value / 100; // Supondo que o valor do slider varia de 0 a 100
+        const red = Math.round(255 * (1 - percentage)); // De vermelho para verde
+        const green = Math.round(255 * percentage); // De vermelho para verde
+        return `rgb(${red}, ${green}, 0)`; // Cor de transição de vermelho para verde
+    };
+
     return (
         <div className="relative col-span-1 gap-5 bg-white dark:bg-boxdark p-5 rounded-md border border-stroke dark:border-strokedark">
             {/* ----> info <----- */}
-            <div className="grid grid-cols-12 gap-2">
-                <div className="col-span-12 md:col-span-5 grid gap-3 min-w-[248px]">
+            <div className='flex justify-between items-center mb-2'>
+                <div className='flex gap-1 items-center justify-center w-fit' >
+                    <CustomCheckbox
+                        check={mainData?.properties["Status"].status?.name === "Proposta aceita"}
+                        callbackFunction={handleUpdateStatus}
+                    />
+                    <span className='text-sm font-medium'>Proposta Aceita</span>
+                </div>
+
+                <Button
+                    variant="ghost"
+                    disabled={deleteModalLock}
+                    className="group flex items-center opacity-100 disabled:opacity-0 disabled:pointer-events-none justify-center overflow-hidden rounded-full px-0 py-0 w-[28px] h-[28px] hover:w-[100px] bg-slate-500 dark:bg-slate-700 dark:hover:bg-slate-700 transition-all duration-300 cursor-pointer ease-in-out"
+                    onClick={() => {
+                        setOpenConfirmModal(true);
+                        setDeleteModalLock(true);
+                    }}
+                >
+                    {isDeleting ? (
+                        <AiOutlineLoading className='animate-spin' />
+                    ) : (
+                        <>
+                            <Fade className="group-hover:hidden">
+                                <BiTrash className='text-white' />
+                            </Fade>
+                            <Fade className="hidden group-hover:block whitespace-nowrap text-sm">
+                                <div className='text-white'>
+                                    Excluir Ativo
+                                </div>
+                            </Fade>
+                        </>
+                    )}
+                </Button>
+            </div>
+            <hr className='border border-stroke dark:border-strokedark mb-4' />
+            <div className="grid grid-cols-12">
+                <div className="col-span-12 md:col-span-6 grid gap-3 min-w-[248px] md:min-w-fit">
                     <div className='text-sm'>
                         <p className='text-black dark:text-snow uppercase font-medium'>Nome do Credor:</p>
                         <CRMTooltip
@@ -834,51 +877,16 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                 />
 
                 {/* ----> divider <---- */}
-                <div className='col-span-12 md:col-span-1 max-h-full w-[1px] bg-stroke dark:bg-strokedark ml-6 md:ml-0'></div>
+                {/* <div className='col-span-12 md:col-span-1 max-h-full w-[1px] bg-stroke dark:bg-strokedark ml-6 md:ml-0'></div> */}
                 {/* ----> end divider <---- */}
 
-                <div className="col-span-12 md:col-span-6 grid gap-5 border-t-2 md:border-t-0 pt-5 md:pt-0">
-                    <div className='flex justify-between items-center'>
-
-                        <div className='flex gap-1 items-center justify-center w-fit' >
-                            <CustomCheckbox
-                                check={mainData?.properties["Status"].status?.name === "Proposta aceita"}
-                                callbackFunction={handleUpdateStatus}
-                            />
-                            <span className='text-sm font-medium'>Proposta Aceita</span>
-                        </div>
-
-                        <Button
-                            variant="ghost"
-                            disabled={deleteModalLock}
-                            className="group flex items-center opacity-100 disabled:opacity-0 disabled:pointer-events-none justify-center overflow-hidden rounded-full px-0 py-0 w-[28px] h-[28px] hover:w-[100px] bg-slate-500 dark:bg-slate-700 dark:hover:bg-slate-700 transition-all duration-300 cursor-pointer ease-in-out"
-                            onClick={() => {
-                                setOpenConfirmModal(true);
-                                setDeleteModalLock(true);
-                            }}
-                        >
-                            {isDeleting ? (
-                                <AiOutlineLoading className='animate-spin' />
-                            ) : (
-                                <>
-                                    <Fade className="group-hover:hidden">
-                                        <BiTrash className='text-white' />
-                                    </Fade>
-                                    <Fade className="hidden group-hover:block whitespace-nowrap text-sm">
-                                        <div className='text-white'>
-                                            Excluir Ativo
-                                        </div>
-                                    </Fade>
-                                </>
-                            )}
-                        </Button>
-
-                    </div>
+                <div className="mx-2 col-span-12 md:col-span-6 grid gap-5 border-t-2 md:border-t-0 pt-5 md:pt-0 mt-5 md:mt-0 border-l-0 md:border-l-2 border-stroke dark:border-strokedark pl-0 md:pl-3">
+                    
                     <div className='relative flex flex-col gap-5 max-h-fit'>
                         <div className="flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
-                            <div className="flex flex-1 flex-col items-center gap-1">
+                            <div className="flex flex-1 flex-col items-center gap-3">
                                 <div className="text-sm font-medium flex items-center">
-                                    <p className="w-full text-sm">Proposta Atual:</p>
+                                    <p className="w-full text-sm">Proposta:</p>
                                     <input
                                         ref={proposalRef}
                                         type="text"
@@ -890,6 +898,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                     />
                                 </div>
                                 <input
+                                    style={{ backgroundColor: "red" }}
                                     type="range"
                                     step="0.01"
                                     min={mainData?.properties["(R$) Proposta Mínima - Celer"].number || 0}
@@ -898,13 +907,21 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                     onChange={e => handleProposalSliderChange(e.target.value, true)}
                                     className="w-full"
                                 />
+                                <div className="flex items-center justify-between w-full">
+                                    <p className="text-xs">
+                                        Proposta Mínima
+                                    </p>
+                                    <p className="text-xs">
+                                        Proposta Máxima
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
                         <div className="relative flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
-                            <div className="flex flex-1 flex-col items-center gap-1">
+                            <div className="flex flex-1 flex-col items-center gap-3">
                                 <div className="text-sm font-medium flex items-center">
-                                    <p className="text-sm">Comissão Atual:</p>
+                                    <p className="text-sm">Comissão:</p>
                                     <input
                                         ref={comissionRef}
                                         type="text"
@@ -940,7 +957,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                     </Button>
 
                     {/* separator */}
-                    <div className="h-px w-full bg-stroke dark:bg-strokedark"></div>
+
                     {/* end separator */}
 
                     {/* ----> observations field <----- */}
