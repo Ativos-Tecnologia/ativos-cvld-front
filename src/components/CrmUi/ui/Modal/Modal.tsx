@@ -1,21 +1,28 @@
 // Modal.tsx
 import React from 'react';
+import Backdrop from '../../Backdrop';
 
 interface ModalProps {
     isOpen: boolean;
-    onClose: () => void;
+    size: keyof typeof sizes
     children: React.ReactNode;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
+const sizes = {
+    "sm": 'w-1/2',
+    "md": 'w-3/5',
+    "lg": 'w-4/5',
+}
+
+const Modal: React.FC<ModalProps> = ({ isOpen, size, children }) => {
     if (!isOpen) return null;
 
     return (
-        <div className='absolute bg-black-2/50 flex flex-col items-center justify-center w-full h-full top-0 left-0 rounded-md border z-40'>
-            <div className="relative h-fit w-3/5 rounded-lg border border-stroke bg-white p-5 dark:border-strokedark dark:bg-boxdark z-40">
+        <Backdrop isOpen={isOpen}>
+            <div className={`relative h-fit ${sizes[size]} rounded-lg border border-stroke bg-white p-5 dark:border-strokedark dark:bg-boxdark z-40`}>
                 {children}
             </div>
-        </div>
+        </Backdrop>
     );
 };
 

@@ -10,7 +10,7 @@ interface ModalFooterProps {
 
 const ModalFooter: React.FC<ModalFooterProps> = ({ onConfirm, onCancel, isLoading }) => {
     return (
-        <div className='flex gap-4 items-center justify-center my-5'>
+        <div className='flex gap-4 items-center justify-center mt-8 mb-5'>
             <Button variant='outlined' className='outlined' onClick={onConfirm}>{
                 isLoading ? <AiOutlineLoading className='animate-spin' /> : 'Confirmar'
                 }</Button>

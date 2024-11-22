@@ -50,10 +50,9 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 ) => {
 
     /* ====> context imports <==== */
-    const { setCardsData, fetchCardData,
-        cardsData, setCedenteModal,
-        isFetchAllowed, setIsFetchAllowed,
-        setDocModalInfo, fetchDetailCardData, specificCardData, 
+    const { fetchCardData, setCedenteModal, deleteModalLock,
+        isFetchAllowed, setIsFetchAllowed, setDeleteModalLock,
+        setDocModalInfo, fetchDetailCardData, specificCardData,
         setSpecificCardData, selectedUser
     } = useContext(BrokersContext);
 
@@ -572,6 +571,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         },
         onSettled: () => {
             setIsDeleting(false);
+            setDeleteModalLock(false);
         }
     });
 
@@ -824,7 +824,14 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                         </div>
                     </div>
                 </div>
-                    <ConfirmModal isOpen={confirmModal} onClose={() => setOpenConfirmModal(false)} onConfirm={() => handleDeleteOficio(mainData!.id)} />
+
+                <ConfirmModal
+                    size='lg'
+                    isOpen={confirmModal}
+                    onClose={() => { setOpenConfirmModal(false); setDeleteModalLock(false) }}
+                    onConfirm={() => handleDeleteOficio(mainData!.id)}
+                    isLoading={isDeleting}
+                />
 
                 {/* ----> divider <---- */}
                 <div className='col-span-12 md:col-span-1 max-h-full w-[1px] bg-stroke dark:bg-strokedark ml-6 md:ml-0'></div>
@@ -843,8 +850,12 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
                         <Button
                             variant="ghost"
-                            className="group flex items-center justify-center overflow-hidden rounded-full px-0 py-0 w-[28px] h-[28px] hover:w-[100px] bg-slate-500 dark:bg-slate-700 dark:hover:bg-slate-700 transition-all duration-300 cursor-pointer ease-in-out"
-                            onClick={() => setOpenConfirmModal(true)}
+                            disabled={deleteModalLock}
+                            className="group flex items-center opacity-100 disabled:opacity-0 disabled:pointer-events-none justify-center overflow-hidden rounded-full px-0 py-0 w-[28px] h-[28px] hover:w-[100px] bg-slate-500 dark:bg-slate-700 dark:hover:bg-slate-700 transition-all duration-300 cursor-pointer ease-in-out"
+                            onClick={() => {
+                                setOpenConfirmModal(true);
+                                setDeleteModalLock(true);
+                            }}
                         >
                             {isDeleting ? (
                                 <AiOutlineLoading className='animate-spin' />
@@ -943,7 +954,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                 placeholder='Insira uma observação'
                             />
                             <Button
-                            variant='ghost'
+                                variant='ghost'
                                 onClick={() => handleUpdateObservation(observationRef.current?.value || "")}
                                 className='absolute z-2 bottom-3 right-2 py-1 text-sm px-1 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70'>
                                 {
