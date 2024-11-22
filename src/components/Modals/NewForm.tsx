@@ -8,8 +8,8 @@ import {
 import tipoOficio from "@/enums/tipoOficio.enum";
 import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
 import { formatCurrency } from "@/functions/formaters/formatCurrency";
+import { applyMaskCpfCnpj } from "@/functions/formaters/maskCpfCnpj";
 import numberFormat from "@/functions/formaters/numberFormat";
-import UseMySwal from "@/hooks/useMySwal";
 import { CvldFormInputsProps } from "@/types/cvldform";
 import { LeadMagnetResposeProps } from "@/types/leadMagnet";
 import api from "@/utils/api";
@@ -37,7 +37,6 @@ import { Button } from "../Button";
 import { UpdatePrecatorioButton } from "../Button/UpdatePrecatorioButton";
 import CustomCheckbox from "../CrmUi/Checkbox";
 import NewFormResultSkeleton from "../Skeletons/NewFormResultSkeleton";
-import { applyMaskCpfCnpj } from "@/functions/formaters/maskCpfCnpj";
 
 const NewForm = () => {
   const { modalOpen, setModalOpen } = useContext(DefaultLayoutContext);
@@ -580,6 +579,7 @@ const NewForm = () => {
                         <>
                           <Cleave
                             {...field}
+                            data-testid="valor_principal"
                             className={`w-full rounded-md border-stroke ${error ? "border-red" : "dark:border-strokedark"} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
                             options={{
                               numeral: true,
@@ -621,6 +621,7 @@ const NewForm = () => {
                         <>
                           <Cleave
                             {...field}
+                            data-testid="valor_juros"
                             className={`w-full rounded-md border-stroke ${error ? "border-red" : "dark:border-strokedark"} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
                             options={{
                               numeral: true,
@@ -654,6 +655,7 @@ const NewForm = () => {
                       <input
                         type="date"
                         id="data_base"
+                        data-testid="data_base"
                         className={`${errors.data_base && "!border-red !ring-0"} w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
                         {...register("data_base", {
                           required: "Campo obrigatório",
@@ -680,6 +682,7 @@ const NewForm = () => {
                         <input
                           type="date"
                           id="data_requisicao"
+                          data-testid="data_requisicao"
                           className={`${errors.data_requisicao && "!border-red !ring-0"} w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
                           {...register("data_requisicao", {
                             required: "Campo obrigatório",
@@ -731,6 +734,7 @@ const NewForm = () => {
                       <input
                         type="number"
                         id="percentual_a_ser_adquirido"
+                        data-testid="percentual_a_ser_adquirido"
                         defaultValue={100}
                         className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                         min={0}
@@ -777,6 +781,7 @@ const NewForm = () => {
                           <input
                             type="number"
                             id="percentual_de_honorarios"
+                            data-testid="percentual_de_honorarios"
                             defaultValue={30}
                             className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                             {...register("percentual_de_honorarios", {})}
@@ -900,6 +905,7 @@ const NewForm = () => {
                       <input
                         type="number"
                         id="numero_de_meses"
+                        data-testid="numero_de_meses"
                         className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                         min={0}
                         {...register("numero_de_meses", {
@@ -952,6 +958,7 @@ const NewForm = () => {
                         render={({ field }) => (
                           <Cleave
                             {...field}
+                            data-testid="valor_pss"
                             className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                             options={{
                               numeral: true,
@@ -1007,6 +1014,7 @@ const NewForm = () => {
                       <input
                         type="date"
                         id="data_limite_de_atualizacao"
+                        data-testid="data_limite_de_atualizacao"
                         className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                         {...register("data_limite_de_atualizacao", {})}
                         min={watch("data_requisicao")}
@@ -1069,6 +1077,7 @@ const NewForm = () => {
                               <input
                                 type="text"
                                 id="credor"
+                                data-testid="credor"
                                 className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                                 {...register("credor", {})}
                               />
@@ -1084,6 +1093,7 @@ const NewForm = () => {
                               <input
                                 type="text"
                                 id="cpf_cnpj"
+                                data-testid="cpf_cnpj"
                                 className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                                 {...register("cpf_cnpj", {})}
                               />
@@ -1134,6 +1144,7 @@ const NewForm = () => {
                                 render={({ field }) => (
                                   <Cleave
                                     {...field}
+                                    data-testid="npu"
                                     className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                                     options={{
                                       blocks: [7, 2, 4, 1, 2, 4],
@@ -1159,6 +1170,7 @@ const NewForm = () => {
                                 render={({ field }) => (
                                   <Cleave
                                     {...field}
+                                    data-testid="npu_originario"
                                     className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                                     options={{
                                       blocks: [7, 2, 4, 1, 2, 4],
@@ -1180,6 +1192,7 @@ const NewForm = () => {
                               <input
                                 type="text"
                                 id="ente_devedor"
+                                data-testid="ente_devedor"
                                 className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                                 {...register("ente_devedor", {})}
                               />
@@ -1219,6 +1232,7 @@ const NewForm = () => {
                               <input
                                 type="text"
                                 id="juizo_vara"
+                                data-testid="juizo_vara"
                                 className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
                                 {...register("juizo_vara", {})}
                               />
