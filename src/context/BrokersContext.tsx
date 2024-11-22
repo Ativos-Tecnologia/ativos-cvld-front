@@ -21,6 +21,8 @@ export type BrokersContextProps = {
     setSpecificCardData: React.Dispatch<React.SetStateAction<NotionPage | null>>;
     selectedUser: string | null;
     setSelectedUser: React.Dispatch<React.SetStateAction<string | null>>;
+    deleteModalLock: boolean;
+    setDeleteModalLock: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const BrokersContext = createContext<BrokersContextProps>({
@@ -41,6 +43,8 @@ export const BrokersContext = createContext<BrokersContextProps>({
     selectedUser: null,
     setSelectedUser: () => { },
     loadingCardData: false,
+    deleteModalLock: false,
+    setDeleteModalLock: () => { }
 });
 
 export const BrokersProvider = ({ children }: { children: React.ReactNode }) => {
@@ -73,6 +77,9 @@ export const BrokersProvider = ({ children }: { children: React.ReactNode }) => 
 
     // estado que define se o loading do card está ativo
     const [loadingCardData, setLoadingCardData] = useState<boolean>(false);
+
+    // estado que define uma trava para não abrir mais de um modal de delete
+    const [deleteModalLock, setDeleteModalLock] = useState<boolean>(false);
 
 
     // função responsável por fazer a request para a API
@@ -115,7 +122,7 @@ export const BrokersProvider = ({ children }: { children: React.ReactNode }) => 
 
     return (
         <BrokersContext.Provider value={{
-            editModalId, setEditModalId, cedenteModal, setCedenteModal,
+            editModalId, setEditModalId, cedenteModal, setCedenteModal, deleteModalLock, setDeleteModalLock,
             cardsData, setCardsData, fetchCardData, isFetchAllowed, setIsFetchAllowed,
             docModalInfo, setDocModalInfo, fetchDetailCardData, specificCardData, setSpecificCardData, selectedUser, setSelectedUser, loadingCardData
         }}>
