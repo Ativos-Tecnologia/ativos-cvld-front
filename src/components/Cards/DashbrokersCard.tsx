@@ -32,6 +32,7 @@ import { Fade } from 'react-awesome-reveal';
 import { TiWarning } from 'react-icons/ti';
 import Show from '../Show';
 import ConfirmModal from '../CrmUi/ConfirmModal';
+import Badge from '../CrmUi/ui/Badge/Badge';
 
 export type ChecksProps = {
     is_precatorio_complete: boolean | null;
@@ -674,7 +675,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         <div className="relative col-span-1 gap-5 bg-white dark:bg-boxdark p-5 rounded-md border border-stroke dark:border-strokedark">
             {/* ----> info <----- */}
             <div className="grid grid-cols-12 gap-2">
-                <div className="col-span-5 grid gap-3">
+                <div className="col-span-5 grid gap-3 min-w-[248px]">
                     <div className='text-sm'>
                         <p className='text-black dark:text-snow uppercase font-medium'>Nome do Credor:</p>
                         <CRMTooltip
@@ -699,10 +700,12 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                         </p>
                     </div>
 
-                    <div className='text-sm'>
+                    {
+                    /* <div className='text-sm'>
                         <p className='text-black dark:text-snow uppercase font-medium'>esfera:</p>
                         <p className='uppercase text-xs font-semibold'>{mainData?.properties["Esfera"].select?.name || "Não informado"}</p>
-                    </div>
+                    </div> */
+                    }
                     <div className='text-sm'>
                         <p className='text-black dark:text-snow uppercase font-medium'>status:</p>
                         <p className='uppercase text-xs font-semibold'>{mainData?.properties["Status"].status?.name || "Não informado"}</p>
@@ -712,7 +715,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                         <p className='uppercase text-xs font-semibold'>{mainData?.properties["Status Diligência"].select?.name || "Não informado"}</p>
                     </div>
 
-                    <div className='flex flex-col'>
+                    <div className='flex flex-col min-w-fit'>
 
                         <button
                             onClick={() => setEditModalId(mainData!.id)}
@@ -743,11 +746,10 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                 </>
                             )}
                         </button>
-
                     </div>
 
 
-                    <div className="flex items-center gap-4 justify-between">
+                    <div className="flex items-center gap-2 justify-between">
                         <div className='flex items-center gap-2'>
 
                             {(checks.isFetching && isFirstLoad) ? (
@@ -809,17 +811,16 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                     )}
                                 </>
                             )}
-                            
                             {/* TODO: Esse aqui será o check para verificação do anuente quando a implementação for desenvolvida */}
                             {/* <MdOutlineCircle className='w-4 h-4' /> */}
                         </div>
-
-                        <div
-                            style={{
-                                background: `${notionColorResolver(mainData?.properties["Tipo"].select?.color || "")}`
-                            }}
-                            className='py-1 px-2 uppercase rounded-md text-black-2 font-medium text-xs'>
-                            {mainData?.properties["Tipo"].select?.name || "Não informado"}
+                        <div className='flex items-center gap-2'>
+                        <Badge isANotionPage color={mainData?.properties["Tipo"].select?.color}>
+                            <Badge.Label label={mainData?.properties["Tipo"].select?.name ?? 'Não informado'} />
+                        </Badge>
+                        <Badge isANotionPage color={mainData?.properties["Esfera"].select?.color}>
+                            <Badge.Label label={mainData?.properties["Esfera"].select?.name ?? 'Não informado'} />
+                        </Badge>
                         </div>
                     </div>
                 </div>
