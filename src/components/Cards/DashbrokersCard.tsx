@@ -124,6 +124,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const proposalRef = useRef<HTMLInputElement | null>(null);
     const comissionRef = useRef<HTMLInputElement | null>(null);
     const observationRef = useRef<HTMLTextAreaElement | null>(null);
+    const proposalRangeRef = useRef<HTMLInputElement | null>(null);
 
     //* ====> Principal Data <==== */
     const [mainData, setMainData] = useState<NotionPage | null>(null);
@@ -224,6 +225,10 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                 proposalRef.current.value = numberFormat(newProposalSliderValue)
             }
         }
+
+        // if (proposalRangeRef.current) {
+        //     proposalRangeRef.current!.style.background = `linear-gradient(to right, ${getColor(newProposalSliderValue)} 0%, ${getColor(newProposalSliderValue)} ${proportion * 100}%, #E5E7EB ${proportion * 100}%, #E5E7EB 100%)`;
+        // }
     };
 
     // Função para atualizar a comissão e ajustar a proposta proporcionalmente
@@ -671,11 +676,9 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         setCredorIdentificationType(credorIdent.length === 11 ? "CPF" : credorIdent.length === 14 ? "CNPJ" : null);
     }, [oficio]);
 
-    const getColor = (value: number) => {
-        console.log(value);
-        const percentage = value / 100; // Supondo que o valor do slider varia de 0 a 100
-        const red = Math.round(255 * (1 - percentage)); // De vermelho para verde
-        const green = Math.round(255 * percentage); // De vermelho para verde
+    const getColor = (proportion: number) => {
+        const red = Math.round(255 * (1 - proportion)); // De vermelho para verde
+        const green = Math.round(255 * proportion); // De vermelho para verde
         return `rgb(${red}, ${green}, 0)`; // Cor de transição de vermelho para verde
     };
 
@@ -882,9 +885,9 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
                 <div className="mx-2 col-span-12 md:col-span-6 grid gap-5 border-t-2 md:border-t-0 pt-5 md:pt-0 mt-5 md:mt-0 border-l-0 md:border-l-2 border-stroke dark:border-strokedark pl-0 md:pl-3">
                     
-                    <div className='relative flex flex-col gap-5 max-h-fit'>
-                        <div className="flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
-                            <div className="flex flex-1 flex-col items-center gap-3">
+                    <div className='relative flex flex-col gap-5 max-h-fit pb-8 sm:pb-0'>
+                        <div className="flex items-center justify-between gap-6 2xsm:flex-col md:flex-row">
+                            <div className="flex flex-1 flex-col items-center gap-4 pb-2 2xsm:pb-0 md:pb-2">
                                 <div className="text-sm font-medium flex items-center">
                                     <p className="w-full text-sm">Proposta:</p>
                                     <input
@@ -898,28 +901,21 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                     />
                                 </div>
                                 <input
-                                    style={{ backgroundColor: "red" }}
+                                    // ref={proposalRangeRef}
                                     type="range"
                                     step="0.01"
                                     min={mainData?.properties["(R$) Proposta Mínima - Celer"].number || 0}
                                     max={mainData?.properties["(R$) Proposta Máxima - Celer"].number || 0}
                                     value={sliderValues.proposal}
                                     onChange={e => handleProposalSliderChange(e.target.value, true)}
-                                    className="w-full"
+                                    className="w-full range-slider"
                                 />
-                                <div className="flex items-center justify-between w-full">
-                                    <p className="text-xs">
-                                        Proposta Mínima
-                                    </p>
-                                    <p className="text-xs">
-                                        Proposta Máxima
-                                    </p>
-                                </div>
+                               
                             </div>
                         </div>
 
                         <div className="relative flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
-                            <div className="flex flex-1 flex-col items-center gap-3">
+                            <div className="flex flex-1 flex-col items-center gap-4">
                                 <div className="text-sm font-medium flex items-center">
                                     <p className="text-sm">Comissão:</p>
                                     <input
@@ -931,6 +927,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                         onChange={e => changeInputValues("comission", e.target.value)}
                                         className="max-w-35 text-center rounded-md border-none pr-2 pl-1 ml-2 py-2 text-sm font-medium text-body focus-visible:ring-body dark:focus-visible:ring-snow dark:bg-boxdark-2/50 dark:text-bodydark bg-gray-100"
                                     />
+                                    
                                 </div>
                                 <input
                                     type="range"
@@ -939,8 +936,9 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                     max={mainData?.properties["(R$) Comissão Máxima - Celer"].number || 0}
                                     value={sliderValues.comission}
                                     onChange={e => handleComissionSliderChange(e.target.value, true)}
-                                    className="w-full"
+                                    className="w-full range-slider-reverse"
                                 />
+                                
                             </div>
                         </div>
 
