@@ -716,43 +716,37 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             <hr className='border border-stroke dark:border-strokedark mb-4' />
             <div className="grid grid-cols-12">
                 <div className="col-span-12 md:col-span-6 grid gap-3 min-w-[248px] md:min-w-fit">
-                    <div className='text-sm'>
+                    <div className='text-xs'>
                         <p className='text-black dark:text-snow uppercase font-medium'>Nome do Credor:</p>
                         <CRMTooltip
                             text={mainData?.properties["Credor"].title[0]?.text.content || "Não informado"}
                             arrow={false}
                         >
-                            <p className='md:max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap uppercase text-xs font-semibold'>
+                            <p className='md:max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap uppercase text-sm font-semibold'>
                                 {mainData?.properties["Credor"].title[0]?.text.content || "Não informado"}
                             </p>
                         </CRMTooltip>
                     </div>
 
-                    <div className='text-sm'>
+                    <div className='text-xs'>
                         <p className='text-black dark:text-snow uppercase font-medium'>CPF/CNPJ:</p>
-                        <p className='uppercase text-xs font-semibold'>{applyMaskCpfCnpj(mainData?.properties["CPF/CNPJ"].rich_text![0].text.content || "") || "Não informado"}</p>
+                        <p className='uppercase text-sm font-semibold'>{applyMaskCpfCnpj(mainData?.properties["CPF/CNPJ"].rich_text![0].text.content || "") || "Não informado"}</p>
                     </div>
 
-                    <div className='text-sm'>
+                    <div className='text-xs'>
                         <p className='text-black dark:text-snow uppercase font-medium'>TRIBUNAL</p>
-                        <p className='max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap uppercase text-xs font-semibold'>
+                        <p className='max-w-[220px] text-ellipsis overflow-hidden whitespace-nowrap uppercase text-sm font-semibold'>
                             {mainData?.properties["Tribunal"].select?.name || "Não informado"}
                         </p>
                     </div>
 
-                    {
-                    /* <div className='text-sm'>
-                        <p className='text-black dark:text-snow uppercase font-medium'>esfera:</p>
-                        <p className='uppercase text-xs font-semibold'>{mainData?.properties["Esfera"].select?.name || "Não informado"}</p>
-                    </div> */
-                    }
-                    <div className='text-sm'>
+                    <div className='text-xs'>
                         <p className='text-black dark:text-snow uppercase font-medium'>status:</p>
-                        <p className='uppercase text-xs font-semibold'>{mainData?.properties["Status"].status?.name || "Não informado"}</p>
+                        <p className='uppercase text-sm font-semibold'>{mainData?.properties["Status"].status?.name || "Não informado"}</p>
                     </div>
-                    <div className='text-sm'>
+                    <div className='text-xs'>
                         <p className='text-black dark:text-snow uppercase font-medium'>status diligência:</p>
-                        <p className='uppercase text-xs font-semibold'>{mainData?.properties["Status Diligência"].select?.name || "Não informado"}</p>
+                        <p className='uppercase text-sm font-semibold'>{mainData?.properties["Status Diligência"].select?.name || "Não informado"}</p>
                     </div>
 
                     <div className='flex flex-col min-w-fit'>
@@ -873,15 +867,11 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                     isLoading={isDeleting}
                 />
 
-                {/* ----> divider <---- */}
-                {/* <div className='col-span-12 md:col-span-1 max-h-full w-[1px] bg-stroke dark:bg-strokedark ml-6 md:ml-0'></div> */}
-                {/* ----> end divider <---- */}
-
                 <div className="mx-2 col-span-12 md:col-span-6 grid gap-5 border-t-2 md:border-t-0 pt-5 md:pt-0 mt-5 md:mt-0 border-l-0 md:border-l-2 border-stroke dark:border-strokedark pl-0 md:pl-3">
-                    
                     <div className='relative flex flex-col gap-5 max-h-fit pb-8 sm:pb-0'>
+
                         <div className="flex items-center justify-between gap-6 2xsm:flex-col md:flex-row">
-                            <div className="flex flex-1 flex-col items-center gap-4 pb-2 2xsm:pb-0 md:pb-2">
+                            <div className="flex flex-1 flex-col items-center gap-4 pb-2 2xsm:pb-0 md:pb-2 w-full">
                                 <div className="text-sm font-medium flex items-center">
                                     <p className="w-full text-sm">Proposta:</p>
                                     <input
@@ -909,8 +899,8 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                         </div>
 
                         <div className="relative flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
-                            <div className="flex flex-1 flex-col items-center gap-4">
-                                <div className="text-sm font-medium flex items-center">
+                            <div className="flex flex-1 flex-col items-center gap-4 w-full">
+                                <div className="text-sm font-medium flex items-center ">
                                     <p className="text-sm">Comissão:</p>
                                     <input
                                         ref={comissionRef}
