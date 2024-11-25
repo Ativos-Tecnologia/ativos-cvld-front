@@ -112,7 +112,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const [isProposalButtonDisabled, setIsProposalButtonDisabled] = useState<boolean>(true);
     const [errorMessage, setErrorMessage] = useState<boolean>(false);
     const [credorIdentificationType, setCredorIdentificationType] = useState<IdentificationType>(null);
-    const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
+    // const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
     const [confirmModal, setOpenConfirmModal] = useState<boolean>(false);
     const [checks, setChecks] = useState<ChecksProps>({
         is_precatorio_complete: false,
@@ -120,6 +120,8 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         are_docs_complete: false,
         isFetching: false
     });
+
+    const isFirstLoad = useRef(true); // referência: 'isFirstLoad' sempre apontará para o mesmo objeto retornado por useRef
 
     /* ====> refs <==== */
     const proposalRef = useRef<HTMLInputElement | null>(null);
@@ -641,7 +643,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             await Promise.allSettled([
                 fetchAllChecks()
             ])
-            setIsFirstLoad(false);
+            isFirstLoad.current = false; // Foi alterada a propriedade 'current', não a variável 'isFirstLoad'. Nesse caso não houve o reassign da variável 'isFirstLoad', mas sim a alteração da propriedade 'current' do objeto retornado por useRef. Desse modo, não usando o 'setIsFirstLoad(false)' um setter de estado, evita que o componente seja renderizado novamente sem uma real necessidade.
         }
 
         refetchChecks();
