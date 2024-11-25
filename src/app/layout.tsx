@@ -5,7 +5,7 @@ import "@/css/satoshi.css";
 import "@/css/style.css";
 import "@/css/nexa.css";
 import "@/css/scrollbar.css";
-import React, { Suspense} from "react";
+import React, { Suspense, useEffect, useRef, useState} from "react";
 import Loader from "@/components/common/Loader";
 import { usePathname } from "next/navigation";
 import { checkIsPublicRoute } from "@/functions/check-is-public-route";
@@ -23,6 +23,11 @@ export default function RootLayout({
   const pathname = usePathname();
   const isPublicRoute = checkIsPublicRoute(pathname);
   const queryClient = new QueryClient();
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 1000);
+  }, []);
 
   return (
     <html lang="pt-br">
@@ -39,10 +44,14 @@ export default function RootLayout({
                 </UserInfoProvider>
               ) : (
                 <>
-                    <Suspense fallback={<Loader />}>
-                      {children}
-                    </Suspense>
-                </>
+                {loading ? (
+                  <Loader />
+                ) : (
+                  <>
+                    {children}
+                  </>
+                )}
+              </>
               )
             }
             <Toaster />
