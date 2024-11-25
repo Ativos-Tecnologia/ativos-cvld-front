@@ -41,10 +41,6 @@ export type SignUpInputs = {
   nome_representante: string;
   cpf_representante: string;
   phone: string;
-  banco: string;
-  agencia: string;
-  conta: string;
-  pix: string;
   password: string;
   confirm_password: string;
 };
@@ -93,10 +89,6 @@ const SignUp: React.FC = () => {
         nome_representante: data.nome_representante,
         cpf_representante: data.cpf_representante,
         phone: data.phone,
-        banco: data.banco,
-        agencia: data.agencia,
-        conta: data.conta,
-        pix: data.pix,
       };
 
       try {
