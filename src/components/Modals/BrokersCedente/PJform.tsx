@@ -652,8 +652,8 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
               required: true,
             })} />
 
-          {/* nome completo */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          {/* razão social */}
+          <div className='relative col-span-2 flex items-center gap-4 max-h-12 2xsm:flex-col md:flex-row'>
             <label htmlFor="razao_social" className='flex items-center justify-center gap-2'>
               <FaUserLarge />
               <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Razão Social</span>
