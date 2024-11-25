@@ -133,7 +133,7 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
             setValue("data_base", mainData.properties["Data Base"].date?.start || "");
             setValue("data_requisicao", mainData.properties["Data do Recebimento"].date?.start || "");
             setValue("valor_aquisicao_total", mainData.properties["Percentual a ser adquirido"].number === 1);
-            setValue("percentual_a_ser_adquirido", mainData.properties["Percentual a ser adquirido"].number || 0);
+            setValue("percentual_a_ser_adquirido", mainData.properties["Percentual a ser adquirido"].number! *100 || 0);
             setValue("ja_possui_destacamento", mainData.properties["Honorários já destacados?"].checkbox);
             setValue("percentual_de_honorarios", mainData.properties["Percentual de Honorários Não destacados"].number! * 100 || 0);
             setValue("incidencia_rra_ir", mainData.properties["Incidencia RRA/IR"].checkbox);
