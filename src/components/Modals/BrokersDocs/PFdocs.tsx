@@ -214,7 +214,6 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
 
   const fetchTipoDoOficio = async () => {
     const req = await fetchDetailCardData(idPrecatorio);
-    console.log(req)
     setTipoDoOficio(req);
   }
 
@@ -232,8 +231,6 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
     setValue("comprovante_de_residencia", cedenteInfo?.properties["Doc. Comprovante de Residência"].url || "");
     setValue("oficio_requisitorio", cedenteInfo?.properties["Doc. Ofício Requisitório"].url || "");
   }, [cedenteInfo])
-
-  console.log(tipoDoOficio)
 
   return (
     <div className='max-h-[480px] px-3 overflow-y-auto overflow-x-hidden'>
