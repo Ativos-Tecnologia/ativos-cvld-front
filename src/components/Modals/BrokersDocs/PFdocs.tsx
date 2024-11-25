@@ -37,6 +37,7 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
     certidao_nasc_cas: false,
     comprovante_de_residencia: false
   });
+  const [tipoDoOficio, setTipoDoOficio] = useState<NotionPage | null>(null);
   const [isUnlinkingDoc, setIsUnlinkingDoc] = useState<Record<string, boolean>>({
     oficio_requisitorio: false,
     rg: false,
@@ -211,11 +212,17 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
     }
   }
 
+  const fetchTipoDoOficio = async () => {
+    const req = await fetchDetailCardData(idPrecatorio);
+    setTipoDoOficio(req);
+  }
+
   // preenche o estado do cedente com os dados do cadastrado no oficio
   useEffect(() => {
     fetchCedenteData();
+    fetchTipoDoOficio();
   }, []);
-
+  
   // preenche os valores dos inputs que já possuirem documento cadastrado
   useEffect(() => {
     if (cedenteInfo === null) return;
@@ -230,7 +237,8 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
       <h2 className='text-center text-2xl font-medium mb-10'>Gestão de documentos</h2>
       <div className='grid grid-cols-2 gap-10 w-full'>
         {/* doc div rg */}
-        <div className='flex flex-col gap-3 col-span-2'>
+        {tipoDoOficio?.properties["Tipo"].select?.name === "PRECATÓRIO" || tipoDoOficio?.properties["Tipo"].select?.name === "RPV" && (
+          <div className='flex flex-col gap-3 col-span-2'>
           <div className='flex gap-3 items-center justify-center'>
             <label className='min-w-[211px]' htmlFor="rg">Ofício Requisitório:</label>
             <input
@@ -301,6 +309,7 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
             </div>
           )}
         </div>
+        )}
         {/* doc div rg */}
         <div className='flex flex-col gap-3 col-span-2'>
           <div className='flex gap-3 items-center justify-center'>
