@@ -29,8 +29,6 @@ import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
 import { IdentificationType } from '../Modals/BrokersCedente';
 import { NotionNumberFormater } from '@/functions/formaters/notionNumberFormater';
 import { Fade } from 'react-awesome-reveal';
-import { TiWarning } from 'react-icons/ti';
-import Show from '../Show';
 import ConfirmModal from '../CrmUi/ConfirmModal';
 import Badge from '../CrmUi/ui/Badge/Badge';
 
@@ -99,7 +97,10 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const enumTipoOficiosList = Object.values(tipoOficio);
 
     /* ====> value states <==== */
-    const [auxProposalValue, setAuxProposalValue] = useState<number>(0);
+    const [auxValues, setAuxValues] = useState<{proposal: number, commission: number}>({
+        proposal: 0,
+        commission: 0
+    });
     const [sliderValues, setSliderValues] = useState({
         proposal: 0,
         comission: 0
@@ -194,7 +195,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
         const newProposalSliderValue = parseFloat(value);
 
-        if (newProposalSliderValue !== auxProposalValue) {
+        if (newProposalSliderValue !== auxValues.proposal) {
             setIsProposalButtonDisabled(false);
         } else {
             setIsProposalButtonDisabled(true);
@@ -225,10 +226,6 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                 proposalRef.current.value = numberFormat(newProposalSliderValue)
             }
         }
-
-        // if (proposalRangeRef.current) {
-        //     proposalRangeRef.current!.style.background = `linear-gradient(to right, ${getColor(newProposalSliderValue)} 0%, ${getColor(newProposalSliderValue)} ${proportion * 100}%, #E5E7EB ${proportion * 100}%, #E5E7EB 100%)`;
-        // }
     };
 
     // Função para atualizar a comissão e ajustar a proposta proporcionalmente
@@ -252,7 +249,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         const newProposalSliderValue =
             (oficio.properties["(R$) Proposta Máxima - Celer"].number || 0) - proportion * ((oficio.properties["(R$) Proposta Máxima - Celer"].number || 0) - (oficio.properties["(R$) Proposta Mínima - Celer"].number || 0));
 
-        if (newProposalSliderValue !== auxProposalValue) {
+        if (newProposalSliderValue !== auxValues.commission) {
             setIsProposalButtonDisabled(false);
         } else {
             setIsProposalButtonDisabled(true);
@@ -275,19 +272,19 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         const rawValue = value.replace(/R\$\s*/g, "").replaceAll(".", "").replaceAll(",", ".");
         const numericalValue = parseFloat(rawValue);
 
-        if (
-            numericalValue >= (oficio.properties["(R$) Proposta Mínima - Celer"].number || 0) &&
-            numericalValue <= (oficio.properties["(R$) Proposta Máxima - Celer"].number || 0) &&
-            !isNaN(numericalValue) &&
-            numericalValue !== auxProposalValue
-        ) {
-            setIsProposalButtonDisabled(false);
-        } else {
-            setIsProposalButtonDisabled(true);
-        }
-
         switch (inputField) {
             case "proposal":
+
+                if (
+                    numericalValue >= (oficio.properties["(R$) Proposta Mínima - Celer"].number || 0) &&
+                    numericalValue <= (oficio.properties["(R$) Proposta Máxima - Celer"].number || 0) &&
+                    !isNaN(numericalValue) &&
+                    numericalValue !== auxValues.proposal
+                ) {
+                    setIsProposalButtonDisabled(false);
+                } else {
+                    setIsProposalButtonDisabled(true);
+                }
 
                 if (
                     numericalValue < (oficio.properties["(R$) Proposta Mínima - Celer"].number || 0) ||
@@ -309,6 +306,17 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                 handleProposalSliderChange(rawValue, false);
                 break;
             case "comission":
+
+                if (
+                    numericalValue >= (oficio.properties["(R$) Comissão Mínima - Celer"].number || 0) &&
+                    numericalValue <= (oficio.properties["(R$) Comissão Máxima - Celer"].number || 0) &&
+                    !isNaN(numericalValue) &&
+                    numericalValue !== auxValues.commission
+                ) {
+                    setIsProposalButtonDisabled(false);
+                } else {
+                    setIsProposalButtonDisabled(true);
+                }
 
                 if (
                     numericalValue < (oficio.properties["(R$) Comissão Mínima - Celer"].number || 0) ||
@@ -647,7 +655,10 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             comission: oficio.properties["Comissão - Celer"].number || oficio.properties["(R$) Comissão Máxima - Celer"].number || 0
         });
 
-        setAuxProposalValue(oficio.properties["Proposta Escolhida - Celer"].number || oficio.properties["(R$) Proposta Mínima - Celer"].number || 0)
+        setAuxValues({
+            proposal: oficio.properties["Proposta Escolhida - Celer"].number || oficio.properties["(R$) Proposta Mínima - Celer"].number || 0,
+            commission: oficio.properties["Comissão - Celer"].number || oficio.properties["(R$) Comissão Mínima - Celer"].number || 0
+        });
 
         if (proposalRef.current && comissionRef.current && observationRef.current) {
 
@@ -849,12 +860,12 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                             {/* <MdOutlineCircle className='w-4 h-4' /> */}
                         </div>
                         <div className='flex items-center gap-2'>
-                        <Badge isANotionPage color={mainData?.properties["Tipo"].select?.color}>
-                            <Badge.Label label={mainData?.properties["Tipo"].select?.name ?? 'Não informado'} />
-                        </Badge>
-                        <Badge isANotionPage color={mainData?.properties["Esfera"].select?.color}>
-                            <Badge.Label label={mainData?.properties["Esfera"].select?.name ?? 'Não informado'} />
-                        </Badge>
+                            <Badge isANotionPage color={mainData?.properties["Tipo"].select?.color}>
+                                <Badge.Label label={mainData?.properties["Tipo"].select?.name ?? 'Não informado'} />
+                            </Badge>
+                            <Badge isANotionPage color={mainData?.properties["Esfera"].select?.color}>
+                                <Badge.Label label={mainData?.properties["Esfera"].select?.name ?? 'Não informado'} />
+                            </Badge>
                         </div>
                     </div>
                 </div>
@@ -894,7 +905,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                     onChange={e => handleProposalSliderChange(e.target.value, true)}
                                     className="w-full range-slider"
                                 />
-                               
+
                             </div>
                         </div>
 
@@ -911,7 +922,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                         onChange={e => changeInputValues("comission", e.target.value)}
                                         className="max-w-35 text-center rounded-md border-none pr-2 pl-1 ml-2 py-2 text-sm font-medium text-body focus-visible:ring-body dark:focus-visible:ring-snow dark:bg-boxdark-2/50 dark:text-bodydark bg-gray-100"
                                     />
-                                    
+
                                 </div>
                                 <input
                                     type="range"
@@ -922,7 +933,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                     onChange={e => handleComissionSliderChange(e.target.value, true)}
                                     className="w-full range-slider-reverse"
                                 />
-                                
+
                             </div>
                         </div>
 
