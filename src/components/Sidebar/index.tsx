@@ -73,7 +73,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         console.error(`Erro ao tentar verificar aprovação do usuário: ${e}`);
       }
     }
-
     fetchUserApprovation();
   }, []);
 
