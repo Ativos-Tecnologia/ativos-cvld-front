@@ -6,8 +6,8 @@ import notionColorResolver from '@/functions/formaters/notionColorResolver';
 import { NotionPage } from '@/interfaces/INotion';
 import api from '@/utils/api';
 import Link from 'next/link';
-import React, { useContext, useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import React, { useContext, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { AiOutlineLoading } from 'react-icons/ai';
 import { BiCheck, BiTrash, BiX } from 'react-icons/bi';
 import { FaFileDownload } from 'react-icons/fa';
@@ -233,149 +233,200 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
   }, [cedenteInfo])
 
   return (
-    <div className='max-h-[480px] px-3 overflow-y-auto overflow-x-hidden'>
-      <h2 className='text-center text-2xl font-medium mb-10'>Gestão de documentos</h2>
-      <div className='grid grid-cols-2 gap-10 w-full'>
+    <div className="overflow-y-auto overflow-x-hidden px-3 2xsm:max-h-[380px] xl:max-h-[480px]">
+      <h2 className="mb-10 text-center text-2xl font-medium">
+        Gestão de Documentos
+      </h2>
+      <div className="grid w-full grid-cols-2 gap-10">
         {/* doc div rg */}
-        {tipoDoOficio?.properties["Tipo"].select?.name === "PRECATÓRIO" || tipoDoOficio?.properties["Tipo"].select?.name === "RPV" && (
+        {(tipoDoOficio?.properties["Tipo"].select?.name === "PRECATÓRIO" || tipoDoOficio?.properties["Tipo"].select?.name === "RPV") && (
           <div className='flex flex-col gap-3 col-span-2'>
-          <div className='flex gap-3 items-center justify-center'>
-            <label className='min-w-[211px]' htmlFor="rg">Ofício Requisitório:</label>
+        <div className="col-span-2 flex flex-col 2xsm:gap-6 md:gap-3">
+          <div className="flex justify-center 2xsm:flex-col 2xsm:items-start 2xsm:gap-1 lg:flex-row lg:items-center lg:gap-3">
+            <label className="min-w-[211px]" htmlFor="rg">
+              Ofício Requisitório:
+            </label>
             <input
               type="text"
-              placeholder={isFirstLoad ? "Carregando..." : "Nenhum documento vinculado"}
+              placeholder={
+                isFirstLoad ? "Carregando..." : "Nenhum documento vinculado"
+              }
               disabled={true}
               {...register("rg", { required: true })}
-              className='flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic'
+              className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0"
             />
           </div>
           {isFirstLoad ? (
             <PFdocsSkeleton />
           ) : (
-            <div className='flex items-center justify-between'>
-              <div className='flex gap-3 items-center justify-start'>
-                <Button variant='outlined' className='flex items-center justify-center py-1 px-3'>
+            <div className="flex 2xsm:flex-col 2xsm:items-start 2xsm:justify-center 2xsm:gap-3 md:flex-row md:items-center md:justify-between md:gap-0">
+              <div className="flex items-center justify-between gap-3 2xsm:w-full md:w-fit md:flex-row">
+                <Button
+                  variant="outlined"
+                  className="flex items-center justify-center px-3 py-1"
+                >
                   <form onSubmit={handleSubmit(submitDocument)}>
-                    <label htmlFor='rg' className='cursor-pointer font-medium text-sm'>
-                      {cedenteInfo?.properties["Doc. Ofício Requisitório"].url ? "Alterar Documento" : "Selecionar Documento"}
+                    <label
+                      htmlFor="rg"
+                      className="cursor-pointer text-sm font-medium"
+                    >
+                      {cedenteInfo?.properties["Doc. Ofício Requisitório"].url
+                        ? "Alterar Documento"
+                        : "Selecionar Documento"}
                     </label>
                     <input
                       type="file"
-                      id='rg'
-                      accept='.jpg, .jpeg, .png, .pdf'
-                      className='sr-only'
+                      id="rg"
+                      accept=".jpg, .jpeg, .png, .pdf"
+                      className="sr-only"
                       onChange={(e) => handleDocument(e, "rg")}
                     />
                   </form>
                 </Button>
                 {isFetchingDoc.oficio_requisitorio && (
-                  <div className='flex items-center justify-center w-8 h-8 rounded-full'>
-                    <AiOutlineLoading className='animate-spin' />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full">
+                    <AiOutlineLoading className="animate-spin" />
                   </div>
                 )}
                 {cedenteInfo?.properties["Doc. Ofício Requisitório"].url && (
-                  <>
-                    <CRMTooltip text='Baixar Ofício Requisitório' placement='right'>
+                  <div className="flex 2xsm:flex-row 2xsm:gap-4 md:flex-none">
+                    <CRMTooltip
+                      text="Baixar Ofício Requisitório"
+                      placement="right"
+                    >
                       <Link
-                        href={cedenteInfo.properties["Doc. Ofício Requisitório"].url || ""}
-                        className='flex items-center justify-center w-8 h-8 rounded-md cursor-pointer bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 transition-colors duration-300'>
-                        <FaFileDownload className='text-xl' />
+                        href={
+                          cedenteInfo.properties["Doc. Ofício Requisitório"]
+                            .url || ""
+                        }
+                        className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-slate-200 transition-colors duration-300 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
+                      >
+                        <FaFileDownload className="text-xl" />
                       </Link>
                     </CRMTooltip>
 
                     <CRMTooltip text="Desvincular documento" placement="right">
                       <Button
-                        variant='ghost'
-                        className='w-8 h-8 p-0 rounded-md flex items-center justify-center bg-red-500 hover:bg-red-600 transition-colors duration-300'
-                        onClick={() => handleRemoveDocument("Ofício Requisitório")}
+                        variant="ghost"
+                        className="flex h-8 w-8 items-center justify-center rounded-md bg-red-500 p-0 transition-colors duration-300 hover:bg-red-600"
+                        onClick={() =>
+                          handleRemoveDocument("Ofício Requisitório")
+                        }
                       >
-                        {isUnlinkingDoc.o ? <AiOutlineLoading className='text-xl text-snow animate-spin' /> : <BiTrash className='text-xl text-snow' />}
+                        {isUnlinkingDoc.o ? (
+                          <AiOutlineLoading className="animate-spin text-xl text-snow" />
+                        ) : (
+                          <BiTrash className="text-xl text-snow" />
+                        )}
                       </Button>
                     </CRMTooltip>
-                  </>
+                  </div>
                 )}
               </div>
-              {cedenteInfo?.properties["Doc. Ofício Requisitório Status"]?.select?.name && (
+              {cedenteInfo?.properties["Doc. Ofício Requisitório Status"]
+                ?.select?.name && (
                 <CRMTooltip text="Status do documento" placement="right">
                   <div
                     style={{
-                      background: `${notionColorResolver(cedenteInfo?.properties["Doc. Ofício Requisitório Status"].select?.color || "")}`
+                      background: `${notionColorResolver(cedenteInfo?.properties["Doc. Ofício Requisitório Status"].select?.color || "")}`,
                     }}
-                    className='py-1 px-3 text-black-2 rounded-md text-sm font-medium'>
-                    {cedenteInfo?.properties["Doc. Ofício Requisitório Status"].select?.name || ""}
+                    className="rounded-md px-3 py-1 text-sm font-medium text-black-2"
+                  >
+                    {cedenteInfo?.properties["Doc. Ofício Requisitório Status"]
+                      .select?.name || ""}
                   </div>
                 </CRMTooltip>
               )}
             </div>
           )}
         </div>
+        </div>
         )}
         {/* doc div rg */}
-        <div className='flex flex-col gap-3 col-span-2'>
-          <div className='flex gap-3 items-center justify-center'>
-            <label className='min-w-[211px]' htmlFor="rg">Identidade (RG):</label>
+        <div className="col-span-2 flex flex-col 2xsm:gap-6 md:gap-3">
+          <div className="flex justify-center 2xsm:flex-col 2xsm:items-start 2xsm:gap-1 lg:flex-row lg:items-center lg:gap-3">
+            <label className="min-w-[211px]" htmlFor="rg">
+              Identidade (RG):
+            </label>
             <input
               type="text"
-              placeholder={isFirstLoad ? "Carregando..." : "Nenhum documento vinculado"}
+              placeholder={
+                isFirstLoad ? "Carregando..." : "Nenhum documento vinculado"
+              }
               disabled={true}
               {...register("rg", { required: true })}
-              className='flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic'
+              className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0"
             />
           </div>
           {isFirstLoad ? (
             <PFdocsSkeleton />
           ) : (
-            <div className='flex items-center justify-between'>
-              <div className='flex gap-3 items-center justify-start'>
-                <Button variant='outlined' className='flex items-center justify-center py-1 px-3'>
+            <div className="flex 2xsm:flex-col 2xsm:items-start 2xsm:justify-center 2xsm:gap-3 md:flex-row md:items-center md:justify-between md:gap-0">
+              <div className="flex items-center justify-between gap-3 2xsm:w-full md:w-fit md:flex-row">
+                <Button
+                  variant="outlined"
+                  className="flex items-center justify-center px-3 py-1"
+                >
                   <form onSubmit={handleSubmit(submitDocument)}>
-                    <label htmlFor='rg' className='cursor-pointer font-medium text-sm'>
-                      {cedenteInfo?.properties["Doc. RG"].url ? "Alterar Documento" : "Selecionar Documento"}
+                    <label
+                      htmlFor="rg"
+                      className="cursor-pointer text-sm font-medium"
+                    >
+                      {cedenteInfo?.properties["Doc. RG"].url
+                        ? "Alterar Documento"
+                        : "Selecionar Documento"}
                     </label>
                     <input
                       type="file"
-                      id='rg'
-                      accept='.jpg, .jpeg, .png, .pdf'
-                      className='sr-only'
+                      id="rg"
+                      accept=".jpg, .jpeg, .png, .pdf"
+                      className="sr-only"
                       onChange={(e) => handleDocument(e, "rg")}
                     />
                   </form>
                 </Button>
                 {isFetchingDoc.rg && (
-                  <div className='flex items-center justify-center w-8 h-8 rounded-full'>
-                    <AiOutlineLoading className='animate-spin' />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full">
+                    <AiOutlineLoading className="animate-spin" />
                   </div>
                 )}
                 {cedenteInfo?.properties["Doc. RG"].url && (
-                  <>
-                    <CRMTooltip text='Baixar RG' placement='right'>
+                  <div className="flex 2xsm:flex-row 2xsm:gap-4 md:flex-none">
+                    <CRMTooltip text="Baixar RG" placement="right">
                       <Link
                         href={cedenteInfo.properties["Doc. RG"].url || ""}
-                        className='flex items-center justify-center w-8 h-8 rounded-md cursor-pointer bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 transition-colors duration-300'>
-                        <FaFileDownload className='text-xl' />
+                        className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-slate-200 transition-colors duration-300 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
+                      >
+                        <FaFileDownload className="text-xl" />
                       </Link>
                     </CRMTooltip>
 
                     <CRMTooltip text="Desvincular documento" placement="right">
                       <Button
-                        variant='ghost'
-                        className='w-8 h-8 p-0 rounded-md flex items-center justify-center bg-red-500 hover:bg-red-600 transition-colors duration-300'
+                        variant="ghost"
+                        className="flex h-8 w-8 items-center justify-center rounded-md bg-red-500 p-0 transition-colors duration-300 hover:bg-red-600"
                         onClick={() => handleRemoveDocument("rg")}
                       >
-                        {isUnlinkingDoc.rg ? <AiOutlineLoading className='text-xl text-snow animate-spin' /> : <BiTrash className='text-xl text-snow' />}
+                        {isUnlinkingDoc.rg ? (
+                          <AiOutlineLoading className="animate-spin text-xl text-snow" />
+                        ) : (
+                          <BiTrash className="text-xl text-snow" />
+                        )}
                       </Button>
                     </CRMTooltip>
-                  </>
+                  </div>
                 )}
               </div>
               {cedenteInfo?.properties["Doc. RG Status"]?.select?.name && (
                 <CRMTooltip text="Status do documento" placement="right">
                   <div
                     style={{
-                      background: `${notionColorResolver(cedenteInfo?.properties["Doc. RG Status"].select?.color || "")}`
+                      background: `${notionColorResolver(cedenteInfo?.properties["Doc. RG Status"].select?.color || "")}`,
                     }}
-                    className='py-1 px-3 text-black-2 rounded-md text-sm font-medium'>
-                    {cedenteInfo?.properties["Doc. RG Status"].select?.name || ""}
+                    className="mx-auto rounded-md px-3 py-1 text-sm font-medium text-black-2"
+                  >
+                    {cedenteInfo?.properties["Doc. RG Status"].select?.name ||
+                      ""}
                   </div>
                 </CRMTooltip>
               )}
@@ -384,71 +435,102 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
         </div>
 
         {/* doc div certidao */}
-        <div className='flex flex-col gap-3 col-span-2'>
-          <div className='flex gap-3 items-center justify-center'>
-            <label className='min-w-[211px]' htmlFor="rg">Certidão Nasc/Casamento:</label>
+        <div className="col-span-2 flex flex-col 2xsm:gap-6 md:gap-3">
+          <div className="flex justify-center 2xsm:flex-col 2xsm:items-start 2xsm:gap-1 lg:flex-row lg:items-center lg:gap-3">
+            <label className="min-w-[211px]" htmlFor="rg">
+              Certidão Nasc/Casamento:
+            </label>
             <input
               type="text"
-              placeholder={isFirstLoad ? "Carregando..." : "Nenhum documento vinculado"}
+              placeholder={
+                isFirstLoad ? "Carregando..." : "Nenhum documento vinculado"
+              }
               disabled={true}
               {...register("certidao_nasc_cas", { required: true })}
-              className='flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic'
+              className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0"
             />
           </div>
           {isFirstLoad ? (
             <PFdocsSkeleton />
           ) : (
-            <div className='flex items-center justify-between'>
-              <div className='flex gap-3 items-center justify-start'>
-                <Button variant='outlined' className='flex items-center justify-center py-1 px-3'>
+            <div className="flex 2xsm:flex-col 2xsm:items-start 2xsm:justify-center 2xsm:gap-3 md:flex-row md:items-center md:justify-between md:gap-0">
+              <div className="flex items-center justify-between gap-3 2xsm:w-full md:w-fit md:flex-row">
+                <Button
+                  variant="outlined"
+                  className="flex items-center justify-center px-3 py-1"
+                >
                   <form onSubmit={handleSubmit(submitDocument)}>
-                    <label htmlFor='certidao_nasc_cas' className='cursor-pointer font-medium text-sm'>
-                      {cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"].url ? "Alterar Documento" : "Selecionar Documento"}
+                    <label
+                      htmlFor="certidao_nasc_cas"
+                      className="cursor-pointer text-sm font-medium"
+                    >
+                      {cedenteInfo?.properties[
+                        "Doc. Certidão Nascimento/Casamento"
+                      ].url
+                        ? "Alterar Documento"
+                        : "Selecionar Documento"}
                     </label>
                     <input
                       type="file"
-                      id='certidao_nasc_cas'
-                      accept='.jpg, .jpeg, .png, .pdf'
-                      className='sr-only'
+                      id="certidao_nasc_cas"
+                      accept=".jpg, .jpeg, .png, .pdf"
+                      className="sr-only"
                       onChange={(e) => handleDocument(e, "certidao_nasc_cas")}
                     />
                   </form>
                 </Button>
                 {isFetchingDoc.certidao_nasc_cas && (
-                  <div className='flex items-center justify-center w-8 h-8 rounded-full'>
-                    <AiOutlineLoading className='animate-spin' />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full">
+                    <AiOutlineLoading className="animate-spin" />
                   </div>
                 )}
-                {cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"].url && (
-                  <>
-                    <CRMTooltip text='Baixar Certidão' placement='right'>
+                {cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"]
+                  .url && (
+                  <div className="flex 2xsm:flex-row 2xsm:gap-4 md:flex-none">
+                    <CRMTooltip text="Baixar Certidão" placement="right">
                       <Link
-                        href={cedenteInfo.properties["Doc. Certidão Nascimento/Casamento"].url || ""}
-                        className='flex items-center justify-center w-8 h-8 rounded-md cursor-pointer bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 transition-colors duration-300'>
-                        <FaFileDownload className='text-xl' />
+                        href={
+                          cedenteInfo.properties[
+                            "Doc. Certidão Nascimento/Casamento"
+                          ].url || ""
+                        }
+                        className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-slate-200 transition-colors duration-300 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
+                      >
+                        <FaFileDownload className="text-xl" />
                       </Link>
                     </CRMTooltip>
 
                     <CRMTooltip text="Desvincular documento" placement="right">
                       <Button
-                        variant='ghost'
-                        className='w-8 h-8 p-0 rounded-md flex items-center justify-center bg-red-500 hover:bg-red-600 transition-colors duration-300'
-                        onClick={() => handleRemoveDocument("certidao_nasc_cas")}
+                        variant="ghost"
+                        className="flex h-8 w-8 items-center justify-center rounded-md bg-red-500 p-0 transition-colors duration-300 hover:bg-red-600"
+                        onClick={() =>
+                          handleRemoveDocument("certidao_nasc_cas")
+                        }
                       >
-                        {isUnlinkingDoc.certidao_nasc_cas ? <AiOutlineLoading className='text-xl text-snow animate-spin' /> : <BiTrash className='text-xl text-snow' />}
+                        {isUnlinkingDoc.certidao_nasc_cas ? (
+                          <AiOutlineLoading className="animate-spin text-xl text-snow" />
+                        ) : (
+                          <BiTrash className="text-xl text-snow" />
+                        )}
                       </Button>
                     </CRMTooltip>
-                  </>
+                  </div>
                 )}
               </div>
-              {cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento Status"].select?.name && (
+              {cedenteInfo?.properties[
+                "Doc. Certidão Nascimento/Casamento Status"
+              ].select?.name && (
                 <CRMTooltip text="Status do documento" placement="right">
                   <div
                     style={{
-                      background: `${notionColorResolver(cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento Status"].select?.color || "")}`
+                      background: `${notionColorResolver(cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento Status"].select?.color || "")}`,
                     }}
-                    className='py-1 px-3 text-black-2 rounded-md text-sm font-medium'>
-                    {cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento Status"].select?.name || ""}
+                    className="rounded-md px-3 py-1 text-sm font-medium text-black-2"
+                  >
+                    {cedenteInfo?.properties[
+                      "Doc. Certidão Nascimento/Casamento Status"
+                    ].select?.name || ""}
                   </div>
                 </CRMTooltip>
               )}
@@ -457,71 +539,102 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
         </div>
 
         {/* doc div comprovante */}
-        <div className='flex flex-col gap-3 col-span-2'>
-          <div className='flex gap-3 items-center justify-center'>
-            <label className='min-w-[211px]' htmlFor="rg">Comprovante de Residência:</label>
+        <div className="col-span-2 flex flex-col 2xsm:gap-6 md:gap-3">
+          <div className="flex justify-center 2xsm:flex-col 2xsm:items-start 2xsm:gap-1 lg:flex-row lg:items-center lg:gap-3">
+            <label className="min-w-[211px]" htmlFor="rg">
+              Comprovante de Residência:
+            </label>
             <input
               type="text"
-              placeholder={isFirstLoad ? "Carregando..." : "Nenhum documento vinculado"}
+              placeholder={
+                isFirstLoad ? "Carregando..." : "Nenhum documento vinculado"
+              }
               disabled={true}
               {...register("comprovante_de_residencia", { required: true })}
-              className='flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic'
+              className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0"
             />
           </div>
           {isFirstLoad ? (
             <PFdocsSkeleton />
           ) : (
-            <div className='flex items-center justify-between'>
-              <div className='flex gap-3 items-center justify-start'>
-                <Button variant='outlined' className='flex items-center justify-center py-1 px-3'>
+            <div className="flex 2xsm:flex-col 2xsm:items-start 2xsm:justify-center 2xsm:gap-3 md:flex-row md:items-center md:justify-between md:gap-0">
+              <div className="flex items-center justify-between gap-3 2xsm:w-full md:w-fit md:flex-row">
+                <Button
+                  variant="outlined"
+                  className="flex items-center justify-center px-3 py-1"
+                >
                   <form onSubmit={handleSubmit(submitDocument)}>
-                    <label htmlFor='comprovante_de_residencia' className='cursor-pointer font-medium text-sm'>
-                      {cedenteInfo?.properties["Doc. Comprovante de Residência"].url ? "Alterar Documento" : "Selecionar Documento"}
+                    <label
+                      htmlFor="comprovante_de_residencia"
+                      className="cursor-pointer text-sm font-medium"
+                    >
+                      {cedenteInfo?.properties["Doc. Comprovante de Residência"]
+                        .url
+                        ? "Alterar Documento"
+                        : "Selecionar Documento"}
                     </label>
                     <input
                       type="file"
-                      id='comprovante_de_residencia'
-                      accept='.jpg, .jpeg, .png, .pdf'
-                      className='sr-only'
-                      onChange={(e) => handleDocument(e, "comprovante_de_residencia")}
+                      id="comprovante_de_residencia"
+                      accept=".jpg, .jpeg, .png, .pdf"
+                      className="sr-only"
+                      onChange={(e) =>
+                        handleDocument(e, "comprovante_de_residencia")
+                      }
                     />
                   </form>
                 </Button>
                 {isFetchingDoc.comprovante_de_residencia && (
-                  <div className='flex items-center justify-center w-8 h-8 rounded-full'>
-                    <AiOutlineLoading className='animate-spin' />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full">
+                    <AiOutlineLoading className="animate-spin" />
                   </div>
                 )}
-                {cedenteInfo?.properties["Doc. Comprovante de Residência"].url && (
-                  <>
-                    <CRMTooltip text='Baixar Comprovante' placement='right'>
+                {cedenteInfo?.properties["Doc. Comprovante de Residência"]
+                  .url && (
+                  <div className="flex 2xsm:flex-row 2xsm:gap-4 md:flex-none">
+                    <CRMTooltip text="Baixar Comprovante" placement="right">
                       <Link
-                        href={cedenteInfo.properties["Doc. Comprovante de Residência"].url || ""}
-                        className='flex items-center justify-center w-8 h-8 rounded-md cursor-pointer bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 transition-colors duration-300'>
-                        <FaFileDownload className='text-xl' />
+                        href={
+                          cedenteInfo.properties[
+                            "Doc. Comprovante de Residência"
+                          ].url || ""
+                        }
+                        className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-slate-200 transition-colors duration-300 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
+                      >
+                        <FaFileDownload className="text-xl" />
                       </Link>
                     </CRMTooltip>
 
                     <CRMTooltip text="Desvincular documento" placement="right">
                       <Button
-                        variant='ghost'
-                        className='w-8 h-8 p-0 rounded-md flex items-center justify-center bg-red-500 hover:bg-red-600 transition-colors duration-300'
-                        onClick={() => handleRemoveDocument("comprovante_de_residencia")}
+                        variant="ghost"
+                        className="flex h-8 w-8 items-center justify-center rounded-md bg-red-500 p-0 transition-colors duration-300 hover:bg-red-600"
+                        onClick={() =>
+                          handleRemoveDocument("comprovante_de_residencia")
+                        }
                       >
-                        {isUnlinkingDoc.comprovante_de_residencia ? <AiOutlineLoading className='text-xl text-snow animate-spin' /> : <BiTrash className='text-xl text-snow' />}
+                        {isUnlinkingDoc.comprovante_de_residencia ? (
+                          <AiOutlineLoading className="animate-spin text-xl text-snow" />
+                        ) : (
+                          <BiTrash className="text-xl text-snow" />
+                        )}
                       </Button>
                     </CRMTooltip>
-                  </>
+                  </div>
                 )}
               </div>
-              {cedenteInfo?.properties["Doc. Comprovante de Residência Status"].select?.name && (
+              {cedenteInfo?.properties["Doc. Comprovante de Residência Status"]
+                .select?.name && (
                 <CRMTooltip text="Status do documento" placement="right">
                   <div
                     style={{
-                      background: `${notionColorResolver(cedenteInfo?.properties["Doc. Comprovante de Residência Status"].select?.color || "")}`
+                      background: `${notionColorResolver(cedenteInfo?.properties["Doc. Comprovante de Residência Status"].select?.color || "")}`,
                     }}
-                    className='py-1 px-3 text-black-2 rounded-md text-sm font-medium'>
-                    {cedenteInfo?.properties["Doc. Comprovante de Residência Status"].select?.name || ""}
+                    className="rounded-md px-3 py-1 text-sm font-medium text-black-2"
+                  >
+                    {cedenteInfo?.properties[
+                      "Doc. Comprovante de Residência Status"
+                    ].select?.name || ""}
                   </div>
                 </CRMTooltip>
               )}
@@ -530,28 +643,33 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
         </div>
 
         {/* botão que desvincula todos os documentos */}
-        {(cedenteInfo?.properties["Doc. Ofício Requisitório"].url || cedenteInfo?.properties["Doc. RG"].url || cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"].url || cedenteInfo?.properties["Doc. Comprovante de Residência"].url) && (
-          <fieldset className='col-span-2 border-t border-stroke dark:border-form-strokedark flex items-center gap-5 justify-center py-3'>
-            <legend className='text-xs px-2 uppercase'>Outras opções</legend>
+        {(cedenteInfo?.properties["Doc. Ofício Requisitório"].url ||
+          cedenteInfo?.properties["Doc. RG"].url ||
+          cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"].url ||
+          cedenteInfo?.properties["Doc. Comprovante de Residência"].url) && (
+          <fieldset className="col-span-2 flex items-center justify-center gap-5 border-t border-stroke py-3 dark:border-form-strokedark">
+            <legend className="px-2 text-xs uppercase">Outras opções</legend>
 
             <Button
               onClick={() => setDocModalInfo(null)}
-              className='bg-green-500 hover:bg-green-600'
+              className="bg-green-500 hover:bg-green-600"
             >
               OK
             </Button>
 
             <Button
-              variant='outlined'
+              variant="outlined"
               onClick={() => handleRemoveDocument("todos")}
             >
-              {isUnlinkingDoc.todos ? "Desvinculando documentos..." : "Desvincular todos os documentos"}
+              {isUnlinkingDoc.todos
+                ? "Desvinculando documentos..."
+                : "Desvincular todos os documentos"}
             </Button>
           </fieldset>
         )}
       </div>
-    </div >
-  )
+    </div>
+  );
 }
 
 export default PFdocs
