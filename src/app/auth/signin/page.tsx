@@ -6,13 +6,14 @@ import api from "@/utils/api";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { lazy } from "react";
 
 import { Fade } from "react-awesome-reveal";
 
 import { Button } from "@/components/Button";
-import ForgotPassword from "@/components/Modals/ForgotPassword";
+const ForgotPassword = lazy(() => import("@/components/Modals/ForgotPassword"));
 import usePassword from "@/hooks/usePassword";
 import { useQueryClient } from "@tanstack/react-query";
 import { AiOutlineLoading } from "react-icons/ai";
@@ -377,7 +378,9 @@ const SignIn: React.FC = () => {
             <LiteFooter />
           )} */}
         </main>
-        <ForgotPassword state={openModal} setState={setOpenModal} />
+        <Suspense>
+          <ForgotPassword state={openModal} setState={setOpenModal} />
+        </Suspense>
       </div>
       {/* <!-- ===== Page Wrapper End ===== --> */}
     </>
