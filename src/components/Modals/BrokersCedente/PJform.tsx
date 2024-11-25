@@ -642,7 +642,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       )}
 
       {(mode === "edit" || cedentePjData.data !== null || openRegisterForm) && (
-        <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-2 gap-2 w-full max-h-100 overflow-y-auto pr-5'>
+        <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-2 w-full max-h-100 overflow-y-auto pr-5 2xsm:gap-6 md:gap-2'>
 
           {/* relacionado ao oficio */}
           <input
@@ -653,7 +653,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
             })} />
 
           {/* razão social */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12 2xsm:flex-col md:flex-row'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="razao_social" className='flex items-center justify-center gap-2'>
               <FaUserLarge />
               <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Razão Social</span>
@@ -673,7 +673,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </div>
 
           {/* CNPJ */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="cnpj" className='flex items-center justify-center gap-2'>
               <HiMiniIdentification className='text-lg' />
               <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>CNPJ</span>
@@ -702,12 +702,12 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </div>
 
           {/* Representante Legal */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="socio_representante" className='flex items-center justify-center gap-2'>
               <PiScalesFill className='text-lg' />
               <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Representante Legal</span>
             </label>
-            <div className='flex items-center gap-3 flex-1'>
+            <div className='flex items-center gap-3 w-full'>
               {cedentePjData.data?.properties["Sócio Representante"].relation?.[0]?.id ? (
                 <input
                   type="text"
@@ -758,7 +758,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </div>
 
           {/* CEP */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="cep" className='flex items-center justify-center gap-2'>
               <MdPinDrop />
               <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>CEP</span>
@@ -788,7 +788,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </div>
 
           {/* bairro */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="bairro" className='flex items-center justify-center gap-2'>
               <PiCityFill />
               <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Bairro</span>
@@ -802,7 +802,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </div>
 
           {/* Celular */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="celular" className='flex items-center justify-center gap-2'>
               <MdPhone />
               <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Celular</span>
@@ -827,7 +827,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </div>
 
           {/* email */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="email" className='flex items-center justify-center gap-2'>
               <MdAlternateEmail />
               <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Email</span>
@@ -841,7 +841,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </div>
 
           {/* estado */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="estado" className='flex items-center justify-center gap-2'>
               <MdPinDrop />
               <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Estado</span>
@@ -855,7 +855,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </div>
 
           {/* Logradouro */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="logradouro" className='flex items-center justify-center gap-2'>
               <RiRoadMapLine />
               <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Logradouro</span>
@@ -869,7 +869,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </div>
 
           {/* numero */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="numero" className='flex items-center justify-center gap-2'>
               <FaHome />
               <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Número</span>
@@ -883,7 +883,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </div>
 
           {/* Complemento */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="complemento" className='flex items-center justify-center gap-2'>
               <FaHome />
               <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Complemento</span>
@@ -897,7 +897,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           </div>
 
           {/* municipio */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="municipio" className='flex items-center justify-center gap-2'>
               <TbBuildingEstate />
               <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Municipio</span>
