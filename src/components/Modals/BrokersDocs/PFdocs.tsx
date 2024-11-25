@@ -237,7 +237,7 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
       <h2 className='text-center text-2xl font-medium mb-10'>Gestão de documentos</h2>
       <div className='grid grid-cols-2 gap-10 w-full'>
         {/* doc div rg */}
-        {tipoDoOficio?.properties["Tipo"].select?.name === "PRECATÓRIO" || tipoDoOficio?.properties["Tipo"].select?.name === "RPV" && (
+        {(tipoDoOficio?.properties["Tipo"].select?.name === "PRECATÓRIO" || tipoDoOficio?.properties["Tipo"].select?.name === "RPV") && (
           <div className='flex flex-col gap-3 col-span-2'>
           <div className='flex gap-3 items-center justify-center'>
             <label className='min-w-[211px]' htmlFor="rg">Ofício Requisitório:</label>
