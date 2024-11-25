@@ -5,7 +5,7 @@ import "@/css/satoshi.css";
 import "@/css/style.css";
 import "@/css/nexa.css";
 import "@/css/scrollbar.css";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState} from "react";
 import Loader from "@/components/common/Loader";
 import { usePathname } from "next/navigation";
 import { checkIsPublicRoute } from "@/functions/check-is-public-route";
@@ -22,16 +22,12 @@ export default function RootLayout({
 
   const pathname = usePathname();
   const isPublicRoute = checkIsPublicRoute(pathname);
-
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const queryClient = new QueryClient();
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     setTimeout(() => setLoading(false), 1000);
   }, []);
-
-  const queryClient = new QueryClient();
-
 
   return (
     <html lang="pt-br">
@@ -48,14 +44,14 @@ export default function RootLayout({
                 </UserInfoProvider>
               ) : (
                 <>
-                  {loading ? (
-                    <Loader />
-                  ) : (
-                    <>
-                      {children}
-                    </>
-                  )}
-                </>
+                {loading ? (
+                  <Loader />
+                ) : (
+                  <>
+                    {children}
+                  </>
+                )}
+              </>
               )
             }
             <Toaster />

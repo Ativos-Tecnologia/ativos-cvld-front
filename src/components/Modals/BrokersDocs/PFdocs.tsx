@@ -37,6 +37,7 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
     certidao_nasc_cas: false,
     comprovante_de_residencia: false
   });
+  const [tipoDoOficio, setTipoDoOficio] = useState<NotionPage | null>(null);
   const [isUnlinkingDoc, setIsUnlinkingDoc] = useState<Record<string, boolean>>({
     oficio_requisitorio: false,
     rg: false,
@@ -211,11 +212,17 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
     }
   }
 
+  const fetchTipoDoOficio = async () => {
+    const req = await fetchDetailCardData(idPrecatorio);
+    setTipoDoOficio(req);
+  }
+
   // preenche o estado do cedente com os dados do cadastrado no oficio
   useEffect(() => {
     fetchCedenteData();
+    fetchTipoDoOficio();
   }, []);
-
+  
   // preenche os valores dos inputs que já possuirem documento cadastrado
   useEffect(() => {
     if (cedenteInfo === null) return;

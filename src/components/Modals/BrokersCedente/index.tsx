@@ -83,7 +83,7 @@ const BrokerModal = () => {
         >
             <div
                 ref={modalRef}
-                className="relative h-fit w-1/2 rounded-lg border border-stroke bg-white p-10 dark:border-strokedark dark:bg-boxdark"
+                className="relative h-fit rounded-lg border border-stroke bg-white 2xsm:p-5 2xsm:w-11/12 md:w-4/5 lg:p-10 lg:w-1/2 dark:border-strokedark dark:bg-boxdark"
             >
 
                 {(credorIdentificationType === "CPF" && cedenteModal) ? (

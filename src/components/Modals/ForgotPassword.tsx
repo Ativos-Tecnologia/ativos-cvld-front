@@ -126,7 +126,8 @@ const ForgotPassword = ({ state, setState }: ChangePasswordProps) => {
           </div>
           <Button
             type="submit"
-            className={`${status === "request_success" && "bg-green-500"} flex w-full cursor-pointer items-center justify-center rounded-lg text-white hover:bg-opacity-90 uppercase tracking-wider`}
+            // className={`${status === "request_success" && "bg-green-500"} flex w-full cursor-pointer items-center justify-center rounded-lg text-white hover:bg-opacity-90 uppercase tracking-wider`}
+            className={`"request_success" && "bg-green-500"} flex w-full cursor-pointer items-center justify-center rounded-lg text-white hover:bg-opacity-90 uppercase tracking-wider`}
           >
             <span className="text-[16px] font-medium">
               {isSending ? "Enviando e-mail" : "Enviar"}
