@@ -1,11 +1,9 @@
 import { BrokersContext } from '@/context/BrokersContext';
 import { NotionPage } from '@/interfaces/INotion';
-import { TiWarning } from "react-icons/ti";
-import React, { useContext, useEffect, useRef, useState } from 'react'
-import { BiTrash, BiX } from 'react-icons/bi';
-import PFform from './PFform';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Fade } from 'react-awesome-reveal';
-import { Button } from '@/components/Button';
+import { TiWarning } from "react-icons/ti";
+import PFform from './PFform';
 import PJform from './PJform';
 
 export type BrokerModalProps = {
