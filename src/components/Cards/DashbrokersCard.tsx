@@ -9,9 +9,6 @@ import { NotionPage } from '@/interfaces/INotion';
 import api from '@/utils/api';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/functions/formaters/formatCurrency';
-import { useForm } from 'react-hook-form';
-import { CvldFormInputsProps } from '@/types/cvldform';
-import tipoOficio from '@/enums/tipoOficio.enum';
 import { AiOutlineLoading } from 'react-icons/ai';
 import { useMutation } from '@tanstack/react-query';
 import { IoCloseCircle } from 'react-icons/io5';
@@ -21,7 +18,6 @@ import { BrokersContext } from '@/context/BrokersContext';
 import { RiErrorWarningFill } from 'react-icons/ri';
 import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
 import { IdentificationType } from '../Modals/BrokersCedente';
-import { NotionNumberFormater } from '@/functions/formaters/notionNumberFormater';
 import { Fade } from 'react-awesome-reveal';
 import ConfirmModal from '../CrmUi/ConfirmModal';
 import Badge from '../CrmUi/ui/Badge/Badge';
@@ -311,6 +307,12 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             toast.success('Proposta e comissão salvas com sucesso!', {
                 icon: <BiCheck className="text-lg fill-green-400" />
             });
+            setAuxValues({
+                proposal: sliderValues.proposal,
+                commission: sliderValues.comission
+            })
+            setIsProposalButtonDisabled(true);
+            fetchDetailCardData(mainData!.id);
         }
 
         if (req.status === 400) {
@@ -321,53 +323,6 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         setIsFetchAllowed(true);
         setSavingProposalAndComission(false);
     };
-    //     mutationFn: async (data) => {
-    //         const req = await api.patch(`/api/lead-magnet/update/${mainData!.id}/`, data);
-    //         return req.status;
-    //     },
-    //     onMutate: async () => {
-    //         setIsSavingEdit(true);
-    //         setIsFetchAllowed(false);
-    //     },
-    //     onError: () => {
-    //         toast.error('Erro ao atualizar ofício', {
-    //             classNames: {
-    //                 toast: "bg-white dark:bg-boxdark",
-    //                 title: "text-black-2 dark:text-white",
-    //                 actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
-    //             },
-    //             icon: <BiX className="text-lg fill-red-500" />,
-    //             action: {
-    //                 label: "OK",
-    //                 onClick() {
-    //                     toast.dismiss();
-    //                 },
-    //             }
-    //         });
-    //     },
-    //     onSuccess: async () => {
-    //         await fetchDetailCardData(mainData!.id);
-    //         setEditModalId(null);
-    //         toast.success("Dados do ofício atualizados.", {
-    //             classNames: {
-    //                 toast: "bg-white dark:bg-boxdark",
-    //                 title: "text-black-2 dark:text-white",
-    //                 actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
-    //             },
-    //             icon: <BiCheck className="text-lg fill-green-400" />,
-    //             action: {
-    //                 label: "OK",
-    //                 onClick() {
-    //                     toast.dismiss();
-    //                 },
-    //             }
-    //         });
-    //     },
-    //     onSettled: () => {
-    //         setIsSavingEdit(false);
-    //         setIsFetchAllowed(true);
-    //     }
-    // });
 
     const updateObservation = useMutation({
         mutationFn: async (message: string) => {
@@ -580,27 +535,29 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
     useEffect(() => {
 
-        setSliderValues({
-            proposal: oficio.properties["Proposta Escolhida - Celer"].number || oficio.properties["(R$) Proposta Mínima - Celer"].number || 0,
-            comission: oficio.properties["Comissão - Celer"].number || oficio.properties["(R$) Comissão Máxima - Celer"].number || 0
-        });
-
-        setAuxValues({
-            proposal: oficio.properties["Proposta Escolhida - Celer"].number || oficio.properties["(R$) Proposta Mínima - Celer"].number || 0,
-            commission: oficio.properties["Comissão - Celer"].number || oficio.properties["(R$) Comissão Mínima - Celer"].number || 0
-        });
-
-        if (proposalRef.current && comissionRef.current && observationRef.current) {
-
-            proposalRef.current.value = numberFormat(oficio.properties["Proposta Escolhida - Celer"].number || oficio.properties["(R$) Proposta Mínima - Celer"].number || 0)
-
-            comissionRef.current.value = numberFormat(oficio.properties["Comissão - Celer"].number || oficio.properties["(R$) Comissão Máxima - Celer"].number || 0);
-
-            observationRef.current.value = oficio?.properties?.["Observação"]?.rich_text!.length > 0 ? oficio.properties["Observação"].rich_text![0].text.content : "";
-
+        if (mainData) {
+            setSliderValues({
+                proposal: mainData.properties["Proposta Escolhida - Celer"].number || mainData.properties["(R$) Proposta Mínima - Celer"].number || 0,
+                comission: mainData.properties["Comissão - Celer"].number || mainData.properties["(R$) Comissão Máxima - Celer"].number || 0
+            });
+    
+            setAuxValues({
+                proposal: mainData.properties["Proposta Escolhida - Celer"].number || mainData.properties["(R$) Proposta Mínima - Celer"].number || 0,
+                commission: mainData.properties["Comissão - Celer"].number || mainData.properties["(R$) Comissão Mínima - Celer"].number || 0
+            });
+    
+            if (proposalRef.current && comissionRef.current && observationRef.current) {
+    
+                proposalRef.current.value = numberFormat(mainData.properties["Proposta Escolhida - Celer"].number || mainData.properties["(R$) Proposta Mínima - Celer"].number || 0)
+    
+                comissionRef.current.value = numberFormat(mainData.properties["Comissão - Celer"].number || mainData.properties["(R$) Comissão Máxima - Celer"].number || 0);
+    
+                observationRef.current.value = mainData?.properties?.["Observação"]?.rich_text!.length > 0 ? mainData.properties["Observação"].rich_text![0].text.content : "";
+    
+            }
         }
 
-    }, [oficio]);
+    }, [mainData]);
 
     useEffect(() => {
         if (oficio === null) return;

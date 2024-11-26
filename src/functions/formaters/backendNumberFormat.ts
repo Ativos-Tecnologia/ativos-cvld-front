@@ -4,7 +4,7 @@ export default function backendNumberFormat(value: string) {
     }
 
     return (
-      value.replace("R$ ", "").replaceAll(".", "").replaceAll(",", ".") ||
+      value.replace(/R\$\s*/g, "").replaceAll(".", "").replaceAll(",", ".") ||
       "0.00"
     );
   }
