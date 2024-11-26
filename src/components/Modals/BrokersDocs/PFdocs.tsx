@@ -239,108 +239,117 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
       </h2>
       <div className="grid w-full grid-cols-2 gap-10">
         {/* doc div rg */}
-        {(tipoDoOficio?.properties["Tipo"].select?.name === "PRECATÓRIO" || tipoDoOficio?.properties["Tipo"].select?.name === "RPV") && (
-          <div className='flex flex-col gap-3 col-span-2'>
-        <div className="col-span-2 flex flex-col 2xsm:gap-6 md:gap-3">
-          <div className="flex justify-center 2xsm:flex-col 2xsm:items-start 2xsm:gap-1 lg:flex-row lg:items-center lg:gap-3">
-            <label className="min-w-[211px]" htmlFor="rg">
-              Ofício Requisitório:
-            </label>
-            <input
-              type="text"
-              placeholder={
-                isFirstLoad ? "Carregando..." : "Nenhum documento vinculado"
-              }
-              disabled={true}
-              {...register("rg", { required: true })}
-              className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0"
-            />
-          </div>
-          {isFirstLoad ? (
-            <PFdocsSkeleton />
-          ) : (
-            <div className="flex 2xsm:flex-col 2xsm:items-start 2xsm:justify-center 2xsm:gap-3 md:flex-row md:items-center md:justify-between md:gap-0">
-              <div className="flex items-center justify-between gap-3 2xsm:w-full md:w-fit md:flex-row">
-                <Button
-                  variant="outlined"
-                  className="flex items-center justify-center px-3 py-1"
-                >
-                  <form onSubmit={handleSubmit(submitDocument)}>
-                    <label
-                      htmlFor="rg"
-                      className="cursor-pointer text-sm font-medium"
-                    >
-                      {cedenteInfo?.properties["Doc. Ofício Requisitório"].url
-                        ? "Alterar Documento"
-                        : "Selecionar Documento"}
-                    </label>
-                    <input
-                      type="file"
-                      id="rg"
-                      accept=".jpg, .jpeg, .png, .pdf"
-                      className="sr-only"
-                      onChange={(e) => handleDocument(e, "rg")}
-                    />
-                  </form>
-                </Button>
-                {isFetchingDoc.oficio_requisitorio && (
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full">
-                    <AiOutlineLoading className="animate-spin" />
-                  </div>
-                )}
-                {cedenteInfo?.properties["Doc. Ofício Requisitório"].url && (
-                  <div className="flex 2xsm:flex-row 2xsm:gap-4 md:flex-none">
-                    <CRMTooltip
-                      text="Baixar Ofício Requisitório"
-                      placement="right"
-                    >
-                      <Link
-                        href={
-                          cedenteInfo.properties["Doc. Ofício Requisitório"]
-                            .url || ""
-                        }
-                        className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-slate-200 transition-colors duration-300 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
-                      >
-                        <FaFileDownload className="text-xl" />
-                      </Link>
-                    </CRMTooltip>
-
-                    <CRMTooltip text="Desvincular documento" placement="right">
-                      <Button
-                        variant="ghost"
-                        className="flex h-8 w-8 items-center justify-center rounded-md bg-red-500 p-0 transition-colors duration-300 hover:bg-red-600"
-                        onClick={() =>
-                          handleRemoveDocument("Ofício Requisitório")
-                        }
-                      >
-                        {isUnlinkingDoc.o ? (
-                          <AiOutlineLoading className="animate-spin text-xl text-snow" />
-                        ) : (
-                          <BiTrash className="text-xl text-snow" />
-                        )}
-                      </Button>
-                    </CRMTooltip>
-                  </div>
-                )}
+        {(tipoDoOficio?.properties["Tipo"].select?.name === "PRECATÓRIO" ||
+          tipoDoOficio?.properties["Tipo"].select?.name === "RPV") && (
+          <div className="col-span-2 flex flex-col gap-3">
+            <div className="col-span-2 flex flex-col 2xsm:gap-6 md:gap-3">
+              <div className="flex justify-center 2xsm:flex-col 2xsm:items-start 2xsm:gap-1 lg:flex-row lg:items-center lg:gap-3">
+                <label className="min-w-[211px]" htmlFor="oficio_requisitorio">
+                  Ofício Requisitório:
+                </label>
+                <input
+                  type="text"
+                  placeholder={
+                    isFirstLoad ? "Carregando..." : "Nenhum documento vinculado"
+                  }
+                  disabled={true}
+                  {...register("rg", { required: true })}
+                  className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0"
+                />
               </div>
-              {cedenteInfo?.properties["Doc. Ofício Requisitório Status"]
-                ?.select?.name && (
-                <CRMTooltip text="Status do documento" placement="right">
-                  <div
-                    style={{
-                      background: `${notionColorResolver(cedenteInfo?.properties["Doc. Ofício Requisitório Status"].select?.color || "")}`,
-                    }}
-                    className="rounded-md px-3 py-1 text-sm font-medium text-black-2"
-                  >
-                    {cedenteInfo?.properties["Doc. Ofício Requisitório Status"]
-                      .select?.name || ""}
+              {isFirstLoad ? (
+                <PFdocsSkeleton />
+              ) : (
+                <div className="flex 2xsm:flex-col 2xsm:items-start 2xsm:justify-center 2xsm:gap-3 md:flex-row md:items-center md:justify-between md:gap-0">
+                  <div className="flex items-center justify-between gap-3 2xsm:w-full md:w-fit md:flex-row">
+                    <Button
+                      variant="outlined"
+                      className="flex items-center justify-center px-3 py-1"
+                    >
+                      <form onSubmit={handleSubmit(submitDocument)}>
+                        <label
+                          htmlFor="oficio_requisitorio"
+                          className="cursor-pointer text-sm font-medium"
+                        >
+                          {cedenteInfo?.properties["Doc. Ofício Requisitório"]
+                            .url
+                            ? "Alterar Documento"
+                            : "Selecionar Documento"}
+                        </label>
+                        <input
+                          type="file"
+                          id="oficio_requisitorio"
+                          accept=".jpg, .jpeg, .png, .pdf"
+                          className="sr-only"
+                          onChange={(e) =>
+                            handleDocument(e, "oficio_requisitorio")
+                          }
+                        />
+                      </form>
+                    </Button>
+                    {isFetchingDoc.oficio_requisitorio && (
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full">
+                        <AiOutlineLoading className="animate-spin" />
+                      </div>
+                    )}
+                    {cedenteInfo?.properties["Doc. Ofício Requisitório"]
+                      .url && (
+                      <div className="flex 2xsm:flex-row 2xsm:gap-4 md:flex-none">
+                        <CRMTooltip
+                          text="Baixar Ofício Requisitório"
+                          placement="right"
+                        >
+                          <Link
+                            href={
+                              cedenteInfo.properties["Doc. Ofício Requisitório"]
+                                .url || ""
+                            }
+                            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-slate-200 transition-colors duration-300 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
+                          >
+                            <FaFileDownload className="text-xl" />
+                          </Link>
+                        </CRMTooltip>
+
+                        <CRMTooltip
+                          text="Desvincular documento"
+                          placement="right"
+                        >
+                          <Button
+                            variant="ghost"
+                            className="flex h-8 w-8 items-center justify-center rounded-md bg-red-500 p-0 transition-colors duration-300 hover:bg-red-600"
+                            onClick={() =>
+                              handleRemoveDocument("Ofício Requisitório")
+                            }
+                          >
+                            {isUnlinkingDoc.o ? (
+                              <AiOutlineLoading className="animate-spin text-xl text-snow" />
+                            ) : (
+                              <BiTrash className="text-xl text-snow" />
+                            )}
+                          </Button>
+                        </CRMTooltip>
+                      </div>
+                    )}
                   </div>
-                </CRMTooltip>
+                  {cedenteInfo?.properties["Doc. Ofício Requisitório Status"]
+                    ?.select?.name && (
+                    <CRMTooltip text="Status do documento" placement="right">
+                      <div
+                        style={{
+                          background: `${notionColorResolver(cedenteInfo?.properties["Doc. Ofício Requisitório Status"].select?.color || "")}`,
+                        }}
+                        className="rounded-md px-3 py-1 text-sm font-medium text-black-2"
+                      >
+                        {cedenteInfo?.properties[
+                          "Doc. Ofício Requisitório Status"
+                        ].select?.name || ""}
+                      </div>
+                    </CRMTooltip>
+                  )}
+                </div>
               )}
             </div>
-          )}
-        </div>
-        </div>
+          </div>
         )}
         {/* doc div rg */}
         <div className="col-span-2 flex flex-col 2xsm:gap-6 md:gap-3">
