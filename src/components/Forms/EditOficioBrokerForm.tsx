@@ -16,6 +16,8 @@ import backendNumberFormat from '@/functions/formaters/backendNumberFormat';
 import { useMutation } from '@tanstack/react-query';
 import api from '@/utils/api';
 import { toast } from 'sonner';
+import { verifyUpdateFields } from '@/functions/verifiers/verifyValues';
+import numberFormat from '@/functions/formaters/numberFormat';
 
 interface IFormBroker {
     mainData: NotionPage | null;
@@ -30,6 +32,9 @@ interface IFormBroker {
  */
 
 const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
+
+    /* ====> dados inicias do formulário */
+    const [defaultFormValues, setDefaultFormValues] = useState<any>(null)
 
     /* ====> form imports <==== */
     const {
@@ -100,23 +105,33 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
 
     // função para alterar os dados do oficio (submit)
     async function onSubmit(data: any) {
+        if (verifyUpdateFields(defaultFormValues, data)) {
+            data.need_to_recalculate_proposal = true
+        } else {
+            data.need_to_recalculate_proposal = false
+        }
+
         data.percentual_a_ser_adquirido /= 100;
         data.percentual_de_honorarios /= 100;
-
+        
+        
         if (typeof data.valor_principal === "string") {
             data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
             data.valor_principal = parseFloat(data.valor_principal);
         }
-
+        
         if (typeof data.valor_juros === "string") {
             data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
             data.valor_juros = parseFloat(data.valor_juros);
         }
-
+        
         if (typeof data.valor_pss) {
             data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
             data.valor_pss = parseFloat(data.valor_pss);
         }
+        
+        // console.log(data)
+        // return
 
         await updateOficio.mutateAsync(data);
     }
@@ -128,8 +143,8 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
             setValue("esfera", mainData.properties["Esfera"].select?.name || "FEDERAL");
             setValue("regime", mainData.properties["Regime"].select?.name || "GERAL");
             setValue("tribunal", mainData.properties["Tribunal"].select?.name || "STJ");
-            setValue("valor_principal", NotionNumberFormater(mainData.properties["Valor Principal"].number || 0));
-            setValue("valor_juros", NotionNumberFormater(mainData.properties["Valor Juros"].number || 0));
+            setValue("valor_principal", numberFormat(mainData.properties["Valor Principal"].number || 0));
+            setValue("valor_juros", numberFormat(mainData.properties["Valor Juros"].number || 0));
             setValue("data_base", mainData.properties["Data Base"].date?.start || "");
             setValue("data_requisicao", mainData.properties["Data do Recebimento"].date?.start || "");
             setValue("valor_aquisicao_total", mainData.properties["Percentual a ser adquirido"].number === 1);
@@ -151,6 +166,9 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
             setValue("juizo_vara", mainData.properties["Juízo"].rich_text?.[0]?.text.content || "");
             setValue("status", mainData.properties["Status"].status?.name || "");
             setValue("upload_notion", true);
+
+            // setando valores iniciais no formulário
+            setDefaultFormValues(watch())
         }
     }, [mainData])
 
