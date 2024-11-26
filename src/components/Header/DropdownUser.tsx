@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import useLogout from "@/hooks/useLogout";
 import { UserInfoAPIContext, UserInfoContextType } from "@/context/UserInfoContext";
+import useLogout from "@/hooks/useLogout";
 import { Avatar } from "flowbite-react";
-import { AiFillCrown, AiOutlineLogout, AiOutlineSetting, AiOutlineUser } from "react-icons/ai";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem, DropdownMenuSeparator } from "../ui/dropdown-menu";
+import Link from "next/link";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { AiFillCrown, AiOutlineLogout } from "react-icons/ai";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -97,7 +97,7 @@ const DropdownUser = () => {
         </Link>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-max">
-        <DropdownMenuItem>
+        {/* <DropdownMenuItem>
           <Link
             href="/profile"
             className="flex items-center w-full gap-3.5 !text-sm font-medium duration-300 ease-in-out hover:text-blue-700 dark:hover:text-white lg:text-base"
@@ -116,7 +116,7 @@ const DropdownUser = () => {
             Configurações
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator /> */}
         <DropdownMenuItem
           className="flex items-center gap-3.5 !text-sm font-medium duration-300 ease-in-out lg:text-base cursor-pointer"
           onClick={logout}

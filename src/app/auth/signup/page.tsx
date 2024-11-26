@@ -41,10 +41,6 @@ export type SignUpInputs = {
   nome_representante: string;
   cpf_representante: string;
   phone: string;
-  banco: string;
-  agencia: string;
-  conta: string;
-  pix: string;
   password: string;
   confirm_password: string;
 };
@@ -93,10 +89,6 @@ const SignUp: React.FC = () => {
         nome_representante: data.nome_representante,
         cpf_representante: data.cpf_representante,
         phone: data.phone,
-        banco: data.banco,
-        agencia: data.agencia,
-        conta: data.conta,
-        pix: data.pix,
       };
 
       try {
@@ -208,7 +200,7 @@ const SignUp: React.FC = () => {
         </div>
 
         {/* form */}
-        <div className="w-full border-stroke bg-snow 2xsm:p-8 sm:px-8 sm:py-12.5 md:absolute md:left-1/2 md:top-1/2 md:max-h-[850px] md:w-3/4 md:-translate-x-1/2 md:-translate-y-1/2 md:overflow-y-scroll md:rounded-tr-md md:rounded-br-md lg:h-fit lg:max-h-[850px] xl:static xl:h-full xl:w-[35%] xl:translate-x-0 xl:translate-y-0 xl:py-5.5 3xl:max-h-[610px] 3xl:overflow-y-scroll">
+        <div className="w-full border-stroke bg-snow 2xsm:p-8 sm:px-8 sm:py-12.5 md:absolute md:left-1/2 md:top-1/2 md:max-h-[850px] md:w-3/4 md:-translate-x-1/2 md:-translate-y-1/2 md:overflow-y-scroll md:rounded-br-md md:rounded-tr-md lg:h-fit lg:max-h-[850px] xl:static xl:h-full xl:w-[35%] xl:translate-x-0 xl:translate-y-0 xl:py-5.5 3xl:max-h-[610px] 3xl:overflow-y-scroll">
           {/* Mobile visible logo */}
           <div className="block w-full xl:hidden">
             <Link
@@ -529,215 +521,46 @@ const SignUp: React.FC = () => {
                   </div>
                 </div>
               ) : null}
-              <div className="w-full justify-center p-3 text-center text-sm text-amber-500 font-medium">
-                Aviso: os dados bancários precisam ser da mesma titularidade
-                do CPF/CNPJ cadastrado.
-              </div>
-              {/* Dados Bancários */}
-              <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 ">
-                {/* Banco */}
-                <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
-                  <label
-                    className="mb-2.5 block font-medium text-black"
-                    htmlFor="banco"
-                  >
-                    Banco
-                  </label>
-                  <div className="relative">
-                    <Controller
-                      name="banco"
-                      control={control}
-                      defaultValue=""
-                      rules={{
-                        required: "Campo obrigatório",
-                        pattern: {
-                          value: /^\d{3}$/,
-                          message: "Número inválido",
-                        },
+              <div className="col-span-2 mb-2 ">
+                <label
+                  className="mb-2.5 block font-medium text-black"
+                  htmlFor="phone"
+                >
+                  Whatsapp
+                </label>
+                <div className="relative">
+                  <Controller
+                    name="phone"
+                    control={control}
+                    defaultValue=""
+                    rules={{
+                      required: "Campo obrigatório",
+                      pattern: {
+                        value: /^\d{2}\.\d{5}-\d{4}$/,
+                        message: "Número inválido",
+                      },
+                    }}
+                    render={({ field }) => (
+                      <InputMask
+                        {...field}
+                        mask="99.99999-9999"
+                        placeholder="Whatsapp"
+                        className={`${errors.phone && "border-2 !border-rose-400 !ring-0"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
+                      />
+                    )}
+                  />
+
+                  <ErrorMessage errors={errors} field="whatsapp" />
+
+                  <span className="absolute right-4 top-2.5">
+                    <BiLogoWhatsapp
+                      style={{
+                        width: "22px",
+                        height: "22px",
+                        fill: "rgb(186, 193, 203)",
                       }}
-                      render={({ field }) => (
-                        <InputMask
-                          {...field}
-                          mask="999"
-                          placeholder="Banco"
-                          className={`${errors.banco && "border-2 !border-rose-400 !ring-0"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
-                        />
-                      )}
                     />
-
-                    <ErrorMessage errors={errors} field="banco" />
-
-                    <span className="absolute right-4 top-2.5">
-                      <BiIdCard
-                        style={{
-                          width: "22px",
-                          height: "22px",
-                          fill: "rgb(186, 193, 203)",
-                        }}
-                      />
-                    </span>
-                  </div>
-                </div>
-                {/* Agencia */}
-                <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
-                  <label
-                    className="mb-2.5 block font-medium text-black"
-                    htmlFor="agencia"
-                  >
-                    Agência
-                  </label>
-                  <div className="relative">
-                    <Controller
-                      name="agencia"
-                      control={control}
-                      defaultValue=""
-                      rules={{
-                        required: "Campo obrigatório",
-                        pattern: {
-                          value: /^\d{4}-\d{1}$/,
-                          message: "Número inválido",
-                        },
-                      }}
-                      render={({ field }) => (
-                        <InputMask
-                          {...field}
-                          mask="9999-9"
-                          placeholder="Agência"
-                          className={`${errors.agencia && "border-2 !border-rose-400 !ring-0"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
-                        />
-                      )}
-                    />
-
-                    <ErrorMessage errors={errors} field="agencia" />
-
-                    <span className="absolute right-4 top-2.5">
-                      <BiIdCard
-                        style={{
-                          width: "22px",
-                          height: "22px",
-                          fill: "rgb(186, 193, 203)",
-                        }}
-                      />
-                    </span>
-                  </div>
-                </div>
-
-                {/* Conta Corrente */}
-                <div className="mb-2 2xsm:col-span-2 md:col-span-1 ">
-                  <label
-                    className="mb-2.5 block font-medium text-black"
-                    htmlFor="conta"
-                  >
-                    Conta Corrente
-                  </label>
-                  <div className="relative">
-                    <Controller
-                      name="conta"
-                      control={control}
-                      defaultValue=""
-                      rules={{
-                        required: "Campo obrigatório",
-                        pattern: {
-                          value: /^\d{7}-\d{1}$/,
-                          message: "Número inválido",
-                        },
-                      }}
-                      render={({ field }) => (
-                        <InputMask
-                          {...field}
-                          mask="9999999-9"
-                          placeholder="Conta Corrente"
-                          className={`${errors.conta && "border-2 !border-rose-400 !ring-0"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
-                        />
-                      )}
-                    />
-
-                    <ErrorMessage errors={errors} field="conta_corrente" />
-
-                    <span className="absolute right-4 top-2.5">
-                      <BiIdCard
-                        style={{
-                          width: "22px",
-                          height: "22px",
-                          fill: "rgb(186, 193, 203)",
-                        }}
-                      />
-                    </span>
-                  </div>
-                </div>
-                {/* Pix */}
-                <div className="mb-2 2xsm:col-span-2  md:col-span-1">
-                  <label
-                    className="mb-2.5 block font-medium text-black"
-                    htmlFor="pix"
-                  >
-                    Pix
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Pix"
-                      className={`${errors.pix && "border-2 !border-rose-400 !ring-0"} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
-                      id="pix"
-                      {...register("pix", {
-                        required: "Campo obrigatório",
-                      })}
-                    />
-
-                    <ErrorMessage errors={errors} field="repre_name" />
-
-                    <span className="absolute right-4 top-2.5">
-                      <BiIdCard
-                        style={{
-                          width: "22px",
-                          height: "22px",
-                          fill: "rgb(186, 193, 203)",
-                        }}
-                      />
-                    </span>
-                  </div>
-                </div>
-                <div className="col-span-2 mb-2 ">
-                  <label
-                    className="mb-2.5 block font-medium text-black"
-                    htmlFor="phone"
-                  >
-                    Whatsapp
-                  </label>
-                  <div className="relative">
-                    <Controller
-                      name="phone"
-                      control={control}
-                      defaultValue=""
-                      rules={{
-                        required: "Campo obrigatório",
-                        pattern: {
-                          value: /^\d{2}\.\d{5}-\d{4}$/,
-                          message: "Número inválido",
-                        },
-                      }}
-                      render={({ field }) => (
-                        <InputMask
-                          {...field}
-                          mask="99.99999-9999"
-                          placeholder="Whatsapp"
-                          className={`${errors.phone && "border-2 !border-rose-400 !ring-0"} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
-                        />
-                      )}
-                    />
-
-                    <ErrorMessage errors={errors} field="whatsapp" />
-
-                    <span className="absolute right-4 top-2.5">
-                      <BiLogoWhatsapp
-                        style={{
-                          width: "22px",
-                          height: "22px",
-                          fill: "rgb(186, 193, 203)",
-                        }}
-                      />
-                    </span>
-                  </div>
+                  </span>
                 </div>
               </div>
             </div>

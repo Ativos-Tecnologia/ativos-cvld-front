@@ -15,12 +15,12 @@ export const APP_ROUTES = {
     broker: {
       name: "/dashboard/broker",
     },
-    profile: {
-      name: "/profile",
-    },
-    settings: {
-      name: "/settings",
-    },
+    // profile: {
+    //   name: "/profile",
+    // },
+    // settings: {
+    //   name: "/settings",
+    // },
   },
   public: {
     login: {
