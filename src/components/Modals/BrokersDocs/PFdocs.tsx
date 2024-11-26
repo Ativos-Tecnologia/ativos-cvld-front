@@ -253,7 +253,7 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
                     isFirstLoad ? "Carregando..." : "Nenhum documento vinculado"
                   }
                   disabled={true}
-                  {...register("rg", { required: true })}
+                  {...register("oficio_requisitorio", { required: true })}
                   className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0"
                 />
               </div>
@@ -318,7 +318,7 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
                             variant="ghost"
                             className="flex h-8 w-8 items-center justify-center rounded-md bg-red-500 p-0 transition-colors duration-300 hover:bg-red-600"
                             onClick={() =>
-                              handleRemoveDocument("Ofício Requisitório")
+                              handleRemoveDocument("oficio_requisitorio")
                             }
                           >
                             {isUnlinkingDoc.o ? (
