@@ -7,15 +7,11 @@ import React, { useContext, useEffect, useState } from "react";
 const routeAccessMap: Record<"crm" | "wallet" | "global", string[]> = {
   crm: [
     APP_ROUTES.private.broker.name,
-    APP_ROUTES.private.profile.name,
-    APP_ROUTES.private.settings.name,
   ],
   wallet: [
     APP_ROUTES.private.wallet.name,
     APP_ROUTES.private.marketplace.name,
     APP_ROUTES.private.marketplaceItem.name,
-    APP_ROUTES.private.profile.name,
-    APP_ROUTES.private.settings.name,
   ],
   global: Object.values(APP_ROUTES.private).map((route) => route.name),
 };
