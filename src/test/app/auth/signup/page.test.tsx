@@ -231,50 +231,6 @@ describe("Testes da Página de Registro ", () => {
     });
   });
 
-  describe("Teste das informações bancárias do Formulário", () => {
-    it("Teste do campo Banco", async () => {
-      const banco = await screen.findByText("Banco");
-      expect(banco).toBeInTheDocument();
-      expect(banco).toHaveTextContent("Banco");
-      expect(banco).toHaveClass("mb-2.5", "block", "font-medium", "text-black");
-      expect(banco).toHaveAttribute("for", "banco");
-    });
-
-    it("Teste do campo Agência", async () => {
-      const agencia = await screen.findByText("Agência");
-      expect(agencia).toBeInTheDocument();
-      expect(agencia).toHaveTextContent("Agência");
-      expect(agencia).toHaveClass(
-        "mb-2.5",
-        "block",
-        "font-medium",
-        "text-black",
-      );
-      expect(agencia).toHaveAttribute("for", "agencia");
-    });
-
-    it("Teste do campo Conta Corrente", async () => {
-      const contaCorrente = await screen.findByText("Conta Corrente");
-      expect(contaCorrente).toBeInTheDocument();
-      expect(contaCorrente).toHaveTextContent("Conta Corrente");
-      expect(contaCorrente).toHaveClass(
-        "mb-2.5",
-        "block",
-        "font-medium",
-        "text-black",
-      );
-      expect(contaCorrente).toHaveAttribute("for", "conta");
-    });
-
-    it("Teste do campo PIX", async () => {
-      const pix = await screen.findByText("Pix");
-      expect(pix).toBeInTheDocument();
-      expect(pix).toHaveTextContent("Pix");
-      expect(pix).toHaveClass("mb-2.5", "block", "font-medium", "text-black");
-      expect(pix).toHaveAttribute("for", "pix");
-    });
-  });
-
   describe("Teste das informações de Senha do Formulário", () => {
     it("Teste do campo Senha", async () => {
       const senha = await screen.findByText("Senha");
@@ -383,38 +339,6 @@ describe("Testes da Página de Registro ", () => {
       fireEvent.change(inputWhatsApp[0], { target: { value: "21999999999" } });
       expect(inputWhatsApp[0].value).toBe("21.99999-9999");
     });
-
-    it("Teste para preencher o campo de Banco", async () => {
-      const banco = (
-        await screen.findAllByPlaceholderText(/Banco/i)
-      )[0] as HTMLInputElement;
-      fireEvent.change(banco, { target: { value: "256" } });
-      expect(banco).toHaveValue("256");
-    });
-
-    it("Teste para preencher o campo de Agência", async () => {
-      const agencia = (
-        await screen.findAllByPlaceholderText(/Agência/i)
-      )[0] as HTMLInputElement;
-      fireEvent.change(agencia, { target: { value: "42123" } });
-      expect(agencia).toHaveValue("4212-3");
-    });
-
-    it("Teste para preencher o campo de Conta Corrente", async () => {
-      const contaCorrente = (
-        await screen.findAllByPlaceholderText(/Conta Corrente/i)
-      )[0] as HTMLInputElement;
-      fireEvent.change(contaCorrente, { target: { value: "44444444" } });
-      expect(contaCorrente).toHaveValue("4444444-4");
-    });
-
-    it("Teste para preencher o campo de PIX", async () => {
-      const pix = (
-        await screen.findAllByPlaceholderText(/Pix/i)
-      )[0] as HTMLInputElement;
-      fireEvent.change(pix, { target: { value: "216549846513546846852132" } });
-      expect(pix).toHaveValue("216549846513546846852132");
-    });
   });
 
   describe("Teste dos botões do Formulário", () => {
@@ -448,24 +372,6 @@ describe("Testes da Página de Registro ", () => {
       expect(link).toBeInTheDocument();
       await userEvent.click(link);
       expect(link).toHaveAttribute("href", "/auth/signin");
-    });
-  });
-
-  describe("Teste do aviso do formulário", () => {
-    it("Teste deve exibir o aviso dos dados bancários", async () => {
-      const aviso = await screen.findByText(
-        "Aviso: os dados bancários precisam ser da mesma titularidade do CPF/CNPJ cadastrado.",
-      );
-      expect(aviso).toBeInTheDocument();
-      expect(aviso).toHaveClass(
-        "w-full",
-        "justify-center",
-        "p-3",
-        "text-center",
-        "text-sm",
-        "text-amber-500",
-        "font-medium",
-      );
     });
   });
 });

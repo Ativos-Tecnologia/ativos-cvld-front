@@ -6,8 +6,8 @@ import notionColorResolver from '@/functions/formaters/notionColorResolver';
 import { NotionPage } from '@/interfaces/INotion';
 import api from '@/utils/api';
 import Link from 'next/link';
-import React, { useContext, useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import React, { useContext, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { AiOutlineLoading } from 'react-icons/ai';
 import { BiCheck, BiTrash, BiX } from 'react-icons/bi';
 import { FaFileDownload } from 'react-icons/fa';
@@ -27,7 +27,7 @@ const PJdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
     control
   } = useForm();
 
-  const { fetchDetailCardData } = useContext(BrokersContext)
+  const { fetchDetailCardData, setIsFetchAllowed } = useContext(BrokersContext)
 
   const [cedenteInfo, setCedenteInfo] = useState<NotionPage | null>(null);
   const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
@@ -46,6 +46,7 @@ const PJdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
       ...old,
       [documentType]: true
     }));
+    setIsFetchAllowed(false);
 
     try {
 
@@ -97,6 +98,7 @@ const PJdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
         ...old,
         [documentType]: false
       }));
+      setIsFetchAllowed(true);
 
     }
 
@@ -109,6 +111,8 @@ const PJdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
       ...old,
       [documentType]: true
     }));
+
+    setIsFetchAllowed(false);
 
     try {
 
@@ -155,6 +159,7 @@ const PJdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
         ...old,
         [documentType]: false
       }));
+      setIsFetchAllowed(true);
 
     }
 
@@ -205,85 +210,109 @@ const PJdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
   }, [cedenteInfo]);
 
   return (
-    <div className='max-h-[480px] px-3'>
-      <h2 className='text-center text-2xl font-medium mb-10'>Gestão de documentos</h2>
-      <div className='grid grid-cols-2 gap-10 w-full'>
+    <div className="overflow-y-auto overflow-x-hidden px-3 2xsm:max-h-[380px] xl:max-h-[480px]">
+      <h2 className="mb-10 text-center text-2xl font-medium">
+        Gestão de documentos
+      </h2>
+      <div className="grid w-full grid-cols-2 gap-10">
         {/* doc div rg */}
-        <div className='flex flex-col gap-3 col-span-2'>
-          <div className='flex gap-3 items-center justify-center'>
-            <label className='min-w-[211px]' htmlFor="rg">Contrato Social:</label>
+        <div className="col-span-2 flex flex-col gap-3">
+          <div className="flex justify-center 2xsm:flex-col 2xsm:items-start 2xsm:gap-1 lg:flex-row lg:items-center lg:gap-3">
+            <label className="min-w-[211px]" htmlFor="rg">
+              Contrato Social:
+            </label>
             <input
               type="text"
-              placeholder={isFirstLoad ? "Carregando..." : "Nenhum documento vinculado"}
+              placeholder={
+                isFirstLoad ? "Carregando..." : "Nenhum documento vinculado"
+              }
               disabled={true}
               {...register("contrato_social", { required: true })}
-              className='flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic'
+              className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0"
             />
           </div>
           {isFirstLoad ? (
             <PFdocsSkeleton />
           ) : (
-            <div className='flex items-center justify-between'>
-              <div className='flex gap-3 items-center justify-start'>
-                <Button variant='outlined' className='flex items-center justify-center py-1 px-3'>
+            <div className="flex 2xsm:flex-col 2xsm:items-start 2xsm:justify-center 2xsm:gap-3 md:flex-row md:items-center md:justify-between md:gap-0">
+              <div className="flex items-center justify-between gap-3 2xsm:w-full md:w-fit md:flex-row">
+                <Button
+                  variant="outlined"
+                  className="flex items-center justify-center px-3 py-1"
+                >
                   <form onSubmit={handleSubmit(submitDocument)}>
-                    <label htmlFor='contrato_social' className='cursor-pointer font-medium text-sm'>
-                      {cedenteInfo?.properties["Doc. Contrato Social"].url ? "Alterar Documento" : "Selecionar Documento"}
+                    <label
+                      htmlFor="contrato_social"
+                      className="cursor-pointer text-sm font-medium"
+                    >
+                      {cedenteInfo?.properties["Doc. Contrato Social"].url
+                        ? "Alterar Documento"
+                        : "Selecionar Documento"}
                     </label>
                     <input
                       type="file"
-                      id='contrato_social'
-                      accept='.jpg, .jpeg, .png, .pdf'
-                      className='sr-only'
+                      id="contrato_social"
+                      accept=".jpg, .jpeg, .png, .pdf"
+                      className="sr-only"
                       onChange={(e) => handleDocument(e, "contrato_social")}
                     />
                   </form>
                 </Button>
                 {isFetchingDoc.contrato_social && (
-                  <div className='flex items-center justify-center w-8 h-8 rounded-full'>
-                    <AiOutlineLoading className='animate-spin' />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full">
+                    <AiOutlineLoading className="animate-spin" />
                   </div>
                 )}
                 {cedenteInfo?.properties["Doc. Contrato Social"].url && (
-                  <>
-                    <CRMTooltip text='Baixar RG' placement='right'>
+                  <div className="flex 2xsm:flex-row 2xsm:gap-4 md:flex-none">
+                    <CRMTooltip text="Baixar RG" placement="right">
                       <Link
-                        href={cedenteInfo.properties["Doc. Contrato Social"].url || ""}
-                        className='flex items-center justify-center w-8 h-8 rounded-md cursor-pointer bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 transition-colors duration-300'>
-                        <FaFileDownload className='text-xl' />
+                        href={
+                          cedenteInfo.properties["Doc. Contrato Social"].url ||
+                          ""
+                        }
+                        className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-slate-200 transition-colors duration-300 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
+                      >
+                        <FaFileDownload className="text-xl" />
                       </Link>
                     </CRMTooltip>
 
                     <CRMTooltip text="Desvincular documento" placement="right">
                       <Button
-                        variant='ghost'
-                        className='w-8 h-8 p-0 rounded-md flex items-center justify-center bg-red-500 hover:bg-red-600 transition-colors duration-300'
+                        variant="ghost"
+                        className="flex h-8 w-8 items-center justify-center rounded-md bg-red-500 p-0 transition-colors duration-300 hover:bg-red-600"
                         onClick={() => handleRemoveDocument("contrato_social")}
                       >
-                        {isUnlinkingDoc.contrato_social ? <AiOutlineLoading className='text-xl text-snow animate-spin' /> : <BiTrash className='text-xl text-snow' />}
+                        {isUnlinkingDoc.contrato_social ? (
+                          <AiOutlineLoading className="animate-spin text-xl text-snow" />
+                        ) : (
+                          <BiTrash className="text-xl text-snow" />
+                        )}
                       </Button>
                     </CRMTooltip>
-                  </>
+                  </div>
                 )}
               </div>
-              {cedenteInfo?.properties["Doc. Contrato Social Status"]?.select?.name && (
+              {cedenteInfo?.properties["Doc. Contrato Social Status"]?.select
+                ?.name && (
                 <CRMTooltip text="Status do documento" placement="right">
                   <div
                     style={{
-                      background: `${notionColorResolver(cedenteInfo?.properties["Doc. Contrato Social Status"].select?.color || "")}`
+                      background: `${notionColorResolver(cedenteInfo?.properties["Doc. Contrato Social Status"].select?.color || "")}`,
                     }}
-                    className='py-1 px-3 text-black-2 rounded-md text-sm font-medium'>
-                    {cedenteInfo?.properties["Doc. Contrato Social Status"].select?.name || ""}
+                    className="rounded-md px-3 py-1 text-sm font-medium text-black-2"
+                  >
+                    {cedenteInfo?.properties["Doc. Contrato Social Status"]
+                      .select?.name || ""}
                   </div>
                 </CRMTooltip>
               )}
             </div>
           )}
         </div>
-
       </div>
-    </div >
-  )
+    </div>
+  );
 }
 
 export default PJdocs;

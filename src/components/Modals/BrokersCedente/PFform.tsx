@@ -580,7 +580,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
       )}
 
       {(mode === "edit" || cedentePfData.data !== null || openRegisterForm) && (
-        <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-2 gap-2 w-full max-h-100 pr-5 overflow-y-auto'>
+        <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-2 w-full max-h-100 pr-5 overflow-y-auto 2xsm:gap-6 md:gap-2'>
 
           {/* relacionado ao oficio */}
           <input
@@ -591,7 +591,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
             })} />
 
           {/* nome completo */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="nome_completo" className='flex items-center justify-center gap-2'>
               <FaUserLarge />
               <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Nome Completo</span>
@@ -611,7 +611,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
           </div>
 
           {/* CPF */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="cpf" className='flex items-center justify-center gap-2'>
               <HiMiniIdentification className='text-lg' />
               <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>CPF</span>
@@ -640,7 +640,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
           </div>
 
           {/* Identidade */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="identidade" className='flex items-center justify-center gap-2'>
               <HiMiniIdentification className='text-lg' />
               <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Identidade</span>
@@ -668,7 +668,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
           </div>
 
           {/* Órgão expedidor */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="orgao_exp" className='flex items-center justify-center gap-2'>
               <FaUniversity />
               <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Órgão expedidor</span>
@@ -682,7 +682,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
           </div>
 
           {/* CEP */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="cep" className='flex items-center justify-center gap-2'>
               <MdPinDrop />
               <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>CEP</span>
@@ -712,7 +712,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
           </div>
 
           {/* bairro */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="bairro" className='flex items-center justify-center gap-2'>
               <PiCityFill />
               <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Bairro</span>
@@ -726,7 +726,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
           </div>
 
           {/* Celular */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="celular" className='flex items-center justify-center gap-2'>
               <MdPhone />
               <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Celular</span>
@@ -751,7 +751,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
           </div>
 
           {/* email */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="email" className='flex items-center justify-center gap-2'>
               <MdAlternateEmail />
               <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Email</span>
@@ -765,7 +765,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
           </div>
 
           {/* estado */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="estado" className='flex items-center justify-center gap-2'>
               <MdPinDrop />
               <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Estado</span>
@@ -779,7 +779,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
           </div>
 
           {/* data de nascimento */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="data_nascimento" className='flex items-center justify-center gap-2'>
               <BsFillCalendar2WeekFill className='text-sm' />
               <span title='Data de nascimento' className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Data de nascimento</span>
@@ -804,7 +804,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
           </div>
 
           {/* Profissão */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="profissao" className='flex items-center justify-center gap-2'>
               <FaBriefcase className='text-sm' />
               <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Profissão</span>
@@ -818,7 +818,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
           </div>
 
           {/* Logradouro */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="logradouro" className='flex items-center justify-center gap-2'>
               <RiRoadMapLine />
               <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Logradouro</span>
@@ -832,7 +832,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
           </div>
 
           {/* numero */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="numero" className='flex items-center justify-center gap-2'>
               <FaHome />
               <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Número</span>
@@ -846,7 +846,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
           </div>
 
           {/* Complemento */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="complemento" className='flex items-center justify-center gap-2'>
               <FaHome />
               <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Complemento</span>
@@ -860,7 +860,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
           </div>
 
           {/* municipio */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="municipio" className='flex items-center justify-center gap-2'>
               <TbBuildingEstate />
               <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Municipio</span>
@@ -874,7 +874,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
           </div>
 
           {/* Nome do pai */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="nome_pai" className='flex items-center justify-center gap-2'>
               <FaMale />
               <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Nome do Pai</span>
@@ -888,7 +888,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
           </div>
 
           {/* Nome da mãe */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="nome_mae" className='flex items-center justify-center gap-2'>
               <FaFemale />
               <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Nome da Mãe</span>
@@ -902,7 +902,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
           </div>
 
           {/* Nacionalidade */}
-          <div className='relative col-span-2 flex items-center gap-4 max-h-12'>
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="nacionalidade" className='flex items-center justify-center gap-2'>
               <FaFlag />
               <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Nacionalidade</span>
@@ -937,36 +937,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
         onConfirm={unlinkCedente}
         isLoading={isUnlinking}
       />
-      {/* {openUnlinkModal && (
-        <div className='absolute bg-black-2/20 flex flex-col items-center justify-center w-full h-full top-0 left-0 rounded-md'>
-          <div className="relative h-fit w-3/5 rounded-lg border border-stroke bg-white p-5 dark:border-strokedark dark:bg-boxdark">
-            
-            <button className='group absolute right-2 top-2 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-700 transition-colors duration-300 cursor-pointer'>
-              <BiX
-                className="group-hover:text-white transition-colors duration-300 text-2xl"
-                onClick={() => setOpenUnlinkModal(false)}
-              />
-            </button>
-
-            <div className='flex flex-col gap-4 items-center justify-center'>
-              <TiWarning className='text-amber-300 text-5xl' />
-
-              <p className='text-center'>Tem certeza? Essa ação não pode ser desfeita.</p>
-
-              <div className='flex gap-4 items-center justify-center my-5'>
-                <Button onClick={unlinkCedente}>
-                  {isUnlinking ? "Desvinculando..." : "Desvincular"}
-                </Button>
-
-                <Button onClick={() => setOpenUnlinkModal(false)} variant='danger'>
-                  Cancelar
-                </Button>
-
-              </div>
-            </div>
-          </div>
-        </div>
-      )} */}
+      
     </div>
   )
 }

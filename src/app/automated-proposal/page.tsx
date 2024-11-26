@@ -159,6 +159,8 @@ const AutomatedProposal = () => {
   );
   const [loading, setLoading] = useState<boolean>(false);
   const [showResults, setShowResults] = useState<boolean>(false);
+  const [isProposalButtonDisabled, setIsProposalButtonDisabled] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<boolean>(false);
   const [isFloatingButtonsVisible, setIsFloatingButtonVisible] =
     useState<boolean>(false);
   const [filledFormData, setFilledFormData] =
@@ -362,24 +364,55 @@ E abaixo, uma memória das informações de entrada:
       .replace(/R\$\s*/g, "")
       .replaceAll(".", "")
       .replaceAll(",", ".");
+
+    const numericalValue = parseFloat(rawValue);
+
     switch (inputField) {
       case "proposal":
+
+        if (
+          numericalValue < (proposalValue.min || 0) ||
+          numericalValue > (proposalValue.max || 0) ||
+          isNaN(numericalValue)
+        ) {
+          setErrorMessage(true);
+          return;
+        } else {
+          setErrorMessage(false);
+        }
+
         setSliderValues((old) => {
           return {
             ...old,
-            proposal: parseFloat(rawValue),
+            proposal: numericalValue,
           };
         });
+
         handleProposalSliderChange(rawValue, false);
+
         break;
       case "comission":
+
+        if (
+          numericalValue < (comissionValue.min || 0) ||
+          numericalValue > (comissionValue.max || 0) ||
+          isNaN(numericalValue)
+        ) {
+          setErrorMessage(true);
+          return;
+        } else {
+          setErrorMessage(false);
+        }
+
         setSliderValues((old) => {
           return {
             ...old,
-            comission: parseFloat(rawValue),
+            comission: numericalValue,
           };
         });
+
         handleComissionSliderChange(rawValue, false);
+
         break;
       default:
         break;
@@ -743,9 +776,7 @@ E abaixo, uma memória das informações de entrada:
                     {...register("data_requisicao", {
                       required: "Campo obrigatório",
                       validate: (data_requisicao) => {
-                        if (
-                          new Date(data_requisicao) < new Date("2023-04-02")
-                        ) {
+                        if (new Date(data_requisicao) < new Date("2023-04-02")) {
                           return "A data de recebimento não pode ser anterior a 02/04/2023";
                         }
                         return true;
@@ -1149,6 +1180,9 @@ E abaixo, uma memória das informações de entrada:
                             <span>{numberFormat(comissionValue.max)}</span>
                           </div>
                         </div>
+
+                        {errorMessage && <p className="text-red text-sm text-center">Erro: Valor&#40;res&#41; fora do escopo de cálculo</p>}
+
                       </div>
                     </div>
 
