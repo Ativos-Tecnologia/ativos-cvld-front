@@ -59,13 +59,11 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         comission: 0
     });
     const [savingProposalAndComission, setSavingProposalAndComission] = useState<boolean>(false);
-    // const [isSavingEdit, setIsSavingEdit] = useState<boolean>(false);
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
     const [savingObservation, setSavingObservation] = useState<boolean>(false);
     const [isProposalButtonDisabled, setIsProposalButtonDisabled] = useState<boolean>(true);
     const [errorMessage, setErrorMessage] = useState<boolean>(false);
     const [credorIdentificationType, setCredorIdentificationType] = useState<IdentificationType>(null);
-    // const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
     const [confirmModal, setOpenConfirmModal] = useState<boolean>(false);
     const [checks, setChecks] = useState<ChecksProps>({
         is_precatorio_complete: false,
@@ -727,7 +725,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                     <div className="flex items-center gap-2 justify-between">
                         <div className='flex items-center gap-2'>
 
-                            {(checks.isFetching && isFirstLoad) ? (
+                            {(checks.isFetching && isFirstLoad.current) ? (
                                 <AiOutlineLoading className='w-4 h-4 animate-spin' />
                             ) : (
                                 <>
@@ -743,7 +741,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                 </>
                             )}
 
-                            {(checks.isFetching && isFirstLoad) ? (
+                            {(checks.isFetching && isFirstLoad.current) ? (
                                 <AiOutlineLoading className='w-4 h-4 animate-spin' />
                             ) : (
                                 <>
@@ -765,7 +763,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                 </>
                             )}
 
-                            {(checks.isFetching && isFirstLoad) ? (
+                            {(checks.isFetching && isFirstLoad.current) ? (
                                 <AiOutlineLoading className='w-4 h-4 animate-spin' />
                             ) : (
                                 <>
