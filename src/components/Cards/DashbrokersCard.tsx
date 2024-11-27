@@ -9,7 +9,7 @@ import { NotionPage } from '@/interfaces/INotion';
 import api from '@/utils/api';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/functions/formaters/formatCurrency';
-import { AiOutlineLoading } from 'react-icons/ai';
+import { AiOutlineLoading, AiOutlineSwap } from 'react-icons/ai';
 import { useMutation } from '@tanstack/react-query';
 import { IoCloseCircle } from 'react-icons/io5';
 import CRMTooltip from '../CrmUi/Tooltip';
@@ -540,20 +540,20 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                 proposal: mainData.properties["Proposta Escolhida - Celer"].number || mainData.properties["(R$) Proposta Mínima - Celer"].number || 0,
                 comission: mainData.properties["Comissão - Celer"].number || mainData.properties["(R$) Comissão Máxima - Celer"].number || 0
             });
-    
+
             setAuxValues({
                 proposal: mainData.properties["Proposta Escolhida - Celer"].number || mainData.properties["(R$) Proposta Mínima - Celer"].number || 0,
                 commission: mainData.properties["Comissão - Celer"].number || mainData.properties["(R$) Comissão Mínima - Celer"].number || 0
             });
-    
+
             if (proposalRef.current && comissionRef.current && observationRef.current) {
-    
+
                 proposalRef.current.value = numberFormat(mainData.properties["Proposta Escolhida - Celer"].number || mainData.properties["(R$) Proposta Mínima - Celer"].number || 0)
-    
+
                 comissionRef.current.value = numberFormat(mainData.properties["Comissão - Celer"].number || mainData.properties["(R$) Comissão Máxima - Celer"].number || 0);
-    
+
                 observationRef.current.value = mainData?.properties?.["Observação"]?.rich_text!.length > 0 ? mainData.properties["Observação"].rich_text![0].text.content : "";
-    
+
             }
         }
 
@@ -678,13 +678,22 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                 </>
                             )}
                         </button>
+
+                        <button
+                            onClick={() => { }}
+                            className={`${(mainData?.properties["Status"].status?.name !== "Due Diligence" && checks.is_cedente_complete === true && checks.is_precatorio_complete === true && checks.are_docs_complete === true) ? "opacity-100" : "opacity-50 cursor-not-allowed pointer-events-none"} flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm`}
+                        >
+                            <AiOutlineSwap />
+                            Enviar para Due Diligence
+                        </button>
+
                     </div>
 
 
                     <div className="flex items-center gap-2 justify-between">
                         <div className='flex items-center gap-2'>
 
-                            {(checks.isFetching && isFirstLoad) ? (
+                            {(checks.isFetching && isFirstLoad.current) ? (
                                 <AiOutlineLoading className='w-4 h-4 animate-spin' />
                             ) : (
                                 <>
@@ -700,7 +709,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                 </>
                             )}
 
-                            {(checks.isFetching && isFirstLoad) ? (
+                            {(checks.isFetching && isFirstLoad.current) ? (
                                 <AiOutlineLoading className='w-4 h-4 animate-spin' />
                             ) : (
                                 <>
@@ -722,7 +731,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                 </>
                             )}
 
-                            {(checks.isFetching && isFirstLoad) ? (
+                            {(checks.isFetching && isFirstLoad.current) ? (
                                 <AiOutlineLoading className='w-4 h-4 animate-spin' />
                             ) : (
                                 <>
