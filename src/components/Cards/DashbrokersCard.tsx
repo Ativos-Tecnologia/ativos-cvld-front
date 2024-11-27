@@ -9,10 +9,7 @@ import { NotionPage } from '@/interfaces/INotion';
 import api from '@/utils/api';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/functions/formaters/formatCurrency';
-import { useForm } from 'react-hook-form';
-import { CvldFormInputsProps } from '@/types/cvldform';
-import tipoOficio from '@/enums/tipoOficio.enum';
-import { AiOutlineLoading } from 'react-icons/ai';
+import { AiOutlineLoading, AiOutlineSwap } from 'react-icons/ai';
 import { useMutation } from '@tanstack/react-query';
 import { IoCloseCircle } from 'react-icons/io5';
 import CRMTooltip from '../CrmUi/Tooltip';
@@ -21,11 +18,11 @@ import { BrokersContext } from '@/context/BrokersContext';
 import { RiErrorWarningFill } from 'react-icons/ri';
 import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
 import { IdentificationType } from '../Modals/BrokersCedente';
-import { NotionNumberFormater } from '@/functions/formaters/notionNumberFormater';
 import { Fade } from 'react-awesome-reveal';
 import ConfirmModal from '../CrmUi/ConfirmModal';
 import Badge from '../CrmUi/ui/Badge/Badge';
 import EditOficioBrokerForm from '../Forms/EditOficioBrokerForm';
+import { HiCheck } from 'react-icons/hi';
 
 export type ChecksProps = {
     is_precatorio_complete: boolean | null;
@@ -59,13 +56,12 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         comission: 0
     });
     const [savingProposalAndComission, setSavingProposalAndComission] = useState<boolean>(false);
-    // const [isSavingEdit, setIsSavingEdit] = useState<boolean>(false);
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
+    const [isUpdatingDiligence, setIsUpdatingDiligence] = useState<boolean>(false);
     const [savingObservation, setSavingObservation] = useState<boolean>(false);
     const [isProposalButtonDisabled, setIsProposalButtonDisabled] = useState<boolean>(true);
     const [errorMessage, setErrorMessage] = useState<boolean>(false);
     const [credorIdentificationType, setCredorIdentificationType] = useState<IdentificationType>(null);
-    // const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
     const [confirmModal, setOpenConfirmModal] = useState<boolean>(false);
     const [checks, setChecks] = useState<ChecksProps>({
         is_precatorio_complete: false,
@@ -152,6 +148,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
         if (newProposalSliderValue !== auxValues.proposal) {
             setIsProposalButtonDisabled(false);
+            setErrorMessage(false);
         } else {
             setIsProposalButtonDisabled(true);
         }
@@ -206,6 +203,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
         if (newProposalSliderValue !== auxValues.commission) {
             setIsProposalButtonDisabled(false);
+            setErrorMessage(false);
         } else {
             setIsProposalButtonDisabled(true);
         }
@@ -311,6 +309,12 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             toast.success('Proposta e comissão salvas com sucesso!', {
                 icon: <BiCheck className="text-lg fill-green-400" />
             });
+            setAuxValues({
+                proposal: sliderValues.proposal,
+                commission: sliderValues.comission
+            })
+            setIsProposalButtonDisabled(true);
+            fetchDetailCardData(mainData!.id);
         }
 
         if (req.status === 400) {
@@ -321,53 +325,6 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         setIsFetchAllowed(true);
         setSavingProposalAndComission(false);
     };
-    //     mutationFn: async (data) => {
-    //         const req = await api.patch(`/api/lead-magnet/update/${mainData!.id}/`, data);
-    //         return req.status;
-    //     },
-    //     onMutate: async () => {
-    //         setIsSavingEdit(true);
-    //         setIsFetchAllowed(false);
-    //     },
-    //     onError: () => {
-    //         toast.error('Erro ao atualizar ofício', {
-    //             classNames: {
-    //                 toast: "bg-white dark:bg-boxdark",
-    //                 title: "text-black-2 dark:text-white",
-    //                 actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
-    //             },
-    //             icon: <BiX className="text-lg fill-red-500" />,
-    //             action: {
-    //                 label: "OK",
-    //                 onClick() {
-    //                     toast.dismiss();
-    //                 },
-    //             }
-    //         });
-    //     },
-    //     onSuccess: async () => {
-    //         await fetchDetailCardData(mainData!.id);
-    //         setEditModalId(null);
-    //         toast.success("Dados do ofício atualizados.", {
-    //             classNames: {
-    //                 toast: "bg-white dark:bg-boxdark",
-    //                 title: "text-black-2 dark:text-white",
-    //                 actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
-    //             },
-    //             icon: <BiCheck className="text-lg fill-green-400" />,
-    //             action: {
-    //                 label: "OK",
-    //                 onClick() {
-    //                     toast.dismiss();
-    //                 },
-    //             }
-    //         });
-    //     },
-    //     onSettled: () => {
-    //         setIsSavingEdit(false);
-    //         setIsFetchAllowed(true);
-    //     }
-    // });
 
     const updateObservation = useMutation({
         mutationFn: async (message: string) => {
@@ -548,6 +505,63 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         await proposalTrigger.mutateAsync(status);
     }
 
+    const handleCloseOutCard = async () => {
+
+        setIsFetchAllowed(false);
+        setIsUpdatingDiligence(true);
+
+        try {
+            const response = await api.patch(
+                `api/notion-api/update/${mainData!.id}/`,
+                {
+                    "Status Diligência": {
+                        select: {
+                            name: "Due Diligence",
+                        },
+                    },
+                },
+            );
+
+            if (response.status === 202) {
+                toast.success("Status Diligência atualizado!", {
+                    classNames: {
+                        toast: "bg-white dark:bg-boxdark",
+                        title: "text-black-2 dark:text-white",
+                        actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+                    },
+                    icon: <BiCheck className="text-lg fill-green-400" />,
+                    action: {
+                        label: "OK",
+                        onClick() {
+                            toast.dismiss();
+                        },
+                    }
+                });
+                setIsFetchAllowed(true);
+                await fetchCardData(selectedUser ?? undefined)
+            }
+
+        } catch (error) {
+
+            toast.error('Erro ao atualizar o status!', {
+                classNames: {
+                    toast: "bg-white dark:bg-boxdark",
+                    title: "text-black-2 dark:text-white",
+                    actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+                },
+                icon: <BiX className="text-lg fill-red-500" />,
+                action: {
+                    label: "OK",
+                    onClick() {
+                        toast.dismiss();
+                    },
+                }
+            });
+
+        } finally {
+            setIsUpdatingDiligence(false);
+        }
+    }
 
     const handleDeleteOficio = async (id: string) => {
         await deleteOficio.mutateAsync(id);
@@ -580,27 +594,29 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
     useEffect(() => {
 
-        setSliderValues({
-            proposal: oficio.properties["Proposta Escolhida - Celer"].number || oficio.properties["(R$) Proposta Mínima - Celer"].number || 0,
-            comission: oficio.properties["Comissão - Celer"].number || oficio.properties["(R$) Comissão Máxima - Celer"].number || 0
-        });
+        if (mainData) {
+            setSliderValues({
+                proposal: mainData.properties["Proposta Escolhida - Celer"].number || mainData.properties["(R$) Proposta Mínima - Celer"].number || 0,
+                comission: mainData.properties["Comissão - Celer"].number || mainData.properties["(R$) Comissão Máxima - Celer"].number || 0
+            });
 
-        setAuxValues({
-            proposal: oficio.properties["Proposta Escolhida - Celer"].number || oficio.properties["(R$) Proposta Mínima - Celer"].number || 0,
-            commission: oficio.properties["Comissão - Celer"].number || oficio.properties["(R$) Comissão Mínima - Celer"].number || 0
-        });
+            setAuxValues({
+                proposal: mainData.properties["Proposta Escolhida - Celer"].number || mainData.properties["(R$) Proposta Mínima - Celer"].number || 0,
+                commission: mainData.properties["Comissão - Celer"].number || mainData.properties["(R$) Comissão Mínima - Celer"].number || 0
+            });
 
-        if (proposalRef.current && comissionRef.current && observationRef.current) {
+            if (proposalRef.current && comissionRef.current && observationRef.current) {
 
-            proposalRef.current.value = numberFormat(oficio.properties["Proposta Escolhida - Celer"].number || oficio.properties["(R$) Proposta Mínima - Celer"].number || 0)
+                proposalRef.current.value = numberFormat(mainData.properties["Proposta Escolhida - Celer"].number || mainData.properties["(R$) Proposta Mínima - Celer"].number || 0)
 
-            comissionRef.current.value = numberFormat(oficio.properties["Comissão - Celer"].number || oficio.properties["(R$) Comissão Máxima - Celer"].number || 0);
+                comissionRef.current.value = numberFormat(mainData.properties["Comissão - Celer"].number || mainData.properties["(R$) Comissão Máxima - Celer"].number || 0);
 
-            observationRef.current.value = oficio?.properties?.["Observação"]?.rich_text!.length > 0 ? oficio.properties["Observação"].rich_text![0].text.content : "";
+                observationRef.current.value = mainData?.properties?.["Observação"]?.rich_text!.length > 0 ? mainData.properties["Observação"].rich_text![0].text.content : "";
 
+            }
         }
 
-    }, [oficio]);
+    }, [mainData]);
 
     useEffect(() => {
         if (oficio === null) return;
@@ -693,6 +709,23 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                     <div className='flex flex-col min-w-fit'>
 
                         <button
+                            onClick={handleCloseOutCard}
+                            className={`${(mainData?.properties["Status Diligência"].select?.name !== "Due Diligence" && checks.is_cedente_complete === true && checks.is_precatorio_complete === true && checks.are_docs_complete === true) ? "opacity-100 bg-green-400 text-black-2 hover:bg-green-500 hover:text-snow" : "opacity-50 bg-slate-100 dark:bg-boxdark-2/50 cursor-not-allowed pointer-events-none"} flex items-center justify-center gap-2 my-1 py-1 px-4 rounded-md transition-colors duration-200 text-sm`}
+                        >
+                            {isUpdatingDiligence ? (
+                                <>
+                                    <AiOutlineLoading className='w-4 h-4 animate-spin' />
+                                    Liquidando...
+                                </>
+                            ) : (
+                                <>
+                                    <HiCheck className='w-4 h-4' />
+                                    Liquidar
+                                </>
+                            )}
+                        </button>
+
+                        <button
                             onClick={() => setEditModalId(mainData!.id)}
                             className='flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm'>
                             <BsPencilSquare />
@@ -721,13 +754,14 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                 </>
                             )}
                         </button>
+
                     </div>
 
 
                     <div className="flex items-center gap-2 justify-between">
                         <div className='flex items-center gap-2'>
 
-                            {(checks.isFetching && isFirstLoad) ? (
+                            {(checks.isFetching && isFirstLoad.current) ? (
                                 <AiOutlineLoading className='w-4 h-4 animate-spin' />
                             ) : (
                                 <>
@@ -743,7 +777,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                 </>
                             )}
 
-                            {(checks.isFetching && isFirstLoad) ? (
+                            {(checks.isFetching && isFirstLoad.current) ? (
                                 <AiOutlineLoading className='w-4 h-4 animate-spin' />
                             ) : (
                                 <>
@@ -765,7 +799,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                 </>
                             )}
 
-                            {(checks.isFetching && isFirstLoad) ? (
+                            {(checks.isFetching && isFirstLoad.current) ? (
                                 <AiOutlineLoading className='w-4 h-4 animate-spin' />
                             ) : (
                                 <>
