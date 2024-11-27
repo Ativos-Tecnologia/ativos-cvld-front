@@ -1,4 +1,5 @@
 import { Button } from '@/components/Button';
+import ConfirmModal from '@/components/CrmUi/ConfirmModal';
 import CRMTooltip from '@/components/CrmUi/Tooltip';
 import CedenteModalSkeleton from '@/components/Skeletons/CedenteModalSkeleton';
 import { BrokersContext } from '@/context/BrokersContext';
@@ -7,23 +8,22 @@ import api from '@/utils/api';
 import queryClient from '@/utils/queryClient';
 import { useMutation } from '@tanstack/react-query';
 import Cleave from 'cleave.js/react';
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react';
 import { Fade } from 'react-awesome-reveal';
 import { Controller, useForm } from 'react-hook-form';
 import { AiOutlineLoading } from 'react-icons/ai';
-import { BiCheck, BiPlus, BiTrash, BiX } from 'react-icons/bi';
+import { BiCheck, BiPlus, BiSolidBank, BiTrash, BiX } from 'react-icons/bi';
+import { BsBank2 } from 'react-icons/bs';
 import { FaHome } from 'react-icons/fa';
 import { FaUserLarge } from 'react-icons/fa6';
-import { HiMiniIdentification } from 'react-icons/hi2';
+import { HiMiniBanknotes, HiMiniIdentification } from 'react-icons/hi2';
 import { LuLink } from 'react-icons/lu';
 import { MdAlternateEmail, MdPhone, MdPinDrop } from 'react-icons/md';
 import { PiCityFill, PiScalesFill } from 'react-icons/pi';
-import { RiRoadMapLine } from 'react-icons/ri';
+import { RiBankCardFill, RiRoadMapLine } from 'react-icons/ri';
 import { TbBuildingEstate } from 'react-icons/tb';
-import { TiWarning } from 'react-icons/ti';
 import { toast } from 'sonner';
 import PFform from './PFform';
-import ConfirmModal from '@/components/CrmUi/ConfirmModal';
 
 type FormValuesForPJ = {
   razao_social: string;
@@ -39,7 +39,11 @@ type FormValuesForPJ = {
   municipio: string;
   socio_representante: any;
   relacionado_a: string;
-}
+  agencia: string;
+  conta: string;
+  pix: string;
+  banco: string;
+};
 
 export type CedenteProps = {
   data: NotionPage | null;
@@ -180,12 +184,16 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       logradouro: "",
       numero: "",
       complemento: "",
-      municipio: ""
+      municipio: "",
+      agencia: "",
+      conta: "",
+      pix: "",
+      banco: "",
     }
   });
 
   const { setCedenteModal, fetchDetailCardData, setIsFetchAllowed, specificCardData } = useContext(BrokersContext);
-
+  const [pixOption, setPixOption] = useState<string>("celular");
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [isUnlinking, setIsUnlinking] = useState<boolean>(false);
   const [openUnlinkModal, setOpenUnlinkModal] = useState<boolean>(false);
@@ -909,6 +917,176 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
               className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
             />
           </div>
+        
+           {/* Dados Bancários */}
+
+          {/* Banco */}
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
+            <label htmlFor="banco" className='flex items-center justify-center gap-2'>
+              <BsBank2 />
+              <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Banco</span>
+            </label>
+            <Controller
+              name="banco"
+              control={control}
+              render={({ field }) => (
+                <>
+                  <Cleave
+                    {...field}
+                    placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "Código do Banco"}
+                    className="border-stroke dark:border-strokedark flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
+                    options={{
+                      delimiters: [" "],
+                      blocks: [3]
+                    }}
+                  />
+                </>
+              )}
+            />
+          </div>
+
+          {/* Agência */}
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
+            <label htmlFor="agencia" className='flex items-center justify-center gap-2'>
+              <BiSolidBank />
+              <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Agência</span>
+            </label>
+            <Controller
+              name="agencia"
+              control={control}
+              render={({ field }) => (
+                <>
+                  <Cleave
+                    {...field}
+                    placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "Código do Agência"}
+                    className="border-stroke dark:border-strokedark flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
+                    options={{
+                      delimiters: [" "],
+                      blocks: [5]
+                    }}
+                  />
+                </>
+              )}
+            />
+          </div>
+
+          {/* Conta */}
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
+            <label htmlFor="conta" className='flex items-center justify-center gap-2'>
+              <RiBankCardFill />
+              <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Conta</span>
+            </label>
+            <Controller
+              name="conta"
+              control={control}
+              render={({ field }) => (
+                <>
+                  <Cleave
+                    {...field}
+                    placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "Código da Conta"}
+                    className="border-stroke dark:border-strokedark flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
+                    options={{
+                      delimiters: [" ", "-"],
+                      blocks: [8,1]
+                    }}
+                  />
+                </>
+              )}
+            />
+          </div>
+
+          {/* Pix */}
+          <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
+            <label htmlFor="pix_type" className='flex items-center justify-center gap-2'>
+              <HiMiniBanknotes />
+              <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Pix</span>
+            </label>
+
+            <div className='grid 2xsm:grid-cols-1 2xsm:w-full md:grid-cols-2 gap-4 items-center'>
+
+            <select
+              id="pix"
+              className={`rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm outline-none focus:border-primary focus-visible:shadow-none sm:w-1/4 md:w-full dark:bg-boxdark`}
+              value={pixOption}
+              onChange={(e) => setPixOption(e.target.value)}
+            >
+              <option className='dark:bg-boxdark bg-white rounded-lg border' value="celular">Celular</option>
+              <option className='dark:bg-boxdark bg-white rounded-lg border' value="cpf">CPF</option>
+              <option className='dark:bg-boxdark bg-white rounded-lg border' value="email">Email</option>
+              <option className='dark:bg-boxdark bg-white rounded-lg border' value="chave">Chave Aleatória</option>
+            </select>
+
+            {pixOption === "celular" ? (
+              
+              <Controller
+              name="pix"
+              control={control}
+              render={({ field }) => (
+                <>
+                  <Cleave
+                    {...field}
+                    placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "99 9 9999-9999"}
+                    className="col-span-1 border-stroke dark:border-strokedark border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
+                    options={{
+                      delimiters: [" ", " ", "-"],
+                      blocks: [2, 1, 4, 4]
+                    }}
+                  />
+                </>
+              )}
+            />
+              
+            ) : null}
+
+            {pixOption === "cpf" ? (
+              <Controller
+              name="pix"
+              control={control}
+              rules={{
+                required: "Campo obrigatório",
+              }}
+              render={({ field, fieldState: { error } }) => (
+                <>
+                <Cleave
+                    {...field}
+                    placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "999.999.999-99"}
+                    className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} col-span-1 border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
+                    options={{
+                      delimiters: [".", ".", "-"],
+                      blocks: [3, 3, 3, 2]
+                    }}
+                  />
+                  {error && <span className='absolute top-1/2 -translate-y-1/2 right-3 text-red text-xs font-medium'>{error.message}</span>}
+                </>
+              )}
+            />
+              
+            ) : null}
+            
+            {pixOption === "email" ? (
+              
+            <input
+              type="email"
+              placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "nome@email.com"}
+              {...register("pix")}
+              className="col-span-1 border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
+            />
+            
+            ) : null}
+
+            {pixOption === "chave" ? (
+              <input
+                type="text"
+                placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "Chave Aleatória"}
+                {...register("pix")}
+                className=" col-span-1 border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
+              />
+              
+            ) : null}
+            </div>
+
+          </div>
+
 
           <div className='col-span-2 flex items-center justify-center my-4'>
             {mode === "edit" ? (
