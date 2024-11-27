@@ -22,6 +22,7 @@ import { Fade } from 'react-awesome-reveal';
 import ConfirmModal from '../CrmUi/ConfirmModal';
 import Badge from '../CrmUi/ui/Badge/Badge';
 import EditOficioBrokerForm from '../Forms/EditOficioBrokerForm';
+import { HiCheck } from 'react-icons/hi';
 
 export type ChecksProps = {
     is_precatorio_complete: boolean | null;
@@ -55,13 +56,12 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         comission: 0
     });
     const [savingProposalAndComission, setSavingProposalAndComission] = useState<boolean>(false);
-    // const [isSavingEdit, setIsSavingEdit] = useState<boolean>(false);
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
+    const [isUpdatingDiligence, setIsUpdatingDiligence] = useState<boolean>(false);
     const [savingObservation, setSavingObservation] = useState<boolean>(false);
     const [isProposalButtonDisabled, setIsProposalButtonDisabled] = useState<boolean>(true);
     const [errorMessage, setErrorMessage] = useState<boolean>(false);
     const [credorIdentificationType, setCredorIdentificationType] = useState<IdentificationType>(null);
-    // const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
     const [confirmModal, setOpenConfirmModal] = useState<boolean>(false);
     const [checks, setChecks] = useState<ChecksProps>({
         is_precatorio_complete: false,
@@ -148,6 +148,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
         if (newProposalSliderValue !== auxValues.proposal) {
             setIsProposalButtonDisabled(false);
+            setErrorMessage(false);
         } else {
             setIsProposalButtonDisabled(true);
         }
@@ -202,6 +203,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
         if (newProposalSliderValue !== auxValues.commission) {
             setIsProposalButtonDisabled(false);
+            setErrorMessage(false);
         } else {
             setIsProposalButtonDisabled(true);
         }
@@ -503,6 +505,63 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         await proposalTrigger.mutateAsync(status);
     }
 
+    const handleCloseOutCard = async () => {
+
+        setIsFetchAllowed(false);
+        setIsUpdatingDiligence(true);
+
+        try {
+            const response = await api.patch(
+                `api/notion-api/update/${mainData!.id}/`,
+                {
+                    "Status Diligência": {
+                        select: {
+                            name: "Due Diligence",
+                        },
+                    },
+                },
+            );
+
+            if (response.status === 202) {
+                toast.success("Status Diligência atualizado!", {
+                    classNames: {
+                        toast: "bg-white dark:bg-boxdark",
+                        title: "text-black-2 dark:text-white",
+                        actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+                    },
+                    icon: <BiCheck className="text-lg fill-green-400" />,
+                    action: {
+                        label: "OK",
+                        onClick() {
+                            toast.dismiss();
+                        },
+                    }
+                });
+                setIsFetchAllowed(true);
+                await fetchCardData(selectedUser ?? undefined)
+            }
+
+        } catch (error) {
+
+            toast.error('Erro ao atualizar o status!', {
+                classNames: {
+                    toast: "bg-white dark:bg-boxdark",
+                    title: "text-black-2 dark:text-white",
+                    actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+                },
+                icon: <BiX className="text-lg fill-red-500" />,
+                action: {
+                    label: "OK",
+                    onClick() {
+                        toast.dismiss();
+                    },
+                }
+            });
+
+        } finally {
+            setIsUpdatingDiligence(false);
+        }
+    }
 
     const handleDeleteOficio = async (id: string) => {
         await deleteOficio.mutateAsync(id);
@@ -650,6 +709,23 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                     <div className='flex flex-col min-w-fit'>
 
                         <button
+                            onClick={handleCloseOutCard}
+                            className={`${(mainData?.properties["Status Diligência"].select?.name !== "Due Diligence" && checks.is_cedente_complete === true && checks.is_precatorio_complete === true && checks.are_docs_complete === true) ? "opacity-100 bg-green-400 text-black-2 hover:bg-green-500 hover:text-snow" : "opacity-50 bg-slate-100 dark:bg-boxdark-2/50 cursor-not-allowed pointer-events-none"} flex items-center justify-center gap-2 my-1 py-1 px-4 rounded-md transition-colors duration-200 text-sm`}
+                        >
+                            {isUpdatingDiligence ? (
+                                <>
+                                    <AiOutlineLoading className='w-4 h-4 animate-spin' />
+                                    Liquidando...
+                                </>
+                            ) : (
+                                <>
+                                    <HiCheck className='w-4 h-4' />
+                                    Liquidar
+                                </>
+                            )}
+                        </button>
+
+                        <button
                             onClick={() => setEditModalId(mainData!.id)}
                             className='flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm'>
                             <BsPencilSquare />
@@ -677,14 +753,6 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                                     Cadastrar Cedente
                                 </>
                             )}
-                        </button>
-
-                        <button
-                            onClick={() => { }}
-                            className={`${(mainData?.properties["Status"].status?.name !== "Due Diligence" && checks.is_cedente_complete === true && checks.is_precatorio_complete === true && checks.are_docs_complete === true) ? "opacity-100" : "opacity-50 cursor-not-allowed pointer-events-none"} flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm`}
-                        >
-                            <AiOutlineSwap />
-                            Enviar para Due Diligence
                         </button>
 
                     </div>
