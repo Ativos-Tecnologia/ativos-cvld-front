@@ -504,7 +504,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
       setValue("nacionalidade", cedentePfData.data?.properties["Nacionalidade"].select?.name || "");
       setValue("agencia", cedentePfData.data?.properties["Agência"].rich_text?.[0]?.text.content || "");
       setValue("conta", cedentePfData.data?.properties["Conta"].rich_text?.[0]?.text.content || "");
-      setValue("pix", cedentePfData.data?.properties["PIX"].rich_text?.[0]?.text.content || "");
+      setValue("pix", cedentePfData.data?.properties["Pix"].rich_text?.[0]?.text.content || "");
       setValue("banco", cedentePfData.data?.properties["Banco"].rich_text?.[0]?.text.content || "");
 
     }
