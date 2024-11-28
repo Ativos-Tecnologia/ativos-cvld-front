@@ -183,8 +183,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
   const [oficioForm, setOficioForm] = useState<any>(null);
   const mySwal = UseMySwal();
   const [loading, setLoading] = useState<boolean>(false);
-  const [fetchingUsersList, setFetchingUsersList] = useState<boolean>(false);
-  const [fetchError, setFetchError] = useState<boolean>(false);
   const [toggleNovaConta, setToggleNovaConta] = useState<boolean>(false);
 
   const [contatoNumberCount, setContatoNumberCount] = useState<number>(1);
@@ -201,18 +199,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
       },
     ],
   });
-
-  /* função que atualiza lista de usuários (somente na role ativos) */
-  // const updateUsersList = async () => {
-  //   setFetchingUsersList(true);
-  //   const [usersList] = await Promise.all([
-  //     api.get("/api/notion-api/list/users/"),
-  //   ]);
-  //   if (usersList.status === 200) {
-  //     setUsersList(usersList.data);
-  //   }
-  //   setFetchingUsersList(false);
-  // };
 
   useEffect(() => {
     if (oficioForm) {
@@ -260,10 +246,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
   const vincularUsuario = watch("vincular_usuario");
   useEffect(() => {
     if (vincularUsuario) {
-      setFetchingUsersList(true);
-      setFetchError(false);
       setSaveInfoToNotion(true);
-      // updateUsersList();
     } else {
       setSaveInfoToNotion(false);
     }

@@ -19,7 +19,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, size, children }) => {
 
     return (
         <Backdrop isOpen={isOpen}>
-            <div className={`relative h-fit ${sizes[size]} rounded-lg border border-stroke bg-white p-5 dark:border-strokedark dark:bg-boxdark z-40`}>
+            <div className={`relative ${sizes[size]} rounded-lg border border-stroke bg-white p-5 dark:border-strokedark dark:bg-boxdark z-40 2xsm:w-[280px] 2xsm:h-70 md:h-fit w-full md:w-3/5 lg:w-4/5 xl:w-3/6`}>
                 {children}
             </div>
         </Backdrop>
