@@ -192,7 +192,6 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
 
   const { setCedenteModal, fetchDetailCardData, setIsFetchAllowed } = useContext(BrokersContext);
 
-  const [pixOption, setPixOption] = useState<string>('celular');
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [isUnlinking, setIsUnlinking] = useState<boolean>(false);
   const [openUnlinkModal, setOpenUnlinkModal] = useState<boolean>(false);
@@ -208,7 +207,8 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
   const pfFormModal = React.useRef<HTMLDivElement>(null);
   const formValues = watch();
   const isFormModified = Object.values(formValues).some(value => (value !== '' && value !== 'Brasileiro' && value !== id));
-
+  const [pixOption, setPixOption] = useState<PixOption>('celular');
+  
   // função que faz fetch na lista de cedentes
   // OBS: é chamada somente se o mode for create
   const fetchRegisteredCedentesList = async () => {
@@ -1015,7 +1015,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
               id="pix"
               className={`rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm outline-none focus:border-primary focus-visible:shadow-none sm:w-1/4 md:w-full dark:bg-boxdark`}
               value={pixOption}
-              onChange={(e) => setPixOption(e.target.value)}
+              onChange={(e) => setPixOption(e.target.value as PixOption)}
             >
               <option className='dark:bg-boxdark bg-white rounded-lg border' value="celular">Celular</option>
               <option className='dark:bg-boxdark bg-white rounded-lg border' value="cpf">CPF</option>
@@ -1032,11 +1032,11 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
                 <>
                   <Cleave
                     {...field}
-                    placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "99 9 9999-9999"}
+                    placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "99 99999-9999"}
                     className="col-span-1 border-stroke dark:border-strokedark border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
                     options={{
                       delimiters: [" ", " ", "-"],
-                      blocks: [2, 1, 4, 4]
+                      blocks: [2, 5, 4]
                     }}
                   />
                 </>
@@ -1082,12 +1082,27 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
             ) : null}
 
             {pixOption === "chave" ? (
-              <input
-                type="text"
-                placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Chave Aleatória"}
-                {...register("pix")}
-                className=" col-span-1 border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
-              />
+              <Controller
+              name="pix"
+              control={control}
+              rules={{
+                required: "Campo obrigatório",
+              }}
+              render={({ field, fieldState: { error } }) => (
+                <>
+                <Cleave
+                    {...field}
+                    placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "Chave Aleatória"}
+                    className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} col-span-1 border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
+                    options={{
+                      delimiters: ["-"],
+                      blocks: [8, 4, 4, 4, 12]
+                    }}
+                  />
+                  {error && <span className='absolute top-1/2 -translate-y-1/2 right-3 text-red text-xs font-medium'>{error.message}</span>}
+                </>
+              )}
+            />
               
             ) : null}
             </div>
