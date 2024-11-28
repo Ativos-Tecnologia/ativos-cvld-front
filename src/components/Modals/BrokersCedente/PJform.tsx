@@ -564,6 +564,11 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       setValue("numero", cedentePjData.data?.properties["Número"].rich_text?.[0]?.text.content || "");
       setValue("complemento", cedentePjData.data?.properties["Complemento"].rich_text?.[0]?.text.content || "");
       setValue("municipio", cedentePjData.data?.properties["Município"].select?.name || "");
+      setValue("agencia", cedentePjData.data?.properties["Agência"].rich_text?.[0]?.text.content || "");
+      setValue("conta", cedentePjData.data?.properties["Conta"].rich_text?.[0]?.text.content || "");
+      setValue("pix", cedentePjData.data?.properties["PIX"].rich_text?.[0]?.text.content || "");
+      setValue("banco", cedentePjData.data?.properties["Banco"].rich_text?.[0]?.text.content || "");
+
 
     } else {
       setValue("relacionado_a", id);
