@@ -530,7 +530,7 @@ E abaixo, uma memória das informações de entrada:
                   defaultValue={enumTipoOficiosList[0]}
                   className="border-strokedark bg-form-input font-nexa text-bodydark"
 
-                // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
+                  // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
                 >
                   {ENUM_TIPO_OFICIOS_LIST.map((status) => (
                     <SelectItem key={status} value={status}>
@@ -556,7 +556,7 @@ E abaixo, uma memória das informações de entrada:
                   defaultValue={"NÃO TRIBUTÁRIA"}
                   className="border-strokedark bg-form-input font-nexa text-bodydark"
 
-                // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
+                  // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
                 >
                   <SelectItem
                     defaultValue="NÃO TRIBUTÁRIA"
@@ -597,7 +597,7 @@ E abaixo, uma memória das informações de entrada:
 
               {/* ====> label REGIME <==== */}
               {watch("esfera") !== "FEDERAL" &&
-                watch("esfera") !== undefined ? (
+              watch("esfera") !== undefined ? (
                 <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                   <label
                     htmlFor="natureza"
@@ -630,7 +630,7 @@ E abaixo, uma memória das informações de entrada:
                   name="tribunal"
                   control={control}
                   defaultValue={tribunais[0].nome}
-                  data-testid='tribunal'
+                  data-testid="tribunal"
                   required={true}
                   className="border-strokedark bg-form-input font-nexa text-bodydark"
                 >
@@ -897,7 +897,7 @@ E abaixo, uma memória das informações de entrada:
 
               {/* ====> checkbox IR INCIDE RRA <==== */}
               {watch("natureza") === "TRIBUTÁRIA" ||
-                watch("incidencia_rra_ir") === false ? null : (
+              watch("incidencia_rra_ir") === false ? null : (
                 <div
                   className={`flex gap-2 ${watch("ir_incidente_rra") ? "items-start" : "items-center"} 2xsm:col-span-2 sm:col-span-1`}
                 >
@@ -919,7 +919,7 @@ E abaixo, uma memória das informações de entrada:
 
               {/* ====> label NÚMERO DE MESES <==== */}
               {watch("ir_incidente_rra") === true &&
-                watch("natureza") !== "TRIBUTÁRIA" ? (
+              watch("natureza") !== "TRIBUTÁRIA" ? (
                 <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                   <label
                     htmlFor="numero_de_meses"
@@ -944,7 +944,7 @@ E abaixo, uma memória das informações de entrada:
               ) : (
                 <>
                   {watch("natureza") === "TRIBUTÁRIA" ||
-                    watch("incidencia_rra_ir") === false ? null : (
+                  watch("incidencia_rra_ir") === false ? null : (
                     <div className="col-span-1 hidden items-center md:flex">
                       &nbsp;
                     </div>
