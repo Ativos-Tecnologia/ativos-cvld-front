@@ -15,6 +15,7 @@ const ECommerce: React.FC = () => {
   const { data: userInfo } = useContext(UserInfoAPIContext);
 
   return (
+      <TableNotionProvider>
     <div className="w-full mt-0 grid grid-cols-12 gap-4 md:gap-6 2xl:gap-7.5">
       {userInfo.product === "global" && (
         <>
@@ -24,14 +25,13 @@ const ECommerce: React.FC = () => {
           ) : <CVLDResult result={data.result} setData={setData} />}
         </>
       )}
-      <div className="col-span-12">
-        <TableNotionProvider>
+      {/* <div className="col-span-12">
           <ExtratosTableProvider>
-            <ExtratosTable newItem={dataToAppend.result} />
+          <ExtratosTable newItem={dataToAppend.result} />
           </ExtratosTableProvider>
-        </TableNotionProvider>
-      </div>
+          </div> */}
     </div>
+          </TableNotionProvider>
   );
 };
 
