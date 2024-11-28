@@ -428,7 +428,11 @@ const DashbrokersCard = ({ oficio, setEditModalId }:
         onSuccess: async () => {
             setIsFetchAllowed(true);
             await fetchDetailCardData(mainData!.id);
-            if (mainData?.properties["Status"].status?.name === "Proposta aceita") {
+            console.log(mainData?.properties["Status Diligência"].select?.name)
+            if (
+                mainData?.properties["Status"].status?.name === "Proposta aceita" &&
+                checks.are_docs_complete && checks.is_cedente_complete && checks.is_precatorio_complete
+            ) {
                 confetti({
                     spread: 180,
                     particleCount: 300,
@@ -448,13 +452,37 @@ const DashbrokersCard = ({ oficio, setEditModalId }:
                     backdrop: false,
                     background: `${theme === "light" ? "#FFF" : "#24303F"}`,
                     showCloseButton: true,
-                    timer: 3000,
-                    timerProgressBar: true
+                    timer: 5000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = swal.stopTimer;
+                        toast.onmouseleave = swal.resumeTimer;
+                    }
+                })
+            } else if (mainData?.properties["Status"].status?.name === "Proposta aceita") {
+                swal.fire({
+                    icon: "info",
+                    // iconColor: "#00b809",
+                    title: "Proposta aceita!",
+                    text: "Porém ainda há pontos pendentes para a conclusão da diligência.",
+                    color: `${theme === "light" ? "#64748B" : "#AEB7C0"}`,
+                    showConfirmButton: true,
+                    confirmButtonText: "OK",
+                    confirmButtonColor: "#1a56db",
+                    backdrop: false,
+                    background: `${theme === "light" ? "#FFF" : "#24303F"}`,
+                    showCloseButton: true,
+                    timer: 5000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = swal.stopTimer;
+                        toast.onmouseleave = swal.resumeTimer;
+                    }
                 })
             } else {
                 swal.fire({
-                    icon: "success",
-                    iconColor: "#00b809",
+                    icon: "warning",
+                    // iconColor: "#e63f66",
                     title: "Proposta cancelada!",
                     text: "Você pode registrar o motivo no campo de observação.",
                     color: `${theme === "light" ? "#64748B" : "#AEB7C0"}`,
@@ -464,8 +492,12 @@ const DashbrokersCard = ({ oficio, setEditModalId }:
                     backdrop: false,
                     background: `${theme === "light" ? "#FFF" : "#24303F"}`,
                     showCloseButton: true,
-                    timer: 3000,
-                    timerProgressBar: true
+                    timer: 5000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = swal.stopTimer;
+                        toast.onmouseleave = swal.resumeTimer;
+                    }
                 })
             }
         }
@@ -572,7 +604,7 @@ const DashbrokersCard = ({ oficio, setEditModalId }:
                     backdrop: false,
                     background: `${theme === "light" ? "#FFF" : "#24303F"}`,
                     showCloseButton: true,
-                    timer: 3000,
+                    timer: 5000,
                     timerProgressBar: true
                 })
                 confetti({
