@@ -25,6 +25,7 @@ import { RiBankCardFill, RiRoadMapLine } from 'react-icons/ri';
 import { TbBuildingEstate } from 'react-icons/tb';
 import { toast } from 'sonner';
 import PFform from './PFform';
+import { validationSelectPix } from '@/functions/formaters/validationPix';
 
 type FormValuesForPJ = {
   razao_social: string;

@@ -28,6 +28,7 @@ import {
   BiMinus,
   BiPlus,
 } from "react-icons/bi";
+import { TableNotionContext } from '@/context/NotionTableContext';
 
 import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
 import { CvldFormInputsProps } from "@/types/cvldform";
@@ -51,12 +52,6 @@ type CVLDFormProps = {
   setCalcStep: (stage: string) => void;
   setDataToAppend: (data: any) => void;
 };
-
-// interface CPFCNPJprops {
-//   blocks: Array<number>;
-//   delimiters: Array<string>;
-//   numericOnly: boolean;
-// }
 
 const MainForm: React.FC<CVLDFormProps> = ({
   dataCallback,
@@ -85,6 +80,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
   const enumTipoOficiosList = Object.values(tipoOficio);
 
   const { data } = useContext<UserInfoContextType>(UserInfoAPIContext);
+  const { setSaveInfoToNotion, usersList } = useContext(TableNotionContext);
 
   const estados = [
     { id: "AC", nome: "Acre" },
@@ -191,8 +187,6 @@ const MainForm: React.FC<CVLDFormProps> = ({
   const [fetchError, setFetchError] = useState<boolean>(false);
   const [toggleNovaConta, setToggleNovaConta] = useState<boolean>(false);
 
-  const [usersList, setUsersList] = useState<any[]>([]);
-
   const [contatoNumberCount, setContatoNumberCount] = useState<number>(1);
 
   const [state, setState] = useState<ChartTwoState>({
@@ -209,16 +203,16 @@ const MainForm: React.FC<CVLDFormProps> = ({
   });
 
   /* função que atualiza lista de usuários (somente na role ativos) */
-  const updateUsersList = async () => {
-    setFetchingUsersList(true);
-    const [usersList] = await Promise.all([
-      api.get("/api/notion-api/list/users/"),
-    ]);
-    if (usersList.status === 200) {
-      setUsersList(usersList.data);
-    }
-    setFetchingUsersList(false);
-  };
+  // const updateUsersList = async () => {
+  //   setFetchingUsersList(true);
+  //   const [usersList] = await Promise.all([
+  //     api.get("/api/notion-api/list/users/"),
+  //   ]);
+  //   if (usersList.status === 200) {
+  //     setUsersList(usersList.data);
+  //   }
+  //   setFetchingUsersList(false);
+  // };
 
   useEffect(() => {
     if (oficioForm) {
@@ -263,26 +257,17 @@ const MainForm: React.FC<CVLDFormProps> = ({
     }
   }, [oficioForm, setValue]);
 
+  const vincularUsuario = watch("vincular_usuario");
   useEffect(() => {
-    const fetchData = async () => {
+    if (vincularUsuario) {
       setFetchingUsersList(true);
-
-      if (data.role === "ativos") {
-        const [usersList] = await Promise.all([
-          api.get("/api/notion-api/list/users/"),
-        ]);
-        if (usersList.status === 200) {
-          setUsersList(usersList.data);
-          setFetchError(false);
-        } else {
-          setFetchError(true);
-        }
-      }
-      setFetchingUsersList(false);
-    };
-
-    fetchData();
-  }, [data.role]);
+      setFetchError(false);
+      setSaveInfoToNotion(true);
+      // updateUsersList();
+    } else {
+      setSaveInfoToNotion(false);
+    }
+  }, [setSaveInfoToNotion, vincularUsuario]);
 
   const isUserAdmin = () => {
     const token = localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`);
@@ -568,7 +553,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
           </p>
           <Image
             src="/images/logo/celer-ia-only-logo.svg"
-            alt="Celler IA Engine"
+            alt="Celer IA Engine"
             width={56}
             height={50}
             className="mt-[6.1px] select-none antialiased"
@@ -1932,17 +1917,23 @@ const MainForm: React.FC<CVLDFormProps> = ({
                         <>
                           <div className="flex justify-between">
                             <div className="flex items-center gap-2">
-                              <CustomCheckbox
+                              {/* <CustomCheckbox
                                 check={watch("vincular_usuario")}
                                 id={"vincular_usuario"}
                                 register={register("vincular_usuario")}
-                              />
-                              {/* <input
+                                onClick={() => {
+                                    console.log("vincular_usuario:", watch("vincular_usuario"))
+                                  setSaveInfoToNotion(Boolean(watch("vincular_usuario")));
+                                  }
+                                }
+                              /> */}
+                              <input
                                 type="checkbox"
                                 id="vincular_usuario"
+                                
                                 className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                                 {...register("vincular_usuario")}
-                              /> */}
+                              />
                               <label
                                 htmlFor="vincular_usuario"
                                 data-testid="vincular_usuario"
@@ -1952,7 +1943,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                                 Vincular a outro usuário?
                               </label>
                             </div>
-                            {(watch("novo_usuario") === false ||
+                            {/* {(watch("novo_usuario") === false ||
                               watch("novo_usuario") === undefined) &&
                               watch("vincular_usuario") === true && (
                                 <div className="flex items-center gap-2">
@@ -1989,7 +1980,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                                     </div>
                                   )}
                                 </div>
-                              )}
+                              )} */}
                           </div>
                           {watch("vincular_usuario") === true ? (
                             <div className="flex flex-col gap-2">
