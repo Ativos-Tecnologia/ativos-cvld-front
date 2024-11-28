@@ -40,6 +40,7 @@ export interface ITableNotion {
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
   checkedList: NotionPage[];
   setCheckedList: React.Dispatch<React.SetStateAction<NotionPage[]>>;
+  setSaveInfoToNotion: React.Dispatch<React.SetStateAction<boolean>>;
   handleSelectRow: (row: NotionPage) => void;
   handleSelectAllRows: (list: NotionPage[]) => void;
   handleCopyValue: (index: number) => void;
@@ -152,6 +153,7 @@ export const TableNotionContext = createContext<ITableNotion>({
   handleFilterByStatus: () => {},
   searchStatus: () => {},
   searchUser: () => {},
+  setSaveInfoToNotion: () => {},
 });
 
 export const TableNotionProvider = ({
@@ -169,6 +171,7 @@ export const TableNotionProvider = ({
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [usersList, setUsersList] = useState<string[]>([]);
+  const [saveInfoToNotion, setSaveInfoToNotion] = useState<boolean>(false);
   const [listQuery, setListQuery] = useState<object | null>(null);
   const [editableLabel, setEditableLabel] = useState<IEditableLabels>({
     id: "",
@@ -225,6 +228,7 @@ export const TableNotionProvider = ({
       return t.data;
     }
   };
+
   const { isPending, data, error, isFetching, refetch } = useQuery({
     queryKey: ["notion_list"],
     refetchOnReconnect: true,
@@ -232,7 +236,7 @@ export const TableNotionProvider = ({
     refetchInterval: 15000,
     staleTime: 100,
     queryFn: fetchNotionData,
-    enabled: userData?.user && listQuery !== null && !isEditing, // only fetch if user is defined after context is loaded and is not editing any table label
+    enabled: false, // only fetch if user is defined after context is loaded and is not editing any table label
   });
 
   /* ====> constants <==== */
@@ -1279,7 +1283,7 @@ export const TableNotionProvider = ({
   // seta a lista de usuários se a role do usuário for ativos
   useEffect(() => {
     const fetchData = async () => {
-      if (userData?.role === "ativos") {
+      if (userData?.role === "ativos" && saveInfoToNotion) {
         const [usersList] = await Promise.all([
           api.get("/api/notion-api/list/users/"),
         ]);
@@ -1291,7 +1295,7 @@ export const TableNotionProvider = ({
     };
 
     fetchData();
-  }, [userData?.role]);
+  }, [saveInfoToNotion, userData?.role]);
 
   return (
     <TableNotionContext.Provider
@@ -1334,6 +1338,7 @@ export const TableNotionProvider = ({
         updateState,
         archiveStatus,
         editLock,
+        setSaveInfoToNotion
       }}
     >
       {children}
