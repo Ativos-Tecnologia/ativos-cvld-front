@@ -1,3 +1,4 @@
+"use client"
 import numberFormat from '@/functions/formaters/numberFormat'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import CustomCheckbox from '../CrmUi/Checkbox';
@@ -23,6 +24,9 @@ import ConfirmModal from '../CrmUi/ConfirmModal';
 import Badge from '../CrmUi/ui/Badge/Badge';
 import EditOficioBrokerForm from '../Forms/EditOficioBrokerForm';
 import { HiCheck } from 'react-icons/hi';
+import confetti from 'canvas-confetti'
+import UseMySwal from '@/hooks/useMySwal';
+import { GeneralUIContext } from '@/context/GeneralUIContext';
 
 export type ChecksProps = {
     is_precatorio_complete: boolean | null;
@@ -31,10 +35,9 @@ export type ChecksProps = {
     isFetching: boolean;
 }
 
-const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
+const DashbrokersCard = ({ oficio, setEditModalId }:
     {
         oficio: NotionPage,
-        editModalId: string | null,
         setEditModalId: React.Dispatch<React.SetStateAction<string | null>>
     }
 ) => {
@@ -70,13 +73,15 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         isFetching: false
     });
 
-    const isFirstLoad = useRef(true); // referência: 'isFirstLoad' sempre apontará para o mesmo objeto retornado por useRef
+    const { theme } = useContext(GeneralUIContext)
+    const swal = UseMySwal();
 
     /* ====> refs <==== */
     const proposalRef = useRef<HTMLInputElement | null>(null);
     const comissionRef = useRef<HTMLInputElement | null>(null);
     const observationRef = useRef<HTMLTextAreaElement | null>(null);
     const proposalRangeRef = useRef<HTMLInputElement | null>(null);
+    const isFirstLoad = useRef(true); // referência: 'isFirstLoad' sempre apontará para o mesmo objeto retornado por useRef
 
     //* ====> Principal Data <==== */
     const [mainData, setMainData] = useState<NotionPage | null>(null);
@@ -416,7 +421,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         onError: async (error, message, context) => {
             setIsFetchAllowed(true);
             setMainData(context?.previousData as NotionPage);
-            toast.error('Erro ao aceitar proposta! Contate a Ativos para verificar o motivo.', {
+            toast.error('Erro ao modificar proposta! Contate a Ativos para verificar o motivo.', {
                 icon: <BiX className="text-lg fill-red-500" />
             });
         },
@@ -424,14 +429,44 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             setIsFetchAllowed(true);
             await fetchDetailCardData(mainData!.id);
             if (mainData?.properties["Status"].status?.name === "Proposta aceita") {
-                toast.success('Proposta aceita. Verifique o status da diligência para mais informações!', {
-                    icon: <BiCheck className="text-lg fill-green-400" />
+                confetti({
+                    spread: 180,
+                    particleCount: 300,
+                    origin: {
+                        y: 0.5
+                    }
                 });
+                swal.fire({
+                    icon: "success",
+                    iconColor: "#00b809",
+                    title: "Proposta aceita!",
+                    text: "Verifique o status da diligência para mais informações.",
+                    color: `${theme === "light" ? "#64748B" : "#AEB7C0"}`,
+                    showConfirmButton: true,
+                    confirmButtonText: "OK",
+                    confirmButtonColor: "#1a56db",
+                    backdrop: false,
+                    background: `${theme === "light" ? "#FFF" : "#24303F"}`,
+                    showCloseButton: true,
+                    timer: 3000,
+                    timerProgressBar: true
+                })
             } else {
-                toast.success('Proposta cancelada! Você pode registrar o motivo no campo de observação.', {
-                    icon: <BiCheck className="text-lg fill-green-400" />
-                });
-
+                swal.fire({
+                    icon: "success",
+                    iconColor: "#00b809",
+                    title: "Proposta cancelada!",
+                    text: "Você pode registrar o motivo no campo de observação.",
+                    color: `${theme === "light" ? "#64748B" : "#AEB7C0"}`,
+                    showConfirmButton: true,
+                    confirmButtonText: "OK",
+                    confirmButtonColor: "#1a56db",
+                    backdrop: false,
+                    background: `${theme === "light" ? "#FFF" : "#24303F"}`,
+                    showCloseButton: true,
+                    timer: 3000,
+                    timerProgressBar: true
+                })
             }
         }
     });
@@ -505,7 +540,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         await proposalTrigger.mutateAsync(status);
     }
 
-    const handleCloseOutCard = async () => {
+    const handleLiquidateCard = async () => {
 
         setIsFetchAllowed(false);
         setIsUpdatingDiligence(true);
@@ -523,22 +558,31 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             );
 
             if (response.status === 202) {
-                toast.success("Status Diligência atualizado!", {
-                    classNames: {
-                        toast: "bg-white dark:bg-boxdark",
-                        title: "text-black-2 dark:text-white",
-                        actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
-                    },
-                    icon: <BiCheck className="text-lg fill-green-400" />,
-                    action: {
-                        label: "OK",
-                        onClick() {
-                            toast.dismiss();
-                        },
-                    }
-                });
                 setIsFetchAllowed(true);
                 await fetchCardData(selectedUser ?? undefined)
+                swal.fire({
+                    icon: "success",
+                    iconColor: "#00b809",
+                    title: "Agora é com a gente!",
+                    text: "O ativo foi enviado para o processo de liquidação.",
+                    color: `${theme === "light" ? "#64748B" : "#AEB7C0"}`,
+                    showConfirmButton: true,
+                    confirmButtonText: "OK",
+                    confirmButtonColor: "#1a56db",
+                    backdrop: false,
+                    background: `${theme === "light" ? "#FFF" : "#24303F"}`,
+                    showCloseButton: true,
+                    timer: 3000,
+                    timerProgressBar: true
+                })
+                confetti({
+                    spread: 180,
+                    particleCount: 300,
+                    origin: {
+                        y: 0.5
+                    }
+                });
+
             }
 
         } catch (error) {
@@ -709,7 +753,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                     <div className='flex flex-col min-w-fit'>
 
                         <button
-                            onClick={handleCloseOutCard}
+                            onClick={handleLiquidateCard}
                             className={`${(mainData?.properties["Status Diligência"].select?.name !== "Due Diligence" && checks.is_cedente_complete === true && checks.is_precatorio_complete === true && checks.are_docs_complete === true) ? "opacity-100 bg-green-400 text-black-2 hover:bg-green-500 hover:text-snow" : "opacity-50 bg-slate-100 dark:bg-boxdark-2/50 cursor-not-allowed pointer-events-none"} flex items-center justify-center gap-2 my-1 py-1 px-4 rounded-md transition-colors duration-200 text-sm`}
                         >
                             {isUpdatingDiligence ? (
@@ -950,7 +994,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             <EditOficioBrokerForm
                 mainData={mainData}
             />
-            {/* end edit info modal */}
+            {/* ----> end edit info modal <----- */}
         </div>
     )
 }

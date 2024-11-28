@@ -188,7 +188,6 @@ const Broker: React.FC = () => {
                     oficio={oficio}
                     key={index}
                     setEditModalId={setEditModalId}
-                    editModalId={editModalId}
                   />
                 ))}
               </Fade>
