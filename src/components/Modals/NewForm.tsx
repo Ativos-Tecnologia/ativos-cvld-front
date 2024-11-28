@@ -9,7 +9,6 @@ import tipoOficio from "@/enums/tipoOficio.enum";
 import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
 import { formatCurrency } from "@/functions/formaters/formatCurrency";
 import numberFormat from "@/functions/formaters/numberFormat";
-import UseMySwal from "@/hooks/useMySwal";
 import { CvldFormInputsProps } from "@/types/cvldform";
 import { LeadMagnetResposeProps } from "@/types/leadMagnet";
 import api from "@/utils/api";
@@ -38,8 +37,10 @@ import { UpdatePrecatorioButton } from "../Button/UpdatePrecatorioButton";
 import CustomCheckbox from "../CrmUi/Checkbox";
 import NewFormResultSkeleton from "../Skeletons/NewFormResultSkeleton";
 import { applyMaskCpfCnpj } from "@/functions/formaters/maskCpfCnpj";
+import { TableNotionContext } from "@/context/NotionTableContext";
 
 const NewForm = () => {
+  const { setSaveInfoToNotion, usersList } = useContext(TableNotionContext);
 
   const [auxValues, setAuxValues] = useState<{ proposal: number, commission: number }>({ proposal: 0, commission: 0 });
   const [errorMessage, setErrorMessage] = useState<boolean>(false);
@@ -47,9 +48,6 @@ const NewForm = () => {
   const { modalOpen, setModalOpen } = useContext(DefaultLayoutContext);
   const [oficioForm, setOficioForm] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [fetchingUsersList, setFetchingUsersList] = useState<boolean>(false);
-  const [usersList, setUsersList] = useState<any[]>([]);
-  const [fetchError, setFetchError] = useState<boolean>(false);
   const enumTipoOficiosList = Object.values(tipoOficio);
   const [backendResponse, setBackendResponse] = useState<LeadMagnetResposeProps>({
     id: "",
@@ -88,16 +86,7 @@ const NewForm = () => {
   });
 
   /* função que atualiza lista de usuários (somente na role ativos) */
-  const updateUsersList = async () => {
-    setFetchingUsersList(true);
-    const [usersList] = await Promise.all([
-      api.get("/api/notion-api/list/users/"),
-    ]);
-    if (usersList.status === 200) {
-      setUsersList(usersList.data);
-    }
-    setFetchingUsersList(false);
-  };
+  
 
   // Função para atualizar a proposta e ajustar a comissão proporcionalmente
   const handleProposalSliderChange = (value: string, sliderChange: boolean) => {
@@ -438,6 +427,17 @@ const NewForm = () => {
       );
     }
   }, [oficioForm]);
+
+
+  const vincularUsuario = watch("vincular_usuario");
+  useEffect(() => {
+    if (vincularUsuario) {
+      console.log("Vincular usuário");
+      setSaveInfoToNotion(true);
+    } else {
+      setSaveInfoToNotion(false);
+    }
+  }, [setSaveInfoToNotion, vincularUsuario]);
 
   return (
     <div
@@ -1334,11 +1334,18 @@ const NewForm = () => {
                               <>
                                 <div className="flex justify-between">
                                   <div className="flex items-center gap-2">
-                                    <CustomCheckbox
+                                    {/* <CustomCheckbox
                                       check={watch("vincular_usuario")}
                                       id={"vincular_usuario"}
                                       register={register("vincular_usuario")}
-                                    />
+                                    /> */}
+                                    <input
+                                type="checkbox"
+                                id="vincular_usuario"
+                                
+                                className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
+                                {...register("vincular_usuario")}
+                              />
 
                                     <label
                                       htmlFor="vincular_usuario"
@@ -1348,44 +1355,6 @@ const NewForm = () => {
                                       Vincular a outro usuário?
                                     </label>
                                   </div>
-                                  {(watch("novo_usuario") === false ||
-                                    watch("novo_usuario") === undefined) &&
-                                    watch("vincular_usuario") === true && (
-                                      <div className="flex items-center gap-2">
-                                        <button
-                                          type="button"
-                                          className="flex cursor-pointer items-center justify-center gap-1 rounded-md bg-slate-100 px-2 py-1 opacity-100 transition-all duration-200 hover:bg-slate-200 group-hover:opacity-100 dark:bg-slate-600 dark:hover:bg-slate-700"
-                                          onClick={updateUsersList}
-                                        >
-                                          {fetchingUsersList ? (
-                                            <>
-                                              <AiOutlineReload className="animate-spin" />
-                                              <span className="text-xs">
-                                                Atualizando...
-                                              </span>
-                                            </>
-                                          ) : (
-                                            <>
-                                              <AiOutlineReload />
-                                              <span className="text-xs">
-                                                Atualizar
-                                              </span>
-                                            </>
-                                          )}
-                                        </button>
-                                        {fetchError && (
-                                          <div className="group/warning relative">
-                                            <AiOutlineWarning className="cursor-pointer text-red-600 dark:text-red-400" />
-                                            <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 w-60 -translate-x-1/2 transform rounded-md border border-stroke bg-white p-4 text-sm opacity-0 transition-opacity duration-300 group-hover/warning:opacity-100 dark:border-form-strokedark dark:bg-boxdark">
-                                              <span>
-                                                Erro ao atualizar os dados. Tente
-                                                novamente mais tarde.
-                                              </span>
-                                            </div>
-                                          </div>
-                                        )}
-                                      </div>
-                                    )}
                                 </div>
                                 {watch("vincular_usuario") === true ? (
                                   <div className="flex flex-col gap-2">
