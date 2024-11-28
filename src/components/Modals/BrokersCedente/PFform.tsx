@@ -3,6 +3,8 @@ import ConfirmModal from '@/components/CrmUi/ConfirmModal';
 import CRMTooltip from '@/components/CrmUi/Tooltip';
 import CedenteModalSkeleton from '@/components/Skeletons/CedenteModalSkeleton';
 import { BrokersContext } from '@/context/BrokersContext';
+import { validationSelectPix } from '@/functions/formaters/validationPix';
+import { PixOption } from '@/types/pix';
 import api from '@/utils/api';
 import { useMutation } from '@tanstack/react-query';
 import Cleave from 'cleave.js/react';
@@ -480,7 +482,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
 
   useEffect(() => {
     if (mode === "edit" && cedentePfData) {
-
+      setPixOption(validationSelectPix(cedentePfData.data?.properties["Pix"].rich_text?.[0]?.text.content || "") as PixOption);
       // valores obrigatórios em um cadastro
       setValue("nome_completo", cedentePfData.data?.properties["Nome Completo"].title[0].text.content);
       setValue("cpf", cedentePfData.data!.properties["CPF"].rich_text![0].text.content);
@@ -1019,6 +1021,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
             >
               <option className='dark:bg-boxdark bg-white rounded-lg border' value="celular">Celular</option>
               <option className='dark:bg-boxdark bg-white rounded-lg border' value="cpf">CPF</option>
+              <option className='dark:bg-boxdark bg-white rounded-lg border' value="cnpj">CNPJ</option>
               <option className='dark:bg-boxdark bg-white rounded-lg border' value="email">Email</option>
               <option className='dark:bg-boxdark bg-white rounded-lg border' value="chave">Chave Aleatória</option>
             </select>
@@ -1061,6 +1064,31 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
                     options={{
                       delimiters: [".", ".", "-"],
                       blocks: [3, 3, 3, 2]
+                    }}
+                  />
+                  {error && <span className='absolute top-1/2 -translate-y-1/2 right-3 text-red text-xs font-medium'>{error.message}</span>}
+                </>
+              )}
+            />
+              
+              ) : null}
+              
+            {pixOption === "cnpj" ? (
+              <Controller
+              name="pix"
+              control={control}
+              rules={{
+                required: "Campo obrigatório",
+              }}
+              render={({ field, fieldState: { error } }) => (
+                <>
+                <Cleave
+                    {...field}
+                    placeholder={(cedentePfData.isFetching && mode === "edit") ? 'Carregando...' : "99.999.999/9999-99"}
+                    className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} col-span-1 border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
+                    options={{
+                      delimiters: [".", ".", "/", "-"],
+                      blocks: [2, 3, 3, 4, 2]
                     }}
                   />
                   {error && <span className='absolute top-1/2 -translate-y-1/2 right-3 text-red text-xs font-medium'>{error.message}</span>}

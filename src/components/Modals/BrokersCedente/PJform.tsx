@@ -4,6 +4,7 @@ import CRMTooltip from '@/components/CrmUi/Tooltip';
 import CedenteModalSkeleton from '@/components/Skeletons/CedenteModalSkeleton';
 import { BrokersContext } from '@/context/BrokersContext';
 import { NotionPage } from '@/interfaces/INotion';
+import { PixOption } from '@/types/pix';
 import api from '@/utils/api';
 import queryClient from '@/utils/queryClient';
 import { useMutation } from '@tanstack/react-query';
@@ -547,7 +548,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
 
   useEffect(() => {
     if (mode === "edit" && cedentePjData.data) {
-
+      setPixOption(validationSelectPix(cedentePjData.data?.properties["Pix"].rich_text?.[0]?.text.content || "") as PixOption);
       // valores obrigatórios em um cadastro
       setValue("relacionado_a", id);
       setValue("razao_social", cedentePjData.data?.properties["Razão Social"].title[0].text.content);
@@ -1017,6 +1018,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
             >
               <option className='dark:bg-boxdark bg-white rounded-lg border' value="celular">Celular</option>
               <option className='dark:bg-boxdark bg-white rounded-lg border' value="cpf">CPF</option>
+              <option className='dark:bg-boxdark bg-white rounded-lg border' value="cnpj">CNPJ</option>
               <option className='dark:bg-boxdark bg-white rounded-lg border' value="email">Email</option>
               <option className='dark:bg-boxdark bg-white rounded-lg border' value="chave">Chave Aleatória</option>
             </select>
@@ -1059,6 +1061,31 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
                     options={{
                       delimiters: [".", ".", "-"],
                       blocks: [3, 3, 3, 2]
+                    }}
+                  />
+                  {error && <span className='absolute top-1/2 -translate-y-1/2 right-3 text-red text-xs font-medium'>{error.message}</span>}
+                </>
+              )}
+            />
+              
+              ) : null}
+              
+            {pixOption === "cnpj" ? (
+              <Controller
+              name="pix"
+              control={control}
+              rules={{
+                required: "Campo obrigatório",
+              }}
+              render={({ field, fieldState: { error } }) => (
+                <>
+                <Cleave
+                    {...field}
+                    placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "99.999.999/9999-99"}
+                    className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} col-span-1 border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
+                    options={{
+                      delimiters: [".", ".", "/", "-"],
+                      blocks: [2, 3, 3, 4, 2]
                     }}
                   />
                   {error && <span className='absolute top-1/2 -translate-y-1/2 right-3 text-red text-xs font-medium'>{error.message}</span>}
