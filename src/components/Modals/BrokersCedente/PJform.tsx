@@ -924,7 +924,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="banco" className='flex items-center justify-center gap-2'>
               <BsBank2 />
-              <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Banco</span>
+              <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Banco</span>
             </label>
             <Controller
               name="banco"
@@ -949,7 +949,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="agencia" className='flex items-center justify-center gap-2'>
               <BiSolidBank />
-              <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Agência</span>
+              <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Agência</span>
             </label>
             <Controller
               name="agencia"
@@ -974,7 +974,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="conta" className='flex items-center justify-center gap-2'>
               <RiBankCardFill />
-              <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Conta</span>
+              <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Conta</span>
             </label>
             <Controller
               name="conta"
@@ -999,7 +999,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
           <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
             <label htmlFor="pix_type" className='flex items-center justify-center gap-2'>
               <HiMiniBanknotes />
-              <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Pix</span>
+              <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Pix</span>
             </label>
 
             <div className='grid 2xsm:grid-cols-1 2xsm:w-full md:grid-cols-2 gap-4 items-center'>
