@@ -76,7 +76,9 @@ export default function DefaultLayout({
                 </div>
               </Show>
             </div>
-            <NewForm />
+            <TableNotionProvider>
+              <NewForm />
+            </TableNotionProvider>
             {/* <!-- ===== Content Area End ===== --> */}
           </div>
         </GeneralUIProvider>
