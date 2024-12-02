@@ -1,3 +1,4 @@
+"use client"
 import numberFormat from '@/functions/formaters/numberFormat'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import CustomCheckbox from '../CrmUi/Checkbox';
@@ -9,7 +10,7 @@ import { NotionPage } from '@/interfaces/INotion';
 import api from '@/utils/api';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/functions/formaters/formatCurrency';
-import { AiOutlineLoading, AiOutlineSwap } from 'react-icons/ai';
+import { AiOutlineLoading, } from 'react-icons/ai';
 import { useMutation } from '@tanstack/react-query';
 import { IoCloseCircle } from 'react-icons/io5';
 import CRMTooltip from '../CrmUi/Tooltip';
@@ -23,6 +24,10 @@ import ConfirmModal from '../CrmUi/ConfirmModal';
 import Badge from '../CrmUi/ui/Badge/Badge';
 import EditOficioBrokerForm from '../Forms/EditOficioBrokerForm';
 import { HiCheck } from 'react-icons/hi';
+import confetti from 'canvas-confetti'
+import UseMySwal from '@/hooks/useMySwal';
+import { GeneralUIContext } from '@/context/GeneralUIContext';
+import { TbReportMoney } from 'react-icons/tb';
 
 export type ChecksProps = {
     is_precatorio_complete: boolean | null;
@@ -31,10 +36,9 @@ export type ChecksProps = {
     isFetching: boolean;
 }
 
-const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
+const DashbrokersCard = ({ oficio, setEditModalId }:
     {
         oficio: NotionPage,
-        editModalId: string | null,
         setEditModalId: React.Dispatch<React.SetStateAction<string | null>>
     }
 ) => {
@@ -60,6 +64,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
     const [isUpdatingDiligence, setIsUpdatingDiligence] = useState<boolean>(false);
     const [savingObservation, setSavingObservation] = useState<boolean>(false);
     const [isProposalButtonDisabled, setIsProposalButtonDisabled] = useState<boolean>(true);
+    const [isProposalChanging, setIsProposalChanging] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<boolean>(false);
     const [credorIdentificationType, setCredorIdentificationType] = useState<IdentificationType>(null);
     const [confirmModal, setOpenConfirmModal] = useState<boolean>(false);
@@ -70,13 +75,15 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         isFetching: false
     });
 
-    const isFirstLoad = useRef(true); // referência: 'isFirstLoad' sempre apontará para o mesmo objeto retornado por useRef
+    const { theme } = useContext(GeneralUIContext);
+    const swal = UseMySwal();
 
     /* ====> refs <==== */
     const proposalRef = useRef<HTMLInputElement | null>(null);
     const comissionRef = useRef<HTMLInputElement | null>(null);
     const observationRef = useRef<HTMLTextAreaElement | null>(null);
     const proposalRangeRef = useRef<HTMLInputElement | null>(null);
+    const isFirstLoad = useRef(true); // referência: 'isFirstLoad' sempre apontará para o mesmo objeto retornado por useRef
 
     //* ====> Principal Data <==== */
     const [mainData, setMainData] = useState<NotionPage | null>(null);
@@ -393,46 +400,95 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                 await api.patch(`api/notion-api/broker/decline-proposal/${mainData?.id}/`);
             return req.status
         },
-        onMutate: async (status: string) => {
+        onMutate: async () => {
             setIsFetchAllowed(false);
-            const previousData = mainData
-            setMainData((old: any) => {
-                return {
-                    ...old,
-                    properties: {
-                        ...old.properties,
-                        Status: {
-                            ...old.properties.Status,
-                            status: {
-                                ...old.properties.Status.status,
-                                name: status
-                            }
-                        }
-                    }
-                }
-            })
-            return { previousData }
+            setIsProposalChanging(true);
         },
-        onError: async (error, message, context) => {
+        onError: async () => {
             setIsFetchAllowed(true);
-            setMainData(context?.previousData as NotionPage);
-            toast.error('Erro ao aceitar proposta! Contate a Ativos para verificar o motivo.', {
+            toast.error('Erro ao modificar proposta! Contate a Ativos para verificar o motivo.', {
                 icon: <BiX className="text-lg fill-red-500" />
             });
         },
         onSuccess: async () => {
             setIsFetchAllowed(true);
             await fetchDetailCardData(mainData!.id);
-            if (mainData?.properties["Status"].status?.name === "Proposta aceita") {
-                toast.success('Proposta aceita. Verifique o status da diligência para mais informações!', {
-                    icon: <BiCheck className="text-lg fill-green-400" />
+            if (
+                mainData?.properties["Status"].status?.name !== "Proposta aceita" &&
+                checks.are_docs_complete && checks.is_cedente_complete && checks.is_precatorio_complete
+            ) {
+                confetti({
+                    spread: 180,
+                    particleCount: 300,
+                    origin: {
+                        y: 0.5
+                    }
                 });
-            } else {
-                toast.success('Proposta cancelada! Você pode registrar o motivo no campo de observação.', {
-                    icon: <BiCheck className="text-lg fill-green-400" />
-                });
-
+                swal.fire({
+                    icon: "success",
+                    iconColor: "#00b809",
+                    title: "Proposta aceita!",
+                    text: "Verifique o status da diligência para mais informações.",
+                    color: `${theme === "light" ? "#64748B" : "#AEB7C0"}`,
+                    showConfirmButton: true,
+                    confirmButtonText: "OK",
+                    confirmButtonColor: "#1a56db",
+                    backdrop: false,
+                    background: `${theme === "light" ? "#FFF" : "#24303F"}`,
+                    showCloseButton: true,
+                    timer: 5000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = swal.stopTimer;
+                        toast.onmouseleave = swal.resumeTimer;
+                    }
+                })
+            } else if (mainData?.properties["Status"].status?.name !== "Proposta aceita" &&
+                (!checks.are_docs_complete || !checks.is_cedente_complete || !checks.is_precatorio_complete)
+            ) {
+                swal.fire({
+                    icon: "info",
+                    // iconColor: "#00b809",
+                    title: "Proposta aceita!",
+                    text: "Porém ainda há pontos pendentes para a conclusão da diligência.",
+                    color: `${theme === "light" ? "#64748B" : "#AEB7C0"}`,
+                    showConfirmButton: true,
+                    confirmButtonText: "OK",
+                    confirmButtonColor: "#1a56db",
+                    backdrop: false,
+                    background: `${theme === "light" ? "#FFF" : "#24303F"}`,
+                    showCloseButton: true,
+                    timer: 5000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = swal.stopTimer;
+                        toast.onmouseleave = swal.resumeTimer;
+                    }
+                })
+            } else if (mainData?.properties["Status"].status?.name === "Proposta aceita") {
+                swal.fire({
+                    icon: "warning",
+                    // iconColor: "#e63f66",
+                    title: "Proposta cancelada!",
+                    text: "Você pode registrar o motivo no campo de observação.",
+                    color: `${theme === "light" ? "#64748B" : "#AEB7C0"}`,
+                    showConfirmButton: true,
+                    confirmButtonText: "OK",
+                    confirmButtonColor: "#1a56db",
+                    backdrop: false,
+                    background: `${theme === "light" ? "#FFF" : "#24303F"}`,
+                    showCloseButton: true,
+                    timer: 5000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = swal.stopTimer;
+                        toast.onmouseleave = swal.resumeTimer;
+                    }
+                })
             }
+        },
+        onSettled: () => {
+            setIsProposalChanging(false);
         }
     });
 
@@ -505,7 +561,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         await proposalTrigger.mutateAsync(status);
     }
 
-    const handleCloseOutCard = async () => {
+    const handleLiquidateCard = async () => {
 
         setIsFetchAllowed(false);
         setIsUpdatingDiligence(true);
@@ -523,22 +579,31 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             );
 
             if (response.status === 202) {
-                toast.success("Status Diligência atualizado!", {
-                    classNames: {
-                        toast: "bg-white dark:bg-boxdark",
-                        title: "text-black-2 dark:text-white",
-                        actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
-                    },
-                    icon: <BiCheck className="text-lg fill-green-400" />,
-                    action: {
-                        label: "OK",
-                        onClick() {
-                            toast.dismiss();
-                        },
-                    }
-                });
                 setIsFetchAllowed(true);
                 await fetchCardData(selectedUser ?? undefined)
+                swal.fire({
+                    icon: "success",
+                    iconColor: "#00b809",
+                    title: "Agora é com a gente!",
+                    text: "O ativo foi enviado para o processo de liquidação.",
+                    color: `${theme === "light" ? "#64748B" : "#AEB7C0"}`,
+                    showConfirmButton: true,
+                    confirmButtonText: "OK",
+                    confirmButtonColor: "#1a56db",
+                    backdrop: false,
+                    background: `${theme === "light" ? "#FFF" : "#24303F"}`,
+                    showCloseButton: true,
+                    timer: 5000,
+                    timerProgressBar: true
+                })
+                confetti({
+                    spread: 180,
+                    particleCount: 300,
+                    origin: {
+                        y: 0.5
+                    }
+                });
+
             }
 
         } catch (error) {
@@ -637,11 +702,15 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
         <div className="relative col-span-1 gap-5 bg-white dark:bg-boxdark p-5 rounded-md border border-stroke dark:border-strokedark">
             {/* ----> info <----- */}
             <div className='flex justify-between items-center mb-2'>
-                <div className='flex gap-1 items-center justify-center w-fit' >
-                    <CustomCheckbox
-                        check={mainData?.properties["Status"].status?.name === "Proposta aceita"}
-                        callbackFunction={handleUpdateStatus}
-                    />
+                <div className='flex gap-2 items-center justify-center w-fit' >
+                    {isProposalChanging ? (
+                        <AiOutlineLoading className='animate-spin' />
+                    ) : (
+                        <CustomCheckbox
+                            check={mainData?.properties["Status"].status?.name === "Proposta aceita"}
+                            callbackFunction={handleUpdateStatus}
+                        />
+                    )}
                     <span className='text-sm font-medium'>Proposta Aceita</span>
                 </div>
 
@@ -708,22 +777,38 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
 
                     <div className='flex flex-col min-w-fit'>
 
-                        <button
-                            onClick={handleCloseOutCard}
-                            className={`${(mainData?.properties["Status Diligência"].select?.name !== "Due Diligence" && checks.is_cedente_complete === true && checks.is_precatorio_complete === true && checks.are_docs_complete === true) ? "opacity-100 bg-green-400 text-black-2 hover:bg-green-500 hover:text-snow" : "opacity-50 bg-slate-100 dark:bg-boxdark-2/50 cursor-not-allowed pointer-events-none"} flex items-center justify-center gap-2 my-1 py-1 px-4 rounded-md transition-colors duration-200 text-sm`}
-                        >
-                            {isUpdatingDiligence ? (
-                                <>
-                                    <AiOutlineLoading className='w-4 h-4 animate-spin' />
-                                    Liquidando...
-                                </>
-                            ) : (
-                                <>
-                                    <HiCheck className='w-4 h-4' />
-                                    Liquidar
-                                </>
+                        <div className='relative w-full'>
+
+                            {(mainData?.properties["Status Diligência"].select?.name !== "Due Diligence" && mainData?.properties["Status"].status?.name === "Proposta aceita" && checks.is_cedente_complete === true && checks.is_precatorio_complete === true && checks.are_docs_complete === true) && (
+                                <span className='absolute z-1 w-full h-full rounded-md bg-green-300 span-pulse'></span>
                             )}
-                        </button>
+
+                            <button
+                                onClick={handleLiquidateCard}
+                                className={`${(mainData?.properties["Status Diligência"].select?.name !== "Due Diligence" && mainData?.properties["Status"].status?.name === "Proposta aceita" && checks.is_cedente_complete === true && checks.is_precatorio_complete === true && checks.are_docs_complete === true) ? "bg-green-400 text-black-2 hover:bg-green-500 hover:text-snow" : "opacity-50 bg-slate-100 dark:bg-boxdark-2/50 cursor-not-allowed pointer-events-none"} relative z-20 flex w-full items-center justify-center gap-2 my-1 py-1 px-4 rounded-md transition-colors duration-200 text-sm`}
+                            >
+
+                                {isUpdatingDiligence ? (
+                                    <>
+                                        <AiOutlineLoading className='w-4 h-4 animate-spin' />
+                                        Liquidando...
+                                    </>
+                                ) : <>
+                                    {(mainData?.properties["Status Diligência"].select?.name === "Due Diligence" && mainData?.properties["Status"].status?.name === "Proposta aceita") ? (
+                                        <>
+                                            <HiCheck className='w-4 h-4' />
+                                            Liquidado
+                                        </>
+                                    ) : (
+                                        <>
+                                            <TbReportMoney className='w-4 h-4' />
+                                            Liquidar
+                                        </>
+                                    )}
+                                </>}
+                            </button>
+
+                        </div>
 
                         <button
                             onClick={() => setEditModalId(mainData!.id)}
@@ -742,7 +827,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
                         <button
                             onClick={() => setCedenteModal(mainData)}
                             className='flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm'>
-                            {(checks.is_cedente_complete !== false) ? (
+                            {(mainData?.properties["Cedente PF"].relation?.[0] || mainData?.properties["Cedente PJ"].relation?.[0]) ? (
                                 <>
                                     <BsPencilSquare />
                                     Editar Cedente
@@ -950,7 +1035,7 @@ const DashbrokersCard = ({ oficio, editModalId, setEditModalId }:
             <EditOficioBrokerForm
                 mainData={mainData}
             />
-            {/* end edit info modal */}
+            {/* ----> end edit info modal <----- */}
         </div>
     )
 }
