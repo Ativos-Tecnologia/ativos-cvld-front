@@ -547,6 +547,10 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
     };
   }, [isFormModified]);
 
+  console.log(mode)
+  console.log(cedentePfData)
+  console.log(openRegisterForm)
+
   return (
     <div className='w-full max-h-[480px] px-3' ref={pfFormModal}>
 
@@ -612,7 +616,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
         </>
       )}
 
-      {(mode === "edit" || cedentePfData.data !== null || openRegisterForm) ? (
+      {(mode === "edit" || cedentePfData.data !== null || openRegisterForm) && (
         <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-2 w-full max-h-100 overflow-y-auto pr-5 2xsm:gap-6 md:gap-2'>
 
           {/* relacionado ao oficio */}
@@ -1170,11 +1174,13 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
             )}
           </div>
         </form>
-      ) : (
-        <div className='flex flex-col gap-2'>
-          <MiniLoader />
-        </div>
       )}
+
+      {(cedentePfData.isFetching && fromFormPJ) && (
+          <div className='flex flex-col gap-2'>
+            <MiniLoader />
+          </div>
+      ) }
 
       {/* ====> unlink modal <==== */}
       <ConfirmModal
