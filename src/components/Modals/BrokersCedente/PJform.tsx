@@ -26,6 +26,8 @@ import { TbBuildingEstate } from 'react-icons/tb';
 import { toast } from 'sonner';
 import PFform from './PFform';
 import { validationSelectPix } from '@/functions/formaters/validationPix';
+import UseMySwal from '@/hooks/useMySwal';
+import { GeneralUIContext } from '@/context/GeneralUIContext';
 
 type FormValuesForPJ = {
   razao_social: string;
@@ -210,12 +212,14 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
     isFetching: true
   });
   const [pixOption, setPixOption] = useState<PixOption>("celular");
-
+  const swal = UseMySwal();
   const formValues = watch();
   const isFormModified: boolean = Object.values(formValues).some(value => (
     value !== '' &&
     value !== id
   ));
+
+  const { theme } = useContext(GeneralUIContext)
 
   // função que faz fetch na lista de cedentes
   // OBS: é chamada somente se o mode for create
@@ -501,10 +505,22 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
   // função de mostrar confirm para fechar modal no modo create
   const confirmClose = () => {
     if (isFormModified && mode === "create") {
-      const confirmClose = window.confirm("Você tem alterações não salvas. Tem certeza de que deseja fechar?");
-      if (confirmClose) {
-        setCedenteModal(null);
-      }
+      swal.fire({
+        title: "Você tem certeza?",
+        text: "Você possui alterações não salvas no formulário",
+        icon: "warning",
+        showCancelButton: true,
+        cancelButtonColor: "#d33",
+        confirmButtonColor: "#1a56db",
+        confirmButtonText: "Sim, fechar",
+        cancelButtonText: "Cancelar",
+        color: `${theme === "light" ? "#64748B" : "#AEB7C0"}`,
+        background: `${theme === "light" ? "#FFF" : "#24303F"}`
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setCedenteModal(null);
+        }
+      })
     } else {
       setCedenteModal(null);
     }
@@ -549,7 +565,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
 
   useEffect(() => {
     if (mode === "edit" && cedentePjData.data) {
-      setPixOption(validationSelectPix(cedentePjData.data?.properties["Pix"].rich_text?.[0]?.text.content || "") as PixOption);
+      setPixOption(validationSelectPix(cedentePjData.data?.properties["Pix"].rich_text?.[0]?.text.content || "celular") as PixOption);
       // valores obrigatórios em um cadastro
       setValue("relacionado_a", id);
       setValue("razao_social", cedentePjData.data?.properties["Razão Social"].title[0].text.content);
@@ -924,8 +940,8 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
               className="flex-1 w-full border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
             />
           </div>
-        
-           {/* Dados Bancários */}
+
+          {/* Dados Bancários */}
 
           {/* Banco */}
           <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
@@ -994,7 +1010,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
                     className="border-stroke dark:border-strokedark flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
                     options={{
                       delimiters: [" ", "-"],
-                      blocks: [8,1]
+                      blocks: [8, 1]
                     }}
                   />
                 </>
@@ -1004,133 +1020,133 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
 
           {/* Pix */}
           <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
-            <label htmlFor="pix_type" className='flex items-center justify-center gap-2'>
+            <label htmlFor="pix" className='flex items-center justify-center gap-2'>
               <HiMiniBanknotes />
               <span className='w-39 text-ellipsis overflow-hidden whitespace-nowrap'>Pix</span>
             </label>
 
             <div className='grid 2xsm:grid-cols-1 2xsm:w-full md:grid-cols-2 gap-4 items-center'>
 
-            <select
-              id="pix"
-              className={`rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm outline-none focus:border-primary focus-visible:shadow-none sm:w-1/4 md:w-full dark:bg-boxdark`}
-              value={pixOption}
-              onChange={(e) => setPixOption(e.target.value as PixOption)}
-            >
-              <option className='dark:bg-boxdark bg-white rounded-lg border' value="celular">Celular</option>
-              <option className='dark:bg-boxdark bg-white rounded-lg border' value="cpf">CPF</option>
-              <option className='dark:bg-boxdark bg-white rounded-lg border' value="cnpj">CNPJ</option>
-              <option className='dark:bg-boxdark bg-white rounded-lg border' value="email">Email</option>
-              <option className='dark:bg-boxdark bg-white rounded-lg border' value="chave">Chave Aleatória</option>
-            </select>
+              <select
+                id="pix"
+                className={`rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm outline-none focus:border-primary focus-visible:shadow-none sm:w-1/4 md:w-full dark:bg-boxdark`}
+                value={pixOption}
+                onChange={(e) => setPixOption(e.target.value as PixOption)}
+              >
+                <option className='dark:bg-boxdark bg-white rounded-lg border' value="celular">Celular</option>
+                <option className='dark:bg-boxdark bg-white rounded-lg border' value="cpf">CPF</option>
+                <option className='dark:bg-boxdark bg-white rounded-lg border' value="cnpj">CNPJ</option>
+                <option className='dark:bg-boxdark bg-white rounded-lg border' value="email">Email</option>
+                <option className='dark:bg-boxdark bg-white rounded-lg border' value="chave">Chave Aleatória</option>
+              </select>
 
-            {pixOption === "celular" ? (
-              
-              <Controller
-              name="pix"
-              control={control}
-              render={({ field }) => (
-                <>
-                  <Cleave
-                    {...field}
-                    placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "99 99999-9999"}
-                    className="col-span-1 border-stroke dark:border-strokedark border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
-                    options={{
-                      delimiters: [" ", " ", "-"],
-                      blocks: [2, 5, 4]
-                    }}
-                  />
-                </>
-              )}
-            />
-              
-            ) : null}
+              {pixOption === "celular" ? (
 
-            {pixOption === "cpf" ? (
-              <Controller
-              name="pix"
-              control={control}
-              rules={{
-                required: "Campo obrigatório",
-              }}
-              render={({ field, fieldState: { error } }) => (
-                <>
-                <Cleave
-                    {...field}
-                    placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "999.999.999-99"}
-                    className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} col-span-1 border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
-                    options={{
-                      delimiters: [".", ".", "-"],
-                      blocks: [3, 3, 3, 2]
-                    }}
-                  />
-                  {error && <span className='absolute top-1/2 -translate-y-1/2 right-3 text-red text-xs font-medium'>{error.message}</span>}
-                </>
-              )}
-            />
-              
+                <Controller
+                  name="pix"
+                  control={control}
+                  render={({ field }) => (
+                    <>
+                      <Cleave
+                        {...field}
+                        placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "99 99999-9999"}
+                        className="col-span-1 border-stroke dark:border-strokedark border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
+                        options={{
+                          delimiters: [" ", " ", "-"],
+                          blocks: [2, 5, 4]
+                        }}
+                      />
+                    </>
+                  )}
+                />
+
               ) : null}
-              
-            {pixOption === "cnpj" ? (
-              <Controller
-              name="pix"
-              control={control}
-              rules={{
-                required: "Campo obrigatório",
-              }}
-              render={({ field, fieldState: { error } }) => (
-                <>
-                <Cleave
-                    {...field}
-                    placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "99.999.999/9999-99"}
-                    className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} col-span-1 border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
-                    options={{
-                      delimiters: [".", ".", "/", "-"],
-                      blocks: [2, 3, 3, 4, 2]
-                    }}
-                  />
-                  {error && <span className='absolute top-1/2 -translate-y-1/2 right-3 text-red text-xs font-medium'>{error.message}</span>}
-                </>
-              )}
-            />
-              
-            ) : null}
-            
-            {pixOption === "email" ? (
-              
-            <input
-              type="email"
-              placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "nome@email.com"}
-              {...register("pix")}
-              className="col-span-1 border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
-            />
-            
-            ) : null}
 
-            {pixOption === "chave" ? (
-              <Controller
-              name="pix"
-              control={control}
-              rules={{
-                required: "Campo obrigatório",
-              }}
-              render={({ field, fieldState: { error } }) => (
-                <>
-                <Cleave
-                    {...field}
-                    placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "Chave Aleatória"}
-                    className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} col-span-1 border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
-                    options={{
-                      delimiters: ["-"],
-                      blocks: [8, 4, 4, 4, 12]
-                    }}
-                  />
-                  {error && <span className='absolute top-1/2 -translate-y-1/2 right-3 text-red text-xs font-medium'>{error.message}</span>}
-                </>
-              )}
-            />
-              
-            ) : null}
+              {pixOption === "cpf" ? (
+                <Controller
+                  name="pix"
+                  control={control}
+                  rules={{
+                    required: "Campo obrigatório",
+                  }}
+                  render={({ field, fieldState: { error } }) => (
+                    <>
+                      <Cleave
+                        {...field}
+                        placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "999.999.999-99"}
+                        className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} col-span-1 border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
+                        options={{
+                          delimiters: [".", ".", "-"],
+                          blocks: [3, 3, 3, 2]
+                        }}
+                      />
+                      {error && <span className='absolute top-1/2 -translate-y-1/2 right-3 text-red text-xs font-medium'>{error.message}</span>}
+                    </>
+                  )}
+                />
+
+              ) : null}
+
+              {pixOption === "cnpj" ? (
+                <Controller
+                  name="pix"
+                  control={control}
+                  rules={{
+                    required: "Campo obrigatório",
+                  }}
+                  render={({ field, fieldState: { error } }) => (
+                    <>
+                      <Cleave
+                        {...field}
+                        placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "99.999.999/9999-99"}
+                        className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} col-span-1 border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
+                        options={{
+                          delimiters: [".", ".", "/", "-"],
+                          blocks: [2, 3, 3, 4, 2]
+                        }}
+                      />
+                      {error && <span className='absolute top-1/2 -translate-y-1/2 right-3 text-red text-xs font-medium'>{error.message}</span>}
+                    </>
+                  )}
+                />
+
+              ) : null}
+
+              {pixOption === "email" ? (
+
+                <input
+                  type="email"
+                  placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "nome@email.com"}
+                  {...register("pix")}
+                  className="col-span-1 border-b border-stroke dark:border-strokedark border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
+                />
+
+              ) : null}
+
+              {pixOption === "chave" ? (
+                <Controller
+                  name="pix"
+                  control={control}
+                  rules={{
+                    required: "Campo obrigatório",
+                  }}
+                  render={({ field, fieldState: { error } }) => (
+                    <>
+                      <Cleave
+                        {...field}
+                        placeholder={(cedentePjData.isFetching && mode === "edit") ? 'Carregando...' : "Chave Aleatória"}
+                        className={`${error ? "border-2 !border-red ring-0" : "border-stroke dark:border-strokedark"} col-span-1 border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic`}
+                        options={{
+                          delimiters: ["-"],
+                          blocks: [8, 4, 4, 4, 12]
+                        }}
+                      />
+                      {error && <span className='absolute top-1/2 -translate-y-1/2 right-3 text-red text-xs font-medium'>{error.message}</span>}
+                    </>
+                  )}
+                />
+
+              ) : null}
             </div>
 
           </div>
@@ -1153,10 +1169,6 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
       {/* ====> link representante legal modal <==== */}
       {openRegisterPfModal && (
         <div className='absolute bg-boxdark flex flex-col items-center w-full h-full p-10 top-0 left-0 rounded-md'>
-
-          <button className='group absolute right-2 top-2 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-700 transition-colors duration-300 cursor-pointer'>
-            <BiX className="group-hover:text-white transition-colors duration-300 text-2xl" onClick={() => setOpenRegisterPfModal(false)} />
-          </button>
 
           <PFform
             id={id}
