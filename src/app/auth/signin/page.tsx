@@ -6,20 +6,19 @@ import api from "@/utils/api";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { Suspense, useState } from "react";
+import React, { lazy, Suspense, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { lazy } from "react";
 
 import { Fade } from "react-awesome-reveal";
 
 import { Button } from "@/components/Button";
-const ForgotPassword = lazy(() => import("@/components/Modals/ForgotPassword"));
 import usePassword from "@/hooks/usePassword";
 import { useQueryClient } from "@tanstack/react-query";
 import { AiOutlineLoading } from "react-icons/ai";
 import { BiLockAlt, BiUser, BiX } from "react-icons/bi";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import "./index.css";
+const ForgotPassword = lazy(() => import("@/components/Modals/ForgotPassword"));
 
 export type SignInInputs = {
   username: string;
@@ -292,7 +291,7 @@ const SignIn: React.FC = () => {
                     </div>
                   </Fade>
                 ) : (
-                  <div className="flex flex-col 2xsm:gap-15 md:mt-10 md:gap-10 self-center">
+                  <div className="flex flex-col 2xsm:gap-6 2xsm:mt-10 md:mt-10 md:gap-10 lg:gap-4 lg:mb-8 lg:mt-0 xl:mb-15 xl:gap-8 xl:mt-5 2xl:mb-0 2xl:mt-10 2xl:gap-10 self-center">
                     <h1
                       className="translate-x-25 animate-fade-right text-left font-bold text-snow opacity-0 delay-300 2xsm:text-4xl md:text-5xl"
                       style={{
