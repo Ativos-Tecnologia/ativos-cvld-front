@@ -14,9 +14,8 @@
 coverage
 .coverage
 
-# Teste e funções
 test.ts
-
+test.tsx
 # next.js
 /.next/
 /out/

@@ -20,6 +20,6 @@ export const validationSelectPix = (pix: string) => {
     case 5:
       return "cnpj";
     default:
-      return null;
+      return "celular";
   }
 };

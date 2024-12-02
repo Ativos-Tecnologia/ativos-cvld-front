@@ -1283,7 +1283,8 @@ export const TableNotionProvider = ({
   // seta a lista de usuários se a role do usuário for ativos
   useEffect(() => {
     const fetchData = async () => {
-      if (userData?.role === "ativos" && saveInfoToNotion) {
+      console.log("fetching users list");
+      if (userData?.role === "ativos" && saveInfoToNotion && usersList.length === 0) {
         const [usersList] = await Promise.all([
           api.get("/api/notion-api/list/users/"),
         ]);
@@ -1295,7 +1296,7 @@ export const TableNotionProvider = ({
     };
 
     fetchData();
-  }, [saveInfoToNotion, userData?.role]);
+  }, [saveInfoToNotion, userData?.role, usersList.length]);
 
   return (
     <TableNotionContext.Provider

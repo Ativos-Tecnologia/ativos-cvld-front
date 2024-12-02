@@ -24,6 +24,9 @@ import { RiBankCardFill, RiRoadMapLine } from 'react-icons/ri';
 import { TbBuildingEstate } from 'react-icons/tb';
 import { toast } from 'sonner';
 import { CedenteListProps, CedenteListResponse, CedenteProps } from './PJform';
+import MiniLoader from '@/components/CrmUi/MiniLoader';
+import UseMySwal from '@/hooks/useMySwal';
+import { GeneralUIContext } from '@/context/GeneralUIContext';
 
 type FormValuesForPF = {
   nome_completo: string;
@@ -210,6 +213,8 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
   const formValues = watch();
   const isFormModified = Object.values(formValues).some(value => (value !== '' && value !== 'Brasileiro' && value !== id));
   const [pixOption, setPixOption] = useState<PixOption>('celular');
+  const swal = UseMySwal();
+  const { theme } = useContext(GeneralUIContext)
   
   // função que faz fetch na lista de cedentes
   // OBS: é chamada somente se o mode for create
@@ -433,10 +438,26 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
   // função de mostrar confirm para fechar modal no modo create
   const confirmClose = () => {
     if (isFormModified && mode === "create") {
-      const confirmClose = window.confirm("Você tem alterações não salvas. Tem certeza de que deseja fechar?");
-      if (confirmClose) {
-        setCedenteModal(null);
-      }
+      swal.fire({
+        title: "Você tem certeza?",
+        text: "Você possui alterações não salvas no formulário",
+        icon: "warning",
+        showCancelButton: true,
+        cancelButtonColor: "#d33",
+        confirmButtonColor: "#1a56db",
+        confirmButtonText: "Sim, fechar",
+        cancelButtonText: "Cancelar",
+        color: `${theme === "light" ? "#64748B" : "#AEB7C0"}`,
+        background: `${theme === "light" ? "#FFF" : "#24303F"}`
+      }).then((result) => {
+        if (result.isConfirmed && fromFormPJ) {
+          openModal && openModal(false);
+        } else if (result.isDenied) {
+          return;
+        }
+      })
+    } else if (mode === "create" && fromFormPJ) {
+      openModal && openModal(false);
     } else {
       setCedenteModal(null);
     }
@@ -526,6 +547,10 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
     };
   }, [isFormModified]);
 
+  console.log(mode)
+  console.log(cedentePfData)
+  console.log(openRegisterForm)
+
   return (
     <div className='w-full max-h-[480px] px-3' ref={pfFormModal}>
 
@@ -551,7 +576,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
       </button>
 
       <h2 className='text-center text-2xl font-medium mb-10'>Cadastro de Cedente</h2>
-      {(mode === "create" && !cedentePfData.data && !openRegisterForm) && (
+      {(mode === "create" && !cedentePfData.data && !openRegisterForm && !fromFormPJ) && (
         <>
           <div className='mt-7'>
             {registeredCedentesList.isFetching ? (
@@ -1006,7 +1031,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
 
           {/* Pix */}
           <div className='relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:flex-row md:items-center md:max-h-12 md:gap-4'>
-            <label htmlFor="pix_type" className='flex items-center justify-center gap-2'>
+            <label htmlFor="pix" className='flex items-center justify-center gap-2'>
               <HiMiniBanknotes />
               <span className='w-33 text-ellipsis overflow-hidden whitespace-nowrap'>Pix</span>
             </label>
@@ -1150,6 +1175,12 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
           </div>
         </form>
       )}
+
+      {(cedentePfData.isFetching && fromFormPJ) && (
+          <div className='flex flex-col gap-2'>
+            <MiniLoader />
+          </div>
+      ) }
 
       {/* ====> unlink modal <==== */}
       <ConfirmModal
