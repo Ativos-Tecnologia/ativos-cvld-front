@@ -1,6 +1,6 @@
 "use client";
 import DashbrokersCard from "../Cards/DashbrokersCard";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import BrokerCardSkeleton from "../Skeletons/BrokerCardSkeleton";
 import { Fade } from "react-awesome-reveal";
 import Image from "next/image";
@@ -32,6 +32,7 @@ const Broker: React.FC = () => {
   const { 
     data: {role, user}
   }  = useContext(UserInfoAPIContext);
+  
 
   // estado para verificar se é o primeiro carregamento da view
   const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
@@ -41,27 +42,32 @@ const Broker: React.FC = () => {
   const selectUserRef = React.useRef<HTMLDivElement>(null);
   const searchUserRef = React.useRef<HTMLInputElement>(null);
 
+
   useEffect(() => {
     if (isFirstLoad && cardsData) {
       setIsFirstLoad(false);
     }
   }, [isFirstLoad, cardsData]);
 
+  const userListAlreadyLoaded = useRef(false);
+
   useEffect(() => {
     const fetchData = async () => {
+      console.log(userListAlreadyLoaded.current);
+      if (userListAlreadyLoaded.current || !openUsersPopover) return;
       const [usersList] = await Promise.all([
         api.get("/api/notion-api/list/users/"),
       ]);
 
-
       if (usersList.status === 200) {
         setUsersList(usersList.data);
         setFilteredUsersList(usersList.data);
+        userListAlreadyLoaded.current = true;
       }
     };
 
     fetchData();
-  }, []);
+  }, [openUsersPopover]);
 
   useEffect(() => {
     if (openUsersPopover && searchUserRef.current) {
@@ -111,7 +117,9 @@ const Broker: React.FC = () => {
             </label>
             <div className="flex items-center justify-center">
               <div
-                onClick={() => setOpenUsersPopover(!openUsersPopover)}
+                onClick={() => {
+                  setOpenUsersPopover(!openUsersPopover)
+                }}
                 className={`flex min-w-48 items-center justify-between gap-1 border border-stroke px-2 py-1 text-xs font-semibold uppercase hover:bg-slate-100 dark:border-strokedark dark:hover:bg-slate-700 ${openUsersPopover && "bg-slate-100 dark:bg-slate-700"} cursor-pointer rounded-md transition-colors duration-200`}
               >
                 <span>{selectedUser || user}</span>

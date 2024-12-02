@@ -1,33 +1,33 @@
 "use client"
-import numberFormat from '@/functions/formaters/numberFormat'
-import React, { useContext, useEffect, useRef, useState } from 'react'
-import CustomCheckbox from '../CrmUi/Checkbox';
+import { BrokersContext } from '@/context/BrokersContext';
+import { GeneralUIContext } from '@/context/GeneralUIContext';
+import { formatCurrency } from '@/functions/formaters/formatCurrency';
+import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
+import numberFormat from '@/functions/formaters/numberFormat';
+import UseMySwal from '@/hooks/useMySwal';
+import { NotionPage } from '@/interfaces/INotion';
+import api from '@/utils/api';
+import { useMutation } from '@tanstack/react-query';
+import confetti from 'canvas-confetti';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Fade } from 'react-awesome-reveal';
+import { AiOutlineLoading, } from 'react-icons/ai';
 import { BiCheck, BiSave, BiTrash, BiX } from 'react-icons/bi';
 import { BsCheckCircleFill, BsPencilSquare } from 'react-icons/bs';
 import { FaRegFilePdf } from 'react-icons/fa';
-import { Button } from '../Button';
-import { NotionPage } from '@/interfaces/INotion';
-import api from '@/utils/api';
-import { toast } from 'sonner';
-import { formatCurrency } from '@/functions/formaters/formatCurrency';
-import { AiOutlineLoading, } from 'react-icons/ai';
-import { useMutation } from '@tanstack/react-query';
-import { IoCloseCircle } from 'react-icons/io5';
-import CRMTooltip from '../CrmUi/Tooltip';
 import { GrDocumentUser } from 'react-icons/gr';
-import { BrokersContext } from '@/context/BrokersContext';
+import { HiCheck } from 'react-icons/hi';
+import { IoCloseCircle } from 'react-icons/io5';
 import { RiErrorWarningFill } from 'react-icons/ri';
-import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
-import { IdentificationType } from '../Modals/BrokersCedente';
-import { Fade } from 'react-awesome-reveal';
+import { TbReportMoney } from 'react-icons/tb';
+import { toast } from 'sonner';
+import { Button } from '../Button';
+import CustomCheckbox from '../CrmUi/Checkbox';
 import ConfirmModal from '../CrmUi/ConfirmModal';
+import CRMTooltip from '../CrmUi/Tooltip';
 import Badge from '../CrmUi/ui/Badge/Badge';
 import EditOficioBrokerForm from '../Forms/EditOficioBrokerForm';
-import { HiCheck } from 'react-icons/hi';
-import confetti from 'canvas-confetti'
-import UseMySwal from '@/hooks/useMySwal';
-import { GeneralUIContext } from '@/context/GeneralUIContext';
-import { TbReportMoney } from 'react-icons/tb';
+import { IdentificationType } from '../Modals/BrokersCedente';
 
 export type ChecksProps = {
     is_precatorio_complete: boolean | null;
@@ -740,8 +740,8 @@ const DashbrokersCard = ({ oficio, setEditModalId }:
                 </Button>
             </div>
             <hr className='border border-stroke dark:border-strokedark mb-4' />
-            <div className="grid grid-cols-12">
-                <div className="col-span-12 md:col-span-6 grid gap-3 min-w-[248px] md:min-w-fit">
+            <div className="grid 2xsm:grid-cols-12 md:grid-cols-8 xl:grid-cols-12">
+                <div className="col-span-12 md:col-span-8 xl:col-span-6 grid gap-3 min-w-[248px] md:min-w-fit">
                     <div className='text-xs'>
                         <p className='text-black dark:text-snow uppercase font-medium'>Nome do Credor:</p>
                         <CRMTooltip
@@ -927,7 +927,7 @@ const DashbrokersCard = ({ oficio, setEditModalId }:
                     isLoading={isDeleting}
                 />
 
-                <div className="mx-2 col-span-12 md:col-span-6 grid gap-5 border-t-2 md:border-t-0 pt-5 md:pt-0 mt-5 md:mt-0 border-l-0 md:border-l-2 border-stroke dark:border-strokedark pl-0 md:pl-3">
+                <div className="mx-2 col-span-12 md:col-span-8 xl:col-span-6 grid gap-5 border-t-2 md:border-t-0 pt-5 md:pt-5 mt-5 md:mt-0 border-l-0 md:border-l-2 border-stroke dark:border-strokedark pl-0 md:pl-3">
                     <div className='relative flex flex-col gap-5 max-h-fit pb-8 sm:pb-0'>
 
                         <div className="flex items-center justify-between gap-6 2xsm:flex-col md:flex-row">
