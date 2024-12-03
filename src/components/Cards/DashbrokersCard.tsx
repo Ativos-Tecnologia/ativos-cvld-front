@@ -2,7 +2,7 @@
 import numberFormat from '@/functions/formaters/numberFormat'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import CustomCheckbox from '../CrmUi/Checkbox';
-import { BiCheck, BiSave, BiTrash, BiX } from 'react-icons/bi';
+import { BiCheck, BiRefresh, BiSave, BiTrash, BiX } from 'react-icons/bi';
 import { BsCheckCircleFill, BsPencilSquare } from 'react-icons/bs';
 import { FaRegFilePdf } from 'react-icons/fa';
 import { Button } from '../Button';
@@ -19,7 +19,6 @@ import { BrokersContext } from '@/context/BrokersContext';
 import { RiErrorWarningFill } from 'react-icons/ri';
 import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
 import { IdentificationType } from '../Modals/BrokersCedente';
-import { Fade } from 'react-awesome-reveal';
 import ConfirmModal from '../CrmUi/ConfirmModal';
 import Badge from '../CrmUi/ui/Badge/Badge';
 import EditOficioBrokerForm from '../Forms/EditOficioBrokerForm';
@@ -36,18 +35,22 @@ export type ChecksProps = {
     isFetching: boolean;
 }
 
-const DashbrokersCard = ({ oficio, setEditModalId }:
+
+/**
+ * @param {NotionPage} oficio - O ativo que vai ser carregado no componente
+ * @returns {JSX.Element} - O card renderizado
+ */
+const DashbrokersCard = ({ oficio }:
     {
-        oficio: NotionPage,
-        setEditModalId: React.Dispatch<React.SetStateAction<string | null>>
+        oficio: NotionPage
     }
-) => {
+): JSX.Element => {
 
     /* ====> context imports <==== */
     const { fetchCardData, setCedenteModal, deleteModalLock,
         isFetchAllowed, setIsFetchAllowed, setDeleteModalLock,
         setDocModalInfo, fetchDetailCardData, specificCardData,
-        setSpecificCardData, selectedUser
+        setSpecificCardData, selectedUser, setEditModalId
     } = useContext(BrokersContext);
 
     /* ====> value states <==== */
@@ -62,6 +65,7 @@ const DashbrokersCard = ({ oficio, setEditModalId }:
     const [savingProposalAndComission, setSavingProposalAndComission] = useState<boolean>(false);
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
     const [isUpdatingDiligence, setIsUpdatingDiligence] = useState<boolean>(false);
+    const [isFetchingData, setIsFetchingData] = useState<boolean>(false);
     const [savingObservation, setSavingObservation] = useState<boolean>(false);
     const [isProposalButtonDisabled, setIsProposalButtonDisabled] = useState<boolean>(true);
     const [isProposalChanging, setIsProposalChanging] = useState<boolean>(false);
@@ -88,8 +92,12 @@ const DashbrokersCard = ({ oficio, setEditModalId }:
     //* ====> Principal Data <==== */
     const [mainData, setMainData] = useState<NotionPage | null>(null);
 
-    // Função responsável por fazer fetch em todos os estados dos checks
-    const fetchAllChecks = async () => {
+    /**
+     * Função responsável por fazer fetch em todos os estados dos checks
+     * 
+     * @returns {Promise<void>} - retorno da função
+     */
+    const fetchAllChecks = async (): Promise<void> => {
 
         setChecks((old) => (
             {
@@ -145,11 +153,16 @@ const DashbrokersCard = ({ oficio, setEditModalId }:
 
     };
 
-    // Função para atualizar a proposta e ajustar a comissão proporcionalmente
+    /**
+     * Função para atualizar a proposta e ajustar a comissão proporcionalmente
+     * @param {string} value - valor da proposta
+     * @param {boolean} sliderChange - indica se a mudança vem de um slider
+     * @returns {void}
+     */
     const handleProposalSliderChange = (
         value: string,
         sliderChange: boolean
-    ) => {
+    ): void => {
 
         const newProposalSliderValue = parseFloat(value);
 
@@ -187,11 +200,17 @@ const DashbrokersCard = ({ oficio, setEditModalId }:
         }
     };
 
-    // Função para atualizar a comissão e ajustar a proposta proporcionalmente
+
+    /**
+     * Função para atualizar a comissão e ajustar a proposta proporcionalmente
+     * @param {string} value - valor da comissão
+     * @param {boolean} sliderChange - indica se a mudança vem de um slider
+     * @returns {void}
+     */ 
     const handleComissionSliderChange = (
         value: string,
         sliderChange: boolean
-    ) => {
+    ): void => {
 
         // seta o valor da slider como o atual
         const newComissionSliderValue = parseFloat(value);
@@ -227,8 +246,14 @@ const DashbrokersCard = ({ oficio, setEditModalId }:
         }
     };
 
-    // Função para atualizar proposta/comissão com os dados dos inputs
-    const changeInputValues = (inputField: string, value: string) => {
+    /**
+     * Função para atualizar proposta/comissão com os dados dos inputs
+     * 
+     * @param {string} inputField - campo input que foi alterado
+     * @param {string} value - valor do campo input
+     * @returns {void}
+     */
+    const changeInputValues = (inputField: string, value: string): void => {
         const rawValue = value.replace(/R\$\s*/g, "").replaceAll(".", "").replaceAll(",", ".");
         const numericalValue = parseFloat(rawValue);
 
@@ -302,7 +327,12 @@ const DashbrokersCard = ({ oficio, setEditModalId }:
 
     }
 
-    const saveProposalAndComission = async () => {
+    /**
+     * Função para salvar os valores de proposta e comissão
+     * 
+     * @returns {Promise<void>}
+     */
+    const saveProposalAndComission = async (): Promise<void> => {
         setSavingProposalAndComission(true);
         setIsFetchAllowed(false);
         const req = await api.patch(`/api/notion-api/broker/negotiation/${oficio.id}/`,
@@ -427,8 +457,8 @@ const DashbrokersCard = ({ oficio, setEditModalId }:
                 swal.fire({
                     icon: "success",
                     iconColor: "#00b809",
-                    title: "Proposta aceita!",
-                    text: "Verifique o status da diligência para mais informações.",
+                    title: "Agora é com a gente!",
+                    text: "Nosso setor jurídico dará inicio ao processo de Due Diligence.",
                     color: `${theme === "light" ? "#64748B" : "#AEB7C0"}`,
                     showConfirmButton: true,
                     confirmButtonText: "OK",
@@ -552,16 +582,34 @@ const DashbrokersCard = ({ oficio, setEditModalId }:
         }
     });
 
-    const handleUpdateObservation = async (message: string) => {
+    /**
+     * Atualiza o campo de observação do oficio
+     * 
+     * @param {string} message - mensagem do campo de observação
+     * @returns {Promise<void>} 
+     */
+    const handleUpdateObservation = async (message: string): Promise<void> => {
         await updateObservation.mutateAsync(message)
     };
 
-    const handleUpdateStatus = async () => {
+    /**
+     * Atualiza o status do oficio por meio do checkbox
+     * 
+     * @returns {Promise<void>}
+     */
+    const handleUpdateStatus = async (): Promise<void> => {
         const status = mainData?.properties["Status"].status?.name === "Proposta aceita" ? "Negociação em Andamento" : "Proposta aceita";
         await proposalTrigger.mutateAsync(status);
     }
 
-    const handleLiquidateCard = async () => {
+    /**
+     * Define o ofício como liquidado
+     * atualizando o status de diligência
+     * e status do ofício
+     * 
+     * @returns {Promise<void>}
+     */
+    const handleLiquidateCard = async (): Promise<void> => {
 
         setIsFetchAllowed(false);
         setIsUpdatingDiligence(true);
@@ -628,11 +676,67 @@ const DashbrokersCard = ({ oficio, setEditModalId }:
         }
     }
 
-    const handleDeleteOficio = async (id: string) => {
+    /**
+     * Deleta o ofício selecionado da lista
+     * 
+     * @param {string} id - O id do ofício que será deletado
+     * @returns {Promise<void>}
+     */
+    const handleDeleteOficio = async (id: string): Promise<void> => {
         await deleteOficio.mutateAsync(id);
         setOpenConfirmModal(false);
+    };
+
+    /**
+     * Atualiza o card com as informações atuais
+     * (vindas do Notion)
+     * 
+     * @returns {Promise<void>}
+     */
+    const handleRefreshCard = async (): Promise<void> => {
+        setIsFetchingData(true);
+
+        try {
+            const responseStatus = await fetchDetailCardData(mainData!.id);
+            if (responseStatus === 200) {
+                toast.success("Dados do ofício atualizados!", {
+                    classNames: {
+                        toast: "bg-white dark:bg-boxdark",
+                        title: "text-black-2 dark:text-white",
+                        actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+                    },
+                    icon: <BiCheck className="text-lg fill-green-400" />,
+                    action: {
+                        label: "OK",
+                        onClick() {
+                            toast.dismiss();
+                        },
+                    }
+                });
+            }
+        } catch (error) {
+            toast.error('Erro ao atualizar as informações do ofício!', {
+                classNames: {
+                    toast: "bg-white dark:bg-boxdark",
+                    title: "text-black-2 dark:text-white",
+                    actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+                },
+                icon: <BiX className="text-lg fill-red-500" />,
+                action: {
+                    label: "OK",
+                    onClick() {
+                        toast.dismiss();
+                    },
+                }
+            });
+        } finally {
+            setIsFetchingData(false);
+        }
     }
 
+    /**
+     * Define o estado de mainData
+     */
     useEffect(() => {
 
         if (specificCardData !== null && specificCardData.id === mainData!.id) {
@@ -643,6 +747,10 @@ const DashbrokersCard = ({ oficio, setEditModalId }:
 
     }, [oficio, specificCardData])
 
+    /**
+     * Faz o fetch em todos os checks do card quando
+     * montado e/ou quando o card for atualizado
+     */
     useEffect(() => {
         if (credorIdentificationType === null || !isFetchAllowed) return;
 
@@ -657,6 +765,10 @@ const DashbrokersCard = ({ oficio, setEditModalId }:
 
     }, [credorIdentificationType, mainData]);
 
+    /**
+     * Define so valores dos sliders de acordo com os valores
+     * de proposta/comissão do oficio carregado
+     */
     useEffect(() => {
 
         if (mainData) {
@@ -683,6 +795,10 @@ const DashbrokersCard = ({ oficio, setEditModalId }:
 
     }, [mainData]);
 
+    /**
+     * Define o tipo de indentificação do credor do ofício
+     * que pode ser CPF ou CNPJ
+     */
     useEffect(() => {
         if (oficio === null) return;
 
@@ -692,7 +808,15 @@ const DashbrokersCard = ({ oficio, setEditModalId }:
         setCredorIdentificationType(credorIdent.length === 11 ? "CPF" : credorIdent.length === 14 ? "CNPJ" : null);
     }, [oficio]);
 
-    const getColor = (proportion: number) => {
+    /**
+     * @ignore - Essa função ainda não é usada
+     * 
+     * Atualiza a cor do slider de acordo com a posição
+     * 
+     * @param {number} proportion - valor da proporção
+     * @returns {string} - valor retornado para aplicar cor a um elemento
+     */
+    const getColor = (proportion: number): string => {
         const red = Math.round(255 * (1 - proportion)); // De vermelho para verde
         const green = Math.round(255 * proportion); // De vermelho para verde
         return `rgb(${red}, ${green}, 0)`; // Cor de transição de vermelho para verde
@@ -714,30 +838,40 @@ const DashbrokersCard = ({ oficio, setEditModalId }:
                     <span className='text-sm font-medium'>Proposta Aceita</span>
                 </div>
 
-                <Button
-                    variant="ghost"
-                    disabled={deleteModalLock}
-                    className="group flex items-center opacity-100 disabled:opacity-0 disabled:pointer-events-none justify-center overflow-hidden rounded-full px-0 py-0 w-[28px] h-[28px] hover:w-[100px] bg-slate-500 dark:bg-slate-700 dark:hover:bg-slate-700 transition-all duration-300 cursor-pointer ease-in-out"
-                    onClick={() => {
-                        setOpenConfirmModal(true);
-                        setDeleteModalLock(true);
-                    }}
-                >
-                    {isDeleting ? (
-                        <AiOutlineLoading className='animate-spin' />
-                    ) : (
-                        <>
-                            <Fade className="group-hover:hidden">
-                                <BiTrash className='text-white' />
-                            </Fade>
-                            <Fade className="hidden group-hover:block whitespace-nowrap text-sm">
-                                <div className='text-white'>
+                <div className='flex gap-3 items-center'>
+                    <Button
+                        variant="ghost"
+                        disabled={deleteModalLock}
+                        className="group flex items-center opacity-100 disabled:opacity-0 disabled:pointer-events-none justify-center overflow-hidden rounded-full px-0 py-0 w-[28px] h-[28px] hover:w-[100px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-700 transition-all duration-300 cursor-pointer ease-in-out"
+                        onClick={() => {
+                            setOpenConfirmModal(true);
+                            setDeleteModalLock(true);
+                        }}
+                    >
+                        {isDeleting ? (
+                            <AiOutlineLoading className='animate-spin' />
+                        ) : (
+                            <>
+                                <BiTrash className=' max-w-4 overflow-hidden opacity-100 group-hover:max-w-0 group-hover:opacity-0 transition-width duration-300' />
+
+                                <div className=' overflow-hidden max-w-0 opacity-0 group-hover:max-w-[76px] group-hover:opacity-100 whitespace-nowrap text-sm transition-opacity duration-500 ease-in-out'>
                                     Excluir Ativo
                                 </div>
-                            </Fade>
-                        </>
-                    )}
-                </Button>
+                            </>
+                        )}
+                    </Button>
+
+                    <Button
+                        title='Atualizar informações do ativo'
+                        variant='ghost'
+                        className='group bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-full px-0 py-0 w-7 h-7 flex items-center justify-center'
+                        onClick={handleRefreshCard}
+                    >
+                        <BiRefresh className={`${isFetchingData && "animate-spin"}`} />
+                    </Button>
+
+                </div>
+
             </div>
             <hr className='border border-stroke dark:border-strokedark mb-4' />
             <div className="grid grid-cols-12">
