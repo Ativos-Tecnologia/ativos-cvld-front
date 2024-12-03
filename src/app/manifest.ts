@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
- 
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'CelerApp',
@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Sua solução One-Stop-Shop para gerenciamento de precatórios',
     start_url: '/',
     display: 'standalone',
-    background_color: '#fff',
-    theme_color: '#fff',
+    background_color: '#263DBF',
+    theme_color: '#263DBF',
     icons: [
       {
         "src": "windows11/SmallTile.scale-100.png",
@@ -459,5 +459,20 @@ export default function manifest(): MetadataRoute.Manifest {
         "sizes": "1024x1024"
       }
     ],
+    shortcuts: [
+      {
+        name: 'Celer - Lead Magnet',
+        short_name: 'Lead Magnet',
+        description: 'Simule a negociação de precatórios',
+        url: '/automated-proposal',
+        icons: [
+          {
+            src: 'android/android-launchericon-512-512.png',
+            sizes: '512x512'
+          }
+        ]
+      }
+    ],
+    
   }
 }
