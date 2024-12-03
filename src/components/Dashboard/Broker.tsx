@@ -1,6 +1,6 @@
 "use client";
 import DashbrokersCard from "../Cards/DashbrokersCard";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import BrokerCardSkeleton from "../Skeletons/BrokerCardSkeleton";
 import { Fade } from "react-awesome-reveal";
 import Image from "next/image";
@@ -15,8 +15,17 @@ import api from "@/utils/api";
 import Show from "../Show";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
 import { BiUser } from "react-icons/bi";
+import { NotionPage, NotionResponse } from "@/interfaces/INotion";
 
-const Broker: React.FC = () => {
+/**
+ * Componente que renderiza a lista de brokers
+ * (wrapper principal)
+ * 
+ * @returns {JSX.Element} - Componente renderizado
+ */
+
+const Broker: React.FC = (): JSX.Element => {
+
   const {
     editModalId,
     setEditModalId,
@@ -34,23 +43,77 @@ const Broker: React.FC = () => {
   }  = useContext(UserInfoAPIContext);
   
 
-  // estado para verificar se é o primeiro carregamento da view
-  const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
   const [openUsersPopover, setOpenUsersPopover] = useState<boolean>(false);
   const [usersList, setUsersList] = useState<string[]>([]);
   const [filteredUsersList, setFilteredUsersList] = useState<string[]>([]);
+  const [visibleData, setVisibleData] = useState<NotionPage[]>([]);
   const selectUserRef = React.useRef<HTMLDivElement>(null);
   const searchUserRef = React.useRef<HTMLInputElement>(null);
+  const observerRef = React.useRef<HTMLDivElement>(null);
+  const isFirstLoad = React.useRef<boolean>(true);
 
-
-  useEffect(() => {
-    if (isFirstLoad && cardsData) {
-      setIsFirstLoad(false);
+  /**
+   * função com useCallback para adicionar mais itens
+   * ao array que renderiza os cards
+   * 
+   * @returns {void}
+   */
+  const loadMoreItems = useCallback(() => {
+    if (cardsData?.results) {
+      if (visibleData.length < cardsData?.results.length) {
+        const nextItems = cardsData.results.slice(
+          visibleData.length,
+          visibleData.length + 4
+        );
+        setVisibleData((prevItems) => [...prevItems, ...nextItems]);
+      }
     }
-  }, [isFirstLoad, cardsData]);
+  }, [cardsData, visibleData]);
 
+  /**
+   * Atualiza a lista de cards ao entrar no range do observerRef
+   */
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        loadMoreItems();
+      }
+    });
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observer.unobserve(observerRef.current);
+      }
+    };
+  }, [loadMoreItems]);
+
+  /**
+   * Atualiza o estado de firstLoad e do visibleData.
+   * 
+   * OBS:
+   * (firstLoad deve ser true para a atualização funcionar,
+   * desta forma evita que alguma atualização do cardsData 
+   * atualize o visibleData de forma indesejada).
+   */
+  useEffect(() => {
+    if (isFirstLoad.current && cardsData) {
+      setVisibleData(cardsData.results.slice(0, 2));
+      isFirstLoad.current = false;
+    } else {
+      setVisibleData(cardsData?.results.slice(0, 2) || [])
+    }
+  }, [isFirstLoad.current, cardsData]);
+
+  
   const userListAlreadyLoaded = useRef(false);
-
+  
+  /**
+   * Carrega a lista de usuários para o filtro
+   */
   useEffect(() => {
     const fetchData = async () => {
       console.log(userListAlreadyLoaded.current);
@@ -69,12 +132,20 @@ const Broker: React.FC = () => {
     fetchData();
   }, [openUsersPopover]);
 
+  /**
+   * Foca no input de search quando o filtro de usuários
+   * é aberto
+   */
   useEffect(() => {
     if (openUsersPopover && searchUserRef.current) {
       searchUserRef.current.focus();
     }
   }, [openUsersPopover]);
 
+  /**
+   * Fecha o filtro de usuários sempre que é dado um clique
+   * fora da sua área ou sempre que a tecla esc for pressionada
+   */
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (selectUserRef.current && !selectUserRef.current.contains(event.target as Node)) {
@@ -97,7 +168,14 @@ const Broker: React.FC = () => {
     };
   }, []);
 
-  const searchUser = (value: string) => {
+  /**
+   * Filtra a lista de usuários renderizada no popup
+   * de acordo com o valor digitado no input de search
+   * 
+   * @param {string} value - valor do input de search
+   * @returns {void} - retorno vazio
+   */
+  const searchUser = (value: string): void => {
     const filteredUsers = usersList.filter((user) =>
       user.toLowerCase().includes(value.toLowerCase()),
     );
@@ -147,10 +225,10 @@ const Broker: React.FC = () => {
                   />
                 </div>
 
-                <div className="mt-3 flex max-h-49 flex-col gap-1 overflow-y-scroll">
+                <div className="mt-3 flex max-h-49 flex-col gap-1 overflow-y-scroll overflow-x-hidden">
                   {filteredUsersList.length > 0 &&
                     filteredUsersList.map((user) => (
-                      <span
+                      <p
                         key={user}
                         className="cursor-pointer rounded-sm p-1 text-sm hover:bg-slate-100 dark:hover:bg-slate-700"
                         onClick={() => {
@@ -159,7 +237,7 @@ const Broker: React.FC = () => {
                         }}
                       >
                         {user}
-                      </span>
+                      </p>
                     ))}
                 </div>
               </div>
@@ -181,7 +259,7 @@ const Broker: React.FC = () => {
         />
       </div>
       <div className="mt-4 grid w-full grid-cols-1 md:grid-cols-2 items-center gap-5">
-        {isFirstLoad ? (
+        {isFirstLoad.current ? (
           <Fade cascade damping={0.1} triggerOnce>
             {[...Array(4)].map((_, index: number) => (
               <BrokerCardSkeleton key={index} />
@@ -189,13 +267,12 @@ const Broker: React.FC = () => {
           </Fade>
         ) : (
           <>
-            {cardsData && cardsData?.results.length > 0 ? (
+            {visibleData.length > 0 ? (
               <Fade cascade damping={0.1} triggerOnce>
-                {cardsData?.results.map((oficio: any, index: number) => (
+                {visibleData.map((oficio: any, index: number) => (
                   <DashbrokersCard
                     oficio={oficio}
                     key={index}
-                    setEditModalId={setEditModalId}
                   />
                 ))}
               </Fade>
@@ -215,6 +292,7 @@ const Broker: React.FC = () => {
           </>
         )}
       </div>
+      <div ref={observerRef} className="h-5" />
       {cedenteModal !== null && <BrokerModal />}
       {docModalInfo !== null && <DocForm />}
     </>
