@@ -28,6 +28,11 @@ api.interceptors.response.use(
   response => response,
   async (error) => {
     const originalRequest = error.config;
+    if (!localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`)) {
+        window.location.href = "auth/signin";
+        return Promise.reject(error);
+    }
+
     if (error.response.data.code === "token_not_valid") {
       localStorage.removeItem(`ATIVOS_${ACCESS_TOKEN}`);
       localStorage.removeItem(`ATIVOS_${REFRESH_TOKEN}`);
