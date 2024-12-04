@@ -239,8 +239,8 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
       </h2>
       <div className="grid w-full grid-cols-2 gap-10">
         {/* doc div rg */}
-        {(tipoDoOficio?.properties["Tipo"].select?.name === "PRECATÓRIO" ||
-          tipoDoOficio?.properties["Tipo"].select?.name === "RPV") && (
+        {(tipoDoOficio?.properties?.["Tipo"]?.select?.name === "PRECATÓRIO" ||
+          tipoDoOficio?.properties?.["Tipo"]?.select?.name === "RPV") && (
           <div className="col-span-2 flex flex-col gap-3">
             <div className="col-span-2 flex flex-col 2xsm:gap-6 md:gap-3">
               <div className="flex justify-center 2xsm:flex-col 2xsm:items-start 2xsm:gap-1 lg:flex-row lg:items-center lg:gap-3">

@@ -740,7 +740,7 @@ const DashbrokersCard = ({ oficio }:
      */
     useEffect(() => {
 
-        if (specificCardData !== null && specificCardData.id === mainData!.id) {
+        if (specificCardData !== null && specificCardData.id === mainData?.id) {
             setMainData(specificCardData);
         } else {
             setMainData(oficio);
