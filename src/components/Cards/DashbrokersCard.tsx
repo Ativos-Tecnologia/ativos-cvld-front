@@ -165,40 +165,43 @@ const DashbrokersCard = ({ oficio }:
         sliderChange: boolean
     ): void => {
 
-        const newProposalSliderValue = parseFloat(value);
+        if (mainData) {
+            const newProposalSliderValue = parseFloat(value);
 
-        if (newProposalSliderValue !== auxValues.proposal) {
-            setIsProposalButtonDisabled(false);
-            setErrorMessage(false);
-        } else {
-            setIsProposalButtonDisabled(true);
-        }
+            if (newProposalSliderValue !== auxValues.proposal) {
+                setIsProposalButtonDisabled(false);
+                setErrorMessage(false);
+            } else {
+                setIsProposalButtonDisabled(true);
+            }
 
-        // seta o valor do slide como o valor atual
-        setSliderValues((oldValues) => {
-            return { ...oldValues, proposal: newProposalSliderValue };
-        });
+            // seta o valor do slide como o valor atual
+            setSliderValues((oldValues) => {
+                return { ...oldValues, proposal: newProposalSliderValue };
+            });
 
-        // Calcular a proporção em relação a proposta e ajustar a comissão
-        const proportion =
-            (newProposalSliderValue - (oficio.properties["(R$) Proposta Mínima - Celer"].number || 0)) /
-            ((oficio.properties["(R$) Proposta Máxima - Celer"].number || 0) - (oficio.properties["(R$) Proposta Mínima - Celer"].number || 0));
+            // Calcular a proporção em relação a proposta e ajustar a comissão
+            const proportion =
+                (newProposalSliderValue - (mainData?.properties["(R$) Proposta Mínima - Celer"].number || 0)) /
+                ((mainData?.properties["(R$) Proposta Máxima - Celer"].number || 0) - (mainData?.properties["(R$) Proposta Mínima - Celer"].number || 0));
 
-        // define o novo valor da comissão em relação a proporção
-        const newComissionSliderValue =
-            (oficio.properties["(R$) Comissão Máxima - Celer"].number || 0) -
-            proportion * ((oficio.properties["(R$) Comissão Máxima - Celer"].number || 0) - (oficio.properties["(R$) Comissão Mínima - Celer"].number || 0));
+            // define o novo valor da comissão em relação a proporção
+            const newComissionSliderValue =
+                (mainData?.properties["(R$) Comissão Máxima - Celer"].number || 0) -
+                proportion * ((mainData?.properties["(R$) Comissão Máxima - Celer"].number || 0) - (mainData?.properties["(R$) Comissão Mínima - Celer"].number || 0));
 
-        setSliderValues((oldValues) => {
-            return { ...oldValues, comission: newComissionSliderValue };
-        });
+            setSliderValues((oldValues) => {
+                return { ...oldValues, comission: newComissionSliderValue };
+            });
 
-        if (comissionRef.current && proposalRef.current) {
-            comissionRef.current.value = numberFormat(newComissionSliderValue)
-            if (sliderChange) {
-                proposalRef.current.value = numberFormat(newProposalSliderValue)
+            if (comissionRef.current && proposalRef.current) {
+                comissionRef.current.value = numberFormat(newComissionSliderValue)
+                if (sliderChange) {
+                    proposalRef.current.value = numberFormat(newProposalSliderValue)
+                }
             }
         }
+
     };
 
 
@@ -207,45 +210,51 @@ const DashbrokersCard = ({ oficio }:
      * @param {string} value - valor da comissão
      * @param {boolean} sliderChange - indica se a mudança vem de um slider
      * @returns {void}
-     */ 
+     */
     const handleComissionSliderChange = (
         value: string,
         sliderChange: boolean
     ): void => {
 
-        // seta o valor da slider como o atual
-        const newComissionSliderValue = parseFloat(value);
-        setSliderValues((oldValues) => {
-            return { ...oldValues, comission: newComissionSliderValue };
-        });
+        if (mainData) {
+            // seta o valor da slider como o atual
+            const newComissionSliderValue = parseFloat(value);
+            setSliderValues((oldValues) => {
+                return { ...oldValues, comission: newComissionSliderValue };
+            });
 
-        // Calcular a proporção em relação a comissão e ajustar a proposta
-        const proportion =
-            (newComissionSliderValue - (oficio.properties["(R$) Comissão Mínima - Celer"].number || 0)) /
-            ((oficio.properties["(R$) Comissão Máxima - Celer"].number || 0) - (oficio.properties["(R$) Comissão Mínima - Celer"].number || 0));
+            // Calcular a proporção em relação a comissão e ajustar a proposta
+            const proportion =
+                (newComissionSliderValue - (mainData.properties["(R$) Comissão Mínima - Celer"].number || 0)) /
+                ((mainData.properties["(R$) Comissão Máxima - Celer"].number || 0) - (mainData.properties["(R$) Comissão Mínima - Celer"].number || 0));
 
-        //  define o novo valor da proposta em relação a proporção
-        const newProposalSliderValue =
-            (oficio.properties["(R$) Proposta Máxima - Celer"].number || 0) - proportion * ((oficio.properties["(R$) Proposta Máxima - Celer"].number || 0) - (oficio.properties["(R$) Proposta Mínima - Celer"].number || 0));
+            //  define o novo valor da proposta em relação a proporção
+            const newProposalSliderValue =
+                (mainData.properties["(R$) Proposta Máxima - Celer"].number || 0) - proportion * ((mainData.properties["(R$) Proposta Máxima - Celer"].number || 0) - (mainData.properties["(R$) Proposta Mínima - Celer"].number || 0));
 
-        if (newProposalSliderValue !== auxValues.commission) {
-            setIsProposalButtonDisabled(false);
-            setErrorMessage(false);
-        } else {
-            setIsProposalButtonDisabled(true);
-        }
+            if (newProposalSliderValue !== auxValues.commission) {
+                setIsProposalButtonDisabled(false);
+                setErrorMessage(false);
+            } else {
+                setIsProposalButtonDisabled(true);
+            }
 
-        setSliderValues((oldValues) => {
-            return { ...oldValues, proposal: newProposalSliderValue };
-        });
+            setSliderValues((oldValues) => {
+                return { ...oldValues, proposal: newProposalSliderValue };
+            });
 
-        if (proposalRef.current && comissionRef.current) {
-            proposalRef.current.value = numberFormat(newProposalSliderValue)
-            if (sliderChange) {
-                comissionRef.current.value = numberFormat(newComissionSliderValue)
+            if (proposalRef.current && comissionRef.current) {
+                proposalRef.current.value = numberFormat(newProposalSliderValue)
+                if (sliderChange) {
+                    comissionRef.current.value = numberFormat(newComissionSliderValue)
+                }
             }
         }
+
     };
+
+    console.log(mainData?.properties["Credor"].title[0]?.text.content === "Teste" && mainData)
+    console.log(mainData?.properties["Credor"].title[0]?.text.content === "Teste" && sliderValues)
 
     /**
      * Função para atualizar proposta/comissão com os dados dos inputs
@@ -920,7 +929,7 @@ const DashbrokersCard = ({ oficio }:
 
                             <button
                                 onClick={handleLiquidateCard}
-                                className={`${(mainData?.properties["Status Diligência"].select?.name !== "Due Diligence" && mainData?.properties["Status"].status?.name === "Proposta aceita" && checks.is_cedente_complete === true && checks.is_precatorio_complete === true && checks.are_docs_complete === true) ? "bg-green-400 text-black-2 hover:bg-green-500 hover:text-snow" : "opacity-50 bg-slate-100 dark:bg-boxdark-2/50 cursor-not-allowed pointer-events-none"} relative z-20 flex w-full items-center justify-center gap-2 my-1 py-1 px-4 rounded-md transition-colors duration-200 text-sm`}
+                                className={`${(mainData?.properties["Status Diligência"].select?.name !== "Due Diligence" && mainData?.properties["Status"].status?.name === "Proposta aceita" && checks.is_cedente_complete === true && checks.is_precatorio_complete === true && checks.are_docs_complete === true) ? "bg-green-400 text-black-2 hover:bg-green-500 hover:text-snow" : "opacity-50 bg-slate-100 dark:bg-boxdark-2/50 cursor-not-allowed pointer-events-none"} relative z-2 flex w-full items-center justify-center gap-2 my-1 py-1 px-4 rounded-md transition-colors duration-200 text-sm`}
                             >
 
                                 {isUpdatingDiligence ? (

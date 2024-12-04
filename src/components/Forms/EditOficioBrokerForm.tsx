@@ -129,6 +129,18 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
             data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
             data.valor_pss = parseFloat(data.valor_pss);
         }
+
+        if (!data.ir_incidente_rra) {
+            data.numero_de_meses = 0
+        }
+
+        if (!data.incidencia_pss) {
+            data.valor_pss = 0
+        }
+
+        if (!data.data_limite_de_atualizacao_check && data.data_limite_de_atualizacao) {
+            delete data.data_limite_de_atualizacao
+        }
         
         // console.log(data)
         // return
@@ -681,7 +693,7 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
                             </div>
                         ) : (
                             <>
-                                {watch("esfera") === "FEDERAL" && <div className="col-span-1 hidden md:block"></div>}
+                                {(watch("esfera") === "FEDERAL" && watch("incidencia_rra_ir") === true) && <div className="col-span-1 hidden md:block"></div>}
                             </>
                         )}
                         {watch("natureza") !== "TRIBUTÁRIA" ? (
