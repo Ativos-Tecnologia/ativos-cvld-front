@@ -18,7 +18,7 @@ import { toast } from 'sonner';
   onde é fetcheado os dados do cedente cadastrado no ofício em questão
 */
 
-const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPrecatorio: string }) => {
+const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string | null, idPrecatorio: string, tipoDoOficio: string }) => {
 
   const {
     register,
@@ -37,7 +37,6 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
     certidao_nasc_cas: false,
     comprovante_de_residencia: false
   });
-  const [tipoDoOficio, setTipoDoOficio] = useState<NotionPage | null>(null);
   const [isUnlinkingDoc, setIsUnlinkingDoc] = useState<Record<string, boolean>>({
     oficio_requisitorio: false,
     rg: false,
@@ -212,15 +211,11 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
     }
   }
 
-  const fetchTipoDoOficio = async () => {
-    const req = await fetchDetailCardData(idPrecatorio);
-    setTipoDoOficio(req);
-  }
+
 
   // preenche o estado do cedente com os dados do cadastrado no oficio
   useEffect(() => {
     fetchCedenteData();
-    fetchTipoDoOficio();
   }, []);
   
   // preenche os valores dos inputs que já possuirem documento cadastrado
@@ -239,8 +234,9 @@ const PFdocs = ({ cedenteId, idPrecatorio }: { cedenteId: string | null, idPreca
       </h2>
       <div className="grid w-full grid-cols-2 gap-10">
         {/* doc div rg */}
-        {(tipoDoOficio?.properties?.["Tipo"]?.select?.name === "PRECATÓRIO" ||
-          tipoDoOficio?.properties?.["Tipo"]?.select?.name === "RPV") && (
+        {
+          (tipoDoOficio === "PRECATÓRIO" ||
+            tipoDoOficio === "RPV") && (
           <div className="col-span-2 flex flex-col gap-3">
             <div className="col-span-2 flex flex-col 2xsm:gap-6 md:gap-3">
               <div className="flex justify-center 2xsm:flex-col 2xsm:items-start 2xsm:gap-1 lg:flex-row lg:items-center lg:gap-3">
