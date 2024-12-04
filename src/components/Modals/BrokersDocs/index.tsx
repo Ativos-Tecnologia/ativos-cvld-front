@@ -54,6 +54,7 @@ const DocForm = () => {
                 docModalInfo!.properties["Cedente PF"].relation?.[0]?.id || null
               }
               idPrecatorio={docModalInfo!.id}
+              tipoDoOficio={docModalInfo!.properties["Tipo"]?.select?.name ?? "Não informado"}
             />
           ) : (
             <>
