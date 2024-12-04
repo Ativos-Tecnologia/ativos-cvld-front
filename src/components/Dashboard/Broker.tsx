@@ -16,6 +16,8 @@ import Show from "../Show";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
 import { BiUser } from "react-icons/bi";
 import { NotionPage, NotionResponse } from "@/interfaces/INotion";
+import UsersFilter from "../Filters/UsersFilter";
+import CredorFilter from "../Filters/CredorFilter";
 
 /**
  * Componente que renderiza a lista de brokers
@@ -38,10 +40,10 @@ const Broker: React.FC = (): JSX.Element => {
   } = useContext(BrokersContext);
 
 
-  const { 
-    data: {role, user}
-  }  = useContext(UserInfoAPIContext);
-  
+  const {
+    data: { role, user }
+  } = useContext(UserInfoAPIContext);
+
 
   const [openUsersPopover, setOpenUsersPopover] = useState<boolean>(false);
   const [usersList, setUsersList] = useState<string[]>([]);
@@ -108,9 +110,9 @@ const Broker: React.FC = (): JSX.Element => {
     }
   }, [isFirstLoad.current, cardsData]);
 
-  
+
   const userListAlreadyLoaded = useRef(false);
-  
+
   /**
    * Carrega a lista de usuários para o filtro
    */
@@ -133,42 +135,6 @@ const Broker: React.FC = (): JSX.Element => {
   }, [openUsersPopover]);
 
   /**
-   * Foca no input de search quando o filtro de usuários
-   * é aberto
-   */
-  useEffect(() => {
-    if (openUsersPopover && searchUserRef.current) {
-      searchUserRef.current.focus();
-    }
-  }, [openUsersPopover]);
-
-  /**
-   * Fecha o filtro de usuários sempre que é dado um clique
-   * fora da sua área ou sempre que a tecla esc for pressionada
-   */
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (selectUserRef.current && !selectUserRef.current.contains(event.target as Node)) {
-        setOpenUsersPopover(false);
-      }
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setOpenUsersPopover(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
-
-  /**
    * Filtra a lista de usuários renderizada no popup
    * de acordo com o valor digitado no input de search
    * 
@@ -185,69 +151,18 @@ const Broker: React.FC = (): JSX.Element => {
 
   return (
     <>
-      <React.Fragment>
+      <div className="flex gap-5 item-center bg-white dark:bg-boxdark mb-5 p-5 rounded-md">
         <Show when={role === "ativos"}>
-        {/* ====== select de user merece um componente próprio ====== */}
-        <div className="flex items-start gap-1 mb-4">
-          <div className="relative">
-            <label className="text-sm mb-2 font-semibold text-bodydark2 dark:text-bodydark flex">
-              <BiUser className="w-5 h-5 mr-2" /> <p className="uppercase">Filtro por usuário</p>
-            </label>
-            <div className="flex items-center justify-center">
-              <div
-                onClick={() => {
-                  setOpenUsersPopover(!openUsersPopover)
-                }}
-                className={`flex min-w-48 items-center justify-between gap-1 border border-stroke px-2 py-1 text-xs font-semibold uppercase hover:bg-slate-100 dark:border-strokedark dark:hover:bg-slate-700 ${openUsersPopover && "bg-slate-100 dark:bg-slate-700"} cursor-pointer rounded-md transition-colors duration-200`}
-              >
-                <span>{selectedUser || user}</span>
-                <LucideChevronsUpDown className="h-4 w-4" />
-              </div>
-              {
-                loadingCardData && <AiOutlineLoading className="ml-4 animate-spin" />
-              }
-            </div>
-            {/* ==== popover ==== */}
-
-            {openUsersPopover && (
-              <div
-                ref={selectUserRef}
-                className={`absolute z-20 mt-3 w-[230px] rounded-md border border-stroke bg-white p-3 shadow-1 dark:border-strokedark dark:bg-form-strokedark ${openUsersPopover ? "visible opacity-100 animate-in fade-in-0 zoom-in-95" : " invisible opacity-0 animate-out fade-out-0 zoom-out-95"} transition-opacity duration-500`}
-              >
-                <div className="flex items-center justify-center gap-1 border-b border-stroke dark:border-bodydark2">
-                  <AiOutlineSearch className="text-lg" />
-                  <input
-                    ref={searchUserRef}
-                    type="text"
-                    placeholder="Pesquisar usuário..."
-                    className="w-full border-none bg-transparent focus-within:ring-0 dark:placeholder:text-bodydark2"
-                    onKeyUp={(e) => searchUser(e.currentTarget.value)}
-                  />
-                </div>
-
-                <div className="mt-3 flex max-h-49 flex-col gap-1 overflow-y-scroll overflow-x-hidden">
-                  {filteredUsersList.length > 0 &&
-                    filteredUsersList.map((user) => (
-                      <p
-                        key={user}
-                        className="cursor-pointer rounded-sm p-1 text-sm hover:bg-slate-100 dark:hover:bg-slate-700"
-                        onClick={() => {
-                          setOpenUsersPopover(false);
-                          setSelectedUser(user);
-                        }}
-                      >
-                        {user}
-                      </p>
-                    ))}
-                </div>
-              </div>
-            )}
-            {/* ==== end popover ==== */}
-          </div>
-        </div>
-        {/* ====== finaliza select de user ====== */}
+          <UsersFilter
+            openUsersPopover={openUsersPopover}
+            setOpenUsersPopover={setOpenUsersPopover}
+            loadingCardData={loadingCardData}
+            filteredUsersList={filteredUsersList}
+            searchUser={searchUser}
+          />
         </Show>
-      </React.Fragment>
+        <CredorFilter />
+      </div>
       <div className="grid grid-cols-1  items-center gap-5  xl:grid-cols-12">
         <BrokerQuantityDistributedChart
           title="Distribuição"
