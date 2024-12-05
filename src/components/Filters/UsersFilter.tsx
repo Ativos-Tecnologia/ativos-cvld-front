@@ -76,16 +76,16 @@ const UsersFilter = ({ openUsersPopover, setOpenUsersPopover, loadingCardData, f
 
     return (
             <div className="flex items-start">
-                <div className="relative">
+                <div className="relative w-full">
                     <label className="text-sm mb-2 font-semibold text-bodydark2 dark:text-bodydark flex">
                         <BiUser className="w-5 h-5 mr-2" /> <p className="uppercase">Filtro por usuário</p>
                     </label>
-                    <div className="flex items-center justify-center">
+                    <div className="flex items-center w-full xl:w-fit">
                         <div
                             onClick={() => {
                                 setOpenUsersPopover(!openUsersPopover)
                             }}
-                            className={`flex min-w-48 items-center justify-between gap-1 h-9 border border-stroke px-3 py-2 text-sm font-semibold uppercase hover:bg-slate-100 dark:border-form-strokedark dark:hover:bg-slate-700 ${openUsersPopover && "bg-slate-100 dark:bg-slate-700"} cursor-pointer rounded-md transition-colors duration-200`}
+                            className={`flex w-[315px] xl:min-w-48 items-center justify-between gap-1 h-9 border border-stroke px-3 py-2 text-sm font-semibold uppercase hover:bg-slate-100 dark:border-form-strokedark dark:hover:bg-slate-700 ${openUsersPopover && "bg-slate-100 dark:bg-slate-700"} cursor-pointer rounded-md transition-colors duration-200`}
                         >
                             <span>{selectedUser || user}</span>
                             <LucideChevronsUpDown className="h-4 w-4" />

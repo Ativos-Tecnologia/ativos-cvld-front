@@ -115,34 +115,31 @@ const CredorFilter = (): JSX.Element => {
                 <FaHandHoldingUsd />
                 Filtro por credor
             </div>
-            <div className='flex'>
+            <div className='flex w-[315px] xl:w-fit'>
                 <input
                     ref={searchRef}
                     type="text"
                     placeholder="Nome do credor"
-                    className='border border-stroke dark:border-form-strokedark dark:bg-boxdark-2 h-9 text-sm uppercase rounded-tl-md rounded-bl-md focus-visible:ring-0'
+                    className='flex-1 border border-stroke dark:border-form-strokedark dark:bg-boxdark-2 h-9 text-sm uppercase rounded-tl-md rounded-bl-md focus-visible:ring-0'
                 />
                 <div
                     className='flex items-center justify-center w-9 h-9 cursor-pointer rounded-tr-md rounded-br-sm bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 transition-colors duration-200'
                 >
-                    {isFetchingName ? (
-                        <AiOutlineLoading className='animate-spin' />
+                    {currentSearch ? (
+                        <BiX
+                            title='Desfazer pesquisa'
+                            onClick={clearSearch}
+                        />
                     ) : (
-                        <>
-                            {currentSearch ? (
-                                <BiX
-                                    title='Desfazer pesquisa'
-                                    onClick={clearSearch}
-                                />
-                            ) : (
-                                <BiSearchAlt2
-                                    onClick={searchCredor}
-                                    title='Pesquisar por credor'
-                                />
-                            )}
-                        </>
+                        <BiSearchAlt2
+                            onClick={searchCredor}
+                            title='Pesquisar por credor'
+                        />
                     )}
                 </div>
+                {isFetchingName && (
+                    <AiOutlineLoading className='animate-spin' />
+                )}
             </div>
         </div>
     )

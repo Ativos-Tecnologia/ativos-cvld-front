@@ -253,9 +253,6 @@ const DashbrokersCard = ({ oficio }:
 
     };
 
-    console.log(mainData?.properties["Credor"].title[0]?.text.content === "Teste" && mainData)
-    console.log(mainData?.properties["Credor"].title[0]?.text.content === "Teste" && sliderValues)
-
     /**
      * Função para atualizar proposta/comissão com os dados dos inputs
      * 
