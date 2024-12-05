@@ -207,7 +207,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
   });
   const [cedentePfData, setCedentePfData] = useState<CedenteProps>({
     data: null,
-    isFetching: true
+    isFetching: false
   });
   const pfFormModal = React.useRef<HTMLDivElement>(null);
   const formValues = watch();
@@ -427,8 +427,15 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
 
   // função de fetch para pegar dados do cedente cadastrado
   const fetchCedente = async () => {
+    setCedentePfData(old => ({
+      ...old,
+      isFetching: true
+    }));
+
     const req = await api.get(`/api/cedente/show/pf/${cedenteId}/`);
+
     if (req.data === null) return
+
     setCedentePfData(old => ({
       data: req.data,
       isFetching: false
@@ -506,9 +513,9 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
       setPixOption(validationSelectPix(cedentePfData.data?.properties["Pix"].rich_text?.[0]?.text.content || "") as PixOption);
       // valores obrigatórios em um cadastro
       setValue("nome_completo", cedentePfData.data?.properties["Nome Completo"].title[0].text.content);
-      setValue("cpf", cedentePfData.data!.properties["CPF"].rich_text![0].text.content);
-      setValue("identidade", cedentePfData.data!.properties["Identidade"].rich_text![0].text.content);
-      setValue("cep", cedentePfData.data!.properties["CEP"].rich_text![0].text.content);
+      setValue("cpf", cedentePfData.data?.properties["CPF"].rich_text![0].text.content || "");
+      setValue("identidade", cedentePfData.data?.properties["Identidade"].rich_text![0].text.content || "");
+      setValue("cep", cedentePfData.data?.properties["CEP"].rich_text![0].text.content || "");
 
       //valores opcionais
       setValue("orgao_exp", cedentePfData.data?.properties["Órgão Expedidor"].rich_text?.[0]?.text.content || "");
@@ -576,7 +583,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
       </button>
 
       <h2 className='text-center text-2xl font-medium mb-10'>Cadastro de Cedente</h2>
-      {(mode === "create" && !cedentePfData.data && !openRegisterForm && !fromFormPJ) && (
+      {(mode === "create" && !cedentePfData.data && !openRegisterForm) && (
         <>
           <div className='mt-7'>
             {registeredCedentesList.isFetching ? (
@@ -1176,11 +1183,12 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
         </form>
       )}
 
-      {(cedentePfData.isFetching && fromFormPJ) && (
+      {/* comentado para um possível uso posterior */}
+      {/* {(cedentePfData.isFetching && fromFormPJ && openRegisterForm) && (
           <div className='flex flex-col gap-2'>
             <MiniLoader />
           </div>
-      ) }
+      )} */}
 
       {/* ====> unlink modal <==== */}
       <ConfirmModal
