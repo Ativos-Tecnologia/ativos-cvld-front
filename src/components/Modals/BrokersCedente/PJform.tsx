@@ -1168,7 +1168,7 @@ const PJform = ({ id, mode, cedenteId = null }: { id: string, mode: "edit" | "cr
 
       {/* ====> link representante legal modal <==== */}
       {openRegisterPfModal && (
-        <div className='absolute bg-boxdark flex flex-col items-center w-full h-full p-10 top-0 left-0 rounded-md'>
+        <div className='absolute bg-white dark:bg-boxdark flex flex-col items-center w-full h-full p-10 top-0 left-0 rounded-md'>
 
           <PFform
             id={id}

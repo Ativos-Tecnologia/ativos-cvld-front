@@ -118,7 +118,7 @@ const Broker: React.FC = (): JSX.Element => {
    */
   useEffect(() => {
     const fetchData = async () => {
-      console.log(userListAlreadyLoaded.current);
+      
       if (userListAlreadyLoaded.current || !openUsersPopover) return;
       const [usersList] = await Promise.all([
         api.get("/api/notion-api/list/users/"),
@@ -151,7 +151,7 @@ const Broker: React.FC = (): JSX.Element => {
 
   return (
     <>
-      <div className="flex gap-5 item-center bg-white dark:bg-boxdark mb-5 p-5 rounded-md">
+      <div className="flex gap-5 item-center bg-white dark:bg-boxdark mb-5 p-5 rounded-md flex-col md:justify-between md:flex-row xl:justify-normal">
         <Show when={role === "ativos"}>
           <UsersFilter
             openUsersPopover={openUsersPopover}
