@@ -15,7 +15,6 @@ const TaskKanban: React.FC = () => {
   return (
     <>
       <div className="mx-auto max-w-5xl">
-        <Breadcrumb pageName="TaskKanban" />
 
         {/* <!-- Task Header Start --> */}
         <TaskHeader />
