@@ -68,7 +68,7 @@ const DropdownUser = () => {
                     <div className="w-[100px] h-[12px] bg-slate-200 rounded-full dark:bg-slate-300"></div>
                   </div>
                 )
-                  : data.title
+                  : data.user
               }
             </span>
           </span>

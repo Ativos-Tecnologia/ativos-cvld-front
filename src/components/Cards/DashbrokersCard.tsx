@@ -89,6 +89,7 @@ const DashbrokersCard = ({ oficio }:
     const observationRef = useRef<HTMLTextAreaElement | null>(null);
     const proposalRangeRef = useRef<HTMLInputElement | null>(null);
     const isFirstLoad = useRef(true); // referência: 'isFirstLoad' sempre apontará para o mesmo objeto retornado por useRef
+    const [loading, setLoading] = useState<boolean>(false);
 
     //* ====> Principal Data <==== */
     const [mainData, setMainData] = useState<NotionPage | null>(null);
@@ -849,10 +850,9 @@ const DashbrokersCard = ({ oficio }:
                 </div>
 
                 <div className='flex gap-3 items-center'>
-                    <Button
-                        variant="ghost"
+                    <button
                         disabled={deleteModalLock}
-                        className="group flex items-center opacity-100 disabled:opacity-0 disabled:pointer-events-none justify-center overflow-hidden rounded-full px-0 py-0 w-[28px] h-[28px] hover:w-[100px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-700 transition-all duration-300 cursor-pointer ease-in-out"
+                        className="group flex items-center opacity-100 disabled:opacity-0 disabled:pointer-events-none justify-center overflow-hidden rounded-full px-0 py-0 w-[28px] h-[28px] hover:w-[100px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-700 transition-all duration-300 cursor-pointer ease-in-out border-transparent"
                         onClick={() => {
                             setOpenConfirmModal(true);
                             setDeleteModalLock(true);
@@ -869,7 +869,7 @@ const DashbrokersCard = ({ oficio }:
                                 </div>
                             </>
                         )}
-                    </Button>
+                    </button>
 
                     <Button
                         title='Atualizar informações do ativo'
@@ -1134,13 +1134,20 @@ const DashbrokersCard = ({ oficio }:
                             <div className='absolute -bottom-4 w-full text-red text-xs text-center'>Valor&#40;res&#41; fora do escopo definido</div>
                         )}
                     </div>
-
-                    <Button
-                        disabled={isProposalButtonDisabled}
-                        onClick={saveProposalAndComission}
-                        className='disabled:opacity-50 disabled:cursor-not-allowed py-1 px-2 h-fit text-sm font-medium w-full transition-all duration-300'>
-                        {savingProposalAndComission ? "Salvando..." : "Salvar Proposta/Comissão"}
-                    </Button>
+                    <div className='flex gap-2'>
+                        <Button
+                            disabled={isProposalButtonDisabled}
+                            onClick={saveProposalAndComission}
+                            className='disabled:opacity-50 disabled:cursor-not-allowed py-1 px-2 h-fit text-sm font-medium w-full transition-all duration-300'>
+                            {savingProposalAndComission ? "Salvando..." : "Salvar Oferta"}
+                        </Button>
+                        <Button
+                            isLoading={loading}
+                            onClick={() => setLoading(!loading)}
+                            className='disabled:opacity-50 disabled:cursor-not-allowed py-1 px-2 h-fit text-sm font-medium w-full transition-all duration-300'>
+                            Gerar Proposta
+                        </Button>
+                    </div>
 
                     {/* separator */}
 

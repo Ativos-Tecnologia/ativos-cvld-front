@@ -1,14 +1,58 @@
+import React from 'react'
+import { cn } from '@/lib/utils'
+import AnimatedNumber from '../ui/AnimatedNumber'
+
+interface MiniCardContainerProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode,
+  className?: string
+}
+
+
+export const MiniCardContainer: React.FC<MiniCardContainerProps> = ({ children, className, ...props }) => {
+  return (
+    <div className={cn("flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0", className)} {...props}>
+      {children}
+    </div>
+
+  )
+}
+
+interface MiniCardLabelProps {
+  amount: number,
+  customSymbol?: string,
+  legend: string,
+  currency?: boolean
+}
+
+export const MiniCardLabel: React.FC<MiniCardLabelProps> = ({
+  amount = 0,
+  customSymbol,
+  legend,
+  currency = false
+}) => {
+  return (
+    <div className='flex flex-col align-middle justify-center'>
+      <h4 className="mb-0.5 text-xl font-semibold text-black dark:text-white md:text-title-lg flex flex-row justify-center">
+      <AnimatedNumber value={amount} isNotCurrency={!currency} />{customSymbol}
+      </h4>
+      <p className="text-sm font-medium">
+        {
+          legend
+        }
+      </p>
+    </div>
+  );
+};
+
+
+
 const DataStats = () => {
   return (
-    <div className="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div className="col-span-12 rounded-md bg-white p-7.5 dark:bg-boxdark">
+    {/* <div className="col-span-12 rounded-md bg-white p-7.5 shadow-default dark:bg-boxdark"> */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4 xl:gap-0">
-        <div className="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0">
-          <div>
-            <h4 className="mb-0.5 text-xl font-semibold text-black dark:text-white md:text-title-lg">
-              $4,350
-            </h4>
-            <p className="text-sm font-medium">Unique Visitors</p>
-          </div>
+        <MiniCardContainer>
+          <MiniCardLabel amount={98} legend="Ofícios" />
           <div className="flex items-center gap-1">
             <svg
               width="19"
@@ -24,14 +68,15 @@ const DataStats = () => {
             </svg>
             <span className="text-meta-3">18%</span>
           </div>
-        </div>
-        <div className="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0">
-          <div>
+        </MiniCardContainer>
+        <MiniCardContainer>
+          {/* <div>
             <h4 className="mb-0.5 text-xl font-semibold text-black dark:text-white md:text-title-lg">
               55.9K
             </h4>
             <p className="text-sm font-medium">Total Pageviews</p>
-          </div>
+          </div> */}
+          <MiniCardLabel amount={458457.98} currency={true} legend="Total em Liquidação" />
           <div className="flex items-center gap-1">
             <svg
               width="19"
@@ -47,14 +92,15 @@ const DataStats = () => {
             </svg>
             <span className="text-meta-3">25%</span>
           </div>
-        </div>
-        <div className="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark sm:border-b-0 sm:pb-0 xl:border-r">
-          <div>
+          </MiniCardContainer>
+        <MiniCardContainer>
+          {/* <div>
             <h4 className="mb-0.5 text-xl font-semibold text-black dark:text-white md:text-title-lg">
               54%
             </h4>
             <p className="text-sm font-medium">Bounce Rate</p>
-          </div>
+          </div> */}
+          <MiniCardLabel amount={54} customSymbol='%' legend="Bounce Rate" />
           <div className="flex items-center gap-1">
             <svg
               width="19"
@@ -70,8 +116,8 @@ const DataStats = () => {
             </svg>
             <span className="text-meta-8">7%</span>
           </div>
-        </div>
-        <div className="flex items-center justify-center gap-2">
+        </MiniCardContainer>
+        <MiniCardContainer className='xl:border-r-0'>
           <div>
             <h4 className="mb-0.5 text-xl font-semibold text-black dark:text-white md:text-title-lg">
               2m 56s
@@ -93,7 +139,7 @@ const DataStats = () => {
             </svg>
             <span className="text-meta-3">12%</span>
           </div>
-        </div>
+        </MiniCardContainer>
       </div>
     </div>
   );
