@@ -24,13 +24,21 @@ const tooltipPlacement: Record<string, { container: string, arrow: string }> = {
     left: {
         container: "right-[75%] top-1/2 -translate-y-1/2 group-hover:right-[120%]",
         arrow: "right-[-4px] top-1/2 -translate-y-1/2 border-r border-t"
+    },
+    start: {
+        container: "bottom-[75%] -translate-x group-hover:bottom-[90%] z-4",
+        arrow: "bottom-[-5px] border-r border-b "
+    },
+    end: {
+        container: "top-[75%] group-hover:top-[120%]",
+        arrow: "top-[-5px] border-l border-t"
     }
 }
 
 const CRMTooltip = ({ children, text, arrow = true, placement = "top", animationDelay = "300" }: TooltipProps) => {
 
     // Esse código aqui é de uma tentativa de fazer o tooltip se reposicionar caso ele ultrapasse a borda do sidebar. Ainda não está funcionando.
-    const tooltipRef = useRef<HTMLDivElement | null>(null);
+    // const tooltipRef = useRef<HTMLDivElement | null>(null);
 
     // useEffect(() => {
     //     const handleResize = () => {
@@ -57,7 +65,7 @@ const CRMTooltip = ({ children, text, arrow = true, placement = "top", animation
             className="group relative inline-block"
         >
             {children}
-            <div className={`absolute mb-3 ${tooltipPlacement[placement].container} z-20 whitespace-nowrap rounded-md bg-snow dark:bg-black-2 border border-stroke dark:border-strokedark px-3.5 py-1 text-sm font-medium opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-${animationDelay}`}>
+            <div className={`absolute mb-3 ${tooltipPlacement[placement].container} z-999999 whitespace-nowrap rounded-md bg-snow dark:bg-black-2 border border-stroke dark:border-strokedark px-3.5 py-1 text-sm font-medium opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-${animationDelay}`}>
                 {arrow && <span className={`absolute -z-10 h-2 w-2 ${tooltipPlacement[placement].arrow} rotate-45 bg-snow dark:bg-black-2 border-stroke dark:border-strokedark`}></span>}
                 <p>{text}</p>
             </div>
