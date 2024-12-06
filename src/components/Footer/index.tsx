@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { BsInstagram, BsLinkedin } from "react-icons/bs";
 import { FaWhatsapp } from "react-icons/fa";
-import { GiTakeMyMoney } from "react-icons/gi";
 import { IoLogoYoutube } from "react-icons/io";
 
 export function MainFooter() {
@@ -73,7 +72,7 @@ export function MainFooter() {
                 </div>
                 <div>
                   <h3 className="font-medium">Email</h3>
-                  <Footer.Link href="mailto:precatoriosativos@gmail.com">
+                  <Footer.Link href="mailto:contato@ativosprecatorios.com.br">
                     contato@ativosprecatorios.com.br
                   </Footer.Link>
                 </div>
@@ -204,7 +203,11 @@ export function MainFooter() {
               />
             </div>
             <div className="border-gradient-to-r flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border-2 from-boxdark-2 to-boxdark">
-              <Link href="https://ativosprecatorios.com.br" target="_blank" referrerPolicy="no-referrer">
+              <Link
+                href="https://ativosprecatorios.com.br"
+                target="_blank"
+                referrerPolicy="no-referrer"
+              >
                 <Image
                   src={"/images/logo/new-logo-dark.svg"}
                   alt="Logo do CelerApp em sua versão somente com o ícone do aplicativo em cor branca"
