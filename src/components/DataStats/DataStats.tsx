@@ -1,6 +1,7 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
 import AnimatedNumber from '../ui/AnimatedNumber'
+import CRMTooltip from '../CrmUi/Tooltip'
 
 interface MiniCardContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode,
@@ -52,7 +53,9 @@ const DataStats = () => {
     {/* <div className="col-span-12 rounded-md bg-white p-7.5 shadow-default dark:bg-boxdark"> */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4 xl:gap-0">
         <MiniCardContainer>
-          <MiniCardLabel amount={98} legend="Ofícios" />
+          <CRMTooltip text={"Este é o total de ofícios sob sua \n responsabilidade, independente do status."} placement="top">
+            <MiniCardLabel amount={98} legend="Total de ofícios" />
+          </CRMTooltip>
           <div className="flex items-center gap-1">
             <svg
               width="19"
@@ -70,12 +73,6 @@ const DataStats = () => {
           </div>
         </MiniCardContainer>
         <MiniCardContainer>
-          {/* <div>
-            <h4 className="mb-0.5 text-xl font-semibold text-black dark:text-white md:text-title-lg">
-              55.9K
-            </h4>
-            <p className="text-sm font-medium">Total Pageviews</p>
-          </div> */}
           <MiniCardLabel amount={458457.98} currency={true} legend="Total em Liquidação" />
           <div className="flex items-center gap-1">
             <svg
@@ -94,12 +91,6 @@ const DataStats = () => {
           </div>
           </MiniCardContainer>
         <MiniCardContainer>
-          {/* <div>
-            <h4 className="mb-0.5 text-xl font-semibold text-black dark:text-white md:text-title-lg">
-              54%
-            </h4>
-            <p className="text-sm font-medium">Bounce Rate</p>
-          </div> */}
           <MiniCardLabel amount={54} customSymbol='%' legend="Bounce Rate" />
           <div className="flex items-center gap-1">
             <svg
