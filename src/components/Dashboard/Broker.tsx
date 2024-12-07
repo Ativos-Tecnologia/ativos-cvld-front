@@ -18,6 +18,7 @@ import { BiUser } from "react-icons/bi";
 import { NotionPage, NotionResponse } from "@/interfaces/INotion";
 import UsersFilter from "../Filters/UsersFilter";
 import CredorFilter from "../Filters/CredorFilter";
+import GridCardsWrapper from "../CrmUi/Wrappers/GridCardsWrapper";
 
 /**
  * Componente que renderiza a lista de brokers
@@ -118,7 +119,7 @@ const Broker: React.FC = (): JSX.Element => {
    */
   useEffect(() => {
     const fetchData = async () => {
-      
+
       if (userListAlreadyLoaded.current || !openUsersPopover) return;
       const [usersList] = await Promise.all([
         api.get("/api/notion-api/list/users/"),
@@ -173,40 +174,44 @@ const Broker: React.FC = (): JSX.Element => {
           response={cardsData}
         />
       </div>
-      <div className="mt-4 grid w-full grid-cols-1 md:grid-cols-2 items-center gap-5">
-        {isFirstLoad.current ? (
-          <Fade cascade damping={0.1} triggerOnce>
-            {[...Array(4)].map((_, index: number) => (
-              <BrokerCardSkeleton key={index} />
-            ))}
-          </Fade>
-        ) : (
-          <>
-            {visibleData.length > 0 ? (
-              <Fade cascade damping={0.1} triggerOnce>
-                {visibleData.map((oficio: any, index: number) => (
-                  <DashbrokersCard
-                    oficio={oficio}
-                    key={index}
+
+      <GridCardsWrapper>
+        <GridCardsWrapper.List cardsSize="lg" className="my-0 mt-4 items-center gap-5">
+          {isFirstLoad.current ? (
+            <Fade cascade damping={0.1} triggerOnce>
+              {[...Array(4)].map((_, index: number) => (
+                <BrokerCardSkeleton key={index} />
+              ))}
+            </Fade>
+          ) : (
+            <>
+              {visibleData.length > 0 ? (
+                <Fade cascade damping={0.1} triggerOnce>
+                  {visibleData.map((oficio: any, index: number) => (
+                    <DashbrokersCard
+                      oficio={oficio}
+                      key={index}
+                    />
+                  ))}
+                </Fade>
+              ) : (
+                <div className="col-span-2 my-10 flex flex-col items-center justify-center gap-5">
+                  <Image
+                    src="/images/documents.svg"
+                    alt="documentos com botão de adicionar"
+                    width={210}
+                    height={210}
                   />
-                ))}
-              </Fade>
-            ) : (
-              <div className="col-span-2 my-10 flex flex-col items-center justify-center gap-5">
-                <Image
-                  src="/images/documents.svg"
-                  alt="documentos com botão de adicionar"
-                  width={210}
-                  height={210}
-                />
-                <p className="text-center font-medium tracking-wider">
-                  Sem registros de ofício para exibir.
-                </p>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+                  <p className="text-center font-medium tracking-wider">
+                    Sem registros de ofício para exibir.
+                  </p>
+                </div>
+              )}
+            </>
+          )}
+        </GridCardsWrapper.List>
+      </GridCardsWrapper>
+
       <div ref={observerRef} className="h-5" />
       {cedenteModal !== null && <BrokerModal />}
       {docModalInfo !== null && <DocForm />}
