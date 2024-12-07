@@ -9,13 +9,13 @@ const MarketplaceCardSkeleton = () => {
                     className='relative group cursor-pointer p-4 h-full bg-center bg-cover flex flex-col justify-between'
                 >
                     {/* icon */}
-                    <CustomSkeleton className='w-10 h-10 rounded-full' />
+                    <CustomSkeleton type='title' className='w-10 h-10 rounded-full' />
                     {/* end icon */}
 
                     {/* info */}
                     <div className='w-full flex flex-col gap-2'>
-                        <CustomSkeleton className='h-5 w-50' />
-                        <CustomSkeleton className='h-6 w-30' />
+                        <CustomSkeleton type='content' className='h-5 w-50' />
+                        <CustomSkeleton type='content' className='h-6 w-30' />
                     </div>
                     {/* end info */}
 
