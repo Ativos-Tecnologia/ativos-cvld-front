@@ -1,23 +1,31 @@
 import Image from "next/image";
-
 interface IPrintPDFProps { 
-	nome: string;
+	nome_do_credor: string;
+	nome_do_broker: string;
 	profissao: string;
-	foto: string;
+	foto_do_broker: string;
+	valor_da_proposta: string;
+	phone?: string;
+	content?: () => React.RefObject<HTMLDivElement>;
 }
 
-export function PrintPDF({nome, profissao, foto}: IPrintPDFProps) {
+
+export function PrintPDF({ nome_do_credor, profissao, foto_do_broker: foto, valor_da_proposta, nome_do_broker, phone, content }: IPrintPDFProps) {
+	
+	 const whatsAppNumber = phone ? phone : "5581996871762";
+	 const message = "Olá! Estou entrando em contato através do CellerApp e preciso tirar uma dúvida.";
+	 const whatsappLink = `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(message)}`;
 
   return (
-    <div className="col-span-2 grid p-10 items-center bg-[#F4F4F4]">
+    <div className="col-span-2 mx-80 flex flex-col items-center bg-</div>[#F4F4F4]" ref={content}>
       {/* Header com a imagem e logo da Ativos */}
-		<header className="relative w-full min-h-[440px] bg-cover bg-no-repeat overflow-hidden" style={{ backgroundImage: "url('/images/brokersPDF/broker_header.webp" }}>
+		<header className="relative h-[440px] w-[1270px] bg-cover bg-no-repeat overflow-hidden" style={{ backgroundImage: "url('/images/brokersPDF/broker_header.webp" }}>
 			<Image
-				src={"/images/brokersPDF/logo-brokers.webp"}
+				src={"/images/logo/new-logo-text-dark.svg"}
 				alt="logo da ativos"
-				width={300}
+				width={200}
 				height={50}
-				className="absolute z-10 object-cover w-fit h-fit left-50 -top-10 min-h-[550px]"
+				className="relative z-10 -bottom-50 left-[600px]"
 			/>
 			<Image
 				src={"/images/brokersPDF/borda_do_header.webp"}
@@ -27,11 +35,11 @@ export function PrintPDF({nome, profissao, foto}: IPrintPDFProps) {
 				className="absolute left-0 -bottom-80 opacity-50 min-h-[550px]  w-full"
 			/>
 			<div className="absolute inset-0 bg-black-2 bg-opacity-50"></div>
-			</header>
+		</header>
 
       {/* Nome do Broker */}
       <div className=" uppercase items-center text-center text-[55px] font-bold text- text-[#171717] justify-center p-10">
-				<h1>{ nome }</h1>
+				<h1>{ nome_do_broker }</h1>
 			</div>
 			
 		{/* Card */}
@@ -42,7 +50,7 @@ export function PrintPDF({nome, profissao, foto}: IPrintPDFProps) {
 						<div className="flex absolute bottom-9 left-[525px] justify-center items-center h-screen">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 800 800"
+								viewBox="0 0 800 80</section>0"
 								fill="currentColor"
 								className="w-8 h-8 rotate-90 text-[#022062]"
 							>
@@ -67,7 +75,7 @@ export function PrintPDF({nome, profissao, foto}: IPrintPDFProps) {
 					</h2>
 					{/* Input com o nome do Cedente */}
 					<div>
-						<input type="text" className="bg-[#D1E1F5] w-[280px] h-[50px] text-lg rounded-lg" />
+						<input type="text" className="bg-[#D1E1F5] w-[280px] h-[50px] text-3xl tracking-[0.5rem] rounded-lg text-center" value={valor_da_proposta} disabled />
 							<p className="uppercase text-title-md justify-center items-center p-5 font-bold text-[#022062]"> Em Até 5 Dias </p>
 							<hr className="bg-[#8AD8EF] h-[5px] -mr-2 "/>
 							<p className="uppercase text-title-lg justify-center items-center p-5 font-bold text-[#022062]" >Próximos Passos:</p>
@@ -117,13 +125,13 @@ export function PrintPDF({nome, profissao, foto}: IPrintPDFProps) {
 					/>
 		</div>
 		<div className="flex flex-col font-bold text-[#171717] text-title-sm uppercase">
-				<span>{ nome }</span>
+				<span>{ nome_do_credor }</span>
 				<span>{ profissao }</span>
 		</div>
 	</div>
 
       {/* Segunda Página do PDF */}
-  <section className=" bg-cover" style={{ backgroundImage: "url('/images/brokersPDF/bg-brokers.webp')" }} >
+  <section className=" bg-cover mx-auto" style={{ backgroundImage: "url('/images/brokersPDF/bg-brokers.webp')" }} >
 				
 			<div className=" m-10 flex flex-col mt-15 mb-15.5 rounded-[50px] border-b-black-2 bg-[#F4F4F4]">
 					
@@ -221,7 +229,7 @@ export function PrintPDF({nome, profissao, foto}: IPrintPDFProps) {
 				</div>
 						
 			</div>
-			<a href="#" className="w-full flex items-center p-10 justify-center">
+			<a href={whatsappLink} className="w-full flex items-center p-10 justify-center">
 				<Image
 						src={"/images/brokersPDF/zap-brokers.webp"}
 						alt="Whatssapp"
