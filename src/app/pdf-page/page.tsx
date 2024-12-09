@@ -2,7 +2,11 @@ import { PrintPDF } from "@/components/PrintPDF";
 
 const PagePDF = () => { 
 	return (
-		<PrintPDF/>
+		<PrintPDF
+			nome="Nome do Broker"
+			profissao="Profissão do Broker"
+			foto="/images/user/user-01.png"
+		/>
 	);
 }
 

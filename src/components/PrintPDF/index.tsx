@@ -1,6 +1,12 @@
 import Image from "next/image";
 
-export function PrintPDF() {
+interface IPrintPDFProps { 
+	nome: string;
+	profissao: string;
+	foto: string;
+}
+
+export function PrintPDF({nome, profissao, foto}: IPrintPDFProps) {
 
   return (
     <div className="col-span-2 grid p-10 items-center bg-[#F4F4F4]">
@@ -13,12 +19,12 @@ export function PrintPDF() {
 				height={20}
 				className="absolute left-0 -bottom-80 opacity-50 min-h-[550px]  w-full"
 				/>
-			<div className="absolute inset-0 bg-black bg-opacity-30"></div>
+			<div className="absolute inset-0 bg-black-2 bg-opacity-50"></div>
 		</header>
 
       {/* Nome do Broker */}
       <div className=" uppercase items-center text-center text-[55px] font-bold text- text-[#171717] justify-center p-10">
-        <h1>Nome do Cedente</h1>
+				<h1>{ nome }</h1>
 			</div>
 			
 		{/* Card */}
@@ -80,34 +86,36 @@ export function PrintPDF() {
           <div className="p-20 flex gap-5 items-center justify-center">
 						<div className="w-32 h-32 rounded-full">
 								<Image
-									src={"/images/user/user-01.png"}
+									src={ foto }
 									alt="foto de perfil do broker"
 									width={128}
 									height={128}
 								/>
 						</div>
 						<div className="flex flex-col font-bold text-[#171717] text-title-sm uppercase">
-							<span>Fulanto de Tal</span>
-              <span>Gerente Comercial</span>
+					<span>{ nome }</span>
+					<span>{ profissao }</span>
 						</div>
 					</div>
 
       {/* Segunda Página do PDF */}
-      <section className=" bg-cover" style={{ backgroundImage: "url('/images/brokersPDF/bg-brokers.webp')" }} >
-				<div className=" m-10 rounded-lg bg-[#F4F4F4]">
-					<div className=" flex items-center justify-center">
+  <section className=" bg-cover" style={{ backgroundImage: "url('/images/brokersPDF/bg-brokers.webp')" }} >
+				
+			<div className=" m-10 flex flex-col mt-15 mb-15.5 rounded-[50px] border-b-black-2 bg-[#F4F4F4]">
+					
+					<div className="flex justify-center relative">
 						<Image
 							src={"/images/brokersPDF/logo-brokers.webp"}
-							alt="borda do header"
-							width={800}
-							height={20}
+							alt="logo da Ativos"
+							width={500}
+							height={500}
+							className=" w-fit h-fit object-cover object-center"
 						/>
+			</div>
 
-          </div>
+      <h1 className="text-center text-[58px] text-[#263DBF]">O que você <b className="font-bold ">poderá fazer:</b> </h1>
 
-        <h1 className="text-center text-[38px] -mt-20 text-[#263DBF]">O que você <b className="font-bold ">poderá fazer:</b> </h1>
-
-				<div className="flex flex-col">
+			<div className="flex flex-col">
 						
         <div className="flex flex-col-2 p-8 gap-2">
           <div>
@@ -128,7 +136,7 @@ export function PrintPDF() {
           </div>
 					</div>
 					
-        <div className="flex flex-col-2 p-8 gap-2">
+       <div className="flex flex-col-2 p-8 gap-2">
           <div>
             <Image
 							src={"/images/brokersPDF/viagem-brokers.webp"}
@@ -189,7 +197,7 @@ export function PrintPDF() {
 				</div>
 						
 			</div>
-			<div className="w-full flex items-center p-10 justify-center">
+			<a href="#" className="w-full flex items-center p-10 justify-center">
 				<Image
 						src={"/images/brokersPDF/zap-brokers.webp"}
 						alt="Whatssapp"
@@ -197,12 +205,19 @@ export function PrintPDF() {
 						height={30}
 						className=" items-center"
 					/>
-				</div>
-		</div>
+				<Image
+						src={"/images/brokersPDF/hand-brokers.webp"}
+						alt="hand"
+						width={40}
+						height={30}
+						className="items-center relative -left-5"
+					/>
+				</a>
+		  </div>
 				<footer className="flex w-full justify-center items-center text-center ">
 					<span className=" mb-10 text-[28px] text-[#F4F4F4] tracking-[0.2em] font-bold">ativosprecatorios.com.br</span>
 				</footer>
-      </section>
+  </section>
     </div>
   );
 }
