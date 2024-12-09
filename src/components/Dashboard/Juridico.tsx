@@ -8,11 +8,10 @@ import {
   UserInfoAPIContext,
   UserInfoContextType,
 } from "@/context/UserInfoContext";
-import { Button } from "../Button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import BrokerCardSkeleton from "../Skeletons/BrokerCardSkeleton";
 import MarketplaceCardSkeleton from "../Skeletons/MarketplaceCardSkeleton";
 import { AiOutlineLoading } from "react-icons/ai";
+import api from "@/utils/api";
 
 enum navItems {
   DUE_DILIGENCE = "Due Diligence",
@@ -29,12 +28,27 @@ type cardProps = {
   tipo: string;
 };
 
+export type SimpleNotionData = {
+  id: string,
+  credor: string,
+  status: string,
+  status_diligencia: string,
+  valor_liquido_disponivel: number,
+  tribunal: string,
+}
+
+type SimpleDataProps = {
+  results: Array<SimpleNotionData>
+}
+
 const Juridico = () => {
   const {
     data: { first_name },
   } = useContext<UserInfoContextType>(UserInfoAPIContext);
+
   const [activeTab, setActiveTab] = React.useState<string>(navItems.DUE_DILIGENCE);
   const [cardData, setCardData] = React.useState<cardProps[]>([]);
+  const [simpleData, setSimpleData] = React.useState<SimpleDataProps>({ results: [] });
   const [loading, setLoading] = React.useState<boolean>(false);
 
   const mockData = (tipo: string) =>
@@ -52,12 +66,26 @@ const Juridico = () => {
     }, 2000);
   };
 
+  const fetchAllPrecatoryWithSimpleData = async () => {
+    const response = await api.get("api/legal/");
+    setLoading(true);
+    setSimpleData(response.data);
+    setLoading(false);
+  }
+
+  React.useEffect(() => {
+    fetchAllPrecatoryWithSimpleData();
+  }, []);
+
   React.useEffect(() => {
     simulateFetch();
   }, [activeTab]);
 
   return (
     <div className="w-full">
+      {
+        first_name
+      }
       <div className="mb-4 flex w-full items-end justify-end gap-5 rounded-md">
         <Breadcrumb
           customIcon={<FaBalanceScale className="h-[32px] w-[32px]" />}
@@ -67,7 +95,7 @@ const Juridico = () => {
         />
       </div>
       <div className="mt-2 grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-        <DataStats />
+        <DataStats data={simpleData.results} isLoading={loading}/>
       </div>
       <div className="my-4">
         <Tabs defaultValue={navItems.DUE_DILIGENCE} className="w-full">

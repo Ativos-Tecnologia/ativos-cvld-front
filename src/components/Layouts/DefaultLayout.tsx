@@ -10,6 +10,7 @@ import { GeneralUIProvider } from "@/context/GeneralUIContext";
 import { DefaultLayoutProvider } from "@/context/DefaultLayoutContext";
 import NewForm from "../Modals/NewForm";
 import Show from "../Show";
+import { UserInfoProvider } from "@/context/UserInfoContext";
 
 export default function DefaultLayout({
   children,
@@ -27,12 +28,12 @@ export default function DefaultLayout({
         <GeneralUIProvider>
           <div className="flex h-screen overflow-hidden">
             {/* <!-- ===== Sidebar Start ===== --> */}
-            <TableNotionProvider>
+            {/* <TableNotionProvider> */}
               <Sidebar
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
               />
-            </TableNotionProvider>
+            {/* </TableNotionProvider> */}
             {/* <!-- ===== Sidebar End ===== --> */}
 
             {/* <!-- ===== Content Area Start ===== --> */}
