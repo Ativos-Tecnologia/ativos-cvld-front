@@ -17,7 +17,8 @@ export function PrintPDF({ nome_do_credor, profissao, foto_do_broker: foto, valo
 	
 	
   return (
-		<div className="col-span-2 mx-auto w-[210mm] flex flex-col items-center bg-[#F4F4F4]">
+		<>
+				<div className="col-span-2 mx-auto w-[210mm] flex flex-col items-center bg-[#F4F4F4]">
 			{/* Header com a imagem e logo da Ativos */}
 		<header className="relative h-[440px] w-[1270px] bg-cover bg-no-repeat overflow-hidden" style={{ backgroundImage: "url('/images/brokersPDF/broker_header.webp" }}>
 			<Image
@@ -39,7 +40,7 @@ export function PrintPDF({ nome_do_credor, profissao, foto_do_broker: foto, valo
 
       {/* Nome do Broker */}
       <div className=" uppercase items-center text-center text-[55px] font-bold text- text-[#171717] justify-center p-10">
-				<h1>{ nome_do_broker }</h1>
+				<h1>{ nome_do_credor }</h1>
 			</div>
 			
 		{/* Card */}
@@ -106,35 +107,12 @@ export function PrintPDF({ nome_do_credor, profissao, foto_do_broker: foto, valo
 				</div>
 			</div>	
 		</div>
-			
-    {/* Card com Nome e Profissão com a Foto do Perfil do Broker */}
-	<div className="p-20 flex gap-5 items-center justify-center">
-		<div className="w-35 h-35 rounded-full">
-					<Image
-						src={ foto }
-						alt="foto de perfil do broker"
-						width={130}
-						height={130}
-					/>
-					<Image
-						src={"/images/brokersPDF/ok.webp"}
-						alt="seta indicando o próximo passo"
-						width={30}
-						height={20}
-						className="relative -top-33 left-25"
-					/>
-		</div>
-		<div className="flex flex-col font-bold text-[#171717] text-title-sm uppercase">
-				<span>{ nome_do_credor }</span>
-				<span>{ profissao }</span>
-		</div>
-	</div>
 
+</div>
       {/* Segunda Página do PDF */}
-  <section className=" bg-cover mx-auto" style={{ backgroundImage: "url('/images/brokersPDF/bg-brokers.webp')" }} >
+  <section className=" flex flex-col bg-cover w-full h-full mt-50" style={{ backgroundImage: "url('/images/brokersPDF/bg-brokers.webp')" }} >
 				
-			<div className=" m-10 flex flex-col mt-15 mb-15.5 rounded-[50px] border-b-black-2 bg-[#F4F4F4]">
-					
+		<div className="m-20 mt-[82px] flex flex-col justify-center rounded-[50px] border-b-black-2 bg-[#F4F4F4]">
 					<div className="flex justify-center relative">
 						<Image
 							src={"/images/brokersPDF/logo-brokers.webp"}
@@ -143,13 +121,13 @@ export function PrintPDF({ nome_do_credor, profissao, foto_do_broker: foto, valo
 							height={500}
 							className=" absolute h-fit -top-30 object-cover object-center"
 						/>
-			</div>
+			    </div>
 
       <h1 className="text-center text-[58px] mt-50 text-[#263DBF]">O que você <b className="font-bold ">poderá fazer:</b> </h1>
 
-			<div className="flex flex-col">
+			<div className="flex flex-col mt-15">
 						
-        <div className="flex flex-col-2 p-8 gap-2">
+        <div className="flex flex-col-2 p-3 gap-2">
           <div>
             <Image
 							src={"/images/brokersPDF/carro-brokers.webp"}
@@ -159,7 +137,7 @@ export function PrintPDF({ nome_do_credor, profissao, foto_do_broker: foto, valo
 							className="rounded-lg"
 						/>
           </div>
-          <div className=" justify-center items-center p-5">
+          <div className=" justify-center items-center p-2">
             <h2 className="text-[#263DBF] font-bold text-[28px]">Um carro novo!</h2>
             <p className="text-title-sm text-[#171717]">
               Um carro novo é o conforto e <span className="font-bold">segurança</span> que você e sua
@@ -168,7 +146,7 @@ export function PrintPDF({ nome_do_credor, profissao, foto_do_broker: foto, valo
           </div>
 					</div>
 					
-       <div className="flex flex-col-2 p-8 gap-2">
+       <div className="flex flex-col-2 p-3 gap-2">
           <div>
             <Image
 							src={"/images/brokersPDF/viagem-brokers.webp"}
@@ -178,7 +156,7 @@ export function PrintPDF({ nome_do_credor, profissao, foto_do_broker: foto, valo
 								className="rounded-lg"
 						/>
           </div>
-          <div className=" justify-center items-center p-5">
+          <div className=" justify-center items-center p-2">
             <h2 className="text-[#263DBF] font-bold text-[28px]">Uma viagem dos sonhos!</h2>
             <p className="text-title-sm text-[#171717]">
               Sabe aquele lugar que você sempre teve vontade de viajar? Faça as
@@ -187,7 +165,7 @@ export function PrintPDF({ nome_do_credor, profissao, foto_do_broker: foto, valo
           </div>
 						</div>
 						
-        <div className="flex flex-col-2 p-8 gap-2">
+        <div className="flex flex-col-2 p-3 gap-2">
           <div>
             <Image
 							src={"/images/brokersPDF/investir-brokers.webp"}
@@ -197,7 +175,7 @@ export function PrintPDF({ nome_do_credor, profissao, foto_do_broker: foto, valo
 							className="rounded-lg"
 						/>
           </div>
-          <div className=" justify-center items-center p-5">
+          <div className=" justify-center items-center p-2">
             <h2 className="text-[#263DBF] font-bold text-[28px]">Investir em um novo negócio!</h2>
             <p className="text-title-sm text-[#171717]">
               <span className="font-bold">Multiplique o valor</span> antecipado do seu precatório
@@ -205,51 +183,73 @@ export function PrintPDF({ nome_do_credor, profissao, foto_do_broker: foto, valo
             </p>
           </div>
 				</div>
-				<div className="flex flex-col-2 p-8 gap-2">
+				<div className="flex flex-col-2 p-3 gap-2">
 					<div>
 						<Image
 							src={"/images/brokersPDF/qualidade-brokers.webp"}
 							alt="representando investimentos"
-							width={285}
+							width={450}
 							height={50}
 							className="rounded-lg"
 						/>
 					</div>
-					<div className="justify-center items-center p-5">
-						<h2 className="text-[#263DBF] font-bold text-[28px]">Qualidade de vida!</h2>
-						<p className="text-title-sm text-[#171717] whitespace-normal break-words">
+					<div className="justify-center items-center p-1">
+						<h2 className="text-[#263DBF] font-bold text-[28px] ">Qualidade de vida!</h2>
+						<p className="text-title-sm text-[#171717] ">
 							Ajudar parentes, melhorar a educação dos seus filhos, quitar uma
-							divida,
-						</p>
-						<p className="text-title-sm text-[#171717] whitespace-normal break-words">
-							enfim, <span className="font-bold">ganhe paz e dê qualidade de vida</span> para
+							divida, enfim, <b className="font-bold">ganhe paz e dê qualidade de vida</b> para
 							a sua familia!
 						</p>
 					</div>
 				</div>
-						
 			</div>
-			<a href={whatsappLink} className="w-full flex items-center p-10 justify-center">
-				<Image
-						src={"/images/brokersPDF/zap-brokers.webp"}
-						alt="Whatssapp"
-						width={90}
-						height={30}
-						className=" items-center"
-					/>
-				<Image
-						src={"/images/brokersPDF/hand-brokers.webp"}
-						alt="hand"
-						width={40}
-						height={30}
-						className="items-center relative -left-5"
-					/>
-				</a>
+					
+			<div className="flex flex-row items-center justify-center gap-10 p-8">
+				{/* Card com Nome e Profissão com a Foto do Perfil do Broker */}
+				<div className="flex gap-2 items-center justify-center">
+					<div className="w-35 h-35 rounded-full">
+								<Image
+									src={ foto }
+									alt="foto de perfil do broker"
+									width={130}
+									height={130}
+								/>
+								<Image
+									src={"/images/brokersPDF/ok.webp"}
+									alt="seta indicando o próximo passo"
+									width={30}
+									height={20}
+									className="relative -top-30 left-25"
+								/>
+					</div>
+					<div className="flex flex-col font-bold text-[#171717] text-title-sm uppercase">
+							<span>{ nome_do_broker }</span>
+							<span>{ profissao }</span>
+					</div>
+					{/* Botão de WhatsApp */}
+					</div>
+						<a href={whatsappLink} className="w-fit flex items-center justify-center">
+							<Image
+									src={"/images/brokersPDF/zap-brokers.webp"}
+									alt="Whatssapp"
+									width={90}
+									height={30}
+									className=" items-center"
+								/>
+							<Image
+									src={"/images/brokersPDF/hand-brokers.webp"}
+									alt="hand"
+									width={40}
+									height={30}
+									className="items-center relative -left-5"
+								/>
+						</a>
+		 		</div>
 		  </div>
-				<footer className="flex w-full justify-center items-center text-center ">
+				<footer className="flex w-full relative justify-center items-center text-center ">
 					<span className=" mb-10 text-[28px] text-[#F4F4F4] tracking-[0.2em] font-bold">ativosprecatorios.com.br</span>
 				</footer>
   </section>
-    </div>
+		</>
   );
 }

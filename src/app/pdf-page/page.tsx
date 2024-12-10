@@ -12,8 +12,7 @@ const PagePDF = () => {
     contentRef: documentRef,
     documentTitle: "Proposta de Broker",
     onPrintError: (errorLocation, error) => {
-      console.error("Erro na impressão:", errorLocation, error);
-      console.log("Elemento de impressão:", documentRef.current);
+      console.error("Erro na geração do PDF:", errorLocation, error);
     }
   });
 
