@@ -3,7 +3,6 @@
 import { DefaultLayoutContext } from "@/context/DefaultLayoutContext";
 import { GeneralUIContext } from "@/context/GeneralUIContext";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
-import useColorMode from "@/hooks/useColorMode";
 import api from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
@@ -37,7 +36,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const sidebar = useRef<any>(null);
 
   const {
-    data: { product },
+    data: { product, staff_approvation },
   } = useContext(UserInfoAPIContext);
   const [userApprovation, setUserApprovation] = useState<boolean | null>(null);
 
@@ -66,18 +65,18 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     queryFn: fetchItems,
   });
 
-  useEffect(() => {
-    async function fetchUserApprovation() {
-      try {
-        const response = await api.get("/api/profile/");
-        setUserApprovation(response.data.staff_approvation);
-      } catch (e) {
-        console.error(`Erro ao tentar verificar aprovação do usuário: ${e}`);
-      }
-    }
+  // useEffect(() => {
+  //   async function fetchUserApprovation() {
+  //     try {
+  //       const response = await api.get("/api/profile/");
+  //       setUserApprovation(response.data.staff_approvation);
+  //     } catch (e) {
+  //       console.error(`Erro ao tentar verificar aprovação do usuário: ${e}`);
+  //     }
+  //   }
 
-    fetchUserApprovation();
-  }, []);
+  //   fetchUserApprovation();
+  // }, []);
 
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {

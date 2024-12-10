@@ -10,10 +10,11 @@ import { AiOutlineLoading } from "react-icons/ai";
 import { Button } from "../Button";
 import Card from "../Cards/marketplaceCard";
 import MarketplaceCardSkeleton from "../Skeletons/MarketplaceCardSkeleton";
+import GridCardsWrapper from "../CrmUi/Wrappers/GridCardsWrapper";
 
 const Marketplace: React.FC = () => {
   const { push } = useRouter();
-  
+
   const [marketPlaceItems, setMarketPlaceItems] = useState<NotionResponse>({
     object: "list",
     next_cursor: null,
@@ -109,44 +110,46 @@ const Marketplace: React.FC = () => {
         </Fade>
       </div>
 
-      <ul className="my-5 grid md:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4">
-        {isFetching && firstLoad ? (
-          <>
-            <Fade cascade damping={0.1} triggerOnce>
-              {[...Array(6)].map((_, index: number) => (
-                <MarketplaceCardSkeleton key={index} />
-              ))}
-            </Fade>
-          </>
-        ) : (
-          <>
-            {updatedData.results.length > 0 ? (
+      <GridCardsWrapper>
+        <GridCardsWrapper.List>
+          {isFetching && firstLoad ? (
+            <>
               <Fade cascade damping={0.1} triggerOnce>
-                {updatedData!.results?.map((oficio) => (
-                  <Card
-                    key={oficio.id}
-                    oficio={oficio}
-                    onClickFn={() => handleRedirect(oficio.id)}
-                    disabled={userApprovation === false ? true : false}
-                  />
+                {[...Array(6)].map((_, index: number) => (
+                  <MarketplaceCardSkeleton key={index} />
                 ))}
               </Fade>
-            ) : (
-              <div className="my-10 flex flex-col items-center justify-center gap-5 md:col-span-2 xl:col-span-3 3xl:col-span-4">
-                <Image
-                  src="/images/empty_cart.svg"
-                  alt="homem com lista em mãos e carrinho vazio"
-                  width={280}
-                  height={280}
-                />
-                <p className="text-center font-medium tracking-wider">
-                  Ainda não temos opções de investimentos disponíveis.
-                </p>
-              </div>
-            )}
-          </>
-        )}
-      </ul>
+            </>
+          ) : (
+            <>
+              {updatedData.results.length > 0 ? (
+                <Fade cascade damping={0.1} triggerOnce>
+                  {updatedData!.results?.map((oficio) => (
+                    <Card
+                      key={oficio.id}
+                      oficio={oficio}
+                      onClickFn={() => handleRedirect(oficio.id)}
+                      disabled={userApprovation === false ? true : false}
+                    />
+                  ))}
+                </Fade>
+              ) : (
+                <div className="my-10 flex flex-col items-center justify-center gap-5 md:col-span-2 xl:col-span-3 3xl:col-span-4">
+                  <Image
+                    src="/images/empty_cart.svg"
+                    alt="homem com lista em mãos e carrinho vazio"
+                    width={280}
+                    height={280}
+                  />
+                  <p className="text-center font-medium tracking-wider">
+                    Ainda não temos opções de investimentos disponíveis.
+                  </p>
+                </div>
+              )}
+            </>
+          )}
+        </GridCardsWrapper.List>
+      </GridCardsWrapper>
 
       {updatedData.has_more && updatedData.results.length > 0 && (
         <div className="flex w-full items-center justify-center">

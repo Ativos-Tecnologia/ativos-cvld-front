@@ -1,7 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
 import React from "react";
-import Title from "../CrmUi/Title";
 import CRMTooltip from "../CrmUi/Tooltip";
 import { Fade } from "react-awesome-reveal";
 interface BreadcrumbProps {
@@ -18,8 +16,9 @@ const Breadcrumb = ({ pageName, iconPath, customIcon, altIcon, title }: Breadcru
   const defaultAltIcon = "O ícone do Workspace";
   return (
     <div className="w-full flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-white dark:bg-boxdark p-5 rounded-md">
+      
       <div className="flex items-center">
-      <Fade cascade damping={0.1} triggerOnce delay={300}>
+      <Fade cascade triggerOnce>
         <div className="mr-4">
         {
           iconPath ? (
@@ -37,7 +36,7 @@ const Breadcrumb = ({ pageName, iconPath, customIcon, altIcon, title }: Breadcru
       </Fade>
         
         <h2 className={`flex w-full text-[28px] font-semibold text-black dark:text-white ${title ? "visible" : "invisible"}`}>
-        <Fade cascade damping={0.1} triggerOnce delay={400}>
+        <Fade cascade damping={0.1} triggerOnce >
           {title}
         </Fade>
         </h2>

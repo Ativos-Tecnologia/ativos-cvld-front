@@ -1254,49 +1254,49 @@ export const TableNotionProvider = ({
 
   /*  ====> Effects <==== */
   // atualiza a queryList
-  useEffect(() => {
-    if (userData) {
-      const updatedQuery =
-        userData?.sub_role === "coordenador"
-          ? buildQueryForCoordinatorOnly()
-          : buildQueryForUserOnly();
-      setListQuery(updatedQuery);
+  // useEffect(() => {
+  //   if (userData) {
+  //     const updatedQuery =
+  //       userData?.sub_role === "coordenador"
+  //         ? buildQueryForCoordinatorOnly()
+  //         : buildQueryForUserOnly();
+  //     setListQuery(updatedQuery);
 
-      if (Object.keys(updatedQuery).length > 0) {
-        refetch();
-      }
-    }
-  }, [userData?.user, statusSelectValue, oficioSelectValue, selectedUser]);
+  //     if (Object.keys(updatedQuery).length > 0) {
+  //       refetch();
+  //     }
+  //   }
+  // }, [userData?.user, statusSelectValue, oficioSelectValue, selectedUser]);
 
   // atualiza o state do listQuery quando renderiza o contexto
-  useEffect(() => {
-    if (userData && listQuery === null) {
-      const defaultQuery = buildQueryForUserOnly();
-      setListQuery(defaultQuery);
+  // useEffect(() => {
+  //   if (userData && listQuery === null) {
+  //     const defaultQuery = buildQueryForUserOnly();
+  //     setListQuery(defaultQuery);
 
-      if (Object.keys(defaultQuery).length > 0) {
-        refetch();
-      }
-    }
-  }, []);
+  //     if (Object.keys(defaultQuery).length > 0) {
+  //       refetch();
+  //     }
+  //   }
+  // }, []);
 
   // seta a lista de usuários se a role do usuário for ativos
-  useEffect(() => {
-    const fetchData = async () => {
-      console.log("fetching users list");
-      if (userData?.role === "ativos" && saveInfoToNotion && usersList.length === 0) {
-        const [usersList] = await Promise.all([
-          api.get("/api/notion-api/list/users/"),
-        ]);
-        if (usersList.status === 200) {
-          setUsersList(usersList.data);
-          setFilteredUsersList(usersList.data);
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     console.log("fetching users list");
+  //     if (userData?.role === "ativos" && saveInfoToNotion && usersList.length === 0) {
+  //       const [usersList] = await Promise.all([
+  //         api.get("/api/notion-api/list/users/"),
+  //       ]);
+  //       if (usersList.status === 200) {
+  //         setUsersList(usersList.data);
+  //         setFilteredUsersList(usersList.data);
+  //       }
+  //     }
+  //   };
 
-    fetchData();
-  }, [saveInfoToNotion, userData?.role, usersList.length]);
+  //   fetchData();
+  // }, [saveInfoToNotion, userData?.role, usersList.length]);
 
   return (
     <TableNotionContext.Provider

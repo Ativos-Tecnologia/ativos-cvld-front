@@ -17,6 +17,7 @@ export interface UserInfo {
   workspace?: string | null | undefined;
   sub_role: string;
   product: string;
+  staff_approvation?: boolean | null | undefined;
 }
 
 export interface IUserBalance {
@@ -31,7 +32,6 @@ export interface UserInfoContextType {
   updateProfile: (id: string, data: any) => Promise<any>;
   firstLogin: boolean | null;
   setFirstLogin: (value: boolean | null) => void;
-  subscriptionData: ISubscriptionInfo;
   credits: IUserBalance;
   setCredits: (value: IUserBalance) => void;
   updateProfilePicture: (id: string, data: FormData) => Promise<any>;
@@ -93,14 +93,6 @@ export const UserInfoAPIContext = createContext<UserInfoContextType>({
   updateProfile: async () => ({}),
   firstLogin: null,
   setFirstLogin: () => {},
-  subscriptionData: {
-    id: "",
-    user: 0,
-    status: "PENDING",
-    plan: "FREE",
-    start_date: "",
-    end_date: "",
-  },
   credits: {
     id: 0,
     available_credits: 0,
@@ -117,14 +109,6 @@ export const UserInfoProvider = ({
   children: React.ReactNode;
 }) => {
   const [firstLogin, setFirstLogin] = useState<boolean | null>(null);
-  const [subscriptionData, setSubscriptionData] = useState<ISubscriptionInfo>({
-    id: "",
-    user: 0,
-    status: "PENDING",
-    plan: "FREE",
-    start_date: "",
-    end_date: "",
-  });
 
   const [credits, setCredits] = useState<IUserBalance>({
     id: 0,
@@ -163,35 +147,6 @@ export const UserInfoProvider = ({
     };
     fetchData();
   }, []);
-
-  /***
-   * Como era a implementação anterior quando fazia requisição para o get-balance.
-   */
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     setLoading(true);
-  //     const [profileResult, creditsResult] = await Promise.all([
-  //       api.get("/api/profile/"),
-  //       api.get("/api/user/get-balance/"),
-  //     ]);
-
-  //     if (profileResult.status === 200) {
-  //       setData(profileResult.data);
-  //     } else {
-  //       setError("Error fetching profile data");
-  //     }
-
-  //     if (creditsResult.status === 200) {
-  //       setCredits(creditsResult.data);
-  //     } else {
-  //       setError("Error fetching credits data");
-  //     }
-
-  //     setLoading(false);
-  //   };
-
-  //   fetchData();
-  // }, []);
 
   const updateProfilePicture = async (id: string, data: FormData) => {
     setLoading(true);
@@ -323,7 +278,6 @@ export const UserInfoProvider = ({
         updateProfile,
         firstLogin,
         setFirstLogin,
-        subscriptionData,
         credits,
         setCredits,
         updateProfilePicture,

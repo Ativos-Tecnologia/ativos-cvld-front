@@ -12,13 +12,11 @@
     padding: 0;
     text-align: center;
     top: 45%;
-    /* height: 100%; */
     gap: 2px;
     position: absolute;
   }
   .dots {
     animation: bounce 1.5s infinite linear;
-    /* background: #e7d142; */
     border-radius: 50%;
     display: inline-block;
     height: 20px;
