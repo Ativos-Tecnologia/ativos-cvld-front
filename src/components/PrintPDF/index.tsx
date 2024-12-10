@@ -17,8 +17,8 @@ export function PrintPDF({ nome_do_credor, profissao, foto_do_broker: foto, valo
 	
 	
   return (
-    <div className="col-span-2 mx-80 flex flex-col items-center bg-[#F4F4F4]">
-      {/* Header com a imagem e logo da Ativos */}
+		<div className="col-span-2 mx-auto w-[210mm] flex flex-col items-center bg-[#F4F4F4]">
+			{/* Header com a imagem e logo da Ativos */}
 		<header className="relative h-[440px] w-[1270px] bg-cover bg-no-repeat overflow-hidden" style={{ backgroundImage: "url('/images/brokersPDF/broker_header.webp" }}>
 			<Image
 				src={"/images/logo/new-logo-text-dark.svg"}
