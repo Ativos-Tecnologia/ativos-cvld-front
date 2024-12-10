@@ -6,18 +6,18 @@ interface IPrintPDFProps {
 	foto_do_broker: string;
 	valor_da_proposta: string;
 	phone?: string;
-	content?: () => React.RefObject<HTMLDivElement>;
 }
 
 
-export function PrintPDF({ nome_do_credor, profissao, foto_do_broker: foto, valor_da_proposta, nome_do_broker, phone, content }: IPrintPDFProps) {
+export function PrintPDF({ nome_do_credor, profissao, foto_do_broker: foto, valor_da_proposta, nome_do_broker, phone }: IPrintPDFProps) {
 	
 	 const whatsAppNumber = phone ? phone : "5581996871762";
 	 const message = "Olá! Estou entrando em contato através do CellerApp e preciso tirar uma dúvida.";
 	 const whatsappLink = `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(message)}`;
-
+	
+	
   return (
-    <div className="col-span-2 mx-80 flex flex-col items-center bg-</div>[#F4F4F4]" ref={content}>
+    <div className="col-span-2 mx-80 flex flex-col items-center bg-[#F4F4F4]">
       {/* Header com a imagem e logo da Ativos */}
 		<header className="relative h-[440px] w-[1270px] bg-cover bg-no-repeat overflow-hidden" style={{ backgroundImage: "url('/images/brokersPDF/broker_header.webp" }}>
 			<Image
