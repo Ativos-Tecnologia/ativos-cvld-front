@@ -46,7 +46,7 @@ const HoverCard = ({ disabled, children, ...props }: IHoverCardProps): JSX.Eleme
  * 
  * @returns {JSX.Element} - Componente renderizado
  */
-HoverCard.Container = ({ children, disabled, backgroundImg, className }: {
+const HoverCardContainer = ({ children, disabled, backgroundImg, className }: {
     children: React.ReactNode;
     disabled?: boolean;
     backgroundImg: string;
@@ -71,6 +71,8 @@ HoverCard.Container = ({ children, disabled, backgroundImg, className }: {
     )
 }
 
+// HoverCardContainer.displayName = "HoverCard.Container";
+
 /**
  * Componente de badge do tribunal
  * 
@@ -80,7 +82,7 @@ HoverCard.Container = ({ children, disabled, backgroundImg, className }: {
  * 
  * @returns {JSX.Element} - Componente de Badge renderizado
  */
-HoverCard.TribunalBadge = ({ tribunal, className }: {
+const HoverCardTribunalBadge = ({ tribunal, className }: {
     tribunal: string | undefined,
     className?: string
 }): JSX.Element => {
@@ -99,6 +101,8 @@ HoverCard.TribunalBadge = ({ tribunal, className }: {
     )
 }
 
+// HoverCardTribunalBadge.displayName = "HoverCard.TribunalBadge";
+
 /**
  * Componente de ícone do hovercard
  * 
@@ -109,7 +113,7 @@ HoverCard.TribunalBadge = ({ tribunal, className }: {
  * 
  * @returns {JSX.Element} - Componente renderizado
  */
-HoverCard.Icon = ({ bgColor, icon, className }: IHoverCardIconProps): JSX.Element => {
+const HoverCardIcon = ({ bgColor, icon, className }: IHoverCardIconProps): JSX.Element => {
     return (
         <span
             style={{
@@ -122,6 +126,8 @@ HoverCard.Icon = ({ bgColor, icon, className }: IHoverCardIconProps): JSX.Elemen
     )
 }
 
+// HoverCardIcon.displayName = "HoverCard.Icon";
+
 /**
  * Componente wrapper de conteúdo (principal) do hovercard,
  * desaparece ao sofrer hover.
@@ -131,7 +137,7 @@ HoverCard.Icon = ({ bgColor, icon, className }: IHoverCardIconProps): JSX.Elemen
  * 
  * @returns {JSX.Element} - Componente renderizado
  */
-HoverCard.Content = ({ children }: {
+const HoverCardContent = ({ children }: {
     children: React.ReactNode
 }): JSX.Element => {
     return (
@@ -140,6 +146,8 @@ HoverCard.Content = ({ children }: {
         </div>
     )
 }
+
+// HoverCardContent.displayName = "HoverCard.Content";
 
 /**
  * Componente wrapper de conteúdo (extra) do hovercard,
@@ -151,7 +159,7 @@ HoverCard.Content = ({ children }: {
  * 
  * @returns {JSX.Element} - Componente renderizado
  */
-HoverCard.HiddenContent = ({ children, className }: React.HTMLAttributes<HTMLDivElement> & {
+const HoverCardHiddenContent = ({ children, className }: React.HTMLAttributes<HTMLDivElement> & {
     children: React.ReactNode,
     className?: string
 }): JSX.Element => {
@@ -164,6 +172,8 @@ HoverCard.HiddenContent = ({ children, className }: React.HTMLAttributes<HTMLDiv
     )
 }
 
+// HoverCardHiddenContent.displayName = "HoverCard.HiddenContent";
+
 /**
  * Componente de wrapper para lista de informações
  * do ativo
@@ -174,7 +184,7 @@ HoverCard.HiddenContent = ({ children, className }: React.HTMLAttributes<HTMLDiv
  * 
  * @returns {JSX.Element} - Componente renderizado
  */
-HoverCard.InfoList = ({ children, className }: React.HTMLAttributes<HTMLDivElement> & {
+const HoverCardInfoList = ({ children, className }: React.HTMLAttributes<HTMLDivElement> & {
     children: React.ReactNode,
     className?: string
 }): JSX.Element => {
@@ -184,6 +194,8 @@ HoverCard.InfoList = ({ children, className }: React.HTMLAttributes<HTMLDivEleme
         </div>
     )
 }
+
+// HoverCardInfoList.displayName = "HoverCard.InfoList";
 
 /**
  * Componente de item da lista de informações
@@ -195,7 +207,7 @@ HoverCard.InfoList = ({ children, className }: React.HTMLAttributes<HTMLDivEleme
  * 
  * @returns {JSX.Element} - Componente renderizado
  */
-HoverCard.ListItem = ({ children, className }: React.HTMLAttributes<HTMLDivElement> & {
+const HoverCardListItem = ({ children, className }: React.HTMLAttributes<HTMLDivElement> & {
     children: React.ReactNode,
     className?: string
 }): JSX.Element => {
@@ -205,5 +217,14 @@ HoverCard.ListItem = ({ children, className }: React.HTMLAttributes<HTMLDivEleme
         </div>
     )
 }
+
+HoverCard.ListItem = HoverCardListItem;
+HoverCard.TribunalBadge = HoverCardTribunalBadge;
+HoverCard.Icon = HoverCardIcon;
+HoverCard.Content = HoverCardContent;
+HoverCard.HiddenContent = HoverCardHiddenContent;
+HoverCard.InfoList = HoverCardInfoList;
+HoverCard.Container = HoverCardContainer;
+
 
 export default HoverCard;
