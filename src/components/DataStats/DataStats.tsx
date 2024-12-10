@@ -1,6 +1,10 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
 import AnimatedNumber from '../ui/AnimatedNumber'
+import CRMTooltip from '../CrmUi/Tooltip'
+import { NotionPage } from '@/interfaces/INotion'
+import CustomSkeleton from '../CrmUi/CustomSkeleton'
+import { SimpleNotionData } from '../Dashboard/Juridico'
 
 interface MiniCardContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode,
@@ -21,16 +25,22 @@ interface MiniCardLabelProps {
   amount: number,
   customSymbol?: string,
   legend: string,
-  currency?: boolean
+  currency?: boolean,
+  isLoading?: boolean
 }
 
 export const MiniCardLabel: React.FC<MiniCardLabelProps> = ({
   amount = 0,
   customSymbol,
   legend,
-  currency = false
+  isLoading,
+  currency = false,
 }) => {
   return (
+    isLoading ? (
+      <MiniCardLabelSkeleton />
+    ) : (
+      
     <div className='flex flex-col align-middle justify-center'>
       <h4 className="mb-0.5 text-xl font-semibold text-black dark:text-white md:text-title-lg flex flex-row justify-center">
       <AnimatedNumber value={amount} isNotCurrency={!currency} />{customSymbol}
@@ -41,18 +51,39 @@ export const MiniCardLabel: React.FC<MiniCardLabelProps> = ({
         }
       </p>
     </div>
+    )
+
   );
 };
 
+const MiniCardLabelSkeleton: React.FC = () => {
+  return (
+    <div className='flex flex-col align-middle justify-center min-h-14'>
+      <div className="flex flex-row justify-center min-h-7 mb-2">
+        <CustomSkeleton type='content' className='h-7 w-20' />
+      </div>
+      <div className="flex flex-row justify-center min-h-5 ">
+        <CustomSkeleton type='content' className="h-5 w-20" />
+      </div>
+    </div>
+  );
+};
+
+type DataStatsProps = {
+  data: SimpleNotionData[],
+  isLoading?: boolean
+}
 
 
-const DataStats = () => {
+const DataStats: React.FC<DataStatsProps> = ({ data, isLoading }) => {
   return (
     <div className="col-span-12 rounded-md bg-white p-7.5 dark:bg-boxdark">
     {/* <div className="col-span-12 rounded-md bg-white p-7.5 shadow-default dark:bg-boxdark"> */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4 xl:gap-0">
         <MiniCardContainer>
-          <MiniCardLabel amount={98} legend="Ofícios" />
+          <CRMTooltip text={"Este é o total de ofícios sob sua \n responsabilidade, independente do status."} placement="top">
+            <MiniCardLabel isLoading={isLoading} amount={data.length} legend="Total de ofícios" />
+          </CRMTooltip>
           <div className="flex items-center gap-1">
             <svg
               width="19"
@@ -70,14 +101,8 @@ const DataStats = () => {
           </div>
         </MiniCardContainer>
         <MiniCardContainer>
-          {/* <div>
-            <h4 className="mb-0.5 text-xl font-semibold text-black dark:text-white md:text-title-lg">
-              55.9K
-            </h4>
-            <p className="text-sm font-medium">Total Pageviews</p>
-          </div> */}
-          <MiniCardLabel amount={458457.98} currency={true} legend="Total em Liquidação" />
-          <div className="flex items-center gap-1">
+          <MiniCardLabel isLoading={isLoading} amount={data.reduce((acc, item) => acc + item.valor_liquido_disponivel, 0)} legend="Valor total" currency />
+          {/* <div className="flex items-center gap-1">
             <svg
               width="19"
               height="19"
@@ -91,15 +116,9 @@ const DataStats = () => {
               />
             </svg>
             <span className="text-meta-3">25%</span>
-          </div>
+          </div> */}
           </MiniCardContainer>
         <MiniCardContainer>
-          {/* <div>
-            <h4 className="mb-0.5 text-xl font-semibold text-black dark:text-white md:text-title-lg">
-              54%
-            </h4>
-            <p className="text-sm font-medium">Bounce Rate</p>
-          </div> */}
           <MiniCardLabel amount={54} customSymbol='%' legend="Bounce Rate" />
           <div className="flex items-center gap-1">
             <svg

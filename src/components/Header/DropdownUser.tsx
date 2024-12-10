@@ -8,7 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const { data, loading, subscriptionData } = useContext<UserInfoContextType>(UserInfoAPIContext);
+  const { data, loading } = useContext<UserInfoContextType>(UserInfoAPIContext);
 
 
   const trigger = useRef<any>(null);
@@ -71,28 +71,6 @@ const DropdownUser = () => {
                   : data.user
               }
             </span>
-          </span>
-
-          <span className="relative h-12 w-12 flex items-center justify-center rounded-full border border-stroke dark:border-strokedark">
-            {
-              loading ? (
-                <div className="animate-pulse">
-                  <div className="w-12 h-12 bg-slate-200 rounded-full dark:bg-slate-300"></div>
-                </div>
-              ) : (
-                <React.Fragment>
-                  <Avatar img={data.profile_picture} size="md" alt="Profile Picture" rounded placeholderInitials={data.first_name.charAt(0) + data.last_name.charAt(0)} />
-                  {subscriptionData.plan === 'GOD_MODE' && (
-                    <span className="absolute bottom-2 left-0 w-4 h-4 rounded-full" style={{
-                      filter: 'drop-shadow(0px 0px 3px rgba(0, 0, 0, 1))'
-                    }}>
-                      <AiFillCrown style={{ width: "16px", height: "16px", fill: "#f5e000" }} />
-                    </span>
-                  )}
-
-                </React.Fragment>
-              )
-            }
           </span>
         </Link>
       </DropdownMenuTrigger>

@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import Juridico from "@/components/Dashboard/Juridico";
-import { UserInfoProvider } from "@/context/UserInfoContext";
 
 export const metadata: Metadata = {
   title: "CelerApp | Jurídico",
@@ -20,9 +19,7 @@ export const metadata: Metadata = {
 const JuridicoWrapperPage = () => {
   return (
     <DefaultLayout>
-        <UserInfoProvider>
-            <Juridico />
-        </UserInfoProvider>
+      <Juridico />
     </DefaultLayout>
   );
 };

@@ -23,17 +23,18 @@ const GridCardsWrapper = ({
     )
 }
 
-GridCardsWrapper.Label = ({ children }: { children: React.ReactNode }): JSX.Element => {
+GridCardsWrapper.Label = (({ children }: { children: React.ReactNode }): JSX.Element => {
     return (
         <h2 className='text-lg font-bold'>{children}</h2>
     )
-}
+}) as React.FC<{ children: React.ReactNode }>;
+GridCardsWrapper.Label.displayName = 'GridCardsWrapper.Label';
 
-GridCardsWrapper.List = ({
+GridCardsWrapper.List = (function List({
     children,
     cardsSize = "md",
     ...props 
-}: IGridCardsWrapperProps): JSX.Element => {
+}: IGridCardsWrapperProps): JSX.Element {
         
     return (
         <ul className={cn(`my-5 grid ${gridCardsSize[cardsSize]}`, props.className)}
@@ -41,6 +42,8 @@ GridCardsWrapper.List = ({
             {children}
         </ul>
     )
-}
+}) as React.FC<IGridCardsWrapperProps>;
+
+GridCardsWrapper.List.displayName = 'GridCardsWrapper.List';
 
 export default GridCardsWrapper;

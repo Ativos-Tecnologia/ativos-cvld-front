@@ -37,29 +37,6 @@ const tooltipPlacement: Record<string, { container: string, arrow: string }> = {
 
 const CRMTooltip = ({ children, text, arrow = true, placement = "top", animationDelay = "300" }: TooltipProps) => {
 
-    // Esse código aqui é de uma tentativa de fazer o tooltip se reposicionar caso ele ultrapasse a borda do sidebar. Ainda não está funcionando.
-    // const tooltipRef = useRef<HTMLDivElement | null>(null);
-
-    // useEffect(() => {
-    //     const handleResize = () => {
-    //         if (tooltipRef.current) {
-    //             const tooltip = tooltipRef.current;
-    //             const rect = tooltip.getBoundingClientRect();
-    //             const sidebar = document.querySelector('.sidebar-expanded');
-    //             console.log(rect.right, sidebar);
-
-    //             if (sidebar) {
-    //                 const sidebarRect = sidebar.getBoundingClientRect();
-    //                 console.log(rect.right, sidebarRect.left);
-    //                 if (rect.right > sidebarRect.left) {
-    //                     tooltip.style.left = `${sidebarRect.left - rect.width}px`;
-    //                 }
-    //             }
-    //         }
-    //     };
-
-    // }, []);
-
     return (
         <div
             className="group relative inline-block"
@@ -67,7 +44,16 @@ const CRMTooltip = ({ children, text, arrow = true, placement = "top", animation
             {children}
             <div className={`absolute mb-3 ${tooltipPlacement[placement].container} z-999999 whitespace-nowrap rounded-md bg-snow dark:bg-black-2 border border-stroke dark:border-strokedark px-3.5 py-1 text-sm font-medium opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-${animationDelay}`}>
                 {arrow && <span className={`absolute -z-10 h-2 w-2 ${tooltipPlacement[placement].arrow} rotate-45 bg-snow dark:bg-black-2 border-stroke dark:border-strokedark`}></span>}
-                <p>{text}</p>
+                <p className={`${text.includes('\n') ? 'text-center' : 'text-left'}`}>
+                    {
+                        text.split('\n').map((item, index) => (
+                            <span key={index}>
+                                {item}
+                                <br />
+                            </span>
+                        ))
+                    }
+                </p>
             </div>
         </div>
     )
