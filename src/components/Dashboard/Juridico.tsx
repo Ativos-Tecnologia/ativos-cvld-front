@@ -12,8 +12,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import MarketplaceCardSkeleton from "../Skeletons/MarketplaceCardSkeleton";
 import { AiOutlineLoading } from "react-icons/ai";
 import api from "@/utils/api";
+import Image from "next/image";
 
 enum navItems {
+  TODOS = "Todos",
   DUE_DILIGENCE = "Due Diligence",
   EM_LIQUIDACAO = "Em liquidação",
   EM_CESSAO = "Em cessão",
@@ -35,6 +37,8 @@ export type SimpleNotionData = {
   status_diligencia: string,
   valor_liquido_disponivel: number,
   tribunal: string,
+  tipo: string,
+  data_e_hora_de_aquisicao: string,
 }
 
 type SimpleDataProps = {
@@ -46,46 +50,23 @@ const Juridico = () => {
     data: { first_name },
   } = useContext<UserInfoContextType>(UserInfoAPIContext);
 
-  const [activeTab, setActiveTab] = React.useState<string>(navItems.DUE_DILIGENCE);
-  const [cardData, setCardData] = React.useState<cardProps[]>([]);
+  const [activeTab, setActiveTab] = React.useState<string>(navItems.TODOS);
   const [simpleData, setSimpleData] = React.useState<SimpleDataProps>({ results: [] });
   const [loading, setLoading] = React.useState<boolean>(false);
 
-  const mockData = (tipo: string) =>
-    Array.from({ length: 12 }, (_, i) => ({
-      id: i,
-      title: `Item ${i}`,
-      tipo: tipo,
-    }));
-
-  const simulateFetch = async () => {
-    setLoading(true);
-    setTimeout(() => {
-      Promise.resolve(setCardData(mockData(activeTab)));
-      setLoading(false);
-    }, 2000);
-  };
-
   const fetchAllPrecatoryWithSimpleData = async () => {
-    const response = await api.get("api/legal/");
     setLoading(true);
+    const response = await api.get(activeTab === navItems.TODOS ? "/api/legal/" : `/api/legal/?status_diligencia=${activeTab}`);
     setSimpleData(response.data);
     setLoading(false);
   }
 
   React.useEffect(() => {
     fetchAllPrecatoryWithSimpleData();
-  }, []);
-
-  React.useEffect(() => {
-    simulateFetch();
   }, [activeTab]);
 
   return (
     <div className="w-full">
-      {
-        first_name
-      }
       <div className="mb-4 flex w-full items-end justify-end gap-5 rounded-md">
         <Breadcrumb
           customIcon={<FaBalanceScale className="h-[32px] w-[32px]" />}
@@ -98,7 +79,7 @@ const Juridico = () => {
         <DataStats data={simpleData.results} isLoading={loading}/>
       </div>
       <div className="my-4">
-        <Tabs defaultValue={navItems.DUE_DILIGENCE} className="w-full">
+        <Tabs defaultValue={navItems.TODOS} className="w-full">
           <TabsList>
             {Object.values(navItems).map((item, index) => (
               <TabsTrigger
@@ -167,16 +148,30 @@ const Juridico = () => {
             Object.values(navItems).map((item, index) => (
               <TabsContent key={index} value={item}>
                 <ul className="my-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4">
-                  {cardData.map((item) => (
-                    <li
-                      key={item.id}
-                      className={`mb-4 h-65 max-w-full cursor-pointer rounded-md bg-white p-5 font-nexa opacity-50 hover:cursor-not-allowed dark:bg-boxdark xsm:min-w-95 xsm:px-2 md:min-w-[350px] md:px-3 lg:px-4`}
-                    >
-                      <p className="text-lg font-semibold">{item.title}</p>
-                      <p className="text-sm">{item.tipo}</p>
-                    </li>
-                  ))}
+                  {simpleData.results.length > 0 && (
+                    simpleData.results.map((item) => (
+                      <li
+                        key={item.id}
+                        className={`mb-4 h-65 max-w-full cursor-pointer rounded-md bg-white p-5 font-nexa opacity-50 hover:cursor-not-allowed dark:bg-boxdark xsm:min-w-95 xsm:px-2 md:min-w-[350px] md:px-3 lg:px-4`}
+                      >
+                        <p className="text-lg font-semibold">{item.credor}</p>
+                        <p className="text-sm">{item.tipo}</p>
+                        <p className="text-sm">{item.status_diligencia}</p>
+                      </li>
+                    ))
+                  )}
                 </ul>
+                {
+                  simpleData.results.length === 0 && (
+                    <div className="flex items-center justify-center h-96 -my-4">
+                      <div className="mb-20">
+                      <Image src="/images/illustration/illustration-01.svg" alt="Nenhum resultado encontrado" width={300} height={300}  />
+                      <p className="text-lg font-semibold text-center">Nenhum resultado encontrado</p>
+
+                      </div>
+                    </div>
+                  )
+                }
               </TabsContent>
             ))
           )}
