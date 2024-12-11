@@ -554,10 +554,6 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
     };
   }, [isFormModified]);
 
-  console.log(mode)
-  console.log(cedentePfData)
-  console.log(openRegisterForm)
-
   return (
     <div className='w-full max-h-[480px] px-3' ref={pfFormModal}>
 

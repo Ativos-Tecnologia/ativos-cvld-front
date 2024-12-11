@@ -65,6 +65,7 @@ const DocForm = () => {
                     docModalInfo!.properties["Cedente PJ"].relation?.[0]?.id ||
                     null
                   }
+                  tipoDoOficio={docModalInfo!.properties["Tipo"]?.select?.name ?? "Não informado"}
                 />
               ) : (
                 <Fade duration={700} triggerOnce>
