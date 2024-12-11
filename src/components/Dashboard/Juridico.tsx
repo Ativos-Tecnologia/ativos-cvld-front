@@ -54,16 +54,16 @@ const Juridico = () => {
   const [simpleData, setSimpleData] = React.useState<SimpleDataProps>({ results: [] });
   const [loading, setLoading] = React.useState<boolean>(false);
 
-  const fetchAllPrecatoryWithSimpleData = async () => {
+  const fetchAllPrecatoryWithSimpleData = React.useCallback(async () => {
     setLoading(true);
     const response = await api.get(activeTab === navItems.TODOS ? "/api/legal/" : `/api/legal/?status_diligencia=${activeTab}`);
     setSimpleData(response.data);
     setLoading(false);
-  }
+  }, [activeTab]);
 
   React.useEffect(() => {
     fetchAllPrecatoryWithSimpleData();
-  }, [activeTab]);
+  }, [activeTab, fetchAllPrecatoryWithSimpleData]);
 
   return (
     <div className="w-full">
@@ -163,7 +163,7 @@ const Juridico = () => {
                 </ul>
                 {
                   simpleData.results.length === 0 && (
-                    <div className="flex items-center justify-center h-96 -my-4">
+                    <div className="flex items-center justify-center h-96 -my-">
                       <div className="mb-20">
                       <Image src="/images/illustration/illustration-01.svg" alt="Nenhum resultado encontrado" width={300} height={300}  />
                       <p className="text-lg font-semibold text-center">Nenhum resultado encontrado</p>

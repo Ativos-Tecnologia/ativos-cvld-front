@@ -13,7 +13,7 @@ const routeAccessMap: Record<"crm" | "wallet" | "global", string[]> = {
     APP_ROUTES.private.marketplace.name,
     APP_ROUTES.private.marketplaceItem.name,
   ],
-  global: Object.values(APP_ROUTES.private).map((route) => route.name),
+  global: Object.values(APP_ROUTES.private).map((route) => route.name)
 };
 
 export default function RouteGuard({
@@ -23,22 +23,34 @@ export default function RouteGuard({
 }) {
   const router = useRouter();
   const {
-    data: { product },
+    data: { product, role, sub_role },
   } = useContext(UserInfoAPIContext) as {
-    data: { product: "crm" | "wallet" | "global" };
+    data: { product: "crm" | "wallet" | "global";
+    role: "ativos";
+    sub_role: "juridico" };
   };
 
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const devRouteGuard = (currentPath:string, fallbackPath:string = APP_ROUTES.private.dashboard.name) => {
+      if (window.location.href.includes(
+        "https://ativoscvld.vercel.app/",
+      ) && currentPath.includes("juridico")) {
+        return router.push(fallbackPath);
+      }
+    };
+
     const currentPath = window.location.pathname;
+    devRouteGuard(currentPath);
+
     const privateRoutes = Object.values(APP_ROUTES.private).map(
       (route) => route.name,
     );
+    
 
     if (privateRoutes.includes(currentPath)) {
       const allowedRoutes = routeAccessMap[product] || [];
-
       if (!allowedRoutes.includes(currentPath)) {
         if (product === "crm") {
           router.push("/dashboard/broker");
