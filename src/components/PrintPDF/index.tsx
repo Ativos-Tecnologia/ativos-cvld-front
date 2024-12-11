@@ -151,8 +151,8 @@ export function PrintPDF({ nome_do_credor, foto_do_broker: foto, valor_da_propos
 							src={"/images/brokersPDF/viagem-brokers.webp"}
 							alt="representando viagem"
 							width={300}
-								height={50}
-								className="rounded-lg"
+							height={50}
+							className="rounded-lg"
 						/>
           </div>
           <div className=" justify-center items-center p-2">
@@ -187,7 +187,7 @@ export function PrintPDF({ nome_do_credor, foto_do_broker: foto, valor_da_propos
 						<Image
 							src={"/images/brokersPDF/qualidade-brokers.webp"}
 							alt="representando investimentos"
-							width={450}
+							width={440}
 							height={50}
 							className="rounded-lg"
 						/>
@@ -212,13 +212,14 @@ export function PrintPDF({ nome_do_credor, foto_do_broker: foto, valor_da_propos
 									alt="foto de perfil do broker"
 									width={130}
 									height={130}
+									className="w-35 h-35 rounded-full"
 								/>
 								<Image
 									src={"/images/brokersPDF/ok.webp"}
 									alt="seta indicando o próximo passo"
 									width={30}
 									height={20}
-									className="relative -top-30 left-25"
+									className="relative -top-32 left-28"
 								/>
 					</div>
 					<div className="flex flex-col font-bold text-[#171717] text-title-sm uppercase">
@@ -227,7 +228,7 @@ export function PrintPDF({ nome_do_credor, foto_do_broker: foto, valor_da_propos
 					</div>
 					{/* Botão de WhatsApp */}
 					</div>
-						<a href={whatsappLink} className="w-fit flex items-center justify-center">
+						<a href={whatsappLink} target="_blank" className="w-fit flex items-center justify-center">
 							<Image
 									src={"/images/brokersPDF/zap-brokers.webp"}
 									alt="Whatssapp"
@@ -246,7 +247,7 @@ export function PrintPDF({ nome_do_credor, foto_do_broker: foto, valor_da_propos
 		 		</div>
 		  </div>
 				<footer className="flex w-full relative justify-center items-center text-center ">
-					<span className=" mb-10 text-[28px] text-[#F4F4F4] tracking-[0.2em] font-bold">ativosprecatorios.com.br</span>
+					<span className=" mb-11 text-[28px] text-[#F4F4F4] tracking-[0.2em] font-bold">ativosprecatorios.com.br</span>
 				</footer>
   </section>
 		</>

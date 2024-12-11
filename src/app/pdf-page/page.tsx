@@ -27,7 +27,7 @@ const PagePDF = () => {
 
   return (
     <div>
-      {/* <button onClick={() => GeneratePDF()}>Gerar PDF</button> */}
+      <button onClick={() => GeneratePDF()}>Gerar PDF</button>
       <div ref={documentRef} className="bg-[#F4F4F4]">
         <PrintPDF
           nome_do_credor="Nome do Credor"
