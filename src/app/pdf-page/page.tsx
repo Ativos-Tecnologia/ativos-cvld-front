@@ -30,10 +30,10 @@ const PagePDF = () => {
       <button onClick={() => GeneratePDF()}>Gerar PDF</button>
       <div ref={documentRef} className="bg-[#F4F4F4]">
         <PrintPDF
-          nome_do_credor="Nome do Credor"
-          valor_da_proposta="8000"
-          nome_do_broker="Nome do Broker"
-          foto_do_broker="/images/user/user-01.png"
+          nomeDoCredor="Nome do Credor"
+          valorDaProposta={5000}
+          nomeDoBroker="Nome do Broker"
+          fotoDoBroker="/images/user/user-01.png"
         />
       </div>
     </div>

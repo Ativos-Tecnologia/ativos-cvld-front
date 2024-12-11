@@ -1,17 +1,18 @@
+import numberFormat from "@/functions/formaters/numberFormat";
 import Image from "next/image";
 interface IPrintPDFProps { 
-	nome_do_credor: string;
-	nome_do_broker: string;
-	foto_do_broker: string;
-	valor_da_proposta: string | number;
+	nomeDoCredor: string;
+	nomeDoBroker: string;
+	fotoDoBroker: string;
+	valorDaProposta: number;
 	phone?: string | number | null;
 }
 
 
-export function PrintPDF({ nome_do_credor, foto_do_broker: foto, valor_da_proposta, nome_do_broker, phone }: IPrintPDFProps) {
+export function PrintPDF({ nomeDoCredor, fotoDoBroker, valorDaProposta, nomeDoBroker, phone }: IPrintPDFProps) {
 	
 	 const whatsAppNumber = phone ? phone : "5581996871762";
-	 const message = "Olá! Estou entrando em contato através do CellerApp e preciso tirar uma dúvida.";
+	 const message = "Olá! Estou entrando em contato e preciso tirar uma dúvida sobre a proposta.";
 	 const whatsappLink = `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(message)}`;
 	
 	
@@ -39,7 +40,7 @@ export function PrintPDF({ nome_do_credor, foto_do_broker: foto, valor_da_propos
 
       {/* Nome do Broker */}
       <div id="nome_do_credor" data-testid='nome_do_credor' className=" uppercase items-center text-center text-[55px] font-bold text- text-[#171717] justify-center p-10">
-				<h1>{ nome_do_credor }</h1>
+				<h1>{ nomeDoCredor }</h1>
 			</div>
 			
 		{/* Card */}
@@ -63,6 +64,7 @@ export function PrintPDF({ nome_do_credor, foto_do_broker: foto, valor_da_propos
 						alt="imagem ilustrativa do cedente"
 						width={300}
 						height={150}
+						priority
 						/>
 				</div>
 
@@ -75,7 +77,11 @@ export function PrintPDF({ nome_do_credor, foto_do_broker: foto, valor_da_propos
 					</h2>
 					{/* Input com o nome do Cedente */}
 					<div>
-						<input type="text" className="bg-[#D1E1F5] w-[280px] h-[50px] text-3xl tracking-[0.5rem] rounded-lg text-center" value={valor_da_proposta} disabled />
+							<input type="text"
+								className="bg-[#D1E1F5] w-[280px] h-[50px] text-3xl rounded-lg text-center"
+								value={numberFormat(valorDaProposta)}
+								disabled
+							/>
 							<p className="uppercase text-title-md justify-center items-center p-5 font-bold text-[#022062]"> Em Até 5 Dias </p>
 							<hr className="bg-[#8AD8EF] h-[5px] -mr-2 "/>
 							<p className="uppercase text-title-lg justify-center items-center p-5 font-bold text-[#022062]" >Próximos Passos:</p>
@@ -134,6 +140,7 @@ export function PrintPDF({ nome_do_credor, foto_do_broker: foto, valor_da_propos
 							width={300}
 							height={50}
 							className="rounded-lg"
+							priority
 						/>
           </div>
           <div className=" justify-center items-center p-2">
@@ -153,6 +160,7 @@ export function PrintPDF({ nome_do_credor, foto_do_broker: foto, valor_da_propos
 							width={300}
 							height={50}
 							className="rounded-lg"
+							priority
 						/>
           </div>
           <div className=" justify-center items-center p-2">
@@ -172,6 +180,7 @@ export function PrintPDF({ nome_do_credor, foto_do_broker: foto, valor_da_propos
 							width={315}
 							height={50}
 							className="rounded-lg"
+							priority
 						/>
           </div>
           <div className=" justify-center items-center p-2">
@@ -190,6 +199,7 @@ export function PrintPDF({ nome_do_credor, foto_do_broker: foto, valor_da_propos
 							width={440}
 							height={50}
 							className="rounded-lg"
+							priority
 						/>
 					</div>
 					<div className="justify-center items-center p-1">
@@ -208,11 +218,12 @@ export function PrintPDF({ nome_do_credor, foto_do_broker: foto, valor_da_propos
 				<div className="flex gap-2 items-center justify-center">
 					<div className="w-35 h-35 rounded-full">
 								<Image
-									src={ foto }
+									src={ fotoDoBroker }
 									alt="foto de perfil do broker"
 									width={130}
 									height={130}
 									className="w-35 h-35 rounded-full"
+									priority
 								/>
 								<Image
 									src={"/images/brokersPDF/ok.webp"}
@@ -220,28 +231,31 @@ export function PrintPDF({ nome_do_credor, foto_do_broker: foto, valor_da_propos
 									width={30}
 									height={20}
 									className="relative -top-32 left-28"
+									priority
 								/>
 					</div>
 					<div className="flex flex-col font-bold text-[#171717] text-title-sm uppercase">
-							<span>{ nome_do_broker }</span>
+							<span>{ nomeDoBroker }</span>
 							<span> Gerente Comercial </span>
 					</div>
 					{/* Botão de WhatsApp */}
 					</div>
 						<a href={whatsappLink} target="_blank" className="w-fit flex items-center justify-center">
 							<Image
-									src={"/images/brokersPDF/zap-brokers.webp"}
-									alt="Whatssapp"
-									width={90}
-									height={30}
-									className=" items-center"
+								src={"/images/brokersPDF/zap-brokers.webp"}
+								alt="Whatssapp"
+								width={90}
+								height={30}
+								className=" items-center"
+								priority
 								/>
 							<Image
-									src={"/images/brokersPDF/hand-brokers.webp"}
-									alt="hand"
-									width={40}
-									height={30}
-									className="items-center relative -left-5"
+								src={"/images/brokersPDF/hand-brokers.webp"}
+								alt="hand"
+								width={40}
+								height={30}
+								className="items-center relative -left-5"
+								priority
 								/>
 						</a>
 		 		</div>

@@ -24,11 +24,11 @@ beforeEach(async () => {
   render(
     <QueryClientProvider client={(global as any).queryClient}>
 			<PrintPDF
-			nome_do_credor="Nome do Credor"
-			valor_da_proposta="8000"
+			nomeDoCredor="Nome do Credor"
+			valorDaProposta="8000"
 			profissao="Profissão do Broker"
-			nome_do_broker="Nome do Broker"
-			foto_do_broker="/images/user/user-01.png"
+			nomeDoBroker="Nome do Broker"
+			fotoDoBroker="/images/user/user-01.png"
 			/>
     </QueryClientProvider>,
   );

@@ -842,14 +842,10 @@ const DashbrokersCard = ({ oficio }:
     const handleGeneratePDF = useReactToPrint({
         contentRef: documentRef,
         documentTitle: "Proposta",
-        onBeforePrint: async () => {
-            setLoading(true);
-            //delay para dar tempo de carregar todo o PDF, porque em alguns casos o template não carrega por completo.
-            return new Promise((resolve) => {
-                setTimeout(resolve, 5000);
-            });
-        },
+        onBeforePrint: async () => setLoading(true),
         onAfterPrint: () => setLoading(false),
+        preserveAfterPrint: true,
+        copyShadowRoots: true,
         onPrintError: (errorLocation, error) => {
             console.error("Erro na geração do PDF:", errorLocation, error);
             setLoading(false);
@@ -1175,10 +1171,10 @@ const DashbrokersCard = ({ oficio }:
                     <div className='hidden'>
                     <div ref={documentRef} className="bg-[#F4F4F4]">
                         <PrintPDF
-                        nome_do_credor={mainData?.properties["Credor"].title[0]?.text.content}
-                        valor_da_proposta={mainData?.properties["Proposta Escolhida - Celer"].number || mainData?.properties["(R$) Proposta Mínima - Celer"].number || 0}
-                        nome_do_broker={first_name + " " + last_name}
-                        foto_do_broker={profile_picture}
+                        nomeDoCredor={mainData?.properties["Credor"].title[0]?.text.content}
+                        valorDaProposta={mainData?.properties["Proposta Escolhida - Celer"].number || mainData?.properties["(R$) Proposta Mínima - Celer"].number || 0}
+                        nomeDoBroker={first_name + " " + last_name}
+                        fotoDoBroker={profile_picture}
                         phone={phone ? phone : null}
                         />
                     </div>
