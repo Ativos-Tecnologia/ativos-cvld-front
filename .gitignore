@@ -13,6 +13,7 @@
 /coverage
 coverage
 .coverage
+.playground
 
 test.ts
 test.tsx
