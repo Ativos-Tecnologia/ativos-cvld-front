@@ -18,6 +18,7 @@ export interface UserInfo {
   sub_role: string;
   product: string;
   staff_approvation?: boolean | null | undefined;
+  is_confirmed: boolean;
 }
 
 export interface IUserBalance {
@@ -86,6 +87,7 @@ export const UserInfoAPIContext = createContext<UserInfoContextType>({
     bio: "",
     sub_role: "",
     product: "",
+    is_confirmed: false,
   },
 
   loading: true,
@@ -128,6 +130,7 @@ export const UserInfoProvider = ({
     bio: "",
     sub_role: "",
     product: "",
+    is_confirmed: false,
   });
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -147,6 +150,8 @@ export const UserInfoProvider = ({
     };
     fetchData();
   }, []);
+
+
 
   const updateProfilePicture = async (id: string, data: FormData) => {
     setLoading(true);
@@ -257,6 +262,7 @@ export const UserInfoProvider = ({
           email: response.data.email,
           sub_role: data.sub_role,
           product: data.product,
+          is_confirmed: data.is_confirmed,
         });
 
         setLoading(false);

@@ -37,6 +37,7 @@ const SignIn: React.FC = () => {
   const queryClient = useQueryClient();
 
   const { loading, setLoading, hide, setHide } = usePassword(passwordInput);
+  const [second, setSecond] = useState<boolean>(false);
 
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [showLoginForm, setShowLoginForm] = useState<boolean>(false);
@@ -44,26 +45,33 @@ const SignIn: React.FC = () => {
   const router = useRouter();
   const MySwal = UseMySwal();
 
-  async function checkUserProduct(): Promise<string> {
+  async function checkUserInfo(): Promise<{
+    product: string;
+    staff_approvation: boolean;
+  }> {
     try {
       const response = await api.get("/api/profile/");
-      return response.data.product;
+
+      return ({
+        "product": response.data.product,
+        "staff_approvation": response.data.staff_approvation,
+      })
     } catch (error) {
       throw new Error("Ocorreu um erro ao tentar buscar o produto do usuário");
       // return 'error';
     }
   }
 
-  async function checkStaffApprovation(): Promise<boolean> {
-    try {
-      const response = await api.get("/api/profile/");
-      return response.data.staff_approvation;
-    } catch (e) {
-      throw new Error(
-        `Erro ao tentar verificar aprovação do usuário ${console.error(e)}`,
-      );
-    }
-  }
+  // async function checkStaffApprovation(): Promise<boolean> {
+  //   try {
+  //     const response = await api.get("/api/profile/");
+  //     return response.data.staff_approvation;
+  //   } catch (e) {
+  //     throw new Error(
+  //       `Erro ao tentar verificar aprovação do usuário ${console.error(e)}`,
+  //     );
+  //   }
+  // }
 
   const onSubmit: SubmitHandler<SignInInputs> = async (data) => {
     setLoading(true);
@@ -74,8 +82,8 @@ const SignIn: React.FC = () => {
         localStorage.setItem(`ATIVOS_${ACCESS_TOKEN}`, res.data.access);
         localStorage.setItem(`ATIVOS_${REFRESH_TOKEN}`, res.data.refresh);
 
-        const userProduct = await checkUserProduct();
-        const userApprovation = await checkStaffApprovation();
+        const userProduct = await checkUserInfo().then((data) => data.product);
+        const userApprovation = await checkUserInfo().then((data) => data.staff_approvation);
 
         queryClient.removeQueries({ queryKey: ["notion_list"] });
         queryClient.removeQueries({ queryKey: ["user"] });
@@ -254,27 +262,24 @@ const SignIn: React.FC = () => {
                           </span>
                         </div>
 
-                        <div className="flex flex-col items-center justify-center md:flex-row gap-3 mb-5">
+                        <div className="flex items-center justify-center md:flex-row gap-3 mb-5">
                           <Button
                             type="submit"
+                            isLoading={loading}
                             style={{
                               boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.35)",
                             }}
-                            className="flex flex-1 items-center justify-center w-full gap-2 text-lg uppercase tracking-widest"
+                            className="flex flex-1 items-center justify-center w-full text-lg uppercase tracking-widest"
                           >
-                            {loading ? (
-                              <>
-                                <AiOutlineLoading className="animate-spin" />
-                                <span>Entrando...</span>
-                              </>
-                            ) : (
-                              "Acessar"
-                            )}
+                            <span className="flex">
+                              Acessar
+                            </span>
                           </Button>
 
                           <Button
                             onClick={() => setOpenModal(true)}
                             variant="ghost"
+                            size="default"
                             className="text-[#0838bb]"
                           >
                             Esqueci a senha

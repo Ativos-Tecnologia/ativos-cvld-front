@@ -30,7 +30,6 @@ const config = {
       poppins: ["Poppins", "sans-serif"],
       manyChat: ["ManyChatGravity", "sans-serif"],
       rooftop: ["Rooftop", "sans-serif"],
-      // sans: ["Inter", "sans-serif"],
     },
 
     extend: {
@@ -293,10 +292,6 @@ const config = {
         "4/3": "4 / 3",
         "21/9": "21 / 9",
       },
-      backgroundImage: {
-        video: "url('../images/video/video.png')",
-        "main-unlogged": "url('/images/logo/main-logo-img.png')",
-      },
       content: {
         "icon-copy": 'url("../images/icon/icon-copy-alt.svg")',
       },
@@ -341,6 +336,10 @@ const config = {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
+        "shimmer": {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
         "skeleton-pass": {
           "0%": { transform: "translateX(-400%)" },
           "100%": { transform: "translateX(1000px)" },
@@ -499,6 +498,7 @@ const config = {
         },
       },
       animation: {
+        shimmer: "shimmer 1.5s infinite",
         fade: "fade 1.2s linear",
         "skeleton-pass": "skeleton-pass 1s ease-in-out infinite",
         "fade-up": "fade-up 1s ease-out forwards",
@@ -517,7 +517,7 @@ const config = {
         easespin: "easespin 5332ms cubic-bezier(0.4, 0, 0.2, 1) infinite both",
         "left-spin":
           "left-spin 1333ms cubic-bezier(0.4, 0, 0.2, 1) infinite both",
-        "right-spin":
+          "right-spin":
           "right-spin 1333ms cubic-bezier(0.4, 0, 0.2, 1) infinite both",
         "ping-once": "ping 5s cubic-bezier(0, 0, 0.2, 1)",
         rotating: "rotating 30s linear infinite",
@@ -531,6 +531,12 @@ const config = {
         line3: "line 7s infinite linear",
         topbottom1: "topToBottomArrow 0.5s forwards",
         bottomtotoparrow: "bottomToTopArrow 0.5s forwards",
+      },
+      backgroundImage: {
+        "skeleton-light":
+          "linear-gradient(90deg, #e0e0e0 25%, #f5f5f5 50%, #e0e0e0 75%)",
+        "skeleton-dark":
+          "linear-gradient(90deg, #2D3748 25%, #4A5568 50%, #2D3748 75%)",
       },
     },
   },

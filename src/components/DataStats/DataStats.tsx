@@ -5,6 +5,7 @@ import CRMTooltip from '../CrmUi/Tooltip'
 import { NotionPage } from '@/interfaces/INotion'
 import CustomSkeleton from '../CrmUi/CustomSkeleton'
 import { SimpleNotionData } from '../Dashboard/Juridico'
+import DynamicSkeleton from '../CrmUi/ui/DynamicSkeleton'
 
 interface MiniCardContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode,
@@ -37,23 +38,24 @@ export const MiniCardLabel: React.FC<MiniCardLabelProps> = ({
   currency = false,
 }) => {
   return (
-    isLoading ? (
-      <MiniCardLabelSkeleton />
-    ) : (
-      
-    <div className='flex flex-col align-middle justify-center'>
-      <h4 className="mb-0.5 text-xl font-semibold text-black dark:text-white md:text-title-lg flex flex-row justify-center">
-      <AnimatedNumber value={amount} isNotCurrency={!currency} />{customSymbol}
+    // isLoading ? (
+    //   <MiniCardLabelSkeleton />
+    // ) : (
+      <DynamicSkeleton trigger={!!isLoading}>
+    <div className='dcontainer flex flex-col align-middle justify-center'>
+      <h4 className="h-6 min-w-[100px] rounded mb-0.5 text-xl font-semibold text-black dark:text-white md:text-title-lg flex flex-row justify-center">
+        <AnimatedNumber value={amount} isNotCurrency={!currency} />{customSymbol}
       </h4>
-      <p className="text-sm font-medium">
+      <p className="h-6 text-sm font-medium">
         {
           legend
         }
       </p>
     </div>
+    </DynamicSkeleton>
     )
 
-  );
+  // );
 };
 
 const MiniCardLabelSkeleton: React.FC = () => {

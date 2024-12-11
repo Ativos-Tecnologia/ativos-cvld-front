@@ -65,19 +65,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     queryFn: fetchItems,
   });
 
-  // useEffect(() => {
-  //   async function fetchUserApprovation() {
-  //     try {
-  //       const response = await api.get("/api/profile/");
-  //       setUserApprovation(response.data.staff_approvation);
-  //     } catch (e) {
-  //       console.error(`Erro ao tentar verificar aprovação do usuário: ${e}`);
-  //     }
-  //   }
-
-  //   fetchUserApprovation();
-  // }, []);
-
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
       if (!sidebar.current || !trigger.current) return;
@@ -254,21 +241,22 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               </Link>
                             </li>
                           )}
-
-                          {(product === "global") && (
-                            <li>
-                              <Link
-                                href="/dashboard/juridico"
-                                className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${pathname === "/dashboard/juridico" && "bg-blue-700/70 text-white hover:bg-blue-800/50 dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
-                              >
-                                <MdOutlineBalance />
-                                <span>Jurídico</span>
-                                <Badge color="#e8e7a1">
-                                  Novo
-                                </Badge>
-                              </Link>
-                            </li>
-                          )}
+                          <Show
+                            when={"dev"}
+                          >
+                            {product === "global" && (
+                              <li>
+                                <Link
+                                  href="/dashboard/juridico"
+                                  className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${pathname === "/dashboard/juridico" && "bg-blue-700/70 text-white hover:bg-blue-800/50 dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
+                                >
+                                  <MdOutlineBalance />
+                                  <span>Jurídico</span>
+                                  <Badge color="#e8e7a1">Novo</Badge>
+                                </Link>
+                              </li>
+                            )}
+                          </Show>
 
                           {(product === "wallet" || product === "global") && (
                             <>

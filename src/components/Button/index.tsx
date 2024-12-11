@@ -17,7 +17,7 @@ const variants = {
   danger: "bg-red-500 hover:bg-red-600 text-white",
   outlined:
     "bg-transparent border border-blue-700 text-blue-700 hover:border-blue-800 hover:text-blue-800 dark:border-snow dark:text-snow dark:hover:border-gray-200 dark:hover:text-gray-200",
-  ghost: "bg-transparent border-transparent",
+  ghost: "bg-transparent border-transparent hover:bg-blue-50 dark:hover:bg-graydark/30 dark:border-transparent",
   success: "bg-green-500 hover:bg-green-600 text-white",
   warning: "bg-yellow-500 hover:bg-yellow-600 text-white",
   info: "bg-blue-500 hover:bg-blue-600 text-white",
@@ -61,6 +61,7 @@ export const Button: React.FC<SubmitButtonProps> = ({
         transition-all 
         duration-300 
         overflow-hidden
+        
       `,
 
         className,
@@ -70,31 +71,32 @@ export const Button: React.FC<SubmitButtonProps> = ({
     >
         <span 
         className={`
-            py-1 
+          py-1.5
+          overflow-hidden 
           absolute 
           top-full 
           left-0 
           w-full 
-          flex 
+          flex
           items-center 
           justify-center 
           transition-all 
           duration-300
-          ${isLoading ? 'translate-y-[-100%]' : 'translate-y-0'}
+          ${isLoading ? 'translate-y-[-114%]' : 'translate-y-0'}
         `}
       >
         <AiOutlineLoading className="h-5 w-5 text-current animate-spin" />
       </span>
 
-      <span 
+      <p 
         className={`
           transition-all
           duration-300
-          ${isLoading ? 'translate-y-full' : 'translate-y-0'}
+          ${isLoading ? 'translate-y-full text-transparent' : 'translate-y-0'}
         `}
       >
         {children}
-      </span>
+      </p>
     </button>
   );
 };
