@@ -19,7 +19,7 @@ const PagePDF = () => {
   
   const GeneratePDF = useReactToPrint({
     contentRef: documentRef,
-    documentTitle: "Proposta de Broker",
+    documentTitle: "Proposta",
     onPrintError: (errorLocation, error) => {
       console.error("Erro na geração do PDF:", errorLocation, error);
     }
@@ -32,7 +32,6 @@ const PagePDF = () => {
         <PrintPDF
           nome_do_credor="Nome do Credor"
           valor_da_proposta="8000"
-          profissao="Profissão do Broker"
           nome_do_broker="Nome do Broker"
           foto_do_broker="/images/user/user-01.png"
         />

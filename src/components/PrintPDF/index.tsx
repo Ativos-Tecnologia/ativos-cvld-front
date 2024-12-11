@@ -2,14 +2,13 @@ import Image from "next/image";
 interface IPrintPDFProps { 
 	nome_do_credor: string;
 	nome_do_broker: string;
-	profissao: string;
 	foto_do_broker: string;
-	valor_da_proposta: string;
-	phone?: string;
+	valor_da_proposta: string | number;
+	phone?: string | number | null;
 }
 
 
-export function PrintPDF({ nome_do_credor, profissao, foto_do_broker: foto, valor_da_proposta, nome_do_broker, phone }: IPrintPDFProps) {
+export function PrintPDF({ nome_do_credor, foto_do_broker: foto, valor_da_proposta, nome_do_broker, phone }: IPrintPDFProps) {
 	
 	 const whatsAppNumber = phone ? phone : "5581996871762";
 	 const message = "Olá! Estou entrando em contato através do CellerApp e preciso tirar uma dúvida.";
@@ -224,7 +223,7 @@ export function PrintPDF({ nome_do_credor, profissao, foto_do_broker: foto, valo
 					</div>
 					<div className="flex flex-col font-bold text-[#171717] text-title-sm uppercase">
 							<span>{ nome_do_broker }</span>
-							<span>{ profissao }</span>
+							<span> Gerente Comercial </span>
 					</div>
 					{/* Botão de WhatsApp */}
 					</div>
