@@ -233,7 +233,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
         Gestão de Documentos
       </h2>
       <div className="grid w-full grid-cols-2 gap-10">
-        {/* doc div rg */}
+        {/* doc div oficio requisitório */}
         {
           (tipoDoOficio === "PRECATÓRIO" ||
             tipoDoOficio === "RPV") && (

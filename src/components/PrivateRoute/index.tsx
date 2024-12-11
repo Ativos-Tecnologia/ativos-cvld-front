@@ -6,6 +6,7 @@ import api from "@/utils/api";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
 import Loader from "@/components/common/Loader";
 import UseMySwal from "@/hooks/useMySwal";
+import { UserInfoAPIContext } from "@/context/UserInfoContext";
 
 type PropsPrivateRouteProps = {
     children: ReactNode;
@@ -17,22 +18,13 @@ export default function PrivateRoute({ children }: PropsPrivateRouteProps) {
 
     const [isUserAuthenticated, setIsUserAuthenticated] = useState<boolean | null>(null);
 
-    const checkIsConfirmed = async (): Promise<boolean> => {
-        try {
-            const response = await api.get("/api/profile/");
+    const { data: is_confirmed } = useContext(UserInfoAPIContext);
 
-            return response.data.is_confirmed;
-
-        } catch (error) {
-            throw new Error('Ocorreu um erro ao tentar buscar a informação do usuário')
-            // return 'error';
-        }
-    }
+    
 
     const auth = useCallback(async () => {
         const token = localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`);
         
-        const isConfirmed = await checkIsConfirmed();
 
         if (!token) {
             MySwal.fire({
@@ -48,7 +40,7 @@ export default function PrivateRoute({ children }: PropsPrivateRouteProps) {
             return;
         }
 
-        if (!isConfirmed) {
+        if (!is_confirmed) {
             MySwal.fire({
                 text: "Sua conta ainda não foi confirmada.",
                 icon: "error",
@@ -69,7 +61,7 @@ export default function PrivateRoute({ children }: PropsPrivateRouteProps) {
         } else {
             setIsUserAuthenticated(true);
         }
-    }, []);
+    }, [MySwal, is_confirmed]);
 
     useEffect(() => {
         if (!localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`) || !localStorage.getItem(`ATIVOS_${REFRESH_TOKEN}`)) {

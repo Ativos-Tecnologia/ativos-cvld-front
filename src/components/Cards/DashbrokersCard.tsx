@@ -1,15 +1,16 @@
 "use client"
 import { BrokersContext } from '@/context/BrokersContext';
 import { GeneralUIContext } from '@/context/GeneralUIContext';
+import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import { formatCurrency } from '@/functions/formaters/formatCurrency';
+import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
 import numberFormat from '@/functions/formaters/numberFormat';
 import UseMySwal from '@/hooks/useMySwal';
 import { NotionPage } from '@/interfaces/INotion';
 import api from '@/utils/api';
 import { useMutation } from '@tanstack/react-query';
 import confetti from 'canvas-confetti';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Fade } from 'react-awesome-reveal';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlineLoading, } from 'react-icons/ai';
 import { BiCheck, BiRefresh, BiSave, BiTrash, BiX } from 'react-icons/bi';
 import { BsCheckCircleFill, BsPencilSquare } from 'react-icons/bs';
@@ -18,8 +19,8 @@ import { GrDocumentUser } from 'react-icons/gr';
 import { HiCheck } from 'react-icons/hi';
 import { IoCloseCircle } from 'react-icons/io5';
 import { RiErrorWarningFill } from 'react-icons/ri';
-import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
 import { TbReportMoney } from 'react-icons/tb';
+import { useReactToPrint } from 'react-to-print';
 import { toast } from 'sonner';
 import { Button } from '../Button';
 import CustomCheckbox from '../CrmUi/Checkbox';
@@ -28,6 +29,7 @@ import CRMTooltip from '../CrmUi/Tooltip';
 import Badge from '../CrmUi/ui/Badge/Badge';
 import EditOficioBrokerForm from '../Forms/EditOficioBrokerForm';
 import { IdentificationType } from '../Modals/BrokersCedente';
+import { PrintPDF } from '../PrintPDF';
 
 export type ChecksProps = {
     is_precatorio_complete: boolean | null;
@@ -53,6 +55,8 @@ const DashbrokersCard = ({ oficio }:
         setDocModalInfo, fetchDetailCardData, specificCardData,
         setSpecificCardData, selectedUser, setEditModalId
     } = useContext(BrokersContext);
+
+    const { data: { profile_picture, first_name, last_name, phone } } = useContext(UserInfoAPIContext)
 
     /* ====> value states <==== */
     const [auxValues, setAuxValues] = useState<{ proposal: number, commission: number }>({
@@ -89,6 +93,8 @@ const DashbrokersCard = ({ oficio }:
     const observationRef = useRef<HTMLTextAreaElement | null>(null);
     const proposalRangeRef = useRef<HTMLInputElement | null>(null);
     const isFirstLoad = useRef(true); // referência: 'isFirstLoad' sempre apontará para o mesmo objeto retornado por useRef
+    const [loading, setLoading] = useState<boolean>(false);
+    const documentRef = useRef<HTMLDivElement>(null);
 
     //* ====> Principal Data <==== */
     const [mainData, setMainData] = useState<NotionPage | null>(null);
@@ -829,6 +835,23 @@ const DashbrokersCard = ({ oficio }:
         return `rgb(${red}, ${green}, 0)`; // Cor de transição de vermelho para verde
     };
 
+    /**
+     * Função para gerar PDF da Proposta
+     */
+
+    const handleGeneratePDF = useReactToPrint({
+        contentRef: documentRef,
+        documentTitle: "Proposta",
+        onBeforePrint: async () => setLoading(true),
+        onAfterPrint: () => setLoading(false),
+        preserveAfterPrint: true,
+        copyShadowRoots: true,
+        onPrintError: (errorLocation, error) => {
+            console.error("Erro na geração do PDF:", errorLocation, error);
+            setLoading(false);
+        }
+    });
+
     return (
         <div className="relative col-span-1 gap-5 bg-white dark:bg-boxdark p-5 rounded-md border border-stroke dark:border-strokedark">
             {/* ----> info <----- */}
@@ -846,10 +869,9 @@ const DashbrokersCard = ({ oficio }:
                 </div>
 
                 <div className='flex gap-3 items-center'>
-                    <Button
-                        variant="ghost"
+                    <button
                         disabled={deleteModalLock}
-                        className="group flex items-center opacity-100 disabled:opacity-0 disabled:pointer-events-none justify-center overflow-hidden rounded-full px-0 py-0 w-[28px] h-[28px] hover:w-[100px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-700 transition-all duration-300 cursor-pointer ease-in-out"
+                        className="group flex items-center opacity-100 disabled:opacity-0 disabled:pointer-events-none justify-center overflow-hidden rounded-full px-0 py-0 w-[28px] h-[28px] hover:w-[100px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-700 transition-all duration-300 cursor-pointer ease-in-out border-transparent"
                         onClick={() => {
                             setOpenConfirmModal(true);
                             setDeleteModalLock(true);
@@ -866,7 +888,7 @@ const DashbrokersCard = ({ oficio }:
                                 </div>
                             </>
                         )}
-                    </Button>
+                    </button>
 
                     <Button
                         title='Atualizar informações do ativo'
@@ -1131,13 +1153,32 @@ const DashbrokersCard = ({ oficio }:
                             <div className='absolute -bottom-4 w-full text-red text-xs text-center'>Valor&#40;res&#41; fora do escopo definido</div>
                         )}
                     </div>
-
-                    <Button
-                        disabled={isProposalButtonDisabled}
-                        onClick={saveProposalAndComission}
-                        className='disabled:opacity-50 disabled:cursor-not-allowed py-1 px-2 h-fit text-sm font-medium w-full transition-all duration-300'>
-                        {savingProposalAndComission ? "Salvando..." : "Salvar Proposta/Comissão"}
-                    </Button>
+                    <div className='flex gap-2'>
+                        <Button
+                            disabled={isProposalButtonDisabled}
+                            onClick={saveProposalAndComission}
+                            className='disabled:opacity-50 disabled:cursor-not-allowed py-1 px-2 h-fit text-sm font-medium w-full transition-all duration-300'>
+                            {savingProposalAndComission ? "Salvando..." : "Salvar Oferta"}
+                        </Button>
+                        <Button
+                            isLoading={loading}
+                            onClick={() => handleGeneratePDF()}
+                            className='disabled:opacity-50 disabled:cursor-not-allowed py-1 px-2 h-fit text-sm font-medium w-full transition-all duration-300'>
+                            Gerar Proposta
+                        </Button>
+                    </div>
+                    {/* Esse componente tem a função apenas de gerar um PDF, por isso hidden */}
+                    <div className='hidden'>
+                    <div ref={documentRef} className="bg-[#F4F4F4]">
+                        <PrintPDF
+                        nomeDoCredor={mainData?.properties["Credor"].title[0]?.text.content}
+                        valorDaProposta={mainData?.properties["Proposta Escolhida - Celer"].number || mainData?.properties["(R$) Proposta Mínima - Celer"].number || 0}
+                        nomeDoBroker={first_name + " " + last_name}
+                        fotoDoBroker={profile_picture}
+                        phone={phone ? phone : null}
+                        />
+                    </div>
+                    </div>
 
                     {/* separator */}
 

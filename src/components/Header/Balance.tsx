@@ -8,12 +8,12 @@ import { Popover } from "flowbite-react";
 
 export const Balance = () => {
 
-    const { subscriptionData, credits, loading } = useContext<UserInfoContextType>(UserInfoAPIContext);
+    const { credits, loading } = useContext<UserInfoContextType>(UserInfoAPIContext);
     const [modalOpen, setModalOpen] = useState<boolean>(false);
     const todayDate = new Date();
-    const expireCreditsDate = new Date(subscriptionData.end_date);
-    const diffTime = expireCreditsDate.getTime() - todayDate.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    // const expireCreditsDate = new Date(subscriptionData.end_date);
+    // const diffTime = expireCreditsDate.getTime() - todayDate.getTime();
+    // const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     return (
         <React.Fragment>
@@ -31,16 +31,16 @@ export const Balance = () => {
                         <div className="w-64 text-sm">
                             <div className="border-b border-gray bg-slate-100 px-3 py-2 dark:bg-meta-4 dark:border-strokedark">
                                 <h3 id="default-popover" className="font-semibold text-black dark:text-white">
-                                    {subscriptionData.plan === 'FREE' ? 'VERSÃO GRATUITA' : 'VERSÃO PREMIUM'}
+                                    {/* {subscriptionData.plan === 'FREE' ? 'VERSÃO GRATUITA' : 'VERSÃO PREMIUM'} */}
                                 </h3>
                             </div>
                             <div className="px-3 py-2 flex flex-col justify-center dark:bg-form-strokedark dark:text-white">
                                 <p>
-                                    {subscriptionData.plan === 'FREE' && (
+                                    {/* {subscriptionData.plan === 'FREE' && (
                                         <>Você está usando a <strong>versão gratuita</strong>.</>
                                     )}
                                     {diffDays > 0 && credits.available_credits > 0 && ` Seus créditos irão expirar em ${diffDays} dias.`}
-                                    {diffDays <= 0 && 'Seus créditos expiraram.'}
+                                    {diffDays <= 0 && 'Seus créditos expiraram.'} */}
                                 </p>
                                 {credits.available_credits <= 10 && credits.available_credits > 0 && (
                                     <p className="my-3 text-sm">

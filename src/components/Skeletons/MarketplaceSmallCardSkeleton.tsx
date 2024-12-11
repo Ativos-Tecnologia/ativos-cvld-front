@@ -9,14 +9,14 @@ const MarketplaceSmallCardSkeleton = () => {
                     className='relative group p-2 cursor-pointer h-full'
                 >
                     <div className='flex items-center justify-between h-12'>
-                        <CustomSkeleton className='w-10 h-10 rounded-full' />
-                        <CustomSkeleton className='w-30 h-7.5' />
+                        <CustomSkeleton type='title' className='w-10 h-10 rounded-full' />
+                        <CustomSkeleton type='content' className='w-30 h-7.5' />
                     </div>
 
                     {/* info */}
                     <div className='mt-5.5 flex flex-col gap-1.5'>
-                        <CustomSkeleton className='h-5 w-full' />
-                        <CustomSkeleton className='h-5 w-full' />
+                        <CustomSkeleton type='content' className='h-5 w-full' />
+                        <CustomSkeleton type='content' className='h-5 w-full' />
                     </div>
                     {/* end info */}
 

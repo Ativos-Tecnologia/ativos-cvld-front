@@ -1,14 +1,91 @@
-const DataStats = () => {
+import React from 'react'
+import { cn } from '@/lib/utils'
+import AnimatedNumber from '../ui/AnimatedNumber'
+import CRMTooltip from '../CrmUi/Tooltip'
+import { NotionPage } from '@/interfaces/INotion'
+import CustomSkeleton from '../CrmUi/CustomSkeleton'
+import { SimpleNotionData } from '../Dashboard/Juridico'
+import DynamicSkeleton from '../CrmUi/ui/DynamicSkeleton'
+
+interface MiniCardContainerProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode,
+  className?: string
+}
+
+
+export const MiniCardContainer: React.FC<MiniCardContainerProps> = ({ children, className, ...props }) => {
   return (
-    <div className="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div className={cn("flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0", className)} {...props}>
+      {children}
+    </div>
+
+  )
+}
+
+interface MiniCardLabelProps {
+  amount: number,
+  customSymbol?: string,
+  legend: string,
+  currency?: boolean,
+  isLoading?: boolean
+}
+
+export const MiniCardLabel: React.FC<MiniCardLabelProps> = ({
+  amount = 0,
+  customSymbol,
+  legend,
+  isLoading,
+  currency = false,
+}) => {
+  return (
+    // isLoading ? (
+    //   <MiniCardLabelSkeleton />
+    // ) : (
+      <DynamicSkeleton trigger={!!isLoading}>
+    <div className='dcontainer flex flex-col align-middle justify-center'>
+      <h4 className="h-6 min-w-[100px] rounded mb-0.5 text-xl font-semibold text-black dark:text-white md:text-title-lg flex flex-row justify-center">
+        <AnimatedNumber value={amount} isNotCurrency={!currency} />{customSymbol}
+      </h4>
+      <p className="h-6 text-sm font-medium">
+        {
+          legend
+        }
+      </p>
+    </div>
+    </DynamicSkeleton>
+    )
+
+  // );
+};
+
+const MiniCardLabelSkeleton: React.FC = () => {
+  return (
+    <div className='flex flex-col align-middle justify-center min-h-14'>
+      <div className="flex flex-row justify-center min-h-7 mb-2">
+        <CustomSkeleton type='content' className='h-7 w-20' />
+      </div>
+      <div className="flex flex-row justify-center min-h-5 ">
+        <CustomSkeleton type='content' className="h-5 w-20" />
+      </div>
+    </div>
+  );
+};
+
+type DataStatsProps = {
+  data: SimpleNotionData[],
+  isLoading?: boolean
+}
+
+
+const DataStats: React.FC<DataStatsProps> = ({ data, isLoading }) => {
+  return (
+    <div className="col-span-12 rounded-md bg-white p-7.5 dark:bg-boxdark">
+    {/* <div className="col-span-12 rounded-md bg-white p-7.5 shadow-default dark:bg-boxdark"> */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4 xl:gap-0">
-        <div className="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0">
-          <div>
-            <h4 className="mb-0.5 text-xl font-semibold text-black dark:text-white md:text-title-lg">
-              $4,350
-            </h4>
-            <p className="text-sm font-medium">Unique Visitors</p>
-          </div>
+        <MiniCardContainer>
+          <CRMTooltip text={"Este é o total de ofícios sob sua \n responsabilidade, independente do status."} placement="top">
+            <MiniCardLabel isLoading={isLoading} amount={data.length} legend="Total de ofícios" />
+          </CRMTooltip>
           <div className="flex items-center gap-1">
             <svg
               width="19"
@@ -24,15 +101,10 @@ const DataStats = () => {
             </svg>
             <span className="text-meta-3">18%</span>
           </div>
-        </div>
-        <div className="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0">
-          <div>
-            <h4 className="mb-0.5 text-xl font-semibold text-black dark:text-white md:text-title-lg">
-              55.9K
-            </h4>
-            <p className="text-sm font-medium">Total Pageviews</p>
-          </div>
-          <div className="flex items-center gap-1">
+        </MiniCardContainer>
+        <MiniCardContainer>
+          <MiniCardLabel isLoading={isLoading} amount={data.reduce((acc, item) => acc + item.valor_liquido_disponivel, 0)} legend="Valor total" currency />
+          {/* <div className="flex items-center gap-1">
             <svg
               width="19"
               height="19"
@@ -46,15 +118,10 @@ const DataStats = () => {
               />
             </svg>
             <span className="text-meta-3">25%</span>
-          </div>
-        </div>
-        <div className="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark sm:border-b-0 sm:pb-0 xl:border-r">
-          <div>
-            <h4 className="mb-0.5 text-xl font-semibold text-black dark:text-white md:text-title-lg">
-              54%
-            </h4>
-            <p className="text-sm font-medium">Bounce Rate</p>
-          </div>
+          </div> */}
+          </MiniCardContainer>
+        <MiniCardContainer>
+          <MiniCardLabel amount={54} customSymbol='%' legend="Bounce Rate" />
           <div className="flex items-center gap-1">
             <svg
               width="19"
@@ -70,8 +137,8 @@ const DataStats = () => {
             </svg>
             <span className="text-meta-8">7%</span>
           </div>
-        </div>
-        <div className="flex items-center justify-center gap-2">
+        </MiniCardContainer>
+        <MiniCardContainer className='xl:border-r-0'>
           <div>
             <h4 className="mb-0.5 text-xl font-semibold text-black dark:text-white md:text-title-lg">
               2m 56s
@@ -93,7 +160,7 @@ const DataStats = () => {
             </svg>
             <span className="text-meta-3">12%</span>
           </div>
-        </div>
+        </MiniCardContainer>
       </div>
     </div>
   );

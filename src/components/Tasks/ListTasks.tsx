@@ -21,7 +21,6 @@ const TaskList: React.FC = () => {
       </div>
 
       <div className="mx-auto max-w-5xl">
-        <Breadcrumb showTitle={false} pageName="Lista de Tarefas" />
 
         {/* <!-- Task Header Start --> */}
         <TaskHeader />

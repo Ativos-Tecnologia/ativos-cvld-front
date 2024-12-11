@@ -3,7 +3,6 @@
 import { DefaultLayoutContext } from "@/context/DefaultLayoutContext";
 import { GeneralUIContext } from "@/context/GeneralUIContext";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
-import useColorMode from "@/hooks/useColorMode";
 import api from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
@@ -14,9 +13,12 @@ import { AiOutlineDown, AiOutlineLoading } from "react-icons/ai";
 import { BiCalculator, BiGridAlt, BiPlus } from "react-icons/bi";
 import { FaBuildingUser } from "react-icons/fa6";
 import { LuWallet2 } from "react-icons/lu";
-import { TbShoppingCartUp } from "react-icons/tb";
+import { TbShoppingCartUp, TbUserStar } from "react-icons/tb";
 import Show from "../Show";
 import SidebarLinkGroup from "./SidebarLinkGroup";
+import { FaBalanceScale } from "react-icons/fa";
+import { MdOutlineBalance } from "react-icons/md";
+import Badge from "../CrmUi/ui/Badge/Badge";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -24,7 +26,7 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
-  const { theme, setTheme } = useContext(GeneralUIContext);
+  const { theme } = useContext(GeneralUIContext);
 
   const { modalOpen, setModalOpen } = useContext(DefaultLayoutContext);
 
@@ -32,10 +34,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
-  const [logoColorSrc, setLogoColorSrc] = useState<string>("");
 
   const {
-    data: { product },
+    data: { product, staff_approvation },
   } = useContext(UserInfoAPIContext);
   const [userApprovation, setUserApprovation] = useState<boolean | null>(null);
 
@@ -63,21 +64,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     staleTime: 50 * 1000, // cinquenta segundos
     queryFn: fetchItems,
   });
-
-  useEffect(() => {
-    async function fetchUserApprovation() {
-      try {
-        const response = await api.get("/api/profile/");
-        setUserApprovation(response.data.staff_approvation);
-      } catch (e) {
-        console.error(`Erro ao tentar verificar aprovação do usuário: ${e}`);
-      }
-    }
-
-    fetchUserApprovation();
-  }, []);
-
-  const [themeApplied] = useColorMode();
 
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
@@ -250,11 +236,27 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 href="/dashboard/broker"
                                 className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${pathname === "/dashboard/broker" && "bg-blue-700/70 text-white hover:bg-blue-800/50 dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
                               >
-                                <FaBuildingUser />
+                                <TbUserStar />
                                 <span>Broker</span>
                               </Link>
                             </li>
                           )}
+                          <Show
+                            when={"dev"}
+                          >
+                            {product === "global" && (
+                              <li>
+                                <Link
+                                  href="/dashboard/juridico"
+                                  className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${pathname === "/dashboard/juridico" && "bg-blue-700/70 text-white hover:bg-blue-800/50 dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
+                                >
+                                  <MdOutlineBalance />
+                                  <span>Jurídico</span>
+                                  <Badge color="#e8e7a1">Novo</Badge>
+                                </Link>
+                              </li>
+                            )}
+                          </Show>
 
                           {(product === "wallet" || product === "global") && (
                             <>

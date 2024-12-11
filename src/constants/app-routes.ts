@@ -15,6 +15,12 @@ export const APP_ROUTES = {
     broker: {
       name: "/dashboard/broker",
     },
+    juridico: {
+      name: "/dashboard/juridico",
+    },
+    juridicoCard: {
+      name: "/dashboard/juridico/:id",
+    },
     // profile: {
     //   name: "/profile",
     // },

@@ -14,8 +14,6 @@ import { NotionPage } from '@/interfaces/INotion';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import api from '@/utils/api';
-import { MdOutlineFilterAltOff } from 'react-icons/md';
-import { LucideChevronsUpDown } from 'lucide-react';
 import MakeFirstContact from '../TablesNotion/MakeFirstContact';
 import { OfficeTypeAndValue } from '../TablesNotion/OfficeTypeAndValue';
 import { SendProposal } from '../TablesNotion/SendProposal';
@@ -49,6 +47,8 @@ type NotionTableViewProps = {
 const NotionTableView = ({ setExtratosTableToNotionDrawersetId, setNotionDrawer }: NotionTableViewProps) => {
 
     const [currentNotionView, setCurrentNotionView] = useState<string>('geral');
+
+    const { data } = useContext(UserInfoAPIContext);
 
     const secondaryDefaultFilterObject = useMemo(() => {
         return {
@@ -95,24 +95,24 @@ const NotionTableView = ({ setExtratosTableToNotionDrawersetId, setNotionDrawer 
     }
 
     //TODO: mover essas funções de fetch para um hook
-    const fetchUser = async () => {
-        const t = await api.get("/api/profile/")
+    // const fetchUser = async () => {
+    //     const t = await api.get("/api/profile/")
 
-        return t.data
-    }
+    //     return t.data
+    // }
 
-    const { data: userData } = useQuery({
-        queryKey: ['user'],
-        queryFn: fetchUser,
-    })
+    // const { data: data } = useQuery({
+    //     queryKey: ['user'],
+    //     queryFn: fetchUser,
+    // })
 
     const defaultFilterObject = {
         "and":
             [
                 {
-                    "property": userData?.sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
+                    "property": data?.sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
                     "multi_select": {
-                        "contains": userData?.user
+                        "contains": data?.user
                     }
                 },
                 secondaryDefaultFilterObject
@@ -128,7 +128,7 @@ const NotionTableView = ({ setExtratosTableToNotionDrawersetId, setNotionDrawer 
     // const [listQuery, setListQuery] = useState<object>({});
 
     const queryClient = useQueryClient()
-    const { data, isFetching, editableLabel, setEditableLabel,
+    const { isFetching, editableLabel, setEditableLabel,
         handleSelectRow, handleSelectAllRows, selectedUser,
         handleCopyValue, handleEditInput, handleArchiveExtrato,
         handleEditStatus, handleEditTipoOficio, handleChangeCreditorName,
@@ -176,9 +176,9 @@ const NotionTableView = ({ setExtratosTableToNotionDrawersetId, setNotionDrawer 
                 "and":
                     [
                         {
-                            "property": userData?.sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
+                            "property": data?.sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
                             "multi_select": {
-                                "contains": selectedUser || userData?.user
+                                "contains": selectedUser || data?.user
                             }
                         },
                         {
@@ -230,9 +230,9 @@ const NotionTableView = ({ setExtratosTableToNotionDrawersetId, setNotionDrawer 
                 "and":
                     [
                         {
-                            "property": userData?.sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
+                            "property": data?.sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
                             "multi_select": {
-                                "contains": selectedUser || userData?.user
+                                "contains": selectedUser || data?.user
                             }
                         },
                         {
@@ -278,9 +278,9 @@ const NotionTableView = ({ setExtratosTableToNotionDrawersetId, setNotionDrawer 
                 "and":
                     [
                         {
-                            "property": userData?.sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
+                            "property": data?.sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
                             "multi_select": {
-                                "contains": selectedUser || userData?.user
+                                "contains": selectedUser || data?.user
                             }
                         },
                         {
@@ -313,9 +313,9 @@ const NotionTableView = ({ setExtratosTableToNotionDrawersetId, setNotionDrawer 
             "and":
                 [
                     {
-                        "property": userData?.sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
+                        "property": data?.sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
                         "multi_select": {
-                            "contains": selectedUser || userData?.user
+                            "contains": selectedUser || data?.user
                         }
                     },
                     {
@@ -341,9 +341,9 @@ const NotionTableView = ({ setExtratosTableToNotionDrawersetId, setNotionDrawer 
                 "and":
                     [
                         {
-                            "property": userData?.sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
+                            "property": data?.sub_role === 'coordenador' ? "Coordenadores" : "Usuário",
                             "multi_select": {
-                                "contains": selectedUser || userData?.user
+                                "contains": selectedUser || data?.user
                             }
                         },
                         {
