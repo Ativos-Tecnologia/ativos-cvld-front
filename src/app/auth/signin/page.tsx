@@ -269,7 +269,7 @@ const SignIn: React.FC = () => {
                             style={{
                               boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.35)",
                             }}
-                            className="flex flex-1 items-center justify-center w-full text-lg uppercase tracking-widest"
+                            className="flex h-8 flex-1 items-center justify-center w-full text-lg uppercase tracking-widest"
                           >
                             <span className="flex">
                               Acessar
@@ -280,7 +280,7 @@ const SignIn: React.FC = () => {
                             onClick={() => setOpenModal(true)}
                             variant="ghost"
                             size="default"
-                            className="text-[#0838bb]"
+                            className="text-[#0838bb] h-8"
                           >
                             Esqueci a senha
                           </Button>

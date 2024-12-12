@@ -1157,13 +1157,13 @@ const DashbrokersCard = ({ oficio }:
                         <Button
                             disabled={isProposalButtonDisabled}
                             onClick={saveProposalAndComission}
-                            className='disabled:opacity-50 disabled:cursor-not-allowed py-1 px-2 h-fit text-sm font-medium w-full transition-all duration-300'>
+                            className='disabled:opacity-50 disabled:cursor-not-allowed py-1 px-2 h-8 text-sm font-medium w-full transition-all duration-300'>
                             {savingProposalAndComission ? "Salvando..." : "Salvar Oferta"}
                         </Button>
                         <Button
                             isLoading={loading}
                             onClick={() => handleGeneratePDF()}
-                            className='disabled:opacity-50 disabled:cursor-not-allowed py-1 px-2 h-fit text-sm font-medium w-full transition-all duration-300'>
+                            className='disabled:opacity-50 disabled:cursor-not-allowed px-2 h-8 text-sm font-medium w-full transition-all duration-300'>
                             Gerar Proposta
                         </Button>
                     </div>
