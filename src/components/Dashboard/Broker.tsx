@@ -19,6 +19,7 @@ import { NotionPage, NotionResponse } from "@/interfaces/INotion";
 import UsersFilter from "../Filters/UsersFilter";
 import CredorFilter from "../Filters/CredorFilter";
 import GridCardsWrapper from "../CrmUi/Wrappers/GridCardsWrapper";
+import DocVisualizer from "../Modals/BrokersDocs/ShowDocs";
 
 /**
  * Componente que renderiza a lista de brokers
@@ -30,13 +31,9 @@ import GridCardsWrapper from "../CrmUi/Wrappers/GridCardsWrapper";
 const Broker: React.FC = (): JSX.Element => {
 
   const {
-    editModalId,
-    setEditModalId,
     cedenteModal,
     cardsData,
     docModalInfo,
-    setSelectedUser,
-    selectedUser,
     loadingCardData,
   } = useContext(BrokersContext);
 

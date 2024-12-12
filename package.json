@@ -25,6 +25,7 @@
     "@radix-ui/react-select": "^2.1.1",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.1",
+    "@react-pdf/renderer": "^4.1.5",
     "@tanstack/react-query": "^5.51.23",
     "apexcharts": "^3.45.2",
     "axios": "^1.6.8",
