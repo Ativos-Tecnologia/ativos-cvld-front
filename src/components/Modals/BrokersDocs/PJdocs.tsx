@@ -296,7 +296,7 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
   }, [representanteState.data])
 
   return (
-    <div className="overflow-y-auto overflow-x-hidden 2xsm:max-h-[380px] xl:max-h-[480px] pr-3">
+    <div className="overflow-y-auto overflow-x-hidden 2xsm:max-h-[85vh] xl:max-h-[480px] pr-3">
       <h2 className="mb-10 text-center text-2xl font-medium">
         Gestão de documentos
       </h2>
