@@ -1,6 +1,7 @@
 import { estados } from "@/constants/estados";
 import { tribunais } from "@/constants/tribunais";
 import { DefaultLayoutContext } from "@/context/DefaultLayoutContext";
+import { TableNotionContext } from "@/context/NotionTableContext";
 import {
   UserInfoAPIContext,
   UserInfoContextType,
@@ -8,6 +9,7 @@ import {
 import tipoOficio from "@/enums/tipoOficio.enum";
 import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
 import { formatCurrency } from "@/functions/formaters/formatCurrency";
+import { applyMaskCpfCnpj } from "@/functions/formaters/maskCpfCnpj";
 import numberFormat from "@/functions/formaters/numberFormat";
 import { CvldFormInputsProps } from "@/types/cvldform";
 import { LeadMagnetResposeProps } from "@/types/leadMagnet";
@@ -20,9 +22,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { Fade } from "react-awesome-reveal";
 import { Controller, useForm } from "react-hook-form";
 import {
-  AiOutlineLoading,
-  AiOutlineReload,
-  AiOutlineWarning,
+  AiOutlineLoading
 } from "react-icons/ai";
 import {
   BiCheck,
@@ -36,8 +36,6 @@ import { Button } from "../Button";
 import { UpdatePrecatorioButton } from "../Button/UpdatePrecatorioButton";
 import CustomCheckbox from "../CrmUi/Checkbox";
 import NewFormResultSkeleton from "../Skeletons/NewFormResultSkeleton";
-import { applyMaskCpfCnpj } from "@/functions/formaters/maskCpfCnpj";
-import { TableNotionContext } from "@/context/NotionTableContext";
 
 const NewForm = () => {
   const { setSaveInfoToNotion, usersList } = useContext(TableNotionContext);
@@ -386,6 +384,7 @@ const NewForm = () => {
   }, [backendResponse]);
 
   useEffect(() => {
+
     if (oficioForm) {
       setValue("natureza", oficioForm.result[0].natureza);
       setValue(
@@ -425,6 +424,74 @@ const NewForm = () => {
         "valor_pss",
         numberFormat(oficioForm.result[0].valor_pss).replace("R$", ""),
       );
+      setValue(
+        "tribunal",
+        oficioForm.result[0].tribunal
+      );
+      setValue(
+        "juizo_vara",
+        oficioForm.result[0].juizo_vara
+      )
+      setValue(
+        "cpf_cnpj",
+        oficioForm.result[0].cpf_cnpj
+      )
+      setValue(
+        "credor",
+        oficioForm.result[0].credor
+      )
+      setValue(
+        "estado_ente_devedor",
+        oficioForm.result[0].estado_ente_devedor
+      )
+      setValue(
+        "npu",
+        oficioForm.result[0].npu
+      )
+      setValue(
+        "npu_originario",
+        oficioForm.result[0].npu_originario
+      )
+      setValue(
+        "status",
+        oficioForm.result[0].status
+      )
+      setValue(
+        "percentual_de_honorarios",
+        oficioForm.result[0].percentual_de_honorarios
+      )
+
+      if (oficioForm.result[0].incidencia_rra_ir) { 
+        setValue("ir_incidente_rra", true);
+        setValue("numero_de_meses", oficioForm.result[0].numero_de_meses);
+      } else {
+        setValue("ir_incidente_rra", false);
+      }
+
+      if(oficioForm.result[0].incidencia_pss) {
+        setValue("incidencia_pss", true);
+        setValue("valor_pss", numberFormat(oficioForm.result[0].valor_pss).replace("R$", ""));
+      }
+      setValue(
+        "especie",
+        oficioForm.result[0].especie
+      )
+      setValue(
+        "ente_devedor",
+        oficioForm.result[0].ente_devedor
+      )
+      setValue(
+        "tipo_do_oficio",
+        oficioForm.result[0].tipo_do_oficio
+      )
+      if (oficioForm.result[0].ja_possui_destacamento) {
+        setValue("ja_possui_destacamento", true);
+        setValue("percentual_de_honorarios", oficioForm.result[0].percentual_de_honorarios);
+      }
+      setValue(
+        "esfera",
+        oficioForm.result[0].esfera
+      )
     }
   }, [oficioForm]);
 
