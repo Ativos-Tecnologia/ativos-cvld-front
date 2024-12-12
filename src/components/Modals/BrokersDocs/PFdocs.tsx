@@ -331,15 +331,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                                 <FaFileDownload className="text-xl" />
                               </Link>
                             </CRMTooltip>
-                            <CRMTooltip text="Visualizar Documento" placement="right">
-                                <Button
-                                  variant='ghost'
-                                  className='w-8 h-8 p-0 bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 transition-colors duration-300'
-                                  onClick={() => handleShowDoc(cedenteInfo?.properties["Doc. Ofício Requisitório"].url || "")}
-                                >
-                                  <FaImage className='text-xl' />
-                                </Button>
-                              </CRMTooltip>
+                            
                             {!cedenteInfo?.properties["Doc. Ofício Requisitório"].url.toLowerCase().includes(".pdf") && (
                               <CRMTooltip text="Visualizar Documento" placement="right">
                                 <Button
