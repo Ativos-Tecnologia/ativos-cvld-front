@@ -224,12 +224,24 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
     }
   }
 
-  const handleShowDoc = (url: string) => {
+  /**
+   * Seta a url que irá ser usada no modal
+   * de exibição do documento e abre o modal
+   * 
+   * @param {string} url - caminho do documento
+   * @returns {void}
+   */
+  const handleShowDoc = (url: string): void => {
     setShowDoc(true);
     setDocUrl(url)
   }
 
-  const handleCloseDoc = () => {
+  /**
+   * fecha o modal de exibição do documento
+   * 
+   * @returns {void}
+   */
+  const handleCloseDoc = (): void => {
     setShowDoc(false);
     setDocUrl("");
   }
