@@ -4,7 +4,7 @@ import { UserInfoAPIContext } from '@/context/UserInfoContext'
 import UseMySwal from '@/hooks/useMySwal'
 import { NotionPage, NotionResponse } from '@/interfaces/INotion'
 import api from '@/utils/api'
-import React, { useContext, useRef, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 import { AiOutlineLoading } from 'react-icons/ai'
 import { BiSearchAlt2, BiX } from 'react-icons/bi'
 import { FaHandHoldingUsd } from 'react-icons/fa'
@@ -115,7 +115,7 @@ const CredorFilter = (): JSX.Element => {
                 <FaHandHoldingUsd />
                 Filtro por credor
             </div>
-            <div className='flex w-[315px] xl:w-fit'>
+            <div className='flex 2xsm:w-[215] md:w-[315px] xl:w-fit'>
                 <input
                     ref={searchRef}
                     type="text"

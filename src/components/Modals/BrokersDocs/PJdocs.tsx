@@ -11,7 +11,9 @@ import { useForm } from 'react-hook-form';
 import { AiOutlineLoading } from 'react-icons/ai';
 import { BiCheck, BiTrash, BiX } from 'react-icons/bi';
 import { FaFileDownload } from 'react-icons/fa';
+import { FaImage } from 'react-icons/fa6';
 import { toast } from 'sonner';
+import DocVisualizer from './ShowDocs';
 
 /*
   OBS: a prop que o componente recebe é somente usada para a requisição
@@ -31,9 +33,13 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
     control
   } = useForm();
 
-  const { fetchDetailCardData, setIsFetchAllowed, setDocModalInfo } = useContext(BrokersContext)
+  const { fetchDetailCardData, setIsFetchAllowed,
+    setDocModalInfo
+  } = useContext(BrokersContext)
 
   const [cedenteInfo, setCedenteInfo] = useState<NotionPage | null>(null);
+  const [showDoc, setShowDoc] = useState<boolean>(false);
+  const [docUrl, setDocUrl] = useState<string>("");
   const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
   const [isFetchingDoc, setIsFetchingDoc] = useState<Record<string, boolean>>({
     contrato_social: false,
@@ -219,6 +225,28 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
   }
 
   /**
+   * Seta a url que irá ser usada no modal
+   * de exibição do documento e abre o modal
+   * 
+   * @param {string} url - caminho do documento
+   * @returns {void}
+   */
+  const handleShowDoc = (url: string): void => {
+    setShowDoc(true);
+    setDocUrl(url)
+  }
+
+  /**
+   * fecha o modal de exibição do documento
+   * 
+   * @returns {void}
+   */
+  const handleCloseDoc = (): void => {
+    setShowDoc(false);
+    setDocUrl("");
+  }
+
+  /**
    * função que puxa os dados do representante legal (se vinculado)
    * 
    * @param {string} id - id do representante legal
@@ -243,7 +271,6 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
     });
 
   }
-  console.log(representanteState)
 
   // função de submit só para que o hook form funcione (temporário)
   const submitDocument = async (data: any) => {
@@ -296,7 +323,7 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
   }, [representanteState.data])
 
   return (
-    <div className="overflow-y-auto overflow-x-hidden 2xsm:max-h-[380px] xl:max-h-[480px] pr-3">
+    <div className="overflow-y-auto overflow-x-hidden 2xsm:max-h-[85vh] xl:max-h-[480px] pr-3">
       <h2 className="mb-10 text-center text-2xl font-medium">
         Gestão de documentos
       </h2>
@@ -355,8 +382,8 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
                     </div>
                   )}
                   {cedenteInfo?.properties["Doc. Contrato Social"].url && (
-                    <div className="flex 2xsm:flex-row 2xsm:gap-4 md:flex-none">
-                      <CRMTooltip text="Baixar RG" placement="right">
+                    <div className="flex 2xsm:flex-row 2xsm:gap-3 md:flex-none">
+                      <CRMTooltip text="Baixar Contrato Social" placement="right">
                         <Link
                           href={
                             cedenteInfo.properties["Doc. Contrato Social"].url ||
@@ -368,10 +395,22 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
                         </Link>
                       </CRMTooltip>
 
+                      {!cedenteInfo?.properties["Doc. Contrato Social"].url.toLowerCase().includes(".pdf") && (
+                        <CRMTooltip text="Visualizar Documento" placement="right">
+                          <Button
+                            variant='ghost'
+                            className='w-8 h-8 p-0 bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 transition-colors duration-300'
+                            onClick={() => handleShowDoc(cedenteInfo?.properties["Doc. Contrato Social"].url || "")}
+                          >
+                            <FaImage className='text-xl' />
+                          </Button>
+                        </CRMTooltip>
+                      )}
+
                       <CRMTooltip text="Desvincular documento" placement="right">
                         <Button
-                          variant="ghost"
-                          className="flex h-8 w-8 items-center justify-center rounded-md bg-red-500 p-0 transition-colors duration-300 hover:bg-red-600"
+                          variant="danger"
+                          className="flex h-8 w-8 items-center justify-center rounded-md p-0 transition-colors duration-300"
                           onClick={() => handleRemoveDocument("contrato_social", "cedente")}
                         >
                           {isUnlinkingDoc.contrato_social ? (
@@ -486,6 +525,19 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
                                     </Link>
                                   </CRMTooltip>
 
+                                  {!representanteState.data.properties["Doc. Ofício Requisitório"].url.toLowerCase().includes(".pdf") && (
+                                    <CRMTooltip text="Visualizar Documento" placement="right">
+                                      <Button
+                                        variant='ghost'
+                                        className='w-8 h-8 p-0 bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 transition-colors duration-300'
+                                        onClick={() => handleShowDoc(representanteState.data?.properties["Doc. Ofício Requisitório"].url || "")}
+                                      >
+                                        <FaImage className='text-xl' />
+                                      </Button>
+                                    </CRMTooltip>
+                                  )}
+
+
                                   <CRMTooltip
                                     text="Desvincular documento"
                                     placement="right"
@@ -588,6 +640,19 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
                             </Link>
                           </CRMTooltip>
 
+                          {!representanteState.data?.properties["Doc. RG"].url.toLowerCase().includes(".pdf") && (
+                            <CRMTooltip text="Visualizar Documento" placement="right">
+                              <Button
+                                variant='ghost'
+                                className='w-8 h-8 p-0 bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 transition-colors duration-300'
+                                onClick={() => handleShowDoc(representanteState.data?.properties["Doc. RG"].url || "")}
+                              >
+                                <FaImage className='text-xl' />
+                              </Button>
+                            </CRMTooltip>
+                          )}
+
+
                           <CRMTooltip text="Desvincular documento" placement="right">
                             <Button
                               variant="ghost"
@@ -686,6 +751,19 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
                                 <FaFileDownload className="text-xl" />
                               </Link>
                             </CRMTooltip>
+
+                            {!representanteState.data.properties["Doc. Certidão Nascimento/Casamento"].url.toLowerCase().includes(".pdf") && (
+                              <CRMTooltip text="Visualizar Documento" placement="right">
+                                <Button
+                                  variant='ghost'
+                                  className='w-8 h-8 p-0 bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 transition-colors duration-300'
+                                  onClick={() => handleShowDoc(representanteState.data?.properties["Doc. Certidão Nascimento/Casamento"].url || "")}
+                                >
+                                  <FaImage className='text-xl' />
+                                </Button>
+                              </CRMTooltip>
+                            )}
+
 
                             <CRMTooltip text="Desvincular documento" placement="right">
                               <Button
@@ -792,6 +870,19 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
                               </Link>
                             </CRMTooltip>
 
+                            {!representanteState.data.properties["Doc. Comprovante de Residência"].url.toLowerCase().includes(".pdf") && (
+                              <CRMTooltip text="Visualizar Documento" placement="right">
+                                <Button
+                                  variant='ghost'
+                                  className='w-8 h-8 p-0 bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 transition-colors duration-300'
+                                  onClick={() => handleShowDoc(representanteState.data?.properties["Doc. Comprovante de Residência"].url || "")}
+                                >
+                                  <FaImage className='text-xl' />
+                                </Button>
+                              </CRMTooltip>
+                            )}
+
+
                             <CRMTooltip text="Desvincular documento" placement="right">
                               <Button
                                 variant="ghost"
@@ -842,6 +933,15 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
         </Button>
 
       </div>
+
+      {showDoc &&
+        <DocVisualizer
+          isOpen={showDoc}
+          onClose={handleCloseDoc}
+          src={docUrl}
+        />
+      }
+
     </div>
   );
 }

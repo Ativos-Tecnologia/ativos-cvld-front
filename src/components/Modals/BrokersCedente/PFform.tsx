@@ -3,7 +3,9 @@ import ConfirmModal from '@/components/CrmUi/ConfirmModal';
 import CRMTooltip from '@/components/CrmUi/Tooltip';
 import CedenteModalSkeleton from '@/components/Skeletons/CedenteModalSkeleton';
 import { BrokersContext } from '@/context/BrokersContext';
+import { GeneralUIContext } from '@/context/GeneralUIContext';
 import { validationSelectPix } from '@/functions/formaters/validationPix';
+import UseMySwal from '@/hooks/useMySwal';
 import { PixOption } from '@/types/pix';
 import api from '@/utils/api';
 import { useMutation } from '@tanstack/react-query';
@@ -24,9 +26,6 @@ import { RiBankCardFill, RiRoadMapLine } from 'react-icons/ri';
 import { TbBuildingEstate } from 'react-icons/tb';
 import { toast } from 'sonner';
 import { CedenteListProps, CedenteListResponse, CedenteProps } from './PJform';
-import MiniLoader from '@/components/CrmUi/MiniLoader';
-import UseMySwal from '@/hooks/useMySwal';
-import { GeneralUIContext } from '@/context/GeneralUIContext';
 
 type FormValuesForPF = {
   nome_completo: string;
@@ -620,7 +619,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
       )}
 
       {(mode === "edit" || cedentePfData.data !== null || openRegisterForm) && (
-        <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-2 w-full max-h-100 overflow-y-auto pr-5 2xsm:gap-6 md:gap-2'>
+        <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-2 w-full h-[70vh] overflow-y-auto pr-5 2xsm:gap-6 md:gap-2'>
 
           {/* relacionado ao oficio */}
           <input
