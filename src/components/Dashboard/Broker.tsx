@@ -1,25 +1,21 @@
 "use client";
-import DashbrokersCard from "../Cards/DashbrokersCard";
-import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
-import BrokerCardSkeleton from "../Skeletons/BrokerCardSkeleton";
-import { Fade } from "react-awesome-reveal";
-import Image from "next/image";
 import { BrokersContext } from "@/context/BrokersContext";
-import BrokerModal from "../Modals/BrokersCedente";
-import DocForm from "../Modals/BrokersDocs";
+import { UserInfoAPIContext } from "@/context/UserInfoContext";
+import { NotionPage } from "@/interfaces/INotion";
+import api from "@/utils/api";
+import Image from "next/image";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { Fade } from "react-awesome-reveal";
+import DashbrokersCard from "../Cards/DashbrokersCard";
 import BrokerComissionDistribution from "../Charts/BrokerComissionDistributionChart";
 import BrokerQuantityDistributedChart from "../Charts/BrokerQuantityDistributedChart";
-import { LucideChevronsUpDown } from "lucide-react";
-import { AiOutlineLoading, AiOutlineSearch } from "react-icons/ai";
-import api from "@/utils/api";
-import Show from "../Show";
-import { UserInfoAPIContext } from "@/context/UserInfoContext";
-import { BiUser } from "react-icons/bi";
-import { NotionPage, NotionResponse } from "@/interfaces/INotion";
-import UsersFilter from "../Filters/UsersFilter";
-import CredorFilter from "../Filters/CredorFilter";
 import GridCardsWrapper from "../CrmUi/Wrappers/GridCardsWrapper";
-import DocVisualizer from "../Modals/BrokersDocs/ShowDocs";
+import CredorFilter from "../Filters/CredorFilter";
+import UsersFilter from "../Filters/UsersFilter";
+import BrokerModal from "../Modals/BrokersCedente";
+import DocForm from "../Modals/BrokersDocs";
+import Show from "../Show";
+import BrokerCardSkeleton from "../Skeletons/BrokerCardSkeleton";
 
 /**
  * Componente que renderiza a lista de brokers

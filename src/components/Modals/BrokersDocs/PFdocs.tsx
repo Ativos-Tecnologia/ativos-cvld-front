@@ -150,7 +150,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
 
     try {
 
-      const req = await api.delete(`/api/cedente/unlink/doc/pf/${cedenteInfo?.id}/${documentType}/`);
+    const req = await api.delete(`/api/cedente/unlink/doc/pf/${cedenteInfo?.id}/${documentType}/`);
       if (req.status === 204) {
         toast.success("Documento(s) desvinculado(s) com sucesso.", {
           classNames: {
@@ -254,7 +254,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
   }, [cedenteInfo])
 
   return (
-    <div className="overflow-y-auto overflow-x-hidden px-3 2xsm:max-h-[380px] xl:max-h-[480px]">
+    <div className="overflow-y-auto overflow-x-hidden px-3 2xsm:max-h-[85vh] xl:max-h-[480px]">
       <h2 className="mb-10 text-center text-2xl font-medium">
         Gestão de Documentos
       </h2>
@@ -736,16 +736,17 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                 OK
               </Button>
 
-              <Button
-                variant="outlined"
-                onClick={() => handleRemoveDocument("todos")}
-              >
-                {isUnlinkingDoc.todos
-                  ? "Desvinculando documentos..."
-                  : "Desvincular todos os documentos"}
-              </Button>
-            </fieldset>
-          )}
+            <Button
+              variant="outlined"
+              onClick={() => handleRemoveDocument("todos")}
+              className='2xsm:text-[15px] 2xsm:p-2 md:text-base md:px-4'
+            >
+              {isUnlinkingDoc.todos
+                ? "Desvinculando documentos..."
+                : "Desvincular todos os documentos"}
+            </Button>
+          </fieldset>
+        )}
       </div>
 
       {showDoc &&
