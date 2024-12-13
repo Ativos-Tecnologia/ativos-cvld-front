@@ -1,10 +1,9 @@
-import React, { useContext, useEffect } from 'react'
-import Show from '../Show';
-import { UserInfoAPIContext } from '@/context/UserInfoContext';
-import { BiUser } from 'react-icons/bi';
-import { LucideChevronsUpDown } from 'lucide-react';
-import { AiOutlineLoading, AiOutlineSearch } from 'react-icons/ai';
 import { BrokersContext } from '@/context/BrokersContext';
+import { UserInfoAPIContext } from '@/context/UserInfoContext';
+import { LucideChevronsUpDown } from 'lucide-react';
+import React, { useContext, useEffect } from 'react';
+import { AiOutlineLoading, AiOutlineSearch } from 'react-icons/ai';
+import { BiUser } from 'react-icons/bi';
 
 /**
  * Componente de filtro por usuário
@@ -85,7 +84,7 @@ const UsersFilter = ({ openUsersPopover, setOpenUsersPopover, loadingCardData, f
                             onClick={() => {
                                 setOpenUsersPopover(!openUsersPopover)
                             }}
-                            className={`flex w-[315px] xl:min-w-48 items-center justify-between gap-1 h-9 border border-stroke px-3 py-2 text-sm font-semibold uppercase hover:bg-slate-100 dark:border-form-strokedark dark:hover:bg-slate-700 ${openUsersPopover && "bg-slate-100 dark:bg-slate-700"} cursor-pointer rounded-md transition-colors duration-200`}
+                            className={`flex 2xsm:w-full md:w-[280px] xl:min-w-48 items-center justify-between gap-1 h-9 border border-stroke px-3 py-2 text-sm font-semibold uppercase hover:bg-slate-100 dark:border-form-strokedark dark:hover:bg-slate-700 ${openUsersPopover && "bg-slate-100 dark:bg-slate-700"} cursor-pointer rounded-md transition-colors duration-200`}
                         >
                             <span>{selectedUser || user}</span>
                             <LucideChevronsUpDown className="h-4 w-4" />
@@ -99,7 +98,7 @@ const UsersFilter = ({ openUsersPopover, setOpenUsersPopover, loadingCardData, f
                     {openUsersPopover && (
                         <div
                             ref={selectUserRef}
-                            className={`absolute z-20 mt-3 w-[230px] rounded-md border border-stroke bg-white p-3 shadow-1 dark:border-strokedark dark:bg-form-strokedark ${openUsersPopover ? "visible opacity-100 animate-in fade-in-0 zoom-in-95" : " invisible opacity-0 animate-out fade-out-0 zoom-out-95"} transition-opacity duration-500`}
+                            className={`absolute z-20 mt-3 w-full rounded-md border border-stroke bg-white p-3 shadow-1 dark:border-strokedark dark:bg-form-strokedark ${openUsersPopover ? "visible opacity-100 animate-in fade-in-0 zoom-in-95" : " invisible opacity-0 animate-out fade-out-0 zoom-out-95"} transition-opacity duration-500`}
                         >
                             <div className="flex items-center justify-center gap-1 border-b border-stroke dark:border-bodydark2">
                                 <AiOutlineSearch className="text-lg" />

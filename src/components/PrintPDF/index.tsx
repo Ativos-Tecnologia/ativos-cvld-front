@@ -26,6 +26,7 @@ export function PrintPDF({ nomeDoCredor, fotoDoBroker, valorDaProposta, nomeDoBr
 				alt="logo da ativos"
 				width={200}
 				height={50}
+				priority
 				className="relative z-10 -bottom-50 left-[600px]"
 			/>
 			<Image
@@ -33,6 +34,7 @@ export function PrintPDF({ nomeDoCredor, fotoDoBroker, valorDaProposta, nomeDoBr
 				alt="borda do header"
 				width={800}
 				height={20}
+				priority
 				className="absolute left-0 -bottom-80 opacity-50 min-h-[550px]  w-full"
 			/>
 			<div className="absolute inset-0 bg-black-2 bg-opacity-50"></div>
@@ -94,6 +96,7 @@ export function PrintPDF({ nomeDoCredor, fotoDoBroker, valorDaProposta, nomeDoBr
 									width={20}
 									height={20}
 									className="rotate-90"
+									priority
 								/>
 							</div>
 						<span className="uppercase text-sm justify-center items-center font-bold text-[#F4F4F4]">Assinatura do Contrato</span>
@@ -104,6 +107,7 @@ export function PrintPDF({ nomeDoCredor, fotoDoBroker, valorDaProposta, nomeDoBr
 										width={20}
 										height={20}
 										className="rotate-90"
+										priority
 									/>
 								</div>
 							<span className="uppercase text-sm justify-center items-center font-bold text-[#F4F4F4]">Recebimento Instantâneo!</span>
@@ -124,6 +128,7 @@ export function PrintPDF({ nomeDoCredor, fotoDoBroker, valorDaProposta, nomeDoBr
 							alt="logo da Ativos"
 							width={900}
 							height={500}
+							priority
 							className=" absolute h-fit -top-30 object-cover object-center"
 						/>
 			    </div>

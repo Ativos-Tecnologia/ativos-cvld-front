@@ -6,6 +6,7 @@ import api from "@/utils/api";
 import Image from "next/image";
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Fade } from "react-awesome-reveal";
+import { IoIosArrowDown } from "react-icons/io";
 import DashbrokersCard from "../Cards/DashbrokersCard";
 import BrokerComissionDistribution from "../Charts/BrokerComissionDistributionChart";
 import BrokerQuantityDistributedChart from "../Charts/BrokerQuantityDistributedChart";
@@ -16,6 +17,7 @@ import BrokerModal from "../Modals/BrokersCedente";
 import DocForm from "../Modals/BrokersDocs";
 import Show from "../Show";
 import BrokerCardSkeleton from "../Skeletons/BrokerCardSkeleton";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 
 /**
  * Componente que renderiza a lista de brokers
@@ -145,7 +147,8 @@ const Broker: React.FC = (): JSX.Element => {
 
   return (
     <>
-      <div className="flex gap-5 item-center bg-white dark:bg-boxdark mb-5 p-5 rounded-md flex-col md:justify-between md:flex-row xl:justify-normal">
+      {/* tablet em diante */}
+      <div className="flex gap-5 item-center bg-white dark:bg-boxdark mb-5 p-5 rounded-md flex-col 2xsm:hidden md:flex md:justify-between md:flex-row xl:justify-normal">
         <Show when={role === "ativos"}>
           <UsersFilter
             openUsersPopover={openUsersPopover}
@@ -156,6 +159,33 @@ const Broker: React.FC = (): JSX.Element => {
           />
         </Show>
         <CredorFilter />
+      </div>
+      {/* Mobile */}
+      <div className="flex gap-5 item-center bg-white dark:bg-boxdark mb-5 p-5 rounded-md flex-col 2xsm:flex md:hidden md:justify-between md:flex-row xl:justify-normal">
+        
+          <Accordion type="single" collapsible >  
+            <AccordionItem value="item-1">
+            <AccordionTrigger>
+              Filtros de Busca
+              <IoIosArrowDown />
+            </AccordionTrigger>
+            <AccordionContent>
+              <CredorFilter />
+            </AccordionContent>
+            <AccordionContent>
+              <Show when={role === "ativos"}>
+              <UsersFilter
+                openUsersPopover={openUsersPopover}
+                setOpenUsersPopover={setOpenUsersPopover}
+                loadingCardData={loadingCardData}
+                filteredUsersList={filteredUsersList}
+                searchUser={searchUser}
+              />
+            </Show>
+            </AccordionContent>
+          </AccordionItem>
+          </Accordion>
+
       </div>
       <div className="grid grid-cols-1  items-center gap-5  xl:grid-cols-12">
         <BrokerQuantityDistributedChart
