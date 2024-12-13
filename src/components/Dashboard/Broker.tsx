@@ -27,13 +27,9 @@ import BrokerCardSkeleton from "../Skeletons/BrokerCardSkeleton";
 const Broker: React.FC = (): JSX.Element => {
 
   const {
-    editModalId,
-    setEditModalId,
     cedenteModal,
     cardsData,
     docModalInfo,
-    setSelectedUser,
-    selectedUser,
     loadingCardData,
   } = useContext(BrokersContext);
 
