@@ -1100,6 +1100,7 @@ const DashbrokersCard = ({ oficio }:
                                     <input
                                         ref={proposalRef}
                                         type="text"
+                                        disabled={mainData?.properties["Status"].status?.name === "Proposta aceita"}
                                         onBlur={e => {
                                             e.target.value = formatCurrency(e.target.value)
                                         }}
@@ -1111,6 +1112,7 @@ const DashbrokersCard = ({ oficio }:
                                     // ref={proposalRangeRef}
                                     type="range"
                                     step="0.01"
+                                    disabled={mainData?.properties["Status"].status?.name === "Proposta aceita"}
                                     min={mainData?.properties["(R$) Proposta Mínima - Celer"].number || 0}
                                     max={mainData?.properties["(R$) Proposta Máxima - Celer"].number || 0}
                                     value={sliderValues.proposal}
@@ -1128,6 +1130,7 @@ const DashbrokersCard = ({ oficio }:
                                     <input
                                         ref={comissionRef}
                                         type="text"
+                                        disabled={mainData?.properties["Status"].status?.name === "Proposta aceita"}
                                         onBlur={e => {
                                             e.target.value = formatCurrency(e.target.value)
                                         }}
@@ -1139,6 +1142,7 @@ const DashbrokersCard = ({ oficio }:
                                 <input
                                     type="range"
                                     step="0.01"
+                                    disabled={mainData?.properties["Status"].status?.name === "Proposta aceita"}
                                     min={mainData?.properties["(R$) Comissão Mínima - Celer"].number || 0}
                                     max={mainData?.properties["(R$) Comissão Máxima - Celer"].number || 0}
                                     value={sliderValues.comission}

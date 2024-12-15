@@ -1,7 +1,9 @@
 "use client";
+import UseMySwal from "@/hooks/useMySwal";
 import { NotionPage, NotionResponse } from "@/interfaces/INotion";
 import api from "@/utils/api";
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { GeneralUIContext } from "./GeneralUIContext";
 
 export type BrokersContextProps = {
     editModalId: string | null;
@@ -44,7 +46,7 @@ export const BrokersContext = createContext<BrokersContextProps>({
     setSelectedUser: () => { },
     loadingCardData: false,
     deleteModalLock: false,
-    setDeleteModalLock: () => { }
+    setDeleteModalLock: () => { },
 });
 
 
@@ -54,7 +56,7 @@ export const BrokersContext = createContext<BrokersContextProps>({
  * @param {React.ReactNode} children - o(s) filho(s) que serão abraçados pelo provider
  * @returns {React.JSX.Element} - O provider do contexto montado
  */
-export const BrokersProvider = ({ children }: { children: React.ReactNode }) => {
+export const BrokersProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
 
     /**
      * Estado que recebe o id do card que está abrindo o modal
