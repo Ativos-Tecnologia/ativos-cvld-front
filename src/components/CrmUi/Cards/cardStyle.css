@@ -1,0 +1,25 @@
+.doc-preview {
+  display: flex;
+  flex-direction: column;
+  width: 165px;
+  height: 200px;
+  margin: 0 auto;
+  position: relative;
+  border-radius: 8px 0 8px 8px;
+  overflow: hidden;
+  clip-path: polygon(0 0, 75% 0, 100% 20%, 100% 100%, 0 100%);
+}
+
+/* .doc-preview::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-top: 40px solid transparent;
+  border-right: 40px solid #a7a7a7;
+  border-top: 40px solid transparent;
+  transform: rotate(90deg);
+} */
