@@ -14,7 +14,7 @@ interface SubmitButtonProps
 
 const variants = {
   default: "bg-blue-600 hover:bg-blue-700 text-white",
-  danger: "bg-red-500 hover:bg-red-600 text-white",
+  danger: "bg-[#cc4b4c] hover:bg-[#cc4b4c]/80 text-white",
   outlined:
     "bg-transparent border border-blue-700 text-blue-700 hover:border-blue-800 hover:text-blue-800 dark:border-snow dark:text-snow dark:hover:border-gray-200 dark:hover:text-gray-200",
   ghost: "bg-transparent border-transparent hover:bg-blue-50 dark:hover:bg-graydark/30 dark:border-transparent",
@@ -52,17 +52,7 @@ export const Button: React.FC<SubmitButtonProps> = ({
     <button
       type={type}
       className={cn(
-        `${variants[variant]} ${sizes[size]}
-        relative 
-        flex 
-        items-center 
-        justify-center 
-        rounded-md 
-        transition-all 
-        duration-300 
-        overflow-hidden
-        
-      `,
+        `${variants[variant]} ${sizes[size]} relative flex items-center justify-center rounded-md transition-all duration-300 overflow-hidden`,
 
         className,
       )}
@@ -88,15 +78,18 @@ export const Button: React.FC<SubmitButtonProps> = ({
         <AiOutlineLoading className="h-5 w-5 text-current animate-spin" />
       </span>
 
-      <p 
+      <div
         className={`
           transition-all
           duration-300
+          flex
+          items-center
+          gap-2
           ${isLoading ? 'translate-y-full text-transparent' : 'translate-y-0'}
         `}
       >
         {children}
-      </p>
+      </div>
     </button>
   );
 };
