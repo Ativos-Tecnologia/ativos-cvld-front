@@ -1,4 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("https://unpkg.com/normalize.css") layer(normalize);
+
+@layer normalize, base, demo;
+
 @import "./nexa.css";
 @import "./satoshi.css";
 @import "./ManyChat.css";
@@ -39,6 +43,15 @@
 
   html {
     scroll-behavior: smooth;
+    color-scheme: light dark;
+  }
+
+  [data-theme="light"] {
+    color-scheme: light only;
+  }
+
+  [data-theme="dark"] {
+    color-scheme: dark only;
   }
 
   .dark {
