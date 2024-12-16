@@ -61,6 +61,7 @@ export default function PrivateRoute({ children }: PropsPrivateRouteProps) {
         } else {
             setIsUserAuthenticated(true);
         }
+
     }, [MySwal, is_confirmed]);
 
     useEffect(() => {

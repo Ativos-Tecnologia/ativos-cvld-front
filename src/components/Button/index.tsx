@@ -10,6 +10,7 @@ interface SubmitButtonProps
   variant?: keyof typeof variants;
   size?: keyof typeof sizes;
   isLoading?: boolean;
+  verticalAdjust?: string;
 }
 
 const variants = {
@@ -62,17 +63,17 @@ export const Button: React.FC<SubmitButtonProps> = ({
         <span 
         className={`
           py-1.5
-          overflow-hidden 
-          absolute 
-          top-full 
-          left-0 
-          w-full 
+          overflow-hidden
+          absolute
+          top-full
+          left-0
+          w-full
           flex
-          items-center 
-          justify-center 
-          transition-all 
+          items-center
+          justify-center
+          transition-all
           duration-300
-          ${isLoading ? 'translate-y-[-114%]' : 'translate-y-0'}
+          ${isLoading ? `translate-y-[-100%]` : 'translate-y-0'}
         `}
       >
         <AiOutlineLoading className="h-5 w-5 text-current animate-spin" />
