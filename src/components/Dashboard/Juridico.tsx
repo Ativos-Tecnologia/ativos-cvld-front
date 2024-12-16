@@ -13,6 +13,7 @@ import MarketplaceCardSkeleton from "../Skeletons/MarketplaceCardSkeleton";
 import { AiOutlineLoading } from "react-icons/ai";
 import api from "@/utils/api";
 import Image from "next/image";
+import Link from "next/link";
 
 enum navItems {
   TODOS = "Todos",
@@ -128,11 +129,6 @@ const Juridico = () => {
               </TabsTrigger>
             ))}
           </TabsList>
-          {/* <p className="text-muted-foreground text-sm font-satoshi font-medium">
-            {loading
-              ? "Carregando..."
-              : `Exibindo ${cardData.length} resultados`}
-          </p> */}
           {loading ? (
             <ul className="my-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4">
               {Array.from({ length: 12 }, (_, i) => (
@@ -150,14 +146,14 @@ const Juridico = () => {
                 <ul className="my-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4">
                   {simpleData.results.length > 0 && (
                     simpleData.results.map((item) => (
-                      <li
+                      <Link href={`juridico/${item.id}`}
                         key={item.id}
-                        className={`mb-4 h-65 max-w-full cursor-pointer rounded-md bg-white p-5 font-nexa opacity-50 hover:cursor-not-allowed dark:bg-boxdark xsm:min-w-95 xsm:px-2 md:min-w-[350px] md:px-3 lg:px-4`}
+                        className={`mb-4 h-65 max-w-full cursor-pointer rounded-md bg-white p-5 font-nexa opacity-50 dark:bg-boxdark xsm:min-w-95 xsm:px-2 md:min-w-[350px] md:px-3 lg:px-4`}
                       >
                         <p className="text-lg font-semibold">{item.credor}</p>
                         <p className="text-sm">{item.tipo}</p>
                         <p className="text-sm">{item.status_diligencia}</p>
-                      </li>
+                      </Link>
                     ))
                   )}
                 </ul>

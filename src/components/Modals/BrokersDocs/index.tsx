@@ -40,7 +40,7 @@ const DocForm = () => {
         role="dialog"
         className="fixed left-0 top-0 z-999 flex h-screen w-screen animate-fade items-center justify-center bg-black-2/50 bg-opacity-10 bg-clip-padding backdrop-blur-sm backdrop-filter transition-all duration-300 ease-in-out"
       >
-        <div className="relative h-fit rounded-lg border border-stroke bg-white dark:border-strokedark dark:bg-boxdark 2xsm:w-11/12 2xsm:py-8 2xsm:px-5 md:w-4/5 md:p-10 lg:w-3/4">
+        <div className="relative h-fit rounded-lg border border-stroke bg-snow dark:border-strokedark dark:bg-boxdark 2xsm:w-11/12 2xsm:py-8 2xsm:px-5 md:w-4/5 md:p-10 lg:w-10/12 3xl:w-10/12">
           <button className="group absolute right-2 top-2 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 hover:bg-slate-700">
             <BiX
               className="text-2xl transition-colors duration-300 group-hover:text-white"
