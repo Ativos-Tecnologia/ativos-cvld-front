@@ -7,7 +7,7 @@ import { LuFileX2 } from 'react-icons/lu';
 
 const CardDocs = ({ children, ...props }: HTMLAttributes<HTMLDivElement> & { children?: React.ReactNode }) => {
     return (
-        <div {...props} className={cn('col-span-1 grid gap-4 bg-white shadow-6 dark:bg-boxdark-2 rounded-md p-5', props.className)}>
+        <div {...props} className={cn('2xsm:col-span-2 lg:col-span-1 grid gap-4 bg-white shadow-6 dark:bg-boxdark-2 rounded-md p-5', props.className)}>
             {children}
         </div>
     )
@@ -21,7 +21,7 @@ const CardDocsHeader = ({ children, ...props }: HTMLAttributes<HTMLHeadingElemen
 
 const CardDocsBody = ({ children, ...props }: HTMLAttributes<HTMLDivElement> & { children?: React.ReactNode }) => {
     return (
-        <div {...props} className={cn("grid grid-cols-5 gap-4", props.className)}>
+        <div {...props} className={cn("grid grid-cols-6 2xsm:gap-8 md:gap-4 lg:gap-8 xl:gap-4", props.className)}>
             {children}
         </div>
     )
@@ -31,7 +31,7 @@ const CardDocsDocPreviewWrapper = ({ children, ...props }: HTMLAttributes<HTMLDi
     children: React.ReactNode
 }) => {
     return (
-        <div {...props} className={cn('col-span-3 grid gap-4 border-r border-stroke dark:border-boxdark', props.className)}>
+        <div {...props} className={cn('2xsm:col-span-6 md:col-span-3 lg:col-span-6 xl:col-span-3 grid gap-4 xl:border-r xl:border-stroke xl:dark:border-boxdark', props.className)}>
             {children}
         </div>
     )
@@ -88,7 +88,7 @@ const CardDocsPreview = ({ url, ...props }: { url: string } & HTMLAttributes<HTM
 
 const CardDocsActions = ({ children, ...props }: HTMLAttributes<HTMLDivElement> & { children?: React.ReactNode }) => {
     return (
-        <div {...props} className={cn("col-span-2 flex flex-col gap-3", props.className)}>
+        <div {...props} className={cn("2xsm:col-span-6 md:col-span-3 md:place-items-end lg:col-span-6 lg:place-items-center xl:col-span-3 flex flex-col gap-3", props.className)}>
             {children}
         </div>
     )
