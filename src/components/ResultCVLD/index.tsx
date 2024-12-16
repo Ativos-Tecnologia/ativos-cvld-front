@@ -334,7 +334,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                     {
                       result.result[0].recalc_flag === "before_12_2021" && (
                         <li className="text-sm ">
-                          <span className="font-bold">Juros Atualizado até 12/2021:</span> {numberFormat(result.result[0].valor_atualizado_juros)}
+                          <span className="font-bold">Juros Atualizado até 12/2021:</span> {numberFormat(result.result[0].valor_juros_atualizado)}
                         </li>
                       )
                     }
