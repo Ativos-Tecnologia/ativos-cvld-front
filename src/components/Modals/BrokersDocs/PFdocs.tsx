@@ -38,7 +38,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
   const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
   const [showDoc, setShowDoc] = useState<boolean>(false);
   const [docUrl, setDocUrl] = useState<string>("");
-  const [hasLinkCopied, setHasLinkCopied] = useState<boolean>(false);
+  const [linkCopied, setLinkCopied] = useState<string>("");
   const [isFetchingDoc, setIsFetchingDoc] = useState<Record<string, boolean>>({
     oficio_requisitorio: false,
     rg: false,
@@ -231,11 +231,11 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
    * @param {string} link - O link a ser copiado
    * @returns {void} - retorno da função 
    */
-  const handleCopyLink = (link: string): void => {
+  const handleCopyLink = (link: string, docType: string): void => {
     navigator.clipboard.writeText(link);
-    setHasLinkCopied(true);
+    setLinkCopied(docType);
 
-    setTimeout(() => setHasLinkCopied(false), 2000);
+    setTimeout(() => setLinkCopied(""), 2000);
   };
 
   // função de submit só para que o hook form funcione (temporário)
@@ -361,9 +361,9 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
 
                           {/* copy link button */}
                           <Button
-                            onClick={() => handleCopyLink(cedenteInfo?.properties["Doc. Ofício Requisitório"].url || "")}
-                            className={`text-sm text-body dark:text-bodydark px-3 py-1 h-fit bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 ${hasLinkCopied && "!text-snow !bg-green-500 hover:!bg-green-600"}`}>
-                            {hasLinkCopied ? (
+                            onClick={() => handleCopyLink(cedenteInfo?.properties["Doc. Ofício Requisitório"].url || "", "oficio_requisitorio")}
+                            className={`text-sm text-body dark:text-bodydark px-3 py-1 h-fit bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 ${linkCopied === "oficio_requisitorio" && "!text-snow !bg-green-500 hover:!bg-green-600"}`}>
+                            {linkCopied === "oficio_requisitorio" ? (
                               <>
                                 <LuClipboardCheck />
                                 <p>Link Copiado!</p>
@@ -467,9 +467,9 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
 
                       {/* copy link button */}
                       <Button
-                        onClick={() => handleCopyLink(cedenteInfo?.properties["Doc. RG"].url || "")}
-                        className={`text-sm text-body dark:text-bodydark px-3 py-1 h-fit bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 ${hasLinkCopied && "!text-snow !bg-green-500 hover:!bg-green-600"}`}>
-                        {hasLinkCopied ? (
+                        onClick={() => handleCopyLink(cedenteInfo?.properties["Doc. RG"].url || "", "rg")}
+                        className={`text-sm text-body dark:text-bodydark px-3 py-1 h-fit bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 ${linkCopied === "rg" && "!text-snow !bg-green-500 hover:!bg-green-600"}`}>
+                        {linkCopied === "rg" ? (
                           <>
                             <LuClipboardCheck />
                             <p>Link Copiado!</p>
@@ -571,9 +571,9 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
 
                       {/* copy link button */}
                       <Button
-                        onClick={() => handleCopyLink(cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"].url || "")}
-                        className={`text-sm px-3 py-1 text-body dark:text-bodydark h-fit bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 ${hasLinkCopied && "!text-snow !bg-green-500 hover:!bg-green-600"}`}>
-                        {hasLinkCopied ? (
+                        onClick={() => handleCopyLink(cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"].url || "", "certidao_nasc_cas")}
+                        className={`text-sm px-3 py-1 text-body dark:text-bodydark h-fit bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 ${linkCopied === "certidao_nasc_cas" && "!text-snow !bg-green-500 hover:!bg-green-600"}`}>
+                        {linkCopied === "certidao_nasc_cas" ? (
                           <>
                             <LuClipboardCheck />
                             <p>Link Copiado!</p>
@@ -675,9 +675,9 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
 
                       {/* copy link button */}
                       <Button
-                        onClick={() => handleCopyLink(cedenteInfo?.properties["Doc. Comprovante de Residência"].url || "")}
-                        className={`text-body dark:text-bodydark text-sm px-3 py-1 h-fit bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 ${hasLinkCopied && "!text-snow !bg-green-500 hover:!bg-green-600"}`}>
-                        {hasLinkCopied ? (
+                        onClick={() => handleCopyLink(cedenteInfo?.properties["Doc. Comprovante de Residência"].url || "", "comprovante_de_residencia")}
+                        className={`text-body dark:text-bodydark text-sm px-3 py-1 h-fit bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 ${linkCopied === "comprovante_de_residencia" && "!text-snow !bg-green-500 hover:!bg-green-600"}`}>
+                        {linkCopied === "comprovante_de_residencia" ? (
                           <>
                             <LuClipboardCheck />
                             <p>Link Copiado!</p>
