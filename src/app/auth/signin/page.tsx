@@ -1,25 +1,23 @@
 "use client";
-import { APP_ROUTES } from "@/constants/app-routes";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/constants";
 import UseMySwal from "@/hooks/useMySwal";
 import api from "@/utils/api";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { Suspense, useState } from "react";
+import React, { lazy, Suspense, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { lazy } from "react";
 
 import { Fade } from "react-awesome-reveal";
 
 import { Button } from "@/components/Button";
-const ForgotPassword = lazy(() => import("@/components/Modals/ForgotPassword"));
 import usePassword from "@/hooks/usePassword";
+import { ValidateSignIn } from "@/validation/singin/singin.validation";
 import { useQueryClient } from "@tanstack/react-query";
-import { AiOutlineLoading } from "react-icons/ai";
 import { BiLockAlt, BiUser, BiX } from "react-icons/bi";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import "./index.css";
+const ForgotPassword = lazy(() => import("@/components/Modals/ForgotPassword"));
 
 export type SignInInputs = {
   username: string;
@@ -48,13 +46,15 @@ const SignIn: React.FC = () => {
   async function checkUserInfo(): Promise<{
     product: string;
     staff_approvation: boolean;
+    is_confirmed:boolean;
   }> {
     try {
       const response = await api.get("/api/profile/");
-
+      console.log(response.data);
       return ({
         "product": response.data.product,
         "staff_approvation": response.data.staff_approvation,
+        "is_confirmed": response.data.is_confirmed,
       })
     } catch (error) {
       throw new Error("Ocorreu um erro ao tentar buscar o produto do usuário");
@@ -75,36 +75,33 @@ const SignIn: React.FC = () => {
 
   const onSubmit: SubmitHandler<SignInInputs> = async (data) => {
     setLoading(true);
-
     try {
       const res = await api.post("/api/token/", data);
+      
       if (res.status === 200) {
         localStorage.setItem(`ATIVOS_${ACCESS_TOKEN}`, res.data.access);
         localStorage.setItem(`ATIVOS_${REFRESH_TOKEN}`, res.data.refresh);
+      
+      const userInfo = await checkUserInfo();
+      const userProduct = userInfo.product;
+      const userApprovation = userInfo.staff_approvation;
+      const userConfirmation = userInfo.is_confirmed;
 
-        const userProduct = await checkUserInfo().then((data) => data.product);
-        const userApprovation = await checkUserInfo().then((data) => data.staff_approvation);
-
-        queryClient.removeQueries({ queryKey: ["notion_list"] });
-        queryClient.removeQueries({ queryKey: ["user"] });
-
-        if (userProduct === "wallet" && userApprovation === true) {
-          router.push(APP_ROUTES.private.wallet.name);
-        } else if (userProduct === "wallet" && userApprovation === false) {
-          router.push(APP_ROUTES.private.marketplace.name);
-        } else if (userProduct === "crm") {
-          router.push(APP_ROUTES.private.broker.name);
-        } else {
-          router.push(APP_ROUTES.private.dashboard.name);
-        }
+      queryClient.removeQueries({ queryKey: ["notion_list"] });
+      queryClient.removeQueries({ queryKey: ["user"] });
+        
+      ValidateSignIn({ userProduct, userApprovation, userConfirmation }, router);
+     
       } else {
-        router.push(APP_ROUTES.public.login.name);
+        throw new Error(
+        `Erro ao tentar efetuar login: ${res.status} - ${res.statusText}`,
+        );
       }
-    } catch (error) {
+    } catch (error: any) {
       MySwal.fire({
-        icon: "error",
-        title: "Erro ao efetuar login",
-        text: "Verifique suas credenciais e tente novamente",
+      icon: "error",
+      title: "Erro ao Efetuar Login",
+      text: `Confirmação Pendente: ${error.response.data.error}`,
       });
     } finally {
       setLoading(false);
