@@ -28,7 +28,7 @@ export interface CVLDResultProps {
     link_cvld: string;
     nome_credor: string;
     cpf_cnpj_credor: string;
-    valor_atualizado_juros: number;
+    valor_juros_atualizado: number;
     valor_atualizado_principal: number;
     valor_liquido_disponivel: number;
     data_limite_de_atualizacao: string;
