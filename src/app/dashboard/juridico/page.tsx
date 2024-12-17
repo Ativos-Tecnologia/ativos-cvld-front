@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 const JuridicoWrapperPage = () => {
   return (
     <DefaultLayout>
-      <Juridico />
+        <Juridico />
     </DefaultLayout>
   );
 };
