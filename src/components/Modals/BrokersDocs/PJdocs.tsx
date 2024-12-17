@@ -810,9 +810,8 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
               </CardDocs>
 
               {/* ====> doc comprovante <==== */}
-
               <CardDocs>
-                <CardDocs.Header>Certidão Nasc/Casamento</CardDocs.Header>
+                <CardDocs.Header>Comprovante de Residência</CardDocs.Header>
                 <CardDocs.Body>
                   <CardDocs.DocPreviewWrapper>
 
