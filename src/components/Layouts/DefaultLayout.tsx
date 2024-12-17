@@ -10,7 +10,6 @@ import { GeneralUIProvider } from "@/context/GeneralUIContext";
 import { DefaultLayoutProvider } from "@/context/DefaultLayoutContext";
 import NewForm from "../Modals/NewForm";
 import Show from "../Show";
-import { UserInfoProvider } from "@/context/UserInfoContext";
 
 export default function DefaultLayout({
   children,

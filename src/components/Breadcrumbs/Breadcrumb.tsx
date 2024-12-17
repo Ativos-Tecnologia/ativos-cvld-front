@@ -2,12 +2,14 @@ import Image from "next/image";
 import React from "react";
 import CRMTooltip from "../CrmUi/Tooltip";
 import { Fade } from "react-awesome-reveal";
+import Link from "next/link";
 interface BreadcrumbProps {
   pageName: string;
   title?: string;
   iconPath?: string;
   customIcon?: React.ReactNode;
   altIcon?: string;
+  animationTrigger?: boolean;
 }
 const Breadcrumb = ({ pageName, iconPath, customIcon, altIcon, title }: BreadcrumbProps) => {
   if (iconPath && customIcon) {
@@ -44,12 +46,12 @@ const Breadcrumb = ({ pageName, iconPath, customIcon, altIcon, title }: Breadcru
 
       <nav>
         <ol className="flex items-center gap-2">
-          <li>
-            <p className="font-medium">
-              Dashboard /
-            </p>
-          </li>
-          <p className="font-medium text-primary">{pageName}</p>
+          
+          <Link href={
+            window.location.pathname.split("/")[1] === "juridico" ? "/juridico" : "/dashboard/juridico"
+          } className="font-medium text-primary">{
+            window.location.pathname.split("/")[window.location.pathname.split("/")?.length - 2] === "juridico" ? "Jurídico" : "Dashboard"
+          }</Link>
         </ol>
       </nav>
     </div>

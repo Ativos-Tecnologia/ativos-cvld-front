@@ -39,7 +39,29 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+
+    /* Remove scrollbar */
+    .remove-scrollbar::-webkit-scrollbar {
+      width: 0px;
+      height: 0px;
+      border-radius: 0px;
+    }
+  
+    .remove-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+  
+    .remove-scrollbar::-webkit-scrollbar-thumb {
+      background: transparent;
+      border-radius: 0px;
+    }
+  
+    .remove-scrollbar::-webkit-scrollbar-thumb:hover {
+      /* background: #1e2238; */
+      background: transparent;
+    }
   }
+
 
   html {
     scroll-behavior: smooth;
@@ -102,12 +124,56 @@
     scrollbar-width: none; /* Firefox */
   }
 
+  .form-inputs-container {
+    @apply flex flex-col xl:flex-row gap-6 p-4 rounded-md bg-white dark:bg-boxdark;
+  }
+
   .chat-height {
     @apply h-[calc(100vh_-_8.125rem)] lg:h-[calc(100vh_-_5.625rem)];
   }
 
   .inbox-height {
     @apply h-[calc(100vh_-_8.125rem)] lg:h-[calc(100vh_-_5.625rem)];
+  }
+
+  .shad-input-label {
+    @apply font-medium text-bodydark2 !important;
+  }
+
+  .shad-input {
+    @apply dark:bg-boxdark-2/20 placeholder:text-bodydark2 border-boxdark-2 h-11 focus-visible:ring-0 focus-visible:ring-offset-0 !important;
+  }
+
+  .shad-input-icon {
+    @apply bg-boxdark placeholder:text-bodydark2 border-boxdark-2 h-11 focus-visible:ring-0 focus-visible:ring-offset-0 !important;
+  }
+
+  .shad-textArea {
+    @apply bg-boxdark placeholder:text-bodydark2 border-boxdark-2 focus-visible:ring-0 focus-visible:ring-offset-0 !important;
+  }
+
+  .shad-combobox-item {
+    @apply data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 !important;
+  }
+
+  .shad-combobox-trigger {
+    @apply h-11 !important;
+  }
+
+  .shad-select-trigger {
+    @apply bg-boxdark  placeholder:text-bodydark2 border-boxdark-2 h-11 focus:ring-0 focus:ring-offset-0 !important;
+  }
+
+  .shad-select-content {
+    @apply bg-boxdark border-boxdark-2 !important;
+  }
+
+  .shad-dialog {
+    @apply bg-boxdark border-boxdark-2 !important;
+  }
+
+  .shad-dialog button {
+    @apply focus:ring-0 focus:ring-offset-0 focus-visible:border-none focus-visible:outline-none focus-visible:ring-transparent focus-visible:ring-offset-0 !important;
   }
 }
 

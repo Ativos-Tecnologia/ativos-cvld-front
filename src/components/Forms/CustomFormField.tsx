@@ -16,6 +16,7 @@ import {
 import { Input } from "../../components/ui/input";
 import { Select, SelectContent, SelectTrigger, SelectValue } from "../../components/ui/select";
 import { Textarea } from "../../components/ui/textarea";
+import { cn } from '@/lib/utils'
 
 export enum FormFieldType {
   INPUT = "input",
@@ -32,7 +33,7 @@ interface CustomProps {
   name: string;
   label?: string;
   placeholder?: string;
-  iconSrc?: string;
+  iconSrc?: React.ReactNode;
   iconAlt?: string;
   disabled?: boolean;
   dateFormat?: string;
@@ -40,27 +41,26 @@ interface CustomProps {
   children?: React.ReactNode;
   renderSkeleton?: (field: any) => React.ReactNode;
   fieldType: FormFieldType;
+  defaultValue?: any;
+  className?: string;
 }
 
 const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
   switch (props.fieldType) {
     case FormFieldType.INPUT:
       return (
-        <div className="flex rounded-md border border-dark-500 bg-dark-400">
+        <div className="flex rounded-md gap-4">
           {props.iconSrc && (
-            <Image
-              src={props.iconSrc}
-              height={24}
-              width={24}
-              alt={props.iconAlt || "icon"}
-              className="ml-2"
-            />
+            <div className="flex items-center">
+                {props.iconSrc}
+            </div>
           )}
           <FormControl>
             <Input
               placeholder={props.placeholder}
               {...field}
-              className="shad-input border-0"
+              className={cn(`shad-input border-0 bg-snow`, props.className)}
+              defaultValue={props.defaultValue}
             />
           </FormControl>
         </div>
