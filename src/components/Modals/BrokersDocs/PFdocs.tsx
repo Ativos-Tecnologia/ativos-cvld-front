@@ -38,7 +38,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
   const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
   const [showDoc, setShowDoc] = useState<boolean>(false);
   const [docUrl, setDocUrl] = useState<string>("");
-  const [hasLinkCopied, setHasLinkCopied] = useState<boolean>(false);
+  const [linkCopied, setLinkCopied] = useState<string>("");
   const [isFetchingDoc, setIsFetchingDoc] = useState<Record<string, boolean>>({
     oficio_requisitorio: false,
     rg: false,
@@ -231,11 +231,11 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
    * @param {string} link - O link a ser copiado
    * @returns {void} - retorno da função 
    */
-  const handleCopyLink = (link: string): void => {
+  const handleCopyLink = (link: string, docType: string): void => {
     navigator.clipboard.writeText(link);
-    setHasLinkCopied(true);
+    setLinkCopied(docType);
 
-    setTimeout(() => setHasLinkCopied(false), 2000);
+    setTimeout(() => setLinkCopied(""), 2000);
   };
 
   // função de submit só para que o hook form funcione (temporário)
@@ -271,11 +271,11 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
   }, [cedenteInfo])
 
   return (
-    <div className="overflow-y-auto overflow-x-hidden px-3 2xsm:max-h-[85vh] xl:max-h-[480px]">
+    <div className="overflow-y-auto overflow-x-hidden px-3 2xsm:max-h-[85vh] xl:max-h-[480px] 3xl:max-h-[750px]">
       <h2 className="mb-10 text-center text-2xl font-medium">
         Gestão de Documentos
       </h2>
-      <div className="grid w-full grid-cols-2 gap-5">
+      <div className="grid w-full grid-cols-2 3xl:grid-cols-3 gap-5 mb-5">
 
         {isFirstLoad ? (
           <>
@@ -316,7 +316,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                       {/* Select / Change document */}
                       <Button
                         isLoading={isFetchingDoc.oficio_requisitorio}
-                        className="px-3 py-1 h-fit text-body dark:text-bodydark bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
+                        className="w-full md:max-w-44 lg:max-w-48 xl:w-full px-3 h-7 text-body dark:text-bodydark bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
                       >
                         <form onSubmit={handleSubmit(submitDocument)}>
                           <label
@@ -353,7 +353,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                           < Link
                             href={
                               cedenteInfo.properties["Doc. Ofício Requisitório"].url || ""}
-                            className="flex items-center text-body dark:text-bodydark justify-center text-sm gap-2 px-3 py-1 h-fit rounded-md bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 transition-colors duration-300"
+                            className="w-full md:max-w-44 lg:max-w-48 xl:w-full flex items-center text-body dark:text-bodydark justify-center text-sm gap-2 px-3 h-7 rounded-md bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 transition-colors duration-300"
                           >
                             <FaFileDownload />
                             <span>Baixar Documento</span>
@@ -361,9 +361,9 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
 
                           {/* copy link button */}
                           <Button
-                            onClick={() => handleCopyLink(cedenteInfo?.properties["Doc. Ofício Requisitório"].url || "")}
-                            className={`text-sm text-body dark:text-bodydark px-3 py-1 h-fit bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 ${hasLinkCopied && "!text-snow !bg-green-500 hover:!bg-green-600"}`}>
-                            {hasLinkCopied ? (
+                            onClick={() => handleCopyLink(cedenteInfo?.properties["Doc. Ofício Requisitório"].url || "", "oficio_requisitorio")}
+                            className={`w-full md:max-w-44 lg:max-w-48 xl:w-full text-sm text-body dark:text-bodydark px-3 h-7 bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 ${linkCopied === "oficio_requisitorio" && "!text-snow !bg-green-500 hover:!bg-green-600"}`}>
+                            {linkCopied === "oficio_requisitorio" ? (
                               <>
                                 <LuClipboardCheck />
                                 <p>Link Copiado!</p>
@@ -380,7 +380,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                           <Button
                             isLoading={isUnlinkingDoc.oficio_requisitorio}
                             variant='danger'
-                            className='text-sm px-3 py-1 h-fit'
+                            className='w-full md:max-w-44 lg:max-w-48 xl:w-full text-sm px-3 h-7'
                             onClick={() => handleRemoveDocument("oficio_requisitorio")}
                           >
                             <BiUnlink className="text-xl text-snow" />
@@ -422,7 +422,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                   {/* Select / Change document */}
                   <Button
                     isLoading={isFetchingDoc.rg}
-                    className="px-3 py-1 h-fit text-body dark:text-bodydark bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
+                    className="w-full md:max-w-44 lg:max-w-48 xl:w-full px-3 h-7 text-body dark:text-bodydark bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
                   >
                     <form onSubmit={handleSubmit(submitDocument)}>
                       <label
@@ -459,7 +459,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                       < Link
                         href={
                           cedenteInfo.properties["Doc. RG"].url || ""}
-                        className="flex items-center text-body dark:text-bodydark justify-center text-sm gap-2 px-3 py-1 h-fit rounded-md bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 transition-colors duration-300"
+                        className="w-full md:max-w-44 lg:max-w-48 xl:w-full flex items-center text-body dark:text-bodydark justify-center text-sm gap-2 px-3 h-7 rounded-md bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 transition-colors duration-300"
                       >
                         <FaFileDownload />
                         <span>Baixar Documento</span>
@@ -467,9 +467,9 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
 
                       {/* copy link button */}
                       <Button
-                        onClick={() => handleCopyLink(cedenteInfo?.properties["Doc. RG"].url || "")}
-                        className={`text-sm text-body dark:text-bodydark px-3 py-1 h-fit bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 ${hasLinkCopied && "!text-snow !bg-green-500 hover:!bg-green-600"}`}>
-                        {hasLinkCopied ? (
+                        onClick={() => handleCopyLink(cedenteInfo?.properties["Doc. RG"].url || "", "rg")}
+                        className={`w-full md:max-w-44 lg:max-w-48 xl:w-full text-sm text-body dark:text-bodydark px-3 h-7 bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 ${linkCopied === "rg" && "!text-snow !bg-green-500 hover:!bg-green-600"}`}>
+                        {linkCopied === "rg" ? (
                           <>
                             <LuClipboardCheck />
                             <p>Link Copiado!</p>
@@ -486,7 +486,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                       <Button
                         isLoading={isUnlinkingDoc.rg}
                         variant="danger"
-                        className='text-sm px-3 py-1 h-fit'
+                        className='w-full md:max-w-44 lg:max-w-48 xl:w-full text-sm px-3 h-7'
                         onClick={() => handleRemoveDocument("rg")}
                       >
                         <BiUnlink className="text-xl text-snow" />
@@ -526,7 +526,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                   {/* Select / Change document */}
                   <Button
                     isLoading={isFetchingDoc.certidao_nasc_cas}
-                    className="px-3 py-1 h-fit text-body dark:text-bodydark bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
+                    className="w-full md:max-w-44 lg:max-w-48 xl:w-full px-3 h-7 text-body dark:text-bodydark bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
                   >
                     <form onSubmit={handleSubmit(submitDocument)}>
                       <label
@@ -563,7 +563,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                       < Link
                         href={
                           cedenteInfo.properties["Doc. Certidão Nascimento/Casamento"].url || ""}
-                        className="flex items-center text-body dark:text-bodydark justify-center text-sm gap-2 px-3 py-1 h-fit rounded-md bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 transition-colors duration-300"
+                        className="w-full md:max-w-44 lg:max-w-48 xl:w-full flex items-center text-body dark:text-bodydark justify-center text-sm gap-2 px-3 h-7 rounded-md bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 transition-colors duration-300"
                       >
                         <FaFileDownload />
                         <span>Baixar Documento</span>
@@ -571,9 +571,9 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
 
                       {/* copy link button */}
                       <Button
-                        onClick={() => handleCopyLink(cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"].url || "")}
-                        className={`text-sm px-3 py-1 text-body dark:text-bodydark h-fit bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 ${hasLinkCopied && "!text-snow !bg-green-500 hover:!bg-green-600"}`}>
-                        {hasLinkCopied ? (
+                        onClick={() => handleCopyLink(cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"].url || "", "certidao_nasc_cas")}
+                        className={`w-full md:max-w-44 lg:max-w-48 xl:w-full text-sm h-7 text-body dark:text-bodydark bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 ${linkCopied === "certidao_nasc_cas" && "!text-snow !bg-green-500 hover:!bg-green-600"}`}>
+                        {linkCopied === "certidao_nasc_cas" ? (
                           <>
                             <LuClipboardCheck />
                             <p>Link Copiado!</p>
@@ -589,7 +589,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                       {/* unlink button */}
                       <Button
                         isLoading={isUnlinkingDoc.certidao_nasc_cas}
-                        className='text-sm px-3 py-1 h-fit'
+                        className='w-full md:max-w-44 lg:max-w-48 xl:w-full text-sm px-3 h-7'
                         variant="danger"
                         onClick={() => handleRemoveDocument("certidao_nasc_cas")}
                       >
@@ -630,7 +630,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                   {/* Select / Change document */}
                   <Button
                     isLoading={isFetchingDoc.comprovante_de_residencia}
-                    className="px-3 py-1 h-fit text-body dark:text-bodydark bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
+                    className="w-full md:max-w-44 lg:max-w-48 xl:w-full px-3 h-7 text-body dark:text-bodydark bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
                   >
                     <form onSubmit={handleSubmit(submitDocument)}>
                       <label
@@ -667,7 +667,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                       < Link
                         href={
                           cedenteInfo.properties["Doc. Comprovante de Residência"].url || ""}
-                        className="flex items-center text-body dark:text-bodydark justify-center text-sm gap-2 px-3 py-1 h-fit rounded-md bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 transition-colors duration-300"
+                        className="w-full md:max-w-44 lg:max-w-48 xl:w-full flex items-center text-body dark:text-bodydark justify-center text-sm gap-2 px-3 h-7 rounded-md bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 transition-colors duration-300"
                       >
                         <FaFileDownload />
                         <span>Baixar Documento</span>
@@ -675,9 +675,9 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
 
                       {/* copy link button */}
                       <Button
-                        onClick={() => handleCopyLink(cedenteInfo?.properties["Doc. Comprovante de Residência"].url || "")}
-                        className={`text-body dark:text-bodydark text-sm px-3 py-1 h-fit bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 ${hasLinkCopied && "!text-snow !bg-green-500 hover:!bg-green-600"}`}>
-                        {hasLinkCopied ? (
+                        onClick={() => handleCopyLink(cedenteInfo?.properties["Doc. Comprovante de Residência"].url || "", "comprovante_de_residencia")}
+                        className={`w-full md:max-w-44 lg:max-w-48 xl:w-full text-body dark:text-bodydark text-sm px-3 h-7 bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700 ${linkCopied === "comprovante_de_residencia" && "!text-snow !bg-green-500 hover:!bg-green-600"}`}>
+                        {linkCopied === "comprovante_de_residencia" ? (
                           <>
                             <LuClipboardCheck />
                             <p>Link Copiado!</p>
@@ -693,7 +693,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                       {/* unlink button */}
                       <Button
                         isLoading={isUnlinkingDoc.comprovante_de_residencia}
-                        className='text-sm px-3 py-1 h-fit'
+                        className='w-full md:max-w-44 lg:max-w-48 xl:w-full text-sm px-3 h-7'
                         variant='danger'
                         onClick={() => handleRemoveDocument("comprovante_de_residencia")}
                       >
@@ -708,35 +708,36 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
           </>
         )}
 
-
-        {/* botão que desvincula todos os documentos */}
-        {(cedenteInfo?.properties["Doc. Ofício Requisitório"].url ||
-          cedenteInfo?.properties["Doc. RG"].url ||
-          cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"].url ||
-          cedenteInfo?.properties["Doc. Comprovante de Residência"].url) && (
-            <div className='col-span-2 bg-white dark:bg-boxdark-2 p-3 shadow-6 rounded-md'>
-              <fieldset className=" flex items-center justify-center gap-5 border-t border-stroke py-3 dark:border-form-strokedark">
-                <legend className="px-2 text-xs uppercase">Outras opções</legend>
-
-                <Button
-                  onClick={() => setDocModalInfo(null)}
-                >
-                  OK
-                </Button>
-
-                <Button
-                  variant="outlined"
-                  onClick={() => handleRemoveDocument("todos")}
-                  className='2xsm:text-[15px] 2xsm:p-2 md:text-base md:px-4'
-                >
-                  {isUnlinkingDoc.todos
-                    ? "Desvinculando documentos..."
-                    : "Desvincular todos os documentos"}
-                </Button>
-              </fieldset>
-            </div>
-          )}
       </div>
+
+      {/* botão que desvincula todos os documentos */}
+      {(cedenteInfo?.properties["Doc. Ofício Requisitório"].url ||
+        cedenteInfo?.properties["Doc. RG"].url ||
+        cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"].url ||
+        cedenteInfo?.properties["Doc. Comprovante de Residência"].url) && (
+          <div className='col-span-2 bg-white dark:bg-boxdark-2 p-3 shadow-6 rounded-md'>
+            <fieldset className="flex items-center justify-center gap-5 border-t border-stroke py-3 dark:border-form-strokedark 2xsm:flex-col 2xsm:gap-3 md:flex-row">
+              <legend className="px-2 text-xs uppercase">Outras opções</legend>
+
+              <Button
+                className='2xsm:w-full md:w-fit'
+                onClick={() => setDocModalInfo(null)}
+              >
+                Fechar
+              </Button>
+
+              <Button
+                variant="outlined"
+                onClick={() => handleRemoveDocument("todos")}
+                className='2xsm:text-[15px] 2xsm:p-2 2xsm:w-full md:w-fit md:text-base md:px-4'
+              >
+                {isUnlinkingDoc.todos
+                  ? "Desvinculando documentos..."
+                  : "Desvincular todos os documentos"}
+              </Button>
+            </fieldset>
+          </div>
+        )}
 
       {showDoc &&
         <DocVisualizer

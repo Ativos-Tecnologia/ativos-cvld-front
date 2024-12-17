@@ -13,15 +13,15 @@ const CardDocsSkeleton = (): JSX.Element => {
     return (
         <>
             {/* wrapper */}
-            <div className='col-span-1 grid gap-4 bg-gray-200 dark:bg-slate-800/70 rounded-md p-5'>
+            <div className='2xsm:col-span-2 lg:col-span-1 grid gap-4 bg-gray-200 dark:bg-slate-800/70 rounded-md p-5'>
 
                 {/* header */}
                 <CustomSkeleton type='title' className='h-6 w-25 rounded-md' />
 
                 {/* body */}
-                <div className='grid grid-cols-5 gap-4'>
+                <div className='grid grid-cols-6 2xsm:gap-8 md:gap-4 lg:gap-8 xl:gap-4'>
                     {/* preview wrapper */}
-                    <div className='col-span-3 grid gap-4'>
+                    <div className='2xsm:col-span-6 md:col-span-3 lg:col-span-6 xl:col-span-3 grid gap-4'>
                         <CustomSkeleton
                             type='title'
                             className='w-[165px] h-50 rounded-md mx-auto'
@@ -33,22 +33,22 @@ const CardDocsSkeleton = (): JSX.Element => {
                     </div>
 
                     {/* actions */}
-                    <div className='col-span-2 flex flex-col gap-3'>
+                    <div className='2xsm:col-span-6 md:col-span-3 md:place-items-end lg:col-span-6 lg:place-items-center xl:col-span-3 flex flex-col gap-3'>
                         <CustomSkeleton
                             type="content"
-                            className='w-full h-7 rounded-md'
+                            className='w-full md:max-w-44 lg:max-w-48 h-7 rounded-md'
                         />
                         <CustomSkeleton
                             type="content"
-                            className='w-full h-7 rounded-md'
+                            className='w-full md:max-w-44 lg:max-w-48 h-7 rounded-md'
                         />
                         <CustomSkeleton
                             type="content"
-                            className='w-full h-7 rounded-md'
+                            className='w-full md:max-w-44 lg:max-w-48 h-7 rounded-md'
                         />
                         <CustomSkeleton
                             type="content"
-                            className='w-full h-7 rounded-md'
+                            className='w-full md:max-w-44 lg:max-w-48 h-7 rounded-md'
                         />
                     </div>
                 </div>

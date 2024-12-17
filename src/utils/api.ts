@@ -1,6 +1,6 @@
-import axios from 'axios';
-import { ACCESS_TOKEN, DEV_API_URL, LOCAL_DEV_API_URL, PROD_API_URL, REFRESH_TOKEN } from '@/constants/constants';
+import { ACCESS_TOKEN, PROD_API_URL, REFRESH_TOKEN } from '@/constants/constants';
 import { checkIsPublicRoute } from '@/functions/check-is-public-route';
+import axios from 'axios';
 
 const activeUrl = LOCAL_DEV_API_URL;
 
@@ -28,8 +28,9 @@ api.interceptors.response.use(
   response => response,
   async (error) => {
     const originalRequest = error.config;
-    if (!localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`)) {
-        window.location.href = "auth/signin";
+    
+    if (!localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`) && !window.location.href.includes("/auth/signin")) {
+        window.location.href = "/auth/signin";
         return Promise.reject(error);
     }
 
@@ -37,11 +38,10 @@ api.interceptors.response.use(
       localStorage.removeItem(`ATIVOS_${ACCESS_TOKEN}`);
       localStorage.removeItem(`ATIVOS_${REFRESH_TOKEN}`);
       if (!checkIsPublicRoute(window.location.href)) {
-        window.location.href = "auth/signin";
+        window.location.href = "/auth/signin";
       }
-
     }
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error.response.status === 401 && !originalRequest._retry && localStorage.getItem(`ATIVOS_${REFRESH_TOKEN}`)) {
       originalRequest._retry = true;
       try {
         const refreshToken = localStorage.getItem(`ATIVOS_${REFRESH_TOKEN}`);
