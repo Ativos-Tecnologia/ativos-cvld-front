@@ -19,6 +19,9 @@ import HoverCard from "../CrmUi/Wrappers/HoverCard";
 import { imgPaths } from "@/constants/tribunais";
 import { FaFileInvoiceDollar } from "react-icons/fa6";
 import { BiSolidCoinStack } from "react-icons/bi";
+import numberFormat from "@/functions/formaters/numberFormat";
+import { LiquidationTimeCounter } from "../TimerCounter/LiquidationTimeCounter";
+import { DueDiligenceCounter } from "../TimerCounter/DueDiligenceCounter";
 
 enum navItems {
   TODOS = "Todos",
@@ -43,8 +46,12 @@ export type SimpleNotionData = {
   status_diligencia: string,
   valor_liquido_disponivel: number,
   tribunal: string,
-  tipo: string,
-  data_e_hora_de_aquisicao: string,
+  tipo: {
+    color: string,
+    id: string,
+    name: string
+  },
+  prazo_final_due: string,
 }
 
 type SimpleDataProps = {
@@ -86,7 +93,7 @@ const Juridico = () => {
     fetchAllPrecatoryWithSimpleData();
   }, [activeTab, fetchAllPrecatoryWithSimpleData]);
 
-  console.dir(simpleData);
+  console.log(simpleData)
 
   return (
     <div className="w-full">
@@ -143,23 +150,32 @@ const Juridico = () => {
 
                       <HoverCard key={item.id} className="h-55">
                         <HoverCard.Container backgroundImg={imgPaths[item.tribunal as keyof typeof imgPaths]}>
-                          <HoverCard.TribunalBadge tribunal={item.tribunal} className="group-hover:opacity-100" />
-                          <HoverCard.Icon
-                            icon={iconsConfig[item.tipo as keyof typeof iconsConfig].icon}
-                            // bgColor={iconsConfig[item.tipo as keyof typeof iconsConfig].bgColor}
-                            bgColor="#000"
-                          />
+                          <HoverCard.Content>
+                            <HoverCard.TribunalBadge tribunal={item.tribunal} />
+                            <HoverCard.Icon
+                              icon={iconsConfig[item.tipo.name as keyof typeof iconsConfig].icon}
+                              // bgColor={iconsConfig[item.tipo as keyof typeof iconsConfig].bgColor}
+                              bgColor="#000000"
+                              className="group-hover:opacity-0"
+                            />
+
+                            <div className="group-hover:opacity-0">
+                              <h2 className="mb-2 w-fit border-b border-snow pr-2 text-sm font-semibold uppercase text-snow">
+                                {item.credor}
+                              </h2>
+                              <p className="text-gray-300">
+                                {numberFormat(item.valor_liquido_disponivel)}
+                              </p>
+                            </div>
+
+                          </HoverCard.Content>
+
+                          <HoverCard.HiddenContent className="group-hover:h-55 items-center justify-evenly gap-5">
+                            <DueDiligenceCounter dueDate={item?.prazo_final_due || ""} />
+                            <span>Clique para detalhes</span>
+                          </HoverCard.HiddenContent>
                         </HoverCard.Container>
                       </HoverCard>
-
-                      // <Link href={`juridico/${item.id}`}
-                      //   key={item.id}
-                      //   className={`mb-4 h-65 max-w-full cursor-pointer rounded-md bg-white p-5 font-nexa opacity-50 dark:bg-boxdark xsm:min-w-95 xsm:px-2 md:min-w-[350px] md:px-3 lg:px-4`}
-                      // >
-                      //   <p className="text-lg font-semibold">{item.credor}</p>
-                      //   <p className="text-sm">{item.tipo}</p>
-                      //   <p className="text-sm">{item.status_diligencia}</p>
-                      // </Link>
                     ))
                   )}
                 </GridCardsWrapper.List>
