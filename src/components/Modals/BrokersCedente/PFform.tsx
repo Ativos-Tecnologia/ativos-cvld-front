@@ -1025,7 +1025,7 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
                     className="border-stroke dark:border-strokedark flex-1 w-full border-b border-l-0 border-t-0 border-r-0 bg-transparent py-1 outline-none focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 placeholder:italic"
                     options={{
                       delimiters: ["-"],
-                      blocks: [13,1]
+                      blocks: [12,1]
                     }}
                   />
                 </>
