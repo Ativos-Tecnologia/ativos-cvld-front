@@ -18,12 +18,12 @@ interface IHoverCardIconProps extends React.HTMLAttributes<HTMLSpanElement> {
  * Componente de wrapper do hovercard
  * 
  * @param {Object} props - propriedades do componente
- * @property {boolean} props.disabled - Informa se o conteúdo está desabilitado para manuseio
+ * @property {boolean} [props.disabled=false] - Informa se o conteúdo está desabilitado para manuseio. default false
  * @property {ReactNode} props.children - conteudo que será abraçado pelo componente
  * 
  * @returns {JSX.Element} - Componente renderizado
  */
-const HoverCard = ({ disabled, children, ...props }: IHoverCardProps): JSX.Element => {
+const HoverCard = ({ disabled=false, children, ...props }: IHoverCardProps): JSX.Element => {
     return (
         <li
             {...props}

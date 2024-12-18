@@ -629,14 +629,7 @@ const DashbrokersCard = ({ oficio }:
 
         try {
             const response = await api.patch(
-                `api/notion-api/update/${mainData!.id}/`,
-                {
-                    "Status Diligência": {
-                        select: {
-                            name: "Due Diligence",
-                        },
-                    },
-                },
+                `api/notion-api/broker/liquidate-proposal/${mainData!.id}/`,
             );
 
             if (response.status === 202) {
