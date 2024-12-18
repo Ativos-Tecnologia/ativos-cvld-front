@@ -709,6 +709,45 @@ const MainForm: React.FC<CVLDFormProps> = ({
               </div>
             </div>
 
+            <div className="col-span-2 flex w-full flex-col justify-between gap-4 sm:flex-row">
+                      <div
+                        className={`flex flex-row ${watch("ja_possui_destacamento") ? "items-center" : "items-start"} w-full gap-2 2xsm:col-span-2 sm:col-span-1`}
+                      >
+                        <CustomCheckbox
+                          check={watch("ja_possui_destacamento")}
+                          id={"ja_possui_destacamento"}
+                          register={register("ja_possui_destacamento")}
+                          defaultChecked
+                        />
+
+                        <label
+                          htmlFor="ja_possui_destacamento"
+                          className={`${!watch("ja_possui_destacamento") && "mt-1"} font-nexa text-xs font-semibold uppercase text-meta-5`}
+                        >
+                          Já possui destacamento de honorários?
+                        </label>
+                      </div>
+                      {watch("ja_possui_destacamento") === false && (
+                        <div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                          <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                            <label
+                              htmlFor="percentual_de_honorarios"
+                              className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                            >
+                              Percentual
+                            </label>
+                            <input
+                              type="number"
+                              id="percentual_de_honorarios"
+                              defaultValue={30}
+                              className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                              {...register("percentual_de_honorarios", {})}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
             <div
               className={`col-span-2 flex max-h-6 items-center gap-2 md:col-span-1`}
             >
@@ -1088,54 +1127,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                       </div>
                       {/* <div className="invisible flex w-full flex-col gap-2 sm:col-span-1 "></div> */}
                     </div>
-                    {(watch("especie") === "PRINCIPAL" ||
-                      watch("especie") === undefined) && (
-                      <div className="my-4 flex w-full flex-row justify-between gap-4 sm:col-span-2">
-                        <div
-                          className={`flex flex-row ${watch("ja_possui_destacamento") ? "items-center" : "items-start"} w-full gap-2 sm:col-span-1`}
-                        >
-                          <CustomCheckbox
-                            check={watch("ja_possui_destacamento")}
-                            id={"ja_possui_destacamento"}
-                            register={register("ja_possui_destacamento")}
-                            defaultChecked
-                          />
-                          {/* <input
-                              type="checkbox"
-                              id="ja_possui_destacamento"
-                              defaultChecked
-                              className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
-                              {...register("ja_possui_destacamento")}
-                            /> */}
-                          <label
-                            htmlFor="ja_possui_destacamento"
-                            className={`${!watch("ja_possui_destacamento") && "mt-1"} font-nexa text-xs font-semibold uppercase text-meta-5`}
-                          >
-                            Já possui destacamento de honorários?
-                          </label>
-                        </div>
-                        {watch("ja_possui_destacamento") === false && (
-                          <div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
-                            <div className="flex w-full flex-col gap-2 sm:col-span-1">
-                              <label
-                                htmlFor="percentual_de_honorarios"
-                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                              >
-                                Percentual
-                              </label>
-                              <input
-                                type="number"
-                                defaultValue={30}
-                                id="percentual_de_honorarios"
-                                data-testid="percentual_de_honorarios"
-                                className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                                {...register("percentual_de_honorarios", {})}
-                              />
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                    
 
                     <span className="text-md w-full self-center font-semibold">
                       Dados do Processo
