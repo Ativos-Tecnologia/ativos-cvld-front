@@ -458,6 +458,8 @@ const PFform = ({ id, mode, cedenteId = null, fromFormPJ, openModal }:
       }).then((result) => {
         if (result.isConfirmed && fromFormPJ) {
           openModal && openModal(false);
+        } else if (result.isConfirmed && !fromFormPJ) {
+          setCedenteModal(null)
         } else if (result.isDenied) {
           return;
         }
