@@ -28,7 +28,6 @@ const HoverCard = ({ disabled=false, children, ...props }: IHoverCardProps): JSX
         <li
             {...props}
             className={cn(`mb-4 h-65 max-w-full cursor-pointer font-nexa xsm:min-w-95 xsm:px-2 md:min-w-[350px] md:px-3 lg:px-4 ${disabled && "opacity-50 hover:cursor-not-allowed"}`, props.className)}
-        // onClick={handleClick}
         >
             {children}
         </li>
@@ -137,11 +136,12 @@ const HoverCardIcon = ({ bgColor, icon, className }: IHoverCardIconProps): JSX.E
  * 
  * @returns {JSX.Element} - Componente renderizado
  */
-const HoverCardContent = ({ children }: {
-    children: React.ReactNode
+const HoverCardContent = ({ children, className }: {
+    children: React.ReactNode,
+    className: string
 }): JSX.Element => {
     return (
-        <div className="group relative flex h-full cursor-pointer flex-col justify-between rounded-md bg-cover bg-center p-4">
+        <div className={cn("group relative flex h-full cursor-pointer flex-col justify-between rounded-md bg-cover bg-center p-4", className)}>
             {children}
         </div>
     )

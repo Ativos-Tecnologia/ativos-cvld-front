@@ -8,17 +8,17 @@ type TimerProps = {
     seconds: string;
 }
 
-export const DueDiligenceCounter = ({ dueDate }: { 
+export const DueDiligenceCounter = ({ dueDate }: {
     dueDate: string,
- }) => {
+}) => {
 
-    const [timer, setTimer] = useState<TimerProps>(calculateTimeLeft(dueDate.split("T")[0]));
+    const [timer, setTimer] = useState<TimerProps>(calculateTimeLeft(dueDate.split(".")[0]));
 
     useEffect(() => {
         if (!dueDate) return; // Não faz nada até a data de destino ser definida
 
         const timer = setInterval(() => {
-            setTimer(calculateTimeLeft(dueDate.split("T")[0]));
+            setTimer(calculateTimeLeft(dueDate.split(".")[0]));
         }, 1000);
 
         return () => clearInterval(timer);
@@ -26,6 +26,7 @@ export const DueDiligenceCounter = ({ dueDate }: {
 
     return (
         <div className='flex flex-col items-center justify-center text-snow'>
+
             <h2>Prazo final em:</h2>
 
             <div className='flex gap-4'>
@@ -37,6 +38,7 @@ export const DueDiligenceCounter = ({ dueDate }: {
                 <p>{timer.minutes} {timer.minutes > "01" ? 'minutos' : 'minuto'}</p>
                 <p>{timer.seconds} {timer.seconds > "01" ? 'segundos' : 'segundo'}</p>
             </div>
+
         </div>
     )
 }
