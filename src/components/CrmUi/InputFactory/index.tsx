@@ -123,7 +123,7 @@ export const CelerInputField: React.FC<CustomProps> = React.memo((props) => {
                 );
             case InputFieldVariant.SELECT:
                 return (
-                    <Select onValueChange={handleChange} defaultValue={value}>
+                    <Select onValueChange={(selectedValue) => handleChange(selectedValue)} value={value} defaultValue={value}>
                         <SelectTrigger className="shad-select-trigger">
                             <SelectValue placeholder={props.placeholder || "Selecione uma opção"} />
                         </SelectTrigger>
