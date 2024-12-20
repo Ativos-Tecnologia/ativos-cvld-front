@@ -1098,7 +1098,7 @@ const DashbrokersCard = ({ oficio }:
                                             e.target.value = formatCurrency(e.target.value)
                                         }}
                                         onChange={e => changeInputValues("proposal", e.target.value)}
-                                        className="max-w-35 text-center rounded-md border-none pr-2 pl-1 ml-2 py-2 text-sm font-medium text-body focus-visible:ring-body dark:focus-visible:ring-snow dark:bg-boxdark-2/50 dark:text-bodydark bg-gray-100"
+                                        className="max-w-35 text-center rounded-md border-none pr-2 pl-1 ml-2 py-2 text-sm font-medium text-body focus-visible:ring-body dark:focus-visible:ring-snow dark:bg-boxdark-2/50 dark:text-bodydark bg-gray-100 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
                                     />
                                 </div>
                                 <input
@@ -1110,7 +1110,7 @@ const DashbrokersCard = ({ oficio }:
                                     max={mainData?.properties["(R$) Proposta Máxima - Celer"].number || 0}
                                     value={sliderValues.proposal}
                                     onChange={e => handleProposalSliderChange(e.target.value, true)}
-                                    className="w-full range-slider"
+                                    className="w-full range-slider disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
                                 />
 
                             </div>
@@ -1128,7 +1128,7 @@ const DashbrokersCard = ({ oficio }:
                                             e.target.value = formatCurrency(e.target.value)
                                         }}
                                         onChange={e => changeInputValues("comission", e.target.value)}
-                                        className="max-w-35 text-center rounded-md border-none pr-2 pl-1 ml-2 py-2 text-sm font-medium text-body focus-visible:ring-body dark:focus-visible:ring-snow dark:bg-boxdark-2/50 dark:text-bodydark bg-gray-100"
+                                        className="max-w-35 text-center rounded-md border-none pr-2 pl-1 ml-2 py-2 text-sm font-medium text-body focus-visible:ring-body dark:focus-visible:ring-snow dark:bg-boxdark-2/50 dark:text-bodydark bg-gray-100 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
                                     />
 
                                 </div>
@@ -1140,7 +1140,7 @@ const DashbrokersCard = ({ oficio }:
                                     max={mainData?.properties["(R$) Comissão Máxima - Celer"].number || 0}
                                     value={sliderValues.comission}
                                     onChange={e => handleComissionSliderChange(e.target.value, true)}
-                                    className="w-full range-slider-reverse"
+                                className="w-full range-slider-reverse disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 [::-webkit-slider-thumb]::-webkit-slider-thumb {background-color: #FFF;}"
                                 />
 
                             </div>

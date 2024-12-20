@@ -98,7 +98,6 @@ const Juridico = () => {
     fetchAllPrecatoryWithSimpleData();
   }, [activeTab, fetchAllPrecatoryWithSimpleData]);
 
-  console.log(simpleData)
 
   return (
     <div className="w-full">
