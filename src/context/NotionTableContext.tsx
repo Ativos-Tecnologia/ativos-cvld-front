@@ -1281,22 +1281,22 @@ export const TableNotionProvider = ({
   // }, []);
 
   // seta a lista de usuários se a role do usuário for ativos
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     console.log("fetching users list");
-  //     if (userData?.role === "ativos" && saveInfoToNotion && usersList.length === 0) {
-  //       const [usersList] = await Promise.all([
-  //         api.get("/api/notion-api/list/users/"),
-  //       ]);
-  //       if (usersList.status === 200) {
-  //         setUsersList(usersList.data);
-  //         setFilteredUsersList(usersList.data);
-  //       }
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log("fetching users list");
+      if (userData?.role === "ativos" && saveInfoToNotion && usersList.length === 0) {
+        const [usersList] = await Promise.all([
+          api.get("/api/notion-api/list/users/"),
+        ]);
+        if (usersList.status === 200) {
+          setUsersList(usersList.data);
+          setFilteredUsersList(usersList.data);
+        }
+      }
+    };
 
-  //   fetchData();
-  // }, [saveInfoToNotion, userData?.role, usersList.length]);
+    fetchData();
+  }, [saveInfoToNotion, userData?.role, usersList.length]);
 
   return (
     <TableNotionContext.Provider

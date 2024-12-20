@@ -61,9 +61,9 @@ const HoverCardContainer = ({ children, disabled, backgroundImg, className }: {
                     alt="Card Image"
                     width={380}
                     height={220}
-                    className="transition-all duration-500 group-hover:scale-105"
+                    className="transition-all duration-500 group-hover:scale-105 h-65"
                 />
-                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.9)_20%,rgba(0,0,0,0.2)_80%)]"></div>
+                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.9)_40%,rgba(0,0,0,0.2)_90%)]"></div>
             </div>
             {children}
         </div>
@@ -138,7 +138,7 @@ const HoverCardIcon = ({ bgColor, icon, className }: IHoverCardIconProps): JSX.E
  */
 const HoverCardContent = ({ children, className }: {
     children: React.ReactNode,
-    className: string
+    className?: string
 }): JSX.Element => {
     return (
         <div className={cn("group relative flex h-full cursor-pointer flex-col justify-between rounded-md bg-cover bg-center p-4", className)}>
