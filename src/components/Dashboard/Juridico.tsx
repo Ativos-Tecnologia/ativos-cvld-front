@@ -22,6 +22,7 @@ import { BiSolidCoinStack } from "react-icons/bi";
 import numberFormat from "@/functions/formaters/numberFormat";
 import { LiquidationTimeCounter } from "../TimerCounter/LiquidationTimeCounter";
 import { DueDiligenceCounter } from "../TimerCounter/DueDiligenceCounter";
+import { useRouter } from "next/navigation";
 
 enum navItems {
   TODOS = "Todos",
@@ -43,7 +44,10 @@ export type SimpleNotionData = {
   id: string,
   credor: string,
   status: string,
+  loa: number,
+  regime: string,
   status_diligencia: string,
+  esfera: string,
   valor_liquido_disponivel: number,
   tribunal: string,
   tipo: {
@@ -81,6 +85,7 @@ const Juridico = () => {
   const [activeTab, setActiveTab] = React.useState<string>(navItems.TODOS);
   const [simpleData, setSimpleData] = React.useState<SimpleDataProps>({ results: [] });
   const [loading, setLoading] = React.useState<boolean>(false);
+  const router = useRouter();
 
   const fetchAllPrecatoryWithSimpleData = React.useCallback(async () => {
     setLoading(true);
@@ -145,37 +150,107 @@ const Juridico = () => {
               <TabsContent key={index} value={item}>
                 <GridCardsWrapper.List className="gap-4">
                   {simpleData.results.length > 0 && (
-                    simpleData.results.map((item) => (
+                    simpleData.results.map((item) => {
 
-                      <HoverCard key={item.id} className="h-55">
-                        <HoverCard.Container backgroundImg={imgPaths[item.tribunal as keyof typeof imgPaths]}>
-                          <HoverCard.Content>
-                            <HoverCard.TribunalBadge tribunal={item.tribunal} />
-                            <HoverCard.Icon
-                              icon={iconsConfig[item.tipo.name as keyof typeof iconsConfig].icon}
-                              // bgColor={iconsConfig[item.tipo as keyof typeof iconsConfig].bgColor}
-                              bgColor="#000000"
-                              className="group-hover:opacity-0"
-                            />
+                      let deadlineSituation: string; // define a situação do prazo
 
-                            <div className="group-hover:opacity-0">
-                              <h2 className="mb-2 w-fit border-b border-snow pr-2 text-sm font-semibold uppercase text-snow">
-                                {item.credor}
-                              </h2>
-                              <p className="text-gray-300">
-                                {numberFormat(item.valor_liquido_disponivel)}
-                              </p>
-                            </div>
+                      const currentDate = +new Date();
+                      const itemDueDate = +new Date(item.prazo_final_due);
 
-                          </HoverCard.Content>
+                      // calcula quantas horas faltam para o prazo expirar
+                      const hoursRemaining = (itemDueDate - currentDate) / (1000 * 60 * 60);
 
-                          <HoverCard.HiddenContent className="group-hover:h-55 items-center justify-evenly gap-5">
-                            <DueDiligenceCounter dueDate={item?.prazo_final_due || ""} />
-                            <span>Clique para detalhes</span>
-                          </HoverCard.HiddenContent>
-                        </HoverCard.Container>
-                      </HoverCard>
-                    ))
+                      if (hoursRemaining >= 96) {
+                        deadlineSituation = "good";
+                      } else if (hoursRemaining < 96 && hoursRemaining >= 48) {
+                        deadlineSituation = "warning";
+                      } else {
+                        deadlineSituation = "danger";
+                      }
+
+                      return (
+                        <HoverCard onClick={() => router.push(`/dashboard/juridico/${item.id}`)} key={item.id} className="h-65 relative">
+
+                          {(deadlineSituation === "danger" && item.prazo_final_due) && (
+                            <>
+                              <div className="absolute z-0 inset-0 w-90 left-3.5 bg-red-500 rounded-md opacity-60 animate-celer-ping" />
+                              <div className="absolute z-0 inset-0 w-90 left-3.5 bg-red-500 delay-300 rounded-md opacity-60 animate-celer-ping" />
+                            </>
+                          )}
+
+                          <HoverCard.Container 
+                          className="h-65"
+                          backgroundImg={imgPaths[item.tribunal as keyof typeof imgPaths]}
+                          >
+                            <HoverCard.Content
+                              className={`${item.prazo_final_due && "outline outline-[3px]"} 
+                              ${deadlineSituation === "good" && "outline-green-400"} 
+                              ${deadlineSituation === "warning" && "outline-yellow-500"} 
+                              ${deadlineSituation === "danger" && "outline-red-500"}
+                                `}
+                            >
+                              <HoverCard.TribunalBadge tribunal={item.tribunal} />
+                              <HoverCard.Icon
+                                icon={iconsConfig[item.tipo.name as keyof typeof iconsConfig].icon}
+                                // bgColor={iconsConfig[item.tipo as keyof typeof iconsConfig].bgColor}
+                                bgColor={iconsConfig[item.tipo.name as keyof typeof iconsConfig].bgColor}
+                                className="group-hover:opacity-0"
+                              />
+
+                              <div className="group-hover:opacity-0 text-snow">
+                                <HoverCard.InfoList>
+                                  <HoverCard.ListItem className="col-span-2 border-0">
+                                    <p className="text-[10px] text-gray-300">CREDOR</p>
+                                    <p className="max-w-[316px] overflow-hidden text-ellipsis whitespace-nowrap text-sm uppercase">
+                                      {item.credor}
+                                    </p>
+                                  </HoverCard.ListItem>
+
+                                  <HoverCard.ListItem className="border-0">
+                                    <p className="text-[10px] text-gray-300">VALOR LÍQUIDO</p>
+                                    <p className="text-sm">
+                                      {numberFormat(item.valor_liquido_disponivel)}
+                                    </p>
+                                  </HoverCard.ListItem>
+
+                                  <HoverCard.ListItem className="border-0">
+                                    <p className="text-[10px] text-gray-300">REGIME</p>
+                                    <p className="text-sm">
+                                      {item.regime}
+                                    </p>
+                                  </HoverCard.ListItem>
+
+                                  <HoverCard.ListItem>
+                                    <p className="text-[10px] text-gray-300">LOA</p>
+                                    <p className="text-sm">
+                                      {item.loa || "Não possui"}
+                                    </p>
+                                  </HoverCard.ListItem>
+
+                                  <HoverCard.ListItem>
+                                    <p className="text-[10px] text-gray-300">ESFERA</p>
+                                    <p className="text-sm">
+                                      {item.esfera}
+                                    </p>
+                                  </HoverCard.ListItem>
+
+                                  <HoverCard.ListItem className="border-0 col-span-2">
+                                    <p className="text-[10px] text-gray-300">PRAZO FINAL</p>
+                                    <DueDiligenceCounter dueDate={item?.prazo_final_due || ""} />
+                                  </HoverCard.ListItem>
+                                </HoverCard.InfoList>
+
+                              </div>
+
+                            </HoverCard.Content>
+
+                            <HoverCard.HiddenContent className="h-65 items-center justify-evenly gap-5">
+                              <span>Clique para detalhes</span>
+                            </HoverCard.HiddenContent>
+                          </HoverCard.Container>
+                        </HoverCard>
+                      )
+                    })
                   )}
                 </GridCardsWrapper.List>
                 {

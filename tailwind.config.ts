@@ -336,7 +336,17 @@ const config = {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
-        "shimmer": {
+        "celer-ping": {
+          from: {
+            opacity: "0.6",
+            transform: "scale(1)",
+          },
+          to: {
+            opacity: "0",
+            transform: "scale(1.1)",
+          },
+        },
+        shimmer: {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
@@ -344,13 +354,13 @@ const config = {
           "0%": { transform: "translateX(-400%)" },
           "100%": { transform: "translateX(1000px)" },
         },
-        "fade": {
-          "0%" : {
-            opacity: "0"
+        fade: {
+          "0%": {
+            opacity: "0",
           },
           "100%": {
-            opacity: "1"
-          }
+            opacity: "1",
+          },
         },
         "fade-up": {
           "0%": {
@@ -498,6 +508,7 @@ const config = {
         },
       },
       animation: {
+        "celer-ping": 'celer-ping 1s ease-out infinite',
         shimmer: "shimmer 1.5s infinite",
         fade: "fade 1.2s linear",
         "skeleton-pass": "skeleton-pass 1s ease-in-out infinite",
@@ -517,7 +528,7 @@ const config = {
         easespin: "easespin 5332ms cubic-bezier(0.4, 0, 0.2, 1) infinite both",
         "left-spin":
           "left-spin 1333ms cubic-bezier(0.4, 0, 0.2, 1) infinite both",
-          "right-spin":
+        "right-spin":
           "right-spin 1333ms cubic-bezier(0.4, 0, 0.2, 1) infinite both",
         "ping-once": "ping 5s cubic-bezier(0, 0, 0.2, 1)",
         rotating: "rotating 30s linear infinite",
