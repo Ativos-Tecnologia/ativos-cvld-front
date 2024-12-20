@@ -26,9 +26,11 @@ interface CustomProps {
     onValueChange?: (name: string, value: any) => void;
     error?: string;
     isLoading?: boolean;
+    onSubmit?: (name: string, value: any) => void;
+    ref?: React.Ref<HTMLInputElement>;
 }
 
-export const CelerInputField: React.FC<CustomProps> = (props) => {
+export const CelerInputField: React.FC<CustomProps> = React.memo((props) => {
     const [value, setValue] = useState(props.defaultValue ?? "");
 
     useEffect(() => {
@@ -38,13 +40,25 @@ export const CelerInputField: React.FC<CustomProps> = (props) => {
     }, [props.defaultValue]);
 
     const handleChange = (newValue: any) => {
-        setValue(newValue);
-        props.onValueChange?.(props.name, newValue);
+        if (newValue !== value) { 
+            setValue(newValue);
+            props.onValueChange?.(props.name, newValue);
+        }
+    };
+
+    const handleKeyDown = (event: React.KeyboardEvent) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            if (props.onSubmit) {
+                props.onSubmit(props.name, value);
+            }
+        }
     };
 
     const commonProps = {
         value,
         onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleChange(e.target.value),
+        onKeyDown: handleKeyDown,
         placeholder: props.placeholder || "Digite aqui",
         disabled: props.disabled || props.isLoading,
     };
@@ -55,7 +69,7 @@ export const CelerInputField: React.FC<CustomProps> = (props) => {
                 return (
                     <div className="flex rounded-md gap-4">
                         {props.iconSrc && <div className="flex items-center">{props.iconSrc}</div>}
-                        <Input defaultValue={props.defaultValue} className={cn("shad-input border-0 bg-snow", props.className)} {...commonProps} />
+                        <Input ref={props.ref} className={cn("shad-input border-0 bg-snow", props.className)} {...commonProps} />
                     </div>
                 );
             case InputFieldVariant.TEXTAREA:
@@ -109,7 +123,7 @@ export const CelerInputField: React.FC<CustomProps> = (props) => {
                 );
             case InputFieldVariant.SELECT:
                 return (
-                    <Select onValueChange={handleChange} defaultValue={value}>
+                    <Select onValueChange={(selectedValue) => handleChange(selectedValue)} value={value} defaultValue={value}>
                         <SelectTrigger className="shad-select-trigger">
                             <SelectValue placeholder={props.placeholder || "Selecione uma opção"} />
                         </SelectTrigger>
@@ -128,6 +142,6 @@ export const CelerInputField: React.FC<CustomProps> = (props) => {
             {props.error && <p className="text-red-500 text-sm mt-1">{props.error}</p>}
         </div>
     );
-};
+});
 
-
+CelerInputField.displayName = "CelerInputField";
