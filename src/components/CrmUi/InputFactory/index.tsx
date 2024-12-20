@@ -9,20 +9,9 @@ import { Select, SelectContent, SelectTrigger, SelectValue } from "@/components/
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import ICelerInputFormField from "@/interfaces/ICelerInputFormField";
 
-interface CustomProps {
-    name: string;
-    fieldType: InputFieldVariant;
-    label?: string;
-    placeholder?: string;
-    iconSrc?: React.ReactNode;
-    iconAlt?: string;
-    disabled?: boolean;
-    dateFormat?: string;
-    showTimeSelect?: boolean;
-    children?: React.ReactNode;
-    defaultValue?: any;
-    className?: string;
+interface ICelerInputField extends ICelerInputFormField {
     onValueChange?: (name: string, value: any) => void;
     error?: string;
     isLoading?: boolean;
@@ -30,7 +19,7 @@ interface CustomProps {
     ref?: React.Ref<HTMLInputElement>;
 }
 
-export const CelerInputField: React.FC<CustomProps> = React.memo((props) => {
+export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) => {
     const [value, setValue] = useState(props.defaultValue ?? "");
 
     useEffect(() => {
