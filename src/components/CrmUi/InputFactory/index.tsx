@@ -40,7 +40,7 @@ export const CelerInputField: React.FC<CustomProps> = React.memo((props) => {
     }, [props.defaultValue]);
 
     const handleChange = (newValue: any) => {
-        if (newValue !== value) { 
+        if (newValue !== value) {
             setValue(newValue);
             props.onValueChange?.(props.name, newValue);
         }
@@ -95,6 +95,7 @@ export const CelerInputField: React.FC<CustomProps> = React.memo((props) => {
                             checked={!!value}
                             onCheckedChange={(isChecked) => handleChange(isChecked)}
                             disabled={props.disabled || props.isLoading}
+                            value={value}
                         />
                         <label htmlFor={props.name} className="checkbox-label">
                             {props.label}
