@@ -17,16 +17,9 @@ import { Input } from "../../components/ui/input";
 import { Select, SelectContent, SelectTrigger, SelectValue } from "../../components/ui/select";
 import { Textarea } from "../../components/ui/textarea";
 import { cn } from '@/lib/utils'
+import { InputFieldVariant } from "@/enums/inputFieldVariants.enum";
 
-export enum FormFieldType {
-  INPUT = "input",
-  TEXTAREA = "textarea",
-  PHONE_INPUT = "phoneInput",
-  CHECKBOX = "checkbox",
-  DATE_PICKER = "datePicker",
-  SELECT = "select",
-  SKELETON = "skeleton",
-}
+
 
 interface CustomProps {
   control: Control<any>;
@@ -40,14 +33,14 @@ interface CustomProps {
   showTimeSelect?: boolean;
   children?: React.ReactNode;
   renderSkeleton?: (field: any) => React.ReactNode;
-  fieldType: FormFieldType;
+  fieldType: InputFieldVariant;
   defaultValue?: any;
   className?: string;
 }
 
 const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
   switch (props.fieldType) {
-    case FormFieldType.INPUT:
+    case InputFieldVariant.INPUT:
       return (
         <div className="flex rounded-md gap-4">
           {props.iconSrc && (
@@ -65,7 +58,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
           </FormControl>
         </div>
       );
-    case FormFieldType.TEXTAREA:
+    case InputFieldVariant.TEXTAREA:
       return (
         <FormControl>
           <Textarea
@@ -76,7 +69,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
           />
         </FormControl>
       );
-    case FormFieldType.PHONE_INPUT:
+    case InputFieldVariant.PHONE_INPUT:
       return (
         <FormControl>
           <PhoneInput
@@ -90,7 +83,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
           />
         </FormControl>
       );
-    case FormFieldType.CHECKBOX:
+    case InputFieldVariant.CHECKBOX:
       return (
         <FormControl>
           <div className="flex items-center gap-4">
@@ -105,7 +98,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
           </div>
         </FormControl>
       );
-    case FormFieldType.DATE_PICKER:
+    case InputFieldVariant.DATE_PICKER:
       return (
         <div className="flex rounded-md border border-dark-500 bg-dark-400">
           <Image
@@ -127,7 +120,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
           </FormControl>
         </div>
       );
-    case FormFieldType.SELECT:
+    case InputFieldVariant.SELECT:
       return (
         <FormControl>
           <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -142,7 +135,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
           </Select>
         </FormControl>
       );
-    case FormFieldType.SKELETON:
+    case InputFieldVariant.SKELETON:
       return props.renderSkeleton ? props.renderSkeleton(field) : null;
     default:
       return null;
@@ -158,7 +151,7 @@ const CustomFormField = (props: CustomProps) => {
       name={name}
       render={({ field }) => (
         <FormItem className="flex-1">
-          {props.fieldType !== FormFieldType.CHECKBOX && label && (
+          {props.fieldType !== InputFieldVariant.CHECKBOX && label && (
             <FormLabel className="shad-input-label">{label}</FormLabel>
           )}
           <RenderInput field={field} props={props} />
