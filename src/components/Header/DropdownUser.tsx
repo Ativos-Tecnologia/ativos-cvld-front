@@ -3,11 +3,11 @@ import useLogout from "@/hooks/useLogout";
 import { Avatar } from "flowbite-react";
 import Link from "next/link";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { AiFillCrown, AiOutlineLogout, AiTwotoneCrown } from "react-icons/ai";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import { BiLogOut, BiUser } from "react-icons/bi";
+import { AiOutlineLogout, AiTwotoneCrown } from "react-icons/ai";
+import { CgProfile } from "react-icons/cg";
 import { Button } from "../Button";
 import DynamicSkeleton from "../CrmUi/ui/DynamicSkeleton";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -93,10 +93,21 @@ const DropdownUser = () => {
       <DropdownMenuContent className="w-max">
         <DropdownMenuItem
           className="flex items-center gap-3.5 !text-sm font-medium duration-300 ease-in-out lg:text-base cursor-pointer"
+        >
+          <Link
+          href="/profile"
+          className="flex w-full p-2 items-center gap-2.5 !text-sm font-medium duration-300 ease-in-out lg:text-base cursor-pointer bg-transparent border-transparent hover:bg-blue-50 dark:hover:bg-graydark/30 dark:border-transparent hover:rounded-md"
+          >
+          <CgProfile className='w-4.5 h-4.5 fill-current'/>
+            Perfil
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="flex items-center gap-3.5 !text-sm font-medium duration-300 ease-in-out lg:text-base cursor-pointer"
           onClick={logout}
         >
           <Button
-          variant="ghost" className="w-full [&>p]:flex [&>p]:justify-between [&>p]:w-full"
+            variant="ghost" className="w-full flex px-2 justify-normal hover:bg-transparent"
             onClick={logout}
           >
             <AiOutlineLogout className='w-4.5 h-4.5 fill-current' />
