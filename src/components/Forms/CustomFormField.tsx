@@ -18,27 +18,10 @@ import { Select, SelectContent, SelectTrigger, SelectValue } from "../../compone
 import { Textarea } from "../../components/ui/textarea";
 import { cn } from '@/lib/utils'
 import { InputFieldVariant } from "@/enums/inputFieldVariants.enum";
+import ICelerInputFormField, { CelerInputFormFieldProps } from "@/interfaces/ICelerInputFormField";
 
 
-
-interface CustomProps {
-  control: Control<any>;
-  name: string;
-  label?: string;
-  placeholder?: string;
-  iconSrc?: React.ReactNode;
-  iconAlt?: string;
-  disabled?: boolean;
-  dateFormat?: string;
-  showTimeSelect?: boolean;
-  children?: React.ReactNode;
-  renderSkeleton?: (field: any) => React.ReactNode;
-  fieldType: InputFieldVariant;
-  defaultValue?: any;
-  className?: string;
-}
-
-const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
+const RenderInput = ({ field, props }: { field: any; props: CelerInputFormFieldProps }) => {
   switch (props.fieldType) {
     case InputFieldVariant.INPUT:
       return (
@@ -86,16 +69,16 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
     case InputFieldVariant.CHECKBOX:
       return (
         <FormControl>
-          <div className="flex items-center gap-4">
-            <Checkbox
-              id={props.name}
-              checked={field.value}
-              onCheckedChange={field.onChange}
-            />
-            <label htmlFor={props.name} className="checkbox-label">
-              {props.label}
-            </label>
-          </div>
+            <div className="flex items-center gap-4">
+                <Checkbox
+                    id={props.name}
+                    checked={field.value || props.defaultValue}
+                    onCheckedChange={field.onChange} 
+                />
+                <label htmlFor={props.name} className="checkbox-label">
+                    {props.label}
+                </label>
+            </div>
         </FormControl>
       );
     case InputFieldVariant.DATE_PICKER:
@@ -123,7 +106,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
     case InputFieldVariant.SELECT:
       return (
         <FormControl>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select onValueChange={field.onChange} value={field.value || props.defaultValue} defaultValue={field.value}>
             <FormControl>
               <SelectTrigger className="shad-select-trigger">
                 <SelectValue placeholder={props.placeholder} />
@@ -142,7 +125,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
   }
 };
 
-const CustomFormField = (props: CustomProps) => {
+const CelerInputFormField = (props: CelerInputFormFieldProps) => {
   const { control, name, label } = props;
 
   return (
@@ -163,4 +146,4 @@ const CustomFormField = (props: CustomProps) => {
   );
 };
 
-export default CustomFormField;
+export default CelerInputFormField;
