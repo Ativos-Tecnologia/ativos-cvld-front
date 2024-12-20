@@ -143,3 +143,5 @@ export const CelerInputField: React.FC<CustomProps> = React.memo((props) => {
         </div>
     );
 });
+
+CelerInputField.displayName = "CelerInputField";
