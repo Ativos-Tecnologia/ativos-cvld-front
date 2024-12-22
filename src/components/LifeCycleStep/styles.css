@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/css?family=Muli:700');
+ :root {
+	 --body-color: #fff;
+	 --color-timeline-default: #d2d3d8;
+	 --color-step-completed: #5c6174;
+	 --color-checkmark-completed: #fff;
+	 --color-in-progress: #13cb8f;
+	 --color-label-default: var(--color-timeline-default);
+	 --color-label-completed: var(--color-step-completed);
+	 --color-label-loading: var(--color-in-progress);
+	 --color-icon-completed: var(--color-step-completed);
+	 --color-icon-default: var(--color-timeline-default);
+	 
+}
+:root .dark {
+	--color-checkmark-completed: #fff;
+	--background-modal-color: #5C6174;
+	--color-timeline-default: #9799A3;
+	--color-checkmark-completed: var(--background-modal-color);
+	--body-color: #fff;
+	--color-step-completed: #fff;
+	--color-icon-completed: var(--color-step-completed);
+
+  }
+
+
+ body .main-container {
+	 display: flex;
+   width: 100%;
+	 flex-direction: column;
+	 justify-content: center;
+	 transition: all 200ms ease;
+	 height: 150px;
+	 min-width: 420px;
+	 flex-grow: 1;
+
+}
+ body .main-container .steps-container {
+	 padding: 40px;
+	 position: relative;
+	 display: flex;
+	 align-items: center;
+	 justify-content: center;
+}
+ body .main-container .steps-container .step {
+	 z-index: 1;
+	 position: relative;
+	 display: flex;
+	 align-items: center;
+	 justify-content: center;
+	 transition: all 200ms ease;
+	 flex-grow: 0;
+	 height: 15px;
+	 width: 15px;
+	 border: 4px solid var(--color-timeline-default);
+	 border-radius: 50%;
+}
+ body .main-container .steps-container .step .preloader, body .main-container .steps-container .step svg {
+	 display: block;
+}
+ body .main-container .steps-container .step.completed {
+	 width: 18px;
+	 height: 18px;
+	 background: var(--color-step-completed);
+	 border: none;
+}
+ body .main-container .steps-container .step.completed svg {
+	 transition: all 200ms ease;
+	 display: block;
+	 height: 10px;
+	 width: 10px;
+	 fill: var(--color-checkmark-completed);
+}
+ body .main-container .steps-container .step.in-progress svg {
+	 transition: all 200ms ease;
+	 display: block;
+	 height: 10px;
+	 width: 10px;
+	 fill: var(--color-in-progress);
+}
+ body .main-container .steps-container .step.in-progress {
+	 width: 18px;
+	 height: 18px;
+	 background: var(--color-in-progress);
+	 border: none;
+}
+ body .main-container .steps-container .step.in-progress .preloader {
+	 display: block;
+	 height: 10px;
+	 width: 10px;
+	 border: 2px solid #fff;
+	 border-radius: 50%;
+	 border-left-color: transparent;
+	 animation-name: spin;
+	 animation-duration: 2000ms;
+	 animation-iteration-count: infinite;
+	 animation-timing-function: linear;
+}
+ body .main-container .steps-container .step .label {
+	 position: absolute;
+	 top: 30px;
+	 filter: none;
+	 color: var(--color-label-default);
+	 transition: all 200ms ease;
+	 font-weight: 700;
+	 font-size: 14px;
+	 text-align: center;
+}
+ body .main-container .steps-container .step .label.completed {
+	 color: var(--color-label-completed);
+}
+ body .main-container .steps-container .step .label.loading {
+	 color: var(--color-label-loading);
+}
+ body .main-container .steps-container .step .icon {
+	 font-size: 40px;
+	 position: absolute;
+	 top: -45px;
+	 color: var(--color-icon-default);
+	 transition: color 200ms ease;
+}
+ body .main-container .steps-container .step .icon.completed svg {
+   fill: var(--color-icon-completed);
+   width: 32px;
+   height: 32px;
+}
+ body .main-container .steps-container .step .icon.in-progress {
+	 color: var(--color-in-progress);
+	 
+}
+ body .main-container .steps-container .step .icon.in-progress svg {
+	 color: var(--color-in-progress);
+	 width: 32px;
+   height: 32px;
+	 
+}
+ body .main-container .steps-container .line {
+	 transition: all 200ms ease;
+	 height: 2px;
+	 flex-grow: 1;
+	 max-width: 120px;
+	 background: var(--color-timeline-default);
+}
+ body .main-container .steps-container .line.completed {
+	 background: var(--color-step-completed);
+}
+ body .main-container .steps-container .line.next-step-uncomplete {
+	 background: linear-gradient(to right, var(--color-step-completed), var(--color-timeline-default));
+}
+ body .main-container .steps-container .line.next-step-in-progress {
+	 background: linear-gradient(to right, var(--color-step-completed), var(--color-in-progress));
+}
+ body .main-container .steps-container .line.prev-step-in-progress {
+	 background: linear-gradient(to right, var(--color-in-progress), var(--color-timeline-default));
+}
+ @keyframes spin {
+	 from {
+		 transform: rotate(0deg);
+	}
+	 to {
+		 transform: rotate(360deg);
+	}
+}
+ 

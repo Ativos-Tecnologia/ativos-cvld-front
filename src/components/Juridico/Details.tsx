@@ -20,6 +20,7 @@ import { SelectItem } from "../ui/select";
 import { estados } from "@/constants/estados";
 import { IoDocumentTextSharp } from "react-icons/io5";
 import CelerInputFormField from "../Forms/CustomFormField";
+import LifeCycleStep from "../LifeCycleStep";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -57,10 +58,10 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   console.log(data)
 
   return (
-    <div className="space-y-12">
+    <div className="flex flex-col w-full gap-5">
 
 
-      <div className="mb-4 flex w-full items-end justify-end gap-5 rounded-md">
+      <div className="flex w-full items-end justify-end rounded-md">
         <Breadcrumb
           customIcon={<FaBalanceScale className="h-[32px] w-[32px]" />}
           altIcon="Espaço de trabalho do time jurídico"
@@ -68,29 +69,33 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
           title={`Olá, ${first_name}`}
         />
       </div>
+      <LifeCycleStep status={data?.properties["Status Diligência"].select?.name ?? "ops"} />
 
       <Form {...form}>
         <form className="flex-1 ">
           <div className="space-y-6 rounded-md">
-            <div className="mb-9 space-y-1">
-              <h2 className="sub-header">Teste</h2>
-            </div>
-            <section id="info_credor">
-              <div className="form-inputs-container">
+            <section id="info_credor" className="form-inputs-container">
+            <div className="col-span-1 w-full">
                 <CelerInputField
-                    fieldType={InputFieldVariant.CHECKBOX}
-                    name="estado_ente_devedor"
-                    label="Honorários já destacados?"
-                    defaultValue={data?.properties["Honorários já destacados?"].checkbox}
-                    />
-                    </div>
-                <div className="w-full lg:w-56">
-                  <CelerInputField
-                    fieldType={InputFieldVariant.INPUT}
-                    name="cpf_cnpj"
-                    label={
-                      data?.properties["CPF/CNPJ"]?.rich_text?.[0]
-                        ?.plain_text &&
+                  name="credor"
+                  fieldType={InputFieldVariant.INPUT}
+                  label="Nome do Credor"
+                  defaultValue={data?.properties["Credor"].title[0].plain_text}
+                  iconSrc={<FaUser
+                    className="self-center" />}
+                  iconAlt="user"
+                  className="w-full"
+                  onSubmit={handleSubmit}
+                />
+            </div>
+
+            <div className="col-span-1 w-full">
+                <CelerInputField
+                  name="cpf_cnpj"
+                  fieldType={InputFieldVariant.INPUT}
+                  label={
+                    data?.properties["CPF/CNPJ"]?.rich_text?.[0]
+                      ?.plain_text &&
                       data.properties["CPF/CNPJ"].rich_text[0].plain_text
                         .length > 11
                       ? "CNPJ"
@@ -103,7 +108,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                   className="w-full"
                   onSubmit={handleSubmit}
                 />
-              </div>
+            </div>
             </section>
 
             <section className="form-inputs-container" id="info_processo">

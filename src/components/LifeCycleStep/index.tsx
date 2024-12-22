@@ -1,65 +1,63 @@
-import React from 'react'
-import { FaRegHandshake } from 'react-icons/fa'
+import React from 'react';
+import {  FaSearchDollar } from 'react-icons/fa';
+import { MdOutlineContentPasteSearch, MdOutlineHandshake } from 'react-icons/md';
+import "./styles.css";
+import { FaCircleCheck, FaUserClock } from 'react-icons/fa6';
+import { BiMoneyWithdraw } from 'react-icons/bi';
 
-const index = () => {
-  return (
-    <div className="main-container">
-    <div className="steps-container">
-        <div className="step completed">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                <path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z" />
-            </svg>
-            <div className="label completed">
-                Prospecção
-            </div>
-            <div className="icon completed">
-                <FaRegHandshake />
-            </div>
-        </div>
-        <div className="line completed"></div>
-        <div className="step completed">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                <path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z" />
-            </svg>
-            <div className="label completed">
-                Tour
-            </div>
-            <div className="icon completed">
-                <i className="far fa-map"></i>
-            </div>
-        </div>
-        <div className="line next-step-in-progress">
-        </div>
-        <div className="step in-progress">
-            <div className="preloader"></div>
-            <div className="label loading">
-                Proposta
-            </div>
-            <div className="icon in-progress">
-                <i className="far fa-money-bill-alt"></i>
-            </div>
-        </div>
-        <div className="line prev-step-in-progress"></div>
-        <div className="step">
-            <div className="label">
-                Due Diligence
-            </div>
-            <div className="icon">
-                <i className="far fa-newspaper"></i>
-            </div>
-        </div>
-        <div className="line"></div>
-        <div className="step">
-            <div className="label">
-                Concluído
-            </div>
-            <div className="icon">
-                <i className="fas fa-home"></i>
-            </div>
-        </div>
-    </div>
-</div>
-  )
-}
+type LifeCycleStepProps = {
+    status: string;
+};
 
-export default index
+const steps = [
+    { label: "Prospecção", alias: "Prospecção", icon: <FaSearchDollar className="text-2xl" /> },
+    { label: "Negociação em andamento", alias: "Negociação", icon: <FaUserClock className="text-2xl" /> },
+    { label: "Proposta", alias: "Proposta", icon: <MdOutlineHandshake className="text-2xl" /> },
+    { label: "Due Diligence", alias: "Due", icon: <MdOutlineContentPasteSearch className="text-2xl" /> },
+    { label: "Em liquidação", alias: "Liquidação", icon: <BiMoneyWithdraw className="text-2xl" /> },
+    { label: "Concluído", alias: "Concluído", icon: <FaCircleCheck className="text-2xl" /> },
+];
+
+const LifeCycleStep = ({ status }: LifeCycleStepProps) => {
+    const currentIndex = steps.findIndex(step => step.label === status);
+
+    return (
+        <div className="main-container dark:bg-boxdark bg-white rounded-md">
+            <div className="steps-container">
+                {steps.map((step, index) => {
+                    const isCompleted = index < currentIndex;
+                    const isInProgress = index === currentIndex;
+                    const isPrevStepInProgress = index === currentIndex - 1;
+
+                    return (
+                        <React.Fragment key={step.label}>
+                            <div className={`step ${isCompleted ? 'completed' : ''} ${isInProgress ? 'in-progress' : ''}`}>
+                                {isCompleted && (
+                                    <svg className='stepIcon' xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                        <path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z" />
+                                    </svg>
+                                )}
+                                {isInProgress && <div className="preloader"></div>}
+                                <div className={`label ${isCompleted ? 'completed' : isInProgress ? 'loading' : ''}`}>
+                                    {step.alias}
+                                </div>
+                                <div className={`icon ${isCompleted ? 'completed' : isInProgress ? 'in-progress' : ''}`}>
+                                    {step.icon}
+                                </div>
+                            </div>
+                            {index < steps.length - 1 && (
+                                <div
+                                    className={`line ${isCompleted ? 'completed' : ''} ${
+                                        isInProgress ? 'prev-step-in-progress' : ''
+                                    } ${isPrevStepInProgress ? 'next-step-in-progress' : ''}`}
+                                ></div>
+                            )}
+                        </React.Fragment>
+                    );
+                })}
+            </div>
+        </div>
+    );
+};
+
+export default LifeCycleStep;
