@@ -1,8 +1,8 @@
-import { ACCESS_TOKEN, PROD_API_URL, LOCAL_DEV_API_URL, REFRESH_TOKEN } from '@/constants/constants';
+import { ACCESS_TOKEN, PROD_API_URL, REFRESH_TOKEN } from '@/constants/constants';
 import { checkIsPublicRoute } from '@/functions/check-is-public-route';
 import axios from 'axios';
 
-const activeUrl = PROD_API_URL;
+const activeUrl = PROD_API_URL; 
 
 const api = axios.create({
   baseURL: activeUrl,

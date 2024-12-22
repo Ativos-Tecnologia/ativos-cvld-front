@@ -7,11 +7,13 @@ import React, { useContext, useEffect, useState } from "react";
 const routeAccessMap: Record<"crm" | "wallet" | "global", string[]> = {
   crm: [
     APP_ROUTES.private.broker.name,
+    APP_ROUTES.private.profile.name,
   ],
   wallet: [
     APP_ROUTES.private.wallet.name,
     APP_ROUTES.private.marketplace.name,
     APP_ROUTES.private.marketplaceItem.name,
+    APP_ROUTES.private.profile.name,
   ],
   global: Object.values(APP_ROUTES.private).map((route) => route.name)
 };
@@ -47,7 +49,6 @@ export default function RouteGuard({
     const privateRoutes = Object.values(APP_ROUTES.private).map(
       (route) => route.name,
     );
-    
 
     if (privateRoutes.includes(currentPath)) {
       const allowedRoutes = routeAccessMap[product] || [];
