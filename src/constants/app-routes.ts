@@ -21,9 +21,9 @@ export const APP_ROUTES = {
     juridicoCard: {
       name: "/dashboard/juridico/:id",
     },
-    // profile: {
-    //   name: "/profile",
-    // },
+    profile: {
+      name: "/profile",
+    },
     // settings: {
     //   name: "/settings",
     // },

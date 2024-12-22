@@ -56,7 +56,7 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
         switch (props.fieldType) {
             case InputFieldVariant.INPUT:
                 return (
-                    <div className="flex rounded-md gap-4">
+                    <div className="flex rounded-md gap-4 mt-2 w-full">
                         {props.iconSrc && <div className="flex items-center">{props.iconSrc}</div>}
                         <Input ref={props.ref} className={cn("shad-input border-0 bg-snow", props.className)} {...commonProps} />
                     </div>
@@ -113,12 +113,15 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
                 );
             case InputFieldVariant.SELECT:
                 return (
-                    <Select onValueChange={(selectedValue) => handleChange(selectedValue)} value={value} defaultValue={value}>
-                        <SelectTrigger className="shad-select-trigger">
-                            <SelectValue placeholder={props.placeholder || "Selecione uma opção"} />
-                        </SelectTrigger>
-                        <SelectContent className="shad-select-content">{props.children}</SelectContent>
-                    </Select>
+                    <div className="flex rounded-md gap-4 mt-2 w-full">
+                        {props.iconSrc && <div className="flex items-center">{props.iconSrc}</div>}
+                        <Select onValueChange={(selectedValue) => handleChange(selectedValue)} value={value} defaultValue={value}>
+                            <SelectTrigger className="shad-select-trigger">
+                                <SelectValue placeholder={props.placeholder || "Selecione uma opção"} />
+                            </SelectTrigger>
+                            <SelectContent className="shad-select-content">{props.children}</SelectContent>
+                        </Select>
+                    </div>
                 );
             default:
                 return null;
@@ -126,7 +129,7 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
     };
 
     return (
-        <div className="form-inputs-container">
+        <div className="w-full col-span-1">
             {props.label && <Label className="shad-input-label">{props.label}</Label>}
             {renderInput()}
             {props.error && <p className="text-red-500 text-sm mt-1">{props.error}</p>}
