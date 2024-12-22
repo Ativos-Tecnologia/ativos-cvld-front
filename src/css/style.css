@@ -329,6 +329,11 @@ input:-webkit-autofill:focus-visible {
   transition: all 0.3s ease-in-out;
 }
 
+.warn-loa {
+  display: flex;
+  flex-direction: column;
+}
+
 /* third-party libraries CSS */
 
 .apexcharts-canvas {

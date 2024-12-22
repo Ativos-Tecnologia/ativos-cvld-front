@@ -552,6 +552,11 @@ const config = {
     },
   },
   plugins: [require("tailwindcss-animate"), flowbite.plugin()],
+  variants: {
+    extend: {
+      content: ['before', 'after'],
+    },
+  },
 } satisfies Config;
 
 export default config;

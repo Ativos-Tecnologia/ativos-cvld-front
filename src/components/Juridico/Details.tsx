@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { Form, FormControl } from "@/components/ui/form";
 import CustomFormField from "../Forms/CustomFormField";
 import { useForm } from "react-hook-form";
@@ -23,6 +23,8 @@ import { Input } from "../ui/input";
 import { InputFieldVariant } from "@/enums/inputFieldVariants.enum";
 import { CelerInputField } from "../CrmUi/InputFactory";
 import { handleDesembolsoVsRentabilidade, handlePercentualDeGanhoVsRentabilidadeAnual } from "@/functions/juridico/solverDesembolsoVsRentabilidade";
+import { estados } from "@/constants/estados";
+import { SelectItem } from "../ui/select";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -33,19 +35,11 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     data: { first_name },
   } = useContext<UserInfoContextType>(UserInfoAPIContext);
 
-  const [formData, setFormData] = useState({});
 
-    const handleValueChange = (name: string, value: any) => {
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-    };
 
-    const handleSubmit = () => {
-        console.log("Dados enviados:", formData);
-        // Enviar para o backend
-    };
+    const handleSubmit = (name: string, value: any) => {
+        console.log(name, value);
+    }
 
   async function fetchData() {
     const response = await api.get(`/api/notion-api/list/page/${id}/`);
@@ -62,27 +56,13 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   const t = !isLoading && handleDesembolsoVsRentabilidade(0.3, data)
   const y = !isLoading && handlePercentualDeGanhoVsRentabilidadeAnual(0.653451365971927, data)
 
-
+  console.log(data?.properties["Honorários já destacados?"].checkbox)
   const form = useForm();
 
   return (
     <div className="space-y-12">
-        <p>
-            Rentabilidade - Desembolso
-            {
-                Object.keys(t).length > 0 && (
-                    <pre>
-                        {JSON.stringify(t, null, 2)}
-                    </pre>
-                )
-            }
-        </p>
-        <p>
-            Rentabilidade - Desembolso
-            {
-                y
-            }
-        </p>
+
+
       <div className="mb-4 flex w-full items-end justify-end gap-5 rounded-md">
         <Breadcrumb
           customIcon={<FaBalanceScale className="h-[32px] w-[32px]" />}
@@ -100,18 +80,27 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
             </div>
             <section id="info_credor">
               <div className="form-inputs-container">
-                {/* <CustomFormField
-                  fieldType={InputFieldVariant.INPUT}
-                  control={form.control}
-                  name="credor"
-                  label="Nome do Credor"
-                  defaultValue={data?.properties["Credor"].title[0].plain_text}
-                  placeholder="John Doe"
-                  iconSrc={<FaUser className="self-center" />}
-                  iconAlt="user"
-                  className="w-full "
-                /> */}
-                <CelerInputField name="credor" fieldType={InputFieldVariant.INPUT} label="Nome do Credor" defaultValue={data?.properties["Credor"].title[0].plain_text} placeholder="John Doe" iconSrc={<FaUser className="self-center" />} iconAlt="user" className="w-full" onValueChange={handleValueChange}/>
+
+            
+
+                {/* <CelerInputField onValueChange={handleSubmit} name="estado_ente_devedor" fieldType={InputFieldVariant.SELECT} label="Nome do Credor" defaultValue={data?.properties["Estado do Ente Devedor"].select?.name} iconSrc={<FaUser className="self-center" />} iconAlt="user" className="w-full">
+                    {
+                        estados.map((estado) => (
+                            <SelectItem defaultChecked={
+                                data?.properties["Estado do Ente Devedor"].select?.name === estado.id
+                            } key={estado.id} value={estado.id}>{estado.nome}</SelectItem>
+                        ))
+                    }
+                </CelerInputField> */}
+                
+                
+                <CustomFormField
+                    fieldType={InputFieldVariant.CHECKBOX}
+                    control={form.control}
+                    name="estado_ente_devedor"
+                    label="Honorários já destacados?"
+                    defaultValue={data?.properties["Honorários já destacados?"].checkbox}
+                    />
                 <div className="w-full lg:w-56">
                   <CustomFormField
                     fieldType={InputFieldVariant.INPUT}
