@@ -4,6 +4,7 @@ const OBSERVABLE_FIELDS = [
   "natureza",
   "tipo_do_oficio",
   "esfera",
+  "regime",
   "tribunal",
   "data_base",
   "data_requisicao",

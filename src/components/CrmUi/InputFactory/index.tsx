@@ -91,7 +91,7 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
                         </label>
                     </div>
                 );
-            case InputFieldVariant.DATE_PICKER:
+            case InputFieldVariant.DATE:
                 return (
                     <div className="flex rounded-md border border-dark-500 bg-dark-400">
                         <Image
@@ -130,7 +130,7 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
 
     return (
         <div className="w-full col-span-1">
-            {props.label && <Label className="shad-input-label">{props.label}</Label>}
+            {(props.label && props.fieldType !== InputFieldVariant.CHECKBOX) && <Label className="shad-input-label">{props.label}</Label>}
             {renderInput()}
             {props.error && <p className="text-red-500 text-sm mt-1">{props.error}</p>}
         </div>
