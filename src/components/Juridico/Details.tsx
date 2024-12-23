@@ -1,28 +1,26 @@
 "use client";
 
 import React, { useContext, useState } from "react";
-import { Form, FormControl } from "@/components/ui/form";
-import CustomFormField from "../Forms/CustomFormField";
+import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { NotionPage } from "@/interfaces/INotion";
 import api from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
-import { FaUser } from "react-icons/fa6";
-import { FaBalanceScale, FaIdCard } from "react-icons/fa";
-import {
-  LiaBalanceScaleLeftSolid,
-  LiaBalanceScaleRightSolid,
-} from "react-icons/lia";
-import { VscLaw } from "react-icons/vsc";
+import { FaBuilding, FaBuildingColumns, FaUser } from "react-icons/fa6";
+import { FaBalanceScale, FaIdCard, FaMapMarkedAlt } from "react-icons/fa";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import {
   UserInfoAPIContext,
   UserInfoContextType,
 } from "@/context/UserInfoContext";
-import { Input } from "../ui/input";
 import { InputFieldVariant } from "@/enums/inputFieldVariants.enum";
 import { CelerInputField } from "../CrmUi/InputFactory";
-import { handleDesembolsoVsRentabilidade, handlePercentualDeGanhoVsRentabilidadeAnual } from "@/functions/juridico/solverDesembolsoVsRentabilidade";
+import { handleDesembolsoVsRentabilidade, findRentabilidadeAoAnoThroughDesembolso } from "@/functions/juridico/solverDesembolsoVsRentabilidade";
+import { SelectItem } from "../ui/select";
+import { estados } from "@/constants/estados";
+import { IoDocumentTextSharp } from "react-icons/io5";
+import CelerInputFormField from "../Forms/CustomFormField";
+import LifeCycleStep from "../LifeCycleStep";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -33,19 +31,11 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     data: { first_name },
   } = useContext<UserInfoContextType>(UserInfoAPIContext);
 
-  const [formData, setFormData] = useState({});
 
-    const handleValueChange = (name: string, value: any) => {
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-    };
 
-    const handleSubmit = () => {
-        console.log("Dados enviados:", formData);
-        // Enviar para o backend
-    };
+    const handleSubmit = (name: string, value: any) => {
+        console.log(name, value);
+    }
 
   async function fetchData() {
     const response = await api.get(`/api/notion-api/list/page/${id}/`);
@@ -60,30 +50,20 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   });
 
   const t = !isLoading && handleDesembolsoVsRentabilidade(0.3, data)
-  const y = !isLoading && handlePercentualDeGanhoVsRentabilidadeAnual(0.653451365971927, data)
+  const y = !isLoading && findRentabilidadeAoAnoThroughDesembolso(1108726.611334225, data)
 
-
+  console.log(data?.properties["Honorários já destacados?"].checkbox)
   const form = useForm();
 
+  console.log(t)
+  console.log(y)
+
   return (
-    <div className="space-y-12">
-        <p>
-            Rentabilidade - Desembolso
-            {
-                Object.keys(t).length > 0 && (
-                    <pre>
-                        {JSON.stringify(t, null, 2)}
-                    </pre>
-                )
-            }
-        </p>
-        <p>
-            Rentabilidade - Desembolso
-            {
-                y
-            }
-        </p>
-      <div className="mb-4 flex w-full items-end justify-end gap-5 rounded-md">
+    <div className="flex flex-col w-full gap-5">
+
+
+
+      <div className="flex w-full items-end justify-end rounded-md">
         <Breadcrumb
           customIcon={<FaBalanceScale className="h-[32px] w-[32px]" />}
           altIcon="Espaço de trabalho do time jurídico"
@@ -91,94 +71,119 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
           title={`Olá, ${first_name}`}
         />
       </div>
+      <LifeCycleStep status={data?.properties["Status Diligência"].select?.name ?? "ops"} />
 
       <Form {...form}>
         <form className="flex-1 ">
           <div className="space-y-6 rounded-md">
-            <div className="mb-9 space-y-1">
-              <h2 className="sub-header">Teste</h2>
-            </div>
-            <section id="info_credor">
-              <div className="form-inputs-container">
-                {/* <CustomFormField
-                  fieldType={InputFieldVariant.INPUT}
-                  control={form.control}
+            <section id="info_credor" className="form-inputs-container">
+            <div className="col-span-1 w-full">
+                <CelerInputField
                   name="credor"
+                  fieldType={InputFieldVariant.INPUT}
                   label="Nome do Credor"
                   defaultValue={data?.properties["Credor"].title[0].plain_text}
-                  placeholder="John Doe"
-                  iconSrc={<FaUser className="self-center" />}
+                  iconSrc={<FaUser
+                    className="self-center" />}
                   iconAlt="user"
-                  className="w-full "
-                /> */}
-                <CelerInputField name="credor" fieldType={InputFieldVariant.INPUT} label="Nome do Credor" defaultValue={data?.properties["Credor"].title[0].plain_text} placeholder="John Doe" iconSrc={<FaUser className="self-center" />} iconAlt="user" className="w-full" onValueChange={handleValueChange}/>
-                <div className="w-full lg:w-56">
-                  <CustomFormField
-                    fieldType={InputFieldVariant.INPUT}
-                    control={form.control}
-                    name="cpf_cnpj"
-                    label={
-                      data?.properties["CPF/CNPJ"]?.rich_text?.[0]
-                        ?.plain_text &&
+                  className="w-full"
+                  onSubmit={handleSubmit}
+                />
+            </div>
+
+            <div className="col-span-1 w-full">
+                <CelerInputField
+                  name="cpf_cnpj"
+                  fieldType={InputFieldVariant.INPUT}
+                  label={
+                    data?.properties["CPF/CNPJ"]?.rich_text?.[0]
+                      ?.plain_text &&
                       data.properties["CPF/CNPJ"].rich_text[0].plain_text
                         .length > 11
-                        ? "CNPJ"
-                        : "CPF"
-                    }
-                    defaultValue={
-                      data?.properties["CPF/CNPJ"]?.rich_text?.[0].plain_text
-                    }
-                    iconSrc={<FaIdCard className="self-center" />}
-                    className="w-full"
-                  />
-                </div>
-              </div>
+                      ? "CNPJ"
+                      : "CPF"
+                  }
+                  defaultValue={data?.properties["CPF/CNPJ"]?.rich_text?.[0].plain_text}
+                  iconSrc={<FaIdCard
+                    className="self-center" />}
+                  iconAlt="document"
+                  className="w-full"
+                  onSubmit={handleSubmit}
+                />
+            </div>
             </section>
 
             <section className="form-inputs-container" id="info_processo">
-              <div className="min-w-64">
-                <CustomFormField
-                  fieldType={InputFieldVariant.INPUT}
-                  control={form.control}
+              <div className="col-span-1">
+                <CelerInputField
                   name="npu_originario"
+                  fieldType={InputFieldVariant.INPUT}
                   label="NPU (Originário)"
-                  iconSrc={
-                    <LiaBalanceScaleLeftSolid className="self-center text-xl" />
-                  }
-                  defaultValue={
-                    data?.properties["NPU (Originário)"]?.rich_text?.[0]
-                      .plain_text
-                  }
-                />
-              </div>
-              <div className="min-w-64">
-                <CustomFormField
-                  fieldType={InputFieldVariant.INPUT}
-                  control={form.control}
-                  name="npu_precatorio"
-                  label="NPU (Precatório)"
-                  iconSrc={
-                    <LiaBalanceScaleRightSolid className="self-center text-xl" />
-                  }
-                  defaultValue={
-                    data?.properties["NPU (Precatório)"]?.rich_text?.[0]
-                      .plain_text
-                  }
-                />
-              </div>
-              <div className="w-full">
-                <CustomFormField
-                  fieldType={InputFieldVariant.INPUT}
-                  control={form.control}
-                  name="juizo_vara"
-                  label="Vara"
-                  iconSrc={<VscLaw />}
-                  defaultValue={
-                    data?.properties["Juízo"].rich_text?.[0].plain_text
-                  }
+                  defaultValue={data?.properties["NPU (Originário)"]?.rich_text?.[0].plain_text}
+                  iconSrc={<IoDocumentTextSharp className="self-center" />}
+                  iconAlt="law"
                   className="w-full"
+                  onSubmit={handleSubmit}
                 />
               </div>
+              <div className="col-span-1">
+                <CelerInputField
+                  name="npu_precatorio"
+                  fieldType={InputFieldVariant.INPUT}
+                  label="NPU (Precatório)"
+                  defaultValue={data?.properties["NPU (Precatório)"]?.rich_text?.[0].plain_text}
+                  iconSrc={<IoDocumentTextSharp className="self-center" />}
+                  iconAlt="law"
+                  className="w-full"
+                  onSubmit={handleSubmit}
+                />
+              </div>
+              <div className="col-span-1">
+                <CelerInputField
+                  name="juizo_vara"
+                  fieldType={InputFieldVariant.INPUT}
+                  label="Vara"
+                  defaultValue={data?.properties["Juízo"]?.rich_text?.[0].plain_text}
+                  iconSrc={<FaBuildingColumns className="self-center" />}
+                  iconAlt="law"
+                  className="w-full"
+                  onSubmit={handleSubmit}
+                />
+              </div>
+              <div className="col-span-1">
+                <CelerInputField
+                  name="ente_devedor"
+                  fieldType={InputFieldVariant.INPUT}
+                  label="Ente Devedor"
+                  defaultValue={data?.properties["Ente Devedor"].select?.name}
+                  iconSrc={<FaBuilding className="self-center" />}
+                  iconAlt="law"
+                  className="w-full"
+                  onSubmit={handleSubmit}
+                />
+              </div>
+              <div className="col-span-1">
+                <CelerInputField
+                  name="estado_ente_devedor"
+                  fieldType={InputFieldVariant.SELECT}
+                  label="Estado Ente Devedor"
+                  defaultValue={data?.properties["Estado do Ente Devedor"].select?.name}
+                  iconSrc={<FaMapMarkedAlt  className="self-center" />}
+                  iconAlt="law"
+                  className="w-full"
+                  onValueChange={handleSubmit}
+                >
+                  {estados.map(estado => (
+                    <SelectItem defaultChecked={
+                      data?.properties["Estado do Ente Devedor"].select?.name === estado.id
+                    } key={estado.id} value={estado.id}>{estado.nome}</SelectItem>
+                  ))}
+                </CelerInputField>
+              </div>
+            </section>
+
+            <section className="form-inputs-container" id="info_valores">
+
             </section>
           </div>
         </form>

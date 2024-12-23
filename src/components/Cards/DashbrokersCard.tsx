@@ -935,19 +935,21 @@ const DashbrokersCard = ({ oficio }:
 
                         <div className='relative w-full'>
 
-                            {(mainData?.properties["Status Diligência"].select?.name !== "Due Diligence" && mainData?.properties["Status"].status?.name === "Proposta aceita" && checks.is_cedente_complete === true && checks.is_precatorio_complete === true && checks.are_docs_complete === true) && (
+                            {(mainData?.properties["Status Diligência"].select?.name !== "Due Diligence" && mainData?.properties["Status Diligência"].select?.name !== "Em liquidação" && mainData?.properties["Status"].status?.name === "Proposta aceita" && checks.is_cedente_complete === true && checks.is_precatorio_complete === true && checks.are_docs_complete === true) && (
                                 <span className='absolute z-1 w-full h-full rounded-md bg-green-300 span-pulse'></span>
                             )}
 
                             <button
                                 onClick={handleLiquidateCard}
-                                className={`${(mainData?.properties["Status Diligência"].select?.name !== "Due Diligence" && mainData?.properties["Status"].status?.name === "Proposta aceita" && checks.is_cedente_complete === true && checks.is_precatorio_complete === true && checks.are_docs_complete === true) ? "bg-green-400 text-black-2 hover:bg-green-500 hover:text-snow" : "opacity-50 bg-slate-100 dark:bg-boxdark-2/50 cursor-not-allowed pointer-events-none"} relative z-2 flex w-full items-center justify-center gap-2 my-1 py-1 px-4 rounded-md transition-colors duration-200 text-sm`}
+                                className={`${(mainData?.properties["Status Diligência"].select?.name.valueOf() !== "Due Diligence" && mainData?.properties["Status Diligência"].select?.name !== "Em liquidação" && mainData?.properties["Status"].status?.name === "Proposta aceita" && checks.is_cedente_complete === true && checks.is_precatorio_complete === true && checks.are_docs_complete === true) ? "bg-green-400 text-black-2 hover:bg-green-500 hover:text-snow" : "opacity-50 bg-slate-100 dark:bg-boxdark-2/50 cursor-not-allowed pointer-events-none"} relative z-2 flex w-full items-center justify-center gap-2 my-1 py-1 px-4 rounded-md transition-colors duration-200 text-sm`}
                             >
 
                                 {isUpdatingDiligence ? (
                                     <>
                                         <AiOutlineLoading className='w-4 h-4 animate-spin' />
-                                        Liquidando...
+                                        {
+                                            (mainData?.properties["Status Diligência"].select?.name === "Due Diligence" && mainData?.properties["Status"].status?.name === "Proposta aceita") ? "Liquidando..." : "Repactuando..."
+                                        }
                                     </>
                                 ) : <>
                                     {(mainData?.properties["Status Diligência"].select?.name === "Due Diligence" && mainData?.properties["Status"].status?.name === "Proposta aceita") ? (
@@ -957,8 +959,19 @@ const DashbrokersCard = ({ oficio }:
                                         </>
                                     ) : (
                                         <>
-                                            <TbReportMoney className='w-4 h-4' />
-                                            Liquidar
+                                            {
+                                                (mainData?.properties["Status Diligência"].select?.name === "Repactuação") ? (
+                                                    <>
+                                                        <HiCheck className='w-4 h-4' />
+                                                        Repactuar
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <HiCheck className='w-4 h-4' />
+                                                        Liquidar
+                                                    </>
+                                                )
+                                            }
                                         </>
                                     )}
                                 </>}
@@ -968,7 +981,8 @@ const DashbrokersCard = ({ oficio }:
 
                         <button
                             onClick={() => setEditModalId(mainData!.id)}
-                            className='flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm'>
+                            disabled={checks.isFetching || mainData?.properties["Status"].status?.name === "Proposta aceita"}
+                            className='flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm disabled:opacity-50 disabled:pointer-events-none'>
                             <BsPencilSquare />
                             Editar Precatório
                         </button>

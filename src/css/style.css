@@ -125,7 +125,7 @@
   }
 
   .form-inputs-container {
-    @apply flex flex-col xl:flex-row gap-6 p-4 rounded-md bg-white dark:bg-boxdark;
+    @apply grid grid-cols-4 3xl:grid-cols-5 gap-6 p-4 rounded-md bg-white dark:bg-boxdark;
   }
 
   .chat-height {
@@ -141,7 +141,7 @@
   }
 
   .shad-input {
-    @apply dark:bg-boxdark-2/20 placeholder:text-bodydark2 border-boxdark-2 h-11 focus-visible:ring-0 focus-visible:ring-offset-0 !important;
+    @apply dark:bg-boxdark-2 placeholder:text-bodydark2 border-strokedark h-11 focus-visible:ring-0 focus-visible:ring-offset-0 !important;
   }
 
   .shad-input-icon {
@@ -161,11 +161,11 @@
   }
 
   .shad-select-trigger {
-    @apply bg-boxdark  placeholder:text-bodydark2 border-boxdark-2 h-11 focus:ring-0 focus:ring-offset-0 !important;
+    @apply dark:bg-boxdark-2 bg-white placeholder:text-bodydark2 border-stroke dark:border-strokedark h-11 focus:ring-0 focus:ring-offset-0 !important;
   }
 
   .shad-select-content {
-    @apply bg-boxdark border-boxdark-2 !important;
+    @apply !bg-boxdark-2 !border-strokedark !important;
   }
 
   .shad-dialog {
@@ -327,6 +327,11 @@ input:-webkit-autofill:focus-visible {
 
 .transition-ease-in-out {
   transition: all 0.3s ease-in-out;
+}
+
+.warn-loa {
+  display: flex;
+  flex-direction: column;
 }
 
 /* third-party libraries CSS */
