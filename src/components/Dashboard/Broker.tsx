@@ -164,7 +164,7 @@ const Broker: React.FC = (): JSX.Element => {
       <div className="flex gap-5 item-center bg-white dark:bg-boxdark mb-5 p-5 rounded-md flex-col 2xsm:flex md:hidden md:justify-between md:flex-row xl:justify-normal">
         
           <Accordion type="single" collapsible >  
-            <AccordionItem value="item-1">
+            <AccordionItem value="item-2">
             <AccordionTrigger>
               Filtros de Busca
               <IoIosArrowDown />

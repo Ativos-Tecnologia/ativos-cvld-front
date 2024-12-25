@@ -32,10 +32,23 @@ const UsersFilter = ({ openUsersPopover, setOpenUsersPopover, loadingCardData, f
     const {
         selectedUser, setSelectedUser
     } = useContext(BrokersContext)
-
+    
     /* ====> refs <===== */
     const selectUserRef = React.useRef<HTMLDivElement>(null);
     const searchUserRef = React.useRef<HTMLInputElement>(null);
+
+    const userSelecionado = selectUserRef.current
+    const userProcurado = searchUserRef.current
+
+    console.log(
+        "Usuário Selecionado após o Contexto: "
+        + userSelecionado?.textContent
+    ) // Lembrar de apagar depois.
+
+    console.log(
+        "Usuário Procurado após o Contexto: "
+        + userProcurado?.value
+    ) // Lembrar de apagar depois.
 
     /**
    * Foca no input de search quando o filtro de usuários
