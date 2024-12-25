@@ -15,7 +15,7 @@ import {
 } from "@/context/UserInfoContext";
 import { InputFieldVariant } from "@/enums/inputFieldVariants.enum";
 import { CelerInputField } from "../CrmUi/InputFactory";
-import { handleDesembolsoVsRentabilidade, handlePercentualDeGanhoVsRentabilidadeAnual } from "@/functions/juridico/solverDesembolsoVsRentabilidade";
+import { handleDesembolsoVsRentabilidade, findRentabilidadeAoAnoThroughDesembolso } from "@/functions/juridico/solverDesembolsoVsRentabilidade";
 import { SelectItem } from "../ui/select";
 import { estados } from "@/constants/estados";
 import { IoDocumentTextSharp } from "react-icons/io5";
@@ -133,12 +133,13 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   });
 
   const t = !isLoading && handleDesembolsoVsRentabilidade(0.3, data)
-  const y = !isLoading && handlePercentualDeGanhoVsRentabilidadeAnual(0.653451365971927, data)
+  const y = !isLoading && findRentabilidadeAoAnoThroughDesembolso(1108726.611334225, data)
 
   const form = useForm();
   const isFormModified = Object.keys(form.watch()).some((key: any) => form.watch()[key] !== formData?.[key]);
 
-  console.log(data)
+  console.log(t)
+  console.log(y)
 
   useEffect(() => {
     if (data) {
@@ -169,6 +170,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
 
   return (
     <div className="flex flex-col w-full gap-5">
+
 
 
       <div className="flex w-full items-end justify-end rounded-md">
