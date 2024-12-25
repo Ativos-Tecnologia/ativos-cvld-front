@@ -95,6 +95,8 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
       delete data.data_limite_de_atualizacao_check
     }
 
+    data.upload_notion = true;
+
     console.log(data)
 
     try {
@@ -138,8 +140,8 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   const form = useForm();
   const isFormModified = Object.keys(form.watch()).some((key: any) => form.watch()[key] !== formData?.[key]);
 
-  console.log(t)
-  console.log(y)
+  // console.log(t)
+  console.log(data)
 
   useEffect(() => {
     if (data) {
@@ -162,7 +164,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
       form.setValue("numero_de_meses", data?.properties["Meses RRA"].number || 0);
       form.setValue("incidencia_pss", data?.properties["Meses RRA"].number || 0);
       form.setValue("incidencia_pss", data?.properties["PSS"].number! > 0);
-      form.setValue("valor_pss", data?.properties["PSS"].number || 0);
+      form.setValue("valor_pss", numberFormat(data?.properties["PSS"].number || 0));
       console.log("atualizando valores")
       setFormData(form.watch);
     }
