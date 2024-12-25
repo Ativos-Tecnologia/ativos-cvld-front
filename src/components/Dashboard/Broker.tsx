@@ -47,8 +47,11 @@ const Broker: React.FC = (): JSX.Element => {
   const [visibleData, setVisibleData] = useState<NotionPage[]>([]);
   const selectUserRef = React.useRef<HTMLDivElement>(null);
   const searchUserRef = React.useRef<HTMLInputElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const observerRef = React.useRef<HTMLDivElement>(null);
   const isFirstLoad = React.useRef<boolean>(true);
+  //Estado para controlar o valor do accordion
+  const [accordionValue, setAccordionValue] = useState<string>("");
 
   /**
    * função com useCallback para adicionar mais itens
@@ -112,23 +115,26 @@ const Broker: React.FC = (): JSX.Element => {
   /**
    * Carrega a lista de usuários para o filtro
    */
-  useEffect(() => {
+ useEffect(() => {
     const fetchData = async () => {
-
       if (userListAlreadyLoaded.current || !openUsersPopover) return;
-      const [usersList] = await Promise.all([
-        api.get("/api/notion-api/list/users/"),
-      ]);
-
-      if (usersList.status === 200) {
-        setUsersList(usersList.data);
-        setFilteredUsersList(usersList.data);
-        userListAlreadyLoaded.current = true;
+      
+      try {
+        const response = await api.get("/api/notion-api/list/users/");
+        
+        if (response.status === 200) {
+          setUsersList(response.data);
+          setFilteredUsersList(response.data);
+          userListAlreadyLoaded.current = true;
+        }
+      } catch (error) {
+        console.error("Erro ao carregar lista de usuários:", error);
       }
     };
 
     fetchData();
   }, [openUsersPopover]);
+
 
   /**
    * Filtra a lista de usuários renderizada no popup
@@ -137,56 +143,51 @@ const Broker: React.FC = (): JSX.Element => {
    * @param {string} value - valor do input de search
    * @returns {void} - retorno vazio
    */
-  const searchUser = (value: string): void => {
+  const searchUser = useCallback((value: string): void => {
     const filteredUsers = usersList.filter((user) =>
-      user.toLowerCase().includes(value.toLowerCase()),
+      user.toLowerCase().includes(value.toLowerCase())
     );
     setFilteredUsersList(filteredUsers);
-  };
+  }, [usersList]);
 
+  // Fiz essa encapsulação para evitar que o componente UsersFilter seja copiado e colado varias vezes
+  const UserFilterComponent = () => (
+    <Show when={role === "ativos"}>
+      <UsersFilter
+        openUsersPopover={openUsersPopover}
+        setOpenUsersPopover={setOpenUsersPopover}
+        loadingCardData={loadingCardData}
+        filteredUsersList={filteredUsersList}
+        searchUser={searchUser}
+        searchInputRef={searchInputRef}
+      />
+    </Show>
+  );
 
   return (
     <>
       {/* tablet em diante */}
       <div className="flex gap-5 item-center bg-white dark:bg-boxdark mb-5 p-5 rounded-md flex-col 2xsm:hidden md:flex md:justify-between md:flex-row xl:justify-normal">
-        <Show when={role === "ativos"}>
-          <UsersFilter
-            openUsersPopover={openUsersPopover}
-            setOpenUsersPopover={setOpenUsersPopover}
-            loadingCardData={loadingCardData}
-            filteredUsersList={filteredUsersList}
-            searchUser={searchUser}
-          />
-        </Show>
+        <UserFilterComponent />
         <CredorFilter />
       </div>
       {/* Mobile */}
-      <div className="flex gap-5 item-center bg-white dark:bg-boxdark mb-5 p-5 rounded-md flex-col 2xsm:flex md:hidden md:justify-between md:flex-row xl:justify-normal">
-        
-          <Accordion type="single" collapsible >  
+        <div className="flex gap-5 bg-white dark:bg-boxdark mb-5 p-5 rounded-md flex-col 2xsm:flex md:hidden md:justify-between md:flex-row xl:justify-normal">
+          <Accordion type="single" collapsible>
             <AccordionItem value="item-2">
-            <AccordionTrigger>
-              Filtros de Busca
-              <IoIosArrowDown />
-            </AccordionTrigger>
-            <AccordionContent>
-              <CredorFilter />
-            </AccordionContent>
-            <AccordionContent>
-              <Show when={role === "ativos"}>
-              <UsersFilter
-                openUsersPopover={openUsersPopover}
-                setOpenUsersPopover={setOpenUsersPopover}
-                loadingCardData={loadingCardData}
-                filteredUsersList={filteredUsersList}
-                searchUser={searchUser}
-              />
-            </Show>
-            </AccordionContent>
-          </AccordionItem>
+              <AccordionTrigger>
+                Filtros de Busca
+                <IoIosArrowDown />
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="flex flex-col gap-4">
+                  <CredorFilter />
+                  <UserFilterComponent />
+                </div>
+              </AccordionContent>
+            </AccordionItem>
           </Accordion>
-
-      </div>
+        </div>
       <div className="grid grid-cols-1  items-center gap-5  xl:grid-cols-12">
         <BrokerQuantityDistributedChart
           title="Distribuição"
