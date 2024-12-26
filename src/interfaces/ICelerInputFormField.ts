@@ -15,6 +15,8 @@ export default interface ICelerInputFormField {
     dateFormat?: string;
     showTimeSelect?: boolean;
     children?: React.ReactNode;
+    rules?: any;
+    currencyFormat?: string | null;
     renderSkeleton?: (field: any) => React.ReactNode;
     fieldType: InputFieldVariant;
     defaultValue?: any;

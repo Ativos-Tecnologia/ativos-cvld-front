@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { NotionPage } from "@/interfaces/INotion";
 import api from "@/utils/api";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { FaBuilding, FaBuildingColumns, FaUser } from "react-icons/fa6";
-import { FaBalanceScale, FaIdCard, FaMapMarkedAlt } from "react-icons/fa";
+import { FaBalanceScale, FaIdCard, FaMapMarkedAlt, FaRegFilePdf } from "react-icons/fa";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import {
   UserInfoAPIContext,
@@ -21,6 +21,21 @@ import { estados } from "@/constants/estados";
 import { IoDocumentTextSharp } from "react-icons/io5";
 import CelerInputFormField from "../Forms/CustomFormField";
 import LifeCycleStep from "../LifeCycleStep";
+import { tribunais } from "@/constants/tribunais";
+import numberFormat from "@/functions/formaters/numberFormat";
+import Link from "next/link";
+import { GrDocumentText, GrDocumentUser } from "react-icons/gr";
+import { BiSolidSave } from "react-icons/bi";
+import { Button } from "../Button";
+import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
+import UseMySwal from "@/hooks/useMySwal";
+import { AxiosError } from "axios";
+import BrokerModal from "../Modals/BrokersCedente";
+import { BrokersContext } from "@/context/BrokersContext";
+import DataStatsTwo from "../DataStats/DataStatsTwo";
+import { BsPencilSquare } from "react-icons/bs";
+import DocForm from "../Modals/BrokersDocs";
+import { AiOutlineLoading } from "react-icons/ai";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -31,37 +46,504 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     data: { first_name },
   } = useContext<UserInfoContextType>(UserInfoAPIContext);
 
+    const {
+      cedenteModal,
+      setCedenteModal,
+      docModalInfo,
+      setDocModalInfo,
+    } = useContext(BrokersContext);
 
 
-    const handleSubmit = (name: string, value: any) => {
-        console.log(name, value);
+  const [formData, setFormData] = useState<any>(null);
+  const [loadingUpdateState, setLoadingUpdateState] = useState({
+    nomeCredor: false,
+    cpfCnpj: false,
+    npuOriginario: false,
+    npuPrecatorio: false,
+    juizoVara: false,
+    enteDevedor: false,
+    estadoEnteDevedor: false,
+    formValores: false
+  });
+  const [editLock, setEditLock] = useState<boolean>(false);
+
+  const swal = UseMySwal()
+
+  const handleDueDiligence = () => {
+    swal.fire({
+      title: 'Diligência',
+      text: 'Deseja mesmo finalizar a diligência?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sim',
+      cancelButtonText: 'Não',
+      confirmButtonColor: '#4CAF50',
+      cancelButtonColor: '#F44336',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const response = await api.patch(`api/notion-api/update/${id}/`, {
+          "Status Diligência": {
+            "select": {
+              "name": "Em liquidação"
+            }
+          }
+        });
+        if (response.status !== 202) {
+          swal.fire({
+            title: 'Erro',
+            text: 'Houve um erro ao finalizar a diligência',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        }
+
+        refetch();
+
+        swal.fire({
+          title: 'Diligência Finalizada',
+          text: 'A diligência foi Finalizada com sucesso! O ofício agora está em liquidação.',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+      }
+    })
+  }
+
+  const onSubmitForm = async (data: any) => {
+
+    if (data.valor_aquisicao_total) {
+      data.percentual_a_ser_adquirido = 1;
+    } else {
+      data.percentual_a_ser_adquirido = data.percentual_a_ser_adquirido / 100;
     }
+
+    if (typeof data.valor_principal === "string") {
+      data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
+      data.valor_principal = parseFloat(data.valor_principal);
+    }
+
+    if (typeof data.valor_juros === "string") {
+      data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
+      data.valor_juros = parseFloat(data.valor_juros);
+    }
+
+    if (data.data_base) {
+      data.data_base = data.data_base.split("/").reverse().join("-");
+    }
+
+    if (data.data_requisicao) {
+      data.data_requisicao = data.data_requisicao.split("/").reverse().join("-");
+    }
+
+    if (data.data_limite_de_atualizacao) {
+      data.data_limite_de_atualizacao = data.data_limite_de_atualizacao.split("/").reverse().join("-");
+    }
+
+    if (typeof data.valor_pss) {
+      data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
+      data.valor_pss = parseFloat(data.valor_pss);
+    }
+
+    if (!data.ir_incidente_rra) {
+      data.numero_de_meses = 0
+    }
+
+    if (!data.incidencia_pss) {
+      data.valor_pss = 0
+    }
+
+    if (!data.data_limite_de_atualizacao_check) {
+      delete data.data_limite_de_atualizacao_check
+    }
+
+    data.upload_notion = true;
+
+    try {
+      const response = await api.patch(`/api/juridico/update/precatorio/${id}/`, data);
+
+      swal.fire({
+        title: 'Sucesso',
+        text: 'Dados atualizados com sucesso!',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+
+    } catch (error: AxiosError | any) {
+      swal.fire({
+        title: 'Erro',
+        text: `${error.response?.data?.detail || error.message}`,
+        icon: 'error',
+        confirmButtonText: 'OK'
+      })
+      console.log(error)
+    }
+
+  }
 
   async function fetchData() {
     const response = await api.get(`/api/notion-api/list/page/${id}/`);
     return response.data;
   }
 
-  const { data, isFetching, isLoading } = useQuery<NotionPage>({
+  const { data, isFetching, isLoading, refetch } = useQuery<NotionPage>({
     queryKey: ["page", id],
-    refetchOnReconnect: true,
-    refetchInterval: 60000,
+    refetchOnWindowFocus: false,
+    // refetchOnReconnect: true,
+    // refetchInterval: 60000,
     queryFn: fetchData,
   });
 
   const t = !isLoading && handleDesembolsoVsRentabilidade(0.3, data)
   const y = !isLoading && findRentabilidadeAoAnoThroughDesembolso(1108726.611334225, data)
 
-  console.log(data?.properties["Honorários já destacados?"].checkbox)
   const form = useForm();
+  const isFormModified = Object.keys(form.watch()).some((key: any) => form.watch()[key] !== formData?.[key]);
 
-  console.log(t)
-  console.log(y)
+  //TODO: Documentar com JSDocs todas as funções desse componente
+  const handleChangeCreditorName = async (value: string, page_id: string) => {
+    await creditorNameMutation.mutateAsync({
+      page_id,
+      value
+    });
+  }
+
+  const handleChangeIdentification = async (value: string, page_id: string) => {
+
+    if (value.length === 11) {
+      value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+    } else if (value.length === 14) {
+      value = value.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+    }
+
+    await identificationMutation.mutateAsync({
+      page_id,
+      value
+    });
+  }
+
+  const handleChangeNpu = async (value: string, type: string, page_id: string) => {
+
+    value = value.replace(/(\d{7})(\d{2})(\d{4})(\d{1})(\d{2})(\d{4})/, "$1-$2.$3.$4.$5.$6");
+
+    await npuMutation.mutateAsync({
+      page_id,
+      type,
+      value
+    });
+  }
+
+  const handleChangeJuizo = async (value: string, page_id: string) => {
+    await juizoMutation.mutateAsync({
+      page_id,
+      value
+    });
+  }
+
+  const handleChangeEnteDevedor = async (value: string, page_id: string) => {
+    await enteDevedorMutation.mutateAsync({
+      page_id,
+      value
+    });
+  }
+
+  const handleChangeEstadoEnteDevedor = async (value: string, page_id: string) => {
+    await estadoEnteDevedorMutation.mutateAsync({
+      page_id,
+      value
+    });
+  }
+
+  // ----> Mutations <-----
+  const creditorNameMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Credor": {
+          "title": [
+            {
+              "text": {
+                "content": paramsObj.value
+              }
+            }
+          ]
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async (paramsObj: any) => {
+      setEditLock(true);
+      setLoadingUpdateState(prev => ({ ...prev, nomeCredor: true }));
+    },
+    onError: () => {
+      swal.fire({
+        title: 'Erro',
+        text: 'Houve um erro ao atualizar o campo Nome do Credor',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      })
+    },
+    onSuccess: () => {
+      swal.fire({
+        title: 'Sucesso',
+        text: 'Nome do Credor atualizado com sucesso',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      })
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, nomeCredor: false }));
+    }
+  });
+
+  const identificationMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "CPF/CNPJ": {
+          "rich_text": [
+            {
+              "text": {
+                "content": paramsObj.value
+              }
+            }
+          ]
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data;
+    },
+    onMutate: async (paramsObj: any) => {
+      setLoadingUpdateState(prev => ({ ...prev, cpfCnpj: true }));
+      setEditLock(true);
+    },
+    onError: () => {
+      swal.fire({
+        title: 'Erro',
+        text: 'Houve um erro ao atualizar o campo CPF/CNPJ',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    },
+    onSuccess: () => {
+      swal.fire({
+        title: 'Sucesso',
+        text: 'CPF/CNPJ atualizado com sucesso',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    },
+    onSettled: () => {
+      setLoadingUpdateState(prev => ({ ...prev, cpfCnpj: false }));
+      setEditLock(false);
+    }
+  });
+
+  const npuMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, type: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        [paramsObj.type]: {
+          "rich_text": [
+            {
+              "text": {
+                "content": paramsObj.value
+              }
+            }
+          ]
+        }
+      });
+      if (response.status !== 202) {
+        console.error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async (paramsObj) => {
+      let npuType = paramsObj.type === "NPU (Originário)" ? "npuOriginario" : "npuPrecatorio"
+      setLoadingUpdateState(prev => ({ ...prev, [npuType]: true }));
+      setEditLock(true);
+      return { npuType };
+    },
+    onError: (error, paramsObj) => {
+      swal.fire({
+        title: 'Erro',
+        text: `Houve um erro ao atualizar o campo ${paramsObj.type}`,
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    },
+    onSuccess: (data, paramsObj) => {
+      swal.fire({
+        title: 'Sucesso',
+        text: `Campo ${paramsObj.type} alterado com sucesso.`,
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    },
+    onSettled: (data, error, paramsObj, context) => {
+      setEditLock(false);
+      if (context?.npuType) {
+        setLoadingUpdateState(prev => ({ ...prev, [context?.npuType]: false }));
+      }
+    }
+  });
+
+  const juizoMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Juízo": {
+          "rich_text": [
+            {
+              "text": {
+                "content": paramsObj.value
+              }
+            }
+          ]
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async () => {
+      setLoadingUpdateState(prev => ({ ...prev, juizoVara: true }));
+      setEditLock(true);
+    },
+    onError: () => {
+      swal.fire({
+        title: 'Erro',
+        text: 'Houve um erro ao atualizar o campo Juízo',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    },
+    onSuccess: () => {
+      swal.fire({
+        title: 'Sucesso',
+        text: 'Campo Juízo alterado com sucesso.',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, juizoVara: false }));
+    }
+  });
+
+  const enteDevedorMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Ente Devedor": {
+          "select": {
+            "name": paramsObj.value
+          }
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async () => {
+      setLoadingUpdateState(prev => ({ ...prev, enteDevedor: true }));
+      setEditLock(true);
+    },
+    onError: () => {
+      swal.fire({
+        title: 'Erro',
+        text: 'Houve um erro ao atualizar o campo Ente Devedor',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    },
+    onSuccess: () => {
+      swal.fire({
+        title: 'Sucesso',
+        text: 'Campo Ente Devedor alterado com sucesso.',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, enteDevedor: false }));
+    }
+  });
+
+  const estadoEnteDevedorMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Estado do Ente Devedor": {
+          "select": {
+            "name": paramsObj.value
+          }
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async () => {
+      setLoadingUpdateState(prev => ({ ...prev, estadoEnteDevedor: true }));
+      setEditLock(true);
+    },
+    onError: () => {
+      swal.fire({
+        title: 'Erro',
+        text: 'Houve um erro ao atualizar o campo Estado do Ente Devedor',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    },
+    onSuccess: () => {
+      swal.fire({
+        title: 'Sucesso',
+        text: 'Campo Estado do Ente Devedor alterado com sucesso.',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, estadoEnteDevedor: false }));
+    }
+  })
+
+  // console.log(t)
+
+  useEffect(() => {
+    if (data) {
+      form.setValue("tipo_do_oficio", data?.properties["Tipo"].select?.name || "PRECATÓRIO");
+      form.setValue("natureza", data?.properties["Natureza"].select?.name || "NÃO TRIBUTÁRIA");
+      form.setValue("esfera", data?.properties["Esfera"].select?.name || "FEDERAL");
+      form.setValue("regime", data?.properties["Regime"].select?.name || "GERAL");
+      form.setValue("tribunal", data?.properties["Tribunal"].select?.name || "STJ");
+      form.setValue("valor_principal", numberFormat(data?.properties["Valor Principal"].number || 0));
+      form.setValue("valor_juros", numberFormat(data?.properties["Valor Juros"].number || 0));
+      form.setValue("data_base", data?.properties["Data Base"].date?.start.split("-").reverse().join("/") || "");
+      form.setValue("data_requisicao", data?.properties["Data do Recebimento"].date?.start.split("-").reverse().join("/") || "");
+      form.setValue("valor_aquisicao_total", data?.properties["Percentual a ser adquirido"].number === 1);
+      form.setValue("ja_possui_destacamento", data?.properties["Honorários já destacados?"].checkbox);
+      form.setValue("percentual_de_honorarios", data?.properties["Percentual de Honorários Não destacados"].number! * 100 || 0);
+      form.setValue("incidencia_juros_moratorios", data?.properties["Incidência de Juros Moratórios"].checkbox);
+      form.setValue("nao_incide_selic_no_periodo_db_ate_abril", data?.properties["Incide Selic Somente Sobre Principal"].checkbox);
+      form.setValue("incidencia_rra_ir", data?.properties["Incidencia RRA/IR"].checkbox);
+      form.setValue("ir_incidente_rra", data?.properties["IR Incidente sobre RRA"].checkbox);
+      form.setValue("numero_de_meses", data?.properties["Meses RRA"].number || 0);
+      form.setValue("incidencia_pss", data?.properties["Meses RRA"].number || 0);
+      form.setValue("incidencia_pss", data?.properties["PSS"].number! > 0);
+      form.setValue("valor_pss", numberFormat(data?.properties["PSS"].number || 0));
+      setFormData(form.watch);
+    }
+  }, [data])
 
   return (
     <div className="flex flex-col w-full gap-5">
-
-
 
       <div className="flex w-full items-end justify-end rounded-md">
         <Breadcrumb
@@ -74,120 +556,524 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
       <LifeCycleStep status={data?.properties["Status Diligência"].select?.name ?? "ops"} />
 
       <Form {...form}>
-        <form className="flex-1 ">
-          <div className="space-y-6 rounded-md">
-            <section id="info_credor" className="form-inputs-container">
-            <div className="col-span-1 w-full">
-                <CelerInputField
-                  name="credor"
-                  fieldType={InputFieldVariant.INPUT}
-                  label="Nome do Credor"
-                  defaultValue={data?.properties["Credor"].title[0].plain_text}
-                  iconSrc={<FaUser
-                    className="self-center" />}
-                  iconAlt="user"
-                  className="w-full"
-                  onSubmit={handleSubmit}
-                />
+        <div className="space-y-6 rounded-md">
+          <section id="info_credor" className="form-inputs-container">
+            <div className="xl:col-span-2 w-full">
+              <CelerInputField
+                name="credor"
+                fieldType={InputFieldVariant.INPUT}
+                label="Nome do Credor"
+                defaultValue={data?.properties["Credor"]?.title?.[0]?.plain_text}
+                iconSrc={<FaUser
+                  className="self-center" />}
+                iconAlt="user"
+                className="w-full"
+                onSubmit={(_, value) => handleChangeCreditorName(value, id)}
+                isLoading={loadingUpdateState.nomeCredor}
+                disabled={editLock}
+              />
             </div>
 
             <div className="col-span-1 w-full">
-                <CelerInputField
-                  name="cpf_cnpj"
-                  fieldType={InputFieldVariant.INPUT}
-                  label={
-                    data?.properties["CPF/CNPJ"]?.rich_text?.[0]
-                      ?.plain_text &&
-                      data.properties["CPF/CNPJ"].rich_text[0].plain_text
-                        .length > 11
-                      ? "CNPJ"
-                      : "CPF"
-                  }
-                  defaultValue={data?.properties["CPF/CNPJ"]?.rich_text?.[0].plain_text}
-                  iconSrc={<FaIdCard
-                    className="self-center" />}
-                  iconAlt="document"
-                  className="w-full"
-                  onSubmit={handleSubmit}
-                />
+              <CelerInputField
+                name="cpf_cnpj"
+                fieldType={InputFieldVariant.INPUT}
+                label={
+                  data?.properties["CPF/CNPJ"]?.rich_text?.[0]
+                    ?.plain_text &&
+                    data.properties["CPF/CNPJ"].rich_text[0].plain_text
+                      .length > 11
+                    ? "CNPJ"
+                    : "CPF"
+                }
+                defaultValue={data?.properties["CPF/CNPJ"]?.rich_text?.[0].plain_text}
+                iconSrc={<FaIdCard
+                  className="self-center" />}
+                iconAlt="document"
+                className="w-full"
+                onSubmit={(_, value) => handleChangeIdentification(value, id)}
+                isLoading={loadingUpdateState.cpfCnpj}
+                disabled={editLock}
+              />
             </div>
-            </section>
+          </section>
 
-            <section className="form-inputs-container" id="info_processo">
-              <div className="col-span-1">
-                <CelerInputField
-                  name="npu_originario"
-                  fieldType={InputFieldVariant.INPUT}
-                  label="NPU (Originário)"
-                  defaultValue={data?.properties["NPU (Originário)"]?.rich_text?.[0].plain_text}
-                  iconSrc={<IoDocumentTextSharp className="self-center" />}
-                  iconAlt="law"
-                  className="w-full"
-                  onSubmit={handleSubmit}
-                />
+          <section className="form-inputs-container" id="info_processo">
+            <div className="col-span-1">
+              <CelerInputField
+                name="npu_originario"
+                fieldType={InputFieldVariant.INPUT}
+                label="NPU (Originário)"
+                defaultValue={data?.properties["NPU (Originário)"]?.rich_text?.[0].plain_text}
+                iconSrc={<IoDocumentTextSharp className="self-center" />}
+                iconAlt="law"
+                className="w-full"
+                onSubmit={(_, value) => handleChangeNpu(value, "NPU (Originário)", id)}
+                isLoading={loadingUpdateState.npuOriginario}
+                disabled={editLock}
+              />
+            </div>
+            <div className="col-span-1">
+              <CelerInputField
+                name="npu_precatorio"
+                fieldType={InputFieldVariant.INPUT}
+                label="NPU (Precatório)"
+                defaultValue={data?.properties["NPU (Precatório)"]?.rich_text?.[0].plain_text}
+                iconSrc={<IoDocumentTextSharp className="self-center" />}
+                iconAlt="law"
+                className="w-full"
+                onSubmit={(_, value) => handleChangeNpu(value, "NPU (Precatório)", id)}
+                isLoading={loadingUpdateState.npuPrecatorio}
+                disabled={editLock}
+              />
+            </div>
+            <div className="col-span-1">
+              <CelerInputField
+                name="juizo_vara"
+                fieldType={InputFieldVariant.INPUT}
+                label="Vara"
+                defaultValue={data?.properties["Juízo"]?.rich_text?.[0].plain_text}
+                iconSrc={<FaBuildingColumns className="self-center" />}
+                iconAlt="law"
+                className="w-full"
+                onSubmit={(_, value) => handleChangeJuizo(value, id)}
+                isLoading={loadingUpdateState.juizoVara}
+                disabled={editLock}
+              />
+            </div>
+            <div className="col-span-1">
+              <CelerInputField
+                name="ente_devedor"
+                fieldType={InputFieldVariant.INPUT}
+                label="Ente Devedor"
+                defaultValue={data?.properties["Ente Devedor"].select?.name}
+                iconSrc={<FaBuilding className="self-center" />}
+                iconAlt="law"
+                className="w-full"
+                onSubmit={(_, value) => handleChangeEnteDevedor(value, id)}
+                isLoading={loadingUpdateState.enteDevedor}
+                disabled={editLock}
+              />
+            </div>
+            <div className="col-span-1">
+              <CelerInputField
+                name="estado_ente_devedor"
+                fieldType={InputFieldVariant.SELECT}
+                label="Estado Ente Devedor"
+                defaultValue={data?.properties["Estado do Ente Devedor"].select?.name}
+                iconSrc={<FaMapMarkedAlt className="self-center" />}
+                iconAlt="law"
+                className="w-full"
+                onValueChange={(_, value) => handleChangeEstadoEnteDevedor(value, id)}
+                isLoading={loadingUpdateState.estadoEnteDevedor}
+                disabled={editLock}
+              >
+                {estados.map(estado => (
+                  <SelectItem className="shad-select-item" defaultChecked={
+                    data?.properties["Estado do Ente Devedor"].select?.name === estado.id
+                  } key={estado.id} value={estado.id}>{estado.nome}</SelectItem>
+                ))}
+              </CelerInputField>
+            </div>
+          </section>
+
+          <section id="cedentes" className="form-inputs-container">
+            <div className="col-span-4 w-full">
+              <h3 className="text-bodydark2 font-medium">
+                Informações sobre o cedente
+              </h3>
+
+            </div>
+            <div className="col-span-4 gap-4">
+              <div className="flex items-center gap-4">
+
+            <button
+                  onClick={() => data && setCedenteModal(data)}
+                  className="border border-strokedark/20 dark:border-stroke/20 dark:text-white text-slate-600 py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium hover:bg-strokedark/20 dark:hover:bg-stroke/20 transition-colors duration-200"
+                  >
+                  {(data?.properties["Cedente PF"].relation?.[0] || data?.properties["Cedente PJ"].relation?.[0]) ? (
+                    <>
+                          <BsPencilSquare />
+                          Editar Cedente
+                      </>
+                  ) : (
+                    <>
+                          <GrDocumentUser />
+                          Cadastrar Cedente
+                      </>
+                  )}
+              </button>
+              <button
+                  onClick={() => data && setDocModalInfo(data)}
+                  className="border border-strokedark/20 dark:border-stroke/20 dark:text-white text-slate-600 py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium hover:bg-strokedark/20 dark:hover:bg-stroke/20 transition-colors duration-200"
+                  >
+                <FaRegFilePdf />
+                Gerir Documentos
+              </button>
+                </div>
+            </div>
+          </section>
+
+
+          <section id="info_valores" className="p-4 rounded-md bg-white dark:bg-boxdark">
+            <form onSubmit={form.handleSubmit(onSubmitForm)}>
+              <div className="grid grid-cols-4 3xl:grid-cols-5 gap-6">
+                {/* tipo */}
+                <div className="col-span-1">
+                  <CelerInputFormField
+                    control={form.control}
+                    name="tipo_do_oficio"
+                    label="Tipo"
+                    fieldType={InputFieldVariant.SELECT}
+                    defaultValue={data?.properties["Tipo"].select?.name ?? ""}
+                    className="w-full"
+                  >
+                    <SelectItem value="PRECATÓRIO">PRECATÓRIO</SelectItem>
+                    <SelectItem value="CREDITÓRIO">CREDITÓRIO</SelectItem>
+                    <SelectItem value="R.P.V.">R.P.V.</SelectItem>
+                  </CelerInputFormField>
+                </div>
+                {/* natureza */}
+                <div className="col-span-1">
+                  <CelerInputFormField
+                    control={form.control}
+                    name="natureza"
+                    label="Natureza"
+                    fieldType={InputFieldVariant.SELECT}
+                    defaultValue={data?.properties["Natureza"].select?.name ?? ""}
+                    className="w-full"
+                  >
+                    <SelectItem value="NÃO TRIBUTÁRIA">NÃO TRIBUTÁRIA</SelectItem>
+                    <SelectItem value="TRIBUTÁRIA">TRIBUTÁRIA</SelectItem>
+                  </CelerInputFormField>
+                </div>
+                {/* esfera */}
+                <div className="col-span-1">
+                  <CelerInputFormField
+                    control={form.control}
+                    name="esfera"
+                    label="Esfera"
+                    fieldType={InputFieldVariant.SELECT}
+                    defaultValue={data?.properties["Esfera"].select?.name ?? ""}
+                    className="w-full"
+                  >
+                    <SelectItem value="FEDERAL">FEDERAL</SelectItem>
+                    <SelectItem value="ESTADUAL">ESTADUAL</SelectItem>
+                    <SelectItem value="MUNICIPAL">MUNICIPAL</SelectItem>
+                  </CelerInputFormField>
+                </div>
+                {/* regime */}
+                {form.watch("esfera") !== "FEDERAL" && (
+                  <div className="col-span-1">
+                    <CelerInputFormField
+                      control={form.control}
+                      name="regime"
+                      label="Regime"
+                      fieldType={InputFieldVariant.SELECT}
+                      defaultValue={data?.properties["Regime"].select?.name ?? ""}
+                      className="w-full"
+                    >
+                      <SelectItem value="GERAL">GERAL</SelectItem>
+                      <SelectItem value="ESPECIAL">ESPECIAL</SelectItem>
+                    </CelerInputFormField>
+                  </div>
+                )}
+                {/* tribunal */}
+                <div className="col-span-1">
+                  <CelerInputFormField
+                    control={form.control}
+                    name="tribunal"
+                    label="Tribunal"
+                    fieldType={InputFieldVariant.SELECT}
+                    defaultValue={data?.properties["Tribunal"].select?.name ?? ""}
+                    className="w-full"
+                  >
+                    {tribunais.map(tribunal => (
+                      <SelectItem key={tribunal.id} value={tribunal.id}>{tribunal.nome}</SelectItem>
+                    ))}
+                  </CelerInputFormField>
+                </div>
+                {/* valor principal */}
+                <div className="col-span-1">
+                  <CelerInputFormField
+                    control={form.control}
+                    name="valor_principal"
+                    label="Valor Principal"
+                    fieldType={InputFieldVariant.NUMBER}
+                    currencyFormat="R$ "
+                    defaultValue={data?.properties["Valor Principal"].number ?? 0}
+                    className="w-full"
+                  />
+                </div>
+                {/* valor juros */}
+                <div className="col-span-1">
+                  <CelerInputFormField
+                    control={form.control}
+                    name="valor_juros"
+                    label="Juros"
+                    fieldType={InputFieldVariant.NUMBER}
+                    currencyFormat="R$ "
+                    defaultValue={data?.properties["Valor Juros"].number ?? 0}
+                    className="w-full"
+                  />
+                </div>
+                {/* data base */}
+                <div className="col-span-1">
+                  <CelerInputFormField
+                    control={form.control}
+                    name="data_base"
+                    label="Data Base"
+                    fieldType={InputFieldVariant.DATE}
+                    defaultValue={data?.properties["Data Base"].date?.start ?? ""}
+                    className="w-full"
+                  />
+                </div>
+                {/* data requisição */}
+                <div className="col-span-1">
+                  <CelerInputFormField
+                    control={form.control}
+                    name="data_requisicao"
+                    label="Data Requisição"
+                    fieldType={InputFieldVariant.DATE}
+                    defaultValue={data?.properties["Data do Recebimento"].date?.start ?? ""}
+                    className="w-full"
+                  />
+                </div>
               </div>
-              <div className="col-span-1">
-                <CelerInputField
-                  name="npu_precatorio"
-                  fieldType={InputFieldVariant.INPUT}
-                  label="NPU (Precatório)"
-                  defaultValue={data?.properties["NPU (Precatório)"]?.rich_text?.[0].plain_text}
-                  iconSrc={<IoDocumentTextSharp className="self-center" />}
-                  iconAlt="law"
-                  className="w-full"
-                  onSubmit={handleSubmit}
-                />
+
+              <hr className="border border-stroke dark:border-strokedark mt-6" />
+
+              <div className="w-1/2 grid grid-cols-2 gap-6 mt-6">
+                {/* percentual adquirido */}
+                <div className="col-span-1">
+                  <CelerInputFormField
+                    control={form.control}
+                    name="valor_aquisicao_total"
+                    label="Aquisição Total"
+                    fieldType={InputFieldVariant.CHECKBOX}
+                    className="w-full"
+                  />
+                </div>
+                {form.watch("valor_aquisicao_total") === false ? (
+                  <div className="col-span-1">
+                    <CelerInputFormField
+                      control={form.control}
+                      name="percentual_a_ser_adquirido"
+                      label="Percentual de Aquisição (%)"
+                      fieldType={InputFieldVariant.NUMBER}
+                      className="w-full"
+                    />
+                  </div>
+                ) : (
+                  <div className="col-span-1">&nbsp;</div>
+                )}
+
+                {/* destacamento de honorários */}
+                <div className="col-span-2 flex gap-6">
+                  <CelerInputFormField
+                    control={form.control}
+                    name="ja_possui_destacamento"
+                    label="Já Possui Destacamento de Honorários?"
+                    fieldType={InputFieldVariant.CHECKBOX}
+                    className="w-full"
+                  />
+                  {form.watch("ja_possui_destacamento") === false ? (
+                    <div className="col-span-1">
+                      <CelerInputFormField
+                        control={form.control}
+                        name="percentual_de_honorarios"
+                        label="Percentual"
+                        fieldType={InputFieldVariant.NUMBER}
+                        className="w-full"
+                      />
+                    </div>
+                  ) : (
+                    null
+                  )}
+                </div>
+
+                {/* juros moratórios */}
+                <div className={`col-span-2 ${form.watch("data_base") && form.watch("data_base").split("/").reverse().join("-") < "2021-12-01" && form.watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}>
+                  <CelerInputFormField
+                    control={form.control}
+                    name="incidencia_juros_moratorios"
+                    label="Juros de Mora Fixados em Sentença"
+                    fieldType={InputFieldVariant.CHECKBOX}
+                    className="w-full"
+                  />
+                </div>
+
+                {/* incide selic */}
+                <div className={`col-span-2 ${form.watch("data_base") && form.watch("data_base").split("/").reverse().join("-") > "2021-12-01" && form.watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}>
+                  <CelerInputFormField
+                    control={form.control}
+                    name="nao_incide_selic_no_periodo_db_ate_abril"
+                    label="SELIC Somente Sobre o Principal"
+                    fieldType={InputFieldVariant.CHECKBOX}
+                    className="w-full"
+                  />
+                </div>
+
+                {/* incidência IR */}
+                <div className="col-span-2">
+                  <CelerInputFormField
+                    control={form.control}
+                    name="incidencia_rra_ir"
+                    label="Incidência de IR"
+                    fieldType={InputFieldVariant.CHECKBOX}
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Incidência de IR sobre RRA */}
+                {form.watch("natureza") !== "TRIBUTÁRIA" && form.watch("incidencia_rra_ir") === true ? (
+                  <>
+                    <div className="col-span-1">
+                      <CelerInputFormField
+                        control={form.control}
+                        name="ir_incidente_rra"
+                        label="IR Incidente sobre RRA?"
+                        fieldType={InputFieldVariant.CHECKBOX}
+                        className="w-full"
+                      />
+                    </div>
+                    {form.watch("ir_incidente_rra") === true ? (
+                      <div className="col-span-1">
+                        <CelerInputFormField
+                          control={form.control}
+                          name="numero_de_meses"
+                          label="Número de Meses"
+                          fieldType={InputFieldVariant.INPUT}
+                          className="w-full"
+                        />
+                      </div>
+                    ) : (
+                      <div className="col-span-1">&nbsp;</div>
+                    )}
+                  </>
+                ) : (
+                  null
+                )}
+
+                {/* incidência de PSS */}
+                {form.watch("natureza") !== "TRIBUTÁRIA" && (
+                  <>
+                    <div className="col-span-1">
+                      <CelerInputFormField
+                        control={form.control}
+                        name="incidencia_pss"
+                        label="Incide PSS?"
+                        fieldType={InputFieldVariant.CHECKBOX}
+                        className="w-full"
+                      />
+                    </div>
+                    {form.watch("incidencia_pss") === true ? (
+                      <div className="col-span-1">
+                        <CelerInputFormField
+                          control={form.control}
+                          name="valor_pss"
+                          label="Valor PSS"
+                          fieldType={InputFieldVariant.NUMBER}
+                          currencyFormat={"R$ "}
+                          className="w-full"
+                        />
+                      </div>
+                    ) : (
+                      <div className="col-span-1">&nbsp;</div>
+                    )}
+                  </>
+                )}
+
+                {/* data limite de atualização */}
+                <div className="col-span-1">
+                  <CelerInputFormField
+                    control={form.control}
+                    name="data_limite_de_atualizacao_check"
+                    label="Atualiza Para Data Passada?"
+                    fieldType={InputFieldVariant.CHECKBOX}
+                    className="w-full"
+                  />
+                </div>
+
+                {form.watch("data_limite_de_atualizacao_check") === true ? (
+                  <div className="col-span-1">
+                    <CelerInputFormField
+                      control={form.control}
+                      name="data_limite_de_atualizacao"
+                      label="Atualizado Até:"
+                      fieldType={InputFieldVariant.DATE}
+                      className="w-full"
+                    />
+                  </div>
+                ) : (
+                  <div className="col-span-1">&nbsp;</div>
+                )}
+
+                {(form.watch("data_limite_de_atualizacao") && form.watch("data_limite_de_atualizacao").split("/").reverse().join("-") < form.watch("data_requisicao").split("/").reverse().join("-")) && (
+                  <span className="text-red-500 dark:text-red-400 text-xs col-span-2">
+                    Data de atualização não pode ser menor que a data da requisição
+                  </span>
+                )}
+
               </div>
-              <div className="col-span-1">
-                <CelerInputField
-                  name="juizo_vara"
-                  fieldType={InputFieldVariant.INPUT}
-                  label="Vara"
-                  defaultValue={data?.properties["Juízo"]?.rich_text?.[0].plain_text}
-                  iconSrc={<FaBuildingColumns className="self-center" />}
-                  iconAlt="law"
-                  className="w-full"
-                  onSubmit={handleSubmit}
-                />
-              </div>
-              <div className="col-span-1">
-                <CelerInputField
-                  name="ente_devedor"
-                  fieldType={InputFieldVariant.INPUT}
-                  label="Ente Devedor"
-                  defaultValue={data?.properties["Ente Devedor"].select?.name}
-                  iconSrc={<FaBuilding className="self-center" />}
-                  iconAlt="law"
-                  className="w-full"
-                  onSubmit={handleSubmit}
-                />
-              </div>
-              <div className="col-span-1">
-                <CelerInputField
-                  name="estado_ente_devedor"
-                  fieldType={InputFieldVariant.SELECT}
-                  label="Estado Ente Devedor"
-                  defaultValue={data?.properties["Estado do Ente Devedor"].select?.name}
-                  iconSrc={<FaMapMarkedAlt  className="self-center" />}
-                  iconAlt="law"
-                  className="w-full"
-                  onValueChange={handleSubmit}
+
+              <hr className="border border-stroke dark:border-strokedark mt-6" />
+
+              <div className="flex items-center justify-center gap-6 mt-6">
+
+                <Button
+                  type="submit"
+                  variant="success"
+                  disabled={!isFormModified}
+                  className="py-2 px-4 rounded-md flex items-center gap-3 disabled:opacity-50 disabled:hover:bg-green-500 uppercase text-sm"
                 >
-                  {estados.map(estado => (
-                    <SelectItem defaultChecked={
-                      data?.properties["Estado do Ente Devedor"].select?.name === estado.id
-                    } key={estado.id} value={estado.id}>{estado.nome}</SelectItem>
-                  ))}
-                </CelerInputField>
+                  <BiSolidSave className="h-4 w-4" />
+                  <span className="font-medium">Salvar Alterações</span>
+                </Button>
+
+                {data?.properties["Memória de Cálculo Ordinário"].url && (
+                  <Link
+                    href={data?.properties["Memória de Cálculo Ordinário"].url}
+                    className="bg-blue-600 hover:bg-blue-700 text-snow py-2 px-4 rounded-md flex items-center gap-3 transition-colors duration-300 uppercase text-sm"
+                  >
+                    <GrDocumentText className="h-4 w-4" />
+                    <span className="font-medium">Memória de Cálculo Simples</span>
+                  </Link>
+                )}
+
+                {data?.properties["Memória de Cálculo RRA"].url && (
+                  <Link
+                    href={data?.properties["Memória de Cálculo RRA"].url}
+                    target="_blank"
+                    referrerPolicy="no-referrer"
+                    className="bg-blue-600 hover:bg-blue-700 text-snow py-2 px-4 rounded-md flex items-center gap-3 transition-colors duration-300 uppercase text-sm"
+                  >
+                    <GrDocumentText className="h-4 w-4" />
+                    <span className="font-medium">Memória de Cálculo RRA</span>
+                  </Link>
+                )}
               </div>
-            </section>
 
-            <section className="form-inputs-container" id="info_valores">
-
-            </section>
-          </div>
-        </form>
+            </form>
+          </section>
+        </div>
       </Form>
+      <div className="flex items-center justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
+        {
+          data?.properties["Status Diligência"].select?.name === "Due Diligence" && (
+            <Button
+              variant="success"
+              className="py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium"
+              onClick={() => handleDueDiligence()}
+            >
+              <BiSolidSave className="h-4 w-4" />
+              <span>Finalizar Due Diligence</span>
+            </Button>
+          )
+        }
+        </div>
+            {cedenteModal !== null && <BrokerModal />}
+            {docModalInfo !== null && <DocForm />}
     </div>
   );
 };

@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import ICelerInputFormField from "@/interfaces/ICelerInputFormField";
+import { AiOutlineLoading } from "react-icons/ai";
 
 interface ICelerInputField extends ICelerInputFormField {
     onValueChange?: (name: string, value: any) => void;
@@ -91,7 +92,7 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
                         </label>
                     </div>
                 );
-            case InputFieldVariant.DATE_PICKER:
+            case InputFieldVariant.DATE:
                 return (
                     <div className="flex rounded-md border border-dark-500 bg-dark-400">
                         <Image
@@ -115,7 +116,7 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
                 return (
                     <div className="flex rounded-md gap-4 mt-2 w-full">
                         {props.iconSrc && <div className="flex items-center">{props.iconSrc}</div>}
-                        <Select onValueChange={(selectedValue) => handleChange(selectedValue)} value={value} defaultValue={value}>
+                        <Select onValueChange={(selectedValue) => handleChange(selectedValue)} value={value} defaultValue={value} disabled={props.disabled || props.isLoading}>
                             <SelectTrigger className="shad-select-trigger">
                                 <SelectValue placeholder={props.placeholder || "Selecione uma opção"} />
                             </SelectTrigger>
@@ -130,8 +131,11 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
 
     return (
         <div className="w-full col-span-1">
-            {props.label && <Label className="shad-input-label">{props.label}</Label>}
-            {renderInput()}
+            {(props.label && props.fieldType !== InputFieldVariant.CHECKBOX) && <Label className="shad-input-label">{props.label}</Label>}
+            <div className="flex items-center gap-2">
+                {renderInput()}
+                {props.isLoading && <AiOutlineLoading className="animate-spin w-5 h-5" />}
+            </div>
             {props.error && <p className="text-red-500 text-sm mt-1">{props.error}</p>}
         </div>
     );

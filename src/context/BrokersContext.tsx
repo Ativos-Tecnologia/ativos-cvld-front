@@ -1,9 +1,7 @@
 "use client";
-import UseMySwal from "@/hooks/useMySwal";
 import { NotionPage, NotionResponse } from "@/interfaces/INotion";
 import api from "@/utils/api";
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { GeneralUIContext } from "./GeneralUIContext";
+import React, { createContext, useEffect, useState } from "react";
 
 export type BrokersContextProps = {
     editModalId: string | null;
@@ -155,7 +153,6 @@ export const BrokersProvider = ({ children }: { children: React.ReactNode }): JS
         }
 
         return response.status;
-
     }
 
     /**
@@ -173,6 +170,8 @@ export const BrokersProvider = ({ children }: { children: React.ReactNode }): JS
         // return () => clearInterval(interval);
 
     }, [selectedUser]);
+
+    
 
     return (
         <BrokersContext.Provider value={{
