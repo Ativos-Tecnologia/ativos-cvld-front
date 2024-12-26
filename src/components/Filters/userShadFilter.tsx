@@ -27,24 +27,20 @@ import { BiUser } from "react-icons/bi";
 export function UserShadFilter() {
 	
   const { data: { user } } = React.useContext(UserInfoAPIContext);
-  const { selectedUser, setSelectedUser } = useContext(BrokersContext);
+  const { selectedUser, setSelectedUser, loadingCardData } = useContext(BrokersContext);
   
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");  
 	const [fetchedUsers, setFetchedUsers] = useState<string[]>([]);
-	const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);  
+    const fetchData = async () => { 
       try {
         const response = await api.get("/api/notion-api/list/users/");
         setFetchedUsers(response.data);
       } catch (error) {
         console.error("Erro ao carregar lista de usuários:", error);
-      } finally {
-        setIsLoading(false); 
-      }
+      } 
     };
     fetchData();
   }, []);
@@ -52,27 +48,24 @@ export function UserShadFilter() {
 	// Coloquei para o usuário logado sempre aparecer no topo da lista e ser o primeiro a ser carregado.
 	const users = user ? [user, ...fetchedUsers] : fetchedUsers; 
 	
-	const handleUserSelect = (currentValue: string) => {
-		setIsLoading(true);  
+	const handleUserSelect = (currentValue: string) => { 
 		try {
 			setValue(currentValue === value ? "" : currentValue);
 			setSelectedUser(currentValue);  
 			setOpen(false);
 		} catch (error) {
 			console.error("Erro ao selecionar usuário:", error);
-		} finally {
-			setIsLoading(false);  
-		}
+		} 
   };
 
 	return (
-		<div className="flex flex-col w-full">
+		<div className="flex flex-col w-full text-bodydark2 dark:text-bodydark bg-white dark:bg-boxdark">
 		<div className="flex w-full relative">
-				<label className="text-sm mb-2 font-semibold text-bodydark2 dark:text-bodydark flex">
+				<label className="text-sm mb-2 font-semibold text-bodydark2 dark:text-bodydark bg-white dark:bg-boxdark flex">
 					<BiUser className="w-5 h-5 mr-2" /> <p className="uppercase">Filtro por usuário</p>
 				</label>
 				{
-					isLoading && <AiOutlineLoading className="ml-4 animate-spin" />
+					loadingCardData && <AiOutlineLoading className="ml-4 animate-spin" />
 				}
 			</div>
 		<Popover open={open} onOpenChange={setOpen}>
