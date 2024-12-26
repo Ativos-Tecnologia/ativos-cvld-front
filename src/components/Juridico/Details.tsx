@@ -481,7 +481,6 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   })
 
   // console.log(t)
-  console.log(data)
 
   useEffect(() => {
     if (data) {
