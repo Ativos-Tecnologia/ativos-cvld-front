@@ -7,7 +7,7 @@ import { NotionPage } from "@/interfaces/INotion";
 import api from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
 import { FaBuilding, FaBuildingColumns, FaUser } from "react-icons/fa6";
-import { FaBalanceScale, FaIdCard, FaMapMarkedAlt } from "react-icons/fa";
+import { FaBalanceScale, FaIdCard, FaMapMarkedAlt, FaRegFilePdf } from "react-icons/fa";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import {
   UserInfoAPIContext,
@@ -24,12 +24,17 @@ import LifeCycleStep from "../LifeCycleStep";
 import { tribunais } from "@/constants/tribunais";
 import numberFormat from "@/functions/formaters/numberFormat";
 import Link from "next/link";
-import { GrDocumentText } from "react-icons/gr";
+import { GrDocumentText, GrDocumentUser } from "react-icons/gr";
 import { BiSolidSave } from "react-icons/bi";
 import { Button } from "../Button";
 import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
 import UseMySwal from "@/hooks/useMySwal";
 import { AxiosError } from "axios";
+import BrokerModal from "../Modals/BrokersCedente";
+import { BrokersContext } from "@/context/BrokersContext";
+import DataStatsTwo from "../DataStats/DataStatsTwo";
+import { BsPencilSquare } from "react-icons/bs";
+import DocForm from "../Modals/BrokersDocs";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -39,6 +44,14 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   const {
     data: { first_name },
   } = useContext<UserInfoContextType>(UserInfoAPIContext);
+
+    const {
+      cedenteModal,
+      setCedenteModal,
+      docModalInfo,
+      setDocModalInfo,
+    } = useContext(BrokersContext);
+
 
   const [formData, setFormData] = useState<any>(null);
 
@@ -139,9 +152,6 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
 
   const form = useForm();
   const isFormModified = Object.keys(form.watch()).some((key: any) => form.watch()[key] !== formData?.[key]);
-
-  // console.log(t)
-  console.log(data)
 
   useEffect(() => {
     if (data) {
@@ -285,13 +295,51 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                 onValueChange={handleSubmit}
               >
                 {estados.map(estado => (
-                  <SelectItem defaultChecked={
+                  <SelectItem className="shad-select-item" defaultChecked={
                     data?.properties["Estado do Ente Devedor"].select?.name === estado.id
                   } key={estado.id} value={estado.id}>{estado.nome}</SelectItem>
                 ))}
               </CelerInputField>
             </div>
           </section>
+
+          <section id="cedentes" className="form-inputs-container">
+            <div className="col-span-4 w-full">
+              <h3 className="text-bodydark2 font-medium">
+                Informações sobre o cedente
+              </h3>
+
+            </div>
+            <div className="col-span-4 gap-4">
+              <div className="flex items-center gap-4">
+
+            <button
+                  onClick={() => data && setCedenteModal(data)}
+                  className="border border-strokedark/20 dark:border-stroke/20 dark:text-white text-slate-600 py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium hover:bg-strokedark/20 dark:hover:bg-stroke/20 transition-colors duration-200"
+                  >
+                  {(data?.properties["Cedente PF"].relation?.[0] || data?.properties["Cedente PJ"].relation?.[0]) ? (
+                    <>
+                          <BsPencilSquare />
+                          Editar Cedente
+                      </>
+                  ) : (
+                    <>
+                          <GrDocumentUser />
+                          Cadastrar Cedente
+                      </>
+                  )}
+              </button>
+              <button
+                  onClick={() => data && setDocModalInfo(data)}
+                  className="border border-strokedark/20 dark:border-stroke/20 dark:text-white text-slate-600 py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium hover:bg-strokedark/20 dark:hover:bg-stroke/20 transition-colors duration-200"
+                  >
+                <FaRegFilePdf />
+                Gerir Documentos
+              </button>
+                </div>
+            </div>
+          </section>
+
 
           <section id="info_valores" className="p-4 rounded-md bg-white dark:bg-boxdark">
             <form onSubmit={form.handleSubmit(onSubmitForm)}>
@@ -606,7 +654,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                   className="py-2 px-4 rounded-md flex items-center gap-3 disabled:opacity-50 disabled:hover:bg-green-500 uppercase text-sm"
                 >
                   <BiSolidSave className="h-4 w-4" />
-                  <span>Salvar Alterações</span>
+                  <span className="font-medium">Salvar Alterações</span>
                 </Button>
 
                 {data?.properties["Memória de Cálculo Ordinário"].url && (
@@ -615,7 +663,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                     className="bg-blue-600 hover:bg-blue-700 text-snow py-2 px-4 rounded-md flex items-center gap-3 transition-colors duration-300 uppercase text-sm"
                   >
                     <GrDocumentText className="h-4 w-4" />
-                    <span>Memória de Cálculo Simples</span>
+                    <span className="font-medium">Memória de Cálculo Simples</span>
                   </Link>
                 )}
 
@@ -627,7 +675,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                     className="bg-blue-600 hover:bg-blue-700 text-snow py-2 px-4 rounded-md flex items-center gap-3 transition-colors duration-300 uppercase text-sm"
                   >
                     <GrDocumentText className="h-4 w-4" />
-                    <span>Memória de Cálculo RRA</span>
+                    <span className="font-medium">Memória de Cálculo RRA</span>
                   </Link>
                 )}
               </div>
@@ -636,6 +684,8 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
           </section>
         </div>
       </Form>
+            {cedenteModal !== null && <BrokerModal />}
+            {docModalInfo !== null && <DocForm />}
     </div>
   );
 };

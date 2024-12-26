@@ -18,6 +18,12 @@ import CardDocs from '@/components/CrmUi/Cards/CardDocs';
 import Badge from '@/components/CrmUi/ui/Badge/Badge';
 import { LuClipboardCheck, LuCopy } from 'react-icons/lu';
 import CardDocsSkeleton from '@/components/Skeletons/CardDocsSkeleton';
+import { UserInfoAPIContext, UserInfoContextType } from '@/context/UserInfoContext';
+import { CelerInputField } from '@/components/CrmUi/InputFactory';
+import { InputFieldVariant } from '@/enums/inputFieldVariants.enum';
+import { SelectItem } from '@/components/ui/select';
+import { Item } from '@radix-ui/react-select';
+import { DocStatus } from '@/enums/docStatus.enum';
 
 /*
   OBS: a prop que o componente recebe é somente usada para a requisição
@@ -40,6 +46,12 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
   const { fetchDetailCardData, setIsFetchAllowed,
     setDocModalInfo
   } = useContext(BrokersContext)
+
+  const {
+      data: { role },
+  } = useContext<UserInfoContextType>(UserInfoAPIContext);
+
+  console.log(role);
 
   const [cedenteInfo, setCedenteInfo] = useState<NotionPage | null>(null);
   const [showDoc, setShowDoc] = useState<boolean>(false);
@@ -306,6 +318,9 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
     }
   }
 
+  // função que atualiza o status dos documentos do cedente
+  async function updateDocStatus(id: string, status: string, docType: string) {}
+
   // preenche o estado do cedente com os dados do cadastrado no oficio
   useEffect(() => {
     fetchCedenteData();
@@ -368,15 +383,26 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
                     />
 
                     {cedenteInfo?.properties["Doc. Contrato Social"].url ? (
-                      <Badge
-                        color={cedenteInfo?.properties["Doc. Contrato Social Status"].select?.color || ""}
-                        isANotionPage={true}
-                        className='w-[165px] mx-auto text-sm capitalize'
+                      <div className='pr-5'>
+                      <CelerInputField
+                      fieldType={InputFieldVariant.SELECT}
+                      name='status_doc'
+                      className='mr-4'
+                      disabled={role !== "ativos" && role !== "juridico"}
+                      defaultValue={cedenteInfo?.properties["Doc. Contrato Social Status"].select?.name || ""}
                       >
-                        {cedenteInfo?.properties[
-                          "Doc. Contrato Social Status"
-                        ].select?.name || ""}
-                      </Badge>
+                        <SelectItem value={cedenteInfo?.properties["Doc. Contrato Social Status"].select?.name || ""}>
+                          {
+                            cedenteInfo?.properties["Doc. Contrato Social Status"].select?.name || ""
+                          }
+                          </SelectItem>
+                          {
+                            Object.values(DocStatus).filter(item => item !== cedenteInfo?.properties["Doc. Contrato Social Status"].select?.name).map((item, index) => (
+                              <SelectItem className='shad-select-item' key={index} value={item}>{item}</SelectItem>
+                            ))
+                          }
+                      </CelerInputField>
+                      </div>
                     ) : (
                       <p className='text-sm text-center'>Nenhum documento vinculado</p>
                     )}

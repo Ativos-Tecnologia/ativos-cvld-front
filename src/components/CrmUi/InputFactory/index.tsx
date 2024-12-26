@@ -115,7 +115,7 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
                 return (
                     <div className="flex rounded-md gap-4 mt-2 w-full">
                         {props.iconSrc && <div className="flex items-center">{props.iconSrc}</div>}
-                        <Select onValueChange={(selectedValue) => handleChange(selectedValue)} value={value} defaultValue={value}>
+                        <Select onValueChange={(selectedValue) => handleChange(selectedValue)} value={value} defaultValue={value} disabled={props.disabled || props.isLoading}>
                             <SelectTrigger className="shad-select-trigger">
                                 <SelectValue placeholder={props.placeholder || "Selecione uma opção"} />
                             </SelectTrigger>

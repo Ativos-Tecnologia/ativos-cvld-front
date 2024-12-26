@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import Juridico from "@/components/Dashboard/Juridico";
+import { BrokersProvider } from "@/context/BrokersContext";
 
 export const metadata: Metadata = {
   title: "CelerApp | Jurídico",

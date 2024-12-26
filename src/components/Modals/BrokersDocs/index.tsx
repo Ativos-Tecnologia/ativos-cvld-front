@@ -7,6 +7,7 @@ import { TiWarning } from 'react-icons/ti';
 import { IdentificationType } from '../BrokersCedente';
 import PFdocs from './PFdocs';
 import PJdocs from './PJdocs';
+import { UserInfoProvider } from '@/context/UserInfoContext';
 
 const DocForm = () => {
 
@@ -49,6 +50,8 @@ const DocForm = () => {
           </button>
 
           {credorIdentificationType === "CPF" ? (
+                            <UserInfoProvider>
+
             <PFdocs
               cedenteId={
                 docModalInfo!.properties["Cedente PF"].relation?.[0]?.id || null
@@ -56,9 +59,11 @@ const DocForm = () => {
               idPrecatorio={docModalInfo!.id}
               tipoDoOficio={docModalInfo!.properties["Tipo"]?.select?.name ?? "Não informado"}
             />
+            </UserInfoProvider>
           ) : (
             <>
               {credorIdentificationType === "CNPJ" ? (
+                <UserInfoProvider>
                 <PJdocs
                   idPrecatorio={docModalInfo!.id}
                   cedenteId={
@@ -67,6 +72,7 @@ const DocForm = () => {
                   }
                   tipoDoOficio={docModalInfo!.properties["Tipo"]?.select?.name ?? "Não informado"}
                 />
+                </UserInfoProvider>
               ) : (
                 <Fade duration={700} triggerOnce>
                   <div className="flex flex-col items-center justify-center gap-4">
