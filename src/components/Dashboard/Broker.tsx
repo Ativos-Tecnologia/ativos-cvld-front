@@ -1,10 +1,8 @@
 "use client";
 import { BrokersContext } from "@/context/BrokersContext";
-import { UserInfoAPIContext } from "@/context/UserInfoContext";
 import { NotionPage } from "@/interfaces/INotion";
-import api from "@/utils/api";
 import Image from "next/image";
-import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Fade } from "react-awesome-reveal";
 import { IoIosArrowDown } from "react-icons/io";
 import DashbrokersCard from "../Cards/DashbrokersCard";
@@ -31,22 +29,9 @@ const Broker: React.FC = (): JSX.Element => {
     cedenteModal,
     cardsData,
     docModalInfo,
-    loadingCardData,
   } = useContext(BrokersContext);
 
-
-  const {
-    data: { role, user }
-  } = useContext(UserInfoAPIContext);
-
-
-  const [openUsersPopover, setOpenUsersPopover] = useState<boolean>(false);
-  const [usersList, setUsersList] = useState<string[]>([]);
-  const [filteredUsersList, setFilteredUsersList] = useState<string[]>([]);
   const [visibleData, setVisibleData] = useState<NotionPage[]>([]);
-  const selectUserRef = React.useRef<HTMLDivElement>(null);
-  const searchUserRef = React.useRef<HTMLInputElement>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
   const observerRef = React.useRef<HTMLDivElement>(null);
   const isFirstLoad = React.useRef<boolean>(true);
 
@@ -105,47 +90,6 @@ const Broker: React.FC = (): JSX.Element => {
       setVisibleData(cardsData?.results.slice(0, 2) || [])
     }
   }, [isFirstLoad.current, cardsData]);
-
-
-  const userListAlreadyLoaded = useRef(false);
-
-  /**
-   * Carrega a lista de usuários para o filtro
-   */
- useEffect(() => {
-    const fetchData = async () => {
-      if (userListAlreadyLoaded.current || !openUsersPopover) return;
-      
-      try {
-        const response = await api.get("/api/notion-api/list/users/");
-        
-        if (response.status === 200) {
-          setUsersList(response.data);
-          setFilteredUsersList(response.data);
-          userListAlreadyLoaded.current = true;
-        }
-      } catch (error) {
-        console.error("Erro ao carregar lista de usuários:", error);
-      }
-    };
-
-    fetchData();
-  }, [openUsersPopover]);
-
-
-  /**
-   * Filtra a lista de usuários renderizada no popup
-   * de acordo com o valor digitado no input de search
-   * 
-   * @param {string} value - valor do input de search
-   * @returns {void} - retorno vazio
-   */
-  const searchUser = useCallback((value: string): void => {
-    const filteredUsers = usersList.filter((user) =>
-      user.toLowerCase().includes(value.toLowerCase())
-    );
-    setFilteredUsersList(filteredUsers);
-  }, [usersList]);
 
   return (
     <>

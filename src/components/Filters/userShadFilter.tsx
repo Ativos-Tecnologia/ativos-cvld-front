@@ -1,21 +1,21 @@
 "use client"
 
 import { Check, ChevronsUpDown } from "lucide-react";
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { Button } from "@/components/ui/button";
 import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
 } from "@/components/ui/command";
 import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import { BrokersContext } from "@/context/BrokersContext";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
@@ -24,14 +24,27 @@ import api from "@/utils/api";
 import { AiOutlineLoading } from "react-icons/ai";
 import { BiUser } from "react-icons/bi";
 
+/**
+ * Componente de filtro de usuário
+ * 
+ * @returns {JSX.Element} - Componente renderizado
+ */
+
 export function UserShadFilter() {
 	
-  const { data: { user } } = React.useContext(UserInfoAPIContext);
-  const { selectedUser, setSelectedUser, loadingCardData } = useContext(BrokersContext);
-  
+  const { data: { user } } = useContext(UserInfoAPIContext);
+  const { setSelectedUser, loadingCardData } = useContext(BrokersContext);
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");  
 	const [fetchedUsers, setFetchedUsers] = useState<string[]>([]);
+
+  /**
+   * @description - Hook que carrega a lista de usuários da API do Notion e coloca a lista no estado fetchedUsers.
+   * @returns {void}
+   * @throws {Error} - Erro ao carregar lista de usuários
+   * @async
+   * @sideeffect - Atualiza o estado fetchedUsers
+   */
 
   useEffect(() => {
     const fetchData = async () => { 
@@ -45,9 +58,23 @@ export function UserShadFilter() {
     fetchData();
   }, []);
 
-	// Coloquei para o usuário logado sempre aparecer no topo da lista e ser o primeiro a ser carregado.
+	/**
+   * @description - Essa constante é responsável por armazenar a lista de usuários, colocando o usuário logado no início da lista.
+   * @constant users - lista de usuários
+   * @returns {string[]} - lista de usuários
+   * @sideeffect - Atualiza o estado users
+   */
 	const users = user ? [user, ...fetchedUsers] : fetchedUsers; 
 	
+  /**
+   * Essa função é responsável por selecionar o usuário da lista e fechar o popover.
+   * @param currentValue - usuário selecionado
+   * @returns {void}
+   * @sideeffect - Atualiza o estado selectedUser
+   * @sideeffect - Atualiza o estado open
+   * @throws {Error} - Erro ao selecionar usuário
+   */
+
 	const handleUserSelect = (currentValue: string) => { 
 		try {
 			setValue(currentValue === value ? "" : currentValue);
