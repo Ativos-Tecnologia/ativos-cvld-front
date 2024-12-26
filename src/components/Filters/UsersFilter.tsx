@@ -14,14 +14,16 @@ import { BiUser } from 'react-icons/bi';
  * @property {boolean} props.loadingCardData - booleano que define se a página está carregando dados ou não
  * @property {Array<string>} props.filteredUsersList - Lista de usuários filtrada (por default vem vazia)
  * @property {Function} props.searchUser - função de busca por usuário
+ * @property {Function} props.searchInputRef - função de busca por usuário pelo input
  * @returns {JSX.Element} - Componente renderizado
  */
-const UsersFilter = ({ openUsersPopover, setOpenUsersPopover, loadingCardData, filteredUsersList, searchUser }: {
+const UsersFilter = ({ openUsersPopover, setOpenUsersPopover, loadingCardData, filteredUsersList, searchUser, searchInputRef }: {
     openUsersPopover: boolean,
     setOpenUsersPopover: React.Dispatch<React.SetStateAction<boolean>>,
     loadingCardData: boolean,
     filteredUsersList: Array<string>,
     searchUser: (value: string) => void
+    searchInputRef: React.RefObject<HTMLInputElement>;
 }): JSX.Element => {
 
     /* ====> Context imports <==== */
@@ -32,20 +34,23 @@ const UsersFilter = ({ openUsersPopover, setOpenUsersPopover, loadingCardData, f
     const {
         selectedUser, setSelectedUser
     } = useContext(BrokersContext)
-
+    
     /* ====> refs <===== */
     const selectUserRef = React.useRef<HTMLDivElement>(null);
     const searchUserRef = React.useRef<HTMLInputElement>(null);
+
+    const popoverRef = React.useRef<HTMLDivElement>(null);
 
     /**
    * Foca no input de search quando o filtro de usuários
    * é aberto
    */
     useEffect(() => {
-        if (openUsersPopover && searchUserRef.current) {
-            searchUserRef.current.focus();
+        if (openUsersPopover && searchInputRef.current) {
+            searchInputRef.current.focus();
+            searchInputRef.current.value = ''; // Limpa o input ao abrir modal
         }
-    }, [openUsersPopover]);
+    }, [openUsersPopover, searchInputRef]);
 
     /**
      * Fecha o filtro de usuários sempre que é dado um clique
@@ -53,7 +58,7 @@ const UsersFilter = ({ openUsersPopover, setOpenUsersPopover, loadingCardData, f
      */
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (selectUserRef.current && !selectUserRef.current.contains(event.target as Node)) {
+            if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
                 setOpenUsersPopover(false);
             }
         };
@@ -64,14 +69,16 @@ const UsersFilter = ({ openUsersPopover, setOpenUsersPopover, loadingCardData, f
             }
         };
 
-        document.addEventListener('mousedown', handleClickOutside);
-        document.addEventListener('keydown', handleKeyDown);
+        if (openUsersPopover) {
+            document.addEventListener('mousedown', handleClickOutside);
+            document.addEventListener('keydown', handleKeyDown);
+        }
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
             document.removeEventListener('keydown', handleKeyDown);
         };
-    }, []);
+    }, [openUsersPopover, setOpenUsersPopover]);
 
     return (
             <div className="flex items-start">
@@ -97,17 +104,17 @@ const UsersFilter = ({ openUsersPopover, setOpenUsersPopover, loadingCardData, f
 
                     {openUsersPopover && (
                         <div
-                            ref={selectUserRef}
+                            ref={popoverRef}
                             className={`absolute z-20 mt-3 w-full rounded-md border border-stroke bg-white p-3 shadow-1 dark:border-strokedark dark:bg-form-strokedark ${openUsersPopover ? "visible opacity-100 animate-in fade-in-0 zoom-in-95" : " invisible opacity-0 animate-out fade-out-0 zoom-out-95"} transition-opacity duration-500`}
                         >
                             <div className="flex items-center justify-center gap-1 border-b border-stroke dark:border-bodydark2">
                                 <AiOutlineSearch className="text-lg" />
                                 <input
-                                    ref={searchUserRef}
+                                    ref={searchInputRef}
                                     type="text"
                                     placeholder="Pesquisar usuário..."
                                     className="w-full border-none bg-transparent focus-within:ring-0 dark:placeholder:text-bodydark2"
-                                    onKeyUp={(e) => searchUser(e.currentTarget.value)}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => searchUser(e.target.value)}
                                 />
                             </div>
 
@@ -118,11 +125,14 @@ const UsersFilter = ({ openUsersPopover, setOpenUsersPopover, loadingCardData, f
                                             key={user}
                                             className="cursor-pointer rounded-sm p-1 text-sm hover:bg-slate-100 dark:hover:bg-slate-700"
                                             onClick={() => {
-                                                setOpenUsersPopover(false);
-                                                setSelectedUser(user);
-                                            }}
-                                        >
-                                            {user}
+                                            setSelectedUser(user);
+                                            setOpenUsersPopover(false);
+                                            if (searchInputRef.current) {
+                                                searchInputRef.current.value = '';
+                                            }
+                                    }}
+                                >
+                                    {user}
                                         </p>
                                     ))}
                             </div>

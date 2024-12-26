@@ -1,10 +1,8 @@
 "use client";
 import { BrokersContext } from "@/context/BrokersContext";
-import { UserInfoAPIContext } from "@/context/UserInfoContext";
 import { NotionPage } from "@/interfaces/INotion";
-import api from "@/utils/api";
 import Image from "next/image";
-import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Fade } from "react-awesome-reveal";
 import { IoIosArrowDown } from "react-icons/io";
 import DashbrokersCard from "../Cards/DashbrokersCard";
@@ -12,10 +10,9 @@ import BrokerComissionDistribution from "../Charts/BrokerComissionDistributionCh
 import BrokerQuantityDistributedChart from "../Charts/BrokerQuantityDistributedChart";
 import GridCardsWrapper from "../CrmUi/Wrappers/GridCardsWrapper";
 import CredorFilter from "../Filters/CredorFilter";
-import UsersFilter from "../Filters/UsersFilter";
+import { UserShadFilter } from "../Filters/userShadFilter";
 import BrokerModal from "../Modals/BrokersCedente";
 import DocForm from "../Modals/BrokersDocs";
-import Show from "../Show";
 import BrokerCardSkeleton from "../Skeletons/BrokerCardSkeleton";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 
@@ -32,21 +29,9 @@ const Broker: React.FC = (): JSX.Element => {
     cedenteModal,
     cardsData,
     docModalInfo,
-    loadingCardData,
   } = useContext(BrokersContext);
 
-
-  const {
-    data: { role, user }
-  } = useContext(UserInfoAPIContext);
-
-
-  const [openUsersPopover, setOpenUsersPopover] = useState<boolean>(false);
-  const [usersList, setUsersList] = useState<string[]>([]);
-  const [filteredUsersList, setFilteredUsersList] = useState<string[]>([]);
   const [visibleData, setVisibleData] = useState<NotionPage[]>([]);
-  const selectUserRef = React.useRef<HTMLDivElement>(null);
-  const searchUserRef = React.useRef<HTMLInputElement>(null);
   const observerRef = React.useRef<HTMLDivElement>(null);
   const isFirstLoad = React.useRef<boolean>(true);
 
@@ -106,87 +91,31 @@ const Broker: React.FC = (): JSX.Element => {
     }
   }, [isFirstLoad.current, cardsData]);
 
-
-  const userListAlreadyLoaded = useRef(false);
-
-  /**
-   * Carrega a lista de usuários para o filtro
-   */
-  useEffect(() => {
-    const fetchData = async () => {
-
-      if (userListAlreadyLoaded.current || !openUsersPopover) return;
-      const [usersList] = await Promise.all([
-        api.get("/api/notion-api/list/users/"),
-      ]);
-
-      if (usersList.status === 200) {
-        setUsersList(usersList.data);
-        setFilteredUsersList(usersList.data);
-        userListAlreadyLoaded.current = true;
-      }
-    };
-
-    fetchData();
-  }, [openUsersPopover]);
-
-  /**
-   * Filtra a lista de usuários renderizada no popup
-   * de acordo com o valor digitado no input de search
-   * 
-   * @param {string} value - valor do input de search
-   * @returns {void} - retorno vazio
-   */
-  const searchUser = (value: string): void => {
-    const filteredUsers = usersList.filter((user) =>
-      user.toLowerCase().includes(value.toLowerCase()),
-    );
-    setFilteredUsersList(filteredUsers);
-  };
-
-
   return (
     <>
       {/* tablet em diante */}
       <div className="flex gap-5 item-center bg-white dark:bg-boxdark mb-5 p-5 rounded-md flex-col 2xsm:hidden md:flex md:justify-between md:flex-row xl:justify-normal">
-        <Show when={role === "ativos"}>
-          <UsersFilter
-            openUsersPopover={openUsersPopover}
-            setOpenUsersPopover={setOpenUsersPopover}
-            loadingCardData={loadingCardData}
-            filteredUsersList={filteredUsersList}
-            searchUser={searchUser}
-          />
-        </Show>
+        {/* <UserFilterComponent /> */}
+        <UserShadFilter />
         <CredorFilter />
       </div>
       {/* Mobile */}
-      <div className="flex gap-5 item-center bg-white dark:bg-boxdark mb-5 p-5 rounded-md flex-col 2xsm:flex md:hidden md:justify-between md:flex-row xl:justify-normal">
-        
-          <Accordion type="single" collapsible >  
-            <AccordionItem value="item-1">
-            <AccordionTrigger>
-              Filtros de Busca
-              <IoIosArrowDown />
-            </AccordionTrigger>
-            <AccordionContent>
-              <CredorFilter />
-            </AccordionContent>
-            <AccordionContent>
-              <Show when={role === "ativos"}>
-              <UsersFilter
-                openUsersPopover={openUsersPopover}
-                setOpenUsersPopover={setOpenUsersPopover}
-                loadingCardData={loadingCardData}
-                filteredUsersList={filteredUsersList}
-                searchUser={searchUser}
-              />
-            </Show>
-            </AccordionContent>
-          </AccordionItem>
+        <div className="flex gap-5 bg-white dark:bg-boxdark mb-5 p-5 rounded-md flex-col 2xsm:flex md:hidden md:justify-between md:flex-row xl:justify-normal">
+          <Accordion type="single" collapsible>
+            <AccordionItem value="item-2">
+              <AccordionTrigger>
+                Filtros de Busca
+                <IoIosArrowDown />
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="flex flex-col gap-4">
+                  <CredorFilter />
+                  <UserShadFilter />
+                </div>
+              </AccordionContent>
+            </AccordionItem>
           </Accordion>
-
-      </div>
+        </div>
       <div className="grid grid-cols-1  items-center gap-5  xl:grid-cols-12">
         <BrokerQuantityDistributedChart
           title="Distribuição"
