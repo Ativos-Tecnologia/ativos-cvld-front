@@ -14,7 +14,7 @@ export type IdentificationType = "CPF" | "CNPJ" | null
 
 const BrokerModal = () => {
 
-    const { cedenteModal, setCedenteModal } = useContext(BrokersContext);
+    const { cedenteModal } = useContext(BrokersContext);
 
     /*
     
@@ -34,21 +34,6 @@ const BrokerModal = () => {
     const [openingModalMode, setOpeningModalMode] = useState<"create" | "edit">("create");
 
     const modalRef = useRef<HTMLDivElement | null>(null);
-
-    // close on click outside
-    // useEffect(() => {
-    //     const clickHandler = ({ target }: MouseEvent) => {
-    //         if (!modalRef.current) return;
-    //         if (modalRef?.current?.contains(target as Node | null)) return;
-    //         setCedenteModal(null);
-    //     };
-    //     document.addEventListener("click", clickHandler);
-    //     return () => document.removeEventListener("click", clickHandler);
-    // });
-
-    // useEffect que dispara o conteúdo do modal (formulário)
-    // a depender do dado de identificação do credor do ofício
-    // CPF/CNPJ
     useEffect(() => {
         if (cedenteModal === null) return;
 

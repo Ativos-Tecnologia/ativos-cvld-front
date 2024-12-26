@@ -7,7 +7,7 @@ import { NotionPage } from "@/interfaces/INotion";
 import api from "@/utils/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { FaBuilding, FaBuildingColumns, FaUser } from "react-icons/fa6";
-import { FaBalanceScale, FaIdCard, FaMapMarkedAlt } from "react-icons/fa";
+import { FaBalanceScale, FaIdCard, FaMapMarkedAlt, FaRegFilePdf } from "react-icons/fa";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import {
   UserInfoAPIContext,
@@ -24,12 +24,17 @@ import LifeCycleStep from "../LifeCycleStep";
 import { tribunais } from "@/constants/tribunais";
 import numberFormat from "@/functions/formaters/numberFormat";
 import Link from "next/link";
-import { GrDocumentText } from "react-icons/gr";
+import { GrDocumentText, GrDocumentUser } from "react-icons/gr";
 import { BiSolidSave } from "react-icons/bi";
 import { Button } from "../Button";
 import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
 import UseMySwal from "@/hooks/useMySwal";
 import { AxiosError } from "axios";
+import BrokerModal from "../Modals/BrokersCedente";
+import { BrokersContext } from "@/context/BrokersContext";
+import DataStatsTwo from "../DataStats/DataStatsTwo";
+import { BsPencilSquare } from "react-icons/bs";
+import DocForm from "../Modals/BrokersDocs";
 import { AiOutlineLoading } from "react-icons/ai";
 
 type JuridicoDetailsProps = {
@@ -40,6 +45,14 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   const {
     data: { first_name },
   } = useContext<UserInfoContextType>(UserInfoAPIContext);
+
+    const {
+      cedenteModal,
+      setCedenteModal,
+      docModalInfo,
+      setDocModalInfo,
+    } = useContext(BrokersContext);
+
 
   const [formData, setFormData] = useState<any>(null);
   const [loadingUpdateState, setLoadingUpdateState] = useState({
@@ -56,8 +69,44 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
 
   const swal = UseMySwal()
 
-  const handleSubmit = (name: string, value: any) => {
-    console.log(name, value);
+  const handleDueDiligence = () => {
+    swal.fire({
+      title: 'Diligência',
+      text: 'Deseja mesmo finalizar a diligência?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sim',
+      cancelButtonText: 'Não',
+      confirmButtonColor: '#4CAF50',
+      cancelButtonColor: '#F44336',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const response = await api.patch(`api/notion-api/update/${id}/`, {
+          "Status Diligência": {
+            "select": {
+              "name": "Em liquidação"
+            }
+          }
+        });
+        if (response.status !== 202) {
+          swal.fire({
+            title: 'Erro',
+            text: 'Houve um erro ao finalizar a diligência',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        }
+
+        refetch();
+
+        swal.fire({
+          title: 'Diligência Finalizada',
+          text: 'A diligência foi Finalizada com sucesso! O ofício agora está em liquidação.',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+      }
+    })
   }
 
   const onSubmitForm = async (data: any) => {
@@ -109,8 +158,6 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
 
     data.upload_notion = true;
 
-    console.log(data)
-
     try {
       const response = await api.patch(`/api/juridico/update/precatorio/${id}/`, data);
 
@@ -138,7 +185,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     return response.data;
   }
 
-  const { data, isFetching, isLoading } = useQuery<NotionPage>({
+  const { data, isFetching, isLoading, refetch } = useQuery<NotionPage>({
     queryKey: ["page", id],
     refetchOnWindowFocus: false,
     // refetchOnReconnect: true,
@@ -468,7 +515,6 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   })
 
   // console.log(t)
-  console.log(data)
 
   useEffect(() => {
     if (data) {
@@ -623,13 +669,51 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                 disabled={editLock}
               >
                 {estados.map(estado => (
-                  <SelectItem defaultChecked={
+                  <SelectItem className="shad-select-item" defaultChecked={
                     data?.properties["Estado do Ente Devedor"].select?.name === estado.id
                   } key={estado.id} value={estado.id}>{estado.nome}</SelectItem>
                 ))}
               </CelerInputField>
             </div>
           </section>
+
+          <section id="cedentes" className="form-inputs-container">
+            <div className="col-span-4 w-full">
+              <h3 className="text-bodydark2 font-medium">
+                Informações sobre o cedente
+              </h3>
+
+            </div>
+            <div className="col-span-4 gap-4">
+              <div className="flex items-center gap-4">
+
+            <button
+                  onClick={() => data && setCedenteModal(data)}
+                  className="border border-strokedark/20 dark:border-stroke/20 dark:text-white text-slate-600 py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium hover:bg-strokedark/20 dark:hover:bg-stroke/20 transition-colors duration-200"
+                  >
+                  {(data?.properties["Cedente PF"].relation?.[0] || data?.properties["Cedente PJ"].relation?.[0]) ? (
+                    <>
+                          <BsPencilSquare />
+                          Editar Cedente
+                      </>
+                  ) : (
+                    <>
+                          <GrDocumentUser />
+                          Cadastrar Cedente
+                      </>
+                  )}
+              </button>
+              <button
+                  onClick={() => data && setDocModalInfo(data)}
+                  className="border border-strokedark/20 dark:border-stroke/20 dark:text-white text-slate-600 py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium hover:bg-strokedark/20 dark:hover:bg-stroke/20 transition-colors duration-200"
+                  >
+                <FaRegFilePdf />
+                Gerir Documentos
+              </button>
+                </div>
+            </div>
+          </section>
+
 
           <section id="info_valores" className="p-4 rounded-md bg-white dark:bg-boxdark">
             <form onSubmit={form.handleSubmit(onSubmitForm)}>
@@ -944,7 +1028,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                   className="py-2 px-4 rounded-md flex items-center gap-3 disabled:opacity-50 disabled:hover:bg-green-500 uppercase text-sm"
                 >
                   <BiSolidSave className="h-4 w-4" />
-                  <span>Salvar Alterações</span>
+                  <span className="font-medium">Salvar Alterações</span>
                 </Button>
 
                 {data?.properties["Memória de Cálculo Ordinário"].url && (
@@ -953,7 +1037,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                     className="bg-blue-600 hover:bg-blue-700 text-snow py-2 px-4 rounded-md flex items-center gap-3 transition-colors duration-300 uppercase text-sm"
                   >
                     <GrDocumentText className="h-4 w-4" />
-                    <span>Memória de Cálculo Simples</span>
+                    <span className="font-medium">Memória de Cálculo Simples</span>
                   </Link>
                 )}
 
@@ -965,7 +1049,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                     className="bg-blue-600 hover:bg-blue-700 text-snow py-2 px-4 rounded-md flex items-center gap-3 transition-colors duration-300 uppercase text-sm"
                   >
                     <GrDocumentText className="h-4 w-4" />
-                    <span>Memória de Cálculo RRA</span>
+                    <span className="font-medium">Memória de Cálculo RRA</span>
                   </Link>
                 )}
               </div>
@@ -974,6 +1058,22 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
           </section>
         </div>
       </Form>
+      <div className="flex items-center justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
+        {
+          data?.properties["Status Diligência"].select?.name === "Due Diligence" && (
+            <Button
+              variant="success"
+              className="py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium"
+              onClick={() => handleDueDiligence()}
+            >
+              <BiSolidSave className="h-4 w-4" />
+              <span>Finalizar Due Diligence</span>
+            </Button>
+          )
+        }
+        </div>
+            {cedenteModal !== null && <BrokerModal />}
+            {docModalInfo !== null && <DocForm />}
     </div>
   );
 };
