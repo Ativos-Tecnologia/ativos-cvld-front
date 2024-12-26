@@ -48,7 +48,7 @@ const UsersFilter = ({ openUsersPopover, setOpenUsersPopover, loadingCardData, f
     useEffect(() => {
         if (openUsersPopover && searchInputRef.current) {
             searchInputRef.current.focus();
-            searchInputRef.current.value = ''; // Limpa o input ao abrir
+            searchInputRef.current.value = ''; // Limpa o input ao abrir modal
         }
     }, [openUsersPopover, searchInputRef]);
 

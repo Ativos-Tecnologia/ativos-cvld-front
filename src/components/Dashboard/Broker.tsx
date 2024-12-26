@@ -13,6 +13,7 @@ import BrokerQuantityDistributedChart from "../Charts/BrokerQuantityDistributedC
 import GridCardsWrapper from "../CrmUi/Wrappers/GridCardsWrapper";
 import CredorFilter from "../Filters/CredorFilter";
 import UsersFilter from "../Filters/UsersFilter";
+import { UserShadFilter } from "../Filters/userShadFilter";
 import BrokerModal from "../Modals/BrokersCedente";
 import DocForm from "../Modals/BrokersDocs";
 import Show from "../Show";
@@ -50,8 +51,6 @@ const Broker: React.FC = (): JSX.Element => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const observerRef = React.useRef<HTMLDivElement>(null);
   const isFirstLoad = React.useRef<boolean>(true);
-  //Estado para controlar o valor do accordion
-  const [accordionValue, setAccordionValue] = useState<string>("");
 
   /**
    * função com useCallback para adicionar mais itens
@@ -168,7 +167,8 @@ const Broker: React.FC = (): JSX.Element => {
     <>
       {/* tablet em diante */}
       <div className="flex gap-5 item-center bg-white dark:bg-boxdark mb-5 p-5 rounded-md flex-col 2xsm:hidden md:flex md:justify-between md:flex-row xl:justify-normal">
-        <UserFilterComponent />
+        {/* <UserFilterComponent /> */}
+        <UserShadFilter />
         <CredorFilter />
       </div>
       {/* Mobile */}
@@ -182,7 +182,7 @@ const Broker: React.FC = (): JSX.Element => {
               <AccordionContent>
                 <div className="flex flex-col gap-4">
                   <CredorFilter />
-                  <UserFilterComponent />
+                  <UserShadFilter />
                 </div>
               </AccordionContent>
             </AccordionItem>
