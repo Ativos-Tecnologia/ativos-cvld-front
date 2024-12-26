@@ -12,11 +12,9 @@ import BrokerComissionDistribution from "../Charts/BrokerComissionDistributionCh
 import BrokerQuantityDistributedChart from "../Charts/BrokerQuantityDistributedChart";
 import GridCardsWrapper from "../CrmUi/Wrappers/GridCardsWrapper";
 import CredorFilter from "../Filters/CredorFilter";
-import UsersFilter from "../Filters/UsersFilter";
 import { UserShadFilter } from "../Filters/userShadFilter";
 import BrokerModal from "../Modals/BrokersCedente";
 import DocForm from "../Modals/BrokersDocs";
-import Show from "../Show";
 import BrokerCardSkeleton from "../Skeletons/BrokerCardSkeleton";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 
@@ -148,20 +146,6 @@ const Broker: React.FC = (): JSX.Element => {
     );
     setFilteredUsersList(filteredUsers);
   }, [usersList]);
-
-  // Fiz essa encapsulação para evitar que o componente UsersFilter seja copiado e colado varias vezes
-  const UserFilterComponent = () => (
-    <Show when={role === "ativos"}>
-      <UsersFilter
-        openUsersPopover={openUsersPopover}
-        setOpenUsersPopover={setOpenUsersPopover}
-        loadingCardData={loadingCardData}
-        filteredUsersList={filteredUsersList}
-        searchUser={searchUser}
-        searchInputRef={searchInputRef}
-      />
-    </Show>
-  );
 
   return (
     <>

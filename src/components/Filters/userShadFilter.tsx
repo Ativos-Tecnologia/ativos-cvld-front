@@ -21,6 +21,8 @@ import { BrokersContext } from "@/context/BrokersContext";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
 import { cn } from "@/lib/utils";
 import api from "@/utils/api";
+import { AiOutlineLoading } from "react-icons/ai";
+import { BiUser } from "react-icons/bi";
 
 export function UserShadFilter() {
 	
@@ -29,35 +31,63 @@ export function UserShadFilter() {
   
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");  
-  const [fetchedUsers, setFetchedUsers] = useState<string[]>([]);
+	const [fetchedUsers, setFetchedUsers] = useState<string[]>([]);
+	const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await api.get("/api/notion-api/list/users/");
-      console.log("Dados do usuário da API: ", response); // lembrar de remover
-      setFetchedUsers(response.data);
+      setIsLoading(true);  
+      try {
+        const response = await api.get("/api/notion-api/list/users/");
+        setFetchedUsers(response.data);
+      } catch (error) {
+        console.error("Erro ao carregar lista de usuários:", error);
+      } finally {
+        setIsLoading(false); 
+      }
     };
-
     fetchData();
   }, []);
 
 	// Coloquei para o usuário logado sempre aparecer no topo da lista e ser o primeiro a ser carregado.
-  const users = user ? [user, ...fetchedUsers] : fetchedUsers; 
+	const users = user ? [user, ...fetchedUsers] : fetchedUsers; 
+	
+	const handleUserSelect = (currentValue: string) => {
+		setIsLoading(true);  
+		try {
+			setValue(currentValue === value ? "" : currentValue);
+			setSelectedUser(currentValue);  
+			setOpen(false);
+		} catch (error) {
+			console.error("Erro ao selecionar usuário:", error);
+		} finally {
+			setIsLoading(false);  
+		}
+  };
 
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+	return (
+		<div className="flex flex-col w-full">
+		<div className="flex w-full relative">
+				<label className="text-sm mb-2 font-semibold text-bodydark2 dark:text-bodydark flex">
+					<BiUser className="w-5 h-5 mr-2" /> <p className="uppercase">Filtro por usuário</p>
+				</label>
+				{
+					isLoading && <AiOutlineLoading className="ml-4 animate-spin" />
+				}
+			</div>
+		<Popover open={open} onOpenChange={setOpen}>
+			<PopoverTrigger asChild>
         <Button
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="2xsm:w-full xl:w-[215px] justify-between"
         >
           {value ? value : "Selecione o Usuário"}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent side="bottom" className="2xsm:w-full xl:w-[215px] p-0">
         <Command>
           <CommandInput placeholder="Pesquisar Usuário" className="h-9" />
           <CommandList>
@@ -68,11 +98,7 @@ export function UserShadFilter() {
                   <CommandItem
                     key={index}
                     value={userItem}
-                    onSelect={(currentValue) => {
-                      setValue(currentValue === value ? "" : currentValue);
-                      setSelectedUser(currentValue);  // Atualiza o usuário selecionado no combobox do Shadcn ao dados do Broker
-                      setOpen(false);
-                    }}
+                    onSelect={(currentValue) => handleUserSelect(currentValue)}
                   >
                     {userItem}
                     <Check
@@ -91,5 +117,6 @@ export function UserShadFilter() {
         </Command>
       </PopoverContent>
     </Popover>
+	</div>
   );
 }
