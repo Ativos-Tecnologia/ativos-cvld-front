@@ -5,7 +5,7 @@ import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { NotionPage } from "@/interfaces/INotion";
 import api from "@/utils/api";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { FaBuilding, FaBuildingColumns, FaUser } from "react-icons/fa6";
 import { FaBalanceScale, FaIdCard, FaMapMarkedAlt } from "react-icons/fa";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
@@ -30,6 +30,7 @@ import { Button } from "../Button";
 import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
 import UseMySwal from "@/hooks/useMySwal";
 import { AxiosError } from "axios";
+import { AiOutlineLoading } from "react-icons/ai";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -41,6 +42,17 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   } = useContext<UserInfoContextType>(UserInfoAPIContext);
 
   const [formData, setFormData] = useState<any>(null);
+  const [loadingUpdateState, setLoadingUpdateState] = useState({
+    nomeCredor: false,
+    cpfCnpj: false,
+    npuOriginario: false,
+    npuPrecatorio: false,
+    juizoVara: false,
+    enteDevedor: false,
+    estadoEnteDevedor: false,
+    formValores: false
+  });
+  const [editLock, setEditLock] = useState<boolean>(false);
 
   const swal = UseMySwal()
 
@@ -140,6 +152,321 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   const form = useForm();
   const isFormModified = Object.keys(form.watch()).some((key: any) => form.watch()[key] !== formData?.[key]);
 
+  //TODO: Documentar com JSDocs todas as funções desse componente
+  const handleChangeCreditorName = async (value: string, page_id: string) => {
+    await creditorNameMutation.mutateAsync({
+      page_id,
+      value
+    });
+  }
+
+  const handleChangeIdentification = async (value: string, page_id: string) => {
+
+    if (value.length === 11) {
+      value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+    } else if (value.length === 14) {
+      value = value.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+    }
+
+    await identificationMutation.mutateAsync({
+      page_id,
+      value
+    });
+  }
+
+  const handleChangeNpu = async (value: string, type: string, page_id: string) => {
+
+    value = value.replace(/(\d{7})(\d{2})(\d{4})(\d{1})(\d{2})(\d{4})/, "$1-$2.$3.$4.$5.$6");
+
+    await npuMutation.mutateAsync({
+      page_id,
+      type,
+      value
+    });
+  }
+
+  const handleChangeJuizo = async (value: string, page_id: string) => {
+    await juizoMutation.mutateAsync({
+      page_id,
+      value
+    });
+  }
+
+  const handleChangeEnteDevedor = async (value: string, page_id: string) => {
+    await enteDevedorMutation.mutateAsync({
+      page_id,
+      value
+    });
+  }
+
+  const handleChangeEstadoEnteDevedor = async (value: string, page_id: string) => {
+    await estadoEnteDevedorMutation.mutateAsync({
+      page_id,
+      value
+    });
+  }
+
+  // ----> Mutations <-----
+  const creditorNameMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Credor": {
+          "title": [
+            {
+              "text": {
+                "content": paramsObj.value
+              }
+            }
+          ]
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async (paramsObj: any) => {
+      setEditLock(true);
+      setLoadingUpdateState(prev => ({ ...prev, nomeCredor: true }));
+    },
+    onError: () => {
+      swal.fire({
+        title: 'Erro',
+        text: 'Houve um erro ao atualizar o campo Nome do Credor',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      })
+    },
+    onSuccess: () => {
+      swal.fire({
+        title: 'Sucesso',
+        text: 'Nome do Credor atualizado com sucesso',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      })
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, nomeCredor: false }));
+    }
+  });
+
+  const identificationMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "CPF/CNPJ": {
+          "rich_text": [
+            {
+              "text": {
+                "content": paramsObj.value
+              }
+            }
+          ]
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data;
+    },
+    onMutate: async (paramsObj: any) => {
+      setLoadingUpdateState(prev => ({ ...prev, cpfCnpj: true }));
+      setEditLock(true);
+    },
+    onError: () => {
+      swal.fire({
+        title: 'Erro',
+        text: 'Houve um erro ao atualizar o campo CPF/CNPJ',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    },
+    onSuccess: () => {
+      swal.fire({
+        title: 'Sucesso',
+        text: 'CPF/CNPJ atualizado com sucesso',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    },
+    onSettled: () => {
+      setLoadingUpdateState(prev => ({ ...prev, cpfCnpj: false }));
+      setEditLock(false);
+    }
+  });
+
+  const npuMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, type: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        [paramsObj.type]: {
+          "rich_text": [
+            {
+              "text": {
+                "content": paramsObj.value
+              }
+            }
+          ]
+        }
+      });
+      if (response.status !== 202) {
+        console.error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async (paramsObj) => {
+      let npuType = paramsObj.type === "NPU (Originário)" ? "npuOriginario" : "npuPrecatorio"
+      setLoadingUpdateState(prev => ({ ...prev, [npuType]: true }));
+      setEditLock(true);
+      return { npuType };
+    },
+    onError: (error, paramsObj) => {
+      swal.fire({
+        title: 'Erro',
+        text: `Houve um erro ao atualizar o campo ${paramsObj.type}`,
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    },
+    onSuccess: (data, paramsObj) => {
+      swal.fire({
+        title: 'Sucesso',
+        text: `Campo ${paramsObj.type} alterado com sucesso.`,
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    },
+    onSettled: (data, error, paramsObj, context) => {
+      setEditLock(false);
+      if (context?.npuType) {
+        setLoadingUpdateState(prev => ({ ...prev, [context?.npuType]: false }));
+      }
+    }
+  });
+
+  const juizoMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Juízo": {
+          "rich_text": [
+            {
+              "text": {
+                "content": paramsObj.value
+              }
+            }
+          ]
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async () => {
+      setLoadingUpdateState(prev => ({ ...prev, juizoVara: true }));
+      setEditLock(true);
+    },
+    onError: () => {
+      swal.fire({
+        title: 'Erro',
+        text: 'Houve um erro ao atualizar o campo Juízo',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    },
+    onSuccess: () => {
+      swal.fire({
+        title: 'Sucesso',
+        text: 'Campo Juízo alterado com sucesso.',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, juizoVara: false }));
+    }
+  });
+
+  const enteDevedorMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Ente Devedor": {
+          "select": {
+            "name": paramsObj.value
+          }
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async () => {
+      setLoadingUpdateState(prev => ({ ...prev, enteDevedor: true }));
+      setEditLock(true);
+    },
+    onError: () => {
+      swal.fire({
+        title: 'Erro',
+        text: 'Houve um erro ao atualizar o campo Ente Devedor',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    },
+    onSuccess: () => {
+      swal.fire({
+        title: 'Sucesso',
+        text: 'Campo Ente Devedor alterado com sucesso.',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, enteDevedor: false }));
+    }
+  });
+
+  const estadoEnteDevedorMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Estado do Ente Devedor": {
+          "select": {
+            "name": paramsObj.value
+          }
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async () => {
+      setLoadingUpdateState(prev => ({ ...prev, estadoEnteDevedor: true }));
+      setEditLock(true);
+    },
+    onError: () => {
+      swal.fire({
+        title: 'Erro',
+        text: 'Houve um erro ao atualizar o campo Estado do Ente Devedor',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    },
+    onSuccess: () => {
+      swal.fire({
+        title: 'Sucesso',
+        text: 'Campo Estado do Ente Devedor alterado com sucesso.',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, estadoEnteDevedor: false }));
+    }
+  })
+
   // console.log(t)
   console.log(data)
 
@@ -165,15 +492,12 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
       form.setValue("incidencia_pss", data?.properties["Meses RRA"].number || 0);
       form.setValue("incidencia_pss", data?.properties["PSS"].number! > 0);
       form.setValue("valor_pss", numberFormat(data?.properties["PSS"].number || 0));
-      console.log("atualizando valores")
       setFormData(form.watch);
     }
   }, [data])
 
   return (
     <div className="flex flex-col w-full gap-5">
-
-
 
       <div className="flex w-full items-end justify-end rounded-md">
         <Breadcrumb
@@ -188,17 +512,19 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
       <Form {...form}>
         <div className="space-y-6 rounded-md">
           <section id="info_credor" className="form-inputs-container">
-            <div className="col-span-1 w-full">
+            <div className="xl:col-span-2 w-full">
               <CelerInputField
                 name="credor"
                 fieldType={InputFieldVariant.INPUT}
                 label="Nome do Credor"
-                defaultValue={data?.properties["Credor"].title[0].plain_text}
+                defaultValue={data?.properties["Credor"]?.title?.[0]?.plain_text}
                 iconSrc={<FaUser
                   className="self-center" />}
                 iconAlt="user"
                 className="w-full"
-                onSubmit={handleSubmit}
+                onSubmit={(_, value) => handleChangeCreditorName(value, id)}
+                isLoading={loadingUpdateState.nomeCredor}
+                disabled={editLock}
               />
             </div>
 
@@ -219,7 +545,9 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                   className="self-center" />}
                 iconAlt="document"
                 className="w-full"
-                onSubmit={handleSubmit}
+                onSubmit={(_, value) => handleChangeIdentification(value, id)}
+                isLoading={loadingUpdateState.cpfCnpj}
+                disabled={editLock}
               />
             </div>
           </section>
@@ -234,7 +562,9 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                 iconSrc={<IoDocumentTextSharp className="self-center" />}
                 iconAlt="law"
                 className="w-full"
-                onSubmit={handleSubmit}
+                onSubmit={(_, value) => handleChangeNpu(value, "NPU (Originário)", id)}
+                isLoading={loadingUpdateState.npuOriginario}
+                disabled={editLock}
               />
             </div>
             <div className="col-span-1">
@@ -246,7 +576,9 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                 iconSrc={<IoDocumentTextSharp className="self-center" />}
                 iconAlt="law"
                 className="w-full"
-                onSubmit={handleSubmit}
+                onSubmit={(_, value) => handleChangeNpu(value, "NPU (Precatório)", id)}
+                isLoading={loadingUpdateState.npuPrecatorio}
+                disabled={editLock}
               />
             </div>
             <div className="col-span-1">
@@ -258,7 +590,9 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                 iconSrc={<FaBuildingColumns className="self-center" />}
                 iconAlt="law"
                 className="w-full"
-                onSubmit={handleSubmit}
+                onSubmit={(_, value) => handleChangeJuizo(value, id)}
+                isLoading={loadingUpdateState.juizoVara}
+                disabled={editLock}
               />
             </div>
             <div className="col-span-1">
@@ -270,7 +604,9 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                 iconSrc={<FaBuilding className="self-center" />}
                 iconAlt="law"
                 className="w-full"
-                onSubmit={handleSubmit}
+                onSubmit={(_, value) => handleChangeEnteDevedor(value, id)}
+                isLoading={loadingUpdateState.enteDevedor}
+                disabled={editLock}
               />
             </div>
             <div className="col-span-1">
@@ -282,7 +618,9 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                 iconSrc={<FaMapMarkedAlt className="self-center" />}
                 iconAlt="law"
                 className="w-full"
-                onValueChange={handleSubmit}
+                onValueChange={(_, value) => handleChangeEstadoEnteDevedor(value, id)}
+                isLoading={loadingUpdateState.estadoEnteDevedor}
+                disabled={editLock}
               >
                 {estados.map(estado => (
                   <SelectItem defaultChecked={
