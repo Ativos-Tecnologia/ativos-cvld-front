@@ -9,26 +9,17 @@ import { Select, SelectContent, SelectTrigger, SelectValue } from "@/components/
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import ICelerInputFormField from "@/interfaces/ICelerInputFormField";
 
-interface CustomProps {
-    name: string;
-    fieldType: InputFieldVariant;
-    label?: string;
-    placeholder?: string;
-    iconSrc?: React.ReactNode;
-    iconAlt?: string;
-    disabled?: boolean;
-    dateFormat?: string;
-    showTimeSelect?: boolean;
-    children?: React.ReactNode;
-    defaultValue?: any;
-    className?: string;
+interface ICelerInputField extends ICelerInputFormField {
     onValueChange?: (name: string, value: any) => void;
     error?: string;
     isLoading?: boolean;
+    onSubmit?: (name: string, value: any) => void;
+    ref?: React.Ref<HTMLInputElement>;
 }
 
-export const CelerInputField: React.FC<CustomProps> = (props) => {
+export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) => {
     const [value, setValue] = useState(props.defaultValue ?? "");
 
     useEffect(() => {
@@ -38,13 +29,25 @@ export const CelerInputField: React.FC<CustomProps> = (props) => {
     }, [props.defaultValue]);
 
     const handleChange = (newValue: any) => {
-        setValue(newValue);
-        props.onValueChange?.(props.name, newValue);
+        if (newValue !== value) {
+            setValue(newValue);
+            props.onValueChange?.(props.name, newValue);
+        }
+    };
+
+    const handleKeyDown = (event: React.KeyboardEvent) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            if (props.onSubmit) {
+                props.onSubmit(props.name, value);
+            }
+        }
     };
 
     const commonProps = {
         value,
         onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleChange(e.target.value),
+        onKeyDown: handleKeyDown,
         placeholder: props.placeholder || "Digite aqui",
         disabled: props.disabled || props.isLoading,
     };
@@ -53,9 +56,9 @@ export const CelerInputField: React.FC<CustomProps> = (props) => {
         switch (props.fieldType) {
             case InputFieldVariant.INPUT:
                 return (
-                    <div className="flex rounded-md gap-4">
+                    <div className="flex rounded-md gap-4 mt-2 w-full">
                         {props.iconSrc && <div className="flex items-center">{props.iconSrc}</div>}
-                        <Input defaultValue={props.defaultValue} className={cn("shad-input border-0 bg-snow", props.className)} {...commonProps} />
+                        <Input ref={props.ref} className={cn("shad-input border-0 bg-snow", props.className)} {...commonProps} />
                     </div>
                 );
             case InputFieldVariant.TEXTAREA:
@@ -81,13 +84,14 @@ export const CelerInputField: React.FC<CustomProps> = (props) => {
                             checked={!!value}
                             onCheckedChange={(isChecked) => handleChange(isChecked)}
                             disabled={props.disabled || props.isLoading}
+                            value={value}
                         />
                         <label htmlFor={props.name} className="checkbox-label">
                             {props.label}
                         </label>
                     </div>
                 );
-            case InputFieldVariant.DATE_PICKER:
+            case InputFieldVariant.DATE:
                 return (
                     <div className="flex rounded-md border border-dark-500 bg-dark-400">
                         <Image
@@ -109,12 +113,15 @@ export const CelerInputField: React.FC<CustomProps> = (props) => {
                 );
             case InputFieldVariant.SELECT:
                 return (
-                    <Select onValueChange={handleChange} defaultValue={value}>
-                        <SelectTrigger className="shad-select-trigger">
-                            <SelectValue placeholder={props.placeholder || "Selecione uma opção"} />
-                        </SelectTrigger>
-                        <SelectContent className="shad-select-content">{props.children}</SelectContent>
-                    </Select>
+                    <div className="flex rounded-md gap-4 mt-2 w-full">
+                        {props.iconSrc && <div className="flex items-center">{props.iconSrc}</div>}
+                        <Select onValueChange={(selectedValue) => handleChange(selectedValue)} value={value} defaultValue={value}>
+                            <SelectTrigger className="shad-select-trigger">
+                                <SelectValue placeholder={props.placeholder || "Selecione uma opção"} />
+                            </SelectTrigger>
+                            <SelectContent className="shad-select-content">{props.children}</SelectContent>
+                        </Select>
+                    </div>
                 );
             default:
                 return null;
@@ -122,12 +129,12 @@ export const CelerInputField: React.FC<CustomProps> = (props) => {
     };
 
     return (
-        <div className="form-inputs-container">
-            {props.label && <Label className="shad-input-label">{props.label}</Label>}
+        <div className="w-full col-span-1">
+            {(props.label && props.fieldType !== InputFieldVariant.CHECKBOX) && <Label className="shad-input-label">{props.label}</Label>}
             {renderInput()}
             {props.error && <p className="text-red-500 text-sm mt-1">{props.error}</p>}
         </div>
     );
-};
+});
 
-
+CelerInputField.displayName = "CelerInputField";

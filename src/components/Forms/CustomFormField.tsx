@@ -1,8 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { E164Number } from "libphonenumber-js/core";
 import Image from "next/image";
-import ReactDatePicker from "react-datepicker";
-import { Control } from "react-hook-form";
 import PhoneInput from "react-phone-number-input";
 
 import { Checkbox } from "../../components/ui/checkbox";
@@ -18,34 +16,18 @@ import { Select, SelectContent, SelectTrigger, SelectValue } from "../../compone
 import { Textarea } from "../../components/ui/textarea";
 import { cn } from '@/lib/utils'
 import { InputFieldVariant } from "@/enums/inputFieldVariants.enum";
+import { CelerInputFormFieldProps } from "@/interfaces/ICelerInputFormField";
+import Cleave from "cleave.js/react";
 
 
-
-interface CustomProps {
-  control: Control<any>;
-  name: string;
-  label?: string;
-  placeholder?: string;
-  iconSrc?: React.ReactNode;
-  iconAlt?: string;
-  disabled?: boolean;
-  dateFormat?: string;
-  showTimeSelect?: boolean;
-  children?: React.ReactNode;
-  renderSkeleton?: (field: any) => React.ReactNode;
-  fieldType: InputFieldVariant;
-  defaultValue?: any;
-  className?: string;
-}
-
-const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
+const RenderInput = ({ field, props }: { field: any; props: CelerInputFormFieldProps }) => {
   switch (props.fieldType) {
     case InputFieldVariant.INPUT:
       return (
         <div className="flex rounded-md gap-4">
           {props.iconSrc && (
             <div className="flex items-center">
-                {props.iconSrc}
+              {props.iconSrc}
             </div>
           )}
           <FormControl>
@@ -69,6 +51,25 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
           />
         </FormControl>
       );
+    case InputFieldVariant.NUMBER:
+      return (
+        <FormControl>
+          <Cleave
+            {...field}
+            defaultValue={props.defaultValue}
+            className={`w-full rounded-md border-stroke px-3 py-3 text-sm font-medium dark:bg-boxdark-2 dark:border-strokedark dark:text-bodydark`}
+            options={{
+              numeral: true,
+              numeralThousandsGroupStyle: "thousand",
+              numeralDecimalScale: 2,
+              numeralDecimalMark: ",",
+              delimiter: ".",
+              prefix: props.currencyFormat || "",
+              rawValueTrimPrefix: true,
+            }}
+          />
+        </FormControl>
+      );
     case InputFieldVariant.PHONE_INPUT:
       return (
         <FormControl>
@@ -89,43 +90,46 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
           <div className="flex items-center gap-4">
             <Checkbox
               id={props.name}
-              checked={field.value}
+              checked={field.value || props.defaultValue}
               onCheckedChange={field.onChange}
             />
-            <label htmlFor={props.name} className="checkbox-label">
+            <label htmlFor={props.name} className="checkbox-label text-sm font-semibold">
               {props.label}
             </label>
           </div>
         </FormControl>
       );
-    case InputFieldVariant.DATE_PICKER:
+    case InputFieldVariant.DATE:
       return (
-        <div className="flex rounded-md border border-dark-500 bg-dark-400">
-          <Image
-            src="/assets/icons/calendar.svg"
-            height={24}
-            width={24}
-            alt="user"
-            className="ml-2"
-          />
+        <div className="flex rounded-md relative">
           <FormControl>
-            <ReactDatePicker
-              showTimeSelect={props.showTimeSelect ?? false}
-              selected={field.value}
-              onChange={(date: Date | null) => field.onChange(date)}
-              timeInputLabel="Time:"
-              dateFormat={props.dateFormat ?? "MM/dd/yyyy"}
-              wrapperClassName="date-picker"
+            <Cleave
+              {...field}
+              defaultValue={props.defaultValue}
+              className={`w-full rounded-md border-stroke px-3 py-3 text-sm font-medium dark:bg-boxdark-2 dark:border-strokedark dark:text-bodydark`}
+              options={{
+                date: true,
+                datePattern: ["d", "m", "Y"],
+                delimiter: "/"
+              }}
             />
           </FormControl>
+
+          <Image
+            src="/assets/icons/calendar.svg"
+            height={16}
+            width={16}
+            alt="calendar"
+            className="absolute right-3 top-3.5"
+          />
         </div>
       );
     case InputFieldVariant.SELECT:
       return (
         <FormControl>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select onValueChange={field.onChange} value={field.value || props.defaultValue} defaultValue={field.value}>
             <FormControl>
-              <SelectTrigger className="shad-select-trigger">
+              <SelectTrigger className="shad-select-trigger h-11">
                 <SelectValue placeholder={props.placeholder} />
               </SelectTrigger>
             </FormControl>
@@ -142,13 +146,14 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
   }
 };
 
-const CustomFormField = (props: CustomProps) => {
+const CelerInputFormField = (props: CelerInputFormFieldProps) => {
   const { control, name, label } = props;
 
   return (
     <FormField
       control={control}
       name={name}
+      rules={props.rules}
       render={({ field }) => (
         <FormItem className="flex-1">
           {props.fieldType !== InputFieldVariant.CHECKBOX && label && (
@@ -163,4 +168,4 @@ const CustomFormField = (props: CustomProps) => {
   );
 };
 
-export default CustomFormField;
+export default CelerInputFormField;

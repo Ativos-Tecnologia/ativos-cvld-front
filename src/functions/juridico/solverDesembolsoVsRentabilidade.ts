@@ -18,11 +18,25 @@ export function handleDesembolsoVsRentabilidade(rentabilidade_ao_ano: number, da
     desembolso,
     percentual_de_desembolso,
     percentual_de_ganho,
-	meses_ate_pgto,
+	  meses_ate_pgto,
   }
 }
 
-export function handlePercentualDeGanhoVsRentabilidadeAnual(percentual_de_ganho: number, data: any) {
-	const meses_ate_pgto = data.properties["Meses entre aquisição e pagamento"]?.formula?.number ?? 0;
-  	return Math.pow(1 + percentual_de_ganho, 12 / meses_ate_pgto) - 1;
+export function findRentabilidadeAoAnoThroughDesembolso(desembolso: number, data: any) {
+  const meses_ate_pgto = data.properties["Meses entre aquisição e pagamento"]?.formula?.number ?? 0;
+  const valor_projetado = data.properties["Valor Projetado"]?.number ?? 0;
+  const valor_liquido_com_reservas = data.properties["Valor Líquido (Com Reserva dos Honorários)"]?.formula?.number ?? 0;
+
+  const percentual_de_desembolso = desembolso / valor_liquido_com_reservas;
+  const percentual_de_ganho = valor_projetado / desembolso - 1;
+  const rentabilidade_ao_ano = Math.pow(1 + percentual_de_ganho, 12 / meses_ate_pgto) - 1;
+
+  return {
+    rentabilidade_ao_ano,
+    desembolso,
+    percentual_de_desembolso,
+    percentual_de_ganho,
+    meses_ate_pgto,
+  }
+
 }

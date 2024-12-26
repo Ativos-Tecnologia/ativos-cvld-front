@@ -26,6 +26,7 @@ import {
 } from "react-icons/ai";
 import {
   BiCheck,
+  BiExpand,
   BiLineChart,
   BiLogoUpwork,
   BiSave,
@@ -36,6 +37,8 @@ import { Button } from "../Button";
 import { UpdatePrecatorioButton } from "../Button/UpdatePrecatorioButton";
 import CustomCheckbox from "../CrmUi/Checkbox";
 import NewFormResultSkeleton from "../Skeletons/NewFormResultSkeleton";
+import { PiResize } from "react-icons/pi";
+import { GiResize } from "react-icons/gi";
 
 const NewForm = () => {
   const { setSaveInfoToNotion, usersList } = useContext(TableNotionContext);
@@ -44,6 +47,7 @@ const NewForm = () => {
   const [errorMessage, setErrorMessage] = useState<boolean>(false);
   const [isProposalButtonDisabled, setIsProposalButtonDisabled] = useState<boolean>(true);
   const { modalOpen, setModalOpen } = useContext(DefaultLayoutContext);
+  const [fullScreen, setFullScreen] = useState<boolean>(false);
   const [oficioForm, setOficioForm] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const enumTipoOficiosList = Object.values(tipoOficio);
@@ -507,11 +511,13 @@ const NewForm = () => {
   }, [setSaveInfoToNotion, vincularUsuario]);
 
   return (
+    
     <div
       className={`absolute left-0 top-0 z-20 flex h-full w-full items-center justify-center bg-black-2/50 ${modalOpen ? "visible opacity-100" : "hidden opacity-0"}`}
     >
+      
       <Fade
-        className="overflow-hidden 2xsm:h-[90%] 2xsm:w-11/12 lg:w-10/12 xl:h-4/5"
+      className={`overflow-hidden transition-all duration-300 transform ${fullScreen ? "h-full w-full" : "2xsm:h-[90%] 2xsm:w-11/12 lg:w-10/12 xl:h-4/5"}`}
         damping={0.1}
       >
         <div className="h-full w-full rounded-sm border border-stroke bg-white p-5 dark:border-strokedark dark:bg-boxdark 2xsm:text-sm md:text-base">
@@ -526,7 +532,7 @@ const NewForm = () => {
                 </p>
                 <Image
                   src="/images/logo/celer-ia-only-logo.svg"
-                  alt="Celler IA Engine"
+                  alt="Celer IA Engine"
                   width={56}
                   height={50}
                   className="mt-[6.1px] select-none antialiased"
@@ -539,12 +545,21 @@ const NewForm = () => {
               </p>
             </div>
             <span
+              title={fullScreen ? "minimizar" : "maximizar"}
+              onClick={() => setFullScreen(!fullScreen)}
+              className={`flex h-6 w-6 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 hover:bg-slate-200 dark:hover:bg-slate-600 ${fullScreen ? "bg-slate-600" : ""}`}>
+              {
+                !fullScreen ? <GiResize className="text-lg" /> : <PiResize className="text-xl" />
+              }
+            </span>
+            <span
               title="fechar"
               onClick={() => setModalOpen(false)}
-              className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 hover:bg-slate-200 dark:hover:bg-slate-600"
+            className={`flex h-6 w-6 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 hover:bg-slate-200 dark:hover:bg-slate-600`}
             >
               <BiX className="text-2xl" />
             </span>
+            
           </div>
 
           <div className="h-[80%] overflow-y-scroll overflow-x-hidden">
@@ -591,6 +606,7 @@ const NewForm = () => {
                                             ))}
                                         </ShadSelect> */}
                     </div>
+                    
 
                     <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                       <label
@@ -1511,7 +1527,31 @@ const NewForm = () => {
                 ) : (
                   <>
                     {showResults ? (
-                      <div className="flex flex-col">
+                      // {
+                      //   watch("data_requisicao")! < "2023-04-02" && watch("esfera") === "FEDERAL" && (
+                      //     <div className="w-full h-full bg-black-2/50 flex items-center justify-center">
+                      //       <p className="text-white text-xl font-bold">Não serão calculdadas propostas para ofícios de L.O.A 24 </p>
+                      //     </div>
+                      //   )
+                      // }
+
+                      // Escrever um texto no before do container informando que não serão calculadas propostas para ofícios de L.O.A 24
+                      <div className={`flex flex-col relative ${watch("data_requisicao")! < "2023-04-02" && watch("esfera") === "FEDERAL" ? "opacity-50 pointer-events-none" : ""}`}>
+
+                       {watch("data_requisicao")! < "2023-04-02" &&( watch("esfera") === "ESTADUAL" || watch("esfera") === "MUNICIPAL") && (
+                        <div className="absolute w-full min-h-full bg-slate-700/90 flex justify-center items-center flex-col">
+                          <h2 className="p-4 uppercase text-md font-medium font-satoshi w-full text-center">
+                            Não é possível calcular valores de proposta e comissão para ativos com <span title="Lei Oçamentária Anual" className="underline">L.O.A</span> 2024
+                          </h2>
+                          {
+                            watch("gerar_cvld") && (
+                              <p className="px-4 text-muted-foreground text-xs">
+                                Seu precatório foi salvo sem proposta e comissionamento definidos
+                              </p>
+                            )
+                          }
+                        </div>)}
+
                         <div className="mb-6 flex flex-col gap-2">
                           <h2 className="text-xl font-medium uppercase">
                             Tudo pronto!
@@ -1524,7 +1564,7 @@ const NewForm = () => {
                         </div>
 
                         <div className="flex items-center justify-between gap-5 p-2 2xsm:flex-col sm:mb-4 md:flex-row">
-                          <div className="relative flex flex-col md:items-center">
+                          <div className="flex flex-col md:items-center">
                             <h4 className="">Proposta Mínima</h4>
                             <span>
                               {numberFormat(backendResponse.min_proposal)}
@@ -1567,7 +1607,7 @@ const NewForm = () => {
 
                         <div className="my-4 h-px w-full bg-stroke dark:bg-strokedark sm:hidden"></div>
 
-                        <div className="relative flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
+                        <div className="flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
                           <div className="flex flex-col items-center">
                             <h4 className="">Comissão Mínima</h4>
                             <span>
