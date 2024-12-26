@@ -69,8 +69,44 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
 
   const swal = UseMySwal()
 
-  const handleSubmit = (name: string, value: any) => {
-    console.log(name, value);
+  const handleDueDiligence = () => {
+    swal.fire({
+      title: 'Diligência',
+      text: 'Deseja mesmo finalizar a diligência?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sim',
+      cancelButtonText: 'Não',
+      confirmButtonColor: '#4CAF50',
+      cancelButtonColor: '#F44336',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const response = await api.patch(`api/notion-api/update/${id}/`, {
+          "Status Diligência": {
+            "select": {
+              "name": "Em liquidação"
+            }
+          }
+        });
+        if (response.status !== 202) {
+          swal.fire({
+            title: 'Erro',
+            text: 'Houve um erro ao finalizar a diligência',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        }
+
+        refetch();
+
+        swal.fire({
+          title: 'Diligência Finalizada',
+          text: 'A diligência foi Finalizada com sucesso! O ofício agora está em liquidação.',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+      }
+    })
   }
 
   const onSubmitForm = async (data: any) => {
@@ -122,8 +158,6 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
 
     data.upload_notion = true;
 
-    console.log(data)
-
     try {
       const response = await api.patch(`/api/juridico/update/precatorio/${id}/`, data);
 
@@ -151,7 +185,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     return response.data;
   }
 
-  const { data, isFetching, isLoading } = useQuery<NotionPage>({
+  const { data, isFetching, isLoading, refetch } = useQuery<NotionPage>({
     queryKey: ["page", id],
     refetchOnWindowFocus: false,
     // refetchOnReconnect: true,
@@ -1024,6 +1058,20 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
           </section>
         </div>
       </Form>
+      <div className="flex items-center justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
+        {
+          data?.properties["Status Diligência"].select?.name === "Due Diligence" && (
+            <Button
+              variant="success"
+              className="py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium"
+              onClick={() => handleDueDiligence()}
+            >
+              <BiSolidSave className="h-4 w-4" />
+              <span>Finalizar Due Diligence</span>
+            </Button>
+          )
+        }
+        </div>
             {cedenteModal !== null && <BrokerModal />}
             {docModalInfo !== null && <DocForm />}
     </div>

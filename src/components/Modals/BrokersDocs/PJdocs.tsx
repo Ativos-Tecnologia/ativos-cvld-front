@@ -53,8 +53,6 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
       data: { role },
   } = useContext<UserInfoContextType>(UserInfoAPIContext);
 
-  console.log(role);
-
   const [cedenteInfo, setCedenteInfo] = useState<NotionPage | null>(null);
   const [showDoc, setShowDoc] = useState<boolean>(false);
   const [docUrl, setDocUrl] = useState<string>("");
@@ -1156,15 +1154,7 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
                     />
 
                     {representanteState.data?.properties["Doc. Comprovante de Residência"].url ? (
-                      // <Badge
-                      //   color={representanteState.data?.properties["Doc. Comprovante de Residência Status"].select?.color || ""}
-                      //   isANotionPage={true}
-                      //   className='w-[165px] mx-auto text-sm capitalize'
-                      // >
-                      //   {representanteState.data?.properties[
-                      //     "Doc. Comprovante de Residência Status"
-                      //   ].select?.name || ""}
-                      // </Badge>
+                      
                       <div className='pr-5'>
                       <CelerInputField
                       fieldType={InputFieldVariant.SELECT}
