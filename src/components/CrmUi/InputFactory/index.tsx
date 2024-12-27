@@ -59,7 +59,7 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
                 return (
                     <div className="flex rounded-md gap-4 mt-2 w-full">
                         {props.iconSrc && <div className="flex items-center">{props.iconSrc}</div>}
-                        <Input ref={props.ref} className={cn("shad-input border-0 bg-snow", props.className)} {...commonProps} />
+                        <Input ref={props.ref} className={cn("shad-input border border-stroke dark:border-strokedark bg-snow", props.className)} {...commonProps} />
                     </div>
                 );
             case InputFieldVariant.TEXTAREA:
@@ -130,7 +130,7 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
     };
 
     return (
-        <div className="w-full col-span-1">
+        <div className="col-span-1">
             {(props.label && props.fieldType !== InputFieldVariant.CHECKBOX) && <Label className="shad-input-label">{props.label}</Label>}
             <div className="flex items-center gap-2">
                 {renderInput()}
