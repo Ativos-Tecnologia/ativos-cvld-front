@@ -36,6 +36,8 @@ import DataStatsTwo from "../DataStats/DataStatsTwo";
 import { BsPencilSquare } from "react-icons/bs";
 import DocForm from "../Modals/BrokersDocs";
 import { AiOutlineLoading } from "react-icons/ai";
+import RentabilityChart from "../Charts/RentabilityChart";
+import { IWalletResponse } from "@/interfaces/IWallet";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -54,6 +56,23 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     } = useContext(BrokersContext);
 
 
+  const [vlData, setVlData] = useState<IWalletResponse>({
+    id: "",
+    valor_investido: 0,
+    valor_projetado: 0,
+    previsao_de_pgto: "",
+    result: [
+      {
+        data_atualizacao: "",
+        valor_principal: 0,
+        valor_juros: 0,
+        valor_inscrito: 0,
+        valor_bruto_atualizado_final: 0,
+        valor_liquido_disponivel: 0,
+      },
+    ]
+  });
+  const [fetchingVL, setFetchingVL] = useState<boolean>(false);
   const [formData, setFormData] = useState<any>(null);
   const [happenedRecalculation, setHappenedRecalculation] = useState<boolean>(false);
   const [recalculationData, setRecalculationData] = useState<any>(null);
@@ -552,6 +571,30 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
       setFormData(form.watch);
     }
   }, [data])
+
+  useEffect(() => {
+    const fetchUpdatedVL = async (oficio: NotionPage) => {
+      // Essa função recebe um objeto do tipo NotionPage e retorna um objeto do tipo IWalletResponse com os valores atualizados
+      try {
+          const response = await api.post('/api/extrato/wallet/', {
+              oficio
+          });
+          setVlData(response.data);
+
+      } catch (error: any) {
+          throw new Error(error.message);
+      } 
+  }
+
+  // if (happenedRecalculation) {
+  //     fetchUpdatedVL(recalculationData);
+  //     setHappenedRecalculation(false);
+  // }
+  if (data) {
+    fetchUpdatedVL(data);
+  }
+  }, [data])
+    
 
   return (
     <div className="flex flex-col w-full gap-5">
@@ -1081,6 +1124,11 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
           </section>
         </div>
       </Form>
+      <div className=" grid grid-cols-12 mt-4 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5"
+        >
+      <RentabilityChart data={vlData} />
+      </div>
+
       <div className="flex items-center justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
         {
           data?.properties["Status Diligência"].select?.name === "Due Diligence" && (
