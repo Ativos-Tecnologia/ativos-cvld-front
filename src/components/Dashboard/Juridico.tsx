@@ -13,14 +13,12 @@ import MarketplaceCardSkeleton from "../Skeletons/MarketplaceCardSkeleton";
 import { AiOutlineLoading } from "react-icons/ai";
 import api from "@/utils/api";
 import Image from "next/image";
-import Link from "next/link";
 import GridCardsWrapper from "../CrmUi/Wrappers/GridCardsWrapper";
 import HoverCard from "../CrmUi/Wrappers/HoverCard";
 import { imgPaths } from "@/constants/tribunais";
 import { FaFileInvoiceDollar } from "react-icons/fa6";
 import { BiSolidCoinStack } from "react-icons/bi";
 import numberFormat from "@/functions/formaters/numberFormat";
-import { LiquidationTimeCounter } from "../TimerCounter/LiquidationTimeCounter";
 import { DueDiligenceCounter } from "../TimerCounter/DueDiligenceCounter";
 import { useRouter } from "next/navigation";
 
@@ -33,12 +31,6 @@ enum navItems {
   ATOS_PROCESSUAIS = "Atos processuais",
   AGUARDAR_PGTO = "Aguardar pagamento",
 }
-
-type cardProps = {
-  id: number;
-  title: string;
-  tipo: string;
-};
 
 export type SimpleNotionData = {
   id: string,
@@ -56,6 +48,8 @@ export type SimpleNotionData = {
     name: string
   },
   prazo_final_due: string,
+  proposta_escolhida: number,
+  comissao: number,
 }
 
 type SimpleDataProps = {
@@ -126,7 +120,7 @@ const Juridico = () => {
                 }}
               >
                 <span
-                  className={`absolute left-0 top-full flex w-full items-center justify-center py-1transition-all duration-300 ${loading && item === activeTab ? "translate-y-[-100%]" : "translate-y-0"}`}
+                  className={`absolute left-0 top-full flex w-full items-center justify-center py-1.5 first-line:transition-all duration-300 ${loading && item === activeTab ? "translate-y-[-100%]" : "translate-y-0"}`}
                 >
                   <AiOutlineLoading className="h-5 w-5 animate-spin text-current" />
                 </span>
