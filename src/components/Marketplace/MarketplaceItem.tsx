@@ -9,7 +9,7 @@ import { Suspense, useContext, useState } from "react";
 import { Fade } from "react-awesome-reveal";
 import { BsFillPatchCheckFill } from "react-icons/bs";
 import { IoCalendar } from "react-icons/io5";
-import { LuDownloadCloud } from "react-icons/lu";
+import { DownloadCloudIcon } from "lucide-react"; 
 import { MdOutlineAttachMoney } from "react-icons/md";
 import { TbMoneybag } from "react-icons/tb";
 import { Button } from "../Button";
@@ -170,7 +170,7 @@ export default function MarketplaceItem({ id }: MarketplaceItemProps) {
                   </a>
                 }
               >
-                <LuDownloadCloud className="h-[18px] w-[18px]" />
+                <DownloadCloudIcon className="h-[18px] w-[18px]" />
               </CardDataStats>
             </div>
           ) : (
@@ -200,7 +200,7 @@ export default function MarketplaceItem({ id }: MarketplaceItemProps) {
                   </a>
                 }
               >
-                <LuDownloadCloud className="h-[18px] w-[18px]" />
+                <DownloadCloudIcon className="h-[18px] w-[18px]" />
               </CardDataStats>
             </div>
           ) : (
