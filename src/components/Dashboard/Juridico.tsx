@@ -227,6 +227,12 @@ const Juridico = () => {
                                       {item.esfera}
                                     </p>
                                   </HoverCard.ListItem>
+                                  <HoverCard.ListItem>
+                                    <p className="text-[10px] text-gray-300">Status da Diligência</p>
+                                    <p className="text-xs">
+                                      {item.status_diligencia || "Não possui"}
+                                    </p>
+                                  </HoverCard.ListItem>
 
                                   <HoverCard.ListItem className="border-0 col-span-2">
                                     <p className="text-[10px] text-gray-300">PRAZO FINAL</p>
