@@ -284,9 +284,9 @@ const ChartTwelve: React.FC = () => {
       enabled: false,
     },
 
-    markers: {
-      size: 0,
-    },
+    // markers: {
+    //   size: 0,
+    // },
 
     labels: {
       show: false,
