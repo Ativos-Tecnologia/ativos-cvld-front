@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { NotionPage } from "@/interfaces/INotion";
@@ -24,18 +24,20 @@ import LifeCycleStep from "../LifeCycleStep";
 import { tribunais } from "@/constants/tribunais";
 import numberFormat from "@/functions/formaters/numberFormat";
 import Link from "next/link";
+import { BiInfoCircle, BiSolidSave, BiSolidCalculator } from "react-icons/bi";
 import { GrDocumentText, GrDocumentUser } from "react-icons/gr";
-import { BiSolidCalculator, BiSolidSave } from "react-icons/bi";
 import { Button } from "../Button";
 import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
 import UseMySwal from "@/hooks/useMySwal";
 import { AxiosError } from "axios";
+import CRMTooltip from "../CrmUi/Tooltip";
 import BrokerModal from "../Modals/BrokersCedente";
 import { BrokersContext } from "@/context/BrokersContext";
 import DataStatsTwo from "../DataStats/DataStatsTwo";
 import { BsPencilSquare } from "react-icons/bs";
 import DocForm from "../Modals/BrokersDocs";
 import { AiOutlineLoading } from "react-icons/ai";
+import JuridicoDetailsSkeleton from "../Skeletons/JuridicoDetailsSkeleton";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -46,12 +48,12 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     data: { first_name },
   } = useContext<UserInfoContextType>(UserInfoAPIContext);
 
-    const {
-      cedenteModal,
-      setCedenteModal,
-      docModalInfo,
-      setDocModalInfo,
-    } = useContext(BrokersContext);
+  const {
+    cedenteModal,
+    setCedenteModal,
+    docModalInfo,
+    setDocModalInfo,
+  } = useContext(BrokersContext);
 
 
   const [formData, setFormData] = useState<any>(null);
@@ -66,11 +68,21 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     juizoVara: false,
     enteDevedor: false,
     estadoEnteDevedor: false,
-    formValores: false
+    formValores: false,
+    sliderValores: false
   });
   const [editLock, setEditLock] = useState<boolean>(false);
+  const [disabledSaveButton, setDisabledSaveButton] = useState<boolean>(true);
+  const [sliderValues, setSliderValues] = useState({
+    rentabilidade: 0,
+    desembolso: 0
+  })
 
-  const swal = UseMySwal()
+  const swal = UseMySwal();
+
+  /* refs */
+  const rentabilidadeSlideRef = useRef<HTMLInputElement>(null);
+  const desembolsoSlideRef = useRef<HTMLInputElement>(null);
 
   const handleDueDiligence = () => {
     swal.fire({
@@ -204,13 +216,10 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     queryFn: fetchData,
   });
 
-  // const t = !isLoading && handleDesembolsoVsRentabilidade(0.3, data)
-  // const y = !isLoading && findRentabilidadeAoAnoThroughDesembolso(1108726.611334225, data)
-
   const form = useForm();
   const isFormModified = Object.keys(form.watch()).some((key: any) => form.watch()[key] !== formData?.[key]);
 
-  //TODO: Documentar com JSDocs todas as funções desse componente
+  // TODO: documentar todas as funções desse componente com JSDocs
   const handleChangeCreditorName = async (value: string, page_id: string) => {
     await creditorNameMutation.mutateAsync({
       page_id,
@@ -264,6 +273,84 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     });
   }
 
+  const handleChangeRentabilidadeSlider = (value: string, fromSlider?: boolean) => {
+
+    if (!value) return;
+    const sanitizedValue = value.replace(/%/g, "");
+
+    const newRentabilidade = !fromSlider ? Number(sanitizedValue) / 100 : Number(sanitizedValue);
+    const newDesembolso = handleDesembolsoVsRentabilidade(Number(newRentabilidade), data).desembolso;
+
+    setSliderValues({
+      rentabilidade: newRentabilidade,
+      desembolso: newDesembolso
+    })
+
+    if (rentabilidadeSlideRef.current && desembolsoSlideRef.current) {
+      rentabilidadeSlideRef.current.value = `${(newRentabilidade * 100).toFixed(2).replace(".", ",")}%`;
+      if (fromSlider) {
+        desembolsoSlideRef.current.value = numberFormat(newDesembolso);
+      }
+    }
+  }
+
+  const handleChangeDesembolsoSlider = (value: string, fromSlider?: boolean) => {
+
+    if (!value) return;
+    const rawValue = value.replace(/R\$\s*/g, "").replaceAll(".", "").replaceAll(",", ".");
+
+    const newDesembolso = Number(rawValue);
+    const newRentabilidade = findRentabilidadeAoAnoThroughDesembolso(Number(newDesembolso), data).rentabilidade_ao_ano;
+
+    setSliderValues({
+      rentabilidade: newRentabilidade,
+      desembolso: newDesembolso
+    })
+
+    if (rentabilidadeSlideRef.current && desembolsoSlideRef.current) {
+      desembolsoSlideRef.current.value = numberFormat(newDesembolso);
+      if (fromSlider) {
+        rentabilidadeSlideRef.current.value = `${(newRentabilidade * 100).toFixed(2).replace(".", ",")}%`;
+      }
+    }
+  }
+
+  const handleSaveValues = async () => {
+
+    setLoadingUpdateState(prev => ({ ...prev, formValores: true }));
+    try {
+      const res = await api.post(`/api/juridico/desembolso/${id}/`, {
+        rentabilidade_anual: sliderValues.rentabilidade
+      });
+
+      if (res.status === 200) {
+        swal.fire({
+          toast: true,
+          timer: 3000,
+          timerProgressBar: true,
+          icon: 'success',
+          text: "Valores salvos com sucesso",
+          position: "bottom-right",
+          showConfirmButton: false,
+        })
+      }
+
+    } catch (error) {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'error',
+        text: "Erro ao salvar os valores",
+        position: "bottom-right",
+        showConfirmButton: false,
+      })
+    } finally {
+      setLoadingUpdateState(prev => ({ ...prev, formValores: false }));
+    }
+
+  }
+
   // ----> Mutations <-----
   const creditorNameMutation = useMutation({
     mutationFn: async (paramsObj: { page_id: string, value: string }) => {
@@ -289,18 +376,24 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     },
     onError: () => {
       swal.fire({
-        title: 'Erro',
-        text: 'Houve um erro ao atualizar o campo Nome do Credor',
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
         icon: 'error',
-        confirmButtonText: 'OK'
+        text: "Houve um erro ao atualizar o campo Nome do Credor",
+        position: "bottom-right",
+        showConfirmButton: false,
       })
     },
     onSuccess: () => {
       swal.fire({
-        title: 'Sucesso',
-        text: 'Nome do Credor atualizado com sucesso',
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
         icon: 'success',
-        confirmButtonText: 'OK'
+        text: "Nome do Credor atualizado com sucesso",
+        position: "bottom-right",
+        showConfirmButton: false,
       })
     },
     onSettled: () => {
@@ -333,18 +426,24 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     },
     onError: () => {
       swal.fire({
-        title: 'Erro',
-        text: 'Houve um erro ao atualizar o campo CPF/CNPJ',
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
         icon: 'error',
-        confirmButtonText: 'OK'
+        text: "Houve um erro ao atualizar o campo CPF/CNPJ",
+        position: "bottom-right",
+        showConfirmButton: false,
       });
     },
     onSuccess: () => {
       swal.fire({
-        title: 'Sucesso',
-        text: 'CPF/CNPJ atualizado com sucesso',
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
         icon: 'success',
-        confirmButtonText: 'OK'
+        text: "CPF/CNPJ atualizado com sucesso",
+        position: "bottom-right",
+        showConfirmButton: false,
       });
     },
     onSettled: () => {
@@ -379,18 +478,24 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     },
     onError: (error, paramsObj) => {
       swal.fire({
-        title: 'Erro',
-        text: `Houve um erro ao atualizar o campo ${paramsObj.type}`,
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
         icon: 'error',
-        confirmButtonText: 'OK'
+        text: `Houve um erro ao atualizar o campo ${paramsObj.type}`,
+        position: "bottom-right",
+        showConfirmButton: false,
       });
     },
     onSuccess: (data, paramsObj) => {
       swal.fire({
-        title: 'Sucesso',
-        text: `Campo ${paramsObj.type} alterado com sucesso.`,
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
         icon: 'success',
-        confirmButtonText: 'OK'
+        text: `Campo ${paramsObj.type} alterado com sucesso.`,
+        position: "bottom-right",
+        showConfirmButton: false,
       });
     },
     onSettled: (data, error, paramsObj, context) => {
@@ -425,18 +530,24 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     },
     onError: () => {
       swal.fire({
-        title: 'Erro',
-        text: 'Houve um erro ao atualizar o campo Juízo',
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
         icon: 'error',
-        confirmButtonText: 'OK'
+        text: `Houve um erro ao atualizar o campo Juíz0.`,
+        position: "bottom-right",
+        showConfirmButton: false,
       });
     },
     onSuccess: () => {
       swal.fire({
-        title: 'Sucesso',
-        text: 'Campo Juízo alterado com sucesso.',
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
         icon: 'success',
-        confirmButtonText: 'OK'
+        text: `Campo Juízo alterado com sucesso.`,
+        position: "bottom-right",
+        showConfirmButton: false,
       });
     },
     onSettled: () => {
@@ -465,18 +576,24 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     },
     onError: () => {
       swal.fire({
-        title: 'Erro',
-        text: 'Houve um erro ao atualizar o campo Ente Devedor',
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
         icon: 'error',
-        confirmButtonText: 'OK'
+        text: `Houve um erro ao atualizar o campo Ente Devedor`,
+        position: "bottom-right",
+        showConfirmButton: false,
       });
     },
     onSuccess: () => {
       swal.fire({
-        title: 'Sucesso',
-        text: 'Campo Ente Devedor alterado com sucesso.',
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
         icon: 'success',
-        confirmButtonText: 'OK'
+        text: `Campo Ente Devedor alterado com sucesso.`,
+        position: "bottom-right",
+        showConfirmButton: false,
       });
     },
     onSettled: () => {
@@ -505,27 +622,44 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     },
     onError: () => {
       swal.fire({
-        title: 'Erro',
-        text: 'Houve um erro ao atualizar o campo Estado do Ente Devedor',
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
         icon: 'error',
-        confirmButtonText: 'OK'
+        text: `Houve um erro ao atualizar o campo Estado do Ente Devedor`,
+        position: "bottom-right",
+        showConfirmButton: false,
       });
     },
     onSuccess: () => {
       swal.fire({
-        title: 'Sucesso',
-        text: 'Campo Estado do Ente Devedor alterado com sucesso.',
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
         icon: 'success',
-        confirmButtonText: 'OK'
+        text: `Campo Estado do Ente Devedor alterado com sucesso.`,
+        position: "bottom-right",
+        showConfirmButton: false,
       });
     },
     onSettled: () => {
       setEditLock(false);
       setLoadingUpdateState(prev => ({ ...prev, estadoEnteDevedor: false }));
     }
-  })
+  });
 
-  // console.log(t)
+  useEffect(() => {
+    if (data && sliderValues.rentabilidade !== 0 && sliderValues.desembolso !== 0) {
+      if (
+        sliderValues.rentabilidade !== data.properties["Rentabilidade Anual"].number ||
+        sliderValues.desembolso !== data.properties["Nova Fórmula do Desembolso"].formula?.number
+      ) {
+        setDisabledSaveButton(false);
+      } else {
+        setDisabledSaveButton(true);
+      }
+    }
+  }, [sliderValues])
 
   useEffect(() => {
     if (data) {
@@ -549,13 +683,24 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
       form.setValue("incidencia_pss", data?.properties["Meses RRA"].number || 0);
       form.setValue("incidencia_pss", data?.properties["PSS"].number! > 0);
       form.setValue("valor_pss", numberFormat(data?.properties["PSS"].number || 0));
+
       setFormData(form.watch);
+
+      setSliderValues({
+        rentabilidade: data?.properties["Rentabilidade Anual"].number || 0,
+        desembolso: data?.properties["Nova Fórmula do Desembolso"].formula?.number || 0
+      })
     }
-  }, [data])
+  }, [data]);
+
+  if (!data) {
+    return (
+      <JuridicoDetailsSkeleton />
+    )
+  }
 
   return (
     <div className="flex flex-col w-full gap-5">
-
       <div className="flex w-full items-end justify-end rounded-md">
         <Breadcrumb
           customIcon={<FaBalanceScale className="h-[32px] w-[32px]" />}
@@ -697,30 +842,30 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
             <div className="col-span-4 gap-4">
               <div className="flex items-center gap-4">
 
-            <button
+                <button
                   onClick={() => data && setCedenteModal(data)}
                   className="border border-strokedark/20 dark:border-stroke/20 dark:text-white text-slate-600 py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium hover:bg-strokedark/20 dark:hover:bg-stroke/20 transition-colors duration-200"
-                  >
+                >
                   {(data?.properties["Cedente PF"].relation?.[0] || data?.properties["Cedente PJ"].relation?.[0]) ? (
                     <>
-                          <BsPencilSquare />
-                          Editar Cedente
-                      </>
+                      <BsPencilSquare />
+                      Editar Cedente
+                    </>
                   ) : (
                     <>
-                          <GrDocumentUser />
-                          Cadastrar Cedente
-                      </>
+                      <GrDocumentUser />
+                      Cadastrar Cedente
+                    </>
                   )}
-              </button>
-              <button
+                </button>
+                <button
                   onClick={() => data && setDocModalInfo(data)}
                   className="border border-strokedark/20 dark:border-stroke/20 dark:text-white text-slate-600 py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium hover:bg-strokedark/20 dark:hover:bg-stroke/20 transition-colors duration-200"
-                  >
-                <FaRegFilePdf />
-                Gerir Documentos
-              </button>
-                </div>
+                >
+                  <FaRegFilePdf />
+                  Gerir Documentos
+                </button>
+              </div>
             </div>
           </section>
 
@@ -853,178 +998,255 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
 
               <hr className="border border-stroke dark:border-strokedark mt-6" />
 
-              <div className="w-1/2 grid grid-cols-2 gap-6 mt-6">
-                {/* percentual adquirido */}
-                <div className="col-span-1">
-                  <CelerInputFormField
-                    control={form.control}
-                    name="valor_aquisicao_total"
-                    label="Aquisição Total"
-                    fieldType={InputFieldVariant.CHECKBOX}
-                    className="w-full"
-                  />
-                </div>
-                {form.watch("valor_aquisicao_total") === false ? (
+              <div className="grid grid-cols-4 3xl:grid-cols-5 gap-6 mt-6">
+                <div className="col-span-2 3xl:col-span-3 grid grid-cols-2 gap-6">
+                  {/* percentual adquirido */}
                   <div className="col-span-1">
                     <CelerInputFormField
                       control={form.control}
-                      name="percentual_a_ser_adquirido"
-                      label="Percentual de Aquisição (%)"
-                      fieldType={InputFieldVariant.NUMBER}
+                      name="valor_aquisicao_total"
+                      label="Aquisição Total"
+                      fieldType={InputFieldVariant.CHECKBOX}
                       className="w-full"
                     />
                   </div>
-                ) : (
-                  <div className="col-span-1">&nbsp;</div>
-                )}
-
-                {/* destacamento de honorários */}
-                <div className="col-span-2 flex gap-6">
-                  <CelerInputFormField
-                    control={form.control}
-                    name="ja_possui_destacamento"
-                    label="Já Possui Destacamento de Honorários?"
-                    fieldType={InputFieldVariant.CHECKBOX}
-                    className="w-full"
-                  />
-                  {form.watch("ja_possui_destacamento") === false ? (
+                  {form.watch("valor_aquisicao_total") === false ? (
                     <div className="col-span-1">
                       <CelerInputFormField
                         control={form.control}
-                        name="percentual_de_honorarios"
-                        label="Percentual"
+                        name="percentual_a_ser_adquirido"
+                        label="Percentual de Aquisição (%)"
                         fieldType={InputFieldVariant.NUMBER}
                         className="w-full"
                       />
                     </div>
                   ) : (
-                    null
+                    <div className="col-span-1">&nbsp;</div>
                   )}
-                </div>
 
-                {/* juros moratórios */}
-                <div className={`col-span-2 ${form.watch("data_base") && form.watch("data_base").split("/").reverse().join("-") < "2021-12-01" && form.watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}>
-                  <CelerInputFormField
-                    control={form.control}
-                    name="incidencia_juros_moratorios"
-                    label="Juros de Mora Fixados em Sentença"
-                    fieldType={InputFieldVariant.CHECKBOX}
-                    className="w-full"
-                  />
-                </div>
-
-                {/* incide selic */}
-                <div className={`col-span-2 ${form.watch("data_base") && form.watch("data_base").split("/").reverse().join("-") > "2021-12-01" && form.watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}>
-                  <CelerInputFormField
-                    control={form.control}
-                    name="nao_incide_selic_no_periodo_db_ate_abril"
-                    label="SELIC Somente Sobre o Principal"
-                    fieldType={InputFieldVariant.CHECKBOX}
-                    className="w-full"
-                  />
-                </div>
-
-                {/* incidência IR */}
-                <div className="col-span-2">
-                  <CelerInputFormField
-                    control={form.control}
-                    name="incidencia_rra_ir"
-                    label="Incidência de IR"
-                    fieldType={InputFieldVariant.CHECKBOX}
-                    className="w-full"
-                  />
-                </div>
-
-                {/* Incidência de IR sobre RRA */}
-                {form.watch("natureza") !== "TRIBUTÁRIA" && form.watch("incidencia_rra_ir") === true ? (
-                  <>
-                    <div className="col-span-1">
-                      <CelerInputFormField
-                        control={form.control}
-                        name="ir_incidente_rra"
-                        label="IR Incidente sobre RRA?"
-                        fieldType={InputFieldVariant.CHECKBOX}
-                        className="w-full"
-                      />
-                    </div>
-                    {form.watch("ir_incidente_rra") === true ? (
-                      <div className="col-span-1">
-                        <CelerInputFormField
-                          control={form.control}
-                          name="numero_de_meses"
-                          label="Número de Meses"
-                          fieldType={InputFieldVariant.INPUT}
-                          className="w-full"
-                        />
-                      </div>
-                    ) : (
-                      <div className="col-span-1">&nbsp;</div>
-                    )}
-                  </>
-                ) : (
-                  null
-                )}
-
-                {/* incidência de PSS */}
-                {form.watch("natureza") !== "TRIBUTÁRIA" && (
-                  <>
-                    <div className="col-span-1">
-                      <CelerInputFormField
-                        control={form.control}
-                        name="incidencia_pss"
-                        label="Incide PSS?"
-                        fieldType={InputFieldVariant.CHECKBOX}
-                        className="w-full"
-                      />
-                    </div>
-                    {form.watch("incidencia_pss") === true ? (
-                      <div className="col-span-1">
-                        <CelerInputFormField
-                          control={form.control}
-                          name="valor_pss"
-                          label="Valor PSS"
-                          fieldType={InputFieldVariant.NUMBER}
-                          currencyFormat={"R$ "}
-                          className="w-full"
-                        />
-                      </div>
-                    ) : (
-                      <div className="col-span-1">&nbsp;</div>
-                    )}
-                  </>
-                )}
-
-                {/* data limite de atualização */}
-                <div className="col-span-1">
-                  <CelerInputFormField
-                    control={form.control}
-                    name="data_limite_de_atualizacao_check"
-                    label="Atualiza Para Data Passada?"
-                    fieldType={InputFieldVariant.CHECKBOX}
-                    className="w-full"
-                  />
-                </div>
-
-                {form.watch("data_limite_de_atualizacao_check") === true ? (
-                  <div className="col-span-1">
+                  {/* destacamento de honorários */}
+                  <div className="col-span-2 flex gap-6">
                     <CelerInputFormField
                       control={form.control}
-                      name="data_limite_de_atualizacao"
-                      label="Atualizado Até:"
-                      fieldType={InputFieldVariant.DATE}
+                      name="ja_possui_destacamento"
+                      label="Já Possui Destacamento de Honorários?"
+                      fieldType={InputFieldVariant.CHECKBOX}
+                      className="w-full"
+                    />
+                    {form.watch("ja_possui_destacamento") === false ? (
+                      <div className="col-span-1">
+                        <CelerInputFormField
+                          control={form.control}
+                          name="percentual_de_honorarios"
+                          label="Percentual"
+                          fieldType={InputFieldVariant.NUMBER}
+                          className="w-full"
+                        />
+                      </div>
+                    ) : (
+                      null
+                    )}
+                  </div>
+
+                  {/* juros moratórios */}
+                  <div className={`col-span-2 ${form.watch("data_base") && form.watch("data_base").split("/").reverse().join("-") < "2021-12-01" && form.watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}>
+                    <CelerInputFormField
+                      control={form.control}
+                      name="incidencia_juros_moratorios"
+                      label="Juros de Mora Fixados em Sentença"
+                      fieldType={InputFieldVariant.CHECKBOX}
                       className="w-full"
                     />
                   </div>
-                ) : (
-                  <div className="col-span-1">&nbsp;</div>
-                )}
 
-                {(form.watch("data_limite_de_atualizacao") && form.watch("data_limite_de_atualizacao").split("/").reverse().join("-") < form.watch("data_requisicao").split("/").reverse().join("-")) && (
-                  <span className="text-red-500 dark:text-red-400 text-xs col-span-2">
-                    Data de atualização não pode ser menor que a data da requisição
-                  </span>
-                )}
+                  {/* incide selic */}
+                  <div className={`col-span-2 ${form.watch("data_base") && form.watch("data_base").split("/").reverse().join("-") > "2021-12-01" && form.watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}>
+                    <CelerInputFormField
+                      control={form.control}
+                      name="nao_incide_selic_no_periodo_db_ate_abril"
+                      label="SELIC Somente Sobre o Principal"
+                      fieldType={InputFieldVariant.CHECKBOX}
+                      className="w-full"
+                    />
+                  </div>
 
+                  {/* incidência IR */}
+                  <div className="col-span-2">
+                    <CelerInputFormField
+                      control={form.control}
+                      name="incidencia_rra_ir"
+                      label="Incidência de IR"
+                      fieldType={InputFieldVariant.CHECKBOX}
+                      className="w-full"
+                    />
+                  </div>
+
+                  {/* Incidência de IR sobre RRA */}
+                  {form.watch("natureza") !== "TRIBUTÁRIA" && form.watch("incidencia_rra_ir") === true ? (
+                    <>
+                      <div className="col-span-1">
+                        <CelerInputFormField
+                          control={form.control}
+                          name="ir_incidente_rra"
+                          label="IR Incidente sobre RRA?"
+                          fieldType={InputFieldVariant.CHECKBOX}
+                          className="w-full"
+                        />
+                      </div>
+                      {form.watch("ir_incidente_rra") === true ? (
+                        <div className="col-span-1">
+                          <CelerInputFormField
+                            control={form.control}
+                            name="numero_de_meses"
+                            label="Número de Meses"
+                            fieldType={InputFieldVariant.INPUT}
+                            className="w-full"
+                          />
+                        </div>
+                      ) : (
+                        <div className="col-span-1">&nbsp;</div>
+                      )}
+                    </>
+                  ) : (
+                    null
+                  )}
+
+                  {/* incidência de PSS */}
+                  {form.watch("natureza") !== "TRIBUTÁRIA" && (
+                    <>
+                      <div className="col-span-1">
+                        <CelerInputFormField
+                          control={form.control}
+                          name="incidencia_pss"
+                          label="Incide PSS?"
+                          fieldType={InputFieldVariant.CHECKBOX}
+                          className="w-full"
+                        />
+                      </div>
+                      {form.watch("incidencia_pss") === true ? (
+                        <div className="col-span-1">
+                          <CelerInputFormField
+                            control={form.control}
+                            name="valor_pss"
+                            label="Valor PSS"
+                            fieldType={InputFieldVariant.NUMBER}
+                            currencyFormat={"R$ "}
+                            className="w-full"
+                          />
+                        </div>
+                      ) : (
+                        <div className="col-span-1">&nbsp;</div>
+                      )}
+                    </>
+                  )}
+
+                  {/* data limite de atualização */}
+                  <div className="col-span-1">
+                    <CelerInputFormField
+                      control={form.control}
+                      name="data_limite_de_atualizacao_check"
+                      label="Atualiza Para Data Passada?"
+                      fieldType={InputFieldVariant.CHECKBOX}
+                      className="w-full"
+                    />
+                  </div>
+
+                  {form.watch("data_limite_de_atualizacao_check") === true ? (
+                    <div className="col-span-1">
+                      <CelerInputFormField
+                        control={form.control}
+                        name="data_limite_de_atualizacao"
+                        label="Atualizado Até:"
+                        fieldType={InputFieldVariant.DATE}
+                        className="w-full"
+                      />
+                    </div>
+                  ) : (
+                    <div className="col-span-1">&nbsp;</div>
+                  )}
+
+                  {(form.watch("data_limite_de_atualizacao") && form.watch("data_limite_de_atualizacao").split("/").reverse().join("-") < form.watch("data_requisicao").split("/").reverse().join("-")) && (
+                    <span className="text-red-500 dark:text-red-400 text-xs col-span-2">
+                      Data de atualização não pode ser menor que a data da requisição
+                    </span>
+                  )}
+
+                </div>
+                <div className="col-span-2 3xl:col-span-2 flex flex-col gap-6">
+                  <h2 className="text-xl font-medium">Rentabilidade x Desembolso</h2>
+
+                  <div className="px-10 flex flex-col gap-5">
+                    <div className="flex flex-col gap-3">
+                      <div className="flex items-center justify-between">
+                        <span className="flex-1">Rentabilidade Anual</span>
+                        <CelerInputField
+                          ref={rentabilidadeSlideRef}
+                          name="rentabilidade_anual"
+                          fieldType={InputFieldVariant.INPUT}
+                          iconSrc={
+                            <CRMTooltip text="Insira um valor e pressione ENTER para modificar">
+                              <BiInfoCircle className="cursor-pointer" />
+                            </CRMTooltip>
+                          }
+                          defaultValue={`${(sliderValues.rentabilidade * 100).toFixed(2).replace(".", ",")}%`}
+                          className="w-25 text-right font-medium"
+                          onSubmit={(_, value) => handleChangeRentabilidadeSlider(value)}
+                          disabled={editLock}
+                        />
+                      </div>
+                      <input
+                        onChange={(e) => handleChangeRentabilidadeSlider(e.target.value, true)}
+                        type="range"
+                        min={0}
+                        max={2}
+                        step={0.01}
+                        className="w-full range-slider disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+                        value={sliderValues.rentabilidade}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="px-10 flex flex-col gap-5">
+                    <div className="flex flex-col gap-3">
+                      <div className="flex items-center justify-between">
+                        <span className="flex-1">Desembolso</span>
+                        <CelerInputField
+                          ref={rentabilidadeSlideRef}
+                          name="desembolso"
+                          fieldType={InputFieldVariant.INPUT}
+                          iconSrc={
+                            <CRMTooltip text="Insira um valor e pressione ENTER para modificar">
+                              <BiInfoCircle className="cursor-pointer" />
+                            </CRMTooltip>
+                          }
+                          defaultValue={numberFormat(sliderValues.desembolso) || "0,00"}
+                          className="max-w-40 text-right font-medium"
+                          onSubmit={(_, value) => handleChangeDesembolsoSlider(value)}
+                          disabled={editLock}
+                        />
+                      </div>
+                      <input
+                        ref={desembolsoSlideRef}
+                        onChange={(e) => handleChangeDesembolsoSlider(e.target.value, true)}
+                        type="range"
+                        min={data && handleDesembolsoVsRentabilidade(2, data).desembolso}
+                        max={data && data.properties["Valor Projetado"].number || 0}
+                        step={0.01}
+                        className="w-full range-slider disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+                        value={sliderValues.desembolso}
+                      />
+                    </div>
+                  </div>
+
+                  <Button
+                    disabled={disabledSaveButton}
+                    onClick={handleSaveValues}
+                    className="w-fit mx-auto text-sm uppercase">
+                    {loadingUpdateState.formValores && (<AiOutlineLoading className="animate-spin" />)}
+                    <span className="font-medium">Salvar Valores</span>
+                  </Button>
+
+                </div>
               </div>
 
               <hr className="border border-stroke dark:border-strokedark mt-6" />
@@ -1081,22 +1303,20 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
           </section>
         </div>
       </Form>
-      <div className="flex items-center justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
-        {
-          data?.properties["Status Diligência"].select?.name === "Due Diligence" && (
-            <Button
-              variant="success"
-              className="py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium"
-              onClick={() => handleDueDiligence()}
-            >
-              <BiSolidSave className="h-4 w-4" />
-              <span>Finalizar Due Diligence</span>
-            </Button>
-          )
-        }
+      {data?.properties["Status Diligência"].select?.name === "Due Diligence" && (
+        <div className="flex items-center justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
+          <Button
+            variant="success"
+            className="py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleDueDiligence()}
+          >
+            <BiSolidSave className="h-4 w-4" />
+            <span>Finalizar Due Diligence</span>
+          </Button>
         </div>
-            {cedenteModal !== null && <BrokerModal />}
-            {docModalInfo !== null && <DocForm />}
+      )}
+      {cedenteModal !== null && <BrokerModal />}
+      {docModalInfo !== null && <DocForm />}
     </div>
   );
 };
