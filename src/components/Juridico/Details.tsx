@@ -25,7 +25,7 @@ import { tribunais } from "@/constants/tribunais";
 import numberFormat from "@/functions/formaters/numberFormat";
 import Link from "next/link";
 import { GrDocumentText, GrDocumentUser } from "react-icons/gr";
-import { BiSolidSave } from "react-icons/bi";
+import { BiSolidCalculator, BiSolidSave } from "react-icons/bi";
 import { Button } from "../Button";
 import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
 import UseMySwal from "@/hooks/useMySwal";
@@ -1027,8 +1027,8 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                   disabled={!isFormModified}
                   className="py-2 px-4 rounded-md flex items-center gap-3 disabled:opacity-50 disabled:hover:bg-green-500 uppercase text-sm"
                 >
-                  <BiSolidSave className="h-4 w-4" />
-                  <span className="font-medium">Salvar Alterações</span>
+                  <BiSolidCalculator className="h-4 w-4" />
+                  <span className="font-medium">Recalcular</span>
                 </Button>
 
                 {data?.properties["Memória de Cálculo Ordinário"].url && (
