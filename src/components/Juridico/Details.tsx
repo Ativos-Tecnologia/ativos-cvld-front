@@ -25,7 +25,7 @@ import { tribunais } from "@/constants/tribunais";
 import numberFormat from "@/functions/formaters/numberFormat";
 import Link from "next/link";
 import { GrDocumentText, GrDocumentUser } from "react-icons/gr";
-import { BiSolidSave } from "react-icons/bi";
+import { BiSolidCalculator, BiSolidSave } from "react-icons/bi";
 import { Button } from "../Button";
 import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
 import UseMySwal from "@/hooks/useMySwal";
@@ -55,6 +55,9 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
 
 
   const [formData, setFormData] = useState<any>(null);
+  const [happenedRecalculation, setHappenedRecalculation] = useState<boolean>(false);
+  const [recalculationData, setRecalculationData] = useState<any>(null);
+  const [isLoadingRecalculation, setIsLoadingRecalculation] = useState<boolean>(false);
   const [loadingUpdateState, setLoadingUpdateState] = useState({
     nomeCredor: false,
     cpfCnpj: false,
@@ -110,6 +113,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   }
 
   const onSubmitForm = async (data: any) => {
+    setIsLoadingRecalculation(true);
 
     if (data.valor_aquisicao_total) {
       data.percentual_a_ser_adquirido = 1;
@@ -146,6 +150,8 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
 
     if (!data.ir_incidente_rra) {
       data.numero_de_meses = 0
+    } else {
+      data.numero_de_meses = Number(data.numero_de_meses)
     }
 
     if (!data.incidencia_pss) {
@@ -160,6 +166,10 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
 
     try {
       const response = await api.patch(`/api/juridico/update/precatorio/${id}/`, data);
+      refetch();
+      setHappenedRecalculation(true);
+      setRecalculationData(response.data);
+
 
       swal.fire({
         title: 'Sucesso',
@@ -178,6 +188,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
       console.log(error)
     }
 
+    setIsLoadingRecalculation(false);
   }
 
   async function fetchData() {
@@ -193,8 +204,8 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     queryFn: fetchData,
   });
 
-  const t = !isLoading && handleDesembolsoVsRentabilidade(0.3, data)
-  const y = !isLoading && findRentabilidadeAoAnoThroughDesembolso(1108726.611334225, data)
+  // const t = !isLoading && handleDesembolsoVsRentabilidade(0.3, data)
+  // const y = !isLoading && findRentabilidadeAoAnoThroughDesembolso(1108726.611334225, data)
 
   const form = useForm();
   const isFormModified = Object.keys(form.watch()).some((key: any) => form.watch()[key] !== formData?.[key]);
@@ -554,7 +565,6 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
         />
       </div>
       <LifeCycleStep status={data?.properties["Status Diligência"].select?.name ?? "ops"} />
-
       <Form {...form}>
         <div className="space-y-6 rounded-md">
           <section id="info_credor" className="form-inputs-container">
@@ -1018,17 +1028,30 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
               </div>
 
               <hr className="border border-stroke dark:border-strokedark mt-6" />
+              <div className="flex items-center justify-center gap-6 mt-6">
+                <p>
+                  Valor Líquido:{" "}
+                </p>
+                {
+                  !isLoading && (
+                    <span>
+                      {numberFormat(happenedRecalculation === false ? data?.properties["Valor Líquido (Com Reserva dos Honorários)"]?.formula?.number || 0 : recalculationData.result.net_mount_to_be_assigned)}
+                    </span>
+                  )
+                }
+              </div>
 
               <div className="flex items-center justify-center gap-6 mt-6">
 
                 <Button
                   type="submit"
                   variant="success"
+                  isLoading={isLoadingRecalculation}
                   disabled={!isFormModified}
                   className="py-2 px-4 rounded-md flex items-center gap-3 disabled:opacity-50 disabled:hover:bg-green-500 uppercase text-sm"
                 >
-                  <BiSolidSave className="h-4 w-4" />
-                  <span className="font-medium">Salvar Alterações</span>
+                  <BiSolidCalculator className="h-4 w-4" />
+                  <span className="font-medium">Recalcular</span>
                 </Button>
 
                 {data?.properties["Memória de Cálculo Ordinário"].url && (

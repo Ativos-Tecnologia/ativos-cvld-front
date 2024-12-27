@@ -9,7 +9,7 @@ const MarketplaceCardSkeleton = () => {
                     className='relative group cursor-pointer p-4 h-full bg-center bg-cover flex flex-col justify-between'
                 >
                     {/* icon */}
-                    <CustomSkeleton type='title' className='w-10 h-10 rounded-full' />
+                    <CustomSkeleton type='title' className='w-10 h-10 rounded-md' />
                     {/* end icon */}
 
                     {/* info */}
