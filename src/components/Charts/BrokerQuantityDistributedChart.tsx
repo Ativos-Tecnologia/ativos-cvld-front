@@ -60,7 +60,6 @@ const BrokerQuantityDistributedChart: React.FC<IBrokerDistributionData> = ({
       
       animations: {
         enabled: true,
-        easing: "linear",
         speed: 400,
         animateGradually: {
           enabled: true,
