@@ -13,14 +13,12 @@ import MarketplaceCardSkeleton from "../Skeletons/MarketplaceCardSkeleton";
 import { AiOutlineLoading } from "react-icons/ai";
 import api from "@/utils/api";
 import Image from "next/image";
-import Link from "next/link";
 import GridCardsWrapper from "../CrmUi/Wrappers/GridCardsWrapper";
 import HoverCard from "../CrmUi/Wrappers/HoverCard";
 import { imgPaths } from "@/constants/tribunais";
 import { FaFileInvoiceDollar } from "react-icons/fa6";
 import { BiSolidCoinStack } from "react-icons/bi";
 import numberFormat from "@/functions/formaters/numberFormat";
-import { LiquidationTimeCounter } from "../TimerCounter/LiquidationTimeCounter";
 import { DueDiligenceCounter } from "../TimerCounter/DueDiligenceCounter";
 import { useRouter } from "next/navigation";
 
@@ -33,12 +31,6 @@ enum navItems {
   ATOS_PROCESSUAIS = "Atos processuais",
   AGUARDAR_PGTO = "Aguardar pagamento",
 }
-
-type cardProps = {
-  id: number;
-  title: string;
-  tipo: string;
-};
 
 export type SimpleNotionData = {
   id: string,
@@ -56,6 +48,8 @@ export type SimpleNotionData = {
     name: string
   },
   prazo_final_due: string,
+  proposta_escolhida: number,
+  comissao: number,
 }
 
 type SimpleDataProps = {
@@ -126,7 +120,7 @@ const Juridico = () => {
                 }}
               >
                 <span
-                  className={`absolute left-0 top-full flex w-full items-center justify-center py-1transition-all duration-300 ${loading && item === activeTab ? "translate-y-[-100%]" : "translate-y-0"}`}
+                  className={`absolute left-0 top-full flex w-full items-center justify-center py-1.5 first-line:transition-all duration-300 ${loading && item === activeTab ? "translate-y-[-100%]" : "translate-y-0"}`}
                 >
                   <AiOutlineLoading className="h-5 w-5 animate-spin text-current" />
                 </span>
@@ -173,8 +167,8 @@ const Juridico = () => {
 
                           {(deadlineSituation === "danger" && item.prazo_final_due) && (
                             <>
-                              <div className="absolute z-0 inset-0 w-90 left-3.5 bg-red-500 rounded-md opacity-60 animate-celer-ping" />
-                              <div className="absolute z-0 inset-0 w-90 left-3.5 bg-red-500 delay-300 rounded-md opacity-60 animate-celer-ping" />
+                              <div className="absolute z-0 inset-0 max-w-90 left-4.5 bg-red-500 rounded-md opacity-60 animate-celer-ping" />
+                              <div className="absolute z-0 inset-0 max-w-90 left-4.5 bg-red-500 delay-300 rounded-md opacity-60 animate-celer-ping" />
                             </>
                           )}
 
@@ -199,8 +193,8 @@ const Juridico = () => {
 
                               <div className="group-hover:opacity-0 text-snow">
                                 <HoverCard.InfoList>
-                                  <HoverCard.ListItem className="col-span-2 border-0">
-                                    <p className="text-[10px] text-gray-300">CREDOR</p>
+                                  <HoverCard.ListItem className="mt-2 col-span-2 border-0">
+                                    {/* <p className="text-[10px] text-gray-300">CREDOR</p> */}
                                     <p className="max-w-[316px] overflow-hidden text-ellipsis whitespace-nowrap text-sm uppercase">
                                       {item.credor}
                                     </p>
@@ -233,8 +227,14 @@ const Juridico = () => {
                                       {item.esfera}
                                     </p>
                                   </HoverCard.ListItem>
+                                  <HoverCard.ListItem>
+                                    <p className="text-[10px] text-gray-300">Status da Diligência</p>
+                                    <p className="text-xs">
+                                      {item.status_diligencia || "Não possui"}
+                                    </p>
+                                  </HoverCard.ListItem>
 
-                                  <HoverCard.ListItem className="border-0 col-span-2">
+                                  <HoverCard.ListItem className="mt-2 border-0 col-span-2">
                                     <p className="text-[10px] text-gray-300">PRAZO FINAL</p>
                                     <DueDiligenceCounter dueDate={item?.prazo_final_due || ""} />
                                   </HoverCard.ListItem>

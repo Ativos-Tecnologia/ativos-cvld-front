@@ -36,9 +36,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const sidebar = useRef<any>(null);
 
   const {
-    data: { product, staff_approvation },
+    data: { product, role, sub_role },
   } = useContext(UserInfoAPIContext);
-  const [userApprovation, setUserApprovation] = useState<boolean | null>(null);
+  const [userApprovation] = useState<boolean | null>(null);
 
   let storedSidebarExpanded = "true";
 
@@ -242,9 +242,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             </li>
                           )}
                           <Show
-                            when={"dev"}
+                            when={product === "global" || sub_role === "juridico"}
                           >
-                            {product === "global" && (
                               <li>
                                 <Link
                                   href="/dashboard/juridico"
@@ -255,7 +254,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                   <Badge color="#e8e7a1">Novo</Badge>
                                 </Link>
                               </li>
-                            )}
                           </Show>
 
                           {(product === "wallet" || product === "global") && (

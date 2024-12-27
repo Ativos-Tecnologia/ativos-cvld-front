@@ -12,14 +12,14 @@ type LifeCycleStepProps = {
 const steps = [
     { label: "Prospecção", alias: "Prospecção", icon: <FaSearchDollar className="text-2xl" /> },
     { label: "Negociação em andamento", alias: "Negociação", icon: <FaUserClock className="text-2xl" /> },
-    { label: "Proposta", alias: "Proposta", icon: <MdOutlineHandshake className="text-2xl" /> },
+    { label: "Proposta", alias: "Proposta", subLabel: "Repactuação", icon: <MdOutlineHandshake className="text-2xl" /> },
     { label: "Due Diligence", alias: "Due", icon: <MdOutlineContentPasteSearch className="text-2xl" /> },
     { label: "Em liquidação", alias: "Liquidação", icon: <BiMoneyWithdraw className="text-2xl" /> },
     { label: "Concluído", alias: "Concluído", icon: <FaCircleCheck className="text-2xl" /> },
 ];
 
 const LifeCycleStep = ({ status }: LifeCycleStepProps) => {
-    const currentIndex = steps.findIndex(step => step.label === status);
+    const currentIndex = steps.findIndex(step => step.label === status || step.subLabel === status);
 
     return (
         <div className="main-container dark:bg-boxdark bg-white rounded-md">
