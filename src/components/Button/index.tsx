@@ -53,7 +53,7 @@ export const Button: React.FC<SubmitButtonProps> = ({
     <button
       type={type}
       className={cn(
-        `${variants[variant]} ${sizes[size]} relative flex items-center justify-center rounded-md transition-all duration-300 overflow-hidden`,
+        `${variants[variant]} ${sizes[size]} relative flex items-center justify-center rounded-md transition-all duration-300 overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed`,
 
         className,
       )}

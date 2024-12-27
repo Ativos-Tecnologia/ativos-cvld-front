@@ -167,8 +167,8 @@ const Juridico = () => {
 
                           {(deadlineSituation === "danger" && item.prazo_final_due) && (
                             <>
-                              <div className="absolute z-0 inset-0 max-w-90 left-4.5 bg-red-500 rounded-md opacity-60 animate-celer-ping" />
-                              <div className="absolute z-0 inset-0 max-w-90 left-4.5 bg-red-500 delay-300 rounded-md opacity-60 animate-celer-ping" />
+                              <div className="absolute z-0 inset-0 bg-red-500 rounded-md opacity-60 animate-celer-ping xsm:max-w-[370px] xsm:left-2 md:max-w-[340px] md:left-3 lg:left-[15px] 2xl:max-w-90 3xl:max-w-80" />
+                              <div className="absolute z-0 inset-0 bg-red-500 delay-300 rounded-md opacity-60 animate-celer-ping xsm:max-w-[370px] xsm:left-2 md:max-w-[340px] md:left-3 lg:left-[15px] 2xl:max-w-90 3xl:max-w-80" />
                             </>
                           )}
 
