@@ -103,7 +103,7 @@ const ProfitBarChart: React.FC<newWalletResponse> = ({
       fontSize: "14px",
 
       markers: {
-        radius: 99,
+        shape: "square",
       },
     },
     fill: {

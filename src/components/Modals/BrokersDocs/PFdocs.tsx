@@ -17,6 +17,13 @@ import { LuClipboardCheck, LuCopy } from 'react-icons/lu';
 import { toast } from 'sonner';
 import DocVisualizer from './ShowDocs';
 import CardDocsSkeleton from '@/components/Skeletons/CardDocsSkeleton';
+import UseMySwal from '@/hooks/useMySwal';
+import { useMutation } from '@tanstack/react-query';
+import { CelerInputField } from '@/components/CrmUi/InputFactory';
+import { InputFieldVariant } from '@/enums/inputFieldVariants.enum';
+import { UserInfoAPIContext, UserInfoContextType } from '@/context/UserInfoContext';
+import { DocStatus } from '@/enums/docStatus.enum';
+import { SelectItem } from '@/components/ui/select';
 
 /*
   OBS: a prop que o componente recebe é somente usada para a requisição
@@ -33,7 +40,9 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
   } = useForm();
 
   const { fetchDetailCardData, setDocModalInfo, setIsFetchAllowed } = useContext(BrokersContext)
-
+  const {
+        data: { role },
+    } = useContext<UserInfoContextType>(UserInfoAPIContext);
   const [cedenteInfo, setCedenteInfo] = useState<NotionPage | null>(null);
   const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
   const [showDoc, setShowDoc] = useState<boolean>(false);
@@ -52,6 +61,19 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
     comprovante_de_residencia: false,
     todos: false
   });
+
+  const [loadingUpdateState, setLoadingUpdateState] = useState({
+      contrato_social: false,
+      oficio_requisitorio: false,
+      rg: false,
+      certidao_nasc_cas: false,
+      comprovante_de_residencia: false,
+    });
+
+  const [editLock, setEditLock] = useState<boolean>(false);
+  const swal = UseMySwal()
+  
+    
 
   // função para cadastrar o documento rg
   async function setDocument(id: string, data: FormData, documentType: string) {
@@ -270,6 +292,199 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
     setValue("oficio_requisitorio", cedenteInfo?.properties["Doc. Ofício Requisitório"].url || "");
   }, [cedenteInfo])
 
+  const docRepOficioRequisitorioMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Doc. Ofício Requisitório Status": {
+          "select": {
+            "name": paramsObj.value
+          }
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async (paramsObj: any) => {
+      setEditLock(true);
+      setLoadingUpdateState(prev => ({ ...prev, oficio_requisitorio: true }));
+    },
+    onError: () => {
+      swal.fire({
+        title: 'Erro',
+        text: 'Houve um erro ao atualizar o status do Ofício Requisitório',
+        icon: 'error',
+        confirmButtonText: 'OK',
+        toast: true,
+        position: 'top-right'
+      })
+    },
+    onSuccess: () => {
+      swal.fire({
+        title: 'Sucesso',
+        text: 'Status do Ofício Requisitório atualizado com sucesso',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        toast: true,
+        position: 'top-right',
+      })
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, oficio_requisitorio: true }));
+    }
+  });
+
+  const docRepRgMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Doc. RG Status": {
+          "select": {
+            "name": paramsObj.value
+          }
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async (paramsObj: any) => {
+      setEditLock(true);
+      setLoadingUpdateState(prev => ({ ...prev, rg: true }));
+    },
+    onError: () => {
+      swal.fire({
+        title: 'Erro',
+        text: 'Houve um erro ao atualizar o status do RG',
+        icon: 'error',
+        confirmButtonText: 'OK',
+        toast: true,
+        position: 'top-right'
+      })
+    },
+    onSuccess: () => {
+      swal.fire({
+        title: 'Sucesso',
+        text: 'Status do RG atualizado com sucesso',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        toast: true,
+        position: 'top-right',
+      })
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, rg: true }));
+    }
+  });
+
+  const docRepCertidaoMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Doc. Certidão Nascimento/Casamento Status": {
+          "select": {
+            "name": paramsObj.value
+          }
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async (paramsObj: any) => {
+      setEditLock(true);
+      setLoadingUpdateState(prev => ({ ...prev, certidao_nasc_cas: true }));
+    },
+    onError: () => {
+      swal.fire({
+        title: 'Erro',
+        text: 'Houve um erro ao atualizar o status da Certidão de Nascimento/Casamento',
+        icon: 'error',
+        confirmButtonText: 'OK',
+        toast: true,
+        position: 'top-right'
+      })
+    },
+    onSuccess: () => {
+      swal.fire({
+        title: 'Sucesso',
+        text: 'Status da Certidão de Nascimento/Casamento atualizado com sucesso',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        toast: true,
+        position: 'top-right',
+      })
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, certidao_nasc_cas: true }));
+    }
+  });
+
+  const docRepComprovanteResidenciaMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Doc. Comprovante de Residência Status": {
+          "select": {
+            "name": paramsObj.value
+          }
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async (paramsObj: any) => {
+      setEditLock(true);
+      setLoadingUpdateState(prev => ({ ...prev, comprovante_de_residencia: true }));
+    },
+    onError: () => {
+      swal.fire({
+        title: 'Erro',
+        text: 'Houve um erro ao atualizar o status do Comprovante de Residência',
+        icon: 'error',
+        confirmButtonText: 'OK',
+        toast: true,
+        position: 'top-right'
+      })
+    },
+    onSuccess: () => {
+      swal.fire({
+        title: 'Sucesso',
+        text: 'Status do Comprovante de Residência atualizado com sucesso',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        toast: true,
+        position: 'top-right',
+      })
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, comprovante_de_residencia: true }));
+    }
+  });
+
+
+  const handleChangeDocStatusOficioRequisitorio = async (page_id: string, value: string) => {
+    await docRepOficioRequisitorioMutation.mutateAsync({ page_id, value });
+  }
+
+  const handleChangeDocStatusRg = async (page_id: string, value: string) => {
+    await docRepRgMutation.mutateAsync({ page_id, value });
+  }
+
+  const handleChangeDocStatusCertidao = async (page_id: string, value: string) => {
+    await docRepCertidaoMutation.mutateAsync({ page_id, value });
+  }
+
+  const handleChangeDocStatusComprovanteResidencia = async (page_id: string, value: string) => {
+    await docRepComprovanteResidenciaMutation.mutateAsync({ page_id, value });
+  }
+
   return (
     <div className="overflow-y-auto overflow-x-hidden px-3 2xsm:max-h-[85vh] xl:max-h-[480px] 3xl:max-h-[750px]">
       <h2 className="mb-10 text-center text-2xl font-medium">
@@ -299,15 +514,31 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                       />
 
                       {cedenteInfo?.properties["Doc. Ofício Requisitório"].url ? (
-                        <Badge
-                          color={cedenteInfo?.properties["Doc. Ofício Requisitório Status"].select?.color || ""}
-                          isANotionPage={true}
-                          className='w-[165px] mx-auto text-sm capitalize'
+                        <div className='pr-5'>
+                        <CelerInputField
+                        fieldType={InputFieldVariant.SELECT}
+                        name='status_doc'
+                        className='mr-4'
+                        disabled={role !== "ativos" && role !== "juridico"}
+                        defaultValue={cedenteInfo.properties["Doc. Ofício Requisitório Status"].select?.name || ""}
+                        onValueChange={(_, value) => {
+                          if (cedenteInfo) {
+                            handleChangeDocStatusOficioRequisitorio(cedenteInfo.id, value);
+                          }
+                        }}
                         >
-                          {cedenteInfo?.properties[
-                            "Doc. Ofício Requisitório Status"
-                          ].select?.name || ""}
-                        </Badge>
+                          <SelectItem value={cedenteInfo.properties["Doc. Ofício Requisitório Status"].select?.name || ""}>
+                            {
+                              cedenteInfo.properties["Doc. Ofício Requisitório Status"].select?.name || ""
+                            }
+                            </SelectItem>
+                            {
+                              Object.values(DocStatus).filter(item => item !== cedenteInfo.properties["Doc. Ofício Requisitório Status"].select?.name).map((item, index) => (
+                                <SelectItem className='shad-select-item' key={index} value={item}>{item}</SelectItem>
+                              ))
+                            }
+                        </CelerInputField>
+                        </div>
                       ) : (
                         <p className='text-sm text-center'>Nenhum documento vinculado</p>
                       )}
@@ -405,15 +636,31 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                   />
 
                   {cedenteInfo?.properties["Doc. RG"].url ? (
-                    <Badge
-                      color={cedenteInfo?.properties["Doc. RG Status"].select?.color || ""}
-                      isANotionPage={true}
-                      className='w-[165px] mx-auto text-sm capitalize'
-                    >
-                      {cedenteInfo?.properties[
-                        "Doc. RG Status"
-                      ].select?.name || ""}
-                    </Badge>
+                     <div className='pr-5'>
+                      <CelerInputField
+                      fieldType={InputFieldVariant.SELECT}
+                      name='status_doc'
+                      className='mr-4'
+                      disabled={role !== "ativos" && role !== "juridico"}
+                      defaultValue={cedenteInfo.properties["Doc. RG Status"].select?.name || ""}
+                      onValueChange={(_, value) => {
+                        if (cedenteInfo) {
+                          handleChangeDocStatusRg(cedenteInfo.id, value);
+                        }
+                      }}
+                      >
+                        <SelectItem value={cedenteInfo.properties["Doc. RG Status"].select?.name || ""}>
+                          {
+                            cedenteInfo.properties["Doc. RG Status"].select?.name || ""
+                          }
+                          </SelectItem>
+                          {
+                            Object.values(DocStatus).filter(item => item !== cedenteInfo.properties["Doc. RG Status"].select?.name).map((item, index) => (
+                              <SelectItem className='shad-select-item' key={index} value={item}>{item}</SelectItem>
+                            ))
+                          }
+                      </CelerInputField>
+                      </div>
                   ) : (
                     <p className='text-sm text-center'>Nenhum documento vinculado</p>
                   )}
@@ -509,15 +756,31 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                   />
 
                   {cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"].url ? (
-                    <Badge
-                      color={cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento Status"].select?.color || ""}
-                      isANotionPage={true}
-                      className='w-[165px] mx-auto text-sm capitalize'
+                    <div className='pr-5'>
+                    <CelerInputField
+                    fieldType={InputFieldVariant.SELECT}
+                    name='status_doc'
+                    className='mr-4'
+                    disabled={role !== "ativos" && role !== "juridico"}
+                    defaultValue={cedenteInfo.properties["Doc. Certidão Nascimento/Casamento Status"].select?.name || ""}
+                    onValueChange={(_, value) => {
+                      if (cedenteInfo) {
+                        handleChangeDocStatusCertidao(cedenteInfo.id, value);
+                      }
+                    }}
                     >
-                      {cedenteInfo?.properties[
-                        "Doc. Certidão Nascimento/Casamento Status"
-                      ].select?.name || ""}
-                    </Badge>
+                      <SelectItem value={cedenteInfo.properties["Doc. Certidão Nascimento/Casamento Status"].select?.name || ""}>
+                        {
+                          cedenteInfo.properties["Doc. Certidão Nascimento/Casamento Status"].select?.name || ""
+                        }
+                        </SelectItem>
+                        {
+                          Object.values(DocStatus).filter(item => item !== cedenteInfo.properties["Doc. Certidão Nascimento/Casamento Status"].select?.name).map((item, index) => (
+                            <SelectItem className='shad-select-item' key={index} value={item}>{item}</SelectItem>
+                          ))
+                        }
+                    </CelerInputField>
+                    </div>
                   ) : (
                     <p className='text-sm text-center'>Nenhum documento vinculado</p>
                   )}
@@ -613,15 +876,40 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                   />
 
                   {cedenteInfo?.properties["Doc. Comprovante de Residência"].url ? (
-                    <Badge
-                      color={cedenteInfo?.properties["Doc. Comprovante de Residência Status"].select?.color || ""}
-                      isANotionPage={true}
-                      className='w-[165px] mx-auto text-sm capitalize'
+                    // <Badge
+                    //   color={cedenteInfo?.properties["Doc. Comprovante de Residência Status"].select?.color || ""}
+                    //   isANotionPage={true}
+                    //   className='w-[165px] mx-auto text-sm capitalize'
+                    // >
+                    //   {cedenteInfo?.properties[
+                    //     "Doc. Comprovante de Residência Status"
+                    //   ].select?.name || ""}
+                    // </Badge>
+                    <div className='pr-5'>
+                    <CelerInputField
+                    fieldType={InputFieldVariant.SELECT}
+                    name='status_doc'
+                    className='mr-4'
+                    disabled={role !== "ativos" && role !== "juridico"}
+                    defaultValue={cedenteInfo.properties["Doc. Comprovante de Residência Status"].select?.name || ""}
+                    onValueChange={(_, value) => {
+                      if (cedenteInfo) {
+                        handleChangeDocStatusComprovanteResidencia(cedenteInfo.id, value);
+                      }
+                    }}
                     >
-                      {cedenteInfo?.properties[
-                        "Doc. Comprovante de Residência Status"
-                      ].select?.name || ""}
-                    </Badge>
+                      <SelectItem value={cedenteInfo.properties["Doc. Comprovante de Residência Status"].select?.name || ""}>
+                        {
+                          cedenteInfo.properties["Doc. Comprovante de Residência Status"].select?.name || ""
+                        }
+                        </SelectItem>
+                        {
+                          Object.values(DocStatus).filter(item => item !== cedenteInfo.properties["Doc. Comprovante de Residência Status"].select?.name).map((item, index) => (
+                            <SelectItem className='shad-select-item' key={index} value={item}>{item}</SelectItem>
+                          ))
+                        }
+                    </CelerInputField>
+                    </div>
                   ) : (
                     <p className='text-sm text-center'>Nenhum documento vinculado</p>
                   )}

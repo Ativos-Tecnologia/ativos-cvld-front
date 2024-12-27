@@ -77,9 +77,9 @@ const ChartSeven: React.FC = () => {
       // width: ['3.5', '3.5'],
     },
 
-    markers: {
-      size: 0,
-    },
+    // markers: {
+    //   size: 0,
+    // },
     // labels: {
     //   show: false,
     //   position: 'top',

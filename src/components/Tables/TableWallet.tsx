@@ -17,7 +17,7 @@ import Title from '../CrmUi/Title';
 import { NotionPage } from '@/interfaces/INotion';
 import CustomCheckbox from '../CrmUi/Checkbox';
 import { RiNotionFill } from 'react-icons/ri';
-import { LuBarChart4 } from 'react-icons/lu';
+import { LucideBarChart } from 'lucide-react';
 import { IWalletResponse } from '@/interfaces/IWallet';
 import numberFormat from '@/functions/formaters/numberFormat';
 import notionColorResolver from '@/functions/formaters/notionColorResolver';
@@ -488,7 +488,7 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                                                                 onClick={() => fetchUpdatedVL(item)}
                                                                 className='w-6 h-6 rounded-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-colos duration-300 grid place-items-center'
                                                             >
-                                                                {fetchingVL === item.id ? <AiOutlineLoading className='animate-spin' /> : <LuBarChart4 />}
+                                                                {fetchingVL === item.id ? <AiOutlineLoading className='animate-spin' /> : <LucideBarChart />}
                                                             </button>
                                                         </TableCell>
 

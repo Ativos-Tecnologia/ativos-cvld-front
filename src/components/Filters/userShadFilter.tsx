@@ -60,11 +60,13 @@ export function UserShadFilter() {
 
 	/**
    * @description - Essa constante é responsável por armazenar a lista de usuários, colocando o usuário logado no início da lista.
-   * @constant users - lista de usuários
+   * @constant fetchedUsers - lista de usuários carregados da API
+   * @constant user - usuário logado
+   * @constant users - Carrega uma lista de usuários, colocando o usuário logado no início da lista, porem se o usuário logado já estiver na lista, a lista é retornada sem alterações.
    * @returns {string[]} - lista de usuários
    * @sideeffect - Atualiza o estado users
    */
-	const users = user ? [user, ...fetchedUsers] : fetchedUsers; 
+  const users = user ? (fetchedUsers.includes(user) ? fetchedUsers : [user, ...fetchedUsers]) : fetchedUsers;
 	
   /**
    * Essa função é responsável por selecionar o usuário da lista e fechar o popover.

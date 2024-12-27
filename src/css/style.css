@@ -157,7 +157,7 @@
   }
 
   .shad-combobox-trigger {
-    @apply h-11 !important;
+    @apply h-11 dark:bg-boxdark-2 bg-white !important;
   }
 
   .shad-select-trigger {
@@ -165,15 +165,19 @@
   }
 
   .shad-select-content {
-    @apply !bg-boxdark-2 !border-strokedark !important;
+    @apply dark:bg-boxdark-2 bg-white !border-strokedark !important;
   }
 
   .shad-dialog {
-    @apply bg-boxdark border-boxdark-2 !important;
+    @apply dark:bg-boxdark border-boxdark-2 !important;
   }
 
   .shad-dialog button {
     @apply focus:ring-0 focus:ring-offset-0 focus-visible:border-none focus-visible:outline-none focus-visible:ring-transparent focus-visible:ring-offset-0 !important;
+  }
+
+  .shad-select-item {
+    @apply dark:bg-boxdark-2 bg-white !important;
   }
 }
 

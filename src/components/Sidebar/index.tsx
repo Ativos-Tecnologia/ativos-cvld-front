@@ -12,7 +12,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { AiOutlineDown, AiOutlineLoading } from "react-icons/ai";
 import { BiCalculator, BiGridAlt, BiPlus } from "react-icons/bi";
 import { FaBuildingUser } from "react-icons/fa6";
-import { LuWallet2 } from "react-icons/lu";
+import { LuWallet } from "react-icons/lu";
 import { TbShoppingCartUp, TbUserStar } from "react-icons/tb";
 import Show from "../Show";
 import SidebarLinkGroup from "./SidebarLinkGroup";
@@ -36,9 +36,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const sidebar = useRef<any>(null);
 
   const {
-    data: { product, staff_approvation },
+    data: { product, role, sub_role },
   } = useContext(UserInfoAPIContext);
-  const [userApprovation, setUserApprovation] = useState<boolean | null>(null);
+  const [userApprovation] = useState<boolean | null>(null);
 
   let storedSidebarExpanded = "true";
 
@@ -242,9 +242,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             </li>
                           )}
                           <Show
-                            when={"dev"}
+                            when={product === "global" || sub_role === "juridico"}
                           >
-                            {product === "global" && (
                               <li>
                                 <Link
                                   href="/dashboard/juridico"
@@ -255,7 +254,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                   <Badge color="#e8e7a1">Novo</Badge>
                                 </Link>
                               </li>
-                            )}
                           </Show>
 
                           {(product === "wallet" || product === "global") && (
@@ -267,7 +265,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                   href="/dashboard/wallet"
                                   className={`group relative flex items-center gap-2.5 rounded-md px-4 py-2 font-medium text-bodydark2 duration-300 ease-in-out hover:bg-blue-400 hover:text-white dark:hover:bg-meta-4 ${pathname === "/dashboard/wallet" && "bg-blue-700/70 text-white hover:bg-blue-800/50 dark:bg-meta-4 dark:hover:bg-form-strokedark"}`}
                                 >
-                                  <LuWallet2 />
+                                  <LuWallet />
                                   <span>Wallet</span>
                                 </Link>
                               </li>
