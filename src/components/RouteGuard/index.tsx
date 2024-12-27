@@ -35,16 +35,16 @@ export default function RouteGuard({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const devRouteGuard = (currentPath:string, fallbackPath:string = APP_ROUTES.private.dashboard.name) => {
-      if (window.location.href.includes(
-        "https://ativoscvld.vercel.app/",
-      ) && currentPath.includes("juridico")) {
-        return router.push(fallbackPath);
-      }
-    };
+    // const devRouteGuard = (currentPath:string, fallbackPath:string = APP_ROUTES.private.dashboard.name) => {
+    //   if (window.location.href.includes(
+    //     "https://ativoscvld.vercel.app/",
+    //   ) && currentPath.includes("juridico")) {
+    //     return router.push(fallbackPath);
+    //   }
+    // };
 
     const currentPath = window.location.pathname;
-    devRouteGuard(currentPath);
+    // devRouteGuard(currentPath);
 
     const privateRoutes = Object.values(APP_ROUTES.private).map(
       (route) => route.name,
