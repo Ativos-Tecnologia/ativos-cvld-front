@@ -319,8 +319,10 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
 
     setLoadingUpdateState(prev => ({ ...prev, formValores: true }));
     try {
+      const factor = Math.pow(10,5);
+      const newRentabilidade = Math.floor(sliderValues.rentabilidade * factor) / factor;
       const res = await api.post(`/api/juridico/desembolso/${id}/`, {
-        rentabilidade_anual: sliderValues.rentabilidade
+        rentabilidade_anual: newRentabilidade
       });
 
       if (res.status === 200) {
