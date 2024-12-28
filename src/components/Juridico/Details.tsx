@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { NotionPage } from "@/interfaces/INotion";
 import api from "@/utils/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { FaBuilding, FaBuildingColumns, FaUser } from "react-icons/fa6";
+import { FaBuilding, FaBuildingColumns, FaLink, FaUser } from "react-icons/fa6";
 import { FaBalanceScale, FaIdCard, FaMapMarkedAlt, FaRegFilePdf } from "react-icons/fa";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import {
@@ -18,7 +18,7 @@ import { CelerInputField } from "../CrmUi/InputFactory";
 import { handleDesembolsoVsRentabilidade, findRentabilidadeAoAnoThroughDesembolso } from "@/functions/juridico/solverDesembolsoVsRentabilidade";
 import { SelectItem } from "../ui/select";
 import { estados } from "@/constants/estados";
-import { IoDocumentTextSharp } from "react-icons/io5";
+import { IoCalendar, IoDocumentTextSharp } from "react-icons/io5";
 import CelerInputFormField from "../Forms/CustomFormField";
 import LifeCycleStep from "../LifeCycleStep";
 import { tribunais } from "@/constants/tribunais";
@@ -40,6 +40,12 @@ import { AiOutlineLoading } from "react-icons/ai";
 import RentabilityChart from "../Charts/RentabilityChart";
 import { IWalletResponse } from "@/interfaces/IWallet";
 import JuridicoDetailsSkeleton from "../Skeletons/JuridicoDetailsSkeleton";
+import percentageFormater from "@/functions/formaters/percentFormater";
+import { GiReceiveMoney } from "react-icons/gi";
+import { TbMoneybag } from "react-icons/tb";
+import { LuHandshake } from "react-icons/lu";
+import dateFormater from "@/functions/formaters/dateFormater";
+import { RiCalendarScheduleFill, RiCalendarScheduleLine } from "react-icons/ri";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -196,6 +202,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     }
 
     data.upload_notion = true;
+    data.need_to_recalculate_proposal=true;
 
     try {
       const response = await api.patch(`/api/juridico/update/precatorio/${id}/`, data);
@@ -895,6 +902,105 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
               </CelerInputField>
             </div>
           </section>
+
+          <section id="cedentes" className="form-inputs-container">
+          <div className="col-span-4 w-full">
+            <div className="flex justify-between gap-4">
+              <h3 className="text-bodydark2 font-medium">
+                Detalhes do precatório
+              </h3>
+              <div className="">
+                {/* Botão com Link da Due */}
+                <button
+                disabled={!data?.properties["Link da Due"]?.url}
+                  onClick={() => window.open(data?.properties["Link da Due"]?.url, '_blank')}
+                  className="border border-strokedark/20 dark:border-stroke/20 dark:text-white text-slate-600 py-1 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium hover:bg-strokedark/20 dark:hover:bg-stroke/20 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-strokedark/20 dark:disabled:bg-stroke/20"
+                >
+                  <FaLink />
+                  Visualizar Due
+                </button>
+
+              </div>
+
+            </div>
+              
+            </div>
+              
+              <div className="col-span-1">
+                <CelerInputField
+                  name="valor_projetado"
+                  fieldType={InputFieldVariant.INPUT}
+                  label="Valor Projetado"
+                  defaultValue={numberFormat(data?.properties["Valor Projetado"]?.number || 0)}
+                  iconSrc={<GiReceiveMoney className="self-center" />}
+                  iconAlt="law"
+                  className="w-full disabled:dark:text-white disabled:text-boxdark"
+                  disabled={true}
+                />
+              </div>
+              <div className="col-span-1">
+                <CelerInputField
+                  name="custo"
+                  fieldType={InputFieldVariant.INPUT}
+                  label="Custo do precatório"
+                  defaultValue={percentageFormater(data?.properties["Custo do precatório"]?.formula?.number || 0)}
+                  iconSrc={<GiReceiveMoney className="self-center" />}
+                  iconAlt="law"
+                  className="w-full disabled:dark:text-white disabled:text-boxdark"
+                  disabled={true}
+                />
+              </div>
+              <div className="col-span-1">
+                <CelerInputField
+                  name="proposta"
+                  fieldType={InputFieldVariant.INPUT}
+                  label="Proposta Escolhida"
+                  defaultValue={numberFormat(data?.properties["Proposta Escolhida - Celer"]?.number || 0)}
+                  iconSrc={<LuHandshake className="self-center" />}
+                  iconAlt="law"
+                  className="w-full disabled:dark:text-white disabled:text-boxdark"
+                  disabled={true}
+                />
+              </div>
+              <div className="col-span-1">
+                <CelerInputField
+                  name="comissao"
+                  fieldType={InputFieldVariant.INPUT}
+                  label="Comissão"
+                  defaultValue={numberFormat(data?.properties["Comissão - Celer"]?.number || 0)}
+                  iconSrc={<TbMoneybag className="self-center" />}
+                  iconAlt="law"
+                  className="w-full disabled:dark:text-white disabled:text-boxdark"
+                  disabled={true}
+                />
+              </div>
+              <div className="col-span-1">
+                <CelerInputField
+                  name="previsao_de_pgto"
+                  fieldType={InputFieldVariant.INPUT}
+                  label="Previsão de pagamento"
+                  defaultValue={dateFormater(data?.properties["Previsão de pagamento"]?.date?.start)}
+                  iconSrc={<RiCalendarScheduleFill className="self-center" />}
+                  iconAlt="law"
+                  className="w-full disabled:dark:text-white disabled:text-boxdark"
+                  disabled={true}
+                />
+              </div>
+              <div className="col-span-1">
+                <CelerInputField
+                  name="loa"
+                  fieldType={InputFieldVariant.INPUT}
+                  label="LOA"
+                  defaultValue={data?.properties["LOA"]?.number || "Sem LOA cadastrada"}
+                  iconSrc={<IoCalendar className="self-center" />}
+                  iconAlt="law"
+                  className="w-full disabled:dark:text-white disabled:text-boxdark"
+                  disabled={true}
+                />
+              </div>
+              
+            </section>
+
 
           <section id="cedentes" className="form-inputs-container">
             <div className="col-span-4 w-full">
