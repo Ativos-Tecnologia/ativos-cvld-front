@@ -81,7 +81,7 @@ const Juridico = () => {
 
   const fetchAllPrecatoryWithSimpleData = React.useCallback(async () => {
     setLoading(true);
-    const response = await api.get(activeTab === navItems.TODOS ? "/api/legal/" : `/api/legal/?status_diligencia=${activeTab}?responsavel=${user}`);
+    const response = await api.get(activeTab === navItems.TODOS ? "/api/legal/" : `/api/legal/?status_diligencia=${activeTab}`);
     setSimpleData(response.data);
     setLoading(false);
   }, [activeTab]);
