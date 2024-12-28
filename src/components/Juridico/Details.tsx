@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { NotionPage } from "@/interfaces/INotion";
 import api from "@/utils/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { FaBuilding, FaBuildingColumns, FaUser } from "react-icons/fa6";
+import { FaBuilding, FaBuildingColumns, FaLink, FaUser } from "react-icons/fa6";
 import { FaBalanceScale, FaIdCard, FaMapMarkedAlt, FaRegFilePdf } from "react-icons/fa";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import {
@@ -18,7 +18,7 @@ import { CelerInputField } from "../CrmUi/InputFactory";
 import { handleDesembolsoVsRentabilidade, findRentabilidadeAoAnoThroughDesembolso } from "@/functions/juridico/solverDesembolsoVsRentabilidade";
 import { SelectItem } from "../ui/select";
 import { estados } from "@/constants/estados";
-import { IoDocumentTextSharp } from "react-icons/io5";
+import { IoCalendar, IoDocumentTextSharp } from "react-icons/io5";
 import CelerInputFormField from "../Forms/CustomFormField";
 import LifeCycleStep from "../LifeCycleStep";
 import { tribunais } from "@/constants/tribunais";
@@ -37,7 +37,15 @@ import DataStatsTwo from "../DataStats/DataStatsTwo";
 import { BsPencilSquare } from "react-icons/bs";
 import DocForm from "../Modals/BrokersDocs";
 import { AiOutlineLoading } from "react-icons/ai";
+import RentabilityChart from "../Charts/RentabilityChart";
+import { IWalletResponse } from "@/interfaces/IWallet";
 import JuridicoDetailsSkeleton from "../Skeletons/JuridicoDetailsSkeleton";
+import percentageFormater from "@/functions/formaters/percentFormater";
+import { GiReceiveMoney } from "react-icons/gi";
+import { TbMoneybag } from "react-icons/tb";
+import { LuHandshake } from "react-icons/lu";
+import dateFormater from "@/functions/formaters/dateFormater";
+import { RiCalendarScheduleFill, RiCalendarScheduleLine } from "react-icons/ri";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -56,6 +64,24 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   } = useContext(BrokersContext);
 
 
+  const [vlData, setVlData] = useState<IWalletResponse>({
+    id: "",
+    valor_investido: 0,
+    valor_projetado: 0,
+    previsao_de_pgto: "",
+    rentabilidade_anual: 0,
+    result: [
+      {
+        data_atualizacao: "",
+        valor_principal: 0,
+        valor_juros: 0,
+        valor_inscrito: 0,
+        valor_bruto_atualizado_final: 0,
+        valor_liquido_disponivel: 0,
+      },
+    ]
+  });
+  const [fetchingVL, setFetchingVL] = useState<boolean>(false);
   const [formData, setFormData] = useState<any>(null);
   const [happenedRecalculation, setHappenedRecalculation] = useState<boolean>(false);
   const [recalculationData, setRecalculationData] = useState<any>(null);
@@ -73,6 +99,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   });
   const [editLock, setEditLock] = useState<boolean>(false);
   const [disabledSaveButton, setDisabledSaveButton] = useState<boolean>(true);
+  const [sliderError, setSliderError] = useState<boolean>(false);
   const [sliderValues, setSliderValues] = useState({
     rentabilidade: 0,
     desembolso: 0
@@ -175,6 +202,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     }
 
     data.upload_notion = true;
+    data.need_to_recalculate_proposal=true;
 
     try {
       const response = await api.patch(`/api/juridico/update/precatorio/${id}/`, data);
@@ -210,9 +238,6 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
 
   const { data, isFetching, isLoading, refetch } = useQuery<NotionPage>({
     queryKey: ["page", id],
-    refetchOnWindowFocus: false,
-    // refetchOnReconnect: true,
-    // refetchInterval: 60000,
     queryFn: fetchData,
   });
 
@@ -281,6 +306,15 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     const newRentabilidade = !fromSlider ? Number(sanitizedValue) / 100 : Number(sanitizedValue);
     const newDesembolso = handleDesembolsoVsRentabilidade(Number(newRentabilidade), data).desembolso;
 
+    if (newRentabilidade > 2 || newRentabilidade < 0) {
+
+      setSliderError(true);
+      return;
+
+    } else {
+      setSliderError(false);
+    }
+
     setSliderValues({
       rentabilidade: newRentabilidade,
       desembolso: newDesembolso
@@ -297,10 +331,22 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   const handleChangeDesembolsoSlider = (value: string, fromSlider?: boolean) => {
 
     if (!value) return;
-    const rawValue = value.replace(/R\$\s*/g, "").replaceAll(".", "").replaceAll(",", ".");
+    const rawValue = !fromSlider
+      ? Number(value.replace(/R\$\s*/g, "").replaceAll(".", "").replaceAll(",", "."))
+      : Number(value);
 
-    const newDesembolso = Number(rawValue);
+    const newDesembolso = rawValue;
     const newRentabilidade = findRentabilidadeAoAnoThroughDesembolso(Number(newDesembolso), data).rentabilidade_ao_ano;
+
+    if (newDesembolso > handleDesembolsoVsRentabilidade(0, data).desembolso
+  || newDesembolso < handleDesembolsoVsRentabilidade(2, data).desembolso) {
+
+      setSliderError(true);
+      return;
+
+    } else {
+      setSliderError(false);
+    }
 
     setSliderValues({
       rentabilidade: newRentabilidade,
@@ -319,8 +365,10 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
 
     setLoadingUpdateState(prev => ({ ...prev, formValores: true }));
     try {
+      const factor = Math.pow(10, 5);
+      const newRentabilidade = Math.floor(sliderValues.rentabilidade * factor) / factor;
       const res = await api.post(`/api/juridico/desembolso/${id}/`, {
-        rentabilidade_anual: sliderValues.rentabilidade
+        rentabilidade_anual: newRentabilidade
       });
 
       if (res.status === 200) {
@@ -333,6 +381,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
           position: "bottom-right",
           showConfirmButton: false,
         })
+        refetch();
       }
 
     } catch (error) {
@@ -693,6 +742,28 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     }
   }, [data]);
 
+  const fetchUpdatedVL = async (oficio: NotionPage) => {
+    // Essa função recebe um objeto do tipo NotionPage e retorna um objeto do tipo IWalletResponse com os valores atualizados
+    try {
+      const response = await api.post('/api/extrato/wallet/', {
+        oficio
+      });
+      setVlData(response.data);
+      // refetch();
+
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  }
+  useEffect(() => {
+    if (data) {
+      fetchUpdatedVL(data);
+    }
+
+  }, [data]);
+
+
+
   if (!data) {
     return (
       <JuridicoDetailsSkeleton />
@@ -831,6 +902,105 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
               </CelerInputField>
             </div>
           </section>
+
+          <section id="cedentes" className="form-inputs-container">
+          <div className="col-span-4 w-full">
+            <div className="flex justify-between gap-4">
+              <h3 className="text-bodydark2 font-medium">
+                Detalhes do precatório
+              </h3>
+              <div className="">
+                {/* Botão com Link da Due */}
+                <button
+                disabled={!data?.properties["Link da Due"]?.url}
+                  onClick={() => window.open(data?.properties["Link da Due"]?.url, '_blank')}
+                  className="border border-strokedark/20 dark:border-stroke/20 dark:text-white text-slate-600 py-1 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium hover:bg-strokedark/20 dark:hover:bg-stroke/20 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-strokedark/20 dark:disabled:bg-stroke/20"
+                >
+                  <FaLink />
+                  Visualizar Due
+                </button>
+
+              </div>
+
+            </div>
+              
+            </div>
+              
+              <div className="col-span-1">
+                <CelerInputField
+                  name="valor_projetado"
+                  fieldType={InputFieldVariant.INPUT}
+                  label="Valor Projetado"
+                  defaultValue={numberFormat(data?.properties["Valor Projetado"]?.number || 0)}
+                  iconSrc={<GiReceiveMoney className="self-center" />}
+                  iconAlt="law"
+                  className="w-full disabled:dark:text-white disabled:text-boxdark"
+                  disabled={true}
+                />
+              </div>
+              <div className="col-span-1">
+                <CelerInputField
+                  name="custo"
+                  fieldType={InputFieldVariant.INPUT}
+                  label="Custo do precatório"
+                  defaultValue={percentageFormater(data?.properties["Custo do precatório"]?.formula?.number || 0)}
+                  iconSrc={<GiReceiveMoney className="self-center" />}
+                  iconAlt="law"
+                  className="w-full disabled:dark:text-white disabled:text-boxdark"
+                  disabled={true}
+                />
+              </div>
+              <div className="col-span-1">
+                <CelerInputField
+                  name="proposta"
+                  fieldType={InputFieldVariant.INPUT}
+                  label="Proposta Escolhida"
+                  defaultValue={numberFormat(data?.properties["Proposta Escolhida - Celer"]?.number || 0)}
+                  iconSrc={<LuHandshake className="self-center" />}
+                  iconAlt="law"
+                  className="w-full disabled:dark:text-white disabled:text-boxdark"
+                  disabled={true}
+                />
+              </div>
+              <div className="col-span-1">
+                <CelerInputField
+                  name="comissao"
+                  fieldType={InputFieldVariant.INPUT}
+                  label="Comissão"
+                  defaultValue={numberFormat(data?.properties["Comissão - Celer"]?.number || 0)}
+                  iconSrc={<TbMoneybag className="self-center" />}
+                  iconAlt="law"
+                  className="w-full disabled:dark:text-white disabled:text-boxdark"
+                  disabled={true}
+                />
+              </div>
+              <div className="col-span-1">
+                <CelerInputField
+                  name="previsao_de_pgto"
+                  fieldType={InputFieldVariant.INPUT}
+                  label="Previsão de pagamento"
+                  defaultValue={dateFormater(data?.properties["Previsão de pagamento"]?.date?.start)}
+                  iconSrc={<RiCalendarScheduleFill className="self-center" />}
+                  iconAlt="law"
+                  className="w-full disabled:dark:text-white disabled:text-boxdark"
+                  disabled={true}
+                />
+              </div>
+              <div className="col-span-1">
+                <CelerInputField
+                  name="loa"
+                  fieldType={InputFieldVariant.INPUT}
+                  label="LOA"
+                  defaultValue={data?.properties["LOA"]?.number || "Sem LOA cadastrada"}
+                  iconSrc={<IoCalendar className="self-center" />}
+                  iconAlt="law"
+                  className="w-full disabled:dark:text-white disabled:text-boxdark"
+                  disabled={true}
+                />
+              </div>
+              
+            </section>
+
 
           <section id="cedentes" className="form-inputs-container">
             <div className="col-span-4 w-full">
@@ -1172,81 +1342,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                   )}
 
                 </div>
-                <div className="col-span-2 3xl:col-span-2 flex flex-col gap-6">
-                  <h2 className="text-xl font-medium">Rentabilidade x Desembolso</h2>
 
-                  <div className="px-10 flex flex-col gap-5">
-                    <div className="flex flex-col gap-3">
-                      <div className="flex items-center justify-between">
-                        <span className="flex-1">Rentabilidade Anual</span>
-                        <CelerInputField
-                          ref={rentabilidadeSlideRef}
-                          name="rentabilidade_anual"
-                          fieldType={InputFieldVariant.INPUT}
-                          iconSrc={
-                            <CRMTooltip text="Insira um valor e pressione ENTER para modificar">
-                              <BiInfoCircle className="cursor-pointer" />
-                            </CRMTooltip>
-                          }
-                          defaultValue={`${(sliderValues.rentabilidade * 100).toFixed(2).replace(".", ",")}%`}
-                          className="w-25 text-right font-medium"
-                          onSubmit={(_, value) => handleChangeRentabilidadeSlider(value)}
-                          disabled={editLock}
-                        />
-                      </div>
-                      <input
-                        onChange={(e) => handleChangeRentabilidadeSlider(e.target.value, true)}
-                        type="range"
-                        min={0}
-                        max={2}
-                        step={0.01}
-                        className="w-full range-slider disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
-                        value={sliderValues.rentabilidade}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="px-10 flex flex-col gap-5">
-                    <div className="flex flex-col gap-3">
-                      <div className="flex items-center justify-between">
-                        <span className="flex-1">Desembolso</span>
-                        <CelerInputField
-                          ref={rentabilidadeSlideRef}
-                          name="desembolso"
-                          fieldType={InputFieldVariant.INPUT}
-                          iconSrc={
-                            <CRMTooltip text="Insira um valor e pressione ENTER para modificar">
-                              <BiInfoCircle className="cursor-pointer" />
-                            </CRMTooltip>
-                          }
-                          defaultValue={numberFormat(sliderValues.desembolso) || "0,00"}
-                          className="max-w-40 text-right font-medium"
-                          onSubmit={(_, value) => handleChangeDesembolsoSlider(value)}
-                          disabled={editLock}
-                        />
-                      </div>
-                      <input
-                        ref={desembolsoSlideRef}
-                        onChange={(e) => handleChangeDesembolsoSlider(e.target.value, true)}
-                        type="range"
-                        min={data && handleDesembolsoVsRentabilidade(2, data).desembolso}
-                        max={data && data.properties["Valor Projetado"].number || 0}
-                        step={0.01}
-                        className="w-full range-slider disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
-                        value={sliderValues.desembolso}
-                      />
-                    </div>
-                  </div>
-
-                  <Button
-                    disabled={disabledSaveButton}
-                    onClick={handleSaveValues}
-                    className="w-fit mx-auto text-sm uppercase">
-                    {loadingUpdateState.formValores && (<AiOutlineLoading className="animate-spin" />)}
-                    <span className="font-medium">Salvar Valores</span>
-                  </Button>
-
-                </div>
               </div>
 
               <hr className="border border-stroke dark:border-strokedark mt-6" />
@@ -1303,6 +1399,90 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
           </section>
         </div>
       </Form>
+      <div className=" grid grid-cols-12 mt-4 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
+        <div className="col-span-8 3xl:col-span-10">
+          <RentabilityChart data={vlData} />
+        </div>
+        <div className="col-span-4 3xl:col-span-2 flex flex-col gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
+          <h2 className="text-xl font-medium">Rentabilidade x Desembolso</h2>
+
+          <div className="px-5 flex flex-col gap-5">
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <span className="flex-1">Rentabilidade Anual</span>
+                <CelerInputField
+                  ref={rentabilidadeSlideRef}
+                  name="rentabilidade_anual"
+                  fieldType={InputFieldVariant.INPUT}
+                  iconSrc={
+                    <CRMTooltip text="Insira um valor e pressione ENTER para modificar">
+                      <BiInfoCircle className="cursor-pointer" />
+                    </CRMTooltip>
+                  }
+                  defaultValue={`${(sliderValues.rentabilidade * 100).toFixed(2).replace(".", ",")}%`}
+                  className="w-25 text-right font-medium"
+                  onSubmit={(_, value) => handleChangeRentabilidadeSlider(value)}
+                  disabled={editLock}
+                />
+              </div>
+              <input
+                onChange={(e) => handleChangeRentabilidadeSlider(e.target.value, true)}
+                type="range"
+                min={0}
+                max={2}
+                step={0.01}
+                className="w-full range-slider disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+                value={sliderValues.rentabilidade}
+              />
+            </div>
+          </div>
+
+          <div className="px-5 flex flex-col gap-5">
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <span className="flex-1">Desembolso</span>
+                <CelerInputField
+                  ref={desembolsoSlideRef}
+                  name="desembolso"
+                  fieldType={InputFieldVariant.INPUT}
+                  iconSrc={
+                    <CRMTooltip text="Insira um valor e pressione ENTER para modificar">
+                      <BiInfoCircle className="cursor-pointer" />
+                    </CRMTooltip>
+                  }
+                  defaultValue={numberFormat(sliderValues.desembolso) || "0,00"}
+                  className="max-w-40 text-right font-medium"
+                  onSubmit={(_, value) => handleChangeDesembolsoSlider(value)}
+                  disabled={editLock}
+                />
+              </div>
+              <input
+                onChange={(e) => handleChangeDesembolsoSlider(e.target.value, true)}
+                type="range"
+                min={data && handleDesembolsoVsRentabilidade(2, data).desembolso}
+                max={data && data.properties["Valor Projetado"].number || 0}
+                step={0.01}
+                className="w-full range-slider disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+                value={sliderValues.desembolso}
+              />
+            </div>
+          </div>
+
+          <Button
+            disabled={disabledSaveButton}
+            onClick={handleSaveValues}
+            className="w-fit mx-auto text-sm uppercase">
+            {loadingUpdateState.formValores && (<AiOutlineLoading className="animate-spin" />)}
+            <span className="font-medium">Salvar Valores</span>
+          </Button>
+
+          {sliderError && (
+            <span className="text-red-500 dark:text-red-400 text-xs uppercase font-medium text-center">Valores fora do escopo permitido!</span>
+          )}
+
+        </div>
+      </div>
+
       {data?.properties["Status Diligência"].select?.name === "Due Diligence" && (
         <div className="flex items-center justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
           <Button

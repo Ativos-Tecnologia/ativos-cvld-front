@@ -2,7 +2,7 @@ import dateFormater from "@/functions/formaters/dateFormater";
 import numberFormat from "@/functions/formaters/numberFormat";
 import percentageFormater from "@/functions/formaters/percentFormater";
 import { calculateProjectedValue, CDIProjection } from "@/functions/marketplace/cdiProjection";
-import { handleMesesAteOPagamento, handleRentabilidadeAM, handleRentabilidadeTotal, handleRentabilideAA } from "@/functions/wallet/rentability";
+import { handleMesesAteOPagamento, handleRentabilidadeAM } from "@/functions/wallet/rentability";
 import { IWalletResponse } from "@/interfaces/IWallet";
 import { ApexOptions } from "apexcharts";
 import React, { useEffect, useState } from "react";
@@ -274,7 +274,7 @@ const ProjectedProfitabilityChart: React.FC<RentabilityChartProps> = ({ data }) 
           <div className="w-full">
             <p className="font-semibold text-black dark:text-snow">Rentabilidade Projetada A.A</p>
             {data ? (<p className="text-sm font-medium">{
-              (handleRentabilideAA(handleRentabilidadeTotal(data), handleMesesAteOPagamento(data)) * 100).toFixed(2).replace('.', ',') + "%"
+              (data.rentabilidade_anual * 100).toFixed(2).replace('.', ',') + "%"
             }</p>) : <AiOutlineLoading className="animate-spin mr-2" />}
           </div>
         </div>
@@ -285,7 +285,7 @@ const ProjectedProfitabilityChart: React.FC<RentabilityChartProps> = ({ data }) 
           <div className="w-full">
             <p className="font-semibold text-black dark:text-snow">Rentabilidade Projetada A.M.</p>
             {data ? (<p className="text-sm font-medium">{
-              (handleRentabilidadeAM(handleRentabilideAA(handleRentabilidadeTotal(data), handleMesesAteOPagamento(data))) * 100).toFixed(2).replace('.', ',') + "%"
+              (handleRentabilidadeAM(data.rentabilidade_anual) * 100).toFixed(2).replace('.', ',') + "%"
             }</p>) : <AiOutlineLoading className="animate-spin mr-2" />}
           </div>
         </div>
