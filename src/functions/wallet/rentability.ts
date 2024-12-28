@@ -9,9 +9,7 @@ export function handleRentabilidadeTotal(data: IWalletResponse) {
 export function handleMesesAteOPagamento(data: IWalletResponse) {
 
   const data_aquisicao = new Date(data?.result[data?.result.length - 1].data_atualizacao);
-  console.log(data_aquisicao);
   const previsao_de_pgto = new Date(data?.previsao_de_pgto);
-  console.log(previsao_de_pgto);
 
   const diffMonths =
     Math.abs(previsao_de_pgto.getTime() - data_aquisicao.getTime()) /

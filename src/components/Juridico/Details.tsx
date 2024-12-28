@@ -1346,6 +1346,10 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
           </section>
         </div>
       </Form>
+      <div className=" grid grid-cols-12 mt-4 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
+      <RentabilityChart data={vlData} />
+      </div>
+
       {data?.properties["Status Diligência"].select?.name === "Due Diligence" && (
         <div className="flex items-center justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
           <Button
