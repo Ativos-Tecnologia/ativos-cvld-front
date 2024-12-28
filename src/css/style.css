@@ -141,7 +141,7 @@
   }
 
   .shad-input {
-    @apply dark:bg-boxdark-2 placeholder:text-bodydark2 border-strokedark h-11 focus-visible:ring-0 focus-visible:ring-offset-0 !important;
+    @apply dark:bg-boxdark bg-white placeholder:text-bodydark2 dark:border-boxdark-2/70 border-stroke h-11 focus-visible:ring-0 focus-visible:ring-offset-0 !important;
   }
 
   .shad-input-icon {
@@ -149,7 +149,7 @@
   }
 
   .shad-textArea {
-    @apply bg-boxdark placeholder:text-bodydark2 border-boxdark-2 focus-visible:ring-0 focus-visible:ring-offset-0 !important;
+    @apply dark:bg-boxdark bg-white placeholder:text-bodydark2 dark:border-boxdark-2/70 border-stroke focus-visible:ring-0 focus-visible:ring-offset-0 !important;
   }
 
   .shad-combobox-item {

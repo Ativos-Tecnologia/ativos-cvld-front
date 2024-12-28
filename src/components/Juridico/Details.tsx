@@ -24,7 +24,7 @@ import LifeCycleStep from "../LifeCycleStep";
 import { tribunais } from "@/constants/tribunais";
 import numberFormat from "@/functions/formaters/numberFormat";
 import Link from "next/link";
-import { BiInfoCircle, BiSolidSave, BiSolidCalculator } from "react-icons/bi";
+import { BiInfoCircle, BiSolidSave, BiSolidCalculator, BiCoin, BiSolidCoinStack, BiX, BiSave } from "react-icons/bi";
 import { GrDocumentText, GrDocumentUser } from "react-icons/gr";
 import { Button } from "../Button";
 import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
@@ -46,6 +46,7 @@ import { TbMoneybag } from "react-icons/tb";
 import { LuHandshake } from "react-icons/lu";
 import dateFormater from "@/functions/formaters/dateFormater";
 import { RiCalendarScheduleFill, RiCalendarScheduleLine } from "react-icons/ri";
+import { IoIosPaper } from "react-icons/io";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -53,7 +54,7 @@ type JuridicoDetailsProps = {
 
 export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   const {
-    data: { first_name },
+    data: { first_name, user },
   } = useContext<UserInfoContextType>(UserInfoAPIContext);
 
   const {
@@ -82,6 +83,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     ]
   });
   const [fetchingVL, setFetchingVL] = useState<boolean>(false);
+  const [observation, setObservation] = useState<string>("");
   const [formData, setFormData] = useState<any>(null);
   const [happenedRecalculation, setHappenedRecalculation] = useState<boolean>(false);
   const [recalculationData, setRecalculationData] = useState<any>(null);
@@ -95,7 +97,10 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     enteDevedor: false,
     estadoEnteDevedor: false,
     formValores: false,
-    sliderValores: false
+    sliderValores: false,
+    observacoes: false,
+    responsavel: false,
+    previsaoDePagamento: false,
   });
   const [editLock, setEditLock] = useState<boolean>(false);
   const [disabledSaveButton, setDisabledSaveButton] = useState<boolean>(true);
@@ -151,62 +156,143 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     })
   }
 
-  const onSubmitForm = async (data: any) => {
+  const handlePendencia = () => {
+    swal.fire({
+      title: 'Pendência a Sanar',
+      input: 'textarea',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sim',
+      cancelButtonText: 'Não',
+      confirmButtonColor: '#4CAF50',
+      cancelButtonColor: '#F44336',
+      inputLabel: 'Informe a pendência a ser sanada pelo cedente',
+      inputPlaceholder: 'Ex: Falta de documentação. Favor enviar o documento X',
+      
+      inputValidator: (value) => {
+        if (!value) {
+          return 'Você precisa informar a pendência'
+        }
+      }
+
+      
+    }).then(async (result) => {
+      
+      if (result.isConfirmed) {
+        const response = await api.patch(`api/notion-api/update/${id}/`, {
+          "Status Diligência": {
+            "select": {
+              "name": "Pendência a Sanar"
+            }
+          },
+          "Observação": {
+            "rich_text": [
+              {
+                "text": {
+                  "content": `
+- Motivo do Retorno: ${result.value}
+- Encaminhado por: ${user} em ${new Date().toLocaleString()}
+-------------------------------
+${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
+                  `
+                }
+              }
+            ]
+          },
+        });
+        if (response.status !== 202) {
+          swal.fire({
+            title: 'Erro',
+            text: 'Houve um erro ao encaminhar o ofício para repactuação',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        }
+
+        refetch();
+
+        swal.fire({
+          title: 'Diligência Repactuada',
+          text: 'O ofício foi encaminhado para repactuação com sucesso!',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+      }
+    })
+  }
+
+  
+
+  async function fetchData() {
+    const response = await api.get(`/api/notion-api/list/page/${id}/`);
+    return response.data;
+  }
+
+  const { data, isFetching, isLoading, refetch } = useQuery<NotionPage>({
+    queryKey: ["page", id],
+    queryFn: fetchData,
+  });
+
+  const onSubmitForm = async (formData: any) => {
     setIsLoadingRecalculation(true);
+    if(formData.observacao) {
+      formData.observacao = `
+💭 Comentários: ${formData.observacao}
+`
+    }
 
-    if (data.valor_aquisicao_total) {
-      data.percentual_a_ser_adquirido = 1;
+    if (formData.valor_aquisicao_total) {
+      formData.percentual_a_ser_adquirido = 1;
     } else {
-      data.percentual_a_ser_adquirido = data.percentual_a_ser_adquirido / 100;
+      formData.percentual_a_ser_adquirido = formData.percentual_a_ser_adquirido / 100;
     }
 
-    if (typeof data.valor_principal === "string") {
-      data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
-      data.valor_principal = parseFloat(data.valor_principal);
+    if (typeof formData.valor_principal === "string") {
+      formData.valor_principal = backendNumberFormat(formData.valor_principal) || 0;
+      formData.valor_principal = parseFloat(formData.valor_principal);
     }
 
-    if (typeof data.valor_juros === "string") {
-      data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
-      data.valor_juros = parseFloat(data.valor_juros);
+    if (typeof formData.valor_juros === "string") {
+      formData.valor_juros = backendNumberFormat(formData.valor_juros) || 0;
+      formData.valor_juros = parseFloat(formData.valor_juros);
     }
 
-    if (data.data_base) {
-      data.data_base = data.data_base.split("/").reverse().join("-");
+    if (formData.data_base) {
+      formData.data_base = formData.data_base.split("/").reverse().join("-");
     }
 
-    if (data.data_requisicao) {
-      data.data_requisicao = data.data_requisicao.split("/").reverse().join("-");
+    if (formData.data_requisicao) {
+      formData.data_requisicao = formData.data_requisicao.split("/").reverse().join("-");
     }
 
-    if (data.data_limite_de_atualizacao) {
-      data.data_limite_de_atualizacao = data.data_limite_de_atualizacao.split("/").reverse().join("-");
+    if (formData.data_limite_de_atualizacao) {
+      formData.data_limite_de_atualizacao = formData.data_limite_de_atualizacao.split("/").reverse().join("-");
     }
 
-    if (typeof data.valor_pss) {
-      data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
-      data.valor_pss = parseFloat(data.valor_pss);
+    if (typeof formData.valor_pss) {
+      formData.valor_pss = backendNumberFormat(formData.valor_pss) || 0;
+      formData.valor_pss = parseFloat(formData.valor_pss);
     }
 
-    if (!data.ir_incidente_rra) {
-      data.numero_de_meses = 0
+    if (!formData.ir_incidente_rra) {
+      formData.numero_de_meses = 0
     } else {
-      data.numero_de_meses = Number(data.numero_de_meses)
+      formData.numero_de_meses = Number(formData.numero_de_meses)
     }
 
-    if (!data.incidencia_pss) {
-      data.valor_pss = 0
+    if (!formData.incidencia_pss) {
+      formData.valor_pss = 0
     }
 
-    if (!data.data_limite_de_atualizacao_check) {
-      delete data.data_limite_de_atualizacao_check
+    if (!formData.data_limite_de_atualizacao_check) {
+      delete formData.data_limite_de_atualizacao_check
     }
 
-    data.upload_notion = true;
-    data.need_to_recalculate_proposal=true;
+    formData.upload_notion = true;
+    formData.need_to_recalculate_proposal=true;
 
     try {
-      const response = await api.patch(`/api/juridico/update/precatorio/${id}/`, data);
-      refetch();
+      const response = await api.patch(`/api/juridico/update/precatorio/${id}/`, formData);
       setHappenedRecalculation(true);
       setRecalculationData(response.data);
 
@@ -218,6 +304,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
         confirmButtonText: 'OK'
       });
 
+      refetch();
     } catch (error: AxiosError | any) {
       swal.fire({
         title: 'Erro',
@@ -230,16 +317,6 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
 
     setIsLoadingRecalculation(false);
   }
-
-  async function fetchData() {
-    const response = await api.get(`/api/notion-api/list/page/${id}/`);
-    return response.data;
-  }
-
-  const { data, isFetching, isLoading, refetch } = useQuery<NotionPage>({
-    queryKey: ["page", id],
-    queryFn: fetchData,
-  });
 
   const form = useForm();
   const isFormModified = Object.keys(form.watch()).some((key: any) => form.watch()[key] !== formData?.[key]);
@@ -361,6 +438,10 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     }
   }
 
+  const handleChangeResponsavel = async (page_id: string) => {
+    await resposavelMutation.mutateAsync({ page_id });
+  }
+
   const handleSaveValues = async () => {
 
     setLoadingUpdateState(prev => ({ ...prev, formValores: true }));
@@ -399,6 +480,55 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     }
 
   }
+
+  const resposavelMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        // pegar os responsáveis do ofício e adicionar o usuário logado. Exemplo: henrique, jarbas, joao, maria
+        "Responsável - Celer": {
+          "multi_select": [
+            {
+              "name": data?.properties["Responsável - Celer"]?.multi_select?.map((item: any) => item.name).join(",") + `${user}`
+            }
+          ]
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async () => {
+      setLoadingUpdateState(prev => ({ ...prev, responsavel: true }));
+      setEditLock(true);
+    },
+    onError: () => {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'error',
+        text: "Houve um erro ao atualizar o campo Responsável",
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSuccess: () => {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'success',
+        text: "Campo Responsável atualizado com sucesso",
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, responsavel: false }));
+    }
+  });
 
   // ----> Mutations <-----
   const creditorNameMutation = useMutation({
@@ -451,6 +581,57 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     }
   });
 
+  const observationMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Observação": {
+          "rich_text": [
+            {
+              "text": {
+                "content": paramsObj.value
+              }
+            }
+          ]
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data;
+    },
+    onMutate: async (paramsObj: any) => {
+      setLoadingUpdateState(prev => ({ ...prev, observacoes: true }));
+      setEditLock(true);
+    },
+    onError: () => {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'error',
+        text: "Houve um erro ao atualizar o campo Observações",
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSuccess: () => {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'success',
+        text: "Observações atualizadas com sucesso",
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+      refetch();
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, observacoes: false }));
+    }
+  });
+
   const identificationMutation = useMutation({
     mutationFn: async (paramsObj: { page_id: string, value: string }) => {
       const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
@@ -497,6 +678,52 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     },
     onSettled: () => {
       setLoadingUpdateState(prev => ({ ...prev, cpfCnpj: false }));
+      setEditLock(false);
+    }
+  });
+
+  const previsaoDePagamentoMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Previsão de pagamento": {
+          "date": {
+            "start": paramsObj.value.split("/").reverse().join("-")
+          }
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data;
+    },
+    onMutate: async () => {
+      setLoadingUpdateState(prev => ({ ...prev, previsaoDePagamento: true }));
+      setEditLock(true);
+    },
+    onError: () => {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'error',
+        text: "Houve um erro ao atualizar o campo Previsão de Pagamento",
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSuccess: () => {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'success',
+        text: "Previsão de Pagamento atualizada com sucesso",
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSettled: () => {
+      setLoadingUpdateState(prev => ({ ...prev, previsaoDePagamento: false }));
       setEditLock(false);
     }
   });
@@ -697,6 +924,20 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     }
   });
 
+  const handleUpdatePrevisaoDePagamento = async (value: string, page_id: string) => {
+    await previsaoDePagamentoMutation.mutateAsync({
+      page_id,
+      value
+    });
+  }
+
+  const handleUpdateObservation = async (value: string, page_id: string) => {
+    await observationMutation.mutateAsync({
+      page_id,
+      value
+    });
+  }
+
   useEffect(() => {
     if (data && sliderValues.rentabilidade !== 0 && sliderValues.desembolso !== 0) {
       if (
@@ -739,6 +980,8 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
         rentabilidade: data?.properties["Rentabilidade Anual"].number || 0,
         desembolso: data?.properties["Nova Fórmula do Desembolso"].formula?.number || 0
       })
+
+      setObservation(data?.properties["Observação"]?.rich_text?.[0]?.text?.content || "");
     }
   }, [data]);
 
@@ -783,6 +1026,45 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
       <LifeCycleStep status={data?.properties["Status Diligência"].select?.name ?? "ops"} />
       <Form {...form}>
         <div className="space-y-6 rounded-md">
+          {/* <section id="info_credor" className="form-inputs-container">
+            <div className="xl:col-span-2 w-full">
+              <CelerInputField
+                name="responsavel"
+                fieldType={InputFieldVariant.CHECKBOX}
+                label="Tornar-se responsável pelo ativo"
+                defaultValue={data?.properties["Responsável - Celer"].multi_select?.some(item => item.name === user) || false}
+                iconSrc={<FaUser
+                  className="self-center" />}
+                iconAlt="user"
+                className="w-full"
+                onValueChange={() => handleChangeResponsavel(id)}
+                isLoading={loadingUpdateState.responsavel}
+                />
+            </div>
+            <div className="xl:col-span-1 w-full">
+              </div>
+              
+            {data?.properties["Responsável - Celer"].multi_select?.some(item => item.name) && (
+              <div className="flex gap-2 items-center">
+              {
+                data?.properties["Responsável - Celer"].multi_select.length > 1 ? (
+                  <span>Responsáveis:</span>
+                ) : (
+                  <span>Responsável:</span>
+                )
+              }
+
+              <div className="flex gap-2">
+                {data?.properties["Responsável - Celer"]?.multi_select?.map(item => (
+                  <span key={item.id} className="text-bodydark2 text-xs font-semibold h-8 px-2 border border-stroke dark:border-bodydark2 rounded-full flex items-center">
+                    {item.name}
+                  </span>
+                ))}
+                </div>
+              
+            </div>)}
+          </section> */}
+
           <section id="info_credor" className="form-inputs-container">
             <div className="xl:col-span-2 w-full">
               <CelerInputField
@@ -794,7 +1076,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                   className="self-center" />}
                 iconAlt="user"
                 className="w-full"
-                onSubmit={(_, value) => handleChangeCreditorName(value, id)}
+                onValueChange={(_, value) => handleChangeCreditorName(value, id)}
                 isLoading={loadingUpdateState.nomeCredor}
                 disabled={editLock}
               />
@@ -904,8 +1186,8 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
           </section>
 
           <section id="cedentes" className="form-inputs-container">
-          <div className="col-span-4 w-full">
-            <div className="flex justify-between gap-4">
+          <div className="col-span-4 w-full 3xl:col-span-5">
+            <div className="flex justify-between gap-4 w-full">
               <h3 className="text-bodydark2 font-medium">
                 Detalhes do precatório
               </h3>
@@ -974,17 +1256,28 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                   disabled={true}
                 />
               </div>
+              {/* <div className="col-span-1">
+                  <CelerInputFormField
+                    control={form.control}
+                    name="data_base"
+                    label="Data Base"
+                    fieldType={InputFieldVariant.DATE}
+                    defaultValue={data?.properties["Data Base"].date?.start ?? ""}
+                    className="w-full"
+                  />
+                </div> */}
               <div className="col-span-1">
                 <CelerInputField
                   name="previsao_de_pgto"
-                  fieldType={InputFieldVariant.INPUT}
+                  fieldType={InputFieldVariant.DATE}
                   label="Previsão de pagamento"
                   defaultValue={dateFormater(data?.properties["Previsão de pagamento"]?.date?.start)}
                   iconSrc={<RiCalendarScheduleFill className="self-center" />}
                   iconAlt="law"
                   className="w-full disabled:dark:text-white disabled:text-boxdark"
-                  disabled={true}
+                  onSubmit={(_, value) => handleUpdatePrevisaoDePagamento(value, id)}
                 />
+                
               </div>
               <div className="col-span-1">
                 <CelerInputField
@@ -1341,7 +1634,29 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                     </span>
                   )}
 
+
+
                 </div>
+                      <div className="col-span-12">
+                        <CelerInputFormField
+                          name="observacao"
+                          control={form.control}
+                          fieldType={InputFieldVariant.TEXTAREA}
+                          label="Motivo da Atualização"
+                          required={true}
+                          placeholder="Insira o motivo da atualização do ativo"
+                          iconSrc={<IoIosPaper className="self-center" />}
+                          iconAlt="law"
+                          className="w-full"
+                          rows={7}
+                          disabled={editLock}
+                        />
+                  </div>
+                  <div className="col-span-12">
+                    <h3 className="text-bodydark2 text-sm font-medium">
+                      Atenção: A atualização dos valores, datas, percentuais etc implica na modificação do valor líquido do ativo. O status do ativo será alterado para Repactuação e retornará para o broker para negociação.
+                      </h3>
+                      </div>
 
               </div>
 
@@ -1400,10 +1715,10 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
         </div>
       </Form>
       <div className=" grid grid-cols-12 mt-4 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-        <div className="col-span-8 3xl:col-span-10">
+        <div className="col-span-8 3xl:col-span-8">
           <RentabilityChart data={vlData} />
         </div>
-        <div className="col-span-4 3xl:col-span-2 flex flex-col gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
+        <div className="col-span-4 3xl:col-span-4 flex flex-col gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
           <h2 className="text-xl font-medium">Rentabilidade x Desembolso</h2>
 
           <div className="px-5 flex flex-col gap-5">
@@ -1482,16 +1797,66 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
 
         </div>
       </div>
+      <section id="observacao" className="form-inputs-container">
+        {/* <div className="col-span-5">
+          <CelerInputField
+            name="observacao"
+            fieldType={InputFieldVariant.TEXTAREA}
+            label="Observações"
+            defaultValue={data?.properties["Observação"]?.rich_text?.[0].plain_text || ""}
+            iconSrc={<IoIosPaper className="self-center" />}
+            iconAlt="law"
+            className="w-full"
+            rows={10}
+            // onSubmit={(_, value) => handleChangeObservacao(value, id)}
+            isLoading={loadingUpdateState.observacoes}
+            disabled={editLock}
+          />
+        </div> */}
+        <div className="col-span-5">
+
+                                <p className='mb-2'>Observações:</p>
+                                <div className='relative'>
+                                    <textarea
+                                        defaultValue={data?.properties["Observação"]?.rich_text?.[0].plain_text || ""}
+                                        className='w-full rounded-md placeholder:text-sm border-stroke dark:border-strokedark dark:bg-boxdark-2/50 resize-none'
+                                        onChange={(e) => setObservation(e.target.value)}
+                                        rows={10}
+                                        placeholder='Insira uma observação'
+                                    />
+                                    <Button
+                                        variant='ghost'
+                                        onClick={() => handleUpdateObservation(observation, id)}
+                                        className='absolute z-2 bottom-3 right-2 py-1 text-sm px-1 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70'>
+                                        {/* {
+                                            savingObservation ? (
+                                                <AiOutlineLoading className="text-lg animate-spin" />
+                                            ) : ( */}
+                                                <BiSave className="text-lg" />
+                                            {/* )
+                                        } */}
+                                    </Button>
+                                </div>
+                                </div>
+      </section>
 
       {data?.properties["Status Diligência"].select?.name === "Due Diligence" && (
         <div className="flex items-center justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handlePendencia()}
+          >
+            <BiX className="h-4 w-4" />
+            <span>Pendência a Sanar</span>
+          </Button>
           <Button
             variant="success"
             className="py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium"
             onClick={() => handleDueDiligence()}
           >
-            <BiSolidSave className="h-4 w-4" />
-            <span>Finalizar Due Diligence</span>
+            <BiSolidCoinStack className="h-4 w-4" />
+            <span>Enviar para Liquidação</span>
           </Button>
         </div>
       )}

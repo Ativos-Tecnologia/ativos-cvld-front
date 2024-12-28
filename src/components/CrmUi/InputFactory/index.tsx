@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import ICelerInputFormField from "@/interfaces/ICelerInputFormField";
 import { AiOutlineLoading } from "react-icons/ai";
+import Cleave from "cleave.js/react";
 
 interface ICelerInputField extends ICelerInputFormField {
     onValueChange?: (name: string, value: any) => void;
@@ -63,7 +64,7 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
                     </div>
                 );
             case InputFieldVariant.TEXTAREA:
-                return <Textarea className="shad-textArea" {...commonProps} />;
+                return <Textarea rows={props.rows} cols={props.cols} required={props.required} className="shad-textArea" {...commonProps} />;
             case InputFieldVariant.PHONE_INPUT:
                 return (
                     <PhoneInput
@@ -94,23 +95,26 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
                 );
             case InputFieldVariant.DATE:
                 return (
-                    <div className="flex rounded-md border border-dark-500 bg-dark-400">
-                        <Image
-                            src="/assets/icons/calendar.svg"
-                            height={24}
-                            width={24}
-                            alt="Calendar"
-                            className="ml-2"
-                        />
-                        <ReactDatePicker
-                            selected={value}
-                            onChange={(date: Date | null) => handleChange(date)}
-                            showTimeSelect={props.showTimeSelect}
-                            dateFormat={props.dateFormat || "MM/dd/yyyy"}
-                            disabled={props.disabled || props.isLoading}
-                            wrapperClassName="date-picker"
-                        />
-                    </div>
+                    <div className="flex rounded-md relative">
+            <Cleave
+                {...commonProps}
+              defaultValue={props.defaultValue}
+              className={`w-full rounded-md border-stroke mt-2 py-2.5 text-sm font-medium dark:bg-boxdark-2 dark:border-strokedark dark:text-bodydark`}
+              options={{
+                date: true,
+                datePattern: ["d", "m", "Y"],
+                delimiter: "/"
+              }}
+            />
+
+          <Image
+            src="/assets/icons/calendar.svg"
+            height={16}
+            width={16}
+            alt="calendar"
+            className="absolute right-3 top-5"
+          />
+        </div>
                 );
             case InputFieldVariant.SELECT:
                 return (
