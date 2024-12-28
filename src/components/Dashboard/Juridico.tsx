@@ -27,9 +27,7 @@ enum navItems {
   DUE_DILIGENCE = "Due Diligence",
   EM_LIQUIDACAO = "Em liquidação",
   EM_CESSAO = "Em cessão",
-  REGISTRO_DE_CESSAO = "Registro de cessão",
-  ATOS_PROCESSUAIS = "Atos processuais",
-  AGUARDAR_PGTO = "Aguardar pagamento",
+  REPACTUACAO = "Repactuação",
 }
 
 export type SimpleNotionData = {
@@ -73,7 +71,7 @@ export const iconsConfig = {
 
 const Juridico = () => {
   const {
-    data: { first_name },
+    data: { first_name, user },
   } = useContext<UserInfoContextType>(UserInfoAPIContext);
 
   const [activeTab, setActiveTab] = React.useState<string>(navItems.TODOS);
@@ -83,7 +81,7 @@ const Juridico = () => {
 
   const fetchAllPrecatoryWithSimpleData = React.useCallback(async () => {
     setLoading(true);
-    const response = await api.get(activeTab === navItems.TODOS ? "/api/legal/" : `/api/legal/?status_diligencia=${activeTab}`);
+    const response = await api.get(activeTab === navItems.TODOS ? "/api/legal/" : `/api/legal/?status_diligencia=${activeTab}?responsavel=${user}`);
     setSimpleData(response.data);
     setLoading(false);
   }, [activeTab]);

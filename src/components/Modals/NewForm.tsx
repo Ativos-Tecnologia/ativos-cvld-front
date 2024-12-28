@@ -27,6 +27,7 @@ import {
 import {
   BiCheck,
   BiExpand,
+  BiHighlight,
   BiLineChart,
   BiLogoUpwork,
   BiSave,
@@ -1535,21 +1536,43 @@ const NewForm = () => {
                       //   )
                       // }
 
-                      // Escrever um texto no before do container informando que não serão calculadas propostas para ofícios de L.O.A 24
-                      <div className={`flex flex-col relative ${watch("data_requisicao")! < "2023-04-02" && watch("esfera") === "FEDERAL" ? "opacity-50 pointer-events-none" : ""}`}>
+                      <div className={`flex flex-col relative ${watch("data_requisicao")! <= "2023-04-02" && watch("esfera") === "FEDERAL" ? "pointer-events-none" : ""}`}>
+                        
 
-                       {watch("data_requisicao")! < "2023-04-02" &&( watch("esfera") === "ESTADUAL" || watch("esfera") === "MUNICIPAL") && (
+                       {watch("data_requisicao")! <= "2023-04-02" &&(watch("esfera") === "FEDERAL") && (
                         <div className="absolute w-full min-h-full bg-slate-700/90 flex justify-center items-center flex-col">
                           <h2 className="p-4 uppercase text-md font-medium font-satoshi w-full text-center">
-                            Não é possível calcular valores de proposta e comissão para ativos com <span title="Lei Oçamentária Anual" className="underline">L.O.A</span> 2024
+                            Não é possível calcular valores de proposta e comissão para ativos <span className="underline">federais</span> com <span title="Lei Oçamentária Anual" className="underline">L.O.A</span> inferior (ou igual) a 2024
                           </h2>
+                          <h3>
+                            <span className="text-xs text-center">
+                              Para mais informações, contate o coordenador de sua equipe
+                            </span>
+                          </h3>
+                        </div>)}
+                       {watch("data_requisicao")! <= "2023-04-02" &&( watch("esfera") === "ESTADUAL" || watch("esfera") === "MUNICIPAL") && (
+                        <div className="absolute w-full min-h-full bg-slate-700/90 flex justify-center items-center flex-col">
+                          <h2 className="p-4 uppercase text-md font-medium font-satoshi w-full text-center">
+                            Não é possível calcular valores de proposta e comissão para ativos com <span title="Lei Oçamentária Anual" className="underline">L.O.A</span> inferior (ou igual) a 2024
+                          </h2>
+                          <h3>
+                            <span className="text-xs text-center">
+                              Para mais informações, contate o coordenador de sua equipe
+                            </span>
+                          </h3>
+                          <div className="mt-8">
                           {
-                            watch("gerar_cvld") && (
+                            watch("gerar_cvld") ? (
                               <p className="px-4 text-muted-foreground text-xs">
                                 Seu precatório foi salvo sem proposta e comissionamento definidos
                               </p>
+                            ) : (
+                            <p className="flex items-center px-4 text-muted-foreground text-xs gap-4">
+                              <BiHighlight className="w-5 h-5" /> Você ainda pode cadastrar o ofício atualizado - ele será salvo sem proposta e comissionamento definidos
+                            </p>
                             )
                           }
+                          </div>
                         </div>)}
 
                         <div className="mb-6 flex flex-col gap-2">
