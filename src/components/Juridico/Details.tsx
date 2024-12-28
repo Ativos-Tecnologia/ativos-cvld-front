@@ -18,7 +18,7 @@ import { CelerInputField } from "../CrmUi/InputFactory";
 import { handleDesembolsoVsRentabilidade, findRentabilidadeAoAnoThroughDesembolso } from "@/functions/juridico/solverDesembolsoVsRentabilidade";
 import { SelectItem } from "../ui/select";
 import { estados } from "@/constants/estados";
-import { IoDocumentTextSharp } from "react-icons/io5";
+import { IoCalendar, IoDocumentTextSharp } from "react-icons/io5";
 import CelerInputFormField from "../Forms/CustomFormField";
 import LifeCycleStep from "../LifeCycleStep";
 import { tribunais } from "@/constants/tribunais";
@@ -873,6 +873,27 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
               </CelerInputField>
             </div>
           </section>
+
+          <section id="cedentes" className="form-inputs-container">
+          <div className="col-span-4 w-full">
+              <h3 className="text-bodydark2 font-medium">
+                Detalhes do precatório
+              </h3>
+            </div>
+              <div className="col-span-1">
+                <CelerInputField
+                  name="loa"
+                  fieldType={InputFieldVariant.INPUT}
+                  label="LOA"
+                  defaultValue={data?.properties["LOA"]?.number || "Sem LOA cadastrada"}
+                  iconSrc={<IoCalendar className="self-center" />}
+                  iconAlt="law"
+                  className="w-full"
+                  disabled={true}
+                />
+              </div>
+            </section>
+
 
           <section id="cedentes" className="form-inputs-container">
             <div className="col-span-4 w-full">
