@@ -3,8 +3,8 @@ import dateFormater from "@/functions/formaters/dateFormater";
 import numberFormat from "@/functions/formaters/numberFormat";
 import {
   handleMesesAteOPagamento,
-  handleRentabilidadeTotal,
-  handleRentabilideAA,
+  // handleRentabilidadeTotal,
+  // handleRentabilideAA,
 } from "@/functions/wallet/rentability";
 import { NotionPage } from "@/interfaces/INotion";
 import api from "@/utils/api";
@@ -166,14 +166,10 @@ const Card = ({
               <HoverCard.ListItem>
                 <p className="text-[10px] text-gray-400">rentabilidade A.A.</p>
                 <p className="text-sm text-snow">
-                  {(
-                    handleRentabilideAA(
-                      handleRentabilidadeTotal(data),
-                      handleMesesAteOPagamento(data),
-                    ) * 100
-                  )
-                    .toFixed(2)
-                    .replace(".", ",") + "%"}
+                 {(
+                    oficio.properties["Rentabilidade Anual"].number || 0
+                     * 100
+                  ).toFixed(2).replace(".", ",") + "%"}
                 </p>
               </HoverCard.ListItem>
               <HoverCard.ListItem>

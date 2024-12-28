@@ -3,8 +3,6 @@ import numberFormat from "@/functions/formaters/numberFormat";
 import {
   handleMesesAteOPagamento,
   handleRentabilidadeAM,
-  handleRentabilidadeTotal,
-  handleRentabilideAA,
 } from "@/functions/wallet/rentability";
 import { NotionPage } from "@/interfaces/INotion";
 import { IWalletResponse } from "@/interfaces/IWallet";
@@ -194,12 +192,7 @@ const OfficeInfoModal = ({
                   <p className="flex-1">Rentabilidade Mensal:</p>
                   <p className="font-medium">
                     {(
-                      handleRentabilidadeAM(
-                        handleRentabilideAA(
-                          handleRentabilidadeTotal(updatedVlData),
-                          handleMesesAteOPagamento(updatedVlData),
-                        ),
-                      ) * 100
+                      handleRentabilidadeAM(data.properties["Rentabilidade Anual"].number || 0) * 100
                     )
                       .toFixed(2)
                       .replace(".", ",") + "%"}
@@ -209,10 +202,7 @@ const OfficeInfoModal = ({
                   <p className="flex-1">Rentabilidade Anual:</p>
                   <p className="font-medium">
                     {(
-                      handleRentabilideAA(
-                        handleRentabilidadeTotal(updatedVlData),
-                        handleMesesAteOPagamento(updatedVlData),
-                      ) * 100
+                      (data.properties["Rentabilidade Anual"].number || 0) * 100
                     )
                       .toFixed(2)
                       .replace(".", ",") + "%"}
