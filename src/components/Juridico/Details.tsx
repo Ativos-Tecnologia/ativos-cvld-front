@@ -1818,7 +1818,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                                 <p className='mb-2'>Observações:</p>
                                 <div className='relative'>
                                     <textarea
-                                        defaultValue={data?.properties["Observação"]?.rich_text?.[0].plain_text || ""}
+                                        defaultValue={data?.properties["Observação"]?.rich_text?.[0]?.plain_text || ""}
                                         className='w-full rounded-md placeholder:text-sm border-stroke dark:border-strokedark dark:bg-boxdark-2/50 resize-none'
                                         onChange={(e) => setObservation(e.target.value)}
                                         rows={10}
