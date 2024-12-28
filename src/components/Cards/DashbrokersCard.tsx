@@ -981,7 +981,7 @@ const DashbrokersCard = ({ oficio }:
 
                         <button
                             onClick={() => setEditModalId(mainData!.id)}
-                            disabled={checks.isFetching || mainData?.properties["Status"].status?.name === "Proposta aceita"}
+                            disabled={checks.isFetching || (mainData?.properties["Status"].status?.name === "Proposta aceita" && mainData?.properties["Status Diligência"].select?.name === "Due Diligence") || (mainData?.properties["Status"].status?.name === "Proposta aceita" && mainData?.properties["Status Diligência"].select?.name === "Em liquidação") || (mainData?.properties["Status"].status?.name === "Proposta aceita" && mainData?.properties["Status Diligência"].select?.name === "Juntar Documentos")}
                             className='flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm disabled:opacity-50 disabled:pointer-events-none'>
                             <BsPencilSquare />
                             Editar Precatório
@@ -1107,7 +1107,7 @@ const DashbrokersCard = ({ oficio }:
                                     <input
                                         ref={proposalRef}
                                         type="text"
-                                        disabled={mainData?.properties["Status"].status?.name === "Proposta aceita"}
+                                        disabled={(mainData?.properties["Status"].status?.name === "Proposta aceita" && mainData?.properties["Status Diligência"].select?.name === "Due Diligence") || (mainData?.properties["Status"].status?.name === "Proposta aceita" && mainData?.properties["Status Diligência"].select?.name === "Em liquidação") || (mainData?.properties["Status"].status?.name === "Proposta aceita" && mainData?.properties["Status Diligência"].select?.name === "Juntar Documentos") || (mainData?.properties["Status"].status?.name === "Proposta aceita" && mainData?.properties["Status Diligência"].select?.name === "Pendência a Sanar")}
                                         onBlur={e => {
                                             e.target.value = formatCurrency(e.target.value)
                                         }}
@@ -1119,7 +1119,7 @@ const DashbrokersCard = ({ oficio }:
                                     // ref={proposalRangeRef}
                                     type="range"
                                     step="0.01"
-                                    disabled={mainData?.properties["Status"].status?.name === "Proposta aceita"}
+                                    disabled={(mainData?.properties["Status"].status?.name === "Proposta aceita" && mainData?.properties["Status Diligência"].select?.name === "Due Diligence") || (mainData?.properties["Status"].status?.name === "Proposta aceita" && mainData?.properties["Status Diligência"].select?.name === "Em liquidação") || (mainData?.properties["Status"].status?.name === "Proposta aceita" && mainData?.properties["Status Diligência"].select?.name === "Juntar Documentos") || (mainData?.properties["Status"].status?.name === "Proposta aceita" && mainData?.properties["Status Diligência"].select?.name === "Pendência a Sanar")}
                                     min={mainData?.properties["(R$) Proposta Mínima - Celer"].number || 0}
                                     max={mainData?.properties["(R$) Proposta Máxima - Celer"].number || 0}
                                     value={sliderValues.proposal}
@@ -1137,7 +1137,7 @@ const DashbrokersCard = ({ oficio }:
                                     <input
                                         ref={comissionRef}
                                         type="text"
-                                        disabled={mainData?.properties["Status"].status?.name === "Proposta aceita"}
+                                        disabled={(mainData?.properties["Status"].status?.name === "Proposta aceita" && mainData?.properties["Status Diligência"].select?.name === "Due Diligence") || (mainData?.properties["Status"].status?.name === "Proposta aceita" && mainData?.properties["Status Diligência"].select?.name === "Em liquidação") || (mainData?.properties["Status"].status?.name === "Proposta aceita" && mainData?.properties["Status Diligência"].select?.name === "Juntar Documentos") || (mainData?.properties["Status"].status?.name === "Proposta aceita" && mainData?.properties["Status Diligência"].select?.name === "Pendência a Sanar")}
                                         onBlur={e => {
                                             e.target.value = formatCurrency(e.target.value)
                                         }}
@@ -1149,7 +1149,7 @@ const DashbrokersCard = ({ oficio }:
                                 <input
                                     type="range"
                                     step="0.01"
-                                    disabled={mainData?.properties["Status"].status?.name === "Proposta aceita"}
+                                    disabled={(mainData?.properties["Status"].status?.name === "Proposta aceita" && mainData?.properties["Status Diligência"].select?.name === "Due Diligence") || (mainData?.properties["Status"].status?.name === "Proposta aceita" && mainData?.properties["Status Diligência"].select?.name === "Em liquidação") || (mainData?.properties["Status"].status?.name === "Proposta aceita" && mainData?.properties["Status Diligência"].select?.name === "Juntar Documentos") || (mainData?.properties["Status"].status?.name === "Proposta aceita" && mainData?.properties["Status Diligência"].select?.name === "Pendência a Sanar")}
                                     min={mainData?.properties["(R$) Comissão Mínima - Celer"].number || 0}
                                     max={mainData?.properties["(R$) Comissão Máxima - Celer"].number || 0}
                                     value={sliderValues.comission}
