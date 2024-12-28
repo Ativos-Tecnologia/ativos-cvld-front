@@ -183,9 +183,9 @@ const Juridico = () => {
                             >
                               <HoverCard.TribunalBadge tribunal={item.tribunal} />
                               <HoverCard.Icon
-                                icon={iconsConfig[item.tipo.name as keyof typeof iconsConfig].icon}
+                                icon={iconsConfig[item.tipo.name as keyof typeof iconsConfig]?.icon}
                                 // bgColor={iconsConfig[item.tipo as keyof typeof iconsConfig].bgColor}
-                                bgColor={iconsConfig[item.tipo.name as keyof typeof iconsConfig].bgColor}
+                                bgColor={iconsConfig[item.tipo.name as keyof typeof iconsConfig]?.bgColor}
                                 className="group-hover:opacity-0"
                               />
 
