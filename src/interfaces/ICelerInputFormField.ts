@@ -21,6 +21,9 @@ export default interface ICelerInputFormField {
     fieldType: InputFieldVariant;
     defaultValue?: any;
     className?: string;
+    cols?: number;
+    rows?: number;
+    required?: boolean;
   }
 
 export type CelerInputFormFieldProps = ICelerInputFormField & ReactHookFormInputFieldProps;

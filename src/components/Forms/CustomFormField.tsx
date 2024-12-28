@@ -44,6 +44,7 @@ const RenderInput = ({ field, props }: { field: any; props: CelerInputFormFieldP
       return (
         <FormControl>
           <Textarea
+            required={props.required}
             placeholder={props.placeholder}
             {...field}
             className="shad-textArea"
