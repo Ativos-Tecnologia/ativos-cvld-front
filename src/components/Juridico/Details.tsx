@@ -63,6 +63,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     valor_investido: 0,
     valor_projetado: 0,
     previsao_de_pgto: "",
+    rentabilidade_anual: 0,
     result: [
       {
         data_atualizacao: "",
@@ -229,9 +230,6 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
 
   const { data, isFetching, isLoading, refetch } = useQuery<NotionPage>({
     queryKey: ["page", id],
-    refetchOnWindowFocus: false,
-    // refetchOnReconnect: true,
-    // refetchInterval: 60000,
     queryFn: fetchData,
   });
 
@@ -354,6 +352,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
           position: "bottom-right",
           showConfirmButton: false,
         })
+        refetch();
       }
 
     } catch (error) {
@@ -714,28 +713,26 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     }
   }, [data]);
 
+  const fetchUpdatedVL = async (oficio: NotionPage) => {
+    // Essa função recebe um objeto do tipo NotionPage e retorna um objeto do tipo IWalletResponse com os valores atualizados
+    try {
+        const response = await api.post('/api/extrato/wallet/', {
+            oficio
+        });
+        setVlData(response.data);
+        // refetch();
+
+    } catch (error: any) {
+        throw new Error(error.message);
+    } 
+}
   useEffect(() => {
-    const fetchUpdatedVL = async (oficio: NotionPage) => {
-      // Essa função recebe um objeto do tipo NotionPage e retorna um objeto do tipo IWalletResponse com os valores atualizados
-      try {
-          const response = await api.post('/api/extrato/wallet/', {
-              oficio
-          });
-          setVlData(response.data);
-
-      } catch (error: any) {
-          throw new Error(error.message);
-      } 
-  }
-
-  // if (happenedRecalculation) {
-  //     fetchUpdatedVL(recalculationData);
-  //     setHappenedRecalculation(false);
-  // }
   if (data) {
     fetchUpdatedVL(data);
   }
-  }, [data])
+
+  }, [data]);
+  
     
 
   if (!data) {
@@ -1217,7 +1214,68 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                   )}
 
                 </div>
-                <div className="col-span-2 3xl:col-span-2 flex flex-col gap-6">
+                
+              </div>
+
+              <hr className="border border-stroke dark:border-strokedark mt-6" />
+              <div className="flex items-center justify-center gap-6 mt-6">
+                <p>
+                  Valor Líquido:{" "}
+                </p>
+                {
+                  !isLoading && (
+                    <span>
+                      {numberFormat(happenedRecalculation === false ? data?.properties["Valor Líquido (Com Reserva dos Honorários)"]?.formula?.number || 0 : recalculationData.result.net_mount_to_be_assigned)}
+                    </span>
+                  )
+                }
+              </div>
+
+              <div className="flex items-center justify-center gap-6 mt-6">
+
+                <Button
+                  type="submit"
+                  variant="success"
+                  isLoading={isLoadingRecalculation}
+                  disabled={!isFormModified}
+                  className="py-2 px-4 rounded-md flex items-center gap-3 disabled:opacity-50 disabled:hover:bg-green-500 uppercase text-sm"
+                >
+                  <BiSolidCalculator className="h-4 w-4" />
+                  <span className="font-medium">Recalcular</span>
+                </Button>
+
+                {data?.properties["Memória de Cálculo Ordinário"].url && (
+                  <Link
+                    href={data?.properties["Memória de Cálculo Ordinário"].url}
+                    className="bg-blue-600 hover:bg-blue-700 text-snow py-2 px-4 rounded-md flex items-center gap-3 transition-colors duration-300 uppercase text-sm"
+                  >
+                    <GrDocumentText className="h-4 w-4" />
+                    <span className="font-medium">Memória de Cálculo Simples</span>
+                  </Link>
+                )}
+
+                {data?.properties["Memória de Cálculo RRA"].url && (
+                  <Link
+                    href={data?.properties["Memória de Cálculo RRA"].url}
+                    target="_blank"
+                    referrerPolicy="no-referrer"
+                    className="bg-blue-600 hover:bg-blue-700 text-snow py-2 px-4 rounded-md flex items-center gap-3 transition-colors duration-300 uppercase text-sm"
+                  >
+                    <GrDocumentText className="h-4 w-4" />
+                    <span className="font-medium">Memória de Cálculo RRA</span>
+                  </Link>
+                )}
+              </div>
+
+            </form>
+          </section>
+        </div>
+      </Form>
+      <div className=" grid grid-cols-12 mt-4 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
+        <div className="col-span-8 3xl:col-span-10">
+      <RentabilityChart data={vlData} />
+      </div>
+      <div className="col-span-4 3xl:col-span-2 flex flex-col gap-6">
                   <h2 className="text-xl font-medium">Rentabilidade x Desembolso</h2>
 
                   <div className="px-10 flex flex-col gap-5">
@@ -1292,64 +1350,6 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
                   </Button>
 
                 </div>
-              </div>
-
-              <hr className="border border-stroke dark:border-strokedark mt-6" />
-              <div className="flex items-center justify-center gap-6 mt-6">
-                <p>
-                  Valor Líquido:{" "}
-                </p>
-                {
-                  !isLoading && (
-                    <span>
-                      {numberFormat(happenedRecalculation === false ? data?.properties["Valor Líquido (Com Reserva dos Honorários)"]?.formula?.number || 0 : recalculationData.result.net_mount_to_be_assigned)}
-                    </span>
-                  )
-                }
-              </div>
-
-              <div className="flex items-center justify-center gap-6 mt-6">
-
-                <Button
-                  type="submit"
-                  variant="success"
-                  isLoading={isLoadingRecalculation}
-                  disabled={!isFormModified}
-                  className="py-2 px-4 rounded-md flex items-center gap-3 disabled:opacity-50 disabled:hover:bg-green-500 uppercase text-sm"
-                >
-                  <BiSolidCalculator className="h-4 w-4" />
-                  <span className="font-medium">Recalcular</span>
-                </Button>
-
-                {data?.properties["Memória de Cálculo Ordinário"].url && (
-                  <Link
-                    href={data?.properties["Memória de Cálculo Ordinário"].url}
-                    className="bg-blue-600 hover:bg-blue-700 text-snow py-2 px-4 rounded-md flex items-center gap-3 transition-colors duration-300 uppercase text-sm"
-                  >
-                    <GrDocumentText className="h-4 w-4" />
-                    <span className="font-medium">Memória de Cálculo Simples</span>
-                  </Link>
-                )}
-
-                {data?.properties["Memória de Cálculo RRA"].url && (
-                  <Link
-                    href={data?.properties["Memória de Cálculo RRA"].url}
-                    target="_blank"
-                    referrerPolicy="no-referrer"
-                    className="bg-blue-600 hover:bg-blue-700 text-snow py-2 px-4 rounded-md flex items-center gap-3 transition-colors duration-300 uppercase text-sm"
-                  >
-                    <GrDocumentText className="h-4 w-4" />
-                    <span className="font-medium">Memória de Cálculo RRA</span>
-                  </Link>
-                )}
-              </div>
-
-            </form>
-          </section>
-        </div>
-      </Form>
-      <div className=" grid grid-cols-12 mt-4 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-      <RentabilityChart data={vlData} />
       </div>
 
       {data?.properties["Status Diligência"].select?.name === "Due Diligence" && (

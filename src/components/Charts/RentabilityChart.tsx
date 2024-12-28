@@ -1,7 +1,7 @@
 import dateFormater from "@/functions/formaters/dateFormater";
 import numberFormat from "@/functions/formaters/numberFormat";
 import percentageFormater from "@/functions/formaters/percentFormater";
-import { handleMesesAteOPagamento, handleRentabilidadeAM, handleRentabilidadeTotal, handleRentabilideAA } from "@/functions/wallet/rentability";
+import { handleMesesAteOPagamento, handleRentabilidadeAM } from "@/functions/wallet/rentability";
 import { IWalletResponse } from "@/interfaces/IWallet";
 import { ApexOptions } from "apexcharts";
 import React, { useEffect, useState } from "react";
@@ -146,6 +146,8 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
     ],
   });
 
+  const [valorInvestido, setValorInvestido] = useState<number>(0);
+
   useEffect(() => {
     setState({
       series: [
@@ -159,6 +161,8 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
         },
       ],
     });
+
+    setValorInvestido(data?.valor_investido);
   }, [data]);
 
   return (
@@ -218,31 +222,9 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
             <span className="block h-2 w-full max-w-2 rounded-full bg-black dark:bg-snow"></span>
           </span>
           <div className="w-full">
-            <p className="font-semibold text-black dark:text-snow">Valor Investido</p>
+            <p className="font-semibold text-xs text-black dark:text-snow">Valor Investido</p>
             {data ? (<p className="text-sm font-medium">{
-              numberFormat(data?.valor_investido)
-            }</p>) : <AiOutlineLoading className="animate-spin mr-2" />}
-          </div>
-        </div>
-        {/* <div className="flex min-w-47.5">
-            <span className="mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-lime-300">
-              <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-black"></span>
-            </span>
-            <div className="w-full">
-              <p className="font-semibold">Rentabilidade Total</p>
-              <p className="text-sm font-medium">{
-                (handleRentabilidadeTotal(response) * 100).toFixed(2) + "%"
-                }</p>
-            </div>
-          </div> */}
-        <div className="flex min-w-60">
-          <span className="mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-black dark:border-snow">
-            <span className="block h-2 w-full max-w-2 rounded-full bg-black dark:bg-snow"></span>
-          </span>
-          <div className="w-full">
-            <p className="font-semibold text-black dark:text-snow">Rentabilidade Projetada A.A</p>
-            {data ? (<p className="text-sm font-medium">{
-              (handleRentabilideAA(handleRentabilidadeTotal(data), handleMesesAteOPagamento(data)) * 100).toFixed(2).replace('.', ',') + "%"
+              numberFormat(valorInvestido)
             }</p>) : <AiOutlineLoading className="animate-spin mr-2" />}
           </div>
         </div>
@@ -251,9 +233,20 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
             <span className="block h-2 w-full max-w-2 rounded-full bg-black dark:bg-snow"></span>
           </span>
           <div className="w-full">
-            <p className="font-semibold text-black dark:text-snow">Rentabilidade Projetada A.M.</p>
+            <p className="font-semibold text-xs text-black dark:text-snow">Rentabilidade Projetada A.A</p>
             {data ? (<p className="text-sm font-medium">{
-              (handleRentabilidadeAM(handleRentabilideAA(handleRentabilidadeTotal(data), handleMesesAteOPagamento(data))) * 100).toFixed(2).replace('.', ',') + "%"
+             (data.rentabilidade_anual * 100).toFixed(2).replace('.', ',') + "%"
+            }</p>) : <AiOutlineLoading className="animate-spin mr-2" />}
+          </div>
+        </div>
+        <div className="flex min-w-60">
+          <span className="mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-black dark:border-snow">
+            <span className="block h-2 w-full max-w-2 rounded-full bg-black dark:bg-snow"></span>
+          </span>
+          <div className="w-full">
+            <p className="font-semibold text-xs text-black dark:text-snow">Rentabilidade Projetada A.M.</p>
+            {data ? (<p className="text-sm font-medium">{
+              (handleRentabilidadeAM(data.rentabilidade_anual) * 100).toFixed(2).replace('.', ',') + "%"
             }</p>) : <AiOutlineLoading className="animate-spin mr-2" />}
           </div>
         </div>

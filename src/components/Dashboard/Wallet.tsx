@@ -30,6 +30,7 @@ const Wallet: React.FC = () => {
     valor_investido: 0,
     valor_projetado: 0,
     previsao_de_pgto: "",
+    rentabilidade_anual: 0,
     result: [
       {
         data_atualizacao: "",

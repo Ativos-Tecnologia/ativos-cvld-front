@@ -1,10 +1,10 @@
 import { IWalletResponse } from "@/interfaces/IWallet";
 
-export function handleRentabilidadeTotal(data: IWalletResponse) {
-  const result =
-    (data?.valor_projetado - data?.valor_investido) / data?.valor_investido;
-  return Number.isNaN(result) ? 0 : result;
-}
+// export function handleRentabilidadeTotal(data: IWalletResponse) {
+//   const result =
+//     (data?.valor_projetado - data?.valor_investido) / data?.valor_investido;
+//   return Number.isNaN(result) ? 0 : result;
+// }
 
 export function handleMesesAteOPagamento(data: IWalletResponse) {
 
@@ -15,16 +15,15 @@ export function handleMesesAteOPagamento(data: IWalletResponse) {
     Math.abs(previsao_de_pgto.getTime() - data_aquisicao.getTime()) /
     (1000 * 60 * 60 * 24 * 30);
 
-  console.log(diffMonths);
   return Number.isNaN(diffMonths) ? 0 : diffMonths;
 }
 
-export function handleRentabilideAA(rentabilidadeTotal: number, mesesAtePagamento: number,) {
+// export function handleRentabilideAA(data: IWalletResponse, mesesAtePagamento: number,) {
 
-  const rentabilidade =
-    Math.pow(1 + rentabilidadeTotal, 12 / mesesAtePagamento) - 1;
-  return Number.isNaN(rentabilidade) ? 0 : rentabilidade;
-}
+//   const rentabilidade =
+//     Math.pow(1 + data.rentabilidade_anual, 12 / mesesAtePagamento) - 1;
+//   return Number.isNaN(rentabilidade) ? 0 : rentabilidade;
+// }
 
 export function handleRentabilidadeAM(rentabilidadeAnual: number) {
   return Math.pow(1 + rentabilidadeAnual, 1 / 12) - 1;
