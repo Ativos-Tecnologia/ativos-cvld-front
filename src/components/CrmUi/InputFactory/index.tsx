@@ -12,6 +12,7 @@ import Image from "next/image";
 import ICelerInputFormField from "@/interfaces/ICelerInputFormField";
 import { AiOutlineLoading } from "react-icons/ai";
 import Cleave from "cleave.js/react";
+import { IoCalendar } from "react-icons/io5";
 
 interface ICelerInputField extends ICelerInputFormField {
     onValueChange?: (name: string, value: any) => void;
@@ -60,7 +61,7 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
                 return (
                     <div className="flex rounded-md gap-4 mt-2 w-full">
                         {props.iconSrc && <div className="flex items-center">{props.iconSrc}</div>}
-                        <Input ref={props.ref} className={cn("shad-input border border-stroke dark:border-strokedark bg-snow", props.className)} {...commonProps} />
+                        <Input ref={props.ref} className={cn("shad-input border border-stroke dark:border-strokedark", props.className)} {...commonProps} />
                     </div>
                 );
             case InputFieldVariant.TEXTAREA:
@@ -95,26 +96,21 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
                 );
             case InputFieldVariant.DATE:
                 return (
-                    <div className="flex rounded-md relative">
-            <Cleave
-                {...commonProps}
-              defaultValue={props.defaultValue}
-              className={`w-full rounded-md border-stroke mt-2 py-2.5 text-sm font-medium dark:bg-boxdark-2 dark:border-strokedark dark:text-bodydark`}
-              options={{
-                date: true,
-                datePattern: ["d", "m", "Y"],
-                delimiter: "/"
-              }}
-            />
-
-          <Image
-            src="/assets/icons/calendar.svg"
-            height={16}
-            width={16}
-            alt="calendar"
-            className="absolute right-3 top-5"
-          />
-        </div>
+                    <div className="flex gap-4 rounded-md w-full mt-2">
+                        <div className="flex items-center">
+                            <IoCalendar className="self-center" />
+                        </div>
+                        <Cleave
+                            {...commonProps}
+                            defaultValue={props.defaultValue}
+                            className={`w-full rounded-md border-stroke py-2 px-3 h-11 text-sm font-medium dark:bg-boxdark-2 dark:border-strokedark dark:text-bodydark`}
+                            options={{
+                                date: true,
+                                datePattern: ["d", "m", "Y"],
+                                delimiter: "/"
+                            }}
+                        />
+                    </div>
                 );
             case InputFieldVariant.SELECT:
                 return (
