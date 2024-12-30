@@ -1355,29 +1355,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
               <div className="grid grid-cols-4 3xl:grid-cols-5 gap-6 mt-6">
                 <div className="col-span-2 3xl:col-span-3 grid grid-cols-2 gap-6">
-                  {/* destacamento de honorários */}
-                  <div className="col-span-2 flex gap-6">
-                    <div className="flex items-center gap-4">
-                      {form.watch("ja_possui_destacamento") ? (
-                        <>
-                          <span className="text-sm font-semibold">
-                            Destaque de Honorários:
-                          </span>
-
-                          <span className="text-sm">
-                            {data?.properties["Percentual de Honorários Não destacados"].number! * 100 || 0}%
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <span className="text-sm font-semibold">
-                            Destacamento de Honorários:
-                          </span>
-                          <span className="text-sm">Não</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
 
                   {/* percentual adquirido */}
                   <div className="col-span-1">
@@ -1395,6 +1372,32 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                         control={form.control}
                         name="percentual_a_ser_adquirido"
                         label="Percentual de Aquisição (%)"
+                        fieldType={InputFieldVariant.NUMBER}
+                        className="w-full"
+                      />
+                    </div>
+                  ) : (
+                    <div className="col-span-1">&nbsp;</div>
+                  )}
+
+                  {/* destacamento de honorários */}
+                  <div className="col-span-1 flex gap-6">
+                    <CelerInputFormField
+                      control={form.control}
+                      name="ja_possui_destacamento"
+                      label="Já Possui Destacamento de Honorários?"
+                      fieldType={InputFieldVariant.CHECKBOX}
+                      className="w-full"
+                    />
+
+                  </div>
+
+                  {!form.watch("ja_possui_destacamento") ? (
+                    <div className="col-span-1">
+                      <CelerInputFormField
+                        control={form.control}
+                        name="percentual_de_honorarios"
+                        label="Percentual de Honorários (%)"
                         fieldType={InputFieldVariant.NUMBER}
                         className="w-full"
                       />
@@ -1744,6 +1747,18 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                 (data.properties["Proposta Escolhida - Celer"].number || 0)
               )
             }
+            iconSrc={<GiReceiveMoney className="self-center" />}
+            iconAlt="money"
+            className="w-full disabled:dark:text-white disabled:text-boxdark"
+            disabled={true}
+          />
+        </div>
+        <div className="col-span-1">
+          <CelerInputField
+            name="percentual_de_honorarios"
+            fieldType={InputFieldVariant.INPUT}
+            label="Destacamento de Honorários"
+            defaultValue={percentageFormater(data?.properties["Percentual de Honorários Não destacados"].number || 0)}
             iconSrc={<GiReceiveMoney className="self-center" />}
             iconAlt="money"
             className="w-full disabled:dark:text-white disabled:text-boxdark"
