@@ -149,7 +149,7 @@
   }
 
   .shad-textArea {
-    @apply dark:bg-boxdark bg-white placeholder:text-bodydark2 dark:border-boxdark-2/70 border-stroke focus-visible:ring-0 focus-visible:ring-offset-0 !important;
+    @apply dark:bg-boxdark-2 bg-white placeholder:text-bodydark2 dark:border-boxdark-2/70 border-stroke focus-visible:ring-0 focus-visible:ring-offset-0 !important;
   }
 
   .shad-combobox-item {
