@@ -1528,11 +1528,11 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                       Data de atualização não pode ser menor que a data da requisição
                     </span>
                   )}
-
-
-
                 </div>
+
+
                 <div className="col-span-12">
+                <hr className="border border-stroke dark:border-strokedark col-span-12 my-6" />
                   <CelerInputFormField
                     name="observacao"
                     control={form.control}
@@ -1635,6 +1635,23 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
         <div className="col-span-1">
           <CelerInputField
+            name="vl_com_reservas"
+            fieldType={InputFieldVariant.INPUT}
+            label="Valor Líquido"
+            defaultValue={
+              numberFormat(
+                (data.properties["Valor Líquido (Com Reserva dos Honorários)"]?.formula?.number || 0)
+              )
+            }
+            iconSrc={<GiReceiveMoney className="self-center" />}
+            iconAlt="money"
+            className="w-full disabled:dark:text-white disabled:text-boxdark"
+            disabled={true}
+          />
+        </div>
+
+        {/* <div className="col-span-1">
+          <CelerInputField
             name="valor_projetado"
             fieldType={InputFieldVariant.INPUT}
             label="Valor Projetado"
@@ -1644,19 +1661,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             className="w-full disabled:dark:text-white disabled:text-boxdark"
             disabled={true}
           />
-        </div>
-        <div className="col-span-1">
-          <CelerInputField
-            name="custo"
-            fieldType={InputFieldVariant.INPUT}
-            label="Custo do precatório"
-            defaultValue={percentageFormater(data?.properties["Custo do precatório"]?.formula?.number || 0)}
-            iconSrc={<GiReceiveMoney className="self-center" />}
-            iconAlt="receive_money"
-            className="w-full disabled:dark:text-white disabled:text-boxdark"
-            disabled={true}
-          />
-        </div>
+        </div> */}
+        
         <div className="col-span-1">
           <CelerInputField
             name="proposta"
@@ -1683,16 +1689,32 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         </div>
         <div className="col-span-1">
           <CelerInputField
-            name="previsao_de_pgto"
-            fieldType={InputFieldVariant.DATE}
-            label="Previsão de pagamento"
-            defaultValue={dateFormater(data?.properties["Previsão de pagamento"]?.date?.start)}
-            iconSrc={<RiCalendarScheduleFill className="self-center" />}
-            iconAlt="law"
+            name="custo_total"
+            fieldType={InputFieldVariant.INPUT}
+            label="Custo total do Precatório (absoluto)"
+            defaultValue={
+              numberFormat(
+                (data.properties["Comissão - Celer"].number || 0) +
+                (data.properties["Proposta Escolhida - Celer"].number || 0)
+              )
+            }
+            iconSrc={<GiReceiveMoney className="self-center" />}
+            iconAlt="money"
             className="w-full disabled:dark:text-white disabled:text-boxdark"
-            onSubmit={(_, value) => handleUpdatePrevisaoDePagamento(value, id)}
+            disabled={true}
           />
-
+        </div>
+        <div className="col-span-1">
+          <CelerInputField
+            name="custo"
+            fieldType={InputFieldVariant.INPUT}
+            label="Custo do precatório"
+            defaultValue={percentageFormater(data?.properties["Custo do precatório"]?.formula?.number || 0)}
+            iconSrc={<GiReceiveMoney className="self-center" />}
+            iconAlt="receive_money"
+            className="w-full disabled:dark:text-white disabled:text-boxdark"
+            disabled={true}
+          />
         </div>
         <div className="col-span-1">
           <CelerInputField
@@ -1720,15 +1742,10 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         </div>
         <div className="col-span-1">
           <CelerInputField
-            name="custo_total"
+            name="percentual_de_honorarios"
             fieldType={InputFieldVariant.INPUT}
-            label="Custo total do Precatório (absoluto)"
-            defaultValue={
-              numberFormat(
-                (data.properties["Comissão - Celer"].number || 0) +
-                (data.properties["Proposta Escolhida - Celer"].number || 0)
-              )
-            }
+            label="Destacamento de Honorários"
+            defaultValue={percentageFormater(data?.properties["Percentual de Honorários Não destacados"].number || 0)}
             iconSrc={<GiReceiveMoney className="self-center" />}
             iconAlt="money"
             className="w-full disabled:dark:text-white disabled:text-boxdark"
@@ -1753,22 +1770,14 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             disabled={true}
           />
         </div>
-        <div className="col-span-1">
-          <CelerInputField
-            name="percentual_de_honorarios"
-            fieldType={InputFieldVariant.INPUT}
-            label="Destacamento de Honorários"
-            defaultValue={percentageFormater(data?.properties["Percentual de Honorários Não destacados"].number || 0)}
-            iconSrc={<GiReceiveMoney className="self-center" />}
-            iconAlt="money"
-            className="w-full disabled:dark:text-white disabled:text-boxdark"
-            disabled={true}
-          />
-        </div>
+        
       </section>
 
       <section id="valores_grafico">
         <div className="grid grid-cols-12 gap-4 md:gap-6 2xl:gap-7.5">
+          {/*
+          Deve ser feita uma verificação em "Data de aquisição do precatório" para que o gráfico seja exibido ou não - situação em que o precatório ainda não foi adquirido. Caso não tenha sido adquirido, o gráfico não deve ser exibido, ficando apenas uma div opaca com a mensagem "Gráfico de rentabilidade indisponível".
+          */}
           <div className="col-span-8 3xl:col-span-8">
             <RentabilityChart data={vlData} />
           </div>
@@ -1848,6 +1857,32 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             {sliderError && (
               <span className="text-red-500 dark:text-red-400 text-xs uppercase font-medium text-center">Valores fora do escopo permitido!</span>
             )}
+
+
+        <div className="col-span-1">
+          <CelerInputField
+            name="valor_projetado"
+            fieldType={InputFieldVariant.INPUT}
+            label="Valor Projetado"
+            defaultValue={numberFormat(data?.properties["Valor Projetado"]?.number || 0)}
+            iconSrc={<GiReceiveMoney className="self-center" />}
+            iconAlt="receive_money"
+            className="w-full disabled:dark:text-white disabled:text-boxdark"
+            disabled={true}
+          />
+        </div>
+        <div className="col-span-1">
+          <CelerInputField
+            name="previsao_de_pgto"
+            fieldType={InputFieldVariant.DATE}
+            label="Previsão de pagamento"
+            defaultValue={dateFormater(data?.properties["Previsão de pagamento"]?.date?.start)}
+            iconSrc={<RiCalendarScheduleFill className="self-center" />}
+            iconAlt="law"
+            className="w-full disabled:dark:text-white disabled:text-boxdark"
+            onSubmit={(_, value) => handleUpdatePrevisaoDePagamento(value, id)}
+          />
+        </div>
 
           </div>
         </div>

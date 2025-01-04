@@ -20,6 +20,33 @@ export interface RentabilityChartProps {
 
 const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
 
+
+  function atualizacaoProjetadaAM(data: IWalletResponse) {
+    const ultimoValor = data.result[data.result.length - 1].valor_liquido_disponivel;
+    const dataDeAtualizacao = new Date(data.result[data.result.length - 1].data_atualizacao);
+
+    const dataPagamento = [];
+    while (dataDeAtualizacao < new Date(data.previsao_de_pgto)) {
+      dataDeAtualizacao.setMonth(dataDeAtualizacao.getMonth() + 1);
+      dataPagamento.push(new Date(dataDeAtualizacao).toISOString().split('T')[0]);
+    }
+   
+    const rentabilidadeAnual = data.rentabilidade_anual;  
+    const rentabilidadeMensal = handleRentabilidadeAM(rentabilidadeAnual);
+    const mesesAteOPagamento = handleMesesAteOPagamento(data);
+    const valorAtualizado = [];
+    let valor = ultimoValor;
+    for (let i = 0; i < Math.floor(mesesAteOPagamento); i++) {
+      valor += valor * Number(rentabilidadeMensal);
+      valorAtualizado.push(valor);
+      
+    }
+    return {
+      data: dataPagamento.map((item) => dateFormater(item).slice(3, 10)),
+      valor: valorAtualizado
+    }
+  }
+
   const options: ApexOptions = {
     legend: {
       show: true,
@@ -103,7 +130,7 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
     },
     xaxis: {
       type: "category",
-      categories: data?.result.map((item) => dateFormater(item.data_atualizacao).slice(3, 10)),
+      categories: data?.result.map((item) => dateFormater(item.data_atualizacao).slice(3, 10)).concat(atualizacaoProjetadaAM(data).data) || [],
       axisBorder: {
         show: true,
       },
@@ -132,6 +159,10 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
 
   };
 
+  
+
+
+
 
   const [state, setState] = useState<ChartOneState>({
     series: [
@@ -157,16 +188,19 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
         // },
         {
           name: "Total Atualizado",
-          data: data?.result.map((item) => Number(item.valor_liquido_disponivel.toFixed(2))) || [],
+          // Aqui eu pego o valor líquido disponível de cada mês e arredondo para 2 casas decimais. Também quero adicionar o valor atualizado de cada mês até o pagamento no gráfico
+          data: data?.result.map((item) => Number(item.valor_liquido_disponivel.toFixed(2))).concat(atualizacaoProjetadaAM(data).valor) || [],
         },
       ],
     });
+
+    console.log(atualizacaoProjetadaAM(data).data);
 
     setValorInvestido(data?.valor_investido);
   }, [data]);
 
   return (
-    <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-12">
+    <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-6 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-12">
       <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
         <div className="flex w-full flex-wrap gap-3 sm:gap-5">
           <div className="flex min-w-56">
@@ -246,7 +280,7 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
           <div className="w-full">
             <p className="font-semibold text-xs text-black dark:text-snow">Rentabilidade Projetada A.M.</p>
             {data ? (<p className="text-sm font-medium">{
-              (handleRentabilidadeAM(data.rentabilidade_anual) * 100).toFixed(2).replace('.', ',') + "%"
+              (Number(handleRentabilidadeAM(data.rentabilidade_anual)) * 100).toFixed(2).replace('.', ',') + "%"
             }</p>) : <AiOutlineLoading className="animate-spin mr-2" />}
           </div>
         </div>
