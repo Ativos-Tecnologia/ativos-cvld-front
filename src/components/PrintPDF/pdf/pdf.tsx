@@ -6,11 +6,13 @@ import { useReactToPrint } from 'react-to-print';
 
 /***
  * @name PagePDF
- * @description Componente para gerar PDF
+ * @author @RobsonFe
+ * @description Componente de exemplo para gerar PDF
  * Esse Componente é responsável por gerar um PDF a partir do componente PrintPDF,
  * você deve gerar essa print pelo ref do componente PrintPDF encapsulado em uma div
  * com o ref={documentRef} e passar esse ref para o useReactToPrint.
  * Para funcionar corretamente, a função que faz o print deve ser chamada na mesma página do Componente.
+ * @returns {React.Component}
  */
 
 const PagePDF = () => {
