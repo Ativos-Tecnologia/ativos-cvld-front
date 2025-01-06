@@ -23,6 +23,12 @@ const LifeCycleStep = ({ status }: LifeCycleStepProps) => {
 
     return (
         <div className="main-container dark:bg-boxdark bg-white rounded-md">
+
+            {/* title */}
+            <div className="title-container">
+                <h1>Progresso atual ({status === "Repactuação" ? "Proposta" : status})</h1>
+            </div>
+
             <div className="steps-container">
                 {steps.map((step, index) => {
                     const isCompleted = index < currentIndex;
