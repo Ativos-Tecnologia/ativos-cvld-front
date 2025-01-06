@@ -172,9 +172,10 @@ const Juridico = () => {
                             </>
                           )}
 
-                          <HoverCard.Container 
-                          className="h-65"
-                          backgroundImg={imgPaths[item.tribunal as keyof typeof imgPaths]}
+                          <HoverCard.Container
+                            className="h-65"
+                            backgroundImg={imgPaths[item.tribunal as keyof typeof imgPaths]}
+                            backgroundColorFill="strong"
                           >
                             <HoverCard.Content
                               className={`${item.prazo_final_due && "outline outline-[3px]"} 
@@ -195,7 +196,7 @@ const Juridico = () => {
                                 <HoverCard.InfoList>
                                   <HoverCard.ListItem className="mt-2 col-span-2 border-0">
                                     {/* <p className="text-[10px] text-gray-300">CREDOR</p> */}
-                                    <p className="max-w-[316px] overflow-hidden text-ellipsis whitespace-nowrap text-sm uppercase">
+                                    <p className="max-w-[230px] overflow-hidden text-ellipsis whitespace-nowrap text-sm uppercase">
                                       {item.credor}
                                     </p>
                                   </HoverCard.ListItem>
@@ -214,20 +215,21 @@ const Juridico = () => {
                                     </p>
                                   </HoverCard.ListItem>
 
-                                  <HoverCard.ListItem>
+                                  <HoverCard.ListItem className="border-0">
                                     <p className="text-[10px] text-gray-300">LOA</p>
                                     <p className="text-sm">
                                       {item.loa || "Não possui"}
                                     </p>
                                   </HoverCard.ListItem>
 
-                                  <HoverCard.ListItem>
+                                  <HoverCard.ListItem className="border-0">
                                     <p className="text-[10px] text-gray-300">ESFERA</p>
                                     <p className="text-sm">
                                       {item.esfera}
                                     </p>
                                   </HoverCard.ListItem>
-                                  <HoverCard.ListItem>
+
+                                  <HoverCard.ListItem className="col-span-2">
                                     <p className="text-[10px] text-gray-300">Status da Diligência</p>
                                     <p className="text-xs">
                                       {item.status_diligencia || "Não possui"}
