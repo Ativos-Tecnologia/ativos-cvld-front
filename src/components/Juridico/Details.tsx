@@ -684,13 +684,25 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
   const previsaoDePagamentoMutation = useMutation({
     mutationFn: async (paramsObj: { page_id: string, value: string }) => {
-      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-        "Previsão de pagamento": {
-          "date": {
-            "start": paramsObj.value.split("/").reverse().join("-")
-          }
+      const response = await api.patch(`api/legal/change-estimated-date/${paramsObj.page_id}/`, {
+        "previsao_de_pagamento": paramsObj.value.split("/").reverse().join("-"),
+        "data_base": data?.properties["Data Base"].date?.start,
+        "valor_principal": data?.properties["Valor Principal"]?.number,
+        "valor_juros": data?.properties["Valor Juros"]?.number,
+        "valor_pss": data?.properties["PSS"]?.number,
+        "numero_de_meses": data?.properties["Meses RRA"]?.number,
+        "ir_incidente_rra": data?.properties["IR Incidente sobre RRA"]?.checkbox,
+        "incidencia_pss": data?.properties["Incidência PSS"]?.checkbox,
+        "data_requisicao": data?.properties["Data do Recebimento"].date?.start,
+        "upload_notion": true,
+        "need_to_recalculate_proposal": true,
+        "percentual_a_ser_adquirido": data?.properties["Percentual a ser adquirido"]?.number,
+        "natureza": data?.properties["Natureza"]?.select?.name,
+        "incidencia_juros_moratorios": data?.properties["Incidência de Juros Moratórios"]?.checkbox,
+        "incidencia_rra_ir": data?.properties["Incidencia RRA/IR"]?.checkbox,
         }
-      });
+      );
+
       if (response.status !== 202) {
         throw new Error('houve um erro ao salvar os dados no notion');
       }
@@ -721,6 +733,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         position: "bottom-right",
         showConfirmButton: false,
       });
+      refetch(); // refetch para atualizar o objeto do notion com a nova data
     },
     onSettled: () => {
       setLoadingUpdateState(prev => ({ ...prev, previsaoDePagamento: false }));
@@ -989,7 +1002,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     // Essa função recebe um objeto do tipo NotionPage e retorna um objeto do tipo IWalletResponse com os valores atualizados
     try {
       const response = await api.post('/api/extrato/wallet/', {
-        oficio
+        oficio,
+        from_today: data?.properties["Data de aquisição do precatório"].date?.start ? false : true
       });
       setVlData(response.data);
       // refetch();
@@ -1077,7 +1091,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                   className="self-center" />}
                 iconAlt="user"
                 className="w-full"
-                onValueChange={(_, value) => handleChangeCreditorName(value, id)}
+                onSubmit={(_, value) => handleChangeCreditorName(value, id)}
                 isLoading={loadingUpdateState.nomeCredor}
                 disabled={editLock}
               />

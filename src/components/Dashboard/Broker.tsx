@@ -15,6 +15,8 @@ import BrokerModal from "../Modals/BrokersCedente";
 import DocForm from "../Modals/BrokersDocs";
 import BrokerCardSkeleton from "../Skeletons/BrokerCardSkeleton";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
+import Show from "../Show";
+import { UserInfoAPIContext } from "@/context/UserInfoContext";
 
 /**
  * Componente que renderiza a lista de brokers
@@ -30,6 +32,8 @@ const Broker: React.FC = (): JSX.Element => {
     cardsData,
     docModalInfo,
   } = useContext(BrokersContext);
+
+  const { data: { role, sub_role } } = useContext(UserInfoAPIContext);
 
   const [visibleData, setVisibleData] = useState<NotionPage[]>([]);
   const observerRef = React.useRef<HTMLDivElement>(null);
@@ -96,7 +100,10 @@ const Broker: React.FC = (): JSX.Element => {
       {/* tablet em diante */}
       <div className="flex gap-5 item-center bg-white dark:bg-boxdark mb-5 p-5 rounded-md flex-col 2xsm:hidden md:flex md:justify-between md:flex-row xl:justify-normal">
         {/* <UserFilterComponent /> */}
+        <Show when={role === "ativos" || sub_role === "coordenador"}>
+          <UserShadFilter />
         <UserShadFilter />
+        </Show>
         <CredorFilter />
       </div>
       {/* Mobile */}
