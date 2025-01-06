@@ -28,6 +28,8 @@ enum navItems {
   EM_LIQUIDACAO = "Em liquidação",
   EM_CESSAO = "Em cessão",
   REPACTUACAO = "Repactuação",
+  DUE_EM_ANDAMENTO = "Due em Andamento",
+  REVISAO_DE_DUE = "Revisão de Due Diligence",
 }
 
 export type SimpleNotionData = {
