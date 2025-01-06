@@ -1004,7 +1004,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     // Essa função recebe um objeto do tipo NotionPage e retorna um objeto do tipo IWalletResponse com os valores atualizados
     try {
       const response = await api.post('/api/extrato/wallet/', {
-        oficio
+        oficio,
+        from_today: data?.properties["Data de aquisição do precatório"].date?.start ? false : true
       });
       setVlData(response.data);
       // refetch();
@@ -1092,7 +1093,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                   className="self-center" />}
                 iconAlt="user"
                 className="w-full"
-                onValueChange={(_, value) => handleChangeCreditorName(value, id)}
+                onSubmit={(_, value) => handleChangeCreditorName(value, id)}
                 isLoading={loadingUpdateState.nomeCredor}
                 disabled={editLock}
               />
