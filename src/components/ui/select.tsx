@@ -19,8 +19,9 @@ const SelectTrigger = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <SelectPrimitive.Trigger
     ref={ref}
+    //Caso ocorra algum problema onde o select não seja exibido em uma div, coloque a classe "z-10" no className.
     className={cn(
-      "flex uppercase font-semibold font-satoshi text-xs w-full items-center justify-between rounded-md border border-stroke dark:border-strokedark bg-background px-2 py-2 h-[37px] ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-90 [&>span]:line-clamp-1 dark:bg-boxdark-2 z-10",
+      "flex uppercase font-semibold font-satoshi text-xs w-full items-center justify-between rounded-md border border-stroke dark:border-strokedark bg-background px-2 py-2 h-[37px] ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-90 [&>span]:line-clamp-1 dark:bg-boxdark-2 ",
       className
     )}
     {...props}
@@ -147,14 +148,6 @@ const SelectSeparator = React.forwardRef<
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName
 
 export {
-  Select,
-  SelectGroup,
-  SelectValue,
-  SelectTrigger,
-  SelectContent,
-  SelectLabel,
-  SelectItem,
-  SelectSeparator,
-  SelectScrollUpButton,
-  SelectScrollDownButton,
-}
+  Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue
+};
+
