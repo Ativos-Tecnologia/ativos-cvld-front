@@ -23,7 +23,7 @@ interface IHoverCardIconProps extends React.HTMLAttributes<HTMLSpanElement> {
  * 
  * @returns {JSX.Element} - Componente renderizado
  */
-const HoverCard = ({ disabled=false, children, ...props }: IHoverCardProps): JSX.Element => {
+const HoverCard = ({ disabled = false, children, ...props }: IHoverCardProps): JSX.Element => {
     return (
         <li
             {...props}
@@ -39,17 +39,19 @@ const HoverCard = ({ disabled=false, children, ...props }: IHoverCardProps): JSX
  * 
  * @param {Object} props - Propriedades do componente 
  * @property {ReactNode} props.children - conteudo que será abraçado pelo componente
- * @property {boolean} props.disabled - Informa se o conteúdo está desabilitado para manuseio
+ * @property {boolean} [props.disabled] - Informa se o conteúdo está desabilitado para manuseio
  * @property {string} props.backgroundImg - caminho da imagem para o plano de fundo do card
- * @property {string} props.className - conjunto de classes CSS
+ * @property {string} [props.className] - conjunto de classes CSS 
+ * @property {string} [props.backgroundColorFill="normal"] - modo de preenchimento do plano de fundo do card. default "normal"
  * 
  * @returns {JSX.Element} - Componente renderizado
  */
-const HoverCardContainer = ({ children, disabled, backgroundImg, className }: {
+const HoverCardContainer = ({ children, disabled, backgroundImg, className, backgroundColorFill = "normal" }: {
     children: React.ReactNode;
     disabled?: boolean;
     backgroundImg: string;
     className?: string;
+    backgroundColorFill?: "strong" | "normal";
 }): JSX.Element => {
     return (
         <div
@@ -63,7 +65,10 @@ const HoverCardContainer = ({ children, disabled, backgroundImg, className }: {
                     height={220}
                     className="transition-all duration-500 group-hover:scale-105 h-65"
                 />
-                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.9)_40%,rgba(0,0,0,0.2)_90%)]"></div>
+                {backgroundColorFill === "strong"
+                    ? <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.9)_40%,rgba(0,0,0,0.5)_90%)]"></div>
+                    : <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.9)_40%,rgba(0,0,0,0.2)_90%)]"></div>
+                }
             </div>
             {children}
         </div>
