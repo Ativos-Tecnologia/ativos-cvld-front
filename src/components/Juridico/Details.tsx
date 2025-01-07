@@ -18,7 +18,7 @@ import UseMySwal from "@/hooks/useMySwal";
 import { NotionPage } from "@/interfaces/INotion";
 import { IWalletResponse } from "@/interfaces/IWallet";
 import api from "@/utils/api";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import Link from "next/link";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -32,7 +32,7 @@ import { GiReceiveMoney } from "react-icons/gi";
 import { GrDocumentText, GrDocumentUser } from "react-icons/gr";
 import { IoIosPaper } from "react-icons/io";
 import { IoCalendar, IoDocumentTextSharp, IoGlobeOutline } from "react-icons/io5";
-import { LuHandshake } from "react-icons/lu";
+import { LuClipboardCheck, LuCopy, LuHandshake } from "react-icons/lu";
 import { RiCalendarScheduleFill } from "react-icons/ri";
 import { TbMoneybag } from "react-icons/tb";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
@@ -82,6 +82,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     ]
   });
   const [fetchingVL, setFetchingVL] = useState<boolean>(false);
+  const [linkCopied, setLinkCopied] = useState<boolean>(false);
   const [observation, setObservation] = useState<string>("");
   const [formData, setFormData] = useState<any>(null);
   const [happenedRecalculation, setHappenedRecalculation] = useState<boolean>(false);
@@ -100,6 +101,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     observacoes: false,
     responsavel: false,
     previsaoDePagamento: false,
+    linkDue: false
   });
   const [editLock, setEditLock] = useState<boolean>(false);
   const [disabledSaveButton, setDisabledSaveButton] = useState<boolean>(true);
@@ -114,6 +116,8 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   /* refs */
   const rentabilidadeSlideRef = useRef<HTMLInputElement>(null);
   const desembolsoSlideRef = useRef<HTMLInputElement>(null);
+  const linkDueInputRef = useRef<HTMLInputElement>(null);
+  console.log(linkDueInputRef?.current?.value)
 
   const handleDueDiligence = () => {
     swal.fire({
@@ -232,6 +236,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     queryFn: fetchData,
     refetchOnWindowFocus: false,
   });
+  const queryClient = useQueryClient();
 
   const onSubmitForm = async (formData: any) => {
     setIsLoadingRecalculation(true);
@@ -481,6 +486,89 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
   }
 
+  const handleUpdatePrevisaoDePagamento = async (value: string, page_id: string) => {
+    await previsaoDePagamentoMutation.mutateAsync({
+      page_id,
+      value
+    });
+  }
+
+  const handleUpdateObservation = async (value: string, page_id: string) => {
+    await observationMutation.mutateAsync({
+      page_id,
+      value
+    });
+  }
+
+  const handleUpdateDueLink = async (value: string, page_id: string) => {
+    await dueLinkMutation.mutateAsync({
+      page_id,
+      value
+    })
+  }
+
+  const handleCopyDueLink = (link: string) => {
+    console.log(link)
+    navigator.clipboard.writeText(link);
+    setLinkCopied(true);
+
+    setTimeout(() => setLinkCopied(false), 2000);
+  }
+
+
+  // ----> Mutations <-----
+  const dueLinkMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string | null }) => {
+
+      if (paramsObj.value === "") {
+        paramsObj.value = null
+      }
+
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Link de Due Diligence": {
+          "url": paramsObj.value
+        }
+      });
+
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+
+      return response.data
+    },
+    onMutate: async () => {
+      setLoadingUpdateState(prev => ({ ...prev, linkDue: true }));
+      setEditLock(true);
+    },
+    onError: () => {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'error',
+        text: "Houve um erro ao atualizar o campo Link do Ofício",
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSuccess: () => {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'success',
+        text: "Campo Link do Ofício atualizado com sucesso",
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+      refetch();
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, linkDue: false }));
+    }
+  });
+
   const resposavelMutation = useMutation({
     mutationFn: async (paramsObj: { page_id: string }) => {
       const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
@@ -530,7 +618,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     }
   });
 
-  // ----> Mutations <-----
   const creditorNameMutation = useMutation({
     mutationFn: async (paramsObj: { page_id: string, value: string }) => {
       const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
@@ -700,7 +787,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         "natureza": data?.properties["Natureza"]?.select?.name,
         "incidencia_juros_moratorios": data?.properties["Incidência de Juros Moratórios"]?.checkbox,
         "incidencia_rra_ir": data?.properties["Incidencia RRA/IR"]?.checkbox,
-        }
+      }
       );
 
       if (response.status !== 202) {
@@ -937,20 +1024,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     }
   });
 
-  const handleUpdatePrevisaoDePagamento = async (value: string, page_id: string) => {
-    await previsaoDePagamentoMutation.mutateAsync({
-      page_id,
-      value
-    });
-  }
-
-  const handleUpdateObservation = async (value: string, page_id: string) => {
-    await observationMutation.mutateAsync({
-      page_id,
-      value
-    });
-  }
-
   useEffect(() => {
     if (data && sliderValues.rentabilidade !== 0 && sliderValues.desembolso !== 0) {
       if (
@@ -1027,6 +1100,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       <JuridicoDetailsSkeleton />
     )
   }
+
+  console.log(data)
 
   return (
     <div className="flex flex-col w-full gap-5">
@@ -1544,7 +1619,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
 
                 <div className="col-span-12">
-                <hr className="border border-stroke dark:border-strokedark col-span-12 my-6" />
+                  <hr className="border border-stroke dark:border-strokedark col-span-12 my-6" />
                   <CelerInputFormField
                     name="observacao"
                     control={form.control}
@@ -1622,25 +1697,62 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         </div>
       </Form>
 
+      <section id="due_diligence" className="form-inputs-container">
+        <div className="text-bodydark2 col-span-4 3xl:col-span-5">
+          <h2 className="font-medium mb-2">
+            Due Diligence
+          </h2>
+          <p className="text-sm">
+            Qualquer pessoa com o link poderá acessar o documento
+          </p>
+        </div>
+        <div className="flex items-center gap-2 col-span-4 3xl:col-span-5">
+          <CelerInputField
+            name="link_due_diligence"
+            ref={linkDueInputRef}
+            fieldType={InputFieldVariant.INPUT}
+            placeholder="Digite o link"
+            isLoading={loadingUpdateState.linkDue}
+            defaultValue={data?.properties["Link de Due Diligence"]?.url || "Sem link disponível"}
+            className="w-100 !h-10"
+            onSubmit={(_, value) => handleUpdateDueLink(value, id)}
+          />
+
+          <Button
+            disabled={!data?.properties["Link de Due Diligence"]?.url || editLock}
+            className="disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+            onClick={() => window.open(data?.properties["Link da Due"]?.url, '_blank')}
+          >
+            <FaLink />
+            Visualizar Due
+          </Button>
+
+          <Button
+            disabled={!data?.properties["Link de Due Diligence"]?.url || editLock}
+            className={`disabled:opacity-50 disabled:cursor-not-allowed mt-2 ${linkCopied && "!text-snow !bg-green-500 hover:!bg-green-600"}`}
+            onClick={() => handleCopyDueLink(linkDueInputRef?.current?.value || "")}
+          >
+            {linkCopied ? (
+              <>
+                <LuClipboardCheck />
+                <p>Link Copiado!</p>
+              </>
+            ) : (
+              <>
+                <LuCopy />
+                Copiar
+              </>
+            )}
+          </Button>
+        </div>
+      </section>
+
       <section id="cedentes" className="form-inputs-container">
-        <div className="col-span-4 w-full 3xl:col-span-5">
+        <div className="col-span-4 w-full 3xl:col-span-5 mb-3">
           <div className="flex 2xsm:flex-col md:flex-row justify-between gap-4 w-full">
             <h3 className="text-bodydark2 font-medium">
               Detalhes do precatório
             </h3>
-            <div className="">
-              {/* Botão com Link da Due */}
-              <button
-                disabled={!data?.properties["Link da Due"]?.url}
-                onClick={() => window.open(data?.properties["Link da Due"]?.url, '_blank')}
-                className="border border-strokedark/20 dark:border-stroke/20 dark:text-white text-slate-600 py-1 px-4 2xsm:w-full text-center md:w-fit rounded-md flex items-center gap-3 uppercase text-sm font-medium hover:bg-strokedark/20 dark:hover:bg-stroke/20 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-strokedark/20 dark:disabled:bg-stroke/20"
-              >
-                <FaLink />
-                Visualizar Due
-              </button>
-
-            </div>
-
           </div>
 
         </div>
@@ -1674,7 +1786,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             disabled={true}
           />
         </div> */}
-        
+
         <div className="2xsm:col-span-4 xl:col-span-1">
           <CelerInputField
             name="proposta"
@@ -1782,7 +1894,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             disabled={true}
           />
         </div>
-        
+
       </section>
 
       <section id="valores_grafico">
@@ -1870,33 +1982,33 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               <span className="text-red-500 dark:text-red-400 text-xs uppercase font-medium text-center">Valores fora do escopo permitido!</span>
             )}
 
-        <div>
-              
-        <div className="col-span-1">
-          <CelerInputField
-            name="valor_projetado"
-            fieldType={InputFieldVariant.INPUT}
-            label="Valor Projetado"
-            defaultValue={numberFormat(data?.properties["Valor Projetado"]?.number || 0)}
-            iconSrc={<GiReceiveMoney className="self-center" />}
-            iconAlt="receive_money"
-            className="w-full disabled:dark:text-white disabled:text-boxdark"
-            disabled={true}
-          />
-        </div>
-        <div className="col-span-1">
-          <CelerInputField
-            name="previsao_de_pgto"
-            fieldType={InputFieldVariant.DATE}
-            label="Previsão de pagamento"
-            defaultValue={dateFormater(data?.properties["Previsão de pagamento"]?.date?.start)}
-            iconSrc={<RiCalendarScheduleFill className="self-center" />}
-            iconAlt="law"
-            className="w-full disabled:dark:text-white disabled:text-boxdark"
-            onSubmit={(_, value) => handleUpdatePrevisaoDePagamento(value, id)}
-          />
-        </div>
-        </div>
+            <div>
+
+              <div className="col-span-1">
+                <CelerInputField
+                  name="valor_projetado"
+                  fieldType={InputFieldVariant.INPUT}
+                  label="Valor Projetado"
+                  defaultValue={numberFormat(data?.properties["Valor Projetado"]?.number || 0)}
+                  iconSrc={<GiReceiveMoney className="self-center" />}
+                  iconAlt="receive_money"
+                  className="w-full disabled:dark:text-white disabled:text-boxdark"
+                  disabled={true}
+                />
+              </div>
+              <div className="col-span-1">
+                <CelerInputField
+                  name="previsao_de_pgto"
+                  fieldType={InputFieldVariant.DATE}
+                  label="Previsão de pagamento"
+                  defaultValue={dateFormater(data?.properties["Previsão de pagamento"]?.date?.start)}
+                  iconSrc={<RiCalendarScheduleFill className="self-center" />}
+                  iconAlt="law"
+                  className="w-full disabled:dark:text-white disabled:text-boxdark"
+                  onSubmit={(_, value) => handleUpdatePrevisaoDePagamento(value, id)}
+                />
+              </div>
+            </div>
 
           </div>
         </div>
