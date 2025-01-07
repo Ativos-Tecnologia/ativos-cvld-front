@@ -747,7 +747,7 @@ const DashbrokersCard = ({ oficio }:
 
         if (specificCardData !== null && specificCardData.id === mainData?.id) {
             setMainData(specificCardData);
-        } else {
+        } else if (isFirstLoad.current === true) {
             setMainData(oficio);
         }
 
