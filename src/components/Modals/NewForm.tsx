@@ -1550,7 +1550,7 @@ const NewForm = () => {
                             </span>
                           </h3>
                         </div>)}
-                       {watch("data_requisicao")! <= "2023-04-02" &&( watch("esfera") === "ESTADUAL" || watch("esfera") === "MUNICIPAL") && (
+                       {watch("data_requisicao")! <= "2023-04-02" &&((watch("esfera") === "ESTADUAL" || watch("esfera") === "MUNICIPAL") && watch("tipo_do_oficio") !== "CREDITÓRIO") && (
                         <div className="absolute w-full min-h-full bg-slate-700/90 flex justify-center items-center flex-col">
                           <h2 className="p-4 uppercase text-md font-medium font-satoshi w-full text-center">
                             Não é possível calcular valores de proposta e comissão para ativos com <span title="Lei Oçamentária Anual" className="underline">L.O.A</span> inferior (ou igual) a 2024
