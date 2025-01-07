@@ -102,7 +102,6 @@ const Broker: React.FC = (): JSX.Element => {
         {/* <UserFilterComponent /> */}
         <Show when={role === "ativos" || sub_role === "coordenador"}>
           <UserShadFilter />
-        <UserShadFilter />
         </Show>
         <CredorFilter />
       </div>
