@@ -741,17 +741,22 @@ const DashbrokersCard = ({ oficio }:
     }
 
     /**
-     * Define o estado de mainData
+     * Define o estado de mainData como oficio quando a página
+     * é renderizada ou é feito algum filtro
      */
     useEffect(() => {
+        setMainData(oficio);
+    }, [oficio]);
 
+    /**
+     * Define o estado de mainData como specificCardData
+     * quando há alguma alteração no card
+     */
+    useEffect(() => {
         if (specificCardData !== null && specificCardData.id === mainData?.id) {
             setMainData(specificCardData);
-        } else if (isFirstLoad.current === true) {
-            setMainData(oficio);
         }
-
-    }, [oficio, specificCardData])
+    }, [specificCardData])
 
     /**
      * Faz o fetch em todos os checks do card quando
