@@ -50,7 +50,6 @@ const SignIn: React.FC = () => {
   }> {
     try {
       const response = await api.get("/api/profile/");
-      console.log(response.data);
       return ({
         "product": response.data.product,
         "staff_approvation": response.data.staff_approvation,
@@ -101,7 +100,7 @@ const SignIn: React.FC = () => {
       MySwal.fire({
       icon: "error",
       title: "Erro ao Efetuar Login",
-      text: `Confirmação Pendente: ${error.response.data.error}`,
+      text: `${error.response.data.error}`,
       });
     } finally {
       setLoading(false);
