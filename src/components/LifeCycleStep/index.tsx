@@ -1,5 +1,5 @@
 import React from 'react';
-import {  FaSearchDollar } from 'react-icons/fa';
+import { FaSearchDollar } from 'react-icons/fa';
 import { MdOutlineContentPasteSearch, MdOutlineHandshake } from 'react-icons/md';
 import "./styles.css";
 import { FaCircleCheck, FaUserClock } from 'react-icons/fa6';
@@ -12,14 +12,31 @@ type LifeCycleStepProps = {
 const steps = [
     { label: "Prospecção", alias: "Prospecção", icon: <FaSearchDollar className="text-2xl" /> },
     { label: "Negociação em andamento", alias: "Negociação", icon: <FaUserClock className="text-2xl" /> },
-    { label: "Proposta", alias: "Proposta", subLabel: "Repactuação", icon: <MdOutlineHandshake className="text-2xl" /> },
-    { label: "Due Diligence", alias: "Due", icon: <MdOutlineContentPasteSearch className="text-2xl" /> },
+    {
+        label: "Proposta",
+        alias: "Proposta",
+        subLabels: [
+            "Repactuação",
+            "Pendência a Sanar",
+            "Juntar Documentos"
+        ],
+        icon: <MdOutlineHandshake className="text-2xl" />
+    },
+    {
+        label: "Due Diligence",
+        alias: "Due",
+        subLabels: [
+            "Due em Andamento",
+            "Revisão de Due Diligence"
+        ],
+        icon: <MdOutlineContentPasteSearch className="text-2xl" />
+    },
     { label: "Em liquidação", alias: "Liquidação", icon: <BiMoneyWithdraw className="text-2xl" /> },
     { label: "Concluído", alias: "Concluído", icon: <FaCircleCheck className="text-2xl" /> },
 ];
 
 const LifeCycleStep = ({ status }: LifeCycleStepProps) => {
-    const currentIndex = steps.findIndex(step => step.label === status || step.subLabel === status);
+    const currentIndex = steps.findIndex(step => step.label === status || step.subLabels?.includes(status));
 
     return (
         <div className="main-container dark:bg-boxdark bg-white rounded-md">
@@ -53,9 +70,8 @@ const LifeCycleStep = ({ status }: LifeCycleStepProps) => {
                             </div>
                             {index < steps.length - 1 && (
                                 <div
-                                    className={`line ${isCompleted ? 'completed' : ''} ${
-                                        isInProgress ? 'prev-step-in-progress' : ''
-                                    } ${isPrevStepInProgress ? 'next-step-in-progress' : ''}`}
+                                    className={`line ${isCompleted ? 'completed' : ''} ${isInProgress ? 'prev-step-in-progress' : ''
+                                        } ${isPrevStepInProgress ? 'next-step-in-progress' : ''}`}
                                 ></div>
                             )}
                         </React.Fragment>
