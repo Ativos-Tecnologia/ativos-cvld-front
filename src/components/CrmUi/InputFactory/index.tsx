@@ -22,7 +22,8 @@ interface ICelerInputField extends ICelerInputFormField {
     ref?: React.Ref<HTMLInputElement>;
 }
 
-export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) => {
+export const CelerInputField = React.memo(
+    React.forwardRef<HTMLInputElement, ICelerInputField>((props, ref) => {
     const [value, setValue] = useState(props.defaultValue ?? "");
 
     useEffect(() => {
@@ -71,7 +72,7 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
                 return (
                     <div className="flex rounded-md gap-4 mt-2 w-full">
                         {props.iconSrc && <div className="flex items-center">{props.iconSrc}</div>}
-                        <Input ref={props.ref} className={cn("shad-input border border-stroke dark:border-strokedark", props.className)} {...commonProps} />
+                        <Input ref={ref} className={cn("shad-input border border-stroke dark:border-strokedark", props.className)} {...commonProps} />
                     </div>
                 );
             case InputFieldVariant.TEXTAREA:
@@ -98,6 +99,7 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
                             onCheckedChange={(isChecked) => handleChange(isChecked)}
                             disabled={props.disabled || props.isLoading}
                             value={value}
+                            className="border-1 relative box-border block cursor-pointer appearance-none rounded-md border-[#d9d9d9] bg-slate-200 transition-all duration-300 before:absolute before:left-2/4 before:top-[42%] before:h-[10px] before:w-[6px] before:-translate-x-2/4 before:-translate-y-2/4 before:rotate-45 before:scale-0 before:border-b-2 before:border-r-2 before:border-solid before:border-b-white before:border-r-white before:opacity-0 before:transition-all before:delay-100 before:duration-100 before:ease-in before:content-[''] after:absolute after:inset-0 after:rounded-[7px] after:opacity-0 after:shadow-[0_0_0_calc(30px_/_2.5)_#1677ff] after:transition-all after:duration-500 after:ease-in after:content-[''] checked:border-transparent checked:bg-[#1677ff] checked:before:-translate-x-2/4 checked:before:-translate-y-2/4 checked:before:rotate-45 checked:before:scale-x-[1.4] checked:before:scale-y-[1.4] checked:before:opacity-100 checked:before:transition-all checked:before:delay-100 checked:before:duration-200 checked:before:ease-in hover:border-[#1677ff] focus:outline-[#1677ff] [&:active:not(:checked)]:after:opacity-100 [&:active:not(:checked)]:after:shadow-none [&:active:not(:checked)]:after:transition-none"
                         />
                         <label htmlFor={props.name} className={cn("shad-label", props.className)}>
                             {props.label}
@@ -107,9 +109,7 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
             case InputFieldVariant.DATE:
                 return (
                     <div className="flex gap-4 rounded-md w-full mt-2">
-                        <div className="flex items-center">
-                            <IoCalendar className="self-center" />
-                        </div>
+                        {props.iconSrc && <div className="flex items-center">{props.iconSrc}</div>}
                         <Cleave
                             {...commonProps}
                             defaultValue={props.defaultValue}
@@ -149,6 +149,6 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
             {props.error && <p className="text-red-500 text-sm mt-1">{props.error}</p>}
         </div>
     );
-});
+}));
 
 CelerInputField.displayName = "CelerInputField";
