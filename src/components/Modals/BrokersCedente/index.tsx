@@ -1,5 +1,6 @@
 import { BrokersContext } from '@/context/BrokersContext';
 import { NotionPage } from '@/interfaces/INotion';
+import { IdentificationType } from '@/types/document';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Fade } from 'react-awesome-reveal';
 import { TiWarning } from "react-icons/ti";
@@ -10,7 +11,6 @@ export type BrokerModalProps = {
     cardInfo: NotionPage;
 };
 
-export type IdentificationType = "CPF" | "CNPJ" | null
 
 const BrokerModal = () => {
 

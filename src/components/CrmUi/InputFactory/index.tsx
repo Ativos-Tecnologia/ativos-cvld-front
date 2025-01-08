@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { InputFieldVariant } from "@/enums/inputFieldVariants.enum";
-import PhoneInput from "react-phone-number-input";
-import { Checkbox } from "@/components/ui/checkbox";
-import ReactDatePicker from "react-datepicker";
-import { Select, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
-import Image from "next/image";
 import ICelerInputFormField from "@/interfaces/ICelerInputFormField";
-import { AiOutlineLoading } from "react-icons/ai";
+import { cn } from "@/lib/utils";
 import Cleave from "cleave.js/react";
+import React, { useEffect, useState } from "react";
+import { AiOutlineLoading } from "react-icons/ai";
 import { IoCalendar } from "react-icons/io5";
+import PhoneInput from "react-phone-number-input";
 
 interface ICelerInputField extends ICelerInputFormField {
     onValueChange?: (name: string, value: any) => void;
@@ -130,7 +128,7 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
     };
 
     return (
-        <div className="col-span-1">
+        <div className="col-span-1 w-full">
             {(props.label && props.fieldType !== InputFieldVariant.CHECKBOX) && <Label className="shad-input-label">{props.label}</Label>}
             <div className="flex items-center gap-2">
                 {renderInput()}

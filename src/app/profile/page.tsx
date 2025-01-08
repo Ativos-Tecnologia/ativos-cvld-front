@@ -141,7 +141,6 @@ const Profile = () => {
       reader.readAsDataURL(file);
     }
   };
-
   const handleCancelProfileEdit = () => {
     setEditModeUser(!editModeUser);
     setUsernameExists(undefined);
