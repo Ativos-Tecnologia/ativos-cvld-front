@@ -508,11 +508,13 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     })
   }
 
-  const handleCopyDueLink = (link: string) => {
-    navigator.clipboard.writeText(link);
-    setLinkCopied(true);
-
-    setTimeout(() => setLinkCopied(false), 2000);
+  const handleCopyDueLink = () => {
+    if (linkDueInputRef.current) {
+      const value = linkDueInputRef.current.value;
+      navigator.clipboard.writeText(value);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+  }
   }
 
   const handleUpdateRevisaoCalculo = async (value: boolean, page_id: string) => {
@@ -1796,7 +1798,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
           <Button
             disabled={!data?.properties["Link de Due Diligence"]?.url || editLock}
             className={`disabled:opacity-50 disabled:cursor-not-allowed mt-2 ${linkCopied && "!text-snow !bg-green-500 hover:!bg-green-600"}`}
-            onClick={() => handleCopyDueLink(linkDueInputRef?.current?.value || "")}
+            onClick={() => handleCopyDueLink()}
           >
             {linkCopied ? (
               <>
