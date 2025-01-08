@@ -3,8 +3,8 @@
 */
 
 *::-webkit-scrollbar {
-    width: 7px;
-    height: 7px;
+  width: 7px;
+  height: 7px;
 }
 
 /* *::-webkit-scrollbar-track {
@@ -13,9 +13,9 @@
 } */
 
 *::-webkit-scrollbar-thumb {
-    background-color: #5a69aa;
-    border-radius: 5px;
-    /* border: 1px solid #f1f1f1; */
+  background-color: #5a69aa;
+  border-radius: 5px;
+  /* border: 1px solid #f1f1f1; */
 }
 
 /* 
@@ -23,11 +23,17 @@
 */
 
 .custom-scrollbar::-webkit-scrollbar {
-    width: 5px;
-    height: 4px;
+  width: 5px;
+  height: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #5a69aa;
-    border-radius: 5px;
+  background-color: #5a69aa;
+  border-radius: 5px;
+}
+
+.tabs-scrollbar {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #5a69aa;
 }
