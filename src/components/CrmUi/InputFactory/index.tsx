@@ -32,10 +32,20 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
     }, [props.defaultValue]);
 
     const handleChange = (newValue: any) => {
-        if (newValue !== value) {
-            setValue(newValue);
-            props.onValueChange?.(props.name, newValue);
-        }
+
+        /**
+         * Código abaixo comentado para evitar o não disparamento
+         * das funções de set e valueChange quando ocorrer um erro
+         * ao tentar mudar o estado do input
+         */
+
+        // if (newValue !== value) {
+        //     setValue(newValue);
+        //     props.onValueChange?.(props.name, newValue);
+        // }
+
+        setValue(newValue);
+        props.onValueChange?.(props.name, newValue);
     };
 
     const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -84,12 +94,12 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
                     <div className="flex items-center gap-4">
                         <Checkbox
                             id={props.name}
-                            checked={!!value}
+                            checked={props.checked}
                             onCheckedChange={(isChecked) => handleChange(isChecked)}
                             disabled={props.disabled || props.isLoading}
                             value={value}
                         />
-                        <label htmlFor={props.name} className="checkbox-label">
+                        <label htmlFor={props.name} className={cn("shad-label", props.className)}>
                             {props.label}
                         </label>
                     </div>
