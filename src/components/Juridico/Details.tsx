@@ -103,7 +103,8 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     responsavel: false,
     previsaoDePagamento: false,
     linkDue: false,
-    revisaoCalculo: false
+    revisaoCalculo: false,
+    espelhoOficio: false
   });
   const [editLock, setEditLock] = useState<boolean>(false);
   const [disabledSaveButton, setDisabledSaveButton] = useState<boolean>(true);
@@ -522,8 +523,75 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     })
   }
 
+  const handleUpdateEspelhoDoOficio = async (value: string, page_id: string) => {
+    await espelhoOficioMutation.mutateAsync({
+      value,
+      page_id
+    })
+  }
 
   // ----> Mutations <-----
+  const espelhoOficioMutation = useMutation({
+    mutationFn: async (paramsObj: { value: string, page_id: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Espelho do ofício": {
+          "checkbox": paramsObj.value
+        }
+      });
+
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+
+      return response.data
+    },
+    onMutate: async (paramsObj) => {
+      setLoadingUpdateState(prev => ({ ...prev, espelhoOficio: true }));
+      setEditLock(true);
+      const prevData = queryClient.getQueryData(['page', id]);
+      queryClient.setQueryData(['page', id], (old: NotionPage) => {
+        return {
+          ...old,
+          properties: {
+            ...old.properties,
+            "Espelho do ofício": {
+              ...old.properties["Espelho do ofício"],
+              checkbox: paramsObj.value,
+            },
+          },
+        };
+      });
+      return { prevData }
+    },
+    onError: (error, paramsObj, context) => {
+      queryClient.setQueryData(['details', id], context?.prevData);
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'error',
+        text: "Houve um erro ao atualizar Espelho do ofício",
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSuccess: (data, paramsObj) => {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'success',
+        text: "Campo Espelho do ofício atualizado com sucesso",
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, espelhoOficio: false }));
+    }
+  })
+
   const revisaoCalculoMutation = useMutation({
     mutationFn: async (paramsObj: { value: boolean, page_id: string }) => {
       const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
@@ -1947,18 +2015,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         <hr className="border border-stroke dark:border-strokedark" />
 
         <div className="grid gap-6">
-          {/* <div className="flex items-center gap-4">
-            <CustomCheckbox
-              check={data?.properties["Cálculo Revisado"].checkbox}
-              callbackFunction={() => handleUpdateRevisaoCalculo(!data?.properties["Cálculo Revisado"].checkbox, id)}
-            />
-            <label
-              className="text-sm font-medium"
-              htmlFor="calculo_revisado_check"
-            >
-              Cálculo Revisado
-            </label>
-          </div> */}
           <CelerInputField
             name="calculo_revisado_check"
             fieldType={InputFieldVariant.CHECKBOX}
@@ -2056,16 +2112,13 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               <span className="text-red-500 dark:text-red-400 text-xs uppercase font-medium text-center">Valores fora do escopo permitido!</span>
             )}
 
-            <div>
-
+            <div className="grid grid-cols-2 gap-3">
               <div className="col-span-1">
                 <CelerInputField
                   name="valor_projetado"
                   fieldType={InputFieldVariant.INPUT}
                   label="Valor Projetado"
                   defaultValue={numberFormat(data?.properties["Valor Projetado"]?.number || 0)}
-                  iconSrc={<GiReceiveMoney className="self-center" />}
-                  iconAlt="receive_money"
                   className="w-full disabled:dark:text-white disabled:text-boxdark"
                   disabled={true}
                 />
@@ -2076,34 +2129,32 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                   fieldType={InputFieldVariant.DATE}
                   label="Previsão de pagamento"
                   defaultValue={dateFormater(data?.properties["Previsão de pagamento"]?.date?.start)}
-                  iconSrc={<RiCalendarScheduleFill className="self-center" />}
-                  iconAlt="law"
                   className="w-full disabled:dark:text-white disabled:text-boxdark"
                   onSubmit={(_, value) => handleUpdatePrevisaoDePagamento(value, id)}
                 />
               </div>
-            </div>
 
+              <hr className="border border-stroke dark:border-strokedark col-span-2" />
+
+              <div className="col-span-2">
+                <CelerInputField
+                  name="espelho_oficio_check"
+                  fieldType={InputFieldVariant.CHECKBOX}
+                  label="Espelho do Ofício"
+                  defaultValue={data?.properties["Espelho do ofício"].checkbox}
+                  className="text-sm font-medium"
+                  onValueChange={(_, value) => handleUpdateEspelhoDoOficio(value, id)}
+                  isLoading={loadingUpdateState.espelhoOficio}
+                  disabled={editLock}
+                />
+              </div>
+
+            </div>
           </div>
         </div>
       </section>
 
       <section id="observacao" className="form-inputs-container">
-        {/* <div className="col-span-5">
-          <CelerInputField
-            name="observacao"
-            fieldType={InputFieldVariant.TEXTAREA}
-            label="Observações"
-            defaultValue={data?.properties["Observação"]?.rich_text?.[0].plain_text || ""}
-            iconSrc={<IoIosPaper className="self-center" />}
-            iconAlt="law"
-            className="w-full"
-            rows={10}
-            // onSubmit={(_, value) => handleChangeObservacao(value, id)}
-            isLoading={loadingUpdateState.observacoes}
-            disabled={editLock}
-          />
-        </div> */}
         <div className="col-span-5">
 
           <p className='mb-2'>Observações:</p>

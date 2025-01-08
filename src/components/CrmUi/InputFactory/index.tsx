@@ -107,9 +107,7 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
             case InputFieldVariant.DATE:
                 return (
                     <div className="flex gap-4 rounded-md w-full mt-2">
-                        <div className="flex items-center">
-                            <IoCalendar className="self-center" />
-                        </div>
+                        {props.iconSrc && <div className="flex items-center">{props.iconSrc}</div>}
                         <Cleave
                             {...commonProps}
                             defaultValue={props.defaultValue}
