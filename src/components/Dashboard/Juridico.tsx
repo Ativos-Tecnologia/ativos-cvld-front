@@ -22,14 +22,17 @@ import numberFormat from "@/functions/formaters/numberFormat";
 import { DueDiligenceCounter } from "../TimerCounter/DueDiligenceCounter";
 import { useRouter } from "next/navigation";
 
+// scrollbarCSS
+import "../../css/scrollbar.css";
+
 enum navItems {
   TODOS = "Todos",
   DUE_DILIGENCE = "Due Diligence",
+  DUE_EM_ANDAMENTO = "Due em Andamento",
+  REVISAO_DE_DUE = "Revisão de Due Diligence",
   EM_LIQUIDACAO = "Em liquidação",
   EM_CESSAO = "Em cessão",
   REPACTUACAO = "Repactuação",
-  DUE_EM_ANDAMENTO = "Due em Andamento",
-  REVISAO_DE_DUE = "Revisão de Due Diligence",
 }
 
 export type SimpleNotionData = {
@@ -108,7 +111,7 @@ const Juridico = () => {
       </div>
       <div className="my-4">
         <Tabs defaultValue={navItems.TODOS} className="w-full">
-          <TabsList>
+          <TabsList className="tabs-scrollbar justify-normal overflow-x-auto overflow-y-hidden xl:w-fit">
             {Object.values(navItems).map((item, index) => (
               <TabsTrigger
                 key={index}
@@ -133,143 +136,141 @@ const Juridico = () => {
               </TabsTrigger>
             ))}
           </TabsList>
-          {loading ? (
+        </Tabs>
+        {loading ? (
+          <GridCardsWrapper.List className="gap-4">
+            {Array.from({ length: 12 }, (_, i) => (
+              <MarketplaceCardSkeleton key={i} />
+            ))}
+          </GridCardsWrapper.List>
+        ) : (
+          <>
             <GridCardsWrapper.List className="gap-4">
-              {Array.from({ length: 12 }, (_, i) => (
-                <MarketplaceCardSkeleton key={i} />
-              ))}
-            </GridCardsWrapper.List>
-          ) : (
-            Object.values(navItems).map((item, index) => (
-              <TabsContent key={index} value={item}>
-                <GridCardsWrapper.List className="gap-4">
-                  {simpleData.results.length > 0 && (
-                    simpleData.results.map((item) => {
+              {simpleData.results.length > 0 && (
+                simpleData.results.map((item) => {
 
-                      let deadlineSituation: string; // define a situação do prazo
+                  let deadlineSituation: string; // define a situação do prazo
 
-                      const currentDate = +new Date();
-                      const itemDueDate = +new Date(item.prazo_final_due);
+                  const currentDate = +new Date();
+                  const itemDueDate = +new Date(item.prazo_final_due);
 
-                      // calcula quantas horas faltam para o prazo expirar
-                      const hoursRemaining = (itemDueDate - currentDate) / (1000 * 60 * 60);
+                  // calcula quantas horas faltam para o prazo expirar
+                  const hoursRemaining = (itemDueDate - currentDate) / (1000 * 60 * 60);
 
-                      if (hoursRemaining >= 96) {
-                        deadlineSituation = "good";
-                      } else if (hoursRemaining < 96 && hoursRemaining >= 48) {
-                        deadlineSituation = "warning";
-                      } else {
-                        deadlineSituation = "danger";
-                      }
+                  if (hoursRemaining >= 96) {
+                    deadlineSituation = "good";
+                  } else if (hoursRemaining < 96 && hoursRemaining >= 48) {
+                    deadlineSituation = "warning";
+                  } else {
+                    deadlineSituation = "danger";
+                  }
 
-                      return (
-                        <HoverCard onClick={() => router.push(`/dashboard/juridico/${item.id}`)} key={item.id} className="h-65 relative">
+                  return (
+                    <HoverCard onClick={() => router.push(`/dashboard/juridico/${item.id}`)} key={item.id} className="h-65 relative">
 
-                          {(deadlineSituation === "danger" && item.prazo_final_due) && (
-                            <>
-                              <div className="absolute z-0 inset-0 bg-red-500 rounded-md opacity-60 animate-celer-ping xsm:max-w-[370px] xsm:left-2 md:max-w-[340px] md:left-3 lg:left-[15px] 2xl:max-w-90 3xl:max-w-80" />
-                              <div className="absolute z-0 inset-0 bg-red-500 delay-300 rounded-md opacity-60 animate-celer-ping xsm:max-w-[370px] xsm:left-2 md:max-w-[340px] md:left-3 lg:left-[15px] 2xl:max-w-90 3xl:max-w-80" />
-                            </>
-                          )}
+                      {(deadlineSituation === "danger" && item.prazo_final_due) && (
+                        <>
+                          <div className="absolute z-0 inset-0 bg-red-500 rounded-md opacity-60 animate-celer-ping xsm:max-w-[370px] xsm:left-2 md:max-w-[340px] md:left-3 lg:left-[15px] 2xl:max-w-90 3xl:max-w-80" />
+                          <div className="absolute z-0 inset-0 bg-red-500 delay-300 rounded-md opacity-60 animate-celer-ping xsm:max-w-[370px] xsm:left-2 md:max-w-[340px] md:left-3 lg:left-[15px] 2xl:max-w-90 3xl:max-w-80" />
+                        </>
+                      )}
 
-                          <HoverCard.Container
-                            className="h-65"
-                            backgroundImg={imgPaths[item.tribunal as keyof typeof imgPaths]}
-                            backgroundColorFill="strong"
-                          >
-                            <HoverCard.Content
-                              className={`${item.prazo_final_due && "outline outline-[3px]"} 
+                      <HoverCard.Container
+                        className="h-65"
+                        backgroundImg={imgPaths[item.tribunal as keyof typeof imgPaths]}
+                        backgroundColorFill="strong"
+                      >
+                        <HoverCard.Content
+                          className={`${item.prazo_final_due && "outline outline-[3px]"} 
                               ${deadlineSituation === "good" && "outline-green-400"} 
                               ${deadlineSituation === "warning" && "outline-yellow-500"} 
                               ${deadlineSituation === "danger" && "outline-red-500"}
                                 `}
-                            >
-                              <HoverCard.TribunalBadge tribunal={item.tribunal} />
-                              <HoverCard.Icon
-                                icon={iconsConfig[item.tipo.name as keyof typeof iconsConfig]?.icon}
-                                // bgColor={iconsConfig[item.tipo as keyof typeof iconsConfig].bgColor}
-                                bgColor={iconsConfig[item.tipo.name as keyof typeof iconsConfig]?.bgColor}
-                                className="group-hover:opacity-0"
-                              />
+                        >
+                          <HoverCard.TribunalBadge tribunal={item.tribunal} />
+                          <HoverCard.Icon
+                            icon={iconsConfig[item.tipo.name as keyof typeof iconsConfig]?.icon}
+                            // bgColor={iconsConfig[item.tipo as keyof typeof iconsConfig].bgColor}
+                            bgColor={iconsConfig[item.tipo.name as keyof typeof iconsConfig]?.bgColor}
+                            className="group-hover:opacity-0"
+                          />
 
-                              <div className="group-hover:opacity-0 text-snow">
-                                <HoverCard.InfoList>
-                                  <HoverCard.ListItem className="mt-2 col-span-2 border-0">
-                                    {/* <p className="text-[10px] text-gray-300">CREDOR</p> */}
-                                    <p className="max-w-[230px] overflow-hidden text-ellipsis whitespace-nowrap text-sm uppercase">
-                                      {item.credor}
-                                    </p>
-                                  </HoverCard.ListItem>
+                          <div className="group-hover:opacity-0 text-snow">
+                            <HoverCard.InfoList>
+                              <HoverCard.ListItem className="mt-2 col-span-2 border-0">
+                                {/* <p className="text-[10px] text-gray-300">CREDOR</p> */}
+                                <p className="max-w-[230px] overflow-hidden text-ellipsis whitespace-nowrap text-sm uppercase">
+                                  {item.credor}
+                                </p>
+                              </HoverCard.ListItem>
 
-                                  <HoverCard.ListItem className="border-0">
-                                    <p className="text-[10px] text-gray-300">VALOR LÍQUIDO</p>
-                                    <p className="text-sm">
-                                      {numberFormat(item.valor_liquido_disponivel)}
-                                    </p>
-                                  </HoverCard.ListItem>
+                              <HoverCard.ListItem className="border-0">
+                                <p className="text-[10px] text-gray-300">VALOR LÍQUIDO</p>
+                                <p className="text-sm">
+                                  {numberFormat(item.valor_liquido_disponivel)}
+                                </p>
+                              </HoverCard.ListItem>
 
-                                  <HoverCard.ListItem className="border-0">
-                                    <p className="text-[10px] text-gray-300">REGIME</p>
-                                    <p className="text-sm">
-                                      {item.regime}
-                                    </p>
-                                  </HoverCard.ListItem>
+                              <HoverCard.ListItem className="border-0">
+                                <p className="text-[10px] text-gray-300">REGIME</p>
+                                <p className="text-sm">
+                                  {item.regime}
+                                </p>
+                              </HoverCard.ListItem>
 
-                                  <HoverCard.ListItem className="border-0">
-                                    <p className="text-[10px] text-gray-300">LOA</p>
-                                    <p className="text-sm">
-                                      {item.loa || "Não possui"}
-                                    </p>
-                                  </HoverCard.ListItem>
+                              <HoverCard.ListItem className="border-0">
+                                <p className="text-[10px] text-gray-300">LOA</p>
+                                <p className="text-sm">
+                                  {item.loa || "Não possui"}
+                                </p>
+                              </HoverCard.ListItem>
 
-                                  <HoverCard.ListItem className="border-0">
-                                    <p className="text-[10px] text-gray-300">ESFERA</p>
-                                    <p className="text-sm">
-                                      {item.esfera}
-                                    </p>
-                                  </HoverCard.ListItem>
+                              <HoverCard.ListItem className="border-0">
+                                <p className="text-[10px] text-gray-300">ESFERA</p>
+                                <p className="text-sm">
+                                  {item.esfera}
+                                </p>
+                              </HoverCard.ListItem>
 
-                                  <HoverCard.ListItem className="col-span-2">
-                                    <p className="text-[10px] text-gray-300">Status da Diligência</p>
-                                    <p className="text-xs">
-                                      {item.status_diligencia || "Não possui"}
-                                    </p>
-                                  </HoverCard.ListItem>
+                              <HoverCard.ListItem className="col-span-2">
+                                <p className="text-[10px] text-gray-300">Status da Diligência</p>
+                                <p className="text-xs">
+                                  {item.status_diligencia || "Não possui"}
+                                </p>
+                              </HoverCard.ListItem>
 
-                                  <HoverCard.ListItem className="mt-2 border-0 col-span-2">
-                                    <p className="text-[10px] text-gray-300">PRAZO FINAL</p>
-                                    <DueDiligenceCounter dueDate={item?.prazo_final_due || ""} />
-                                  </HoverCard.ListItem>
-                                </HoverCard.InfoList>
+                              <HoverCard.ListItem className="mt-2 border-0 col-span-2">
+                                <p className="text-[10px] text-gray-300">PRAZO FINAL</p>
+                                <DueDiligenceCounter dueDate={item?.prazo_final_due || ""} />
+                              </HoverCard.ListItem>
+                            </HoverCard.InfoList>
 
-                              </div>
+                          </div>
 
-                            </HoverCard.Content>
+                        </HoverCard.Content>
 
-                            <HoverCard.HiddenContent className="h-65 items-center justify-evenly gap-5">
-                              <span>Clique para detalhes</span>
-                            </HoverCard.HiddenContent>
-                          </HoverCard.Container>
-                        </HoverCard>
-                      )
-                    })
-                  )}
-                </GridCardsWrapper.List>
-                {
-                  simpleData.results.length === 0 && (
-                    <div className="flex items-center justify-center h-96 -my-">
-                      <div className="mb-20">
-                        <Image src="/images/illustration/illustration-01.svg" alt="Nenhum resultado encontrado" width={300} height={300} />
-                        <p className="text-lg font-semibold text-center">Nenhum resultado encontrado</p>
-
-                      </div>
-                    </div>
+                        <HoverCard.HiddenContent className="h-65 items-center justify-evenly gap-5">
+                          <span>Clique para detalhes</span>
+                        </HoverCard.HiddenContent>
+                      </HoverCard.Container>
+                    </HoverCard>
                   )
-                }
-              </TabsContent>
-            ))
-          )}
-        </Tabs>
+                })
+              )}
+            </GridCardsWrapper.List>
+            {
+              simpleData.results.length === 0 && (
+                <div className="flex items-center justify-center h-96 -my-">
+                  <div className="mb-20">
+                    <Image src="/images/illustration/illustration-01.svg" alt="Nenhum resultado encontrado" width={300} height={300} />
+                    <p className="text-lg font-semibold text-center">Nenhum resultado encontrado</p>
+
+                  </div>
+                </div>
+              )
+            }
+          </>
+        )}
       </div>
       {/* <div className="flex gap-5 item-center bg-white dark:bg-boxdark my-4 p-5 rounded-md">
             {
