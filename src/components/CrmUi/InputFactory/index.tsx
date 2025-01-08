@@ -22,7 +22,8 @@ interface ICelerInputField extends ICelerInputFormField {
     ref?: React.Ref<HTMLInputElement>;
 }
 
-export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) => {
+export const CelerInputField = React.memo(
+    React.forwardRef<HTMLInputElement, ICelerInputField>((props, ref) => {
     const [value, setValue] = useState(props.defaultValue ?? "");
 
     useEffect(() => {
@@ -71,7 +72,7 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
                 return (
                     <div className="flex rounded-md gap-4 mt-2 w-full">
                         {props.iconSrc && <div className="flex items-center">{props.iconSrc}</div>}
-                        <Input ref={props.ref} className={cn("shad-input border border-stroke dark:border-strokedark", props.className)} {...commonProps} />
+                        <Input ref={ref} className={cn("shad-input border border-stroke dark:border-strokedark", props.className)} {...commonProps} />
                     </div>
                 );
             case InputFieldVariant.TEXTAREA:
@@ -150,6 +151,6 @@ export const CelerInputField: React.FC<ICelerInputField> = React.memo((props) =>
             {props.error && <p className="text-red-500 text-sm mt-1">{props.error}</p>}
         </div>
     );
-});
+}));
 
 CelerInputField.displayName = "CelerInputField";
