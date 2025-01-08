@@ -46,6 +46,7 @@ import BrokerModal from "../Modals/BrokersCedente";
 import DocForm from "../Modals/BrokersDocs";
 import JuridicoDetailsSkeleton from "../Skeletons/JuridicoDetailsSkeleton";
 import { SelectItem } from "../ui/select";
+import CustomCheckbox from "../CrmUi/Checkbox";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -101,7 +102,8 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     observacoes: false,
     responsavel: false,
     previsaoDePagamento: false,
-    linkDue: false
+    linkDue: false,
+    revisaoCalculo: false
   });
   const [editLock, setEditLock] = useState<boolean>(false);
   const [disabledSaveButton, setDisabledSaveButton] = useState<boolean>(true);
@@ -117,7 +119,6 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   const rentabilidadeSlideRef = useRef<HTMLInputElement>(null);
   const desembolsoSlideRef = useRef<HTMLInputElement>(null);
   const linkDueInputRef = useRef<HTMLInputElement>(null);
-  console.log(linkDueInputRef?.current?.value)
 
   const handleDueDiligence = () => {
     swal.fire({
@@ -508,15 +509,82 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
   }
 
   const handleCopyDueLink = (link: string) => {
-    console.log(link)
     navigator.clipboard.writeText(link);
     setLinkCopied(true);
 
     setTimeout(() => setLinkCopied(false), 2000);
   }
 
+  const handleUpdateRevisaoCalculo = async (value: boolean, page_id: string) => {
+    await revisaoCalculoMutation.mutateAsync({
+      value,
+      page_id
+    })
+  }
+
 
   // ----> Mutations <-----
+  const revisaoCalculoMutation = useMutation({
+    mutationFn: async (paramsObj: { value: boolean, page_id: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Cálculo Revisado": {
+          "checkbox": paramsObj.value
+        }
+      });
+
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+
+      return response.data
+    },
+    onMutate: async (paramsObj) => {
+      setLoadingUpdateState(prev => ({ ...prev, revisaoCalculo: true }));
+      setEditLock(true);
+      const prevData = queryClient.getQueryData(['page', id]);
+      queryClient.setQueryData(['page', id], (old: NotionPage) => {
+        return {
+          ...old,
+          properties: {
+            ...old.properties,
+            "Cálculo Revisado": {
+              ...old.properties["Cálculo Revisado"],
+              checkbox: paramsObj.value,
+            },
+          },
+        };
+      });
+      return { prevData }
+    },
+    onError: (error, paramsObj, context) => {
+      queryClient.setQueryData(['details', id], context?.prevData);
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'error',
+        text: "Houve um erro ao atualizar Revisão de Cálculo",
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSuccess: (data, paramsObj) => {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'success',
+        text: "Campo Revisão de Cálculo atualizado com sucesso",
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, revisaoCalculo: false }));
+    }
+  })
+
   const dueLinkMutation = useMutation({
     mutationFn: async (paramsObj: { page_id: string, value: string | null }) => {
 
@@ -1100,8 +1168,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       <JuridicoDetailsSkeleton />
     )
   }
-
-  console.log(data)
 
   return (
     <div className="flex flex-col w-full gap-5">
@@ -1747,154 +1813,162 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         </div>
       </section>
 
-      <section id="cedentes" className="form-inputs-container">
-        <div className="col-span-4 w-full 3xl:col-span-5 mb-3">
-          <div className="flex 2xsm:flex-col md:flex-row justify-between gap-4 w-full">
-            <h3 className="text-bodydark2 font-medium">
-              Detalhes do precatório
-            </h3>
+      <section id="cedentes" className="grid gap-6 p-4 rounded-md bg-white dark:bg-boxdark">
+        <h3 className="text-bodydark2 font-medium">
+          Detalhes do precatório
+        </h3>
+        <div className="grid grid-cols-4 3xl:grid-cols-5 gap-6">
+          <div className="2xsm:col-span-4 xl:col-span-1">
+            <CelerInputField
+              name="vl_com_reservas"
+              fieldType={InputFieldVariant.INPUT}
+              label="Valor Líquido"
+              defaultValue={
+                numberFormat(
+                  (data.properties["Valor Líquido (Com Reserva dos Honorários)"]?.formula?.number || 0)
+                )
+              }
+              iconSrc={<GiReceiveMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
           </div>
 
+          <div className="2xsm:col-span-4 xl:col-span-1">
+            <CelerInputField
+              name="proposta"
+              fieldType={InputFieldVariant.INPUT}
+              label="Proposta Escolhida"
+              defaultValue={numberFormat(data?.properties["Proposta Escolhida - Celer"]?.number || 0)}
+              iconSrc={<LuHandshake className="self-center" />}
+              iconAlt="deal"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 xl:col-span-1">
+            <CelerInputField
+              name="comissao"
+              fieldType={InputFieldVariant.INPUT}
+              label="Comissão"
+              defaultValue={numberFormat(data?.properties["Comissão - Celer"]?.number || 0)}
+              iconSrc={<TbMoneybag className="self-center" />}
+              iconAlt="money_bag"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 xl:col-span-1">
+            <CelerInputField
+              name="custo_total"
+              fieldType={InputFieldVariant.INPUT}
+              label="Custo total do Precatório (absoluto)"
+              defaultValue={
+                numberFormat(
+                  (data.properties["Comissão - Celer"].number || 0) +
+                  (data.properties["Proposta Escolhida - Celer"].number || 0)
+                )
+              }
+              iconSrc={<GiReceiveMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 xl:col-span-1">
+            <CelerInputField
+              name="custo"
+              fieldType={InputFieldVariant.INPUT}
+              label="Custo do precatório"
+              defaultValue={percentageFormater(data?.properties["Custo do precatório"]?.formula?.number || 0)}
+              iconSrc={<GiReceiveMoney className="self-center" />}
+              iconAlt="receive_money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 xl:col-span-1">
+            <CelerInputField
+              name="loa"
+              fieldType={InputFieldVariant.INPUT}
+              label="LOA"
+              defaultValue={data?.properties["LOA"]?.number || "Sem LOA cadastrada"}
+              iconSrc={<IoCalendar className="self-center" />}
+              iconAlt="calendar"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 xl:col-span-1">
+            <CelerInputField
+              name="esfera"
+              fieldType={InputFieldVariant.INPUT}
+              label="Esfera"
+              defaultValue={data?.properties["Esfera"].select?.name || "Não informada"}
+              iconSrc={<IoGlobeOutline className="self-center" />}
+              iconAlt="calendar"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 xl:col-span-1">
+            <CelerInputField
+              name="percentual_de_honorarios"
+              fieldType={InputFieldVariant.INPUT}
+              label="Destacamento de Honorários"
+              defaultValue={percentageFormater(data?.properties["Percentual de Honorários Não destacados"].number || 0)}
+              iconSrc={<GiReceiveMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 xl:col-span-1">
+            <CelerInputField
+              name="spread"
+              fieldType={InputFieldVariant.INPUT}
+              label="Spread"
+              defaultValue={
+                numberFormat(
+                  (data.properties["Nova Fórmula do Desembolso"].formula?.number || 0) -
+                  (data.properties["Comissão - Celer"].number || 0) -
+                  (data.properties["Proposta Escolhida - Celer"].number || 0)
+                )
+              }
+              iconSrc={<GiReceiveMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
         </div>
 
-        <div className="2xsm:col-span-4 xl:col-span-1">
-          <CelerInputField
-            name="vl_com_reservas"
-            fieldType={InputFieldVariant.INPUT}
-            label="Valor Líquido"
-            defaultValue={
-              numberFormat(
-                (data.properties["Valor Líquido (Com Reserva dos Honorários)"]?.formula?.number || 0)
-              )
-            }
-            iconSrc={<GiReceiveMoney className="self-center" />}
-            iconAlt="money"
-            className="w-full disabled:dark:text-white disabled:text-boxdark"
-            disabled={true}
-          />
-        </div>
+        <hr className="border border-stroke dark:border-strokedark" />
 
-        {/* <div className="col-span-1">
+        <div className="grid gap-6">
+          {/* <div className="flex items-center gap-4">
+            <CustomCheckbox
+              check={data?.properties["Cálculo Revisado"].checkbox}
+              callbackFunction={() => handleUpdateRevisaoCalculo(!data?.properties["Cálculo Revisado"].checkbox, id)}
+            />
+            <label
+              className="text-sm font-medium"
+              htmlFor="calculo_revisado_check"
+            >
+              Cálculo Revisado
+            </label>
+          </div> */}
           <CelerInputField
-            name="valor_projetado"
-            fieldType={InputFieldVariant.INPUT}
-            label="Valor Projetado"
-            defaultValue={numberFormat(data?.properties["Valor Projetado"]?.number || 0)}
-            iconSrc={<GiReceiveMoney className="self-center" />}
-            iconAlt="receive_money"
-            className="w-full disabled:dark:text-white disabled:text-boxdark"
-            disabled={true}
-          />
-        </div> */}
-
-        <div className="2xsm:col-span-4 xl:col-span-1">
-          <CelerInputField
-            name="proposta"
-            fieldType={InputFieldVariant.INPUT}
-            label="Proposta Escolhida"
-            defaultValue={numberFormat(data?.properties["Proposta Escolhida - Celer"]?.number || 0)}
-            iconSrc={<LuHandshake className="self-center" />}
-            iconAlt="deal"
-            className="w-full disabled:dark:text-white disabled:text-boxdark"
-            disabled={true}
+            name="calculo_revisado_check"
+            fieldType={InputFieldVariant.CHECKBOX}
+            checked={data?.properties["Cálculo Revisado"].checkbox}
+            label="Cálculo Revisado"
+            isLoading={loadingUpdateState.revisaoCalculo}
+            onValueChange={(_, value) => handleUpdateRevisaoCalculo(value, id)}
+            className="text-sm font-medium"
           />
         </div>
-        <div className="2xsm:col-span-4 xl:col-span-1">
-          <CelerInputField
-            name="comissao"
-            fieldType={InputFieldVariant.INPUT}
-            label="Comissão"
-            defaultValue={numberFormat(data?.properties["Comissão - Celer"]?.number || 0)}
-            iconSrc={<TbMoneybag className="self-center" />}
-            iconAlt="money_bag"
-            className="w-full disabled:dark:text-white disabled:text-boxdark"
-            disabled={true}
-          />
-        </div>
-        <div className="2xsm:col-span-4 xl:col-span-1">
-          <CelerInputField
-            name="custo_total"
-            fieldType={InputFieldVariant.INPUT}
-            label="Custo total do Precatório (absoluto)"
-            defaultValue={
-              numberFormat(
-                (data.properties["Comissão - Celer"].number || 0) +
-                (data.properties["Proposta Escolhida - Celer"].number || 0)
-              )
-            }
-            iconSrc={<GiReceiveMoney className="self-center" />}
-            iconAlt="money"
-            className="w-full disabled:dark:text-white disabled:text-boxdark"
-            disabled={true}
-          />
-        </div>
-        <div className="2xsm:col-span-4 xl:col-span-1">
-          <CelerInputField
-            name="custo"
-            fieldType={InputFieldVariant.INPUT}
-            label="Custo do precatório"
-            defaultValue={percentageFormater(data?.properties["Custo do precatório"]?.formula?.number || 0)}
-            iconSrc={<GiReceiveMoney className="self-center" />}
-            iconAlt="receive_money"
-            className="w-full disabled:dark:text-white disabled:text-boxdark"
-            disabled={true}
-          />
-        </div>
-        <div className="2xsm:col-span-4 xl:col-span-1">
-          <CelerInputField
-            name="loa"
-            fieldType={InputFieldVariant.INPUT}
-            label="LOA"
-            defaultValue={data?.properties["LOA"]?.number || "Sem LOA cadastrada"}
-            iconSrc={<IoCalendar className="self-center" />}
-            iconAlt="calendar"
-            className="w-full disabled:dark:text-white disabled:text-boxdark"
-            disabled={true}
-          />
-        </div>
-        <div className="2xsm:col-span-4 xl:col-span-1">
-          <CelerInputField
-            name="esfera"
-            fieldType={InputFieldVariant.INPUT}
-            label="Esfera"
-            defaultValue={data?.properties["Esfera"].select?.name || "Não informada"}
-            iconSrc={<IoGlobeOutline className="self-center" />}
-            iconAlt="calendar"
-            className="w-full disabled:dark:text-white disabled:text-boxdark"
-            disabled={true}
-          />
-        </div>
-        <div className="2xsm:col-span-4 xl:col-span-1">
-          <CelerInputField
-            name="percentual_de_honorarios"
-            fieldType={InputFieldVariant.INPUT}
-            label="Destacamento de Honorários"
-            defaultValue={percentageFormater(data?.properties["Percentual de Honorários Não destacados"].number || 0)}
-            iconSrc={<GiReceiveMoney className="self-center" />}
-            iconAlt="money"
-            className="w-full disabled:dark:text-white disabled:text-boxdark"
-            disabled={true}
-          />
-        </div>
-        <div className="2xsm:col-span-4 xl:col-span-1">
-          <CelerInputField
-            name="spread"
-            fieldType={InputFieldVariant.INPUT}
-            label="Spread"
-            defaultValue={
-              numberFormat(
-                (data.properties["Nova Fórmula do Desembolso"].formula?.number || 0) -
-                (data.properties["Comissão - Celer"].number || 0) -
-                (data.properties["Proposta Escolhida - Celer"].number || 0)
-              )
-            }
-            iconSrc={<GiReceiveMoney className="self-center" />}
-            iconAlt="money"
-            className="w-full disabled:dark:text-white disabled:text-boxdark"
-            disabled={true}
-          />
-        </div>
-
       </section>
 
       <section id="valores_grafico">
