@@ -513,7 +513,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     if (linkDueInputRef.current) {
       const value = linkDueInputRef.current.value;
       navigator.clipboard.writeText(value);
-      setLinkCopied(true);
+      navigator.vibrate(200);
       setTimeout(() => setLinkCopied(false), 2000);
   }
   }
