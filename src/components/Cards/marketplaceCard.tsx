@@ -1,11 +1,6 @@
 import { imgPaths } from "@/constants/tribunais";
 import dateFormater from "@/functions/formaters/dateFormater";
 import numberFormat from "@/functions/formaters/numberFormat";
-import {
-  handleMesesAteOPagamento,
-  // handleRentabilidadeTotal,
-  // handleRentabilideAA,
-} from "@/functions/wallet/rentability";
 import { NotionPage } from "@/interfaces/INotion";
 import api from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
@@ -167,7 +162,7 @@ const Card = ({
                 <p className="text-[10px] text-gray-400">rentabilidade A.A.</p>
                 <p className="text-sm text-snow">
                  {(
-                    oficio.properties["Rentabilidade Anual"].number || 0
+                    oficio.properties["Rentabilidade Anual"]?.number || 0
                      * 100
                   ).toFixed(2).replace(".", ",") + "%"}
                 </p>
