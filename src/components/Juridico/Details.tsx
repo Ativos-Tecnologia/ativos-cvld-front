@@ -28,12 +28,13 @@ import { AiOutlineLoading } from "react-icons/ai";
 import { BiInfoCircle, BiSave, BiSolidCalculator, BiSolidCoinStack, BiX } from "react-icons/bi";
 import { BsCalendar2HeartFill, BsPencilSquare } from "react-icons/bs";
 import { FaBalanceScale, FaIdCard, FaMapMarkedAlt, FaRegFilePdf } from "react-icons/fa";
-import { FaBuilding, FaBuildingColumns, FaLink, FaUser } from "react-icons/fa6";
-import { GiReceiveMoney } from "react-icons/gi";
-import { GrDocumentText, GrDocumentUser } from "react-icons/gr";
+import { FaBuilding, FaBuildingColumns, FaLink, FaMoneyBillTransfer, FaUser } from "react-icons/fa6";
+import { GiMoneyStack, GiPayMoney, GiReceiveMoney, GiTakeMyMoney } from "react-icons/gi";
+import { GrDocumentText, GrDocumentUser, GrMoney } from "react-icons/gr";
 import { IoIosPaper } from "react-icons/io";
 import { IoCalendar, IoDocumentTextSharp, IoGlobeOutline } from "react-icons/io5";
 import { LuClipboardCheck, LuCopy, LuHandshake } from "react-icons/lu";
+import { RiMoneyDollarBoxFill } from "react-icons/ri";
 import { TbMoneybag } from "react-icons/tb";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import { Button } from "../Button";
@@ -1396,21 +1397,21 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       form.setValue("esfera", data?.properties["Esfera"].select?.name || "FEDERAL");
       form.setValue("regime", data?.properties["Regime"].select?.name || "GERAL");
       form.setValue("tribunal", data?.properties["Tribunal"].select?.name || "STJ");
-      form.setValue("valor_principal", numberFormat(data?.properties["Valor Principal"].number || 0));
-      form.setValue("valor_juros", numberFormat(data?.properties["Valor Juros"].number || 0));
+      form.setValue("valor_principal", numberFormat(data?.properties["Valor Principal"]?.number || 0));
+      form.setValue("valor_juros", numberFormat(data?.properties["Valor Juros"]?.number || 0));
       form.setValue("data_base", data?.properties["Data Base"].date?.start.split("-").reverse().join("/") || "");
       form.setValue("data_requisicao", data?.properties["Data do Recebimento"].date?.start.split("-").reverse().join("/") || "");
-      form.setValue("valor_aquisicao_total", data?.properties["Percentual a ser adquirido"].number === 1);
+      form.setValue("valor_aquisicao_total", data?.properties["Percentual a ser adquirido"]?.number === 1);
       form.setValue("ja_possui_destacamento", data?.properties["Honorários já destacados?"].checkbox);
-      form.setValue("percentual_de_honorarios", data?.properties["Percentual de Honorários Não destacados"].number! * 100 || 0);
+      form.setValue("percentual_de_honorarios", data?.properties["Percentual de Honorários Não destacados"]?.number! * 100 || 0);
       form.setValue("incidencia_juros_moratorios", data?.properties["Incidência de Juros Moratórios"].checkbox);
       form.setValue("nao_incide_selic_no_periodo_db_ate_abril", data?.properties["Incide Selic Somente Sobre Principal"].checkbox);
       form.setValue("incidencia_rra_ir", data?.properties["Incidencia RRA/IR"].checkbox);
       form.setValue("ir_incidente_rra", data?.properties["IR Incidente sobre RRA"].checkbox);
-      form.setValue("numero_de_meses", data?.properties["Meses RRA"].number || 0);
-      form.setValue("incidencia_pss", data?.properties["Meses RRA"].number || 0);
-      form.setValue("incidencia_pss", data?.properties["PSS"].number! > 0);
-      form.setValue("valor_pss", numberFormat(data?.properties["PSS"].number || 0));
+      form.setValue("numero_de_meses", data?.properties["Meses RRA"]?.number || 0);
+      form.setValue("incidencia_pss", data?.properties["Meses RRA"]?.number || 0);
+      form.setValue("incidencia_pss", data?.properties["PSS"]?.number! > 0);
+      form.setValue("valor_pss", numberFormat(data?.properties["PSS"]?.number || 0));
 
       setFormData(form.watch);
 
@@ -2137,7 +2138,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                   (data.properties["Valor Líquido (Com Reserva dos Honorários)"]?.formula?.number || 0)
                 )
               }
-              iconSrc={<GiReceiveMoney className="self-center" />}
+              iconSrc={<GrMoney className="self-center" />}
               iconAlt="money"
               className="w-full disabled:dark:text-white disabled:text-boxdark"
               disabled={true}
@@ -2179,7 +2180,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                   (data.properties["Proposta Escolhida - Celer"].number || 0)
                 )
               }
-              iconSrc={<GiReceiveMoney className="self-center" />}
+              iconSrc={<GiMoneyStack className="self-center" />}
               iconAlt="money"
               className="w-full disabled:dark:text-white disabled:text-boxdark"
               disabled={true}
@@ -2191,7 +2192,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               fieldType={InputFieldVariant.INPUT}
               label="Custo do precatório"
               defaultValue={percentageFormater(data?.properties["Custo do precatório"]?.formula?.number || 0)}
-              iconSrc={<GiReceiveMoney className="self-center" />}
+              iconSrc={<RiMoneyDollarBoxFill className="self-center" />}
               iconAlt="receive_money"
               className="w-full disabled:dark:text-white disabled:text-boxdark"
               disabled={true}
@@ -2227,7 +2228,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               fieldType={InputFieldVariant.INPUT}
               label="Destacamento de Honorários"
               defaultValue={percentageFormater(data?.properties["Percentual de Honorários Não destacados"].number || 0)}
-              iconSrc={<GiReceiveMoney className="self-center" />}
+              iconSrc={<FaMoneyBillTransfer className="self-center" />}
               iconAlt="money"
               className="w-full disabled:dark:text-white disabled:text-boxdark"
               disabled={true}
@@ -2245,7 +2246,35 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                   (data.properties["Proposta Escolhida - Celer"].number || 0)
                 )
               }
+              iconSrc={<GiTakeMyMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 xl:col-span-1">
+            <CelerInputField
+              name="percentual_a_ser_adquirido"
+              fieldType={InputFieldVariant.INPUT}
+              label="Percentual a ser Adquirido"
+              defaultValue={percentageFormater(data?.properties["Percentual a ser adquirido"]?.number || 0)}
               iconSrc={<GiReceiveMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 xl:col-span-1">
+            <CelerInputField
+              name="valor_liquido_cedido"
+              fieldType={InputFieldVariant.INPUT}
+              label="Valor Líquido a ser Cedido"
+              defaultValue={
+                numberFormat(
+                  (data?.properties["Valor Líquido a ser cedido"]?.formula?.number || 0)
+                )
+              }
+              iconSrc={<GiPayMoney className="self-center" />}
               iconAlt="money"
               className="w-full disabled:dark:text-white disabled:text-boxdark"
               disabled={true}
