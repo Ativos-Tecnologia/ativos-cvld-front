@@ -806,6 +806,8 @@ const DashbrokersCard = ({ oficio }:
 
     }, [mainData]);
 
+
+    console.log(oficio)
     /**
      * Define o tipo de indentificação do credor do ofício
      * que pode ser CPF ou CNPJ
@@ -814,7 +816,7 @@ const DashbrokersCard = ({ oficio }:
         if (oficio === null) return;
 
         // verifica o tipo de identificação do credor e formata para só obter números na string
-        const credorIdent = oficio.properties["CPF/CNPJ"].rich_text![0].text.content.replace(/\D/g, '');
+        const credorIdent = oficio.properties["CPF/CNPJ"].rich_text?.[0]?.text?.content?.replace(/\D/g, '') || "";
 
         setCredorIdentificationType(credorIdent.length === 11 ? "CPF" : credorIdent.length === 14 ? "CNPJ" : null);
     }, [oficio]);
@@ -917,7 +919,7 @@ const DashbrokersCard = ({ oficio }:
 
                     <div className='text-xs'>
                         <p className='text-black dark:text-snow uppercase font-medium'>CPF/CNPJ:</p>
-                        <p className='uppercase text-sm font-semibold'>{applyMaskCpfCnpj(mainData?.properties["CPF/CNPJ"].rich_text![0].text.content || "") || "Não informado"}</p>
+                        <p className='uppercase text-sm font-semibold'>{applyMaskCpfCnpj(mainData?.properties["CPF/CNPJ"].rich_text?.[0]?.text?.content || "") || "Não informado"}</p>
                     </div>
 
                     <div className='text-xs'>
@@ -1001,7 +1003,8 @@ const DashbrokersCard = ({ oficio }:
 
                         <button
                             onClick={() => setCedenteModal(mainData)}
-                            className='flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm'>
+                            disabled={mainData && mainData?.properties["CPF/CNPJ"]?.rich_text?.length === 0 || undefined}
+                            className='flex items-center justify-center gap-2 my-1 py-1 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70 rounded-md transition-colors duration-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed'>
                             {(mainData?.properties["Cedente PF"].relation?.[0] || mainData?.properties["Cedente PJ"].relation?.[0]) ? (
                                 <>
                                     <BsPencilSquare />
