@@ -299,7 +299,7 @@ const Profile = () => {
                               </label>
                               <input
                                 type="file"
-                                accept="image/*"
+                                accept="image/jpg, image/jpeg, image/png"
                                 id="profile"
                                 className="sr-only"
                                 {...register("profile_picture")}
