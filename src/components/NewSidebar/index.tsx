@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   Map,
   PieChart,
+  Plus,
   Settings2,
   ShoppingCart,
   SquareTerminal,
@@ -29,6 +30,8 @@ import {
 } from "@/components/ui/sidebar"
 import Image from "next/image"
 import { UserInfoAPIContext, UserInfoProvider } from "@/context/UserInfoContext"
+import { NavModule } from "../nav-module"
+import { DefaultLayoutContext, DefaultLayoutProvider } from "@/context/DefaultLayoutContext"
 
 
 const AtivosLogo = () => {
@@ -142,6 +145,7 @@ const data = {
     //   ],
     // },
   ],
+  
   projects: [
     {
       name: "PrecaShop",
@@ -164,9 +168,10 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const { data: dataUser } = React.useContext(UserInfoAPIContext)
-  
+  const { modalOpen, setModalOpen } = React.useContext(DefaultLayoutContext);  
 
   return (
+    <DefaultLayoutProvider>
     <UserInfoProvider>
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -175,6 +180,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
+        <NavModule items={[{
+      name: "Novo Precatório",
+      logo: Plus,
+      fn: () => setModalOpen(!modalOpen),
+    }]} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={dataUser} />
@@ -182,5 +192,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarRail />
     </Sidebar>
     </UserInfoProvider>
+    </DefaultLayoutProvider>
   )
 }
