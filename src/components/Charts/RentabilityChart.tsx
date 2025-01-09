@@ -1,6 +1,5 @@
 import dateFormater from "@/functions/formaters/dateFormater";
 import numberFormat from "@/functions/formaters/numberFormat";
-import percentageFormater from "@/functions/formaters/percentFormater";
 import { handleMesesAteOPagamento, handleRentabilidadeAM } from "@/functions/wallet/rentability";
 import { IWalletResponse } from "@/interfaces/IWallet";
 import { ApexOptions } from "apexcharts";
@@ -193,8 +192,6 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
         },
       ],
     });
-
-    console.log(atualizacaoProjetadaAM(data).data);
 
     setValorInvestido(data?.valor_investido);
   }, [data]);

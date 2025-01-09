@@ -246,11 +246,21 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     refetchOnWindowFocus: false,
   });
   
-  const { data: cedenteData, isFetching: isFetchingCedente } = useQuery<NotionPage>({
-    queryKey: ["cedente", data?.properties['Cedente PF']?.relation?.[0]?.id],
+  const { data: cedenteDataPF, isFetching: isFetchingCedentePF } = useQuery<NotionPage>({
+    queryKey: ["cedentePF", data?.properties['Cedente PF']?.relation?.[0]?.id],
     queryFn: () => fetchCedenteData(data?.properties['Cedente PF']?.relation?.[0]?.id!),
     refetchOnWindowFocus: false,
   });
+  
+  const { data: cedenteDataPJ, isFetching: isFetchingCedentePJ } = useQuery<NotionPage>({
+    queryKey: ["cedentePJ", data?.properties['Cedente PJ']],
+    queryFn: () => fetchCedenteData(data?.properties['Cedente PF']?.relation?.[0]?.id!),
+    refetchOnWindowFocus: false,
+  });
+
+  console.log("Dados do Notion: ",data)
+  console.log("Cedente PJ: ",cedenteDataPJ)
+  console.log("ID: ",cedenteDataPJ?.properties["CENTRAL DE PRECATÓRIOS"]?.relation?.[0]?.id)
   
   const onSubmitForm = async (formData: any) => {
     setIsLoadingRecalculation(true);
@@ -514,6 +524,29 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
   }
 
+  const handleUpdatePrevisaoDePagamento = async (value: string, page_id: string) => {
+    await previsaoDePagamentoMutation.mutateAsync({
+      page_id,
+      value
+    });
+  }
+
+  const handleUpdateObservation = async (value: string, page_id: string) => {
+    await observationMutation.mutateAsync({
+      page_id,
+      value
+    });
+  }
+
+  const handleUpdateEstadoCivil = async (value: string, page_id: string) => {
+    await estadoCivilMutation.mutateAsync({
+      page_id,
+      value
+    });
+  }
+
+  
+  // ----> Mutations <-----
   const resposavelMutation = useMutation({
     mutationFn: async (paramsObj: { page_id: string }) => {
       const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
@@ -563,7 +596,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     }
   });
 
-  // ----> Mutations <-----
   const creditorNameMutation = useMutation({
     mutationFn: async (paramsObj: { page_id: string, value: string }) => {
       const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
@@ -1060,7 +1092,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
   const estadoCivilMutation = useMutation({
     mutationFn: async (paramsObj: { page_id: string, value: string }) => {
-      const response = await api.patch(`api/notion-api/update/${cedenteData?.id}/`, {
+      const response = await api.patch(`api/notion-api/update/${cedenteDataPF?.id}/`, {
         "Estado Civil": {
           "select": {
             "name": paramsObj.value
@@ -1103,27 +1135,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       setLoadingUpdateState(prev => ({ ...prev, estadoCivil: false }));
     }
   });
-
-  const handleUpdatePrevisaoDePagamento = async (value: string, page_id: string) => {
-    await previsaoDePagamentoMutation.mutateAsync({
-      page_id,
-      value
-    });
-  }
-
-  const handleUpdateObservation = async (value: string, page_id: string) => {
-    await observationMutation.mutateAsync({
-      page_id,
-      value
-    });
-  }
-
-  const handleUpdateEstadoCivil = async (value: string, page_id: string) => {
-    await estadoCivilMutation.mutateAsync({
-      page_id,
-      value
-    });
-  }
 
   useEffect(() => {
     if (data && sliderValues.rentabilidade !== 0 && sliderValues.desembolso !== 0) {
@@ -1199,7 +1210,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         const credorIdent = data?.properties["CPF/CNPJ"].rich_text![0].text.content.replace(/\D/g, '');
 
         setCredorIdentificationType(credorIdent?.length === 11 ? "CPF" : credorIdent?.length === 14 ? "CNPJ" : null);
-    }, [data]);
+  }, [data]);
 
 
   if (!data) {
@@ -1338,14 +1349,14 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                     name="regime_casamento"
                     label="Estado Civil"
                     iconSrc={<BsCalendar2HeartFill />}
-                    defaultValue={cedenteData?.properties["Estado Civil"]?.select?.name! || ''}
+                    defaultValue={cedenteDataPF?.properties["Estado Civil"]?.select?.name! || ''}
                     onValueChange={(_, value) => handleUpdateEstadoCivil(value, id)}
                     isLoading={loadingUpdateState.estadoCivil}
                     disabled={editLock}
                 >
                     {tipoRegime.map((item, index) => (
                       <SelectItem defaultChecked={
-                        cedenteData?.properties["Estado Civil"]?.select?.name! === item
+                        cedenteDataPF?.properties["Estado Civil"]?.select?.name! === item
                       } key={index} value={item}>{item}</SelectItem>
                     ))}
                   </CelerInputField>
