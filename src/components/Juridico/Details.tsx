@@ -2,6 +2,7 @@
 
 import { Form } from "@/components/ui/form";
 import { estados } from "@/constants/estados";
+import { tipoRegime } from "@/constants/regime-casamento";
 import { tribunais } from "@/constants/tribunais";
 import { BrokersContext } from "@/context/BrokersContext";
 import {
@@ -25,7 +26,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { AiOutlineLoading } from "react-icons/ai";
 import { BiInfoCircle, BiSave, BiSolidCalculator, BiSolidCoinStack, BiX } from "react-icons/bi";
-import { BsPencilSquare } from "react-icons/bs";
+import { BsCalendar2HeartFill, BsPencilSquare } from "react-icons/bs";
 import { FaBalanceScale, FaIdCard, FaMapMarkedAlt, FaRegFilePdf } from "react-icons/fa";
 import { FaBuilding, FaBuildingColumns, FaLink, FaUser } from "react-icons/fa6";
 import { GiReceiveMoney } from "react-icons/gi";
@@ -33,7 +34,6 @@ import { GrDocumentText, GrDocumentUser } from "react-icons/gr";
 import { IoIosPaper } from "react-icons/io";
 import { IoCalendar, IoDocumentTextSharp, IoGlobeOutline } from "react-icons/io5";
 import { LuClipboardCheck, LuCopy, LuHandshake } from "react-icons/lu";
-import { RiCalendarScheduleFill } from "react-icons/ri";
 import { TbMoneybag } from "react-icons/tb";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import { Button } from "../Button";
@@ -42,11 +42,10 @@ import { CelerInputField } from "../CrmUi/InputFactory";
 import CRMTooltip from "../CrmUi/Tooltip";
 import CelerInputFormField from "../Forms/CustomFormField";
 import LifeCycleStep from "../LifeCycleStep";
-import BrokerModal from "../Modals/BrokersCedente";
+import BrokerModal, { IdentificationType } from "../Modals/BrokersCedente";
 import DocForm from "../Modals/BrokersDocs";
 import JuridicoDetailsSkeleton from "../Skeletons/JuridicoDetailsSkeleton";
 import { SelectItem } from "../ui/select";
-import CustomCheckbox from "../CrmUi/Checkbox";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -64,7 +63,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     setDocModalInfo,
   } = useContext(BrokersContext);
 
-
+  const [credorIdentificationType, setCredorIdentificationType] = useState<IdentificationType>(null);
   const [vlData, setVlData] = useState<IWalletResponse>({
     id: "",
     valor_investido: 0,
@@ -104,7 +103,10 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     previsaoDePagamento: false,
     linkDue: false,
     revisaoCalculo: false,
-    espelhoOficio: false
+    espelhoOficio: false,
+    estadoCivil: false,
+    certidaoEmitidas: false,
+    possuiProcessos: false,
   });
   const [editLock, setEditLock] = useState<boolean>(false);
   const [disabledSaveButton, setDisabledSaveButton] = useState<boolean>(true);
@@ -115,6 +117,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   })
 
   const swal = UseMySwal();
+  const queryClient = useQueryClient();
 
   /* refs */
   const rentabilidadeSlideRef = useRef<HTMLInputElement>(null);
@@ -232,13 +235,40 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     const response = await api.get(`/api/notion-api/list/page/${id}/`);
     return response.data;
   }
+  async function fetchCedenteData(cedenteId: string) {
+     const response = await api.get(`/api/notion-api/list/page/${cedenteId}/`);
+    return response.data;
+  }
 
   const { data, isFetching, isLoading, refetch } = useQuery<NotionPage>({
     queryKey: ["page", id],
     queryFn: fetchData,
     refetchOnWindowFocus: false,
   });
-  const queryClient = useQueryClient();
+
+   const { data: cedenteDataPF, isFetching: isFetchingCedentePF } = useQuery<NotionPage>({
+    queryKey: ["cedentePF", data?.properties['Cedente PF']?.relation?.[0]?.id],
+    queryFn: () => fetchCedenteData(data?.properties['Cedente PF']?.relation?.[0]?.id!),
+    refetchOnWindowFocus: false,
+    enabled: !!data?.properties['Cedente PF']?.relation?.[0]?.id
+  });
+  
+  const { data: cedenteDataPJ, isFetching: isFetchingCedentePJ } = useQuery<NotionPage>({
+    queryKey: ["cedentePJ", data?.properties['Cedente PJ']?.relation?.[0]?.id],
+    queryFn: () => fetchCedenteData(data?.properties['Cedente PJ']?.relation?.[0]?.id!),
+    refetchOnWindowFocus: false,
+    enabled: !!data?.properties['Cedente PJ']?.relation?.[0]?.id
+  });
+  
+  const { data: socioData, isFetching: isFetchingSocioData } = useQuery<NotionPage>({
+    queryKey: ["socio", cedenteDataPJ?.properties["Sócio Representante"]?.relation?.[0]?.id],
+    queryFn: () => fetchCedenteData(cedenteDataPJ?.properties["Sócio Representante"]?.relation?.[0]?.id!),
+    refetchOnWindowFocus: false,
+    enabled: !!cedenteDataPJ?.properties["Sócio Representante"]?.relation?.[0]?.id
+  });
+
+  console.log(data,cedenteDataPJ,socioData)
+  console.log(data?.properties['Certidões emitidas'])
 
   const onSubmitForm = async (formData: any) => {
     setIsLoadingRecalculation(true);
@@ -531,6 +561,29 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       page_id
     })
   }
+
+  const handleUpdateCertidoesEmitidas = async (value: string, page_id: string) => {
+    await certidaoEmitidaMutation.mutateAsync({
+      page_id,
+      value
+    });
+  }
+
+  const handleUpdatePossuiProcessos = async (value: string, page_id: string) => {
+    await possuiProcessosMutation.mutateAsync({
+      page_id,
+      value
+    });
+  }
+
+  const handleUpdateEstadoCivil = async (value: string, page_id: string) => {
+    await estadoCivilMutation.mutateAsync({
+      page_id,
+      value
+    });
+  }
+
+
 
   // ----> Mutations <-----
   const espelhoOficioMutation = useMutation({
@@ -1048,7 +1101,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         timer: 3000,
         timerProgressBar: true,
         icon: 'error',
-        text: `Houve um erro ao atualizar o campo Juíz0.`,
+        text: `Houve um erro ao atualizar o campo Juízo.`,
         position: "bottom-right",
         showConfirmButton: false,
       });
@@ -1162,6 +1215,140 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     }
   });
 
+  const certidaoEmitidaMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Certidões emitidas": {
+          "checkbox": paramsObj.value
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async () => {
+      setLoadingUpdateState(prev => ({ ...prev, certidaoEmitidas: true }));
+      setEditLock(true);
+    },
+    onError: () => {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'error',
+        text: `Houve um erro ao atualizar o campo Certidões Emitidas`,
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSuccess: () => {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'success',
+        text: `Campo Certidões Emitidas foi alterado com sucesso.`,
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, certidaoEmitidas: false }));
+    }
+  });
+
+  const possuiProcessosMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Possui processos?": {
+          "checkbox": paramsObj.value
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async () => {
+      setLoadingUpdateState(prev => ({ ...prev, possuiProcessos: true }));
+      setEditLock(true);
+    },
+    onError: () => {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'error',
+        text: `Houve um erro ao atualizar o campo Possui Processos`,
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSuccess: () => {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'success',
+        text: `Campo Possui Processos foi alterado com sucesso.`,
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, possuiProcessos: false }));
+    }
+  });
+
+  const estadoCivilMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Estado Civil": {
+          "select": {
+            "name": paramsObj.value
+          }
+        }
+      });
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+      return response.data
+    },
+    onMutate: async () => {
+      setLoadingUpdateState(prev => ({ ...prev, estadoCivil: true }));
+      setEditLock(true);
+    },
+    onError: () => {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'error',
+        text: `Houve um erro ao atualizar o campo Estado Civil`,
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSuccess: () => {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'success',
+        text: `Campo Estado Civil alterado com sucesso.`,
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, estadoCivil: false }));
+    }
+  });
+
   useEffect(() => {
     if (data && sliderValues.rentabilidade !== 0 && sliderValues.desembolso !== 0) {
       if (
@@ -1231,6 +1418,12 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
   }, [data]);
 
+   useEffect(() => {
+        // verifica o tipo de identificação do credor e formata para só obter números na string
+        const credorIdent = data?.properties["CPF/CNPJ"].rich_text![0].text.content.replace(/\D/g, '');
+
+        setCredorIdentificationType(credorIdent?.length === 11 ? "CPF" : credorIdent?.length === 14 ? "CNPJ" : null);
+  }, [data]);
 
 
   if (!data) {
@@ -1299,7 +1492,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                 label="Nome do Credor"
                 defaultValue={data?.properties["Credor"]?.title?.[0]?.plain_text || ''}
                 iconSrc={<FaUser
-                  className="self-center" />}
+                className="self-center" />}
                 iconAlt="user"
                 className="w-full"
                 onSubmit={(_, value) => handleChangeCreditorName(value, id)}
@@ -1313,16 +1506,11 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                 name="cpf_cnpj"
                 fieldType={InputFieldVariant.INPUT}
                 label={
-                  data?.properties["CPF/CNPJ"]?.rich_text?.[0]
-                    ?.plain_text &&
-                    data.properties["CPF/CNPJ"].rich_text[0].plain_text
-                      .length > 11
-                    ? "CNPJ"
-                    : "CPF"
+                  credorIdentificationType === "CPF" ? "CPF" : "CNPJ"
                 }
                 defaultValue={data?.properties["CPF/CNPJ"]?.rich_text?.[0].plain_text || ''}
                 iconSrc={<FaIdCard
-                  className="self-center" />}
+                className="self-center" />}
                 iconAlt="document"
                 className="w-full"
                 onSubmit={(_, value) => handleChangeIdentification(value, id)}
@@ -1340,6 +1528,72 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
             </div>
             <div className="col-span-4 gap-4">
+             <div className="flex flex-wrap items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <CelerInputField
+                    name="emissao_certidao_check"
+                    fieldType={InputFieldVariant.CHECKBOX}
+                    label="Certidões Emitidas ?"
+                    checked={data?.properties["Certidões emitidas"]?.checkbox}
+                    defaultValue={data?.properties["Certidões emitidas"]?.checkbox}
+                    onValueChange={(_, value) => handleUpdateCertidoesEmitidas(value, id)}
+                    isLoading={loadingUpdateState.certidaoEmitidas}
+                    disabled={editLock}
+                  />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <CelerInputField
+                    name="possui_processos_check"
+                    fieldType={InputFieldVariant.CHECKBOX}
+                    label="Possui Processos ?"
+                    checked={data?.properties["Possui processos?"]?.checkbox}
+                    defaultValue={data?.properties["Possui processos?"]?.checkbox}
+                    onValueChange={(_, value) => handleUpdatePossuiProcessos(value, id)}
+                    isLoading={loadingUpdateState.possuiProcessos}
+                    disabled={editLock}
+                  />
+                </div>
+                  
+              </div>
+                <div className="flex 2xsm:w-full md:w-[460px] gap-2 mt-5">
+                    <CelerInputField
+                    className="w-full gap-2"
+                    fieldType={InputFieldVariant.SELECT}
+                    name="regime_casamento"
+                    label="Estado Civil"
+                    iconSrc={<BsCalendar2HeartFill />}
+                    defaultValue={
+                      credorIdentificationType === "CPF" 
+                      ? cedenteDataPF?.properties["Estado Civil"]?.select?.name || ''
+                      : socioData?.properties["Estado Civil"]?.select?.name || ''
+                    }
+                    onValueChange={(_, value) => handleUpdateEstadoCivil(value, 
+                      credorIdentificationType === "CPF" 
+                      ? cedenteDataPF?.id!
+                      : socioData?.id!
+                    )}
+                    isLoading={loadingUpdateState.estadoCivil}
+                    disabled={editLock}
+                    >
+                    {tipoRegime.map((item, index) => (
+                      <SelectItem 
+                      defaultChecked={
+                        credorIdentificationType === "CPF"
+                        ? cedenteDataPF?.properties["Estado Civil"]?.select?.name === item
+                        : socioData?.properties["Estado Civil"]?.select?.name === item
+                      } 
+                      key={index} 
+                      value={item}
+                      >
+                      {item}
+                      </SelectItem>
+                    ))}
+                    </CelerInputField>
+                </div>
+            </div>
+            <div className="col-span-4 gap-4">
+              
               <div className="flex items-center gap-4">
 
                 <button
