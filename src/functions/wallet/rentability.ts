@@ -15,8 +15,6 @@ export function handleMesesAteOPagamento(data: IWalletResponse): number {
     Math.abs(previsao_de_pgto.getTime() - data_aquisicao.getTime()) /
     (1000 * 60 * 60 * 24 * 30);
 
-    console.log(diffMonths);
-
   return Number.isNaN(diffMonths) ? 0 : diffMonths;
 }
 
