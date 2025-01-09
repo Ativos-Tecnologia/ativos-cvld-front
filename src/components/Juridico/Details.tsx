@@ -267,9 +267,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     enabled: !!cedenteDataPJ?.properties["Sócio Representante"]?.relation?.[0]?.id
   });
 
-  console.log(data,cedenteDataPJ,socioData)
-  console.log(data?.properties['Certidões emitidas'])
-
   const onSubmitForm = async (formData: any) => {
     setIsLoadingRecalculation(true);
     if (formData.observacao) {
@@ -1227,11 +1224,26 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       }
       return response.data
     },
-    onMutate: async () => {
+    onMutate: async (paramsObj) => {
       setLoadingUpdateState(prev => ({ ...prev, certidaoEmitidas: true }));
       setEditLock(true);
+      const prevData = queryClient.getQueryData(['page', id]);
+      queryClient.setQueryData(['page', id], (old: NotionPage) => {
+        return {
+          ...old,
+          properties: {
+            ...old?.properties,
+            "Certidões emitidas": {
+              ...old?.properties["Certidões emitidas"],
+              checkbox: paramsObj.value,
+            },
+          },
+        };
+      });
+      return { prevData }
     },
-    onError: () => {
+    onError: (error, paramsObj, context) => {
+      queryClient.setQueryData(['page', id], context?.prevData);
       swal.fire({
         toast: true,
         timer: 3000,
@@ -1271,11 +1283,26 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       }
       return response.data
     },
-    onMutate: async () => {
+    onMutate: async (paramsObj) => {
       setLoadingUpdateState(prev => ({ ...prev, possuiProcessos: true }));
       setEditLock(true);
+      const prevData = queryClient.getQueryData(['page', id]);
+      queryClient.setQueryData(['page', id], (old: NotionPage) => {
+        return {
+          ...old,
+          properties: {
+            ...old?.properties,
+            "Possui processos?": {
+              ...old?.properties["Possui processos?"],
+              checkbox: paramsObj.value,
+            },
+          },
+        };
+      });
+      return { prevData }
     },
-    onError: () => {
+    onError: (error, paramsObj, context) => {
+      queryClient.setQueryData(['page', id], context?.prevData);
       swal.fire({
         toast: true,
         timer: 3000,
@@ -1423,8 +1450,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         const credorIdent = data?.properties["CPF/CNPJ"].rich_text![0].text.content.replace(/\D/g, '');
 
         setCredorIdentificationType(credorIdent?.length === 11 ? "CPF" : credorIdent?.length === 14 ? "CNPJ" : null);
-  }, [data]);
-
+   }, [data]);
 
   if (!data) {
     return (
@@ -1445,45 +1471,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       <LifeCycleStep status={data?.properties["Status Diligência"].select?.name ?? "ops"} />
       <Form {...form}>
         <div className="space-y-6 rounded-md">
-          {/* <section id="info_credor" className="form-inputs-container">
-            <div className="xl:col-span-2 w-full">
-              <CelerInputField
-                name="responsavel"
-                fieldType={InputFieldVariant.CHECKBOX}
-                label="Tornar-se responsável pelo ativo"
-                defaultValue={data?.properties["Responsável - Celer"].multi_select?.some(item => item.name === user) || false}
-                iconSrc={<FaUser
-                  className="self-center" />}
-                iconAlt="user"
-                className="w-full"
-                onValueChange={() => handleChangeResponsavel(id)}
-                isLoading={loadingUpdateState.responsavel}
-                />
-            </div>
-            <div className="xl:col-span-1 w-full">
-              </div>
-              
-            {data?.properties["Responsável - Celer"].multi_select?.some(item => item.name) && (
-              <div className="flex gap-2 items-center">
-              {
-                data?.properties["Responsável - Celer"].multi_select.length > 1 ? (
-                  <span>Responsáveis:</span>
-                ) : (
-                  <span>Responsável:</span>
-                )
-              }
-
-              <div className="flex gap-2">
-                {data?.properties["Responsável - Celer"]?.multi_select?.map(item => (
-                  <span key={item.id} className="text-bodydark2 text-xs font-semibold h-8 px-2 border border-stroke dark:border-bodydark2 rounded-full flex items-center">
-                    {item.name}
-                  </span>
-                ))}
-                </div>
-              
-            </div>)}
-          </section> */}
-
           <section id="info_credor" className="form-inputs-container">
             <div className="2xsm:col-span-4 xl:col-span-2 w-full">
               <CelerInputField
@@ -1505,9 +1492,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               <CelerInputField
                 name="cpf_cnpj"
                 fieldType={InputFieldVariant.INPUT}
-                label={
-                  credorIdentificationType === "CPF" ? "CPF" : "CNPJ"
-                }
+                label={credorIdentificationType === "CPF" ? "CPF" : "CNPJ"}
                 defaultValue={data?.properties["CPF/CNPJ"]?.rich_text?.[0].plain_text || ''}
                 iconSrc={<FaIdCard
                 className="self-center" />}
@@ -1556,7 +1541,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                 </div>
                   
               </div>
-                <div className="flex 2xsm:w-full md:w-[460px] gap-2 mt-5">
+                <div className="grid 2xsm:w-full md:w-115 gap-2 mt-5">
                     <CelerInputField
                     className="w-full gap-2"
                     fieldType={InputFieldVariant.SELECT}
@@ -1590,7 +1575,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                       </SelectItem>
                     ))}
                     </CelerInputField>
-                </div>
+                 </div>
             </div>
             <div className="col-span-4 gap-4">
               
