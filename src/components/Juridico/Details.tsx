@@ -250,18 +250,21 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     queryKey: ["cedentePF", data?.properties['Cedente PF']?.relation?.[0]?.id],
     queryFn: () => fetchCedenteData(data?.properties['Cedente PF']?.relation?.[0]?.id!),
     refetchOnWindowFocus: false,
+    enabled: !!data?.properties['Cedente PF']?.relation?.[0]?.id
   });
   
   const { data: cedenteDataPJ, isFetching: isFetchingCedentePJ } = useQuery<NotionPage>({
     queryKey: ["cedentePJ", data?.properties['Cedente PJ']?.relation?.[0]?.id],
     queryFn: () => fetchCedenteData(data?.properties['Cedente PJ']?.relation?.[0]?.id!),
     refetchOnWindowFocus: false,
+    enabled: !!data?.properties['Cedente PJ']?.relation?.[0]?.id
   });
   
   const { data: socioData, isFetching: isFetchingSocioData } = useQuery<NotionPage>({
     queryKey: ["socio", cedenteDataPJ?.properties["Sócio Representante"]?.relation?.[0]?.id],
     queryFn: () => fetchCedenteData(cedenteDataPJ?.properties["Sócio Representante"]?.relation?.[0]?.id!),
     refetchOnWindowFocus: false,
+    enabled: !!cedenteDataPJ?.properties["Sócio Representante"]?.relation?.[0]?.id
   });
   
   const onSubmitForm = async (formData: any) => {

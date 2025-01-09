@@ -1,4 +1,3 @@
-import React from 'react'
 import CustomSkeleton from '../CrmUi/CustomSkeleton'
 
 const JuridicoDetailsSkeleton = () => {
@@ -26,6 +25,26 @@ const JuridicoDetailsSkeleton = () => {
                     <CustomSkeleton type='content' className='w-80 h-9' />
                 </div>
             </div>
+
+            <div className='col-span-4 w-full rounded-md bg-white dark:bg-boxdark'>
+                <div className='col-span-4 w-full'>
+                    <CustomSkeleton type='title' className='text-bodydark2 font-medium' />
+                </div>
+                <div className='flex gap-4'>
+                    <CustomSkeleton type='content' className='m-5 w-40 h-6' />
+                    <CustomSkeleton type='content' className='m-5 w-40 h-6' />
+                </div>
+                
+                <div className='flex px-5 flex-col gap-2 xl:col-span-1'>
+                    <CustomSkeleton type='title' className='w-28 h-5' />
+                    <CustomSkeleton type='content' className='w-80 h-8' />
+                </div>
+                <div className='flex gap-4'>
+                    <CustomSkeleton type='content' className='m-5 w-30 h-8' />
+                    <CustomSkeleton type='content' className='m-5 w-30 h-8' />
+                </div>
+            </div>
+
 
             <div className='grid grid-cols-4 3xl:grid-cols-5 gap-6 p-4 rounded-md bg-white dark:bg-boxdark'>
                 <div className='flex flex-col gap-2 xl:col-span-1'>
