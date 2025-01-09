@@ -253,14 +253,16 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
   });
   
   const { data: cedenteDataPJ, isFetching: isFetchingCedentePJ } = useQuery<NotionPage>({
-    queryKey: ["cedentePJ", data?.properties['Cedente PJ']],
-    queryFn: () => fetchCedenteData(data?.properties['Cedente PF']?.relation?.[0]?.id!),
+    queryKey: ["cedentePJ", data?.properties['Cedente PJ']?.relation?.[0]?.id],
+    queryFn: () => fetchCedenteData(data?.properties['Cedente PJ']?.relation?.[0]?.id!),
     refetchOnWindowFocus: false,
   });
-
-  console.log("Dados do Notion: ",data)
-  console.log("Cedente PJ: ",cedenteDataPJ)
-  console.log("ID: ",cedenteDataPJ?.properties["CENTRAL DE PRECATÓRIOS"]?.relation?.[0]?.id)
+  
+  const { data: socioData, isFetching: isFetchingSocioData } = useQuery<NotionPage>({
+    queryKey: ["socio", cedenteDataPJ?.properties["Sócio Representante"]?.relation?.[0]?.id],
+    queryFn: () => fetchCedenteData(cedenteDataPJ?.properties["Sócio Representante"]?.relation?.[0]?.id!),
+    refetchOnWindowFocus: false,
+  });
   
   const onSubmitForm = async (formData: any) => {
     setIsLoadingRecalculation(true);
@@ -1092,7 +1094,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
   const estadoCivilMutation = useMutation({
     mutationFn: async (paramsObj: { page_id: string, value: string }) => {
-      const response = await api.patch(`api/notion-api/update/${cedenteDataPF?.id}/`, {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
         "Estado Civil": {
           "select": {
             "name": paramsObj.value
@@ -1343,23 +1345,39 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                   
               </div>
                 <div className="flex 2xsm:w-full md:w-115 gap-2 mt-5">
-                  <CelerInputField
+                    <CelerInputField
                     className="w-full gap-2"
                     fieldType={InputFieldVariant.SELECT}
                     name="regime_casamento"
                     label="Estado Civil"
                     iconSrc={<BsCalendar2HeartFill />}
-                    defaultValue={cedenteDataPF?.properties["Estado Civil"]?.select?.name! || ''}
-                    onValueChange={(_, value) => handleUpdateEstadoCivil(value, id)}
+                    defaultValue={
+                      credorIdentificationType === "CPF" 
+                      ? cedenteDataPF?.properties["Estado Civil"]?.select?.name || ''
+                      : socioData?.properties["Estado Civil"]?.select?.name || ''
+                    }
+                    onValueChange={(_, value) => handleUpdateEstadoCivil(value, 
+                      credorIdentificationType === "CPF" 
+                      ? cedenteDataPF?.id!
+                      : socioData?.id!
+                    )}
                     isLoading={loadingUpdateState.estadoCivil}
                     disabled={editLock}
-                >
+                    >
                     {tipoRegime.map((item, index) => (
-                      <SelectItem defaultChecked={
-                        cedenteDataPF?.properties["Estado Civil"]?.select?.name! === item
-                      } key={index} value={item}>{item}</SelectItem>
+                      <SelectItem 
+                      defaultChecked={
+                        credorIdentificationType === "CPF"
+                        ? cedenteDataPF?.properties["Estado Civil"]?.select?.name === item
+                        : socioData?.properties["Estado Civil"]?.select?.name === item
+                      } 
+                      key={index} 
+                      value={item}
+                      >
+                      {item}
+                      </SelectItem>
                     ))}
-                  </CelerInputField>
+                    </CelerInputField>
                 </div>
             </div>
             <div className="col-span-4 gap-4">
