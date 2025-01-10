@@ -86,7 +86,7 @@ const data = {
       items: [
         {
           title: "Resumo",
-          url: "#",
+          url: "/comercial/resumo",
         },
         {
           title: "Explorer",

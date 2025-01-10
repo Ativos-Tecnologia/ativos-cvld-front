@@ -33,6 +33,7 @@
     "@radix-ui/react-tooltip": "^1.1.6",
     "@react-pdf/renderer": "^4.1.5",
     "@tanstack/react-query": "^5.62.10",
+    "@tanstack/react-table": "^8.20.6",
     "apexcharts": "^4.3.0",
     "axios": "^1.7.9",
     "canvas-confetti": "^1.9.3",
