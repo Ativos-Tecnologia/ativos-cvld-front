@@ -12,17 +12,17 @@ const JuridicoDetailsSkeleton = () => {
             </div>
 
             <div className="flex items-center justify-center dark:bg-boxdark bg-white rounded-md p-4">
-                <CustomSkeleton type='title' className='w-3/6 xl:w-2/6 h-18' />
+                <CustomSkeleton type='title' className='w-5/6 h-18' />
             </div>
 
             <div className='grid grid-cols-4 3xl:grid-cols-5 gap-6 p-4 rounded-md bg-white dark:bg-boxdark'>
-                <div className='flex flex-col gap-2 md:col-span-2'>
+                <div className='flex flex-col gap-2 2xsm:col-span-4 md:col-span-2'>
                     <CustomSkeleton type='title' className='w-28 h-5' />
                     <CustomSkeleton type='content' className='w-full h-9' />
                 </div>
-                <div className='flex flex-col gap-2 md:col-span-1'>
+                <div className='flex flex-col gap-2 2xsm:col-span-4 md:col-span-1'>
                     <CustomSkeleton type='title' className='w-28 h-5' />
-                    <CustomSkeleton type='content' className='w-70 h-9' />
+                    <CustomSkeleton type='content' className='2xsm:w-full md:w-70 h-9' />
                 </div>
             </div>
 
@@ -47,23 +47,23 @@ const JuridicoDetailsSkeleton = () => {
 
 
             <div className='grid grid-cols-4 3xl:grid-cols-5 gap-6 p-4 rounded-md bg-white dark:bg-boxdark'>
-                <div className='flex flex-col gap-2 md:col-span-2 xl:col-span-1'>
+                <div className='flex flex-col gap-2 2xsm:col-span-4 md:col-span-2 xl:col-span-1'>
                     <CustomSkeleton type='title' className='w-28 h-5' />
                     <CustomSkeleton type='content' className='w-full h-9' />
                 </div>
-                <div className='flex flex-col gap-2 md:col-span-2 xl:col-span-1'>
+                <div className='flex flex-col gap-2 2xsm:col-span-4 md:col-span-2 xl:col-span-1'>
                     <CustomSkeleton type='title' className='w-28 h-5' />
                     <CustomSkeleton type='content' className='w-full h-9' />
                 </div>
-                <div className='flex flex-col gap-2 md:col-span-2 xl:col-span-1'>
+                <div className='flex flex-col gap-2 2xsm:col-span-4 md:col-span-2 xl:col-span-1'>
                     <CustomSkeleton type='title' className='w-28 h-5' />
                     <CustomSkeleton type='content' className='w-full h-9' />
                 </div>
-                <div className='flex flex-col gap-2 md:col-span-2 xl:col-span-1'>
+                <div className='flex flex-col gap-2 2xsm:col-span-4 md:col-span-2 xl:col-span-1'>
                     <CustomSkeleton type='title' className='w-28 h-5' />
                     <CustomSkeleton type='content' className='w-full h-9' />
                 </div>
-                <div className='flex flex-col gap-2 md:col-span-2 xl:col-span-1'>
+                <div className='flex flex-col gap-2 2xsm:col-span-4 md:col-span-2 xl:col-span-1'>
                     <CustomSkeleton type='title' className='w-28 h-5' />
                     <CustomSkeleton type='content' className='w-full h-9' />
                 </div>
@@ -76,46 +76,46 @@ const JuridicoDetailsSkeleton = () => {
 
             <div className='bg-white dark:bg-boxdark rounded-md p-4'>
                 <div className='grid grid-cols-4 3xl:grid-cols-5 gap-6 mb-8'>
-                    <div className='flex flex-col gap-2 md:col-span-2 xl:col-span-1'>
+                    <div className='flex flex-col gap-2 2xsm:col-span-4 md:col-span-2 xl:col-span-1'>
                         <CustomSkeleton type='title' className='w-28 h-5' />
                         <CustomSkeleton type='content' className='w-full h-9' />
                     </div>
-                    <div className='flex flex-col gap-2 md:col-span-2 xl:col-span-1'>
+                    <div className='flex flex-col gap-2 2xsm:col-span-4 md:col-span-2 xl:col-span-1'>
                         <CustomSkeleton type='title' className='w-28 h-5' />
                         <CustomSkeleton type='content' className='w-full h-9' />
                     </div>
-                    <div className='flex flex-col gap-2 md:col-span-2 xl:col-span-1'>
+                    <div className='flex flex-col gap-2 2xsm:col-span-4 md:col-span-2 xl:col-span-1'>
                         <CustomSkeleton type='title' className='w-28 h-5' />
                         <CustomSkeleton type='content' className='w-full h-9' />
                     </div>
-                    <div className='flex flex-col gap-2 md:col-span-2 xl:col-span-1'>
+                    <div className='flex flex-col gap-2 2xsm:col-span-4 md:col-span-2 xl:col-span-1'>
                         <CustomSkeleton type='title' className='w-28 h-5' />
                         <CustomSkeleton type='content' className='w-full h-9' />
                     </div>
-                    <div className='flex flex-col gap-2 md:col-span-2 xl:col-span-1'>
+                    <div className='flex flex-col gap-2 2xsm:col-span-4 md:col-span-2 xl:col-span-1'>
                         <CustomSkeleton type='title' className='w-28 h-5' />
                         <CustomSkeleton type='content' className='w-full h-9' />
                     </div>
-                    <div className='flex flex-col gap-2 md:col-span-2 xl:col-span-1'>
+                    <div className='flex flex-col gap-2 2xsm:col-span-4 md:col-span-2 xl:col-span-1'>
                         <CustomSkeleton type='title' className='w-28 h-5' />
                         <CustomSkeleton type='content' className='w-full h-9' />
                     </div>
-                    <div className='flex flex-col gap-2 md:col-span-2 xl:col-span-1'>
+                    <div className='flex flex-col gap-2 2xsm:col-span-4 md:col-span-2 xl:col-span-1'>
                         <CustomSkeleton type='title' className='w-28 h-5' />
                         <CustomSkeleton type='content' className='w-full h-9' />
                     </div>
-                    <div className='flex flex-col gap-2 md:col-span-2 xl:col-span-1'>
+                    <div className='flex flex-col gap-2 2xsm:col-span-4 md:col-span-2 xl:col-span-1'>
                         <CustomSkeleton type='title' className='w-28 h-5' />
                         <CustomSkeleton type='content' className='w-full h-9' />
                     </div>
-                    <div className='flex flex-col gap-2 md:col-span-2 xl:col-span-1'>
+                    <div className='flex flex-col gap-2 2xsm:col-span-4 md:col-span-2 xl:col-span-1'>
                         <CustomSkeleton type='title' className='w-28 h-5' />
                         <CustomSkeleton type='content' className='w-full h-9' />
                     </div>
                 </div>
 
                 <div className='grid grid-cols-4 3xl:grid-cols-5 gap-6 mt-8'>
-                    <div className='col-span-2 3xl:col-span-3 grid grid-cols-2 gap-6'>
+                    <div className='2xsm:col-span-4 md:col-span-2 3xl:col-span-3 grid grid-cols-2 gap-6'>
                         <CustomSkeleton type='content' className='col-span-1 h-5' />
                         <div className='col-span-1'>&nbsp;</div>
                         <CustomSkeleton type='content' className='col-span-1 h-5' />
@@ -130,7 +130,7 @@ const JuridicoDetailsSkeleton = () => {
                         <div className='col-span-1'>&nbsp;</div>
                         <CustomSkeleton type='content' className='col-span-1 h-5' />
                     </div>
-                    <div className='col-span-2 3xl:col-span-2 flex flex-col gap-6'>
+                    <div className='2xsm:col-span-4 md:col-span-2 3xl:col-span-2 flex flex-col gap-6'>
                         <CustomSkeleton type='title' className='w-80 h-7' />
                         <div className='flex flex-col gap-3'>
                             <div className='flex items-center justify-between'>
