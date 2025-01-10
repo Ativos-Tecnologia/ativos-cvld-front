@@ -1448,7 +1448,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
    useEffect(() => {
         // verifica o tipo de identificação do credor e formata para só obter números na string
-        const credorIdent = data?.properties["CPF/CNPJ"].rich_text![0].text.content.replace(/\D/g, '');
+        const credorIdent = data?.properties["CPF/CNPJ"].rich_text?.[0]?.text?.content.replace(/\D/g, '') || "";
 
         setCredorIdentificationType(credorIdent?.length === 11 ? "CPF" : credorIdent?.length === 14 ? "CNPJ" : null);
    }, [data]);
@@ -1473,7 +1473,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       <Form {...form}>
         <div className="space-y-6 rounded-md">
           <section id="info_credor" className="form-inputs-container">
-            <div className="2xsm:col-span-4 xl:col-span-2 w-full">
+            <div className="2xsm:col-span-4 lg:col-span-2 xl:col-span-2 w-full">
               <CelerInputField
                 name="credor"
                 fieldType={InputFieldVariant.INPUT}
@@ -1489,7 +1489,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               />
             </div>
 
-            <div className="2xsm:col-span-4 xl:col-span-2 w-full">
+            <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1 w-full">
               <CelerInputField
                 name="cpf_cnpj"
                 fieldType={InputFieldVariant.INPUT}
@@ -1610,7 +1610,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
           </section>
 
           <section className="form-inputs-container" id="info_processo">
-            <div className="2xsm:col-span-4 xl:col-span-1">
+            <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
               <CelerInputField
                 name="npu_originario"
                 fieldType={InputFieldVariant.INPUT}
@@ -1624,7 +1624,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                 disabled={editLock}
               />
             </div>
-            <div className="2xsm:col-span-4 xl:col-span-1">
+            <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
               <CelerInputField
                 name="npu_precatorio"
                 fieldType={InputFieldVariant.INPUT}
@@ -1638,7 +1638,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                 disabled={editLock}
               />
             </div>
-            <div className="2xsm:col-span-4 xl:col-span-1">
+            <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
               <CelerInputField
                 name="juizo_vara"
                 fieldType={InputFieldVariant.INPUT}
@@ -1652,7 +1652,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                 disabled={editLock}
               />
             </div>
-            <div className="2xsm:col-span-4 xl:col-span-1">
+            <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
               <CelerInputField
                 name="ente_devedor"
                 fieldType={InputFieldVariant.INPUT}
@@ -1666,7 +1666,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                 disabled={editLock}
               />
             </div>
-            <div className="2xsm:col-span-4 xl:col-span-1">
+            <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
               <CelerInputField
                 name="estado_ente_devedor"
                 fieldType={InputFieldVariant.SELECT}
@@ -1692,7 +1692,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             <form onSubmit={form.handleSubmit(onSubmitForm)}>
               <div className="grid grid-cols-4 3xl:grid-cols-5 gap-6">
                 {/* tipo */}
-                <div className="2xsm:col-span-4 xl:col-span-1">
+                <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
                   <CelerInputFormField
                     control={form.control}
                     name="tipo_do_oficio"
@@ -1707,7 +1707,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                   </CelerInputFormField>
                 </div>
                 {/* natureza */}
-                <div className="2xsm:col-span-4 xl:col-span-1">
+                <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
                   <CelerInputFormField
                     control={form.control}
                     name="natureza"
@@ -1721,7 +1721,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                   </CelerInputFormField>
                 </div>
                 {/* esfera */}
-                <div className="2xsm:col-span-4 xl:col-span-1">
+                <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
                   <CelerInputFormField
                     control={form.control}
                     name="esfera"
@@ -1737,7 +1737,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                 </div>
                 {/* regime */}
                 {form.watch("esfera") !== "FEDERAL" && (
-                  <div className="2xsm:col-span-4 xl:col-span-1">
+                  <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
                     <CelerInputFormField
                       control={form.control}
                       name="regime"
@@ -1752,7 +1752,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                   </div>
                 )}
                 {/* tribunal */}
-                <div className="2xsm:col-span-4 xl:col-span-1">
+                <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
                   <CelerInputFormField
                     control={form.control}
                     name="tribunal"
@@ -1767,7 +1767,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                   </CelerInputFormField>
                 </div>
                 {/* valor principal */}
-                <div className="2xsm:col-span-4 xl:col-span-1">
+                <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
                   <CelerInputFormField
                     control={form.control}
                     name="valor_principal"
@@ -1779,7 +1779,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                   />
                 </div>
                 {/* valor juros */}
-                <div className="2xsm:col-span-4 xl:col-span-1">
+                <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
                   <CelerInputFormField
                     control={form.control}
                     name="valor_juros"
@@ -1791,7 +1791,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                   />
                 </div>
                 {/* data base */}
-                <div className="2xsm:col-span-4 xl:col-span-1">
+                <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
                   <CelerInputFormField
                     control={form.control}
                     name="data_base"
@@ -1802,7 +1802,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                   />
                 </div>
                 {/* data requisição */}
-                <div className="2xsm:col-span-4 xl:col-span-1">
+                <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
                   <CelerInputFormField
                     control={form.control}
                     name="data_requisicao"
@@ -1816,9 +1816,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
               <hr className="border border-stroke dark:border-strokedark mt-6" />
 
-              <div className="grid 2xsm:grid-cols-12 xl:grid-cols-4 3xl:grid-cols-5 gap-6 mt-6">
-                <div className="grid 2xsm:col-span-12 xl:col-span-2 3xl:col-span-3 xl:grid-cols-2 gap-6">
-
+              <div className="grid md:grid-cols-4 xl:grid-cols-4 3xl:grid-cols-5 gap-6 mt-6">
+                <div className="grid 2xsm:col-span-4 xl:col-span-2 3xl:col-span-3 xl:grid-cols-2 gap-6">
                   {/* percentual adquirido */}
                   <div className="2xsm:col-span-4 xl:col-span-1">
                     <CelerInputFormField
@@ -1915,7 +1914,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                         />
                       </div>
                       {form.watch("ir_incidente_rra") === true ? (
-                        <div className="2xsm:col-span-4 xl:col-span-1">
+                        <div className="col-span-1">
                           <CelerInputFormField
                             control={form.control}
                             name="numero_de_meses"
@@ -1993,9 +1992,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                   )}
                 </div>
 
-
-                <div className="col-span-12">
-                  <hr className="border border-stroke dark:border-strokedark col-span-12 my-6" />
+                <div className="col-span-4">
+                  <hr className="border border-stroke dark:border-strokedark my-6" />
                   <CelerInputFormField
                     name="observacao"
                     control={form.control}
@@ -2010,8 +2008,9 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                     disabled={editLock}
                   />
                 </div>
-                <div className="col-span-12">
-                  <h3 className="text-bodydark2 text-sm font-medium">
+
+                <div className="col-span-4">
+                  <h3 className="text-bodydark2 text-sm font-medium 2xsm:text-center md:text-left">
                     Atenção: A atualização dos valores, datas, percentuais etc implica na modificação do valor líquido do ativo. O status do ativo será alterado para Repactuação e retornará para o broker para negociação.
                   </h3>
                 </div>
@@ -2019,6 +2018,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               </div>
 
               <hr className="border border-stroke dark:border-strokedark mt-6" />
+
               <div className="flex items-center justify-center gap-6 mt-6">
                 <p>
                   Valor Líquido:{" "}
@@ -2032,7 +2032,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                 }
               </div>
 
-              <div className="flex 2xsm:flex-col xl:flex-row items-center justify-center gap-6 mt-6">
+              <div className="flex items-center justify-center 2xsm:gap-3 2xsm:flex-col lg:flex-row lg:gap-6 mt-6">
 
                 <Button
                   type="submit"
@@ -2048,7 +2048,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                 {data?.properties["Memória de Cálculo Ordinário"].url && (
                   <Link
                     href={data?.properties["Memória de Cálculo Ordinário"].url}
-                    className="bg-blue-600 hover:bg-blue-700 text-snow py-2 px-4 2xsm:w-full md:w-fit rounded-md flex items-center gap-3 transition-colors duration-300 uppercase text-sm"
+                    className="bg-blue-600 hover:bg-blue-700 text-snow py-2 px-4 2xsm:w-full md:w-fit rounded-md flex items-center justify-center gap-3 transition-colors duration-300 uppercase text-sm"
                   >
                     <GrDocumentText className="h-4 w-4" />
                     <span className="font-medium">Memória de Cálculo Simples</span>
@@ -2060,7 +2060,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                     href={data?.properties["Memória de Cálculo RRA"].url}
                     target="_blank"
                     referrerPolicy="no-referrer"
-                    className="bg-blue-600 hover:bg-blue-700 text-snow py-2 px-4 2xsm:w-full md:w-fit rounded-md flex items-center gap-3 transition-colors duration-300 uppercase text-sm"
+                    className="bg-blue-600 hover:bg-blue-700 text-snow py-2 px-4 2xsm:w-full md:w-fit rounded-md flex items-center justify-center gap-3 transition-colors duration-300 uppercase text-sm"
                   >
                     <GrDocumentText className="h-4 w-4" />
                     <span className="font-medium">Memória de Cálculo RRA</span>
@@ -2082,7 +2082,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             Qualquer pessoa com o link poderá acessar o documento
           </p>
         </div>
-        <div className="flex items-center gap-2 col-span-4 3xl:col-span-5">
+        <div className="flex gap-2 col-span-4 2xsm:flex-col md:flex-row md:items-center 3xl:col-span-5">
           <CelerInputField
             name="link_due_diligence"
             ref={linkDueInputRef}
@@ -2090,7 +2090,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             placeholder="Digite o link"
             isLoading={loadingUpdateState.linkDue}
             defaultValue={data?.properties["Link de Due Diligence"]?.url || "Sem link disponível"}
-            className="w-100 !h-10"
+            className="2xsm:wfull md:w-100 !h-10"
             onSubmit={(_, value) => handleUpdateDueLink(value, id)}
           />
 
@@ -2128,7 +2128,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
           Detalhes do precatório
         </h3>
         <div className="grid grid-cols-4 3xl:grid-cols-5 gap-6">
-          <div className="2xsm:col-span-4 xl:col-span-1">
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
             <CelerInputField
               name="vl_com_reservas"
               fieldType={InputFieldVariant.INPUT}
@@ -2145,7 +2145,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             />
           </div>
 
-          <div className="2xsm:col-span-4 xl:col-span-1">
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
             <CelerInputField
               name="proposta"
               fieldType={InputFieldVariant.INPUT}
@@ -2157,7 +2157,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               disabled={true}
             />
           </div>
-          <div className="2xsm:col-span-4 xl:col-span-1">
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
             <CelerInputField
               name="comissao"
               fieldType={InputFieldVariant.INPUT}
@@ -2169,7 +2169,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               disabled={true}
             />
           </div>
-          <div className="2xsm:col-span-4 xl:col-span-1">
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
             <CelerInputField
               name="custo_total"
               fieldType={InputFieldVariant.INPUT}
@@ -2186,7 +2186,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               disabled={true}
             />
           </div>
-          <div className="2xsm:col-span-4 xl:col-span-1">
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
             <CelerInputField
               name="custo"
               fieldType={InputFieldVariant.INPUT}
@@ -2198,7 +2198,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               disabled={true}
             />
           </div>
-          <div className="2xsm:col-span-4 xl:col-span-1">
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
             <CelerInputField
               name="loa"
               fieldType={InputFieldVariant.INPUT}
@@ -2210,7 +2210,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               disabled={true}
             />
           </div>
-          <div className="2xsm:col-span-4 xl:col-span-1">
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
             <CelerInputField
               name="esfera"
               fieldType={InputFieldVariant.INPUT}
@@ -2222,7 +2222,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               disabled={true}
             />
           </div>
-          <div className="2xsm:col-span-4 xl:col-span-1">
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
             <CelerInputField
               name="percentual_de_honorarios"
               fieldType={InputFieldVariant.INPUT}
@@ -2234,7 +2234,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               disabled={true}
             />
           </div>
-          <div className="2xsm:col-span-4 xl:col-span-1">
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
             <CelerInputField
               name="spread"
               fieldType={InputFieldVariant.INPUT}
@@ -2252,7 +2252,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               disabled={true}
             />
           </div>
-          <div className="2xsm:col-span-4 xl:col-span-1">
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
             <CelerInputField
               name="percentual_a_ser_adquirido"
               fieldType={InputFieldVariant.INPUT}
@@ -2264,7 +2264,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               disabled={true}
             />
           </div>
-          <div className="2xsm:col-span-4 xl:col-span-1">
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
             <CelerInputField
               name="valor_liquido_cedido"
               fieldType={InputFieldVariant.INPUT}
