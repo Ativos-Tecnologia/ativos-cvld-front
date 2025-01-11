@@ -21,6 +21,7 @@ import {
 import { FileWithPreview } from "@/app/profile/page"
 import { UserInfoAPIContext } from "@/context/UserInfoContext"
 import { centerAspectCrop } from "@/functions/cut-crop"
+import UseMySwal from "@/hooks/useMySwal"
 import { CropIcon, Trash2Icon } from "lucide-react"
 import { BiPencil } from "react-icons/bi"
 import "react-image-crop/dist/ReactCrop.css"
@@ -116,7 +117,10 @@ export function ImageCropper({
       const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
       
       if (!fileType || !allowedTypes.includes(fileType)) {
-        alert('Formato de imagem não suportado. Use apenas PNG, JPG ou JPEG.');
+        UseMySwal().fire({
+                  title: "Formato de imagem não suportado. Use apenas PNG, JPG ou JPEG.",
+                  icon: "error",
+                });
         return;
       }
 
