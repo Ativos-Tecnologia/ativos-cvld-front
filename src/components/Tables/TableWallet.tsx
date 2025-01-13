@@ -26,6 +26,9 @@ import { Button } from '../ui/button';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { WalletTableSkeletons } from '../Skeletons/WalletTableSkeletons';
 import dateFormater from '@/functions/formaters/dateFormater';
+import { IoGlobeOutline } from 'react-icons/io5';
+import { FaBuilding, FaLink } from 'react-icons/fa6';
+import { LuCheck, LuCopy } from 'react-icons/lu';
 
 export interface ITableWalletProps {
     data?: any;
@@ -38,6 +41,7 @@ export interface ITableWalletProps {
 const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data, isPending, isFetching, setVlData, setDefaultFilterObject }, ref) => {
 
     /* =====> states <====== */
+    const [linkCopied, setLinkCopied] = useState<string | null>(null);
     const [fetchingVL, setFetchingVL] = useState<string | null>(null);
     const [openTipoOficioPopover, setOpenTipoOficioPopover] = useState<boolean>(false);
     const [openUsersPopover, setOpenUsersPopover] = useState<boolean>(false)
@@ -148,6 +152,14 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
         }));
         // setShouldFetchExternally(true);
     }, []);
+
+    const handleCopyLink = (link: string | undefined, itemId: string) => () => {
+        if (link) {
+            navigator.clipboard.writeText(link);
+            setLinkCopied(itemId);
+            setTimeout(() => setLinkCopied(null), 2000);
+        }
+    }
 
     /* função que faz uma requisição ao backend para retornar resultados que contenham
     a determinada palavra-chave e adiciona a nova linha filtrada para os resultados já
@@ -400,66 +412,26 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                                     </div>
                                 </Title>
                             </TableHeadCell>
-                            {/* <TableHeadCell className='max-w-50'>
+                            <TableHeadCell className='max-w-50'>
                                 <div className='flex gap-2'>
-                                    <BiSolidCategoryAlt className='text-base' />
-                                    <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Natureza</span>
+                                    <IoGlobeOutline className="text-base" />
+                                    <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Esfera</span>
                                 </div>
                             </TableHeadCell>
                             <TableHeadCell className='max-w-50'>
                                 <div className='flex gap-2'>
-                                    <BsCalendar3 className='text-base' />
-                                    <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Data de Recebimento</span>
+                                    <FaBuilding className="text-base" />
+                                    <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Ente Devedor</span>
                                 </div>
                             </TableHeadCell>
                             <TableHeadCell className='max-w-50'>
-                                <div className='flex gap-2'>
-                                    <BsCalendar3 className='text-base' />
-                                    <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Data Base</span>
-                                </div>
+                                <Title text='Link dos Documentos'>
+                                    <div className='flex gap-2'>
+                                        <FaLink className="text-base" />
+                                        <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Link dos Documentos</span>
+                                    </div>
+                                </Title>
                             </TableHeadCell>
-                            <TableHeadCell className='max-w-50'>
-                                <div className='flex gap-2'>
-                                    <CgMathPercent className='text-base' />
-                                    <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Juros Fixados?</span>
-                                </div>
-                            </TableHeadCell>
-                            <TableHeadCell className='max-w-50'>
-                                <div className='flex gap-2'>
-                                    <LiaCoinsSolid className='text-base' />
-                                    <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>PSS</span>
-                                </div>
-                            </TableHeadCell>
-                            <TableHeadCell className='max-w-50'>
-                                <div className='flex gap-2'>
-                                    <BsCalendar3 className='text-base' />
-                                    <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Meses RRA</span>
-                                </div>
-                            </TableHeadCell>
-                            <TableHeadCell className='max-w-50'>
-                                <div className='flex gap-2'>
-                                    <BiUpArrowAlt className='text-base' />
-                                    <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Incidência IR</span>
-                                </div>
-                            </TableHeadCell>
-                            <TableHeadCell className='max-w-50'>
-                                <div className='flex gap-2'>
-                                    <LiaCoinsSolid className='text-base' />
-                                    <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Valor Principal</span>
-                                </div>
-                            </TableHeadCell>
-                            <TableHeadCell className='max-w-50'>
-                                <div className='flex gap-2'>
-                                    <LiaCoinsSolid className='text-base' />
-                                    <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Valor Juros</span>
-                                </div>
-                            </TableHeadCell>
-                            <TableHeadCell className='max-w-50'>
-                                <div className='flex gap-2'>
-                                    <PiListBulletsBold className='text-base' />
-                                    <span className='text-left w-40 text-ellipsis overflow-hidden whitespace-nowrap'>Usuário da Wallet</span>
-                                </div>
-                            </TableHeadCell> */}
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -529,73 +501,32 @@ const TableWallet = forwardRef<HTMLDivElement | null, ITableWalletProps>(({ data
                                                             {dateFormater(item.properties["Data de aquisição do precatório"].date?.start.split("T")[0] || '')}
                                                         </TableCell>
 
-                                                        {/* Natureza */}
-                                                        {/* <TableCell className='text-sm'>
-                                                            {item.properties["Natureza"].select?.name}
-                                                        </TableCell> */}
+                                                        {/* Esfera */}
+                                                        <TableCell className='text-sm'>
+                                                            {item.properties["Esfera"].select?.name || ""}
+                                                        </TableCell>
 
-                                                        {/* Data de recebimento */}
-                                                        {/* <TableCell className='text-sm'>
-                                                            {dateConverter(item.properties["Data do Recebimento"].date?.start || '')}
-                                                        </TableCell> */}
+                                                        {/* Ente devedor */}
+                                                        <TableCell className='text-sm'>
+                                                            {item.properties["Ente Devedor"].select?.name || ""}
+                                                        </TableCell>
 
-                                                        {/* Data base */}
-                                                        {/* <TableCell className='text-sm'>
-                                                            {dateConverter(item.properties["Data Base"].date?.start || '')}
-                                                        </TableCell> */}
-
-                                                        {/* Juros fixados */}
-                                                        {/* <TableCell className='text-sm'>
-                                                            <CustomCheckbox
-                                                                check={item.properties['Juros fixados?'].checkbox}
-                                                                readOnly
-                                                            />
-                                                        </TableCell> */}
-
-                                                        {/* PSS */}
-                                                        {/* <TableCell className='text-sm text-right'>
-                                                            {numberFormat(item.properties["PSS"].number || 0)}
-                                                        </TableCell> */}
-
-                                                        {/* Meses RRa */}
-                                                        {/* <TableCell className='text-sm text-right'>
-                                                            {item.properties["Meses RRA"].number}
-                                                        </TableCell> */}
-
-                                                        {/* Incidência de IR */}
-                                                        {/* <TableCell className='text-sm'>
-                                                            <CustomCheckbox
-                                                                check={item.properties['Incidência IR'].checkbox}
-                                                                readOnly
-                                                            />
-                                                        </TableCell> */}
-
-                                                        {/* Valor Principal */}
-                                                        {/* <TableCell className='text-sm text-right'>
-                                                            {numberFormat(item.properties["Valor Principal"].number || 0)}
-                                                        </TableCell> */}
-
-                                                        {/* Valor Juros */}
-                                                        {/* <TableCell className='text-sm text-right'>
-                                                            {numberFormat(item.properties["Valor Juros"].number || 0)}
-                                                        </TableCell> */}
-
-                                                        {/* Usuário da Wallet */}
-                                                        {/* <TableCell className='text-sm'>
-                                                            <div
-                                                                className='flex items-center gap-1 overflow-x-scroll custom-scrollbar pb-0.5'>
-                                                                {item.properties["Usuário da Wallet"].multi_select?.map((user: any) => (
-                                                                    <span
-                                                                        key={user.id}
-                                                                        style={{
-                                                                            backgroundColor: notionColorResolver(user.color)
-                                                                        }}
-                                                                        className='px-2 py-0 text-white rounded'>
-                                                                        {user.name}
-                                                                    </span>
-                                                                ))}
-                                                            </div>
-                                                        </TableCell> */}
+                                                        {/* Link de Due */}
+                                                        <TableCell className='group text-sm relative'>
+                                                            <p className='max-w-[400px] truncate'>
+                                                                {item?.properties["Link de Due Diligence"]?.url || "Sem link disponível"}
+                                                            </p>
+                                                            {item?.properties["Link de Due Diligence"]?.url && (
+                                                                <Title text={linkCopied === item.id ? "Link copiado!" : "Copiar link"}>
+                                                                    <div
+                                                                        onClick={handleCopyLink(item?.properties["Link de Due Diligence"]?.url, item.id)}
+                                                                        className={`absolute top-1/2 -translate-y-1/2 right-0 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-full w-6 h-6 transition-all duration-300 cursor-pointer ${linkCopied === item.id ? "bg-green-400" : "hover:bg-slate-200 dark:hover:bg-slate-700"}`}
+                                                                    >
+                                                                        {linkCopied === item.id ? <LuCheck className='text-white' /> : <LuCopy />}
+                                                                    </div>
+                                                                </Title>
+                                                            )}
+                                                        </TableCell>
                                                     </TableRow>
                                                 ))
                                             }
