@@ -28,13 +28,12 @@ import { AiOutlineLoading } from "react-icons/ai";
 import { BiInfoCircle, BiSave, BiSolidCalculator, BiSolidCoinStack, BiX } from "react-icons/bi";
 import { BsCalendar2HeartFill, BsPencilSquare } from "react-icons/bs";
 import { FaBalanceScale, FaIdCard, FaMapMarkedAlt, FaRegFilePdf } from "react-icons/fa";
-import { FaBuilding, FaBuildingColumns, FaLink, FaMoneyBillTransfer, FaUser } from "react-icons/fa6";
-import { GiMoneyStack, GiPayMoney, GiReceiveMoney, GiTakeMyMoney } from "react-icons/gi";
-import { GrDocumentText, GrDocumentUser, GrMoney } from "react-icons/gr";
+import { FaBuilding, FaBuildingColumns, FaLink, FaUser } from "react-icons/fa6";
+import { GiPayMoney, GiReceiveMoney, GiTakeMyMoney } from "react-icons/gi";
+import { GrDocumentText, GrDocumentUser } from "react-icons/gr";
 import { IoIosPaper } from "react-icons/io";
 import { IoCalendar, IoDocumentTextSharp, IoGlobeOutline } from "react-icons/io5";
 import { LuClipboardCheck, LuCopy, LuHandshake } from "react-icons/lu";
-import { RiMoneyDollarBoxFill } from "react-icons/ri";
 import { TbMoneybag } from "react-icons/tb";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import { Button } from "../Button";
@@ -47,6 +46,7 @@ import BrokerModal, { IdentificationType } from "../Modals/BrokersCedente";
 import DocForm from "../Modals/BrokersDocs";
 import JuridicoDetailsSkeleton from "../Skeletons/JuridicoDetailsSkeleton";
 import { SelectItem } from "../ui/select";
+import { ReactGlobalQueryContext } from "@/context/ReactGlobalQueryContext";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -118,7 +118,9 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   })
 
   const swal = UseMySwal();
-  const queryClient = useQueryClient();
+  const {
+    globalQueryClient
+  } = useContext(ReactGlobalQueryContext);
 
   /* refs */
   const rentabilidadeSlideRef = useRef<HTMLInputElement>(null);
@@ -237,6 +239,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     return response.data;
   }
   async function fetchCedenteData(cedenteId: string) {
+    if (!cedenteId) return;
     const response = await api.get(`/api/notion-api/list/page/${cedenteId}/`);
     return response.data;
   }
@@ -244,7 +247,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
   const { data, isFetching, isLoading, refetch } = useQuery<NotionPage>({
     queryKey: ["page", id],
     queryFn: fetchData,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: false
   });
 
   const { data: cedenteDataPF, isFetching: isFetchingCedentePF } = useQuery<NotionPage>({
@@ -601,8 +604,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     onMutate: async (paramsObj) => {
       setLoadingUpdateState(prev => ({ ...prev, espelhoOficio: true }));
       setEditLock(true);
-      const prevData = queryClient.getQueryData(['page', id]);
-      queryClient.setQueryData(['page', id], (old: NotionPage) => {
+      const prevData = globalQueryClient.getQueryData(['page', id]);
+      globalQueryClient.setQueryData(['page', id], (old: NotionPage) => {
         return {
           ...old,
           properties: {
@@ -617,7 +620,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       return { prevData }
     },
     onError: (error, paramsObj, context) => {
-      queryClient.setQueryData(['details', id], context?.prevData);
+      globalQueryClient.setQueryData(['details', id], context?.prevData);
       swal.fire({
         toast: true,
         timer: 3000,
@@ -662,8 +665,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     onMutate: async (paramsObj) => {
       setLoadingUpdateState(prev => ({ ...prev, revisaoCalculo: true }));
       setEditLock(true);
-      const prevData = queryClient.getQueryData(['page', id]);
-      queryClient.setQueryData(['page', id], (old: NotionPage) => {
+      const prevData = globalQueryClient.getQueryData(['page', id]);
+      globalQueryClient.setQueryData(['page', id], (old: NotionPage) => {
         return {
           ...old,
           properties: {
@@ -678,7 +681,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       return { prevData }
     },
     onError: (error, paramsObj, context) => {
-      queryClient.setQueryData(['details', id], context?.prevData);
+      globalQueryClient.setQueryData(['details', id], context?.prevData);
       swal.fire({
         toast: true,
         timer: 3000,
@@ -1228,8 +1231,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     onMutate: async (paramsObj) => {
       setLoadingUpdateState(prev => ({ ...prev, certidaoEmitidas: true }));
       setEditLock(true);
-      const prevData = queryClient.getQueryData(['page', id]);
-      queryClient.setQueryData(['page', id], (old: NotionPage) => {
+      const prevData = globalQueryClient.getQueryData(['page', id]);
+      globalQueryClient.setQueryData(['page', id], (old: NotionPage) => {
         return {
           ...old,
           properties: {
@@ -1244,7 +1247,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       return { prevData }
     },
     onError: (error, paramsObj, context) => {
-      queryClient.setQueryData(['page', id], context?.prevData);
+      globalQueryClient.setQueryData(['page', id], context?.prevData);
       swal.fire({
         toast: true,
         timer: 3000,
@@ -1287,8 +1290,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     onMutate: async (paramsObj) => {
       setLoadingUpdateState(prev => ({ ...prev, possuiProcessos: true }));
       setEditLock(true);
-      const prevData = queryClient.getQueryData(['page', id]);
-      queryClient.setQueryData(['page', id], (old: NotionPage) => {
+      const prevData = globalQueryClient.getQueryData(['page', id]);
+      globalQueryClient.setQueryData(['page', id], (old: NotionPage) => {
         return {
           ...old,
           properties: {
@@ -1303,7 +1306,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       return { prevData }
     },
     onError: (error, paramsObj, context) => {
-      queryClient.setQueryData(['page', id], context?.prevData);
+      globalQueryClient.setQueryData(['page', id], context?.prevData);
       swal.fire({
         toast: true,
         timer: 3000,
@@ -1552,7 +1555,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             </div>
           </section>
 
-          <section id="cedentes" className="form-inputs-container">
+           <section id="cedentes" className="form-inputs-container">
             <div className="col-span-4 w-full">
               <h3 className="text-bodydark2 font-medium">
                 Informações sobre o cedente
@@ -1560,6 +1563,72 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
             </div>
             <div className="col-span-4 gap-4">
+             <div className="flex flex-wrap items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <CelerInputField
+                    name="emissao_certidao_check"
+                    fieldType={InputFieldVariant.CHECKBOX}
+                    label="Certidões Emitidas ?"
+                    checked={data?.properties["Certidões emitidas"]?.checkbox}
+                    defaultValue={data?.properties["Certidões emitidas"]?.checkbox}
+                    onValueChange={(_, value) => handleUpdateCertidoesEmitidas(value, id)}
+                    isLoading={loadingUpdateState.certidaoEmitidas}
+                    disabled={editLock}
+                  />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <CelerInputField
+                    name="possui_processos_check"
+                    fieldType={InputFieldVariant.CHECKBOX}
+                    label="Possui Processos ?"
+                    checked={data?.properties["Possui processos?"]?.checkbox}
+                    defaultValue={data?.properties["Possui processos?"]?.checkbox}
+                    onValueChange={(_, value) => handleUpdatePossuiProcessos(value, id)}
+                    isLoading={loadingUpdateState.possuiProcessos}
+                    disabled={editLock}
+                  />
+                </div>
+                  
+              </div>
+                <div className="grid 2xsm:w-full md:w-115 gap-2 mt-5">
+                    <CelerInputField
+                    className="w-full gap-2"
+                    fieldType={InputFieldVariant.SELECT}
+                    name="regime_casamento"
+                    label="Estado Civil"
+                    iconSrc={<BsCalendar2HeartFill />}
+                    defaultValue={
+                      credorIdentificationType === "CPF" 
+                      ? cedenteDataPF?.properties["Estado Civil"]?.select?.name || ''
+                      : socioData?.properties["Estado Civil"]?.select?.name || ''
+                    }
+                    onValueChange={(_, value) => handleUpdateEstadoCivil(value, 
+                      credorIdentificationType === "CPF" 
+                      ? cedenteDataPF?.id!
+                      : socioData?.id!
+                    )}
+                    isLoading={loadingUpdateState.estadoCivil}
+                    disabled={editLock}
+                    >
+                    {tipoRegime.map((item, index) => (
+                      <SelectItem 
+                      defaultChecked={
+                        credorIdentificationType === "CPF"
+                        ? cedenteDataPF?.properties["Estado Civil"]?.select?.name === item
+                        : socioData?.properties["Estado Civil"]?.select?.name === item
+                      } 
+                      key={index} 
+                      value={item}
+                      >
+                      {item}
+                      </SelectItem>
+                    ))}
+                    </CelerInputField>
+                 </div>
+            </div>
+            <div className="col-span-4 gap-4">
+              
               <div className="flex items-center gap-4">
 
                 <button
@@ -1588,6 +1657,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               </div>
             </div>
           </section>
+
 
           <section className="form-inputs-container" id="info_processo">
             <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
