@@ -32,10 +32,19 @@ const customTheme: CustomFlowbiteTheme = {
   },
 };
 
+/**
+ * @description - Essa interface faz um "preview" do arquivo selecionado pelo usuário.
+ * @type {FileWithPreview} - Interface que faz um preview do arquivo selecionado pelo usuário.
+ * @property {FileWithPath} - Arquivo com caminho
+ */
 export type FileWithPreview = FileWithPath & {
   preview: string
 }
 
+/**
+ * @description - Constante com os tipos de arquivos aceitos pelo dropzone
+ * @property {string} - Tipos de arquivos aceitos das imagens
+ */
 const accept = {
   "image/jpg, image/jpeg, image/png": [],
 }
@@ -86,6 +95,7 @@ const Profile = () => {
   const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
 
       const file = acceptedFiles[0]
+      
       if (!file) {
         UseMySwal().fire({
         title: "Erro ao carregar imagem",
@@ -99,7 +109,7 @@ const Profile = () => {
       const fileWithPreview = Object.assign(file, {
         preview: URL.createObjectURL(file),
       })
-   
+    
     setSelectedFile(fileWithPreview)
     setDialogOpen(true)
     },
@@ -107,11 +117,27 @@ const Profile = () => {
     [],
   )
 
+   /**
+   * @description - Função que atualiza a foto de perfil do usuário
+   * @param file - Arquivo de imagem
+   * @returns {Promise<void>}
+   */
+  async function updatePhoto(file: File) {
+        try {
+          const formData = new FormData();
+          formData.append('profile_picture', file!);
+          await updateProfilePicture(`${data.id}`, formData);
+
+        } catch (error) {
+          console.error('Erro ao atualizar foto de perfil:', error);
+        }
+    }
+
   /**
    * @description - Hook do react-dropzone que retorna as propriedades necessárias para o dropzone
-   * @type {object}
+   * @type {object} Esse objeto é importante para que o formato do arquivo seja aceito e enviado para o componente "imageCropper".
    */
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getInputProps } = useDropzone({
     onDrop,
     accept,
   })
@@ -342,15 +368,13 @@ const Profile = () => {
                       content={
                         <div>
                           <button className="flex relative w-full items-center border-b border-stroke p-2 hover:bg-black/10 dark:border-strokedark dark:hover:bg-white/10">
-                            <form
-                              onSubmit={handleSubmit(updateProfileDataSubmit)}
-                            >
                                {selectedFile ? (
                                     <ImageCropper
                                       dialogOpen={isDialogOpen}
                                       setDialogOpen={setDialogOpen}
                                       selectedFile={selectedFile}
                                       setSelectedFile={setSelectedFile}
+                                      handleUpdatePhoto={updatePhoto}
                                     />
                                   ) : (
                                     <label
@@ -363,9 +387,8 @@ const Profile = () => {
                                       id="profile"
                                       {...getInputProps()}
                                     />
-                                      </label>
+                                    </label>
                                   )}
-                            </form>
                           </button>
                           <button
                             onClick={() =>
