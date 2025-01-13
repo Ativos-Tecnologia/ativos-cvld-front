@@ -132,9 +132,7 @@ export const columns: ColumnDef<IResumoComercial>[] = [
       },
     {
       accessorKey: "username",
-      
       header: ({ column }) => {
-        
         return (
           <Button
           variant={"ghost"}

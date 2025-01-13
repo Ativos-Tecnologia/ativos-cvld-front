@@ -84,11 +84,29 @@ export function DataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
       pagination,
+      
     },
     manualPagination: true,
     onPaginationChange: setPagination,
     pageCount,
   });
+
+  function solveHeaderId(headerId: string) {
+    switch (headerId) {
+        case "username":
+            return "Usuário";
+        case "email":
+            return "E-mail";
+        case "date_joined":
+            return "Data de Cadastro";
+        case "phone":
+            return "Telefone";
+        case "is_confirmed":
+            return "Confirmado";
+        default:
+            return headerId;
+        }
+  }
 
   return (
     <div className="container mx-auto py-10">
@@ -109,7 +127,7 @@ export function DataTable<TData, TValue>({
               Coluna <ChevronDown />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="bg-white dark:bg-boxdark-2">
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
@@ -123,7 +141,7 @@ export function DataTable<TData, TValue>({
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.columnDef.header?.toString()}
+                    {solveHeaderId(column.id)}
                   </DropdownMenuCheckboxItem>
                 );
               })}
