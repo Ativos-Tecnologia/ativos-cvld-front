@@ -32,6 +32,7 @@ import Image from "next/image"
 import { UserInfoAPIContext, UserInfoProvider } from "@/context/UserInfoContext"
 import { NavModule } from "../nav-module"
 import { DefaultLayoutContext, DefaultLayoutProvider } from "@/context/DefaultLayoutContext"
+import { usePathname, useRouter } from "next/navigation"
 
 
 const AtivosLogo = () => {
@@ -40,135 +41,80 @@ const AtivosLogo = () => {
   )
 }
 
-// This is sample data.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Ativos",
-      logo: AtivosLogo as React.ElementType,
-      plan: "CelerApp",
-    },
-  ],
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "#",
-      icon: LayoutDashboard,
-      isActive: true,
-      items: [
-        {
-          title: "Calculadora",
-          url: "/",
-        },
-        {
-          title: "Broker",
-          url: "/dashboard/broker",
-        },
-        {
-          title: "Jurídico",
-          url: "/dashboard/juridico",
-        },
-        {
-          title: "Wallet",
-          url: "/dashboard/wallet",
-        },
-      ],
-    },
-    {
-      title: "Comercial",
-      url: "#",
-      icon: BriefcaseBusiness,
-      items: [
-        {
-          title: "Resumo",
-          url: "/comercial/resumo",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    // {
-    //   title: "Documentation",
-    //   url: "#",
-    //   icon: BookOpen,
-    //   items: [
-    //     {
-    //       title: "Introduction",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Get Started",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Tutorials",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Changelog",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
-    // {
-    //   title: "Settings",
-    //   url: "#",
-    //   icon: Settings2,
-    //   items: [
-    //     {
-    //       title: "General",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Team",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Billing",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Limits",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
-  ],
-  
-  projects: [
-    {
-      name: "PrecaShop",
-      url: "/dashboard/marketplace",
-      icon: ShoppingCart,
-    },
-    // {
-    //   name: "Sales & Marketing",
-    //   url: "#",
-    //   icon: PieChart,
-    // },
-    // {
-    //   name: "Travel",
-    //   url: "#",
-    //   icon: Map,
-    // },
-  ],
+const usePath = () => {
+  const pathname = usePathname();
+  return pathname;
 }
+
+// This is sample data.
+
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const { data: dataUser } = React.useContext(UserInfoAPIContext)
-  const { modalOpen, setModalOpen } = React.useContext(DefaultLayoutContext);  
+  const { modalOpen, setModalOpen } = React.useContext(DefaultLayoutContext);
+
+  const data = {
+    user: {
+      name: "shadcn",
+      email: "m@example.com",
+      avatar: "/avatars/shadcn.jpg",
+    },
+    teams: [
+      {
+        name: "Ativos",
+        logo: AtivosLogo as React.ElementType,
+        plan: "CelerApp",
+      },
+    ],
+    navMain: [
+      {
+        title: "Dashboard",
+        url: "#",
+        icon: LayoutDashboard,
+        isActive: usePath().includes("/dashboard") || usePath() === "/",
+        items: [
+          {
+            title: "Calculadora",
+            url: "/",
+          },
+          {
+            title: "Broker",
+            url: "/dashboard/broker",
+          },
+          {
+            title: "Jurídico",
+            url: "/dashboard/juridico",
+          },
+          {
+            title: "Wallet",
+            url: "/dashboard/wallet",
+          },
+        ],
+      },
+      {
+        title: "Comercial",
+        url: "#",
+        icon: BriefcaseBusiness,
+        isActive: usePath().includes("/comercial"),
+        items: [
+          {
+            title: "Resumo",
+            url: "/comercial/resumo",
+          },
+        ],
+      },
+  
+    ],
+    
+    projects: [
+      {
+        name: "PrecaShop",
+        url: "/dashboard/marketplace",
+        icon: ShoppingCart,
+      },
+    ],
+  }
 
   return (
     <DefaultLayoutProvider>

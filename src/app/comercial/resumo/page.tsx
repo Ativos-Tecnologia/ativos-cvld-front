@@ -6,9 +6,10 @@ import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { IResumoComercial } from "@/interfaces/IResumoComercial";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import api from "@/utils/api";
 import { ICelerResponse } from "@/interfaces/ICelerResponse";
+import { PaginationState } from "@tanstack/react-table";
 
 export type Payment = {
   id: string;
@@ -17,16 +18,28 @@ export type Payment = {
   email: string;
 };
 
-async function fetchData() {
-  const response = await api.get(`/api/comercial/resumo`);
+async function fetchData(options: {
+    pageIndex: number
+    pageSize?: number
+  }) {
+  const response = await api.get(`/api/comercial/resumo${options.pageIndex === 0 ? "" : `?page=${options.pageIndex + 1}`}`);
+  
   return response.data;
 }
 
 export function ResumoWrapperPage() {
-    const { data, isLoading } = useQuery<ICelerResponse<IResumoComercial>>({
-    queryKey: ["resumo"],
-    queryFn: fetchData,
+    const [pagination, setPagination] = React.useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 20,
+    })
+
+    const { data, isLoading, refetch  } = useQuery<ICelerResponse<IResumoComercial>>({
+    queryKey: ["resumo", pagination],
+    queryFn: () => fetchData(pagination),
+    placeholderData: keepPreviousData,
 });
+
+const pageCount = Math.round((data?.count ?? 0) / 20);
 
   return (
     <div className="w-full">
@@ -37,7 +50,7 @@ export function ResumoWrapperPage() {
           </h1>
         </div>
         <section className="mt-6 flex flex-col rounded-md bg-white dark:bg-boxdark">
-          <DataTable columns={columns} data={data?.results || []} />
+          <DataTable columns={columns} data={data?.results || []} pagination={pagination} setPagination={setPagination} loading={isLoading} pageCount={ pageCount } refetch={refetch} />
         </section>
       </DefaultLayout>
     </div>
