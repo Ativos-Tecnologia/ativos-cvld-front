@@ -45,8 +45,7 @@ export function ImageCropper({
 
   const [crop, setCrop] = useState<Crop>()
   const [croppedImageUrl, setCroppedImageUrl] = useState<string>("")
-  const [croppedImage, setCroppedImage] = useState<string>("")
-   const {data, updateProfilePicture } = useContext(UserInfoAPIContext);
+  const {data, updateProfilePicture } = useContext(UserInfoAPIContext);
 
   /**
    * @description Atualiza o crop da imagem de acordo com o aspecto da imagem.

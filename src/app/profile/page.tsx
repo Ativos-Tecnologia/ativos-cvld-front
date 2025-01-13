@@ -197,13 +197,13 @@ const Profile = () => {
   //   }
   // };
 
-  const handleCancelProfileEdit = () => {
-    setEditModeUser(!editModeUser);
-    setUsernameExists(undefined);
-    setEmailExists("undefined");
-    setValue("email", data?.email);
-    setValue("username", data?.user);
-  };
+  // const handleCancelProfileEdit = () => {
+  //   setEditModeUser(!editModeUser);
+  //   setUsernameExists(undefined);
+  //   setEmailExists("undefined");
+  //   setValue("email", data?.email);
+  //   setValue("username", data?.user);
+  // };
 
   const updateProfileDataSubmit: SubmitHandler<Record<string, any>> = async (
     data,
