@@ -1,19 +1,21 @@
 "use client";
 
+import { ImageCropper } from "@/components/ImageCropper/imageCropper";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { UserInfoAPIContext } from "@/context/UserInfoContext";
 import UseMySwal from "@/hooks/useMySwal";
 import api from "@/utils/api";
 import { CustomFlowbiteTheme, Flowbite, Popover } from "flowbite-react";
 import Image from "next/image";
-import React, { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { FileWithPath, useDropzone } from "react-dropzone";
 import { SubmitHandler, useForm } from "react-hook-form";
 import {
   BiCheck,
   BiDotsVerticalRounded,
   BiPencil,
   BiTrashAlt,
-  BiX,
+  BiX
 } from "react-icons/bi";
 import { BsExclamation } from "react-icons/bs";
 import { FaEnvelopeCircleCheck } from "react-icons/fa6";
@@ -29,6 +31,23 @@ const customTheme: CustomFlowbiteTheme = {
     },
   },
 };
+
+/**
+ * @description - Essa interface faz um "preview" do arquivo selecionado pelo usuário.
+ * @type {FileWithPreview} - Interface que faz um preview do arquivo selecionado pelo usuário.
+ * @property {FileWithPath} - Arquivo com caminho
+ */
+export type FileWithPreview = FileWithPath & {
+  preview: string
+}
+
+/**
+ * @description - Constante com os tipos de arquivos aceitos pelo dropzone
+ * @property {string} - Tipos de arquivos aceitos das imagens
+ */
+const accept = {
+  "image/jpg, image/jpeg, image/png": [],
+}
 
 const Profile = () => {
   const {
@@ -60,6 +79,68 @@ const Profile = () => {
     formState: { errors },
     watch,
   } = useForm();
+
+  /**
+   * @description - Estado que armazena o arquivo selecionado pelo usuário
+   * @type {FileWithPreview | null}
+   */
+  const [selectedFile, setSelectedFile] = useState<FileWithPreview | null>(null)
+  const [isDialogOpen, setDialogOpen] = useState(false)
+
+  /**
+   * @description - Função que é chamada quando o usuário solta a imagem no dropzone
+   * @param acceptedFiles Arquivo aceito pelo dropzone
+   * @returns {void}
+   */
+  const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
+
+      const file = acceptedFiles[0]
+      
+      if (!file) {
+        UseMySwal().fire({
+        title: "Erro ao carregar imagem",
+        text: "A imagem selecionada está fora do tamanho permitido",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+        return
+      }
+
+      const fileWithPreview = Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      })
+    
+    setSelectedFile(fileWithPreview)
+    setDialogOpen(true)
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  )
+
+   /**
+   * @description - Função que atualiza a foto de perfil do usuário
+   * @param file - Arquivo de imagem
+   * @returns {Promise<void>}
+   */
+  async function updatePhoto(file: File) {
+        try {
+          const formData = new FormData();
+          formData.append('profile_picture', file!);
+          await updateProfilePicture(`${data.id}`, formData);
+
+        } catch (error) {
+          console.error('Erro ao atualizar foto de perfil:', error);
+        }
+    }
+
+  /**
+   * @description - Hook do react-dropzone que retorna as propriedades necessárias para o dropzone
+   * @type {object} Esse objeto é importante para que o formato do arquivo seja aceito e enviado para o componente "imageCropper".
+   */
+  const { getInputProps } = useDropzone({
+    onDrop,
+    accept,
+  })
 
   useEffect(() => {
     if (firstLogin) {
@@ -129,26 +210,26 @@ const Profile = () => {
     }
   }, [watch("email")]);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const formData = new FormData();
-        formData.append("profile_picture", file);
-        await updateProfilePicture(`${auxData.id}`, formData);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onloadend = async () => {
+  //       const formData = new FormData();
+  //       formData.append("profile_picture", file);
+  //       await updateProfilePicture(`${auxData.id}`, formData);
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
 
-  const handleCancelProfileEdit = () => {
-    setEditModeUser(!editModeUser);
-    setUsernameExists(undefined);
-    setEmailExists("undefined");
-    setValue("email", data?.email);
-    setValue("username", data?.user);
-  };
+  // const handleCancelProfileEdit = () => {
+  //   setEditModeUser(!editModeUser);
+  //   setUsernameExists(undefined);
+  //   setEmailExists("undefined");
+  //   setValue("email", data?.email);
+  //   setValue("username", data?.user);
+  // };
 
   const updateProfileDataSubmit: SubmitHandler<Record<string, any>> = async (
     data,
@@ -286,28 +367,28 @@ const Profile = () => {
                       arrow={false}
                       content={
                         <div>
-                          <button className="flex w-full items-center border-b border-stroke p-2 hover:bg-black/10 dark:border-strokedark dark:hover:bg-white/10">
-                            <form
-                              onSubmit={handleSubmit(updateProfileDataSubmit)}
-                            >
-                              <label
-                                htmlFor="profile"
-                                className="flex cursor-pointer items-center"
-                              >
-                                <BiPencil className="mr-2 h-4 w-4" />
-                                Mudar foto
-                              </label>
-                              <input
-                                type="file"
-                                accept="image/jpg, image/jpeg, image/png"
-                                id="profile"
-                                className="sr-only"
-                                {...register("profile_picture")}
-                                onChange={(e) => {
-                                  handleImageChange(e);
-                                }}
-                              />
-                            </form>
+                          <button className="flex relative w-full items-center border-b border-stroke p-2 hover:bg-black/10 dark:border-strokedark dark:hover:bg-white/10">
+                               {selectedFile ? (
+                                    <ImageCropper
+                                      dialogOpen={isDialogOpen}
+                                      setDialogOpen={setDialogOpen}
+                                      selectedFile={selectedFile}
+                                      setSelectedFile={setSelectedFile}
+                                      handleUpdatePhoto={updatePhoto}
+                                    />
+                                  ) : (
+                                    <label
+                                      htmlFor="profile"
+                                      className="flex cursor-pointer items-center "
+                                        >
+                                      <BiPencil className="mr-2 h-4 w-4" />
+                                      Mudar foto
+                                    <input
+                                      id="profile"
+                                      {...getInputProps()}
+                                    />
+                                    </label>
+                                  )}
                           </button>
                           <button
                             onClick={() =>
