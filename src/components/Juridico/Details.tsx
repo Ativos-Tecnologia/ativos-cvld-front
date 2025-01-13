@@ -47,6 +47,7 @@ import BrokerModal, { IdentificationType } from "../Modals/BrokersCedente";
 import DocForm from "../Modals/BrokersDocs";
 import JuridicoDetailsSkeleton from "../Skeletons/JuridicoDetailsSkeleton";
 import { SelectItem } from "../ui/select";
+import { ReactGlobalQueryContext } from "@/context/ReactGlobalQueryContext";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -118,7 +119,9 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   })
 
   const swal = UseMySwal();
-  const queryClient = useQueryClient();
+  const {
+    globalQueryClient
+  } = useContext(ReactGlobalQueryContext);
 
   /* refs */
   const rentabilidadeSlideRef = useRef<HTMLInputElement>(null);
@@ -237,6 +240,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     return response.data;
   }
   async function fetchCedenteData(cedenteId: string) {
+    if (!cedenteId) return;
     const response = await api.get(`/api/notion-api/list/page/${cedenteId}/`);
     return response.data;
   }
@@ -244,7 +248,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
   const { data, isFetching, isLoading, refetch } = useQuery<NotionPage>({
     queryKey: ["page", id],
     queryFn: fetchData,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: false
   });
 
   const { data: cedenteDataPF, isFetching: isFetchingCedentePF } = useQuery<NotionPage>({
@@ -601,8 +605,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     onMutate: async (paramsObj) => {
       setLoadingUpdateState(prev => ({ ...prev, espelhoOficio: true }));
       setEditLock(true);
-      const prevData = queryClient.getQueryData(['page', id]);
-      queryClient.setQueryData(['page', id], (old: NotionPage) => {
+      const prevData = globalQueryClient.getQueryData(['page', id]);
+      globalQueryClient.setQueryData(['page', id], (old: NotionPage) => {
         return {
           ...old,
           properties: {
@@ -617,7 +621,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       return { prevData }
     },
     onError: (error, paramsObj, context) => {
-      queryClient.setQueryData(['details', id], context?.prevData);
+      globalQueryClient.setQueryData(['details', id], context?.prevData);
       swal.fire({
         toast: true,
         timer: 3000,
@@ -662,8 +666,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     onMutate: async (paramsObj) => {
       setLoadingUpdateState(prev => ({ ...prev, revisaoCalculo: true }));
       setEditLock(true);
-      const prevData = queryClient.getQueryData(['page', id]);
-      queryClient.setQueryData(['page', id], (old: NotionPage) => {
+      const prevData = globalQueryClient.getQueryData(['page', id]);
+      globalQueryClient.setQueryData(['page', id], (old: NotionPage) => {
         return {
           ...old,
           properties: {
@@ -678,7 +682,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       return { prevData }
     },
     onError: (error, paramsObj, context) => {
-      queryClient.setQueryData(['details', id], context?.prevData);
+      globalQueryClient.setQueryData(['details', id], context?.prevData);
       swal.fire({
         toast: true,
         timer: 3000,
@@ -1228,8 +1232,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     onMutate: async (paramsObj) => {
       setLoadingUpdateState(prev => ({ ...prev, certidaoEmitidas: true }));
       setEditLock(true);
-      const prevData = queryClient.getQueryData(['page', id]);
-      queryClient.setQueryData(['page', id], (old: NotionPage) => {
+      const prevData = globalQueryClient.getQueryData(['page', id]);
+      globalQueryClient.setQueryData(['page', id], (old: NotionPage) => {
         return {
           ...old,
           properties: {
@@ -1244,7 +1248,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       return { prevData }
     },
     onError: (error, paramsObj, context) => {
-      queryClient.setQueryData(['page', id], context?.prevData);
+      globalQueryClient.setQueryData(['page', id], context?.prevData);
       swal.fire({
         toast: true,
         timer: 3000,
@@ -1287,8 +1291,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     onMutate: async (paramsObj) => {
       setLoadingUpdateState(prev => ({ ...prev, possuiProcessos: true }));
       setEditLock(true);
-      const prevData = queryClient.getQueryData(['page', id]);
-      queryClient.setQueryData(['page', id], (old: NotionPage) => {
+      const prevData = globalQueryClient.getQueryData(['page', id]);
+      globalQueryClient.setQueryData(['page', id], (old: NotionPage) => {
         return {
           ...old,
           properties: {
@@ -1303,7 +1307,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       return { prevData }
     },
     onError: (error, paramsObj, context) => {
-      queryClient.setQueryData(['page', id], context?.prevData);
+      globalQueryClient.setQueryData(['page', id], context?.prevData);
       swal.fire({
         toast: true,
         timer: 3000,
