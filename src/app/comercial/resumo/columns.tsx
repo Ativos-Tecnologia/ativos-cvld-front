@@ -114,6 +114,7 @@ import { BiCheck } from "react-icons/bi"
 export const columns: ColumnDef<IResumoComercial>[] = [
     {
         accessorKey: "date_joined",
+        
         accessorFn: (row) => dateFormater(row.date_joined.split("T")[0]),
         header: ({ column }) => {
           return (
@@ -131,7 +132,9 @@ export const columns: ColumnDef<IResumoComercial>[] = [
       },
     {
       accessorKey: "username",
+      
       header: ({ column }) => {
+        
         return (
           <Button
           variant={"ghost"}
