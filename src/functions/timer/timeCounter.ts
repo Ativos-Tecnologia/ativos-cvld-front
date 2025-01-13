@@ -7,8 +7,8 @@ export const calculateTimeLeft = (date: string) => {
         seconds: "00"
     };
     const currentDate = +new Date();
-    const limitDate = +new Date(date) + (24 * 60 * 60 * 1000); // substituir por date.split(".")[0]
-    const diff = limitDate - currentDate;
+    const limitDate = +new Date(date); // substituir por date.split(".")[0]
+    const diff = limitDate - (currentDate  + 3 * 60 * 60 * 1000);
 
     if (diff > 0) {
         timeLeft = {
