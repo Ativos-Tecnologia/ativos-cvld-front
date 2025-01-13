@@ -4,6 +4,7 @@ import DropdownUser from "./DropdownUser";
 import Image from "next/image";
 import { useContext } from "react";
 import { GeneralUIContext } from "@/context/GeneralUIContext";
+import ThemeSwitcher from "../CrmUi/ThemeSwitcher";
 
 
 const Header = (props: {
@@ -119,7 +120,8 @@ const Header = (props: {
         <div className="flex items-center 2xsm:gap-3">
           <ul className="flex items-center gap-2 2xsm:gap-4">
             {/* <!-- Dark Mode Toggler --> */}
-            <DarkModeSwitcher />
+            {/* <DarkModeSwitcher /> */}
+            <ThemeSwitcher />
             {/* <!-- Dark Mode Toggler --> */}
 
             {/* Free Tier Notification */}
