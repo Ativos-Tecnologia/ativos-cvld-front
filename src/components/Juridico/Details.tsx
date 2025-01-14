@@ -1460,8 +1460,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     )
   }
 
-  console.log("Dados do Credor: ", data);
-
   return (
     <div className="flex flex-col w-full gap-5">
       <div className="flex w-full items-end justify-end rounded-md">
