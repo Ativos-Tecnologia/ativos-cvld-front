@@ -28,6 +28,7 @@ import { useForm } from "react-hook-form";
 import { AiOutlineLoading } from "react-icons/ai";
 import { BiInfoCircle, BiSave, BiSolidCalculator, BiSolidCoinStack, BiX } from "react-icons/bi";
 import { BsCalendar2HeartFill, BsPencilSquare } from "react-icons/bs";
+import { CgSearchLoading } from "react-icons/cg";
 import { FaBalanceScale, FaIdCard, FaMapMarkedAlt, FaRegFilePdf } from "react-icons/fa";
 import { FaBuilding, FaBuildingColumns, FaLink, FaUser } from "react-icons/fa6";
 import { GiPayMoney, GiReceiveMoney, GiTakeMyMoney } from "react-icons/gi";
@@ -35,6 +36,7 @@ import { GrDocumentText, GrDocumentUser, GrMoney } from "react-icons/gr";
 import { IoIosPaper } from "react-icons/io";
 import { IoCalendar, IoDocumentTextSharp, IoGlobeOutline } from "react-icons/io5";
 import { LuClipboardCheck, LuCopy, LuHandshake } from "react-icons/lu";
+import { MdOutlineDownloading } from "react-icons/md";
 import { TbMoneybag } from "react-icons/tb";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import { Button } from "../Button";
@@ -197,8 +199,8 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
         refetch();
 
         swal.fire({
-          title: 'Diligência Finalizada',
-          text: 'A diligência foi Finalizada com sucesso! O ofício agora está em liquidação.',
+          title: 'Registro Salvo.',
+          text: 'O Oficio seguiu para a parte de cessão.',
           icon: 'success',
           confirmButtonText: 'OK'
         });
@@ -271,6 +273,85 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     })
   }
 
+  const handleDueAndamento = () => {
+    swal.fire({
+      title: 'Due em Andamento',
+      text: 'Deseja mesmo deixar o Due em Andamento?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sim',
+      cancelButtonText: 'Não',
+      confirmButtonColor: '#4CAF50',
+      cancelButtonColor: '#F44336',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const response = await api.patch(`api/notion-api/update/${id}/`, {
+          "Status Diligência": {
+            "select": {
+              "name": "Due em Andamento"
+            }
+          }
+        });
+        if (response.status !== 202) {
+          swal.fire({
+            title: 'Erro',
+            text: 'Houve um erro ao deixar a Due em Andamento',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        }
+
+        refetch();
+
+        swal.fire({
+          title: 'Registro Salvo',
+          text: 'A diligência está em andamento!.',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+      }
+    })
+  }
+
+  const handleRevisaoDueDiligence = () => {
+    swal.fire({
+      title: 'Revisão de Due Diligence',
+      text: 'Deseja mesmo enviar para Revisão de Due Diligence?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sim',
+      cancelButtonText: 'Não',
+      confirmButtonColor: '#4CAF50',
+      cancelButtonColor: '#F44336',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const response = await api.patch(`api/notion-api/update/${id}/`, {
+          "Status Diligência": {
+            "select": {
+              "name": "Revisão de Due Diligence"
+            }
+          }
+        });
+        if (response.status !== 202) {
+          swal.fire({
+            title: 'Erro',
+            text: 'Houve um erro ao Enviar para Revisão da Due Diligence',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        }
+
+        refetch();
+
+        swal.fire({
+          title: 'Registro da Due está em Andamento',
+          text: 'A diligência está em andamento.',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+      }
+    })
+  }
 
 
   async function fetchData() {
@@ -2678,19 +2759,37 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       </section>
 
       {statusDiligence === "Due Diligence" && (
-        <div className="flex items-center justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
+        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
           <Button
             variant="danger"
-            className="py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
             onClick={() => handlePendencia()}
           >
             <BiX className="h-4 w-4" />
             <span>Pendência a Sanar</span>
           </Button>
-          {statusDiligence === "Due Diligence" ? (
+
+          <Button
+            variant="info"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleDueAndamento()}
+          >
+            <MdOutlineDownloading className="h-4 w-4" />
+            <span>Due em Andamento</span>
+          </Button>
+
+          <Button
+            variant="warning"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleRevisaoDueDiligence()}
+          >
+            <CgSearchLoading className="h-4 w-4" />
+            <span>Revisão de Due Diligence</span>
+          </Button>
+          
             <Button
               variant="success"
-              className="py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium"
+              className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
               onClick={() => handleDueDiligence()}
             >
               <BiSolidCoinStack className="h-4 w-4" />
@@ -2698,33 +2797,77 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                 Enviar para Liquidação
               </span>
             </Button>
-          ) : null}
         </div>
       )}
-      {statusDiligence === "Em cessão" && (
-        <div className="flex items-center justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
+      {statusDiligence === "Due em Andamento" && (
+        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
           <Button
             variant="danger"
-            className="py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
             onClick={() => handlePendencia()}
           >
             <BiX className="h-4 w-4" />
             <span>Pendência a Sanar</span>
           </Button>
-          {statusDiligence === "Em cessão" ? (
+      
             <Button
               variant="success"
-              className="py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium"
-              onClick={() => handleCessao()}
+              className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+              onClick={() => handleDueDiligence()}
             >
               <BiSolidCoinStack className="h-4 w-4" />
               <span>
-                Enviar pra Registro de Cessão
+                Enviar para Liquidação
               </span>
             </Button>
-          ) : null}
         </div>
       )}
+      {statusDiligence === "Em cessão" && (
+        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handlePendencia()}
+          >
+            <BiX className="h-4 w-4" />
+            <span>Pendência a Sanar</span>
+          </Button>
+          
+          <Button
+            variant="success"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleCessao()}
+          >
+            <BiSolidCoinStack className="h-4 w-4" />
+            <span>
+              Enviar pra Registro de Cessão
+            </span>
+          </Button>
+        </div>)
+      }
+      {statusDiligence === "Revisão de Due Diligence" && (
+        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handlePendencia()}
+          >
+            <BiX className="h-4 w-4" />
+            <span>Pendência a Sanar</span>
+          </Button>
+          
+          <Button
+              variant="success"
+              className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+              onClick={() => handleDueDiligence()}
+            >
+              <BiSolidCoinStack className="h-4 w-4" />
+              <span>
+                Enviar para Liquidação
+              </span>
+            </Button>
+        </div>)
+      }
       {cedenteModal !== null && <BrokerModal />}
       {docModalInfo !== null && <DocForm />}
     </div>
