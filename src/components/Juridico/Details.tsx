@@ -32,7 +32,7 @@ import { CgSearchLoading } from "react-icons/cg";
 import { FaBalanceScale, FaIdCard, FaMapMarkedAlt, FaRegFilePdf } from "react-icons/fa";
 import { FaBuilding, FaBuildingColumns, FaLink, FaUser } from "react-icons/fa6";
 import { GiPayMoney, GiReceiveMoney, GiTakeMyMoney } from "react-icons/gi";
-import { GrDocumentText, GrDocumentUser } from "react-icons/gr";
+import { GrDocumentText, GrDocumentUser, GrMoney } from "react-icons/gr";
 import { IoIosPaper } from "react-icons/io";
 import { IoCalendar, IoDocumentTextSharp, IoGlobeOutline } from "react-icons/io5";
 import { LuClipboardCheck, LuCopy, LuHandshake } from "react-icons/lu";
@@ -122,9 +122,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   const [statusDiligence, setStatusDiligence] = useState<String>("");
 
   const swal = UseMySwal();
-  const {
-    globalQueryClient
-  } = useContext(ReactGlobalQueryContext);
+  const { globalQueryClient } = useContext(ReactGlobalQueryContext);
 
   /* refs */
   const rentabilidadeSlideRef = useRef<HTMLInputElement>(null);
@@ -2488,6 +2486,86 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                 )
               }
               iconSrc={<GiPayMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+            <CelerInputField
+              name="valor_total_inscrito"
+              fieldType={InputFieldVariant.INPUT}
+              label="Valor Total Inscrito"
+              defaultValue={
+                numberFormat(
+                  (data?.properties["Valor Total Inscrito"]?.formula?.number || 0)
+                )
+              }
+              iconSrc={<GrMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+            <CelerInputField
+              name="imposto_de_renda_retido_3"
+              fieldType={InputFieldVariant.INPUT}
+              label="Imposto de Renda"
+              defaultValue={
+                numberFormat(
+                  (data?.properties["Imposto de Renda Retido 3%"]?.number || 0)
+                )
+              }
+              iconSrc={<GiTakeMyMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+            <CelerInputField
+              name="rra"
+              fieldType={InputFieldVariant.INPUT}
+              label="RRA"
+              defaultValue={
+                numberFormat(
+                  (data?.properties?.RRA?.number || 0)
+                )
+              }
+              iconSrc={<GiReceiveMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+            <CelerInputField
+              name="PSS"
+              fieldType={InputFieldVariant.INPUT}
+              label="PSS"
+              defaultValue={
+                numberFormat(
+                  (data?.properties?.PSS?.number || 0)
+                )
+              }
+              iconSrc={<GiReceiveMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+            <CelerInputField
+              name="valor_dos_honorarios_nao_destacados"
+              fieldType={InputFieldVariant.INPUT}
+              label="Valor dos Honorários"
+              defaultValue={
+                numberFormat(
+                  (data?.properties["Honorários não destacados"]?.formula?.number || 0)
+                )
+              }
+              iconSrc={<GiTakeMyMoney className="self-center" />}
               iconAlt="money"
               className="w-full disabled:dark:text-white disabled:text-boxdark"
               disabled={true}
