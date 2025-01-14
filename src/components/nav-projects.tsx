@@ -24,6 +24,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import Show from "./Show"
 
 export function NavProjects({
   projects,
@@ -32,6 +33,7 @@ export function NavProjects({
     name: string
     url: string
     icon: LucideIcon
+    when?: boolean
   }[]
 }) {
   const { isMobile } = useSidebar()
@@ -43,6 +45,7 @@ export function NavProjects({
       </SidebarGroupLabel>
       <SidebarMenu>
         {projects.map((item) => (
+        <Show when={item.when ?? true}>
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
               <a href={item.url}>
@@ -78,6 +81,7 @@ export function NavProjects({
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
+          </Show>
         ))}
         {/* <SidebarMenuItem>
           <SidebarMenuButton className="text-sidebar-foreground/70">
