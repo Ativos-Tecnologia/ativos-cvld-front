@@ -1,9 +1,10 @@
 import React from 'react';
+import { BiMoneyWithdraw } from 'react-icons/bi';
 import { FaSearchDollar } from 'react-icons/fa';
+import { FaCircleCheck, FaUserClock } from 'react-icons/fa6';
+import { IoDocumentAttachOutline } from 'react-icons/io5';
 import { MdOutlineContentPasteSearch, MdOutlineHandshake } from 'react-icons/md';
 import "./styles.css";
-import { FaCircleCheck, FaUserClock } from 'react-icons/fa6';
-import { BiMoneyWithdraw } from 'react-icons/bi';
 
 type LifeCycleStepProps = {
     status: string;
@@ -32,6 +33,14 @@ const steps = [
         icon: <MdOutlineContentPasteSearch className="text-2xl" />
     },
     { label: "Em liquidação", alias: "Liquidação", icon: <BiMoneyWithdraw className="text-2xl" /> },
+    {
+        label: "Cessão", alias: "Cessão",
+        subLabels: [
+            "Em cessão",
+            "Registro de cessão"
+        ],
+        icon: <IoDocumentAttachOutline className="text-2xl" />
+    },
     { label: "Concluído", alias: "Concluído", icon: <FaCircleCheck className="text-2xl" /> },
 ];
 

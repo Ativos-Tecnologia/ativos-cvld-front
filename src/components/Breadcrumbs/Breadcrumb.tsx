@@ -43,17 +43,6 @@ const Breadcrumb = ({ pageName, iconPath, customIcon, altIcon, title }: Breadcru
         </Fade>
         </h2>
       </div>
-
-      <nav>
-        <ol className="flex items-center gap-2">
-          
-          <Link href={
-            window.location.pathname.split("/")[1] === "juridico" ? "/juridico" : "/dashboard/juridico"
-          } className="font-medium text-primary">{
-            window.location.pathname.split("/")[window.location.pathname.split("/")?.length - 2] === "juridico" ? "Jurídico" : "Dashboard"
-          }</Link>
-        </ol>
-      </nav>
     </div>
   );
 };

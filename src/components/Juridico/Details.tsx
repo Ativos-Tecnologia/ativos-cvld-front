@@ -5,6 +5,7 @@ import { estados } from "@/constants/estados";
 import { tipoRegime } from "@/constants/regime-casamento";
 import { tribunais } from "@/constants/tribunais";
 import { BrokersContext } from "@/context/BrokersContext";
+import { ReactGlobalQueryContext } from "@/context/ReactGlobalQueryContext";
 import {
   UserInfoAPIContext,
   UserInfoContextType,
@@ -19,7 +20,7 @@ import UseMySwal from "@/hooks/useMySwal";
 import { NotionPage } from "@/interfaces/INotion";
 import { IWalletResponse } from "@/interfaces/IWallet";
 import api from "@/utils/api";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import Link from "next/link";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -27,13 +28,15 @@ import { useForm } from "react-hook-form";
 import { AiOutlineLoading } from "react-icons/ai";
 import { BiInfoCircle, BiSave, BiSolidCalculator, BiSolidCoinStack, BiX } from "react-icons/bi";
 import { BsCalendar2HeartFill, BsPencilSquare } from "react-icons/bs";
+import { CgSearchLoading } from "react-icons/cg";
 import { FaBalanceScale, FaIdCard, FaMapMarkedAlt, FaRegFilePdf } from "react-icons/fa";
 import { FaBuilding, FaBuildingColumns, FaLink, FaUser } from "react-icons/fa6";
 import { GiPayMoney, GiReceiveMoney, GiTakeMyMoney } from "react-icons/gi";
-import { GrDocumentText, GrDocumentUser } from "react-icons/gr";
+import { GrDocumentText, GrDocumentUser, GrMoney } from "react-icons/gr";
 import { IoIosPaper } from "react-icons/io";
 import { IoCalendar, IoDocumentTextSharp, IoGlobeOutline } from "react-icons/io5";
 import { LuClipboardCheck, LuCopy, LuHandshake } from "react-icons/lu";
+import { MdOutlineDownloading } from "react-icons/md";
 import { TbMoneybag } from "react-icons/tb";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import { Button } from "../Button";
@@ -46,7 +49,6 @@ import BrokerModal, { IdentificationType } from "../Modals/BrokersCedente";
 import DocForm from "../Modals/BrokersDocs";
 import JuridicoDetailsSkeleton from "../Skeletons/JuridicoDetailsSkeleton";
 import { SelectItem } from "../ui/select";
-import { ReactGlobalQueryContext } from "@/context/ReactGlobalQueryContext";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -105,9 +107,10 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     linkDue: false,
     revisaoCalculo: false,
     espelhoOficio: false,
+    estoquePrecatorio: false,
     estadoCivil: false,
     certidaoEmitidas: false,
-    possuiProcessos: false,
+    possuiProcessos: false
   });
   const [editLock, setEditLock] = useState<boolean>(false);
   const [disabledSaveButton, setDisabledSaveButton] = useState<boolean>(true);
@@ -116,11 +119,10 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     rentabilidade: 0,
     desembolso: 0
   })
+  const [statusDiligence, setStatusDiligence] = useState<String>("");
 
   const swal = UseMySwal();
-  const {
-    globalQueryClient
-  } = useContext(ReactGlobalQueryContext);
+  const { globalQueryClient } = useContext(ReactGlobalQueryContext);
 
   /* refs */
   const rentabilidadeSlideRef = useRef<HTMLInputElement>(null);
@@ -160,6 +162,45 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
         swal.fire({
           title: 'Diligência Finalizada',
           text: 'A diligência foi Finalizada com sucesso! O ofício agora está em liquidação.',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+      }
+    })
+  }
+  const handleCessao = () => {
+    swal.fire({
+      title: 'Cessão',
+      text: 'Deseja mesmo Enviar o Registro de Cessão?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sim',
+      cancelButtonText: 'Não',
+      confirmButtonColor: '#4CAF50',
+      cancelButtonColor: '#F44336',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const response = await api.patch(`api/notion-api/update/${id}/`, {
+          "Status Diligência": {
+            "select": {
+              "name": "Registro de cessão"
+            }
+          }
+        });
+        if (response.status !== 202) {
+          swal.fire({
+            title: 'Erro',
+            text: 'Houve um erro ao Enviar Registro de Cessão',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        }
+
+        refetch();
+
+        swal.fire({
+          title: 'Registro Salvo.',
+          text: 'O Oficio seguiu para a parte de cessão.',
           icon: 'success',
           confirmButtonText: 'OK'
         });
@@ -232,6 +273,85 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     })
   }
 
+  const handleDueAndamento = () => {
+    swal.fire({
+      title: 'Due em Andamento',
+      text: 'Deseja mesmo deixar o Due em Andamento?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sim',
+      cancelButtonText: 'Não',
+      confirmButtonColor: '#4CAF50',
+      cancelButtonColor: '#F44336',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const response = await api.patch(`api/notion-api/update/${id}/`, {
+          "Status Diligência": {
+            "select": {
+              "name": "Due em Andamento"
+            }
+          }
+        });
+        if (response.status !== 202) {
+          swal.fire({
+            title: 'Erro',
+            text: 'Houve um erro ao deixar a Due em Andamento',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        }
+
+        refetch();
+
+        swal.fire({
+          title: 'Registro Salvo',
+          text: 'A diligência está em andamento!.',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+      }
+    })
+  }
+
+  const handleRevisaoDueDiligence = () => {
+    swal.fire({
+      title: 'Revisão de Due Diligence',
+      text: 'Deseja mesmo enviar para Revisão de Due Diligence?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sim',
+      cancelButtonText: 'Não',
+      confirmButtonColor: '#4CAF50',
+      cancelButtonColor: '#F44336',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const response = await api.patch(`api/notion-api/update/${id}/`, {
+          "Status Diligência": {
+            "select": {
+              "name": "Revisão de Due Diligence"
+            }
+          }
+        });
+        if (response.status !== 202) {
+          swal.fire({
+            title: 'Erro',
+            text: 'Houve um erro ao Enviar para Revisão da Due Diligence',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        }
+
+        refetch();
+
+        swal.fire({
+          title: 'Registro da Due está em Andamento',
+          text: 'A diligência está em andamento.',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+      }
+    })
+  }
 
 
   async function fetchData() {
@@ -350,7 +470,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         icon: 'error',
         confirmButtonText: 'OK'
       })
-      console.log(error)
+      console.error(error)
     }
 
     setIsLoadingRecalculation(false);
@@ -544,7 +664,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     if (linkDueInputRef.current) {
       const value = linkDueInputRef.current.value;
       navigator.clipboard.writeText(value);
-      setLinkCopied(true);
+      navigator.vibrate(200);
       setTimeout(() => setLinkCopied(false), 2000);
     }
   }
@@ -558,6 +678,13 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
   const handleUpdateEspelhoDoOficio = async (value: string, page_id: string) => {
     await espelhoOficioMutation.mutateAsync({
+      value,
+      page_id
+    })
+  }
+
+  const handleUpdateEstoquePrecatorio = async (value: string, page_id: string) => {
+    await estoquePrecatoriosMutation.mutateAsync({
       value,
       page_id
     })
@@ -587,6 +714,67 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
 
   // ----> Mutations <-----
+  const estoquePrecatoriosMutation = useMutation({
+    mutationFn: async (paramsObj: { value: string, page_id: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Estoque de Precatórios Baixado": {
+          "checkbox": paramsObj.value
+        }
+      });
+
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+
+      return response.data
+    },
+    onMutate: async (paramsObj) => {
+      setLoadingUpdateState(prev => ({ ...prev, estoquePrecatorio: true }));
+      setEditLock(true);
+      const prevData = globalQueryClient.getQueryData(['page', id]);
+      globalQueryClient.setQueryData(['page', id], (old: NotionPage) => {
+        return {
+          ...old,
+          properties: {
+            ...old?.properties,
+            "Estoque de Precatórios Baixado": {
+              ...old?.properties["Estoque de Precatórios Baixado"],
+              checkbox: paramsObj.value,
+            },
+          },
+        };
+      });
+      return { prevData }
+    },
+    onError: (error, paramsObj, context) => {
+      globalQueryClient.setQueryData(['details', id], context?.prevData);
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'error',
+        text: "Houve um erro ao atualizar campo Estoque de Precatórios",
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSuccess: (data, paramsObj) => {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'success',
+        text: "Campo Estoque de Precatórios atualizado com sucesso",
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, estoquePrecatorio: false }));
+    }
+  })
+
   const espelhoOficioMutation = useMutation({
     mutationFn: async (paramsObj: { value: string, page_id: string }) => {
       const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
@@ -1220,7 +1408,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     mutationFn: async (paramsObj: { page_id: string, value: string }) => {
       const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
         "Certidões emitidas": {
-          "checkbox": paramsObj.value
+          "checkbox": paramsObj.value === "SIM" ? true : false
         }
       });
       if (response.status !== 202) {
@@ -1279,7 +1467,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     mutationFn: async (paramsObj: { page_id: string, value: string }) => {
       const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
         "Possui processos?": {
-          "checkbox": paramsObj.value
+          "checkbox": paramsObj.value === "SIM" ? true : false
         }
       });
       if (response.status !== 202) {
@@ -1449,11 +1637,17 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
   }, [data]);
 
-   useEffect(() => {
-        // verifica o tipo de identificação do credor e formata para só obter números na string
-        const credorIdent = data?.properties["CPF/CNPJ"].rich_text?.[0]?.text?.content.replace(/\D/g, '') || "";
-        
+  useEffect(() => {
+    // verifica o tipo de identificação do credor e formata para só obter números na string
+    const credorIdent = data?.properties["CPF/CNPJ"].rich_text?.[0]?.text?.content.replace(/\D/g, '') || "";
+
     setCredorIdentificationType(credorIdent?.length === 11 ? "CPF" : credorIdent?.length === 14 ? "CNPJ" : null);
+   }, [data]);
+  
+   useEffect(() => { 
+     const dataStatusDiligence = data?.properties["Status Diligência"].select?.name;
+     setStatusDiligence(dataStatusDiligence || "");
+    
   }, [data]);
 
   if (!data) {
@@ -1475,45 +1669,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       <LifeCycleStep status={data?.properties["Status Diligência"].select?.name ?? "ops"} />
       <Form {...form}>
         <div className="space-y-6 rounded-md">
-          {/* <section id="info_credor" className="form-inputs-container">
-            <div className="xl:col-span-2 w-full">
-              <CelerInputField
-                name="responsavel"
-                fieldType={InputFieldVariant.CHECKBOX}
-                label="Tornar-se responsável pelo ativo"
-                defaultValue={data?.properties["Responsável - Celer"].multi_select?.some(item => item.name === user) || false}
-                iconSrc={<FaUser
-                  className="self-center" />}
-                iconAlt="user"
-                className="w-full"
-                onValueChange={() => handleChangeResponsavel(id)}
-                isLoading={loadingUpdateState.responsavel}
-                />
-            </div>
-            <div className="xl:col-span-1 w-full">
-              </div>
-
-            {data?.properties["Responsável - Celer"].multi_select?.some(item => item.name) && (
-              <div className="flex gap-2 items-center">
-              {
-                data?.properties["Responsável - Celer"].multi_select.length > 1 ? (
-                  <span>Responsáveis:</span>
-                ) : (
-                  <span>Responsável:</span>
-                )
-              }
-
-              <div className="flex gap-2">
-                {data?.properties["Responsável - Celer"]?.multi_select?.map(item => (
-                  <span key={item.id} className="text-bodydark2 text-xs font-semibold h-8 px-2 border border-stroke dark:border-bodydark2 rounded-full flex items-center">
-                    {item.name}
-                  </span>
-                ))}
-                </div>
-
-            </div>)}
-          </section> */}
-
           <section id="info_credor" className="form-inputs-container">
             <div className="2xsm:col-span-4 lg:col-span-2 xl:col-span-2 w-full">
               <CelerInputField
@@ -1555,7 +1710,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             </div>
           </section>
 
-           <section id="cedentes" className="form-inputs-container">
+          <section id="cedentes" className="form-inputs-container">
             <div className="col-span-4 w-full">
               <h3 className="text-bodydark2 font-medium">
                 Informações sobre o cedente
@@ -1563,72 +1718,78 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
             </div>
             <div className="col-span-4 gap-4">
-             <div className="flex flex-wrap items-center gap-4">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-6">
+                <div className="grid min-w-35">
                   <CelerInputField
                     name="emissao_certidao_check"
-                    fieldType={InputFieldVariant.CHECKBOX}
-                    label="Certidões Emitidas ?"
-                    checked={data?.properties["Certidões emitidas"]?.checkbox}
-                    defaultValue={data?.properties["Certidões emitidas"]?.checkbox}
+                    fieldType={InputFieldVariant.SELECT}
+                    label={`Certidões Emitidas ?`}
+                    defaultValue={data?.properties["Certidões emitidas"]?.checkbox ? "SIM" : "NÃO"}
                     onValueChange={(_, value) => handleUpdateCertidoesEmitidas(value, id)}
                     isLoading={loadingUpdateState.certidaoEmitidas}
                     disabled={editLock}
-                  />
+                    className="w-full"
+                  >
+                    <SelectItem value="SIM">Sim</SelectItem>
+                    <SelectItem value="NÃO">Não</SelectItem>
+                  </CelerInputField>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="grid min-w-35">
                   <CelerInputField
                     name="possui_processos_check"
-                    fieldType={InputFieldVariant.CHECKBOX}
-                    label="Possui Processos ?"
-                    checked={data?.properties["Possui processos?"]?.checkbox}
-                    defaultValue={data?.properties["Possui processos?"]?.checkbox}
+                    fieldType={InputFieldVariant.SELECT}
+                    label={`Possui Processos ?`}
+                    defaultValue={data?.properties["Possui processos?"]?.checkbox ? "SIM" : "NÃO"}
                     onValueChange={(_, value) => handleUpdatePossuiProcessos(value, id)}
                     isLoading={loadingUpdateState.possuiProcessos}
                     disabled={editLock}
-                  />
+                    className="w-full"
+                  >
+                    <SelectItem value="SIM">Sim</SelectItem>
+                    <SelectItem value="NÃO">Não</SelectItem>
+                  </CelerInputField>
                 </div>
-                  
+
               </div>
-                <div className="grid 2xsm:w-full md:w-115 gap-2 mt-5">
-                    <CelerInputField
-                    className="w-full gap-2"
-                    fieldType={InputFieldVariant.SELECT}
-                    name="regime_casamento"
-                    label="Estado Civil"
-                    iconSrc={<BsCalendar2HeartFill />}
-                    defaultValue={
-                      credorIdentificationType === "CPF" 
+              <div className="grid 2xsm:w-full md:w-115 gap-2 mt-5">
+                <CelerInputField
+                  className="w-full gap-2"
+                  fieldType={InputFieldVariant.SELECT}
+                  name="regime_casamento"
+                  label="Estado Civil"
+                  iconSrc={<BsCalendar2HeartFill />}
+                  defaultValue={
+                    credorIdentificationType === "CPF"
                       ? cedenteDataPF?.properties["Estado Civil"]?.select?.name || ''
                       : socioData?.properties["Estado Civil"]?.select?.name || ''
-                    }
-                    onValueChange={(_, value) => handleUpdateEstadoCivil(value, 
-                      credorIdentificationType === "CPF" 
+                  }
+                  onValueChange={(_, value) => handleUpdateEstadoCivil(value,
+                    credorIdentificationType === "CPF"
                       ? cedenteDataPF?.id!
                       : socioData?.id!
-                    )}
-                    isLoading={loadingUpdateState.estadoCivil}
-                    disabled={editLock}
-                    >
-                    {tipoRegime.map((item, index) => (
-                      <SelectItem 
+                  )}
+                  isLoading={loadingUpdateState.estadoCivil}
+                  disabled={editLock}
+                >
+                  {tipoRegime.map((item, index) => (
+                    <SelectItem
                       defaultChecked={
                         credorIdentificationType === "CPF"
-                        ? cedenteDataPF?.properties["Estado Civil"]?.select?.name === item
-                        : socioData?.properties["Estado Civil"]?.select?.name === item
-                      } 
-                      key={index} 
+                          ? cedenteDataPF?.properties["Estado Civil"]?.select?.name === item
+                          : socioData?.properties["Estado Civil"]?.select?.name === item
+                      }
+                      key={index}
                       value={item}
-                      >
+                    >
                       {item}
-                      </SelectItem>
-                    ))}
-                    </CelerInputField>
-                 </div>
+                    </SelectItem>
+                  ))}
+                </CelerInputField>
+              </div>
             </div>
             <div className="col-span-4 gap-4">
-              
+
               <div className="flex items-center gap-4">
 
                 <button
@@ -2330,6 +2491,86 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               disabled={true}
             />
           </div>
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+            <CelerInputField
+              name="valor_total_inscrito"
+              fieldType={InputFieldVariant.INPUT}
+              label="Valor Total Inscrito"
+              defaultValue={
+                numberFormat(
+                  (data?.properties["Valor Total Inscrito"]?.formula?.number || 0)
+                )
+              }
+              iconSrc={<GrMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+            <CelerInputField
+              name="imposto_de_renda_retido_3"
+              fieldType={InputFieldVariant.INPUT}
+              label="Imposto de Renda"
+              defaultValue={
+                numberFormat(
+                  (data?.properties["Imposto de Renda Retido 3%"]?.number || 0)
+                )
+              }
+              iconSrc={<GiTakeMyMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+            <CelerInputField
+              name="rra"
+              fieldType={InputFieldVariant.INPUT}
+              label="RRA"
+              defaultValue={
+                numberFormat(
+                  (data?.properties?.RRA?.number || 0)
+                )
+              }
+              iconSrc={<GiReceiveMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+            <CelerInputField
+              name="PSS"
+              fieldType={InputFieldVariant.INPUT}
+              label="PSS"
+              defaultValue={
+                numberFormat(
+                  (data?.properties?.PSS?.number || 0)
+                )
+              }
+              iconSrc={<GiReceiveMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+            <CelerInputField
+              name="valor_dos_honorarios_nao_destacados"
+              fieldType={InputFieldVariant.INPUT}
+              label="Valor dos Honorários"
+              defaultValue={
+                numberFormat(
+                  (data?.properties["Honorários não destacados"]?.formula?.number || 0)
+                )
+              }
+              iconSrc={<GiTakeMyMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
         </div>
 
         <hr className="border border-stroke dark:border-strokedark" />
@@ -2469,6 +2710,21 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                 />
               </div>
 
+              {data?.properties["Esfera"].select?.name !== "FEDERAL" && (
+                <div className="col-span-2">
+                  <CelerInputField
+                    name="espelho_oficio_check"
+                    fieldType={InputFieldVariant.CHECKBOX}
+                    label="Estoque de Precatórios Baixado"
+                    defaultValue={data?.properties["Estoque de Precatórios Baixado"].checkbox}
+                    className="text-sm font-medium"
+                    onValueChange={(_, value) => handleUpdateEstoquePrecatorio(value, id)}
+                    isLoading={loadingUpdateState.estoquePrecatorio}
+                    disabled={editLock}
+                  />
+                </div>
+              )}
+
             </div>
           </div>
         </div>
@@ -2502,26 +2758,116 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         </div>
       </section>
 
-      {data?.properties["Status Diligência"].select?.name === "Due Diligence" && (
-        <div className="flex items-center justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
+      {statusDiligence === "Due Diligence" && (
+        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
           <Button
             variant="danger"
-            className="py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
             onClick={() => handlePendencia()}
           >
             <BiX className="h-4 w-4" />
             <span>Pendência a Sanar</span>
           </Button>
+
           <Button
-            variant="success"
-            className="py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleDueDiligence()}
+            variant="info"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleDueAndamento()}
           >
-            <BiSolidCoinStack className="h-4 w-4" />
-            <span>Enviar para Liquidação</span>
+            <MdOutlineDownloading className="h-4 w-4" />
+            <span>Due em Andamento</span>
           </Button>
+
+          <Button
+            variant="warning"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleRevisaoDueDiligence()}
+          >
+            <CgSearchLoading className="h-4 w-4" />
+            <span>Revisão de Due Diligence</span>
+          </Button>
+          
+            <Button
+              variant="success"
+              className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+              onClick={() => handleDueDiligence()}
+            >
+              <BiSolidCoinStack className="h-4 w-4" />
+              <span>
+                Enviar para Liquidação
+              </span>
+            </Button>
         </div>
       )}
+      {statusDiligence === "Due em Andamento" && (
+        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handlePendencia()}
+          >
+            <BiX className="h-4 w-4" />
+            <span>Pendência a Sanar</span>
+          </Button>
+      
+            <Button
+              variant="success"
+              className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+              onClick={() => handleDueDiligence()}
+            >
+              <BiSolidCoinStack className="h-4 w-4" />
+              <span>
+                Enviar para Liquidação
+              </span>
+            </Button>
+        </div>
+      )}
+      {statusDiligence === "Em cessão" && (
+        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handlePendencia()}
+          >
+            <BiX className="h-4 w-4" />
+            <span>Pendência a Sanar</span>
+          </Button>
+          
+          <Button
+            variant="success"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleCessao()}
+          >
+            <BiSolidCoinStack className="h-4 w-4" />
+            <span>
+              Enviar pra Registro de Cessão
+            </span>
+          </Button>
+        </div>)
+      }
+      {statusDiligence === "Revisão de Due Diligence" && (
+        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handlePendencia()}
+          >
+            <BiX className="h-4 w-4" />
+            <span>Pendência a Sanar</span>
+          </Button>
+          
+          <Button
+              variant="success"
+              className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+              onClick={() => handleDueDiligence()}
+            >
+              <BiSolidCoinStack className="h-4 w-4" />
+              <span>
+                Enviar para Liquidação
+              </span>
+            </Button>
+        </div>)
+      }
       {cedenteModal !== null && <BrokerModal />}
       {docModalInfo !== null && <DocForm />}
     </div>
