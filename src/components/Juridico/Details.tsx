@@ -105,9 +105,10 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     linkDue: false,
     revisaoCalculo: false,
     espelhoOficio: false,
+    estoquePrecatorio: false,
     estadoCivil: false,
     certidaoEmitidas: false,
-    possuiProcessos: false,
+    possuiProcessos: false
   });
   const [editLock, setEditLock] = useState<boolean>(false);
   const [disabledSaveButton, setDisabledSaveButton] = useState<boolean>(true);
@@ -603,6 +604,13 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     })
   }
 
+  const handleUpdateEstoquePrecatorio = async (value: string, page_id: string) => {
+    await estoquePrecatoriosMutation.mutateAsync({
+      value,
+      page_id
+    })
+  }
+
   const handleUpdateCertidoesEmitidas = async (value: string, page_id: string) => {
     await certidaoEmitidaMutation.mutateAsync({
       page_id,
@@ -627,6 +635,67 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
 
   // ----> Mutations <-----
+  const estoquePrecatoriosMutation = useMutation({
+    mutationFn: async (paramsObj: { value: string, page_id: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Estoque de Precatórios Baixado": {
+          "checkbox": paramsObj.value
+        }
+      });
+
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+
+      return response.data
+    },
+    onMutate: async (paramsObj) => {
+      setLoadingUpdateState(prev => ({ ...prev, estoquePrecatorio: true }));
+      setEditLock(true);
+      const prevData = globalQueryClient.getQueryData(['page', id]);
+      globalQueryClient.setQueryData(['page', id], (old: NotionPage) => {
+        return {
+          ...old,
+          properties: {
+            ...old?.properties,
+            "Estoque de Precatórios Baixado": {
+              ...old?.properties["Estoque de Precatórios Baixado"],
+              checkbox: paramsObj.value,
+            },
+          },
+        };
+      });
+      return { prevData }
+    },
+    onError: (error, paramsObj, context) => {
+      globalQueryClient.setQueryData(['details', id], context?.prevData);
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'error',
+        text: "Houve um erro ao atualizar campo Estoque de Precatórios",
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSuccess: (data, paramsObj) => {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'success',
+        text: "Campo Estoque de Precatórios atualizado com sucesso",
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, estoquePrecatorio: false }));
+    }
+  })
+
   const espelhoOficioMutation = useMutation({
     mutationFn: async (paramsObj: { value: string, page_id: string }) => {
       const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
@@ -1260,7 +1329,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     mutationFn: async (paramsObj: { page_id: string, value: string }) => {
       const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
         "Certidões emitidas": {
-          "checkbox": paramsObj.value
+          "checkbox": paramsObj.value === "SIM" ? true : false
         }
       });
       if (response.status !== 202) {
@@ -1319,7 +1388,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     mutationFn: async (paramsObj: { page_id: string, value: string }) => {
       const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
         "Possui processos?": {
-          "checkbox": paramsObj.value
+          "checkbox": paramsObj.value === "SIM" ? true : false
         }
       });
       if (response.status !== 202) {
@@ -1489,10 +1558,10 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
   }, [data]);
 
-   useEffect(() => {
-        // verifica o tipo de identificação do credor e formata para só obter números na string
-        const credorIdent = data?.properties["CPF/CNPJ"].rich_text?.[0]?.text?.content.replace(/\D/g, '') || "";
-        
+  useEffect(() => {
+    // verifica o tipo de identificação do credor e formata para só obter números na string
+    const credorIdent = data?.properties["CPF/CNPJ"].rich_text?.[0]?.text?.content.replace(/\D/g, '') || "";
+
     setCredorIdentificationType(credorIdent?.length === 11 ? "CPF" : credorIdent?.length === 14 ? "CNPJ" : null);
    }, [data]);
   
@@ -1562,7 +1631,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             </div>
           </section>
 
-           <section id="cedentes" className="form-inputs-container">
+          <section id="cedentes" className="form-inputs-container">
             <div className="col-span-4 w-full">
               <h3 className="text-bodydark2 font-medium">
                 Informações sobre o cedente
@@ -1570,72 +1639,78 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
             </div>
             <div className="col-span-4 gap-4">
-             <div className="flex flex-wrap items-center gap-4">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-6">
+                <div className="grid min-w-35">
                   <CelerInputField
                     name="emissao_certidao_check"
-                    fieldType={InputFieldVariant.CHECKBOX}
-                    label="Certidões Emitidas ?"
-                    checked={data?.properties["Certidões emitidas"]?.checkbox}
-                    defaultValue={data?.properties["Certidões emitidas"]?.checkbox}
+                    fieldType={InputFieldVariant.SELECT}
+                    label={`Certidões Emitidas ?`}
+                    defaultValue={data?.properties["Certidões emitidas"]?.checkbox ? "SIM" : "NÃO"}
                     onValueChange={(_, value) => handleUpdateCertidoesEmitidas(value, id)}
                     isLoading={loadingUpdateState.certidaoEmitidas}
                     disabled={editLock}
-                  />
+                    className="w-full"
+                  >
+                    <SelectItem value="SIM">Sim</SelectItem>
+                    <SelectItem value="NÃO">Não</SelectItem>
+                  </CelerInputField>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="grid min-w-35">
                   <CelerInputField
                     name="possui_processos_check"
-                    fieldType={InputFieldVariant.CHECKBOX}
-                    label="Possui Processos ?"
-                    checked={data?.properties["Possui processos?"]?.checkbox}
-                    defaultValue={data?.properties["Possui processos?"]?.checkbox}
+                    fieldType={InputFieldVariant.SELECT}
+                    label={`Possui Processos ?`}
+                    defaultValue={data?.properties["Possui processos?"]?.checkbox ? "SIM" : "NÃO"}
                     onValueChange={(_, value) => handleUpdatePossuiProcessos(value, id)}
                     isLoading={loadingUpdateState.possuiProcessos}
                     disabled={editLock}
-                  />
+                    className="w-full"
+                  >
+                    <SelectItem value="SIM">Sim</SelectItem>
+                    <SelectItem value="NÃO">Não</SelectItem>
+                  </CelerInputField>
                 </div>
-                  
+
               </div>
-                <div className="grid 2xsm:w-full md:w-115 gap-2 mt-5">
-                    <CelerInputField
-                    className="w-full gap-2"
-                    fieldType={InputFieldVariant.SELECT}
-                    name="regime_casamento"
-                    label="Estado Civil"
-                    iconSrc={<BsCalendar2HeartFill />}
-                    defaultValue={
-                      credorIdentificationType === "CPF" 
+              <div className="grid 2xsm:w-full md:w-115 gap-2 mt-5">
+                <CelerInputField
+                  className="w-full gap-2"
+                  fieldType={InputFieldVariant.SELECT}
+                  name="regime_casamento"
+                  label="Estado Civil"
+                  iconSrc={<BsCalendar2HeartFill />}
+                  defaultValue={
+                    credorIdentificationType === "CPF"
                       ? cedenteDataPF?.properties["Estado Civil"]?.select?.name || ''
                       : socioData?.properties["Estado Civil"]?.select?.name || ''
-                    }
-                    onValueChange={(_, value) => handleUpdateEstadoCivil(value, 
-                      credorIdentificationType === "CPF" 
+                  }
+                  onValueChange={(_, value) => handleUpdateEstadoCivil(value,
+                    credorIdentificationType === "CPF"
                       ? cedenteDataPF?.id!
                       : socioData?.id!
-                    )}
-                    isLoading={loadingUpdateState.estadoCivil}
-                    disabled={editLock}
-                    >
-                    {tipoRegime.map((item, index) => (
-                      <SelectItem 
+                  )}
+                  isLoading={loadingUpdateState.estadoCivil}
+                  disabled={editLock}
+                >
+                  {tipoRegime.map((item, index) => (
+                    <SelectItem
                       defaultChecked={
                         credorIdentificationType === "CPF"
-                        ? cedenteDataPF?.properties["Estado Civil"]?.select?.name === item
-                        : socioData?.properties["Estado Civil"]?.select?.name === item
-                      } 
-                      key={index} 
+                          ? cedenteDataPF?.properties["Estado Civil"]?.select?.name === item
+                          : socioData?.properties["Estado Civil"]?.select?.name === item
+                      }
+                      key={index}
                       value={item}
-                      >
+                    >
                       {item}
-                      </SelectItem>
-                    ))}
-                    </CelerInputField>
-                 </div>
+                    </SelectItem>
+                  ))}
+                </CelerInputField>
+              </div>
             </div>
             <div className="col-span-4 gap-4">
-              
+
               <div className="flex items-center gap-4">
 
                 <button
@@ -2475,6 +2550,21 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                   disabled={editLock}
                 />
               </div>
+
+              {data?.properties["Esfera"].select?.name !== "FEDERAL" && (
+                <div className="col-span-2">
+                  <CelerInputField
+                    name="espelho_oficio_check"
+                    fieldType={InputFieldVariant.CHECKBOX}
+                    label="Estoque de Precatórios Baixado"
+                    defaultValue={data?.properties["Estoque de Precatórios Baixado"].checkbox}
+                    className="text-sm font-medium"
+                    onValueChange={(_, value) => handleUpdateEstoquePrecatorio(value, id)}
+                    isLoading={loadingUpdateState.estoquePrecatorio}
+                    disabled={editLock}
+                  />
+                </div>
+              )}
 
             </div>
           </div>
