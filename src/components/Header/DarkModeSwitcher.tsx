@@ -5,15 +5,13 @@ import { BiSun, BiSolidMoon } from "react-icons/bi";
 
 const DarkModeSwitcher = () => {
   const {
-    theme,
     setTheme,
   } = useContext(GeneralUIContext);
   const [colorMode, setColorMode] = useColorMode();
 
   return (
-    <li>
       <label
-        className={`relative m-0 block h-6 w-10 rounded-full ${colorMode === "dark" ? "bg-blue-700" : "bg-stroke"
+        className={`relative m-0 block h-6 w-10 mr-4 rounded-full ${colorMode === "dark" ? "bg-blue-700" : "bg-stroke"
           }`}
       >
         <input
@@ -37,7 +35,6 @@ const DarkModeSwitcher = () => {
           </span>
         </span>
       </label>
-    </li>
   );
 };
 
