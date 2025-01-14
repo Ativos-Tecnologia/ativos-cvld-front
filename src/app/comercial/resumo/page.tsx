@@ -22,7 +22,7 @@ async function fetchData(options: {
     pageIndex: number
     pageSize?: number
   }) {
-  const response = await api.get(`/api/comercial/resumo${options.pageIndex === 0 ? "" : `?page=${options.pageIndex + 1}`}`);
+  const response = await api.get(`/api/comercial/resumo${options.pageIndex === 0 ? `?page_size=${options.pageSize}` : `?page=${options.pageIndex + 1}&page_size=${options.pageSize}`}`);
   
   return response.data;
 }
@@ -39,7 +39,7 @@ export function ResumoWrapperPage() {
     placeholderData: keepPreviousData,
 });
 
-const pageCount = Math.round((data?.count ?? 0) / 20);
+const pageCount = Math.round((data?.count ?? 0) / pagination.pageSize);
 
   return (
     <div className="w-full">

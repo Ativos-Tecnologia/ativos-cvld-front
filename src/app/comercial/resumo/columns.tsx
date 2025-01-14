@@ -270,11 +270,12 @@ export const columns: ColumnDef<IResumoComercial>[] = [
               <DropdownMenuItem
                 onClick={handleCopyPhone}
               >
-                Copiar Telefone
+                Copiar telefone
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem disabled={resumo.is_confirmed} onClick={actionConfirmUser}>Confirmar usuário</DropdownMenuItem>
-              <DropdownMenuItem>Solicitar designação</DropdownMenuItem>
+              <DropdownMenuItem disabled>Solicitar designação</DropdownMenuItem>
+              <DropdownMenuItem disabled>Redefinir senha</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )

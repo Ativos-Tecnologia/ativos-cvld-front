@@ -33,6 +33,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
+import { BiChevronLeft, BiChevronRight, BiChevronsLeft, BiChevronsRight } from "react-icons/bi";
 
 type ColumnDef<TData, TValue> = BaseColumnDef<TData, TValue> & {
   filterVariant?: 'range' | 'select' | 'text';
@@ -199,44 +200,50 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex items-center gap-2">
-          <button
-            className="rounded border p-1"
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => table.firstPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            {"<<"}
-          </button>
-          <button
-            className="rounded border p-1"
+            <BiChevronsLeft />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
-          >
-            {"<"}
-          </button>
-          <button
-            className="rounded border p-1"
+            >
+            <BiChevronLeft />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
-          >
-            {">"}
-          </button>
-          <button
-            className="rounded border p-1"
+            >
+
+            <BiChevronRight />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => table.lastPage()}
             disabled={!table.getCanNextPage()}
-          >
-            {">>"}
-          </button>
-          <span className="flex items-center gap-1">
-            <div>Page</div>
+            >
+                <BiChevronsRight />
+            
+          </Button>
+            <span className="flex items-center gap-1">
+            <div>Página</div>
             <strong>
-              {table.getState().pagination.pageIndex + 1} of{" "}
+              {table.getState().pagination.pageIndex + 1} de{" "}
               {table.getPageCount().toLocaleString()}
             </strong>
           </span>
           <span className="flex items-center gap-1">
-            | Go to page:
+            | Ir para pág.:
             <input
               type="number"
               min="1"
@@ -246,49 +253,29 @@ export function DataTable<TData, TValue>({
                 const page = e.target.value ? Number(e.target.value) - 1 : 0;
                 table.setPageIndex(page);
               }}
-              className="w-16 rounded border p-1"
+              className="w-12 h-8 px-2 text-center border border-stroke rounded-md"
             />
           </span>
           <select
             value={table.getState().pagination.pageSize}
+            className="h-8 py-0 px-2 border border-stroke rounded-md text-sm"
             onChange={(e) => {
               table.setPageSize(Number(e.target.value));
             }}
           >
-            {[20, 30, 40, 50].map((pageSize) => (
-              <option key={pageSize} value={pageSize}>
-                Show {pageSize}
+            {[20, 30, 40, 50, 100].map((pageSize) => (
+              <option key={pageSize} value={pageSize} className="text-black text-xs">
+                Mostrar {pageSize} por página
               </option>
             ))}
           </select>
         </div>
-        <div>
+        {/* <div>
           Showing {table.getRowModel().rows.length.toLocaleString()} of{" "}
           {table.getRowCount().toLocaleString()} Rows
-        </div>
-        {/* <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} de{" "}
-          {table.getFilteredRowModel().rows.length} linha(s) selecionadas.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Anterior
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Próximo
-          </Button>
         </div> */}
+        </div>
+       
       </div>
-    </div>
   );
 }

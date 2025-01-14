@@ -29,6 +29,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import useLogout from "@/hooks/useLogout"
+import { Button } from "./Button"
 
 export function NavUser({
   user,
@@ -41,6 +43,8 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const logout = useLogout()
+
 
   const name = `${user.first_name ?? ""} ${user.last_name ?? ""}`
   const initials = `${user.first_name?.charAt(0)}${user.last_name?.charAt(0)}`
@@ -85,7 +89,7 @@ export function NavUser({
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            {/* <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <Sparkles />
@@ -107,10 +111,13 @@ export function NavUser({
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
+            <DropdownMenuSeparator /> */}
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <LogOut />
-              Log out
+              <Button onClick={logout} variant="ghost" className="w-full justify-start">
+                <LogOut />
+                Sair
+              </Button>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

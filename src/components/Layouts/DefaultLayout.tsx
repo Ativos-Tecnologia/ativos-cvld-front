@@ -27,13 +27,13 @@ import {
 import { AppSidebar } from "../NewSidebar";
 import { usePathname, useRouter } from "next/navigation";
 import DarkModeSwitcher from "../Header/DarkModeSwitcher";
+import ThemeSwitcher from "../CrmUi/ThemeSwitcher";
 
 export default function DefaultLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showAlert, setShowAlert] = useState(true);
   const [styleRelated, setStyleRelated] = useState({ opacity: 1 });
 
@@ -45,7 +45,7 @@ export default function DefaultLayout({
       <DefaultLayoutProvider>
         <GeneralUIProvider>
         <div className="flex h-screen overflow-hidden">
-        <SidebarProvider>
+        <SidebarProvider defaultOpen={document.cookie.includes("sidebar:state=true")}>
       <AppSidebar />
       <SidebarInset>
       <div className="relative flex flex-1 flex-col overflow-hidden">
@@ -80,8 +80,8 @@ export default function DefaultLayout({
               </BreadcrumbList>
             </Breadcrumb>
           </div>
-          <div className="flex items-center gap-2 ml-auto">
-            <DarkModeSwitcher />
+          <div className="flex items-center gap-2 ml-auto mr-4">
+            <ThemeSwitcher />
           </div>
         </header>
               <main className="w-full bg-[#f4f4f4] dark:bg-boxdark-2 flex-1 overflow-y-auto">

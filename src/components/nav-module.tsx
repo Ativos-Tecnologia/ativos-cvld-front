@@ -31,7 +31,7 @@ export function NavModule({
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Plataforma</SidebarGroupLabel>
+      {/* <SidebarGroupLabel>Plataforma</SidebarGroupLabel> */}
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible
@@ -40,7 +40,7 @@ export function NavModule({
             className="group/collapsible"
           >
             <SidebarMenuItem>
-                <SidebarMenuButton className="border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-100 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-200" tooltip={item.name} onClick={item.fn}>
+                <SidebarMenuButton className={`border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-100 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-200 items-center w-full py-3 text-sm font-medium rounded-lg transition-colors duration-200`} onClick={item.fn}>
                   
                   {item.logo && <item.logo />}
                   <span>{item.name}</span>
