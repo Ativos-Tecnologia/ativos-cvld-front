@@ -115,6 +115,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     rentabilidade: 0,
     desembolso: 0
   })
+  const [statusDiligence, setStatusDiligence] = useState<String>("");
 
   const swal = UseMySwal();
   const queryClient = useQueryClient();
@@ -147,6 +148,45 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
           swal.fire({
             title: 'Erro',
             text: 'Houve um erro ao finalizar a diligência',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        }
+
+        refetch();
+
+        swal.fire({
+          title: 'Diligência Finalizada',
+          text: 'A diligência foi Finalizada com sucesso! O ofício agora está em liquidação.',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+      }
+    })
+  }
+  const handleCessao = () => {
+    swal.fire({
+      title: 'Cessão',
+      text: 'Deseja mesmo Enviar o Registro de Cessão?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sim',
+      cancelButtonText: 'Não',
+      confirmButtonColor: '#4CAF50',
+      cancelButtonColor: '#F44336',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const response = await api.patch(`api/notion-api/update/${id}/`, {
+          "Status Diligência": {
+            "select": {
+              "name": "Registro de cessão"
+            }
+          }
+        });
+        if (response.status !== 202) {
+          swal.fire({
+            title: 'Erro',
+            text: 'Houve um erro ao Enviar Registro de Cessão',
             icon: 'error',
             confirmButtonText: 'OK'
           });
@@ -346,7 +386,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         icon: 'error',
         confirmButtonText: 'OK'
       })
-      console.log(error)
+      console.error(error)
     }
 
     setIsLoadingRecalculation(false);
@@ -1450,6 +1490,12 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         const credorIdent = data?.properties["CPF/CNPJ"].rich_text?.[0]?.text?.content.replace(/\D/g, '') || "";
         
     setCredorIdentificationType(credorIdent?.length === 11 ? "CPF" : credorIdent?.length === 14 ? "CNPJ" : null);
+   }, [data]);
+  
+   useEffect(() => { 
+     const dataStatusDiligence = data?.properties["Status Diligência"].select?.name;
+     setStatusDiligence(dataStatusDiligence || "");
+    
   }, [data]);
 
   if (!data) {
@@ -1471,45 +1517,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       <LifeCycleStep status={data?.properties["Status Diligência"].select?.name ?? "ops"} />
       <Form {...form}>
         <div className="space-y-6 rounded-md">
-          {/* <section id="info_credor" className="form-inputs-container">
-            <div className="xl:col-span-2 w-full">
-              <CelerInputField
-                name="responsavel"
-                fieldType={InputFieldVariant.CHECKBOX}
-                label="Tornar-se responsável pelo ativo"
-                defaultValue={data?.properties["Responsável - Celer"].multi_select?.some(item => item.name === user) || false}
-                iconSrc={<FaUser
-                  className="self-center" />}
-                iconAlt="user"
-                className="w-full"
-                onValueChange={() => handleChangeResponsavel(id)}
-                isLoading={loadingUpdateState.responsavel}
-                />
-            </div>
-            <div className="xl:col-span-1 w-full">
-              </div>
-
-            {data?.properties["Responsável - Celer"].multi_select?.some(item => item.name) && (
-              <div className="flex gap-2 items-center">
-              {
-                data?.properties["Responsável - Celer"].multi_select.length > 1 ? (
-                  <span>Responsáveis:</span>
-                ) : (
-                  <span>Responsável:</span>
-                )
-              }
-
-              <div className="flex gap-2">
-                {data?.properties["Responsável - Celer"]?.multi_select?.map(item => (
-                  <span key={item.id} className="text-bodydark2 text-xs font-semibold h-8 px-2 border border-stroke dark:border-bodydark2 rounded-full flex items-center">
-                    {item.name}
-                  </span>
-                ))}
-                </div>
-
-            </div>)}
-          </section> */}
-
           <section id="info_credor" className="form-inputs-container">
             <div className="2xsm:col-span-4 lg:col-span-2 xl:col-span-2 w-full">
               <CelerInputField
@@ -2498,7 +2505,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         </div>
       </section>
 
-      {data?.properties["Status Diligência"].select?.name === "Due Diligence" && (
+      {statusDiligence === "Due Diligence" && (
         <div className="flex items-center justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
           <Button
             variant="danger"
@@ -2508,14 +2515,42 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             <BiX className="h-4 w-4" />
             <span>Pendência a Sanar</span>
           </Button>
+          {statusDiligence === "Due Diligence" ? (
+            <Button
+              variant="success"
+              className="py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium"
+              onClick={() => handleDueDiligence()}
+            >
+              <BiSolidCoinStack className="h-4 w-4" />
+              <span>
+                Enviar para Liquidação
+              </span>
+            </Button>
+          ) : null}
+        </div>
+      )}
+      {statusDiligence === "Em cessão" && (
+        <div className="flex items-center justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
           <Button
-            variant="success"
+            variant="danger"
             className="py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleDueDiligence()}
+            onClick={() => handlePendencia()}
           >
-            <BiSolidCoinStack className="h-4 w-4" />
-            <span>Enviar para Liquidação</span>
+            <BiX className="h-4 w-4" />
+            <span>Pendência a Sanar</span>
           </Button>
+          {statusDiligence === "Em cessão" ? (
+            <Button
+              variant="success"
+              className="py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium"
+              onClick={() => handleCessao()}
+            >
+              <BiSolidCoinStack className="h-4 w-4" />
+              <span>
+                Enviar pra Registro de Cessão
+              </span>
+            </Button>
+          ) : null}
         </div>
       )}
       {cedenteModal !== null && <BrokerModal />}
