@@ -2355,7 +2355,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             <CelerInputField
               name="imposto_de_renda_retido_3"
               fieldType={InputFieldVariant.INPUT}
-              label="Imposto de Renda Retido 3%"
+              label="Imposto de Renda"
               defaultValue={
                 numberFormat(
                   (data?.properties["Imposto de Renda Retido 3%"]?.number || 0)
@@ -2403,7 +2403,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             <CelerInputField
               name="valor_dos_honorarios_nao_destacados"
               fieldType={InputFieldVariant.INPUT}
-              label="Valor dos Honorários (Honorários não destacados)"
+              label="Valor dos Honorários"
               defaultValue={
                 numberFormat(
                   (data?.properties["Honorários não destacados"]?.formula?.number || 0)
