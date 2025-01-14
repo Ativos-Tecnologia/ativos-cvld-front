@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 
 // scrollbarCSS
 import "../../css/scrollbar.css";
+import { ReactGlobalQueryContext } from "@/context/ReactGlobalQueryContext";
 
 enum navItems {
   TODOS = "Todos",
@@ -157,9 +158,9 @@ const Juridico = () => {
                   // calcula quantas horas faltam para o prazo expirar
                   const hoursRemaining = (itemDueDate - currentDate) / (1000 * 60 * 60);
 
-                  if (hoursRemaining >= 96) {
+                  if (hoursRemaining >= 48) {
                     deadlineSituation = "good";
-                  } else if (hoursRemaining < 96 && hoursRemaining >= 48) {
+                  } else if (hoursRemaining < 48 && hoursRemaining >= 24) {
                     deadlineSituation = "warning";
                   } else {
                     deadlineSituation = "danger";
