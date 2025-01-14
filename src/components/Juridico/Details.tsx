@@ -5,6 +5,7 @@ import { estados } from "@/constants/estados";
 import { tipoRegime } from "@/constants/regime-casamento";
 import { tribunais } from "@/constants/tribunais";
 import { BrokersContext } from "@/context/BrokersContext";
+import { ReactGlobalQueryContext } from "@/context/ReactGlobalQueryContext";
 import {
   UserInfoAPIContext,
   UserInfoContextType,
@@ -19,7 +20,7 @@ import UseMySwal from "@/hooks/useMySwal";
 import { NotionPage } from "@/interfaces/INotion";
 import { IWalletResponse } from "@/interfaces/IWallet";
 import api from "@/utils/api";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import Link from "next/link";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -30,7 +31,7 @@ import { BsCalendar2HeartFill, BsPencilSquare } from "react-icons/bs";
 import { FaBalanceScale, FaIdCard, FaMapMarkedAlt, FaRegFilePdf } from "react-icons/fa";
 import { FaBuilding, FaBuildingColumns, FaLink, FaUser } from "react-icons/fa6";
 import { GiPayMoney, GiReceiveMoney, GiTakeMyMoney } from "react-icons/gi";
-import { GrDocumentText, GrDocumentUser } from "react-icons/gr";
+import { GrDocumentText, GrDocumentUser, GrMoney } from "react-icons/gr";
 import { IoIosPaper } from "react-icons/io";
 import { IoCalendar, IoDocumentTextSharp, IoGlobeOutline } from "react-icons/io5";
 import { LuClipboardCheck, LuCopy, LuHandshake } from "react-icons/lu";
@@ -46,7 +47,6 @@ import BrokerModal, { IdentificationType } from "../Modals/BrokersCedente";
 import DocForm from "../Modals/BrokersDocs";
 import JuridicoDetailsSkeleton from "../Skeletons/JuridicoDetailsSkeleton";
 import { SelectItem } from "../ui/select";
-import { ReactGlobalQueryContext } from "@/context/ReactGlobalQueryContext";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -118,9 +118,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   })
 
   const swal = UseMySwal();
-  const {
-    globalQueryClient
-  } = useContext(ReactGlobalQueryContext);
+  const { globalQueryClient } = useContext(ReactGlobalQueryContext);
 
   /* refs */
   const rentabilidadeSlideRef = useRef<HTMLInputElement>(null);
@@ -1462,6 +1460,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     )
   }
 
+  console.log("Dados do Credor: ", data);
+
   return (
     <div className="flex flex-col w-full gap-5">
       <div className="flex w-full items-end justify-end rounded-md">
@@ -2325,6 +2325,86 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                 )
               }
               iconSrc={<GiPayMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+            <CelerInputField
+              name="valor_total_inscrito"
+              fieldType={InputFieldVariant.INPUT}
+              label="Valor Total Inscrito"
+              defaultValue={
+                numberFormat(
+                  (data?.properties["Valor Total Inscrito"]?.formula?.number || 0)
+                )
+              }
+              iconSrc={<GrMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+            <CelerInputField
+              name="imposto_de_renda_retido_3"
+              fieldType={InputFieldVariant.INPUT}
+              label="Imposto de Renda Retido 3%"
+              defaultValue={
+                numberFormat(
+                  (data?.properties["Imposto de Renda Retido 3%"]?.number || 0)
+                )
+              }
+              iconSrc={<GiTakeMyMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+            <CelerInputField
+              name="rra"
+              fieldType={InputFieldVariant.INPUT}
+              label="RRA"
+              defaultValue={
+                numberFormat(
+                  (data?.properties?.RRA?.number || 0)
+                )
+              }
+              iconSrc={<GiReceiveMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+            <CelerInputField
+              name="PSS"
+              fieldType={InputFieldVariant.INPUT}
+              label="PSS"
+              defaultValue={
+                numberFormat(
+                  (data?.properties?.PSS?.number || 0)
+                )
+              }
+              iconSrc={<GiReceiveMoney className="self-center" />}
+              iconAlt="money"
+              className="w-full disabled:dark:text-white disabled:text-boxdark"
+              disabled={true}
+            />
+          </div>
+          <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+            <CelerInputField
+              name="valor_dos_honorarios_nao_destacados"
+              fieldType={InputFieldVariant.INPUT}
+              label="Valor dos Honorários (Honorários não destacados)"
+              defaultValue={
+                numberFormat(
+                  (data?.properties["Honorários não destacados"]?.formula?.number || 0)
+                )
+              }
+              iconSrc={<GiTakeMyMoney className="self-center" />}
               iconAlt="money"
               className="w-full disabled:dark:text-white disabled:text-boxdark"
               disabled={true}
