@@ -50,14 +50,10 @@ const usePath = () => {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const { data: dataUser } = React.useContext(UserInfoAPIContext)
+  const { role, product, sub_role }  = dataUser;
   const { modalOpen, setModalOpen } = React.useContext(DefaultLayoutContext);
 
   const data = {
-    user: {
-      name: "shadcn",
-      email: "m@example.com",
-      avatar: "/avatars/shadcn.jpg",
-    },
     teams: [
       {
         name: "Ativos",
@@ -70,23 +66,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: "Dashboard",
         url: "#",
         icon: LayoutDashboard,
-        isActive: usePath().includes("/dashboard") || usePath() === "/",
+        isActive: window.location.pathname.includes("/dashboard") || window.location.pathname === "/",
         items: [
           {
             title: "Calculadora",
             url: "/",
+            when: product === "global",
           },
           {
             title: "Broker",
             url: "/dashboard/broker",
+            when: product === "crm" || product === "global",
           },
           {
             title: "Jurídico",
             url: "/dashboard/juridico",
+            when: product === "global" || sub_role === "juridico",
           },
           {
             title: "Wallet",
             url: "/dashboard/wallet",
+            when: product === "wallet" || product === "global",
           },
         ],
       },
@@ -99,6 +99,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {
             title: "Resumo",
             url: "/comercial/resumo",
+            when: product === "global",
           },
         ],
       },
@@ -110,6 +111,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         name: "PrecaShop",
         url: "/dashboard/marketplace",
         icon: ShoppingCart,
+        when: product === "wallet" || product === "global",
       },
     ],
   }

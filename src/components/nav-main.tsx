@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import Show from "./Show"
 
 export function NavMain({
   items,
@@ -31,6 +32,7 @@ export function NavMain({
     items?: {
       title: string
       url: string,
+      when?: boolean
     }[]
   }[]
 }) {
@@ -59,6 +61,7 @@ export function NavMain({
               <CollapsibleContent>
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
+                    <Show when={subItem.when ?? true}>
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild className={pathname === subItem.url ? "bg-sidebar-accent text-sidebar-accent-foreground" : ""}>
                         <Link href={subItem.url}>
@@ -66,6 +69,7 @@ export function NavMain({
                         </Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
+                    </Show>
                   ))}
                 </SidebarMenuSub>
               </CollapsibleContent>

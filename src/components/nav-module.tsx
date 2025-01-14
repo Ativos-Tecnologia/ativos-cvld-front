@@ -19,6 +19,9 @@ import {
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 import { FaN } from "react-icons/fa6"
+import Show from "./Show"
+import { useContext } from "react"
+import { UserInfoAPIContext } from "@/context/UserInfoContext"
 
 export function NavModule({
   items,
@@ -29,7 +32,9 @@ export function NavModule({
     fn?: VoidFunction
     }[]
 }) {
+  const { data : { product } } = useContext(UserInfoAPIContext)
   return (
+    <Show when={product !== "wallet"}>
     <SidebarGroup>
       {/* <SidebarGroupLabel>Plataforma</SidebarGroupLabel> */}
       <SidebarMenu>
@@ -50,5 +55,6 @@ export function NavModule({
         ))}
       </SidebarMenu>
     </SidebarGroup>
+    </Show>
   )
 }

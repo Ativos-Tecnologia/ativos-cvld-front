@@ -1,7 +1,7 @@
 import * as React from "react"
 import {
-    Column,
   ColumnDef,
+  Row,
 } from "@tanstack/react-table"
 
 type CustomColumnDef<T> = ColumnDef<T, unknown> & {
@@ -10,7 +10,6 @@ type CustomColumnDef<T> = ColumnDef<T, unknown> & {
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -111,6 +110,86 @@ import { BiCheck } from "react-icons/bi"
 //     )
 //   }
 
+
+const CellComponent = ({ row }: { row: Row<IResumoComercial> }) => {
+    const resumo = row.original;
+
+    function handleCopyPhone() {
+        navigator.clipboard.writeText(`${resumo.phone}`);
+    }
+
+    async function handleConfirmUser() {
+        return await api.patch(`/api/comercial/confirm-user/${resumo.id}/`);
+    }
+
+    const handleConfirmMutation = useMutation({
+        mutationFn: handleConfirmUser,
+        onMutate(variables) {
+            const prevData = document.getElementById(String(resumo.id))!.textContent;
+            resumo.is_confirmed = true;
+            document.getElementById(String(resumo.id))!.textContent = "Sim";
+            return { prevData };
+        },
+        onSuccess: () => {
+            toast.success("Usuário confirmado", {
+                classNames: {
+                    toast: "bg-white dark:bg-boxdark",
+                    title: "text-black-2 dark:text-white",
+                    actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+                },
+                icon: <BiCheck className="text-lg fill-green-400" />,
+                action: {
+                    label: "OK",
+                    onClick() {
+                        toast.dismiss();
+                    },
+                }
+            });
+        },
+        onError: (error, paramsObj, context) => {
+            resumo.is_confirmed = false;
+            document.getElementById(String(resumo.id))!.textContent = context?.prevData as string;
+            toast.error("Erro ao confirmar usuário", {
+                classNames: {
+                    toast: "bg-white dark:bg-boxdark",
+                    title: "text-black-2 dark:text-white",
+                },
+            });
+        }
+    });
+
+    const handleConfirm = async () => {
+            await handleConfirmMutation.mutateAsync();
+    }
+
+    return (
+        <div>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Abrir menu</span>
+                        <MoreHorizontal />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-white dark:bg-boxdark-2">
+                    <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                    <DropdownMenuItem
+                        onClick={handleCopyPhone}
+                    >
+                        Copiar telefone
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem disabled={resumo.is_confirmed} onClick={handleConfirm}>Confirmar usuário</DropdownMenuItem>
+                    <DropdownMenuItem disabled>Solicitar designação</DropdownMenuItem>
+                    <DropdownMenuItem disabled>Redefinir senha</DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </div>
+    );
+};
+
+export default CellComponent;
+
 export const columns: ColumnDef<IResumoComercial>[] = [
     {
         accessorKey: "date_joined",
@@ -209,75 +288,8 @@ export const columns: ColumnDef<IResumoComercial>[] = [
             return await api.patch(`/api/comercial/confirm-user/${resumo.id}/`)
         }
 
-        const handleConfirmMutation = useMutation({
-
-            mutationFn: handleConfirmUser,
-            onMutate(variables) {
-                const prevData = document.getElementById(String(resumo.id))!.textContent
-                resumo.is_confirmed = true
-                document.getElementById(String(resumo.id))!.textContent = "Sim"
-                return { prevData }
-            },
-            onSuccess: () => {
-                toast.success("Usuário confirmado", {
-                classNames: {
-                    toast: "bg-white dark:bg-boxdark",
-                    title: "text-black-2 dark:text-white",
-                    actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
-                },
-                icon: <BiCheck className="text-lg fill-green-400" />,
-                action: {
-                    label: "OK",
-                    onClick() {
-                        toast.dismiss();
-                    },
-                }
-            });            },
-            onError: (error, paramsObj, context) => {
-                resumo.is_confirmed = false
-                document.getElementById(String(resumo.id))!.textContent = context?.prevData as string
-                toast.error("Erro ao confirmar usuário", {
-                    classNames: {
-                        toast: "bg-white dark:bg-boxdark",
-                        title: "text-black-2 dark:text-white",
-                        actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
-                    },
-                    icon: <BiCheck className="text-lg fill-red-400" />,
-                    action: {
-                        label: "OK",
-                        onClick() {
-                            toast.dismiss();
-                        },
-                    }
-                });
-            },
-        })
-
-        const actionConfirmUser = async () => {
-            await handleConfirmMutation.mutateAsync()
-        }
-  
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Abrir menu</span>
-                <MoreHorizontal />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-white dark:bg-boxdark-2">
-              <DropdownMenuLabel>Ações</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={handleCopyPhone}
-              >
-                Copiar telefone
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem disabled={resumo.is_confirmed} onClick={actionConfirmUser}>Confirmar usuário</DropdownMenuItem>
-              <DropdownMenuItem disabled>Solicitar designação</DropdownMenuItem>
-              <DropdownMenuItem disabled>Redefinir senha</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <CellComponent row={row} />
         )
       },
     },
