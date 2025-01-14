@@ -27,7 +27,7 @@ async function fetchData(options: {
   return response.data;
 }
 
-export function ResumoWrapperPage() {
+function ResumoWrapperPage() {
     const [pagination, setPagination] = React.useState<PaginationState>({
         pageIndex: 0,
         pageSize: 20,

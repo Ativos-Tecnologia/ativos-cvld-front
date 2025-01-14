@@ -70,7 +70,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: "Dashboard",
         url: "#",
         icon: LayoutDashboard,
-        isActive: usePath().includes("/dashboard") || usePath() === "/",
+        isActive: window.location.pathname.includes("/dashboard") || window.location.pathname === "/",
         items: [
           {
             title: "Calculadora",
