@@ -7,7 +7,6 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   PaginationState,
   SortingState,
@@ -110,7 +109,7 @@ export function DataTable<TData, TValue>({
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto pb-10 pt-4">
       <div className="flex items-center py-4">
         <Input
           placeholder="Digite um usuário"
