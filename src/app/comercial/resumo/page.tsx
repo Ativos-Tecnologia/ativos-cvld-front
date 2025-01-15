@@ -39,12 +39,12 @@ function ResumoWrapperPage() {
     placeholderData: keepPreviousData,
 });
 
-const pageCount = Math.round((data?.count ?? 0) / pagination.pageSize);
+const pageCount = Math.ceil((data?.count ?? 0) / pagination.pageSize);
 
   return (
     <div className="w-full">
       <DefaultLayout>
-        <div className="flex w-full flex-col">
+        <div className="flex w-full flex-col bg-white dark:bg-boxdark pl-4 py-2 rounded-md">
           <h1 className="text-3xl font-semibold text-black dark:text-white">
             Resumo
           </h1>
