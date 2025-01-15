@@ -45,8 +45,8 @@ export function NavProjects({
       </SidebarGroupLabel>
       <SidebarMenu>
         {projects.map((item) => (
-        <Show when={item.when ?? true}>
-          <SidebarMenuItem key={item.name}>
+        <Show when={item.when ?? true} key={item.name}>
+          <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <a href={item.url}>
                 <item.icon />
