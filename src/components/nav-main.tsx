@@ -61,7 +61,7 @@ export function NavMain({
               <CollapsibleContent>
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
-                    <Show when={subItem.when ?? true}>
+                    <Show when={subItem.when ?? true} key={subItem.title}>
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild className={pathname === subItem.url ? "bg-sidebar-accent text-sidebar-accent-foreground" : ""}>
                         <Link href={subItem.url}>
