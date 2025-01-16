@@ -49,6 +49,7 @@ import BrokerModal, { IdentificationType } from "../Modals/BrokersCedente";
 import DocForm from "../Modals/BrokersDocs";
 import JuridicoDetailsSkeleton from "../Skeletons/JuridicoDetailsSkeleton";
 import { SelectItem } from "../ui/select";
+import verifyRequiredInputsToDue from "@/functions/juridico/verifyRequiredInputsToDue";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -67,6 +68,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   } = useContext(BrokersContext);
 
   const [credorIdentificationType, setCredorIdentificationType] = useState<IdentificationType>(null);
+  const [requiredDueInputsError, setRequiredDueInputsError] = useState<boolean>(false);
   const [vlData, setVlData] = useState<IWalletResponse>({
     id: "",
     valor_investido: 0,
@@ -274,83 +276,106 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
   }
 
   const handleDueAndamento = () => {
-    swal.fire({
-      title: 'Due em Andamento',
-      text: 'Deseja mesmo deixar o Due em Andamento?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Sim',
-      cancelButtonText: 'Não',
-      confirmButtonColor: '#4CAF50',
-      cancelButtonColor: '#F44336',
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        const response = await api.patch(`api/notion-api/update/${id}/`, {
-          "Status Diligência": {
-            "select": {
-              "name": "Due em Andamento"
+    const requiredInputsCheck = verifyRequiredInputsToDue(data && data, credorIdentificationType === "CPF" ? cedenteDataPF : socioData);
+    if (requiredInputsCheck) {
+
+      swal.fire({
+        title: 'Due em Andamento',
+        text: 'Deseja mesmo deixar o Due em Andamento?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sim',
+        cancelButtonText: 'Não',
+        confirmButtonColor: '#4CAF50',
+        cancelButtonColor: '#F44336',
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const response = await api.patch(`api/notion-api/update/${id}/`, {
+            "Status Diligência": {
+              "select": {
+                "name": "Due em Andamento"
+              }
             }
+          });
+          if (response.status !== 202) {
+            swal.fire({
+              title: 'Erro',
+              text: 'Houve um erro ao deixar a Due em Andamento',
+              icon: 'error',
+              confirmButtonText: 'OK'
+            });
           }
-        });
-        if (response.status !== 202) {
+
+          refetch();
+
           swal.fire({
-            title: 'Erro',
-            text: 'Houve um erro ao deixar a Due em Andamento',
-            icon: 'error',
+            title: 'Registro Salvo',
+            text: 'A diligência está em andamento!.',
+            icon: 'success',
             confirmButtonText: 'OK'
           });
         }
+      });
 
-        refetch();
-
-        swal.fire({
-          title: 'Registro Salvo',
-          text: 'A diligência está em andamento!.',
-          icon: 'success',
-          confirmButtonText: 'OK'
-        });
-      }
-    })
+    } else {
+      swal.fire({
+        icon: "warning",
+        title: "Aviso",
+        text: "Existem campos obrigatórios que ainda não foram preenchidos. Por favor, revise o formulário.",
+      });
+      setRequiredDueInputsError(true);
+    }
   }
 
   const handleRevisaoDueDiligence = () => {
-    swal.fire({
-      title: 'Revisão de Due Diligence',
-      text: 'Deseja mesmo enviar para Revisão de Due Diligence?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Sim',
-      cancelButtonText: 'Não',
-      confirmButtonColor: '#4CAF50',
-      cancelButtonColor: '#F44336',
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        const response = await api.patch(`api/notion-api/update/${id}/`, {
-          "Status Diligência": {
-            "select": {
-              "name": "Revisão de Due Diligence"
+    const requiredInputsCheck = verifyRequiredInputsToDue(data && data, credorIdentificationType === "CPF" ? cedenteDataPF : socioData);
+    if (requiredInputsCheck) {
+
+      swal.fire({
+        title: 'Revisão de Due Diligence',
+        text: 'Deseja mesmo enviar para Revisão de Due Diligence?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sim',
+        cancelButtonText: 'Não',
+        confirmButtonColor: '#4CAF50',
+        cancelButtonColor: '#F44336',
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const response = await api.patch(`api/notion-api/update/${id}/`, {
+            "Status Diligência": {
+              "select": {
+                "name": "Revisão de Due Diligence"
+              }
             }
+          });
+          if (response.status !== 202) {
+            swal.fire({
+              title: 'Erro',
+              text: 'Houve um erro ao Enviar para Revisão da Due Diligence',
+              icon: 'error',
+              confirmButtonText: 'OK'
+            });
           }
-        });
-        if (response.status !== 202) {
+  
+          refetch();
+  
           swal.fire({
-            title: 'Erro',
-            text: 'Houve um erro ao Enviar para Revisão da Due Diligence',
-            icon: 'error',
+            title: 'Registro da Due está em Andamento',
+            text: 'A diligência está em andamento.',
+            icon: 'success',
             confirmButtonText: 'OK'
           });
         }
-
-        refetch();
-
-        swal.fire({
-          title: 'Registro da Due está em Andamento',
-          text: 'A diligência está em andamento.',
-          icon: 'success',
-          confirmButtonText: 'OK'
-        });
-      }
-    })
+      })
+    } else {
+      swal.fire({
+        icon: "warning",
+        title: "Aviso",
+        text: "Existem campos obrigatórios que ainda não foram preenchidos. Por favor, revise o formulário.",
+      });
+      setRequiredDueInputsError(true);
+    }
   }
 
 
@@ -369,6 +394,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     queryFn: fetchData,
     refetchOnWindowFocus: false
   });
+
+  console.log(data)
 
   const { data: cedenteDataPF, isFetching: isFetchingCedentePF } = useQuery<NotionPage>({
     queryKey: ["cedentePF", data?.properties['Cedente PF']?.relation?.[0]?.id],
@@ -797,9 +824,9 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         return {
           ...old,
           properties: {
-            ...old.properties,
+            ...old?.properties,
             "Espelho do ofício": {
-              ...old.properties["Espelho do ofício"],
+              ...old?.properties["Espelho do ofício"],
               checkbox: paramsObj.value,
             },
           },
@@ -1642,12 +1669,12 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     const credorIdent = data?.properties["CPF/CNPJ"].rich_text?.[0]?.text?.content.replace(/\D/g, '') || "";
 
     setCredorIdentificationType(credorIdent?.length === 11 ? "CPF" : credorIdent?.length === 14 ? "CNPJ" : null);
-   }, [data]);
-  
-   useEffect(() => { 
-     const dataStatusDiligence = data?.properties["Status Diligência"].select?.name;
-     setStatusDiligence(dataStatusDiligence || "");
-    
+  }, [data]);
+
+  useEffect(() => {
+    const dataStatusDiligence = data?.properties["Status Diligência"].select?.name;
+    setStatusDiligence(dataStatusDiligence || "");
+
   }, [data]);
 
   if (!data) {
@@ -1718,8 +1745,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
             </div>
             <div className="col-span-4 gap-4">
-              <div className="flex flex-wrap items-center gap-6">
-                <div className="grid min-w-35">
+              <div className="grid grid-cols-6 gap-6">
+                <div className="grid min-w-40 md:col-span-3 lg:col-span-2 xl:col-span-1">
                   <CelerInputField
                     name="emissao_certidao_check"
                     fieldType={InputFieldVariant.SELECT}
@@ -1733,9 +1760,13 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                     <SelectItem value="SIM">Sim</SelectItem>
                     <SelectItem value="NÃO">Não</SelectItem>
                   </CelerInputField>
+
+                  {(!data?.properties["Certidões emitidas"]?.checkbox && requiredDueInputsError) && (
+                    <p className="text-red-500 dark:text-red-400 text-xs mt-2">Campo obrigatório para due</p>
+                  )}
                 </div>
 
-                <div className="grid min-w-35">
+                <div className="grid min-w-40 md:col-span-3 lg:col-span-2 xl:col-span-1">
                   <CelerInputField
                     name="possui_processos_check"
                     fieldType={InputFieldVariant.SELECT}
@@ -1749,43 +1780,55 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                     <SelectItem value="SIM">Sim</SelectItem>
                     <SelectItem value="NÃO">Não</SelectItem>
                   </CelerInputField>
+
+                  {(!data?.properties["Possui processos?"]?.checkbox && requiredDueInputsError) && (
+                    <p className="text-red-500 dark:text-red-400 text-xs mt-2">Campo obrigatório para due</p>
+                  )}
                 </div>
 
-              </div>
-              <div className="grid 2xsm:w-full md:w-115 gap-2 mt-5">
-                <CelerInputField
-                  className="w-full gap-2"
-                  fieldType={InputFieldVariant.SELECT}
-                  name="regime_casamento"
-                  label="Estado Civil"
-                  iconSrc={<BsCalendar2HeartFill />}
-                  defaultValue={
-                    credorIdentificationType === "CPF"
-                      ? cedenteDataPF?.properties["Estado Civil"]?.select?.name || ''
-                      : socioData?.properties["Estado Civil"]?.select?.name || ''
-                  }
-                  onValueChange={(_, value) => handleUpdateEstadoCivil(value,
-                    credorIdentificationType === "CPF"
-                      ? cedenteDataPF?.id!
-                      : socioData?.id!
+                <div className="grid 2xsm:w-full md:w-115 md:col-span-6 xl:col-span-2">
+                  <CelerInputField
+                    className="w-full gap-2"
+                    fieldType={InputFieldVariant.SELECT}
+                    name="regime_casamento"
+                    label="Estado Civil"
+                    iconSrc={<BsCalendar2HeartFill />}
+                    defaultValue={
+                      credorIdentificationType === "CPF"
+                        ? cedenteDataPF?.properties["Estado Civil"]?.select?.name || ''
+                        : socioData?.properties["Estado Civil"]?.select?.name || ''
+                    }
+                    onValueChange={(_, value) => handleUpdateEstadoCivil(value,
+                      credorIdentificationType === "CPF"
+                        ? cedenteDataPF?.id!
+                        : socioData?.id!
+                    )}
+                    isLoading={loadingUpdateState.estadoCivil}
+                    disabled={editLock}
+                  >
+                    {tipoRegime.map((item, index) => (
+                      <SelectItem
+                        defaultChecked={
+                          credorIdentificationType === "CPF"
+                            ? cedenteDataPF?.properties["Estado Civil"]?.select?.name === item
+                            : socioData?.properties["Estado Civil"]?.select?.name === item
+                        }
+                        key={index}
+                        value={item}
+                      >
+                        {item}
+                      </SelectItem>
+                    ))}
+                  </CelerInputField>
+
+                  {credorIdentificationType === "CPF" && !cedenteDataPF?.properties["Estado Civil"]?.select?.name && requiredDueInputsError && (
+                    <p className="text-red-500 dark:text-red-400 text-xs mt-2">Campo obrigatório para due</p>
                   )}
-                  isLoading={loadingUpdateState.estadoCivil}
-                  disabled={editLock}
-                >
-                  {tipoRegime.map((item, index) => (
-                    <SelectItem
-                      defaultChecked={
-                        credorIdentificationType === "CPF"
-                          ? cedenteDataPF?.properties["Estado Civil"]?.select?.name === item
-                          : socioData?.properties["Estado Civil"]?.select?.name === item
-                      }
-                      key={index}
-                      value={item}
-                    >
-                      {item}
-                    </SelectItem>
-                  ))}
-                </CelerInputField>
+
+                  {credorIdentificationType === "CNPJ" && !socioData?.properties["Estado Civil"]?.select?.name && requiredDueInputsError && (
+                    <p className="text-red-500 dark:text-red-400 text-xs mt-2">Campo obrigatório para due</p>
+                  )}
+                </div>
               </div>
             </div>
             <div className="col-span-4 gap-4">
@@ -2703,6 +2746,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                   fieldType={InputFieldVariant.CHECKBOX}
                   label="Espelho do Ofício"
                   defaultValue={data?.properties["Espelho do ofício"].checkbox}
+                  checked={data?.properties["Espelho do ofício"].checkbox}
                   className="text-sm font-medium"
                   onValueChange={(_, value) => handleUpdateEspelhoDoOficio(value, id)}
                   isLoading={loadingUpdateState.espelhoOficio}
@@ -2717,6 +2761,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                     fieldType={InputFieldVariant.CHECKBOX}
                     label="Estoque de Precatórios Baixado"
                     defaultValue={data?.properties["Estoque de Precatórios Baixado"].checkbox}
+                    checked={data?.properties["Estoque de Precatórios Baixado"].checkbox}
                     className="text-sm font-medium"
                     onValueChange={(_, value) => handleUpdateEstoquePrecatorio(value, id)}
                     isLoading={loadingUpdateState.estoquePrecatorio}
@@ -2786,17 +2831,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             <CgSearchLoading className="h-4 w-4" />
             <span>Revisão de Due Diligence</span>
           </Button>
-          
-            <Button
-              variant="success"
-              className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-              onClick={() => handleDueDiligence()}
-            >
-              <BiSolidCoinStack className="h-4 w-4" />
-              <span>
-                Enviar para Liquidação
-              </span>
-            </Button>
         </div>
       )}
       {statusDiligence === "Due em Andamento" && (
@@ -2809,17 +2843,26 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             <BiX className="h-4 w-4" />
             <span>Pendência a Sanar</span>
           </Button>
-      
-            <Button
-              variant="success"
-              className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-              onClick={() => handleDueDiligence()}
-            >
-              <BiSolidCoinStack className="h-4 w-4" />
-              <span>
-                Enviar para Liquidação
-              </span>
-            </Button>
+
+          <Button
+            variant="warning"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleRevisaoDueDiligence()}
+          >
+            <CgSearchLoading className="h-4 w-4" />
+            <span>Revisão de Due Diligence</span>
+          </Button>
+
+          <Button
+            variant="success"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleDueDiligence()}
+          >
+            <BiSolidCoinStack className="h-4 w-4" />
+            <span>
+              Enviar para Liquidação
+            </span>
+          </Button>
         </div>
       )}
       {statusDiligence === "Em cessão" && (
@@ -2832,7 +2875,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             <BiX className="h-4 w-4" />
             <span>Pendência a Sanar</span>
           </Button>
-          
+
           <Button
             variant="success"
             className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
@@ -2855,17 +2898,17 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             <BiX className="h-4 w-4" />
             <span>Pendência a Sanar</span>
           </Button>
-          
+
           <Button
-              variant="success"
-              className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-              onClick={() => handleDueDiligence()}
-            >
-              <BiSolidCoinStack className="h-4 w-4" />
-              <span>
-                Enviar para Liquidação
-              </span>
-            </Button>
+            variant="success"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleDueDiligence()}
+          >
+            <BiSolidCoinStack className="h-4 w-4" />
+            <span>
+              Enviar para Liquidação
+            </span>
+          </Button>
         </div>)
       }
       {cedenteModal !== null && <BrokerModal />}
