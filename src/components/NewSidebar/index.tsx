@@ -10,6 +10,7 @@ import {
   Frame,
   LayoutDashboard,
   Map,
+  MessageSquare,
   PieChart,
   Plus,
   Settings2,
@@ -26,6 +27,9 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
 import Image from "next/image"
@@ -33,6 +37,7 @@ import { UserInfoAPIContext, UserInfoProvider } from "@/context/UserInfoContext"
 import { NavModule } from "../nav-module"
 import { DefaultLayoutContext, DefaultLayoutProvider } from "@/context/DefaultLayoutContext"
 import { usePathname, useRouter } from "next/navigation"
+import { FeedbackDialog } from "../CrmUi/feedback-dialog"
 
 
 const AtivosLogo = () => {
@@ -52,6 +57,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: dataUser } = React.useContext(UserInfoAPIContext)
   const { role, product, sub_role }  = dataUser;
   const { modalOpen, setModalOpen } = React.useContext(DefaultLayoutContext);
+
+
 
   const data = {
     teams: [
@@ -114,6 +121,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         when: product === "wallet" || product === "global",
       },
     ],
+
+    modules : [
+      {
+        name: "Novo Precatório",
+        logo: Plus,
+        fn: () => setModalOpen(!modalOpen),
+      },
+  ]
   }
 
   return (
@@ -124,15 +139,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavModule items={[{
-      name: "Novo Precatório",
-      logo: Plus,
-      fn: () => setModalOpen(!modalOpen),
-    }]} />
+        <NavModule items={data.modules} />
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+        <FeedbackDialog trigger={
+          <SidebarMenuButton disabled tooltip="Feedback">
+          <MessageSquare className="h-4 w-4" />
+          <span>Feedback</span>
+        </SidebarMenuButton>
+        }/>
+        </SidebarMenuItem>
+        </SidebarMenu>
         <NavUser user={dataUser} />
       </SidebarFooter>
       <SidebarRail />
