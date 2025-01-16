@@ -73,6 +73,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     valor_projetado: 0,
     previsao_de_pgto: "",
     rentabilidade_anual: 0,
+    data_de_aquisicao: "",
     result: [
       {
         data_atualizacao: "",
