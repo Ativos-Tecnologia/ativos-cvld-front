@@ -111,7 +111,10 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
             data.need_to_recalculate_proposal = false
         }
 
-        data.percentual_a_ser_adquirido /= 100;
+        if (typeof data.percentual_a_ser_adquirido === "string") {
+            data.percentual_a_ser_adquirido = Number((data.percentual_a_ser_adquirido.replace(/[^0-9,]/g, "").replace(",", ".") / 100).toFixed(4))
+        }
+
         data.percentual_de_honorarios /= 100;
         
         
@@ -150,6 +153,14 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
 
     useEffect(() => {
         if (mainData) {
+
+
+            const t = Number((mainData.properties["Percentual a ser adquirido"].number! * 100).toFixed(2))
+            const tFormatado = t.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              });
+
             setValue("tipo_do_oficio", mainData.properties["Tipo"].select?.name || "PRECATÓRIO");
             setValue("natureza", mainData.properties["Natureza"].select?.name || "NÃO TRIBUTÁRIA");
             setValue("esfera", mainData.properties["Esfera"].select?.name || "FEDERAL");
@@ -160,7 +171,8 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
             setValue("data_base", mainData.properties["Data Base"].date?.start || "");
             setValue("data_requisicao", mainData.properties["Data do Recebimento"].date?.start || "");
             setValue("valor_aquisicao_total", mainData.properties["Percentual a ser adquirido"].number! === 1);
-            setValue("percentual_a_ser_adquirido", mainData.properties["Percentual a ser adquirido"].number! *100 || 0);
+            // Exemplo: 30.819.999.999.999.997 --> 30.82
+            setValue("percentual_a_ser_adquirido", tFormatado);
             setValue("ja_possui_destacamento", mainData.properties["Honorários já destacados?"].checkbox);
             setValue("percentual_de_honorarios", mainData.properties["Percentual de Honorários Não destacados"].number! * 100 || 0);
             setValue("incidencia_rra_ir", mainData.properties["Incidencia RRA/IR"].checkbox);
@@ -179,10 +191,12 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
             setValue("status", mainData.properties["Status"].status?.name || "");
             setValue("upload_notion", true);
 
+
             // setando valores iniciais no formulário
             setDefaultFormValues(watch())
         }
     }, [mainData])
+
 
     return (
         <div className={`absolute top-0 left-0 z-3 bg-white dark:bg-boxdark w-full ${editModalId === mainData?.id ? "max-h-full overflow-y-scroll border border-snow rounded-md" : "max-h-0 overflow-hidden"} grid grid-cols-2 gap-2 transition-all duration-300`}>
@@ -515,8 +529,8 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
                                 >
                                     Percentual de aquisição (%)
                                 </label>
-                                <input
-                                    type="number"
+                                {/* <input
+                                    type="text"
                                     id="percentual_a_ser_adquirido"
                                     defaultValue={100}
                                     className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
@@ -527,7 +541,41 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
                                             return parseInt(value);
                                         },
                                     })}
-                                />
+                                /> */}
+
+                            <Controller
+                                name="percentual_a_ser_adquirido"
+                                control={control}
+                                defaultValue={100}
+                                rules={{
+                                    min: {
+                                        value: 1,
+                                        message: "O valor deve ser maior que 0",
+                                    },
+                                }}
+                                render={({ field, fieldState: { error } }) => (
+                                    <>
+                                        <Cleave
+                                            {...field}
+                                            className={`w-full rounded-md border-stroke ${error ? "border-red" : "dark:border-strokedark"} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
+                                            
+                                            options={{
+                                                numeral: true,
+                                                numeralThousandsGroupStyle: 'none',
+                                                numeralDecimalMark: ',', 
+                                                prefix: '%',
+                                                tailPrefix: true,
+                                                rawValueTrimPrefix: true,     
+                                            }}
+                                        />
+                                        {error && (
+                                            <span className="absolute right-2 top-8.5 text-xs font-medium text-red">
+                                                {error.message}
+                                            </span>
+                                        )}
+                                    </>
+                                )}
+                            />
                             </div>
                         ) : (
                             <div className="col-span-1 hidden md:block"></div>

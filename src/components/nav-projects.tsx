@@ -25,6 +25,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import Show from "./Show"
+import { Collapsible } from "./ui/collapsible"
 
 export function NavProjects({
   projects,
@@ -39,13 +40,19 @@ export function NavProjects({
   const { isMobile } = useSidebar()
 
   return (
-    <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+    // <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+    <SidebarGroup>
       <SidebarGroupLabel>
         Módulos
       </SidebarGroupLabel>
       <SidebarMenu>
         {projects.map((item) => (
-        <Show when={item.when ?? true} key={item.name}>
+          <Collapsible
+          key={item.name}
+          asChild
+          className="group/collapsible"
+        >
+        <Show when={item.when ?? true}>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <a href={item.url}>
@@ -82,6 +89,7 @@ export function NavProjects({
             </DropdownMenu>
           </SidebarMenuItem>
           </Show>
+        </Collapsible>
         ))}
         {/* <SidebarMenuItem>
           <SidebarMenuButton className="text-sidebar-foreground/70">
