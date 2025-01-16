@@ -9,7 +9,7 @@ export type CvldFormInputsProps = {
     data_base: string;
     data_requisicao: string;
     valor_aquisicao_total: boolean;
-    percentual_a_ser_adquirido: number;
+    percentual_a_ser_adquirido: number | string;
     ja_possui_destacamento: boolean;
     percentual_de_honorarios: number;
     incidencia_juros_moratorios:

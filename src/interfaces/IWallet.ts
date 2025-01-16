@@ -13,6 +13,7 @@ export interface IWalletResponse {
     valor_projetado: number;
     previsao_de_pgto: string;
     rentabilidade_anual: number;
+    data_de_aquisicao: string;
     result: IWalletResults[];
   }
 

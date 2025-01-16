@@ -271,7 +271,7 @@ const NewForm = () => {
     if (data.valor_aquisicao_total) {
       data.percentual_a_ser_adquirido = 1;
     } else {
-      data.percentual_a_ser_adquirido /= 100;
+      data.percentual_a_ser_adquirido = data.percentual_a_ser_adquirido = Number((data.percentual_a_ser_adquirido.replace(/[^0-9,]/g, "").replace(",", ".") / 100).toFixed(4))
     }
 
     if (data.tribunal === "TRF1" || data.tribunal === "TRF6") {
@@ -886,19 +886,39 @@ const NewForm = () => {
                         >
                           Percentual de aquisição (%)
                         </label>
-                        <input
-                          type="number"
-                          id="percentual_a_ser_adquirido"
-                          defaultValue={100}
-                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                          min={0}
-                          {...register("percentual_a_ser_adquirido", {
-                            required: "Campo obrigatório",
-                            setValueAs: (value) => {
-                              return parseInt(value);
-                            },
-                          })}
-                        />
+                        <Controller
+                                name="percentual_a_ser_adquirido"
+                                control={control}
+                                defaultValue={100}
+                                rules={{
+                                    min: {
+                                        value: 1,
+                                        message: "O valor deve ser maior que 0",
+                                    },
+                                }}
+                                render={({ field, fieldState: { error } }) => (
+                                    <>
+                                        <Cleave
+                                            {...field}
+                                            className={`w-full rounded-md border-stroke ${error ? "border-red" : "dark:border-strokedark"} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
+                                            
+                                            options={{
+                                                numeral: true,
+                                                numeralThousandsGroupStyle: 'none',
+                                                numeralDecimalMark: ',', 
+                                                prefix: '%',
+                                                tailPrefix: true,
+                                                rawValueTrimPrefix: true,     
+                                            }}
+                                        />
+                                        {error && (
+                                            <span className="absolute right-2 top-8.5 text-xs font-medium text-red">
+                                                {error.message}
+                                            </span>
+                                        )}
+                                    </>
+                                )}
+                            />
                       </div>
                     ) : (
                       <div className="col-span-1 hidden md:block"></div>
