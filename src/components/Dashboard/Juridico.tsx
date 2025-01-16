@@ -154,9 +154,10 @@ const Juridico = () => {
 
                   const currentDate = +new Date();
                   const itemDueDate = +new Date(item.prazo_final_due);
+                  const timeZone = 3;
 
                   // calcula quantas horas faltam para o prazo expirar
-                  const hoursRemaining = (itemDueDate - currentDate) / (1000 * 60 * 60);
+                  const hoursRemaining = (itemDueDate - currentDate) / (1000 * 60 * 60) - timeZone;
 
                   if (hoursRemaining >= 48) {
                     deadlineSituation = "good";
