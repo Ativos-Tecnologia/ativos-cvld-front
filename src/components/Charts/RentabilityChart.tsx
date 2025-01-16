@@ -6,6 +6,7 @@ import { ApexOptions } from "apexcharts";
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { AiOutlineLoading } from "react-icons/ai";
+import Decimal from "decimal.js";
 
 interface ChartOneState {
   series: {
@@ -22,27 +23,43 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
 
   function atualizacaoProjetadaAM(data: IWalletResponse) {
     const ultimoValor = data.result[data.result.length - 1].valor_liquido_disponivel;
-    const dataDeAtualizacao = new Date(data.result[data.result.length - 1].data_atualizacao);
+    // const dataDeAtualizacao = new Date(data.result[0].data_atualizacao);
+    // const projetado_12_meses = ultimoValor * (1 + data.ipca_ultimos_12_meses)
+    // const diff = projetado_12_meses - ultimoValor;
+    // const diff_mensal = diff / 12;
 
-    const dataPagamento = [];
-    while (dataDeAtualizacao < new Date(data.previsao_de_pgto)) {
-      dataDeAtualizacao.setMonth(dataDeAtualizacao.getMonth() + 1);
-      dataPagamento.push(new Date(dataDeAtualizacao).toISOString().split('T')[0]);
-    }
-   
-    const rentabilidadeAnual = data.rentabilidade_anual;  
-    const rentabilidadeMensal = handleRentabilidadeAM(rentabilidadeAnual);
-    const mesesAteOPagamento = handleMesesAteOPagamento(data);
-    const valorAtualizado = [];
-    let valor = ultimoValor;
-    for (let i = 0; i < Math.floor(mesesAteOPagamento); i++) {
-      valor += valor * Number(rentabilidadeMensal);
-      valorAtualizado.push(valor);
+    
+    // while (dataDeAtualizacao < new Date(data.previsao_de_pgto)) {
+      //   dataDeAtualizacao.setMonth(dataDeAtualizacao.getMonth() + 1);
+      //   datas_de_referencia.push(new Date(dataDeAtualizacao).toISOString().split('T')[0]);
+      // }
+
       
-    }
+      const datas_de_referencia = [];
+
+      if (data.result.length > 0) {
+
+        const dataDeAtualizacao = data.data_de_aquisicao?.split('T')[0];
+        const dataDePagamento = data.previsao_de_pgto
+        datas_de_referencia.push(dataDeAtualizacao);
+        datas_de_referencia.push(dataDePagamento);
+      }
+
+
+
+    // const mesesAteOPagamento = handleMesesAteOPagamento(data);
+
+    const valores_de_referencia = [ultimoValor, data.valor_projetado];
+    // let valor = ultimoValor;
+
+    // for (let i = 0; i <= Math.floor(mesesAteOPagamento); i++) {
+    //   valor += diff_mensal;
+    //   valorAtualizado.push(valor);
+    // }
+
     return {
-      data: dataPagamento.map((item) => dateFormater(item).slice(3, 10)),
-      valor: valorAtualizado
+      data: datas_de_referencia.map((item) => dateFormater(item).slice(3, 10)),
+      valor: valores_de_referencia.map((item) => Number(item.toFixed(2)))
     }
   }
 
@@ -129,7 +146,7 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
     },
     xaxis: {
       type: "category",
-      categories: data?.result.map((item) => dateFormater(item.data_atualizacao).slice(3, 10)).concat(atualizacaoProjetadaAM(data).data) || [],
+      categories: atualizacaoProjetadaAM(data).data,
       axisBorder: {
         show: true,
       },
@@ -188,7 +205,7 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
         {
           name: "Total Atualizado",
           // Aqui eu pego o valor líquido disponível de cada mês e arredondo para 2 casas decimais. Também quero adicionar o valor atualizado de cada mês até o pagamento no gráfico
-          data: data?.result.map((item) => Number(item.valor_liquido_disponivel.toFixed(2))).concat(atualizacaoProjetadaAM(data).valor) || [],
+          data: atualizacaoProjetadaAM(data).valor,
         },
       ],
     });
