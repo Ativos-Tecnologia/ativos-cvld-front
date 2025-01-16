@@ -1556,8 +1556,8 @@ const NewForm = () => {
                       //   )
                       // }
 
-                      <div className={`flex flex-col relative ${watch("data_requisicao")! <= "2023-04-02" && watch("esfera") === "FEDERAL" ? "pointer-events-none" : ""}`}>
-                       {watch("data_requisicao")! <= "2023-04-02" &&(watch("esfera") === "FEDERAL") && (
+                      <div className={`flex flex-col relative ${watch("data_requisicao")! <= "2023-04-02" && watch("esfera") === "FEDERAL" && watch('tipo_do_oficio') !== 'CREDITÓRIO' ? "pointer-events-none" : ""}`}>
+                       {watch("data_requisicao")! <= "2023-04-02" &&(watch("esfera") === "FEDERAL" && watch('tipo_do_oficio') !== 'CREDITÓRIO') && (
                         <div className="absolute w-full min-h-full bg-slate-700/90 flex justify-center items-center flex-col">
                           <h2 className="p-4 uppercase text-md font-medium font-satoshi w-full text-center">
                             Não é possível calcular valores de proposta e comissão para ativos <span className="underline">federais</span> com <span title="Lei Oçamentária Anual" className="underline">L.O.A</span> inferior (ou igual) a 2024
