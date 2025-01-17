@@ -31,6 +31,8 @@ import {
 } from "@/components/ui/sidebar"
 import useLogout from "@/hooks/useLogout"
 import { Button } from "./Button"
+import { useRouter } from "next/navigation"
+import { APP_ROUTES } from "@/constants/app-routes"
 
 export function NavUser({
   user,
@@ -44,6 +46,7 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar()
   const logout = useLogout()
+  const router = useRouter();
 
 
   const name = `${user.first_name ?? ""} ${user.last_name ?? ""}`
@@ -62,7 +65,7 @@ export function NavUser({
                 <AvatarImage src={user.profile_picture} alt={user.first_name} />
                 <AvatarFallback className="rounded-lg">{
                   initials
-                  }</AvatarFallback>
+                }</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{name}</span>
@@ -77,15 +80,15 @@ export function NavUser({
             align="end"
             sideOffset={4}
           >
-            <DropdownMenuLabel className="p-0 font-normal">
+            <DropdownMenuLabel title="Acessar Perfil" onClick={() => router.push(APP_ROUTES.private.profile.name)} className="p-0 font-normal cursor-pointer hover:bg-sidebar-accent rounded-md">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.profile_picture} alt={user.first_name} />
                   <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate font-semibold text-body dark:text-bodydark1">{name}</span>
+                  <span className="truncate text-xs text-body dark:text-bodydark1">{user.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -113,8 +116,8 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator /> */}
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Button onClick={logout} variant="ghost" className="w-full justify-start">
+            <DropdownMenuItem className="hover:bg-transparent focus:bg-transparent">
+              <Button onClick={logout} variant="ghost" className="w-full justify-start hover:bg-sidebar-accent dark:hover:bg-sidebar-accent">
                 <LogOut />
                 Sair
               </Button>
