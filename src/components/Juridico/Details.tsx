@@ -36,7 +36,7 @@ import { GrDocumentText, GrDocumentUser, GrMoney } from "react-icons/gr";
 import { IoIosPaper } from "react-icons/io";
 import { IoCalendar, IoDocumentTextSharp, IoGlobeOutline } from "react-icons/io5";
 import { LuClipboardCheck, LuCopy, LuHandshake } from "react-icons/lu";
-import { MdOutlineDownloading } from "react-icons/md";
+import { MdOutlineArchive, MdOutlineDownloading } from "react-icons/md";
 import { TbMoneybag } from "react-icons/tb";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import { Button } from "../Button";
@@ -269,6 +269,71 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         swal.fire({
           title: 'Diligência Repactuada',
           text: 'O ofício foi encaminhado para repactuação com sucesso!',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+      }
+    })
+  }
+  const handleArchiving = () => {
+    swal.fire({
+      title: 'Arquivar Ofício',
+      input: 'textarea',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sim',
+      cancelButtonText: 'Não',
+      confirmButtonColor: '#4CAF50',
+      cancelButtonColor: '#F44336',
+      inputLabel: 'Informe o motivo do arquivamento',
+      inputPlaceholder: 'Ex: Desistência do credor.',
+
+      inputValidator: (value) => {
+        if (!value) {
+          return 'Você precisa informar a motivo'
+        }
+      }
+
+
+    }).then(async (result) => {
+
+      if (result.isConfirmed) {
+        const response = await api.patch(`api/notion-api/update/${id}/`, {
+          "Status": {
+            "status": {
+              "name": "ARQUIVADO"
+            }
+          },
+          "Observação": {
+            "rich_text": [
+              {
+                "text": {
+                  "content": `
+- Motivo do Arquivamento: ${result.value}
+- Encaminhado por: ${user} em ${new Date().toLocaleString()}
+-------------------------------
+${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
+                  `
+                }
+              }
+            ]
+          },
+        });
+
+        if (response.status !== 202) {
+          swal.fire({
+            title: 'Erro',
+            text: 'Houve um erro ao arquivar o ofício.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        }
+
+        refetch();
+
+        swal.fire({
+          title: 'Ofício Arquivado',
+          text: 'O ofício arquivado com sucesso!',
           icon: 'success',
           confirmButtonText: 'OK'
         });
@@ -2804,6 +2869,28 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         </div>
       </section>
 
+      {statusDiligence === "Repactuação" && (
+        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
+          <Button
+            variant="info"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleDueAndamento()}
+          >
+            <MdOutlineDownloading className="h-4 w-4" />
+            <span>Due em Andamento</span>
+          </Button>
+
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleArchiving()}
+          >
+            <MdOutlineArchive className="h-4 w-4" />
+            <span>Arquivar</span>
+          </Button>
+        </div>
+      )}
+
       {statusDiligence === "Due Diligence" && (
         <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
           <Button
@@ -2831,6 +2918,15 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
           >
             <CgSearchLoading className="h-4 w-4" />
             <span>Revisão de Due Diligence</span>
+          </Button>
+
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleArchiving()}
+          >
+            <MdOutlineArchive className="h-4 w-4" />
+            <span>Arquivar</span>
           </Button>
         </div>
       )}
@@ -2864,6 +2960,15 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               Enviar para Liquidação
             </span>
           </Button>
+
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleArchiving()}
+          >
+            <MdOutlineArchive className="h-4 w-4" />
+            <span>Arquivar</span>
+          </Button>
         </div>
       )}
       {statusDiligence === "Em cessão" && (
@@ -2887,6 +2992,15 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               Enviar pra Registro de Cessão
             </span>
           </Button>
+
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleArchiving()}
+          >
+            <MdOutlineArchive className="h-4 w-4" />
+            <span>Arquivar</span>
+          </Button>
         </div>)
       }
       {statusDiligence === "Revisão de Due Diligence" && (
@@ -2909,6 +3023,15 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             <span>
               Enviar para Liquidação
             </span>
+          </Button>
+
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleArchiving()}
+          >
+            <MdOutlineArchive className="h-4 w-4" />
+            <span>Arquivar</span>
           </Button>
         </div>)
       }
