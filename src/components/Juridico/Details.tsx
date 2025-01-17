@@ -2877,7 +2877,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             onClick={() => handleDueAndamento()}
           >
             <MdOutlineDownloading className="h-4 w-4" />
-            <span>Due em Andamento</span>
+            <span>Pendência Sanada</span>
           </Button>
 
           <Button
@@ -2908,7 +2908,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             onClick={() => handleDueAndamento()}
           >
             <MdOutlineDownloading className="h-4 w-4" />
-            <span>Due em Andamento</span>
+            <span>Pendência Sanada</span>
           </Button>
 
           <Button
