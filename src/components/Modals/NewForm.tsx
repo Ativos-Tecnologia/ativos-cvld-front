@@ -567,9 +567,9 @@ const NewForm = () => {
             <div className="grid grid-cols-12 gap-4">
               {/* form */}
               <div className="col-span-12 p-3 xl:col-span-7">
-                <div className="col-span-12 mx-auto flex w-full flex-col justify-center">
+                {/* <div className="col-span-12 mx-auto flex w-full flex-col justify-center">
                   <UpdatePrecatorioButton setStateFunction={setOficioForm} />
-                </div>
+                </div> */}
                 <form
                   className="mt-8 space-y-5"
                   onSubmit={handleSubmit(onSubmit)}
