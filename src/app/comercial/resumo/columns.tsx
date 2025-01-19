@@ -226,7 +226,6 @@ const CellComponent = ({ row }: { row: Row<IResumoComercial> }) => {
         }}
         onOpenChange={(open: boolean) => {
           if (!open) {
-            setDropdownOpen(false);
             setChangePasswordDialogOpen(false);
           }
         }}
