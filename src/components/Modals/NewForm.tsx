@@ -89,7 +89,7 @@ const NewForm = () => {
   });
 
   /* função que atualiza lista de usuários (somente na role ativos) */
-  
+
 
   // Função para atualizar a proposta e ajustar a comissão proporcionalmente
   const handleProposalSliderChange = (value: string, sliderChange: boolean) => {
@@ -466,14 +466,14 @@ const NewForm = () => {
         oficioForm.result[0].percentual_de_honorarios
       )
 
-      if (oficioForm.result[0].incidencia_rra_ir) { 
+      if (oficioForm.result[0].incidencia_rra_ir) {
         setValue("ir_incidente_rra", true);
         setValue("numero_de_meses", oficioForm.result[0].numero_de_meses);
       } else {
         setValue("ir_incidente_rra", false);
       }
 
-      if(oficioForm.result[0].incidencia_pss) {
+      if (oficioForm.result[0].incidencia_pss) {
         setValue("incidencia_pss", true);
         setValue("valor_pss", numberFormat(oficioForm.result[0].valor_pss).replace("R$", ""));
       }
@@ -512,13 +512,13 @@ const NewForm = () => {
   }, [setSaveInfoToNotion, vincularUsuario]);
 
   return (
-    
+
     <div
       className={`absolute left-0 top-0 z-20 flex h-full w-full items-center justify-center bg-black-2/50 ${modalOpen ? "visible opacity-100" : "hidden opacity-0"}`}
     >
-      
+
       <Fade
-      className={`overflow-hidden transition-all duration-300 transform ${fullScreen ? "h-full w-full" : "2xsm:h-[90%] 2xsm:w-11/12 lg:w-10/12 xl:h-4/5"}`}
+        className={`overflow-hidden transition-all duration-300 transform ${fullScreen ? "h-full w-full" : "2xsm:h-[90%] 2xsm:w-11/12 lg:w-10/12 xl:h-4/5"}`}
         damping={0.1}
       >
         <div className="h-full w-full rounded-sm border border-stroke bg-white p-5 dark:border-strokedark dark:bg-boxdark 2xsm:text-sm md:text-base">
@@ -556,20 +556,20 @@ const NewForm = () => {
             <span
               title="fechar"
               onClick={() => setModalOpen(false)}
-            className={`flex h-6 w-6 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 hover:bg-slate-200 dark:hover:bg-slate-600`}
+              className={`flex h-6 w-6 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 hover:bg-slate-200 dark:hover:bg-slate-600`}
             >
               <BiX className="text-2xl" />
             </span>
-            
+
           </div>
 
           <div className="h-[80%] overflow-y-scroll overflow-x-hidden">
             <div className="grid grid-cols-12 gap-4">
               {/* form */}
               <div className="col-span-12 p-3 xl:col-span-7">
-                <div className="col-span-12 mx-auto flex w-full flex-col justify-center">
+                {/* <div className="col-span-12 mx-auto flex w-full flex-col justify-center">
                   <UpdatePrecatorioButton setStateFunction={setOficioForm} />
-                </div>
+                </div> */}
                 <form
                   className="mt-8 space-y-5"
                   onSubmit={handleSubmit(onSubmit)}
@@ -607,7 +607,7 @@ const NewForm = () => {
                                             ))}
                                         </ShadSelect> */}
                     </div>
-                    
+
 
                     <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                       <label
@@ -887,38 +887,38 @@ const NewForm = () => {
                           Percentual de aquisição (%)
                         </label>
                         <Controller
-                                name="percentual_a_ser_adquirido"
-                                control={control}
-                                defaultValue={100}
-                                rules={{
-                                    min: {
-                                        value: 1,
-                                        message: "O valor deve ser maior que 0",
-                                    },
+                          name="percentual_a_ser_adquirido"
+                          control={control}
+                          defaultValue={100}
+                          rules={{
+                            min: {
+                              value: 1,
+                              message: "O valor deve ser maior que 0",
+                            },
+                          }}
+                          render={({ field, fieldState: { error } }) => (
+                            <>
+                              <Cleave
+                                {...field}
+                                className={`w-full rounded-md border-stroke ${error ? "border-red" : "dark:border-strokedark"} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
+
+                                options={{
+                                  numeral: true,
+                                  numeralThousandsGroupStyle: 'none',
+                                  numeralDecimalMark: ',',
+                                  prefix: '%',
+                                  tailPrefix: true,
+                                  rawValueTrimPrefix: true,
                                 }}
-                                render={({ field, fieldState: { error } }) => (
-                                    <>
-                                        <Cleave
-                                            {...field}
-                                            className={`w-full rounded-md border-stroke ${error ? "border-red" : "dark:border-strokedark"} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
-                                            
-                                            options={{
-                                                numeral: true,
-                                                numeralThousandsGroupStyle: 'none',
-                                                numeralDecimalMark: ',', 
-                                                prefix: '%',
-                                                tailPrefix: true,
-                                                rawValueTrimPrefix: true,     
-                                            }}
-                                        />
-                                        {error && (
-                                            <span className="absolute right-2 top-8.5 text-xs font-medium text-red">
-                                                {error.message}
-                                            </span>
-                                        )}
-                                    </>
-                                )}
-                            />
+                              />
+                              {error && (
+                                <span className="absolute right-2 top-8.5 text-xs font-medium text-red">
+                                  {error.message}
+                                </span>
+                              )}
+                            </>
+                          )}
+                        />
                       </div>
                     ) : (
                       <div className="col-span-1 hidden md:block"></div>
@@ -1433,8 +1433,8 @@ const NewForm = () => {
                           <hr className="col-span-2 my-8 border border-stroke dark:border-strokedark" />
                           <div className="flex flex-col gap-2">
                             {(data.role === "ativos" &&
-                              watch("regime") !== "ESPECIAL") ||
-                              watch("regime") === undefined ? (
+                              (watch("regime") !== "ESPECIAL") ||
+                              watch("regime") === undefined) ? (
                               <>
                                 <div className="flex justify-between">
                                   <div className="flex items-center gap-2">
@@ -1444,12 +1444,11 @@ const NewForm = () => {
                                       register={register("vincular_usuario")}
                                     /> */}
                                     <input
-                                type="checkbox"
-                                id="vincular_usuario"
-                                
-                                className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
-                                {...register("vincular_usuario")}
-                              />
+                                      type="checkbox"
+                                      id="vincular_usuario"
+                                      className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
+                                      {...register("vincular_usuario")}
+                                    />
 
                                     <label
                                       htmlFor="vincular_usuario"
@@ -1557,41 +1556,41 @@ const NewForm = () => {
                       // }
 
                       <div className={`flex flex-col relative ${watch("data_requisicao")! <= "2023-04-02" && watch("esfera") === "FEDERAL" && watch('tipo_do_oficio') !== 'CREDITÓRIO' ? "pointer-events-none" : ""}`}>
-                       {watch("data_requisicao")! <= "2023-04-02" &&(watch("esfera") === "FEDERAL" && watch('tipo_do_oficio') !== 'CREDITÓRIO') && (
-                        <div className="absolute w-full min-h-full bg-slate-700/90 flex justify-center items-center flex-col">
-                          <h2 className="p-4 uppercase text-md font-medium font-satoshi w-full text-center">
-                            Não é possível calcular valores de proposta e comissão para ativos <span className="underline">federais</span> com <span title="Lei Oçamentária Anual" className="underline">L.O.A</span> inferior (ou igual) a 2024
-                          </h2>
-                          <h3>
-                            <span className="text-xs text-center">
-                              Para mais informações, contate o coordenador de sua equipe
-                            </span>
-                          </h3>
-                        </div>)}
-                       {watch("data_requisicao")! <= "2023-04-02" &&((watch("esfera") === "ESTADUAL" || watch("esfera") === "MUNICIPAL") && watch("tipo_do_oficio") !== "CREDITÓRIO") && (
-                        <div className="absolute w-full min-h-full bg-slate-700/90 flex justify-center items-center flex-col">
-                          <h2 className="p-4 uppercase text-md font-medium font-satoshi w-full text-center">
-                            Não é possível calcular valores de proposta e comissão para ativos com <span title="Lei Oçamentária Anual" className="underline">L.O.A</span> inferior (ou igual) a 2024
-                          </h2>
-                          <h3>
-                            <span className="text-xs text-center">
-                              Para mais informações, contate o coordenador de sua equipe
-                            </span>
-                          </h3>
-                          <div className="mt-8">
-                          {
-                            watch("gerar_cvld") ? (
-                              <p className="px-4 text-muted-foreground text-xs">
-                                Seu precatório foi salvo sem proposta e comissionamento definidos
-                              </p>
-                            ) : (
-                            <p className="flex items-center px-4 text-muted-foreground text-xs gap-4">
-                              <BiHighlight className="w-5 h-5" /> Você ainda pode cadastrar o ofício atualizado - ele será salvo sem proposta e comissionamento definidos
-                            </p>
-                            )
-                          }
-                          </div>
-                        </div>)}
+                        {watch("data_requisicao")! <= "2023-04-02" && (watch("esfera") === "FEDERAL" && watch('tipo_do_oficio') !== 'CREDITÓRIO') && (
+                          <div className="absolute w-full min-h-full bg-slate-700/90 flex justify-center items-center flex-col">
+                            <h2 className="p-4 uppercase text-md font-medium font-satoshi w-full text-center">
+                              Não é possível calcular valores de proposta e comissão para ativos <span className="underline">federais</span> com <span title="Lei Oçamentária Anual" className="underline">L.O.A</span> inferior (ou igual) a 2024
+                            </h2>
+                            <h3>
+                              <span className="text-xs text-center">
+                                Para mais informações, contate o coordenador de sua equipe
+                              </span>
+                            </h3>
+                          </div>)}
+                        {watch("data_requisicao")! <= "2023-04-02" && ((watch("esfera") === "ESTADUAL" || watch("esfera") === "MUNICIPAL") && watch("tipo_do_oficio") !== "CREDITÓRIO") && (
+                          <div className="absolute w-full min-h-full bg-slate-700/90 flex justify-center items-center flex-col">
+                            <h2 className="p-4 uppercase text-md font-medium font-satoshi w-full text-center">
+                              Não é possível calcular valores de proposta e comissão para ativos com <span title="Lei Oçamentária Anual" className="underline">L.O.A</span> inferior (ou igual) a 2024
+                            </h2>
+                            <h3>
+                              <span className="text-xs text-center">
+                                Para mais informações, contate o coordenador de sua equipe
+                              </span>
+                            </h3>
+                            <div className="mt-8">
+                              {
+                                watch("gerar_cvld") ? (
+                                  <p className="px-4 text-muted-foreground text-xs">
+                                    Seu precatório foi salvo sem proposta e comissionamento definidos
+                                  </p>
+                                ) : (
+                                  <p className="flex items-center px-4 text-muted-foreground text-xs gap-4">
+                                    <BiHighlight className="w-5 h-5" /> Você ainda pode cadastrar o ofício atualizado - ele será salvo sem proposta e comissionamento definidos
+                                  </p>
+                                )
+                              }
+                            </div>
+                          </div>)}
 
                         <div className="mb-6 flex flex-col gap-2">
                           <h2 className="text-xl font-medium uppercase">

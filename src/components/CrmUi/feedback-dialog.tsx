@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
+import { toast } from "sonner"
+import { BiCheck } from "react-icons/bi"
 
 export interface FeedbackDialogProps {
   trigger?: React.ReactNode
@@ -53,6 +55,20 @@ export function FeedbackDialog({
       })
       setOpen(false)
       resetForm()
+      toast.success("Feedback enviado!",{
+        classNames: {
+            toast: "bg-white dark:bg-boxdark",
+            title: "text-black-2 dark:text-white",
+            actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+        },
+        icon: <BiCheck className="text-lg fill-green-400" />,
+        action: {
+            label: "OK",
+            onClick() {
+                toast.dismiss();
+            },
+        }
+    })
     } catch (error) {
       console.error('Erro ao enviar o feedback:', error)
     } finally {

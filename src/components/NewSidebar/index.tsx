@@ -2,20 +2,11 @@
 
 import * as React from "react"
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
   BriefcaseBusiness,
-  Command,
-  Frame,
   LayoutDashboard,
-  Map,
   MessageSquare,
-  PieChart,
   Plus,
-  Settings2,
   ShoppingCart,
-  SquareTerminal,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -38,6 +29,7 @@ import { NavModule } from "../nav-module"
 import { DefaultLayoutContext, DefaultLayoutProvider } from "@/context/DefaultLayoutContext"
 import { usePathname, useRouter } from "next/navigation"
 import { FeedbackDialog } from "../CrmUi/feedback-dialog"
+import api from "@/utils/api"
 
 
 const AtivosLogo = () => {
@@ -108,6 +100,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: "/comercial/resumo",
             when: product === "global",
           },
+          {
+            title: "Espaço Gerencial",
+            url: "/comercial/espaco",
+            when: product === "global",
+          },
         ],
       },
   
@@ -131,6 +128,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   ]
   }
 
+  const onFeedbackSubmit = async (data: { reaction: string | null; feedback: string }) => {
+    try {
+      await api.post("api/feedback/", data)
+    } catch (error) {
+      console.error("Erro ao enviar o feedback:", error)
+    }
+}
+
   return (
     <DefaultLayoutProvider>
     <UserInfoProvider>
@@ -147,11 +152,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
         <FeedbackDialog trigger={
-          <SidebarMenuButton disabled tooltip="Feedback">
+          <SidebarMenuButton tooltip="Feedback">
           <MessageSquare className="h-4 w-4" />
           <span>Feedback</span>
         </SidebarMenuButton>
-        }/>
+        } onSubmit={onFeedbackSubmit} />
         </SidebarMenuItem>
         </SidebarMenu>
         <NavUser user={dataUser} />
