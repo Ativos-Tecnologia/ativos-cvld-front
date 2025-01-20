@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-empty-object-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+import React, { createContext, useEffect, useRef, useState } from "react";
 import api from "@/utils/api";
 import { PaginatedResponse } from "@/components/TaskElements";
 import { CVLDResultProps } from "@/interfaces/IResultCVLD";
@@ -8,7 +11,6 @@ import tipoOficio from "@/enums/tipoOficio.enum";
 import { toast } from "sonner";
 import useUpdateOficio from "@/hooks/useUpdateOficio";
 import { NotionResponse } from "@/interfaces/INotion";
-import { UserInfoAPIContext } from "./UserInfoContext";
 
 // types
 export type ActiveState = "ALL" | "PRECATÓRIO" | "R.P.V" | "CREDITÓRIO";
@@ -217,10 +219,6 @@ export const ExtratosTableContext = createContext<IExtratosTable>({
 
 export const ExtratosTableProvider = ({ children }: { children: React.ReactNode }) => {
 
-    const {
-        data: { user }
-    } = useContext(UserInfoAPIContext);
-
     /*  ====> states <===== */
     const [data, setData] = useState<PaginatedResponse<CVLDResultProps>>({ results: [], count: 0, next: "", previous: "" });
     const [auxData, setAuxData] = useState<PaginatedResponse<CVLDResultProps>>({ results: [], count: 0, next: "", previous: "" });
@@ -286,7 +284,7 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
     /* ====> functions <==== */
 
     /* função que capta todos os extratos do backend e os coloca em um estado (data e auxData) */
-    const fetchData = async (query: string, username?: string) => {
+    const fetchData = async (query: string) => {
         setLoading(true);
         const response = await api.get(`api/extratos/${query}`);
         setData(response.data);
@@ -307,7 +305,7 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
     const fetchDelete = async (ids: string[]) => {
         try {
             setLoading(true);
-            const response = await api.post(`api/extrato/bulk-action/?action=delete`, {
+            await api.post(`api/extrato/bulk-action/?action=delete`, {
                 ids: ids
             });
 

@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
+import React from "react";
 import { Form } from "@/components/ui/form";
 import { estados } from "@/constants/estados";
 import { tipoRegime } from "@/constants/regime-casamento";
@@ -21,7 +24,6 @@ import { NotionPage } from "@/interfaces/INotion";
 import { IWalletResponse } from "@/interfaces/IWallet";
 import api from "@/utils/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 import Link from "next/link";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -50,6 +52,7 @@ import DocForm from "../Modals/BrokersDocs";
 import JuridicoDetailsSkeleton from "../Skeletons/JuridicoDetailsSkeleton";
 import { SelectItem } from "../ui/select";
 import verifyRequiredInputsToDue from "@/functions/juridico/verifyRequiredInputsToDue";
+import { AxiosError } from "axios";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -87,10 +90,9 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
       },
     ]
   });
-  const [fetchingVL, setFetchingVL] = useState<boolean>(false);
   const [linkCopied, setLinkCopied] = useState<boolean>(false);
   const [observation, setObservation] = useState<string>("");
-  const [formData, setFormData] = useState<any>(null);
+  const [formData, setFormData] = useState<Record<string, any> | null>(null);
   const [happenedRecalculation, setHappenedRecalculation] = useState<boolean>(false);
   const [recalculationData, setRecalculationData] = useState<any>(null);
   const [isLoadingRecalculation, setIsLoadingRecalculation] = useState<boolean>(false);
@@ -123,7 +125,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     rentabilidade: 0,
     desembolso: 0
   })
-  const [statusDiligence, setStatusDiligence] = useState<String>("");
+  const [statusDiligence, setStatusDiligence] = useState<string>("");
 
   const swal = UseMySwal();
   const { globalQueryClient } = useContext(ReactGlobalQueryContext);
@@ -459,28 +461,31 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     return response.data;
   }
 
-  const { data, isFetching, isLoading, refetch } = useQuery<NotionPage>({
+  const { data, isLoading, refetch } = useQuery<NotionPage>({
     queryKey: ["page", id],
     queryFn: fetchData,
     refetchOnWindowFocus: false
   });
 
-  const { data: cedenteDataPF, isFetching: isFetchingCedentePF } = useQuery<NotionPage>({
+  const { data: cedenteDataPF } = useQuery<NotionPage>({
     queryKey: ["cedentePF", data?.properties['Cedente PF']?.relation?.[0]?.id],
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
     queryFn: () => fetchCedenteData(data?.properties['Cedente PF']?.relation?.[0]?.id!),
     refetchOnWindowFocus: false,
     enabled: !!data?.properties['Cedente PF']?.relation?.[0]?.id
   });
 
-  const { data: cedenteDataPJ, isFetching: isFetchingCedentePJ } = useQuery<NotionPage>({
+  const { data: cedenteDataPJ} = useQuery<NotionPage>({
     queryKey: ["cedentePJ", data?.properties['Cedente PJ']?.relation?.[0]?.id],
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
     queryFn: () => fetchCedenteData(data?.properties['Cedente PJ']?.relation?.[0]?.id!),
     refetchOnWindowFocus: false,
     enabled: !!data?.properties['Cedente PJ']?.relation?.[0]?.id
   });
 
-  const { data: socioData, isFetching: isFetchingSocioData } = useQuery<NotionPage>({
+  const { data: socioData } = useQuery<NotionPage>({
     queryKey: ["socio", cedenteDataPJ?.properties["Sócio Representante"]?.relation?.[0]?.id],
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
     queryFn: () => fetchCedenteData(cedenteDataPJ?.properties["Sócio Representante"]?.relation?.[0]?.id!),
     refetchOnWindowFocus: false,
     enabled: !!cedenteDataPJ?.properties["Sócio Representante"]?.relation?.[0]?.id
@@ -522,7 +527,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       formData.data_limite_de_atualizacao = formData.data_limite_de_atualizacao.split("/").reverse().join("-");
     }
 
-    if (typeof formData.valor_pss) {
+    if (typeof formData.valor_pss === "string") {
       formData.valor_pss = backendNumberFormat(formData.valor_pss) || 0;
       formData.valor_pss = parseFloat(formData.valor_pss);
     }
@@ -589,7 +594,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
   }
 
   const form = useForm();
-  const isFormModified = Object.keys(form.watch()).some((key: any) => form.watch()[key] !== formData?.[key]);
+  const isFormModified = Object.keys(form.watch()).some((key) => form.watch()[key] !== formData?.[key]);
 
   // TODO: documentar todas as funções desse componente com JSDocs
   const handleChangeCreditorName = async (value: string, page_id: string) => {
@@ -723,10 +728,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         rentabilidadeSlideRef.current.value = `${(newRentabilidade * 100).toFixed(2).replace(".", ",")}%`;
       }
     }
-  }
-
-  const handleChangeResponsavel = async (page_id: string) => {
-    await resposavelMutation.mutateAsync({ page_id });
   }
 
   const handleSaveValues = async () => {
@@ -1410,7 +1411,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       return response.data
     },
     onMutate: async (paramsObj) => {
-      let npuType = paramsObj.type === "NPU (Originário)" ? "npuOriginario" : "npuPrecatorio"
+      const npuType = paramsObj.type === "NPU (Originário)" ? "npuOriginario" : "npuPrecatorio"
       setLoadingUpdateState(prev => ({ ...prev, [npuType]: true }));
       setEditLock(true);
       return { npuType };

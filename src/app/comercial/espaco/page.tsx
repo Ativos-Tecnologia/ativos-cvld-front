@@ -1,3 +1,4 @@
+import React from "react";
 import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import EspacoGerencial from "@/components/Features/Comercial/EspacoGerencial";
