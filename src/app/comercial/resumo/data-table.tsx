@@ -95,7 +95,7 @@ export function DataTable<TData, TValue>({
   )
 
   const table = useReactTable({
-    
+
     data,
     columns,
     onSortingChange: setSorting,
@@ -105,7 +105,7 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    globalFilterFn: advancedFilter,
+    // globalFilterFn: advancedFilter,
     rowCount: data.length,
     state: {
       sorting,
@@ -113,7 +113,7 @@ export function DataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
       pagination,
-      
+
     },
     manualPagination: true,
     onPaginationChange: setPagination,
@@ -212,7 +212,7 @@ export function DataTable<TData, TValue>({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="flex justify-between items-center py-4">
+      {/* <div className="flex justify-between items-center py-4">
         <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
         <Button variant="outline" className="w-[200px] justify-between">
@@ -263,7 +263,7 @@ export function DataTable<TData, TValue>({
                 </Button>
               </div>
               ))}
-              
+
             </CommandGroup>
             <div className="flex justify-end p-2">
               <Button
@@ -277,7 +277,7 @@ export function DataTable<TData, TValue>({
 
           </PopoverContent>
         </Popover>
-      </div>
+      </div> */}
       <div className="rounded-md border">
         <Table className="rounded-md" data-state={loading && "loading"}>
           <TableHeader className="rounded-t-md bg-snow dark:border-strokedark dark:bg-boxdark-2">
@@ -362,7 +362,7 @@ export function DataTable<TData, TValue>({
             disabled={!table.getCanNextPage()}
             >
                 <BiChevronsRight />
-            
+
           </Button>
             <span className="flex items-center gap-1">
             <div>Página</div>
@@ -404,7 +404,7 @@ export function DataTable<TData, TValue>({
           {table.getRowCount().toLocaleString()} Rows
         </div> */}
         </div>
-       
+
       </div>
   );
 }
