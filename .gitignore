@@ -48,3 +48,6 @@ ativos-cvld-front.code-workspace
 
 #others
 /src/app/auth/signin/bkp.tsx
+
+#tests
+teste.js
