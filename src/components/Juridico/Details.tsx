@@ -53,6 +53,7 @@ import JuridicoDetailsSkeleton from "../Skeletons/JuridicoDetailsSkeleton";
 import { SelectItem } from "../ui/select";
 import verifyRequiredInputsToDue from "@/functions/juridico/verifyRequiredInputsToDue";
 import { AxiosError } from "axios";
+import ChartFive from "../Charts/ChartFive";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -503,6 +504,10 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       formData.percentual_a_ser_adquirido = 1;
     } else {
       formData.percentual_a_ser_adquirido = formData.percentual_a_ser_adquirido / 100;
+    }
+
+    if (!formData.ja_possui_destacamento) {
+      formData.percentual_de_honorarios = formData.percentual_de_honorarios / 100
     }
 
     if (typeof formData.valor_principal === "string") {
@@ -1777,6 +1782,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       form.setValue("data_base", data?.properties["Data Base"].date?.start.split("-").reverse().join("/") || "");
       form.setValue("data_requisicao", data?.properties["Data do Recebimento"].date?.start.split("-").reverse().join("/") || "");
       form.setValue("valor_aquisicao_total", data?.properties["Percentual a ser adquirido"]?.number === 1);
+      form.setValue("percentual_a_ser_adquirido", data?.properties["Percentual a ser adquirido"]?.number! * 100 || 0);
       form.setValue("ja_possui_destacamento", data?.properties["Honorários já destacados?"].checkbox);
       form.setValue("percentual_de_honorarios", data?.properties["Percentual de Honorários Não destacados"]?.number! * 100 || 0);
       form.setValue("incidencia_juros_moratorios", data?.properties["Incidência de Juros Moratórios"].checkbox);
@@ -1834,6 +1840,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
   }, [data]);
 
+  console.log(data)
+
   if (!data) {
     return (
       <JuridicoDetailsSkeleton />
@@ -1842,6 +1850,12 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
   return (
     <div className="flex flex-col w-full gap-5">
+
+      {/* chart test */}
+      {/* <div className="w-full flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-white dark:bg-boxdark p-5 rounded-md">
+        
+      </div> */}
+
       <div className="flex w-full items-end justify-end rounded-md">
         <Breadcrumb
           customIcon={<FaBalanceScale className="h-[32px] w-[32px]" />}
