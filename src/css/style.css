@@ -77,6 +77,27 @@
       background: transparent;
     }
 
+    #driver-highlighted-element-stage {
+      z-index: 10000 !important;
+    }
+    
+    .driver-popover {
+      z-index: 10001 !important;
+    }
+    
+    .driver-overlay {
+      z-index: 9999 !important;
+    }
+
+    /* Remova overflow hidden quando o driver.js estiver ativo */
+  .driver-active {
+    overflow: visible !important;
+  }
+  
+  .driver-active * {
+    overflow: visible !important;
+  }
+
 
 
   html {
