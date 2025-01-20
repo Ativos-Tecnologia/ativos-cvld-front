@@ -105,7 +105,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {
             title: "Espaço Gerencial",
             url: "/comercial/espaco",
-            when: product === "global",
+            when: "dev" as const,
           },
         ],
       },

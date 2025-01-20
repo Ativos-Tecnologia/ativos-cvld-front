@@ -34,7 +34,7 @@ export function NavMain({
     items?: {
       title: string
       url: string,
-      when?: boolean
+      when: boolean | "dev"
     }[]
   }[]
 }) {
