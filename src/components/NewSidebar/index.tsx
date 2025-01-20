@@ -1,21 +1,14 @@
 "use client"
 
 import * as React from "react"
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
   BriefcaseBusiness,
-  Command,
-  Frame,
   LayoutDashboard,
-  Map,
   MessageSquare,
-  PieChart,
   Plus,
-  Settings2,
   ShoppingCart,
-  SquareTerminal,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -56,10 +49,10 @@ const usePath = () => {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const { data: dataUser } = React.useContext(UserInfoAPIContext)
-  const { role, product, sub_role }  = dataUser;
+  const { role, product, sub_role } = dataUser;
   const { modalOpen, setModalOpen } = React.useContext(DefaultLayoutContext);
 
-
+  const highlightRef = React.useRef<HTMLButtonElement>(null)
 
   const data = {
     teams: [
@@ -109,11 +102,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: "/comercial/resumo",
             when: product === "global",
           },
+          {
+            title: "Espaço Gerencial",
+            url: "/comercial/espaco",
+            when: product === "global",
+          },
         ],
       },
-  
+
     ],
-    
+
     projects: [
       {
         name: "PrecaShop",
@@ -123,13 +121,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       },
     ],
 
-    modules : [
+    modules: [
       {
         name: "Novo Precatório",
         logo: Plus,
         fn: () => setModalOpen(!modalOpen),
       },
-  ]
+    ]
   }
 
   const onFeedbackSubmit = async (data: { reaction: string | null; feedback: string }) => {
@@ -138,36 +136,74 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     } catch (error) {
       console.error("Erro ao enviar o feedback:", error)
     }
-}
+  }
+
+  React.useEffect(() => {
+
+    // retorna se não houver elemento
+    if (!highlightRef.current) return
+
+    // verificando valor no localStorage
+    const hasSeenHighlight: boolean = JSON.parse(localStorage.getItem("feedback_highlight") || "false") || false;
+
+    // retorna se ja foi visto
+    if (hasSeenHighlight) return
+
+    const driverObj = driver({
+      popoverClass: "bg-blue-500"
+    });
+    const highlightFeature = setTimeout(() => {
+      driverObj.highlight({
+        element: highlightRef.current as HTMLElement,
+        popover: {
+          title: "Nova funcionalidade 🎉",
+          description: "Clicando aqui você pode deixar seu feedback ou sugestão para nosso sistema.",
+          side: "top",
+          showButtons: ["close"],
+          onCloseClick: () => {
+            driverObj.destroy()
+          }
+        }
+      });
+      localStorage.setItem("feedback_highlight", JSON.stringify(true))
+    }, 1500)
+
+    return () => {
+      clearTimeout(highlightFeature)
+    }
+
+  }, [highlightRef.current])
 
   return (
     <DefaultLayoutProvider>
-    <UserInfoProvider>
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
-      </SidebarHeader>
-      <SidebarContent>
-        <NavModule items={data.modules} />
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-      </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-        <FeedbackDialog trigger={
-          <SidebarMenuButton tooltip="Feedback">
-          <MessageSquare className="h-4 w-4" />
-          <span>Feedback</span>
-        </SidebarMenuButton>
-        } onSubmit={onFeedbackSubmit} />
-        </SidebarMenuItem>
-        </SidebarMenu>
-        <NavUser user={dataUser} />
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
-    </UserInfoProvider>
+      <UserInfoProvider>
+        <Sidebar collapsible="icon" {...props}>
+          <SidebarHeader>
+            <TeamSwitcher teams={data.teams} />
+          </SidebarHeader>
+          <SidebarContent>
+            <NavModule items={data.modules} />
+            <NavMain items={data.navMain} />
+            <NavProjects projects={data.projects} />
+          </SidebarContent>
+          <SidebarFooter>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <FeedbackDialog
+                  trigger={
+                    <SidebarMenuButton ref={highlightRef} tooltip="Feedback">
+                      <MessageSquare className="h-4 w-4" />
+                      <span>Feedback</span>
+                    </SidebarMenuButton>
+                  } onSubmit={onFeedbackSubmit}
+                />
+              </SidebarMenuItem>
+            </SidebarMenu>
+            <NavUser user={dataUser} />
+          </SidebarFooter>
+          <SidebarRail />
+        </Sidebar>
+      </UserInfoProvider>
     </DefaultLayoutProvider>
   )
 }
