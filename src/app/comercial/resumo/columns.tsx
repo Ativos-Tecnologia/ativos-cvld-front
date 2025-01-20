@@ -4,9 +4,6 @@ import {
   Row,
 } from "@tanstack/react-table"
 
-type CustomColumnDef<T> = ColumnDef<T, unknown> & {
-  filterVariant?: 'range' | 'select' | 'text'
-}
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -25,7 +22,7 @@ import { FindCoordinator } from "@/functions/comercial/find_cordinator"
 import api from "@/utils/api"
 import { useMutation } from "@tanstack/react-query"
 import CRMTooltip from "@/components/CrmUi/Tooltip"
-import { toast, Toaster } from "sonner"
+import { toast } from "sonner"
 import { BiCheck } from "react-icons/bi"
 
 // function Filter({ column }: { column: Column<any, unknown> }) {
@@ -124,7 +121,7 @@ const CellComponent = ({ row }: { row: Row<IResumoComercial> }) => {
 
     const handleConfirmMutation = useMutation({
         mutationFn: handleConfirmUser,
-        onMutate(variables) {
+        onMutate() {
             const prevData = document.getElementById(String(resumo.id))!.textContent;
             resumo.is_confirmed = true;
             document.getElementById(String(resumo.id))!.textContent = "Sim";
@@ -232,7 +229,7 @@ export const columns: ColumnDef<IResumoComercial>[] = [
       header: "Telefone",
       cell: ({ row }) => <CRMTooltip text="Seguir para o WhatsApp"><a href={
         `https://api.whatsapp.com/send?phone=55${(row.getValue("phone") as string)?.replace(/\D/g, "")}`
-      } target="_blank" className="lowercase">{row.getValue("phone")}</a></CRMTooltip>,
+      } target="_blank" className="lowercase" rel="noreferrer">{row.getValue("phone")}</a></CRMTooltip>,
     },
     {
       accessorKey: "email",
@@ -278,16 +275,6 @@ export const columns: ColumnDef<IResumoComercial>[] = [
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
-        const resumo = row.original
-
-        function handleCopyPhone() {
-          navigator.clipboard.writeText(`${resumo.phone}`)
-        }
-
-        async function handleConfirmUser() {
-            return await api.patch(`/api/comercial/confirm-user/${resumo.id}/`)
-        }
-
         return (
           <CellComponent row={row} />
         )

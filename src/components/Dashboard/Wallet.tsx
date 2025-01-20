@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import RentabilityChart from "../Charts/RentabilityChart";
@@ -44,7 +46,7 @@ const Wallet: React.FC = () => {
     ]
   });
 
-  const [defaultFilterObject, setDefaultFilterObject] = useState<any>({
+  const [, setDefaultFilterObject] = useState<any>({
     "username": user
   });
   const [activeView, setActiveView] = useState<string>("wallet");
@@ -57,7 +59,7 @@ const Wallet: React.FC = () => {
   };
 
   const queryClient = useQueryClient()
-  const { isPending, data, error, isFetching, refetch } = useQuery(
+  const { isPending, data, isFetching } = useQuery(
     {
       queryKey: ['notion_wallet_list'],
       refetchOnReconnect: true,

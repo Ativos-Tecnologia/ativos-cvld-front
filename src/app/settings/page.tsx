@@ -1,8 +1,7 @@
 "use client";
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
+import React from "react";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { UserInfoAPIContext } from "@/context/UserInfoContext";
+import { useCallback, useEffect, useState } from "react";
 import { BiChevronRight } from "react-icons/bi";
 import { LocalShowOptionsProps } from "@/context/ExtratosTableContext";
 
@@ -16,7 +15,6 @@ const defaultOptions: LocalShowOptionsProps[] = [
 
 const Settings = () => {
 
-  const { data } = useContext(UserInfoAPIContext);
   const [localShowOptions, setLocalShowOptions] = useState<LocalShowOptionsProps[]>([]);
 
   const fetchStateFromLocalStorage = () => {

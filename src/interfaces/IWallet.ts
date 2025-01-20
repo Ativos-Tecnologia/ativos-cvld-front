@@ -5,7 +5,7 @@ export interface IWalletResults {
     valor_inscrito: number;
     valor_bruto_atualizado_final: number;
     valor_liquido_disponivel: number;
-  }[]
+  }
 
 export interface IWalletResponse {
     id: string;

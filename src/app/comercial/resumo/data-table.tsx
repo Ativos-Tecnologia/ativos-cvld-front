@@ -1,8 +1,7 @@
 "use client";
 
 import {
-    Column,
-  ColumnDef as BaseColumnDef,
+    ColumnDef as BaseColumnDef,
   ColumnFiltersState,
   flexRender,
   getCoreRowModel,
@@ -12,7 +11,6 @@ import {
   SortingState,
   useReactTable,
   VisibilityState,
-  FilterFn,
 } from "@tanstack/react-table";
 
 import {
@@ -32,11 +30,8 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, ChevronsUpDown, Plus, X } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { BiChevronLeft, BiChevronRight, BiChevronsLeft, BiChevronsRight } from "react-icons/bi";
-import { AdvancedFilter } from "@/components/Features/Comercial/advanced-filter";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput } from "@/components/ui/command";
 
 type ColumnDef<TData, TValue> = BaseColumnDef<TData, TValue> & {
   filterVariant?: 'range' | 'select' | 'text';
@@ -69,30 +64,30 @@ export function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [filters, setFilters] = React.useState<any[]>([])
-  const [open, setOpen] = React.useState(false)
+  // const [filters, setFilters] = React.useState<any[]>([])
+  // const [open, setOpen] = React.useState(false)
 
-  const advancedFilter: FilterFn<any> = React.useCallback(
-    (row, columnId, value, addMeta) => {
-      if (filters.length === 0) return true
-      return filters.some((filter) => {
-        const cellValue = row.getValue(filter.column) as string
-        switch (filter.condition) {
-          case "equals":
-            return cellValue === filter.value
-          case "contains":
-            return cellValue.includes(filter.value)
-          case "startsWith":
-            return cellValue.startsWith(filter.value)
-          case "endsWith":
-            return cellValue.endsWith(filter.value)
-          default:
-            return true
-        }
-      })
-    },
-    [filters],
-  )
+  // const advancedFilter: FilterFn<any> = React.useCallback(
+  //   (row, columnId, value, addMeta) => {
+  //     if (filters.length === 0) return true
+  //     return filters.some((filter) => {
+  //       const cellValue = row.getValue(filter.column) as string
+  //       switch (filter.condition) {
+  //         case "equals":
+  //           return cellValue === filter.value
+  //         case "contains":
+  //           return cellValue.includes(filter.value)
+  //         case "startsWith":
+  //           return cellValue.startsWith(filter.value)
+  //         case "endsWith":
+  //           return cellValue.endsWith(filter.value)
+  //         default:
+  //           return true
+  //       }
+  //     })
+  //   },
+  //   [filters],
+  // )
 
   const table = useReactTable({
 
@@ -137,39 +132,39 @@ export function DataTable<TData, TValue>({
         }
   }
 
-  const filterColumns = table
-    .getAllColumns()
-    .filter((column) => column.getCanHide())
-    .map((column) => {
-      return {
-        key: column.id,
-        label: solveHeaderId(column.id),
-      };
-    });
+  // const filterColumns = table
+  //   .getAllColumns()
+  //   .filter((column) => column.getCanHide())
+  //   .map((column) => {
+  //     return {
+  //       key: column.id,
+  //       label: solveHeaderId(column.id),
+  //     };
+  //   });
 
-    const addFilter = () => {
-      const newFilter = {
-        id: Math.random().toString(36).substr(2, 9),
-        column: filterColumns[0].key,
-        condition: "equals",
-        value: "",
-      };
-      setFilters([...filters, newFilter]);
-    };
+    // const addFilter = () => {
+    //   const newFilter = {
+    //     id: Math.random().toString(36).substr(2, 9),
+    //     column: filterColumns[0].key,
+    //     condition: "equals",
+    //     value: "",
+    //   };
+    //   setFilters([...filters, newFilter]);
+    // };
 
-    const removeFilter = (id: string) => {
-      setFilters(filters.filter((f) => f.id !== id));
-    };
+    // const removeFilter = (id: string) => {
+    //   setFilters(filters.filter((f) => f.id !== id));
+    // };
 
-    const updateFilter = (id: string, updates: Partial<any>) => {
-      setFilters(
-        filters.map((f) => (f.id === id ? { ...f, ...updates } : f)),
-      );
-    };
+    // const updateFilter = (id: string, updates: Partial<any>) => {
+    //   setFilters(
+    //     filters.map((f) => (f.id === id ? { ...f, ...updates } : f)),
+    //   );
+    // };
 
-    const applyFilters = () => {
-      table.setGlobalFilter(filters);
-    };
+    // const applyFilters = () => {
+    //   table.setGlobalFilter(filters);
+    // };
 
 
   return (

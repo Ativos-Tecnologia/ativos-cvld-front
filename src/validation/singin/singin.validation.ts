@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { APP_ROUTES } from "@/constants/app-routes";
 
 interface UserValidation {
