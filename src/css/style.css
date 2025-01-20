@@ -319,11 +319,11 @@ input[type="password"]::-webkit-textfield-decoration-container {
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
+/* input:-webkit-autofill:focus, */
 input:-webkit-autofill:active,
-input:-webkit-autofill:focus-visible {
+/* input:-webkit-autofill:focus-visible {
   @apply rounded !bg-transparent;
-}
+} */
 
 .table-scroll {
   max-height: 648px;
