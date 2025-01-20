@@ -1,5 +1,5 @@
 "use client"
-
+import React from "react"
 import { ChevronRight, type LucideIcon } from "lucide-react"
 
 import {
@@ -34,7 +34,7 @@ export function NavMain({
     items?: {
       title: string
       url: string,
-      when?: boolean
+      when: boolean | "dev"
     }[]
   }[]
 }) {

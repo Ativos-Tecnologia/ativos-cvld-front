@@ -1,9 +1,7 @@
+import * as React from "react";
 import { ColumnDef, Row } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 
-type CustomColumnDef<T> = ColumnDef<T, unknown> & {
-  filterVariant?: "range" | "select" | "text";
-};
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,17 +12,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import CRMTooltip from "@/components/CrmUi/Tooltip";
-import { FindCoordinator } from "@/functions/comercial/find_cordinator";
-import dateFormater from "@/functions/formaters/dateFormater";
+
 import { IResumoComercial } from "@/interfaces/IResumoComercial";
+import dateFormater from "@/functions/formaters/dateFormater";
+import { FindCoordinator } from "@/functions/comercial/find_cordinator";
 import api from "@/utils/api";
 import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
-import { BiCheck } from "react-icons/bi";
+import CRMTooltip from "@/components/CrmUi/Tooltip";
 import { toast } from "sonner";
+import { BiCheck } from "react-icons/bi";
 import ModalChangePasswordComponent from "@/components/CrmUi/modal-change-component";
-
 
 // function Filter({ column }: { column: Column<any, unknown> }) {
 //     const columnFilterValue = column.getFilterValue()
@@ -110,7 +107,7 @@ import ModalChangePasswordComponent from "@/components/CrmUi/modal-change-compon
 
 const CellComponent = ({ row }: { row: Row<IResumoComercial> }) => {
   const resumo = row.original;
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   function handleCopyPhone() {
     navigator.clipboard.writeText(`${resumo.phone}`);
@@ -153,7 +150,7 @@ const CellComponent = ({ row }: { row: Row<IResumoComercial> }) => {
 
   const handleConfirmMutation = useMutation({
     mutationFn: handleConfirmUser,
-    onMutate(variables) {
+    onMutate() {
       const prevData = document.getElementById(String(resumo.id))!.textContent;
       resumo.is_confirmed = true;
       document.getElementById(String(resumo.id))!.textContent = "Sim";
@@ -192,7 +189,6 @@ const CellComponent = ({ row }: { row: Row<IResumoComercial> }) => {
   const handleConfirm = async () => {
     await handleConfirmMutation.mutateAsync();
   };
-  console.log("Estado do Modal do lado de Fora: ", isModalOpen);
 
   return (
     <div>
@@ -286,6 +282,7 @@ export const columns: ColumnDef<IResumoComercial>[] = [
           href={`https://api.whatsapp.com/send?phone=55${(row.getValue("phone") as string)?.replace(/\D/g, "")}`}
           target="_blank"
           className="lowercase"
+          rel="noreferrer"
         >
           {row.getValue("phone")}
         </a>
@@ -339,16 +336,6 @@ export const columns: ColumnDef<IResumoComercial>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const resumo = row.original;
-
-      function handleCopyPhone() {
-        navigator.clipboard.writeText(`${resumo.phone}`);
-      }
-
-      async function handleConfirmUser() {
-        return await api.patch(`/api/comercial/confirm-user/${resumo.id}/`);
-      }
-
       return <CellComponent row={row} />;
     },
   },

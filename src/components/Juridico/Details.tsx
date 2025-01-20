@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
+import React from "react";
 import { Form } from "@/components/ui/form";
 import { estados } from "@/constants/estados";
 import { tipoRegime } from "@/constants/regime-casamento";
@@ -21,7 +24,6 @@ import { NotionPage } from "@/interfaces/INotion";
 import { IWalletResponse } from "@/interfaces/IWallet";
 import api from "@/utils/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 import Link from "next/link";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -37,7 +39,7 @@ import { IoIosPaper } from "react-icons/io";
 import { IoCalendar, IoDocumentTextSharp, IoGlobeOutline } from "react-icons/io5";
 import { LuClipboardCheck, LuCopy, LuHandshake } from "react-icons/lu";
 import { MdOutlineArchive, MdOutlineDownloading } from "react-icons/md";
-import { TbMoneybag } from "react-icons/tb";
+import { TbMoneybag, TbStatusChange } from "react-icons/tb";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import { Button } from "../Button";
 import RentabilityChart from "../Charts/RentabilityChart";
@@ -50,6 +52,7 @@ import DocForm from "../Modals/BrokersDocs";
 import JuridicoDetailsSkeleton from "../Skeletons/JuridicoDetailsSkeleton";
 import { SelectItem } from "../ui/select";
 import verifyRequiredInputsToDue from "@/functions/juridico/verifyRequiredInputsToDue";
+import { AxiosError } from "axios";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -87,10 +90,9 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
       },
     ]
   });
-  const [fetchingVL, setFetchingVL] = useState<boolean>(false);
   const [linkCopied, setLinkCopied] = useState<boolean>(false);
   const [observation, setObservation] = useState<string>("");
-  const [formData, setFormData] = useState<any>(null);
+  const [formData, setFormData] = useState<Record<string, any> | null>(null);
   const [happenedRecalculation, setHappenedRecalculation] = useState<boolean>(false);
   const [recalculationData, setRecalculationData] = useState<any>(null);
   const [isLoadingRecalculation, setIsLoadingRecalculation] = useState<boolean>(false);
@@ -113,7 +115,8 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     estoquePrecatorio: false,
     estadoCivil: false,
     certidaoEmitidas: false,
-    possuiProcessos: false
+    possuiProcessos: false,
+    returnDue: false
   });
   const [editLock, setEditLock] = useState<boolean>(false);
   const [disabledSaveButton, setDisabledSaveButton] = useState<boolean>(true);
@@ -122,7 +125,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     rentabilidade: 0,
     desembolso: 0
   })
-  const [statusDiligence, setStatusDiligence] = useState<String>("");
+  const [statusDiligence, setStatusDiligence] = useState<string>("");
 
   const swal = UseMySwal();
   const { globalQueryClient } = useContext(ReactGlobalQueryContext);
@@ -423,9 +426,9 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               confirmButtonText: 'OK'
             });
           }
-  
+
           refetch();
-  
+
           swal.fire({
             title: 'Registro da Due está em Andamento',
             text: 'A diligência está em andamento.',
@@ -444,6 +447,9 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     }
   }
 
+  const handleCession = () => {
+    /** code here */
+  }
 
   async function fetchData() {
     const response = await api.get(`/api/notion-api/list/page/${id}/`);
@@ -455,30 +461,31 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     return response.data;
   }
 
-  const { data, isFetching, isLoading, refetch } = useQuery<NotionPage>({
+  const { data, isLoading, refetch } = useQuery<NotionPage>({
     queryKey: ["page", id],
     queryFn: fetchData,
     refetchOnWindowFocus: false
   });
 
-  console.log(data)
-
-  const { data: cedenteDataPF, isFetching: isFetchingCedentePF } = useQuery<NotionPage>({
+  const { data: cedenteDataPF } = useQuery<NotionPage>({
     queryKey: ["cedentePF", data?.properties['Cedente PF']?.relation?.[0]?.id],
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
     queryFn: () => fetchCedenteData(data?.properties['Cedente PF']?.relation?.[0]?.id!),
     refetchOnWindowFocus: false,
     enabled: !!data?.properties['Cedente PF']?.relation?.[0]?.id
   });
 
-  const { data: cedenteDataPJ, isFetching: isFetchingCedentePJ } = useQuery<NotionPage>({
+  const { data: cedenteDataPJ} = useQuery<NotionPage>({
     queryKey: ["cedentePJ", data?.properties['Cedente PJ']?.relation?.[0]?.id],
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
     queryFn: () => fetchCedenteData(data?.properties['Cedente PJ']?.relation?.[0]?.id!),
     refetchOnWindowFocus: false,
     enabled: !!data?.properties['Cedente PJ']?.relation?.[0]?.id
   });
 
-  const { data: socioData, isFetching: isFetchingSocioData } = useQuery<NotionPage>({
+  const { data: socioData } = useQuery<NotionPage>({
     queryKey: ["socio", cedenteDataPJ?.properties["Sócio Representante"]?.relation?.[0]?.id],
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
     queryFn: () => fetchCedenteData(cedenteDataPJ?.properties["Sócio Representante"]?.relation?.[0]?.id!),
     refetchOnWindowFocus: false,
     enabled: !!cedenteDataPJ?.properties["Sócio Representante"]?.relation?.[0]?.id
@@ -520,7 +527,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       formData.data_limite_de_atualizacao = formData.data_limite_de_atualizacao.split("/").reverse().join("-");
     }
 
-    if (typeof formData.valor_pss) {
+    if (typeof formData.valor_pss === "string") {
       formData.valor_pss = backendNumberFormat(formData.valor_pss) || 0;
       formData.valor_pss = parseFloat(formData.valor_pss);
     }
@@ -542,35 +549,52 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     formData.upload_notion = true;
     formData.need_to_recalculate_proposal = true;
 
-    try {
-      const response = await api.patch(`/api/juridico/update/precatorio/${id}/`, formData);
-      setHappenedRecalculation(true);
-      setRecalculationData(response.data);
 
+    swal.fire({
+      title: 'Confirmação',
+      text: 'Deseja enviar para repactuação?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sim. Enviar para repactuação',
+      cancelButtonText: 'Não. Somente atualizar',
+      confirmButtonColor: '#4CAF50',
+      cancelButtonColor: '#F44336',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        formData.repactuar = true;
+      } else {
+        formData.repactuar = false;
+      }
 
-      swal.fire({
-        title: 'Sucesso',
-        text: 'Dados atualizados com sucesso!',
-        icon: 'success',
-        confirmButtonText: 'OK'
-      });
+      try {
+        const response = await api.patch(`/api/juridico/update/precatorio/${id}/`, formData);
+        setHappenedRecalculation(true);
+        setRecalculationData(response.data);
 
-      refetch();
-    } catch (error: AxiosError | any) {
-      swal.fire({
-        title: 'Erro',
-        text: `${error.response?.data?.detail || error.message}`,
-        icon: 'error',
-        confirmButtonText: 'OK'
-      })
-      console.error(error)
-    }
+        swal.fire({
+          title: 'Sucesso',
+          text: 'Dados atualizados com sucesso!',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
 
-    setIsLoadingRecalculation(false);
+        refetch();
+      } catch (error: AxiosError | any) {
+        swal.fire({
+          title: 'Erro',
+          text: `${error.response?.data?.detail || error.message}`,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        })
+        console.error(error)
+      } finally {
+        setIsLoadingRecalculation(false);
+      }
+    })
   }
 
   const form = useForm();
-  const isFormModified = Object.keys(form.watch()).some((key: any) => form.watch()[key] !== formData?.[key]);
+  const isFormModified = Object.keys(form.watch()).some((key) => form.watch()[key] !== formData?.[key]);
 
   // TODO: documentar todas as funções desse componente com JSDocs
   const handleChangeCreditorName = async (value: string, page_id: string) => {
@@ -580,7 +604,15 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     });
   }
 
-  const handleChangeIdentification = async (value: string, page_id: string) => {
+  /**
+   * @description
+   * Essa função é utilizada para lidar com a mudança no campo de identificação (CPF/CNPJ)
+   * 
+   * @param {string} value - Valor do campo de identificação
+   * @param {string} page_id - ID da página do Notion
+   * @returns {Promise<void>}
+   */
+  const handleChangeIdentification = async (value: string, page_id: string): Promise<void> => {
 
     if (value.length === 11) {
       value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
@@ -594,6 +626,15 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     });
   }
 
+  /**
+   * @description
+   * Essa função é utilizada para lidar com a mudança no campo de NPU
+   * 
+   * @param {string} value - Valor do campo de NPU
+   * @param {string} type - Tipo do campo de NPU (ex: 'NPU')
+   * @param {string} page_id - ID da página do Notion
+   * @returns {Promise<void>}
+   */
   const handleChangeNpu = async (value: string, type: string, page_id: string) => {
 
     value = value.replace(/(\d{7})(\d{2})(\d{4})(\d{1})(\d{2})(\d{4})/, "$1-$2.$3.$4.$5.$6");
@@ -687,10 +728,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         rentabilidadeSlideRef.current.value = `${(newRentabilidade * 100).toFixed(2).replace(".", ",")}%`;
       }
     }
-  }
-
-  const handleChangeResponsavel = async (page_id: string) => {
-    await resposavelMutation.mutateAsync({ page_id });
   }
 
   const handleSaveValues = async () => {
@@ -804,9 +841,63 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     });
   }
 
+  const handleReturnDueRevision = async () => {
+    await returnDueRevisionMutation.mutateAsync({
+      page_id: id
+    });
+  }
+
 
 
   // ----> Mutations <-----
+  const returnDueRevisionMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string }) => {
+      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
+        "Status Diligência": {
+          "select": {
+            "name": "Revisão de Due Diligence"
+          }
+        }
+      });
+
+      if (response.status !== 202) {
+        throw new Error('houve um erro ao salvar os dados no notion');
+      }
+
+      return response.data
+    },
+    onMutate: async (paramsObj) => {
+      setLoadingUpdateState(prev => ({ ...prev, returnDue: true }));
+      setEditLock(true);
+    },
+    onError: () => {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'error',
+        text: "Houve um erro ao atualizar o status de diligência",
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSuccess: () => {
+      swal.fire({
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'success',
+        text: "Status de Diligência atualizado com sucesso",
+        position: "bottom-right",
+        showConfirmButton: false,
+      });
+    },
+    onSettled: () => {
+      setEditLock(false);
+      setLoadingUpdateState(prev => ({ ...prev, returnDue: false }));
+    }
+  })
+
   const estoquePrecatoriosMutation = useMutation({
     mutationFn: async (paramsObj: { value: string, page_id: string }) => {
       const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
@@ -1320,7 +1411,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       return response.data
     },
     onMutate: async (paramsObj) => {
-      let npuType = paramsObj.type === "NPU (Originário)" ? "npuOriginario" : "npuPrecatorio"
+      const npuType = paramsObj.type === "NPU (Originário)" ? "npuOriginario" : "npuPrecatorio"
       setLoadingUpdateState(prev => ({ ...prev, [npuType]: true }));
       setEditLock(true);
       return { npuType };
@@ -2331,7 +2422,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
                 <div className="col-span-4">
                   <h3 className="text-bodydark2 text-sm font-medium 2xsm:text-center md:text-left">
-                    Atenção: A atualização dos valores, datas, percentuais etc implica na modificação do valor líquido do ativo. O status do ativo será alterado para Repactuação e retornará para o broker para negociação.
+                    Atenção: A atualização dos valores, datas, percentuais etc implica na modificação do valor líquido do ativo. Caso o status do ativo será alterado para Repactuação, ele retornará para o broker para re-negociação.
                   </h3>
                 </div>
 
@@ -3035,6 +3126,40 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
           </Button>
         </div>)
       }
+
+      {statusDiligence === "Em liquidação" && (
+        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleArchiving()}
+          >
+            <MdOutlineArchive className="h-4 w-4" />
+            <span>Arquivar</span>
+          </Button>
+
+          <Button
+            variant="warning"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleReturnDueRevision()}
+          >
+            {loadingUpdateState.returnDue ? <AiOutlineLoading className="animate-spin h-4 w-4" /> : <TbStatusChange className="h-4 w-4" />}
+            <span>Retornar para revisão de Due</span>
+          </Button>
+
+          <Button
+            disabled
+            variant="info"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium disabled:opacity-50 disabled:pointer-events-none"
+            onClick={() => handleCession()}
+          >
+            <BiSolidCoinStack className="h-4 w-4" />
+            <span>
+              Marcar Cessão
+            </span>
+          </Button>
+        </div>
+      )}
       {cedenteModal !== null && <BrokerModal />}
       {docModalInfo !== null && <DocForm />}
     </div>
