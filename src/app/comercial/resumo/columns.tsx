@@ -119,7 +119,7 @@ const CellComponent = ({ row }: { row: Row<IResumoComercial> }) => {
 
   async function handleChangePassword(new_password: string) {
     return await api.patch(`/api/user/change-password/${resumo.id}/`, {
-      new_password: new_password,
+      password: new_password,
     });
   }
 
