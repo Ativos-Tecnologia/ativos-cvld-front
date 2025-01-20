@@ -12,6 +12,7 @@ import {
   SortingState,
   useReactTable,
   VisibilityState,
+  FilterFn,
 } from "@tanstack/react-table";
 
 import {
@@ -31,8 +32,11 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronsUpDown, Plus, X } from "lucide-react";
 import { BiChevronLeft, BiChevronRight, BiChevronsLeft, BiChevronsRight } from "react-icons/bi";
+import { AdvancedFilter } from "@/components/Features/Comercial/advanced-filter";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput } from "@/components/ui/command";
 
 type ColumnDef<TData, TValue> = BaseColumnDef<TData, TValue> & {
   filterVariant?: 'range' | 'select' | 'text';
@@ -65,9 +69,33 @@ export function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [filters, setFilters] = React.useState<any[]>([])
+  const [open, setOpen] = React.useState(false)
+
+  const advancedFilter: FilterFn<any> = React.useCallback(
+    (row, columnId, value, addMeta) => {
+      if (filters.length === 0) return true
+      return filters.some((filter) => {
+        const cellValue = row.getValue(filter.column) as string
+        switch (filter.condition) {
+          case "equals":
+            return cellValue === filter.value
+          case "contains":
+            return cellValue.includes(filter.value)
+          case "startsWith":
+            return cellValue.startsWith(filter.value)
+          case "endsWith":
+            return cellValue.endsWith(filter.value)
+          default:
+            return true
+        }
+      })
+    },
+    [filters],
+  )
 
   const table = useReactTable({
-    
+
     data,
     columns,
     onSortingChange: setSorting,
@@ -77,6 +105,7 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    // globalFilterFn: advancedFilter,
     rowCount: data.length,
     state: {
       sorting,
@@ -84,7 +113,7 @@ export function DataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
       pagination,
-      
+
     },
     manualPagination: true,
     onPaginationChange: setPagination,
@@ -107,6 +136,41 @@ export function DataTable<TData, TValue>({
             return headerId;
         }
   }
+
+  const filterColumns = table
+    .getAllColumns()
+    .filter((column) => column.getCanHide())
+    .map((column) => {
+      return {
+        key: column.id,
+        label: solveHeaderId(column.id),
+      };
+    });
+
+    const addFilter = () => {
+      const newFilter = {
+        id: Math.random().toString(36).substr(2, 9),
+        column: filterColumns[0].key,
+        condition: "equals",
+        value: "",
+      };
+      setFilters([...filters, newFilter]);
+    };
+
+    const removeFilter = (id: string) => {
+      setFilters(filters.filter((f) => f.id !== id));
+    };
+
+    const updateFilter = (id: string, updates: Partial<any>) => {
+      setFilters(
+        filters.map((f) => (f.id === id ? { ...f, ...updates } : f)),
+      );
+    };
+
+    const applyFilters = () => {
+      table.setGlobalFilter(filters);
+    };
+
 
   return (
     <div className="container mx-auto pb-10 pt-4">
@@ -148,6 +212,72 @@ export function DataTable<TData, TValue>({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+      {/* <div className="flex justify-between items-center py-4">
+        <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+        <Button variant="outline" className="w-[200px] justify-between">
+          Filters
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[300px] p-0" align="start">
+          <Command>
+            <Button onClick={addFilter}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add filter
+            </Button>
+            <CommandEmpty>No filters found.</CommandEmpty>
+            <CommandGroup>
+              {filters.map((filter) => (
+                <div key={filter.id} className="flex items-center p-2">
+                <select
+                  value={filter.column}
+                  onChange={(e) => updateFilter(filter.id, { column: e.target.value })}
+                  className="w-1/3 p-1 text-sm"
+                >
+                  {filterColumns.map((col) => (
+                    <option key={col.key} value={col.key}>
+                      {col.label}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={filter.condition}
+                  onChange={(e) => updateFilter(filter.id, { condition: e.target.value})}
+                  className="w-1/3 p-1 text-sm"
+                >
+                  <option value="equals">Equals</option>
+                  <option value="contains">Contains</option>
+                  <option value="startsWith">Starts with</option>
+                  <option value="endsWith">Ends with</option>
+                </select>
+                <input
+                  type="text"
+                  value={filter.value}
+                  onChange={(e) => updateFilter(filter.id, { value: e.target.value })}
+                  className="w-1/3 p-1 text-sm"
+                  placeholder="Value"
+                />
+                <Button variant="ghost" size="sm" onClick={() => removeFilter(filter.id)}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              ))}
+
+            </CommandGroup>
+            <div className="flex justify-end p-2">
+              <Button
+                onClick={applyFilters}
+              >
+                Apply Filters
+              </Button>
+            </div>
+
+          </Command>
+
+          </PopoverContent>
+        </Popover>
+      </div> */}
       <div className="rounded-md border">
         <Table className="rounded-md" data-state={loading && "loading"}>
           <TableHeader className="rounded-t-md bg-snow dark:border-strokedark dark:bg-boxdark-2">
@@ -232,7 +362,7 @@ export function DataTable<TData, TValue>({
             disabled={!table.getCanNextPage()}
             >
                 <BiChevronsRight />
-            
+
           </Button>
             <span className="flex items-center gap-1">
             <div>Página</div>
@@ -274,7 +404,7 @@ export function DataTable<TData, TValue>({
           {table.getRowCount().toLocaleString()} Rows
         </div> */}
         </div>
-       
+
       </div>
   );
 }
