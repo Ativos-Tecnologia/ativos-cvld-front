@@ -7,7 +7,7 @@ import { BsEye, BsEyeSlash } from "react-icons/bs";
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
 
 
-const LabelPassword = ({ title, errors, register, field, passwordInput, strengthColor, barWidth, passwordStr, passwordRequirements, htmlFor }: LabelProps) => {
+const LabelPassword = ({ title, errors, register, field, passwordInput, strengthColor, barWidth, passwordStr, passwordRequirements, htmlFor}: LabelProps) => {
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
 

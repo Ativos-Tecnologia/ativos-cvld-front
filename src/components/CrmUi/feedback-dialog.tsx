@@ -89,15 +89,16 @@ export function FeedbackDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger}
-      </DialogTrigger>
-      <DialogContent className={cn("sm:max-w-[425px]", className)}>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      <DialogContent
+        className={cn(
+          "dark:bg-boxdark dark:text-white sm:max-w-[425px]",
+          className,
+        )}
+      >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>
-            {description}
-          </DialogDescription>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <Textarea
@@ -114,7 +115,8 @@ export function FeedbackDialog({
                 size="icon"
                 className={cn(
                   "h-10 w-10 rounded-full text-lg",
-                  selectedReaction === index && "bg-primary text-primary-foreground"
+                  selectedReaction === index &&
+                    "bg-primary text-primary-foreground",
                 )}
                 onClick={() => setSelectedReaction(index)}
               >
@@ -131,15 +133,12 @@ export function FeedbackDialog({
           >
             {cancelText}
           </Button>
-          <Button 
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-          >
+          <Button onClick={handleSubmit} disabled={isSubmitting}>
             {submitText}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
