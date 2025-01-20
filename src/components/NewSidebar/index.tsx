@@ -4,20 +4,11 @@ import * as React from "react"
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
   BriefcaseBusiness,
-  Command,
-  Frame,
   LayoutDashboard,
-  Map,
   MessageSquare,
-  PieChart,
   Plus,
-  Settings2,
   ShoppingCart,
-  SquareTerminal,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -109,6 +100,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {
             title: "Resumo",
             url: "/comercial/resumo",
+            when: product === "global",
+          },
+          {
+            title: "Espaço Gerencial",
+            url: "/comercial/espaco",
             when: product === "global",
           },
         ],
