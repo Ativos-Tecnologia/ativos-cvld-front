@@ -14,8 +14,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-import { ChangePasswordDialog } from "@/components/CrmUi/change-password-component";
 import CRMTooltip from "@/components/CrmUi/Tooltip";
 import { FindCoordinator } from "@/functions/comercial/find_cordinator";
 import dateFormater from "@/functions/formaters/dateFormater";
@@ -25,6 +23,9 @@ import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { BiCheck } from "react-icons/bi";
 import { toast } from "sonner";
+import { FeedbackDialog } from "@/components/CrmUi/feedback-dialog";
+import ModalChangePasswordComponent from "@/components/CrmUi/modal-change-component";
+
 
 // function Filter({ column }: { column: Column<any, unknown> }) {
 //     const columnFilterValue = column.getFilterValue()
@@ -110,9 +111,7 @@ import { toast } from "sonner";
 
 const CellComponent = ({ row }: { row: Row<IResumoComercial> }) => {
   const resumo = row.original;
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [isChangePasswordDialogOpen, setChangePasswordDialogOpen] =
-    useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   function handleCopyPhone() {
     navigator.clipboard.writeText(`${resumo.phone}`);
@@ -127,6 +126,31 @@ const CellComponent = ({ row }: { row: Row<IResumoComercial> }) => {
       new_password: new_password,
     });
   }
+
+  const { mutateAsync: mutateChangePassword } = useMutation({
+    mutationFn: handleChangePassword,
+    onSuccess: () => {
+      toast.success("Senha alterada com sucesso", {
+        classNames: {
+          toast: "bg-white dark:bg-boxdark",
+          title: "text-black-2 dark:text-white",
+          actionButton:
+            "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300",
+        },
+        icon: <BiCheck className="fill-green-400 text-lg" />,
+      });
+      setIsModalOpen(false);
+    },
+    onError: (error) => {
+      console.error("Erro ao alterar senha:", error);
+      toast.error("Erro ao alterar senha", {
+        classNames: {
+          toast: "bg-white dark:bg-boxdark",
+          title: "text-black-2 dark:text-white",
+        },
+      });
+    },
+  });
 
   const handleConfirmMutation = useMutation({
     mutationFn: handleConfirmUser,
@@ -169,6 +193,7 @@ const CellComponent = ({ row }: { row: Row<IResumoComercial> }) => {
   const handleConfirm = async () => {
     await handleConfirmMutation.mutateAsync();
   };
+  console.log("Estado do Modal do lado de Fora: ", isModalOpen);
 
   return (
     <div>
@@ -192,44 +217,23 @@ const CellComponent = ({ row }: { row: Row<IResumoComercial> }) => {
             Confirmar usuário
           </DropdownMenuItem>
           <DropdownMenuItem disabled>Solicitar designação</DropdownMenuItem>
-          {/* <ChangePasswordDialog
-                       className="text-graydark dark:text-white dark:bg-boxdark "
-                        trigger={<Button className="relative flex cursor-point w-full select-none items-center justify-start rounded-sm px-2 py-1.5 !text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50" variant="ghost">Redefinir senha</Button>}
-                        title="Redefinir Senha"
-                        description={`Deseja redefinir a senha do usuário: ${resumo.username} ?`}
-                        onSubmit={(password: string) => {
-                        handleChangePassword(password);
-                        setDropdownOpen(false);
-                          }}
-                        onOpenChange={(open: boolean) => {
-                          if (!open) {
-                            setDropdownOpen(false);
-                            }
-                            }}
-                            /> */}
           <DropdownMenuItem
-            onClick={() => setChangePasswordDialogOpen(true)}
+            onClick={() => setIsModalOpen(true)}
             className="cursor-pointer"
+            typeof="button"
           >
             Redefinir senha
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <ChangePasswordDialog
+      <ModalChangePasswordComponent
         className="text-graydark dark:bg-boxdark dark:text-white"
-        trigger={null}
-        title="Redefinir Senha"
-        description={`Deseja redefinir a senha do usuário: ${resumo.username} ?`}
-        onSubmit={(password: string) => {
-          handleChangePassword(password);
-          setChangePasswordDialogOpen(false);
+        nameUser={resumo.username}
+        onSubmit={async (password: string) => {
+          await mutateChangePassword(password);
         }}
-        onOpenChange={(open: boolean) => {
-          if (!open) {
-            setChangePasswordDialogOpen(false);
-          }
-        }}
-        open={isChangePasswordDialogOpen}
+        setOpenModal={setIsModalOpen}
+        openModal={isModalOpen}
       />
     </div>
   );
