@@ -461,8 +461,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     refetchOnWindowFocus: false
   });
 
-  console.log(data)
-
   const { data: cedenteDataPF, isFetching: isFetchingCedentePF } = useQuery<NotionPage>({
     queryKey: ["cedentePF", data?.properties['Cedente PF']?.relation?.[0]?.id],
     queryFn: () => fetchCedenteData(data?.properties['Cedente PF']?.relation?.[0]?.id!),
@@ -542,31 +540,48 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     formData.upload_notion = true;
     formData.need_to_recalculate_proposal = true;
 
-    try {
-      const response = await api.patch(`/api/juridico/update/precatorio/${id}/`, formData);
-      setHappenedRecalculation(true);
-      setRecalculationData(response.data);
 
+    swal.fire({
+      title: 'Confirmação',
+      text: 'Deseja enviar para repactuação?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sim. Enviar para repactuação',
+      cancelButtonText: 'Não. Somente atualizar',
+      confirmButtonColor: '#4CAF50',
+      cancelButtonColor: '#F44336',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        formData.repactuar = true;
+      } else {
+        formData.repactuar = false;
+      }
 
-      swal.fire({
-        title: 'Sucesso',
-        text: 'Dados atualizados com sucesso!',
-        icon: 'success',
-        confirmButtonText: 'OK'
-      });
+      try {
+        const response = await api.patch(`/api/juridico/update/precatorio/${id}/`, formData);
+        setHappenedRecalculation(true);
+        setRecalculationData(response.data);
 
-      refetch();
-    } catch (error: AxiosError | any) {
-      swal.fire({
-        title: 'Erro',
-        text: `${error.response?.data?.detail || error.message}`,
-        icon: 'error',
-        confirmButtonText: 'OK'
-      })
-      console.error(error)
-    }
+        swal.fire({
+          title: 'Sucesso',
+          text: 'Dados atualizados com sucesso!',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
 
-    setIsLoadingRecalculation(false);
+        refetch();
+      } catch (error: AxiosError | any) {
+        swal.fire({
+          title: 'Erro',
+          text: `${error.response?.data?.detail || error.message}`,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        })
+        console.error(error)
+      } finally {
+        setIsLoadingRecalculation(false);
+      }
+    })
   }
 
   const form = useForm();
@@ -2331,7 +2346,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
                 <div className="col-span-4">
                   <h3 className="text-bodydark2 text-sm font-medium 2xsm:text-center md:text-left">
-                    Atenção: A atualização dos valores, datas, percentuais etc implica na modificação do valor líquido do ativo. O status do ativo será alterado para Repactuação e retornará para o broker para negociação.
+                    Atenção: A atualização dos valores, datas, percentuais etc implica na modificação do valor líquido do ativo. Caso o status do ativo será alterado para Repactuação, ele retornará para o broker para re-negociação.
                   </h3>
                 </div>
 
