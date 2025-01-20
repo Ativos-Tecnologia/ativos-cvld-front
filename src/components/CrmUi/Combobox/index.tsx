@@ -40,7 +40,7 @@ const CelerAppCombobox = ({ list, size="250px" }: CelerComboboxProps) => {
                     >
                         {value
                             ? list.find((item: any) => item === value)
-                            : "Select framework..."}
+                            : "Selecione para filtro..."}
                         <LuChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
