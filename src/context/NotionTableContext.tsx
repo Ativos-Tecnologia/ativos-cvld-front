@@ -1,13 +1,13 @@
-import { NotionPage, NotionResponse } from "@/interfaces/INotion";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { NotionPage } from "@/interfaces/INotion";
 import api from "@/utils/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
+import React, {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import statusOficio from "@/enums/statusOficio.enum";
@@ -200,7 +200,7 @@ export const TableNotionProvider = ({
   const [editLock, setEditLock] = useState<boolean>(false);
   const [archiveStatus, setArchiveStatus] = useState<boolean>(false);
   const [filteredUsersList, setFilteredUsersList] = useState<string[]>([]);
-  const [filteredStatusValues, setFilteredStatusValues] =
+  const [, setFilteredStatusValues] =
     useState<statusOficio[]>(ENUM_OFICIOS_LIST);
 
   const {
@@ -229,7 +229,7 @@ export const TableNotionProvider = ({
     }
   };
 
-  const { isPending, data, error, isFetching, refetch } = useQuery({
+  const { data, isFetching } = useQuery({
     queryKey: ["notion_list"],
     refetchOnReconnect: true,
     refetchOnWindowFocus: true,
@@ -382,7 +382,7 @@ export const TableNotionProvider = ({
       }
       return response.data;
     },
-    onMutate: async (paramsObj) => {
+    onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: ["notion_list"] });
       const previousData: any = queryClient.getQueryData(["notion_list"]);
       queryClient.setQueryData(["notion_list"], (old: any) => {
@@ -461,7 +461,7 @@ export const TableNotionProvider = ({
       queryClient.setQueryData(["notion_list"], context?.previousData);
       toast.error("Erro ao alterar o status do ofício");
     },
-    onSuccess: (data, paramsObj) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notion_list"] });
     },
   });
@@ -514,7 +514,7 @@ export const TableNotionProvider = ({
       queryClient.setQueryData(["notion_list"], context?.previousData);
       toast.error("Erro ao alterar o tipo do ofício");
     },
-    onSuccess: (data, paramsObj) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notion_list"] });
     },
   });
@@ -607,7 +607,7 @@ export const TableNotionProvider = ({
       }
       return response.data;
     },
-    onMutate: async (paramsObj) => {
+    onMutate: async () => {
       setUpdateState("pending");
       setEditLock(true);
       await queryClient.cancelQueries({ queryKey: ["notion_list"] });
@@ -661,7 +661,7 @@ export const TableNotionProvider = ({
       }
       return response.data;
     },
-    onMutate: async (paramsObj) => {
+    onMutate: async () => {
       setEditLock(true);
       setUpdateState("pending");
       await queryClient.cancelQueries({ queryKey: ["notion_list"] });
@@ -711,7 +711,7 @@ export const TableNotionProvider = ({
       }
       return response.data;
     },
-    onMutate: async (paramsObj) => {
+    onMutate: async () => {
       setUpdateState("pending");
       setEditLock(true);
       await queryClient.cancelQueries({ queryKey: ["notion_list"] });
@@ -723,7 +723,7 @@ export const TableNotionProvider = ({
       queryClient.setQueryData(["notion_list"], context?.previousData);
       toast.error("Erro ao alterar o preço proposto");
     },
-    onSuccess: (paramsObj) => {
+    onSuccess: () => {
       setUpdateState("success");
       queryClient.invalidateQueries({ queryKey: ["notion_list"] });
     },
@@ -771,7 +771,7 @@ export const TableNotionProvider = ({
 
       return response.data;
     },
-    onMutate: async (paramsObj) => {
+    onMutate: async () => {
       setUpdateState("pending");
       setEditLock(true);
       await queryClient.cancelQueries({ queryKey: ["notion_list"] });
@@ -809,75 +809,7 @@ export const TableNotionProvider = ({
   });
 
   /*  ====> Functions <==== */
-  const buildQueryForUserOnly = useCallback(() => {
-    return {
-      and: [
-        {
-          property: "Usuário",
-          multi_select: {
-            contains: selectedUser || userData?.user,
-          },
-        },
-        {
-          property: "Status",
-          status: {
-            equals: statusSelectValue || "",
-          },
-        },
-        {
-          property: "Tipo",
-          select: {
-            equals: oficioSelectValue || "",
-          },
-        },
-        secondaryDefaultFilterObject,
-      ],
-    };
-  }, [
-    userData?.user,
-    selectedUser,
-    statusSelectValue,
-    oficioSelectValue,
-    secondaryDefaultFilterObject,
-  ]);
 
-  const buildQueryForCoordinatorOnly = useCallback(() => {
-    return {
-      and: [
-        {
-          property: "Coordenadores",
-          multi_select: {
-            contains: userData?.user,
-          },
-        },
-        {
-          property: "Usuário",
-          multi_select: {
-            contains: selectedUser || "",
-          },
-        },
-        {
-          property: "Status",
-          status: {
-            equals: statusSelectValue || "",
-          },
-        },
-        {
-          property: "Tipo",
-          select: {
-            equals: oficioSelectValue || "",
-          },
-        },
-        secondaryDefaultFilterObject,
-      ],
-    };
-  }, [
-    userData?.user,
-    selectedUser,
-    statusSelectValue,
-    oficioSelectValue,
-    secondaryDefaultFilterObject,
-  ]);
 
   const handleSelectRow = (item: NotionPage) => {
     if (checkedList.length === 0) {

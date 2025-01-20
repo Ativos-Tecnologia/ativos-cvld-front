@@ -1,10 +1,11 @@
 "use client"
 
+import React from "react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
-import { Check, ChevronsUpDown, Plus, X } from 'lucide-react'
+import { ChevronsUpDown, Plus, X } from 'lucide-react'
 
 type FilterCondition = "equals" | "contains" | "startsWith" | "endsWith"
 

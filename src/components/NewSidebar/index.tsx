@@ -29,7 +29,7 @@ import Image from "next/image"
 import { UserInfoAPIContext, UserInfoProvider } from "@/context/UserInfoContext"
 import { NavModule } from "../nav-module"
 import { DefaultLayoutContext, DefaultLayoutProvider } from "@/context/DefaultLayoutContext"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { FeedbackDialog } from "../CrmUi/feedback-dialog"
 import api from "@/utils/api"
 
@@ -49,7 +49,7 @@ const usePath = () => {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const { data: dataUser } = React.useContext(UserInfoAPIContext)
-  const { role, product, sub_role } = dataUser;
+  const { product, sub_role } = dataUser;
   const { modalOpen, setModalOpen } = React.useContext(DefaultLayoutContext);
 
   const highlightRef = React.useRef<HTMLButtonElement>(null)
@@ -202,7 +202,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <NavUser user={dataUser} />
           </SidebarFooter>
           <SidebarRail />
-        </Sidebar>
+              </Sidebar>
       </UserInfoProvider>
     </DefaultLayoutProvider>
   )
