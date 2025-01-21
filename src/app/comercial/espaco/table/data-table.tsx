@@ -31,7 +31,15 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ChevronDown, ChevronsUpDownIcon, Plus, Search, SlidersHorizontal, X } from 'lucide-react';
+import {
+    ChevronDown,
+    ChevronsUpDownIcon,
+    FilterIcon,
+    Plus,
+    Search,
+    SlidersHorizontal,
+    X,
+} from 'lucide-react';
 import { BiChevronLeft, BiChevronRight, BiChevronsLeft, BiChevronsRight } from 'react-icons/bi';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup } from '@/components/ui/command';
@@ -46,20 +54,13 @@ type ColumnDef<TData, TValue> = BaseColumnDef<TData, TValue> & {
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
-    pagination: PaginationState;
-    setPagination: React.Dispatch<React.SetStateAction<PaginationState>>;
     loading: boolean;
-    pageCount?: number;
-    refetch: VoidFunction;
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
-    pagination,
-    setPagination,
     loading,
-    pageCount,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -76,19 +77,13 @@ export function DataTable<TData, TValue>({
     const advancedFilter: FilterFn<any> = React.useCallback(
         (row, columnId, value, addMeta) => {
             if (filters.length === 0) return true;
-            return filters.some((filter) => {
+            return filters.every((filter) => {
                 const cellValue = String(row.getValue(filter.column));
                 switch (filter.condition) {
                     case 'equals':
                         return cellValue === String(filter.value);
                     case 'contains':
                         return cellValue.includes(filter.value);
-                    case 'startsWith':
-                        return cellValue.startsWith(filter.value);
-                    case 'endsWith':
-                        return cellValue.endsWith(filter.value);
-                    default:
-                        return true;
                 }
             });
         },
@@ -112,11 +107,7 @@ export function DataTable<TData, TValue>({
             columnFilters,
             columnVisibility,
             rowSelection,
-            pagination,
         },
-        manualPagination: true,
-        onPaginationChange: setPagination,
-        pageCount,
     });
 
     function solveHeaderId(headerId: string) {
@@ -156,12 +147,34 @@ export function DataTable<TData, TValue>({
         setFilters([...filters, newFilter]);
     };
 
-    const removeFilter = (id: string) => {
-        setFilters(filters.filter((f) => f.id !== id));
+    const addGlobalFilter = (column: string, condition: string, value: string) => {
+        const exists = filters.find((f) => f.column === column);
+        if (exists) {
+            if (!value) {
+                removeFilter(exists.id);
+                return;
+            }
+            updateFilter(exists.id, { condition, value });
+            return;
+        }
+
+        const newFilter = {
+            id: Math.random().toString(36).substr(2, 9),
+            column,
+            condition,
+            value,
+        };
+
+        setFilters([...filters, newFilter]);
     };
 
     const updateFilter = (id: string, updates: Partial<any>) => {
         setFilters(filters.map((f) => (f.id === id ? { ...f, ...updates } : f)));
+    };
+
+    const removeFilter = (id: string) => {
+        setFilters(filters.filter((f) => f.id !== id));
+        table.setGlobalFilter(filters.filter((f) => f.id !== id));
     };
 
     const applyFilters = () => {
@@ -175,123 +188,29 @@ export function DataTable<TData, TValue>({
 
     const getActiveFilterCount = () => filters.length;
 
+    const statusOptions = [
+        { value: 'Negociação em Andamento', label: 'Negociação em Andamento' },
+        { value: 'Proposta aceita', label: 'Proposta Aceita' },
+    ];
+
+    const getColumnValues = (columnId: string) => {
+        const column = table.getColumn(columnId); // Obter a coluna pelo ID
+        if (!column) return []; // Retorna vazio se a coluna não existir
+        return column.getFacetedRowModel().rows.map((row) => row.getValue(columnId));
+    };
+
+    const teste = getColumnValues('loa');
+    console.log(teste);
+
     return (
-        <div className="container mx-auto pb-10 pt-4">
-            {/* <div className="flex items-center py-4">
-                <Input
-                    placeholder="Digite um usuário"
-                    value={(table.getColumn('username')?.getFilterValue() as string) ?? ''}
-                    onChange={(event) =>
-                        table.getColumn('username')?.setFilterValue(event.target.value)
-                    }
-                    className="max-w-sm"
-                />
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="ml-auto">
-                            Coluna <ChevronDown />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="bg-white dark:bg-boxdark-2">
-                        {table
-                            .getAllColumns()
-                            .filter((column) => column.getCanHide())
-                            .map((column) => {
-                                return (
-                                    <DropdownMenuCheckboxItem
-                                        key={column.id}
-                                        className="capitalize"
-                                        checked={column.getIsVisible()}
-                                        onCheckedChange={(value) =>
-                                            column.toggleVisibility(!!value)
-                                        }
-                                    >
-                                        {solveHeaderId(column.id)}
-                                    </DropdownMenuCheckboxItem>
-                                );
-                            })}
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div> */}
-            {/* <div className="flex items-center justify-between py-4"> */}
-            {/* <AmazingFilter filterColumns={filterColumns} applyFilterFn={} /> */}
-            {/* <Popover open={open} onOpenChange={setOpen}>
-                    <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-[200px] justify-between">
-                            Filters
-                            <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[300px] p-0" align="start">
-                        <Command>
-                            <Button onClick={addFilter}>
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add filter
-                            </Button>
-                            <CommandEmpty>No filters found.</CommandEmpty>
-                            <CommandGroup>
-                                {filters.map((filter) => (
-                                    <div key={filter.id} className="flex items-center p-2">
-                                        <select
-                                            value={filter.column}
-                                            onChange={(e) =>
-                                                updateFilter(filter.id, { column: e.target.value })
-                                            }
-                                            className="w-1/3 p-1 text-sm"
-                                        >
-                                            {filterColumns.map((col) => (
-                                                <option key={col.key} value={col.key}>
-                                                    {col.label}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <select
-                                            value={filter.condition}
-                                            onChange={(e) =>
-                                                updateFilter(filter.id, {
-                                                    condition: e.target.value,
-                                                })
-                                            }
-                                            className="w-1/3 p-1 text-sm"
-                                        >
-                                            <option value="equals">Equals</option>
-                                            <option value="contains">Contains</option>
-                                            <option value="startsWith">Starts with</option>
-                                            <option value="endsWith">Ends with</option>
-                                        </select>
-                                        <input
-                                            type="text"
-                                            value={filter.value}
-                                            onChange={(e) =>
-                                                updateFilter(filter.id, { value: e.target.value })
-                                            }
-                                            className="w-1/3 p-1 text-sm"
-                                            placeholder="Value"
-                                        />
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => removeFilter(filter.id)}
-                                        >
-                                            <X className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                ))}
-                            </CommandGroup>
-                            <div className="flex justify-end p-2">
-                                <Button onClick={applyFilters}>Apply Filters</Button>
-                            </div>
-                        </Command>
-                    </PopoverContent>
-                </Popover> */}
-            {/* </div> */}
-            <div className="relative z-0 w-full max-w-2xl">
+        <div className="container pb-10 pt-4">
+            <div className="relative z-50 mb-14 w-full max-w-2xl">
                 <div className="relative">
-                    <div className="relative flex items-center">
+                    <div className="relative flex max-w-md items-center">
                         <Search className="absolute left-3 h-4 w-4 text-zinc-400" />
                         <input
                             type="text"
-                            placeholder="Search with filters"
+                            placeholder="Pesquisar"
                             className={cn(
                                 'w-full py-2 pl-10 pr-20',
                                 'rounded-lg border border-zinc-200 dark:border-zinc-800',
@@ -312,7 +231,7 @@ export function DataTable<TData, TValue>({
                                         : 'text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800',
                                 )}
                             >
-                                <SlidersHorizontal className="h-4 w-4" />
+                                <FilterIcon className="h-4 w-4" />
                                 {getActiveFilterCount() > 0 && (
                                     <span className="min-w-[20px] rounded-full bg-indigo-100 px-1 py-0.5 text-xs dark:bg-indigo-500/20">
                                         {getActiveFilterCount()}
@@ -326,10 +245,11 @@ export function DataTable<TData, TValue>({
                         <div
                             ref={filterRef}
                             className={cn(
-                                'absolute bottom-full right-0 mb-2 w-96 p-4',
+                                'absolute left-[29rem] top-0 w-full max-w-md p-4',
                                 'bg-white dark:bg-zinc-900',
                                 'border border-zinc-200 dark:border-zinc-800',
                                 'rounded-lg shadow-lg',
+                                'z-50', // Add this
                             )}
                         >
                             <div className="mb-4 flex items-center justify-between">
@@ -343,69 +263,112 @@ export function DataTable<TData, TValue>({
                                 </button>
                             </div>
 
-                            {filters.map((filter) => (
-                                <div key={filter.id} className="mb-2 flex items-center gap-2">
-                                    <select
-                                        value={filter.column}
-                                        onChange={(e) =>
-                                            updateFilter(filter.id, { column: e.target.value })
-                                        }
-                                        className={cn(
-                                            'w-1/3 px-2 py-1',
-                                            'rounded-md border border-zinc-200 dark:border-zinc-800',
-                                            'bg-white dark:bg-zinc-900',
-                                            'text-sm text-zinc-900 dark:text-zinc-100',
-                                            'focus:outline-none focus:ring-2 focus:ring-indigo-500/20',
-                                        )}
-                                    >
-                                        {filterColumns.map((col) => (
-                                            <option key={col.key} value={col.key}>
-                                                {col.label}
+                            {filterColumns
+                                .filter((t) => t.key === 'status')
+                                .map((col) => (
+                                    <div className="relative" key={col.key}>
+                                        <label
+                                            htmlFor={`filter-${col.key}`}
+                                            className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                                        >
+                                            {col.label}
+                                        </label>
+                                        <select
+                                            id={`filter-${col.key}`}
+                                            value={
+                                                filters.find((f) => f.column === col.key)?.value ||
+                                                ''
+                                            }
+                                            onChange={(e) =>
+                                                addGlobalFilter(col.key, 'equals', e.target.value)
+                                            }
+                                            className={cn(
+                                                'w-full py-1.5 pl-3 pr-8',
+                                                'rounded-md border border-zinc-200 dark:border-zinc-800',
+                                                'bg-white dark:bg-zinc-900',
+                                                'text-sm text-zinc-900 dark:text-zinc-100',
+                                                'focus:outline-none focus:ring-2 focus:ring-indigo-500/20',
+                                            )}
+                                        >
+                                            <option defaultChecked value="">
+                                                Selecione
                                             </option>
-                                        ))}
-                                    </select>
-                                    <select
-                                        value={filter.condition}
-                                        onChange={(e) =>
-                                            updateFilter(filter.id, { condition: e.target.value })
-                                        }
-                                        className={cn(
-                                            'w-1/3 px-2 py-1',
-                                            'rounded-md border border-zinc-200 dark:border-zinc-800',
-                                            'bg-white dark:bg-zinc-900',
-                                            'text-sm text-zinc-900 dark:text-zinc-100',
-                                            'focus:outline-none focus:ring-2 focus:ring-indigo-500/20',
-                                        )}
-                                    >
-                                        <option value="equals">Igual</option>
-                                        <option value="contains">Contém</option>
-                                        <option value="startsWith">Starts with</option>
-                                        <option value="endsWith">Ends with</option>
-                                    </select>
-                                    <input
-                                        type="text"
-                                        value={filter.value}
-                                        onChange={(e) =>
-                                            updateFilter(filter.id, { value: e.target.value })
-                                        }
-                                        className={cn(
-                                            'w-1/3 px-2 py-1',
-                                            'rounded-md border border-zinc-200 dark:border-zinc-800',
-                                            'bg-white dark:bg-zinc-900',
-                                            'text-sm text-zinc-900 dark:text-zinc-100',
-                                            'focus:outline-none focus:ring-2 focus:ring-indigo-500/20',
-                                        )}
-                                        placeholder="Value"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => removeFilter(filter.id)}
-                                        className="text-zinc-400 hover:text-zinc-600 dark:text-zinc-600 dark:hover:text-zinc-400"
-                                    >
-                                        <X className="h-4 w-4" />
-                                    </button>
-                                </div>
-                            ))}
+                                            {statusOptions.map((option) => (
+                                                <option key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                ))}
+
+                            {filters
+                                .filter((e) => e.column !== 'status')
+                                .map((filter) => (
+                                    <div key={filter.id} className="mb-2 flex items-center gap-2">
+                                        <select
+                                            value={filter.column}
+                                            onChange={(e) =>
+                                                updateFilter(filter.id, { column: e.target.value })
+                                            }
+                                            className={cn(
+                                                'w-1/3 px-2 py-1',
+                                                'rounded-md border border-zinc-200 dark:border-zinc-800',
+                                                'bg-white dark:bg-zinc-900',
+                                                'text-sm text-zinc-900 dark:text-zinc-100',
+                                                'focus:outline-none focus:ring-2 focus:ring-indigo-500/20',
+                                            )}
+                                        >
+                                            {filterColumns
+                                                .filter((t) => t.key !== 'status')
+                                                .map((col) => (
+                                                    <option key={col.key} value={col.key}>
+                                                        {col.label}
+                                                    </option>
+                                                ))}
+                                        </select>
+                                        <select
+                                            value={filter.condition}
+                                            onChange={(e) =>
+                                                updateFilter(filter.id, {
+                                                    condition: e.target.value,
+                                                })
+                                            }
+                                            className={cn(
+                                                'w-1/3 px-2 py-1',
+                                                'rounded-md border border-zinc-200 dark:border-zinc-800',
+                                                'bg-white dark:bg-zinc-900',
+                                                'text-sm text-zinc-900 dark:text-zinc-100',
+                                                'focus:outline-none focus:ring-2 focus:ring-indigo-500/20',
+                                            )}
+                                        >
+                                            <option value="equals">Igual</option>
+                                            <option value="contains">Contém</option>
+                                        </select>
+                                        <input
+                                            type="text"
+                                            value={filter.value}
+                                            onChange={(e) =>
+                                                updateFilter(filter.id, { value: e.target.value })
+                                            }
+                                            className={cn(
+                                                'w-1/3 px-2 py-1',
+                                                'rounded-md border border-zinc-200 dark:border-zinc-800',
+                                                'bg-white dark:bg-zinc-900',
+                                                'text-sm text-zinc-900 dark:text-zinc-100',
+                                                'focus:outline-none focus:ring-2 focus:ring-indigo-500/20',
+                                            )}
+                                            placeholder="Value"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => removeFilter(filter.id)}
+                                            className="text-zinc-400 hover:text-zinc-600 dark:text-zinc-600 dark:hover:text-zinc-400"
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                ))}
                             {filters.length > 0 && (
                                 <div className="mt-4 flex justify-end">
                                     <button
@@ -501,14 +464,21 @@ export function DataTable<TData, TValue>({
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    Sem resultados.
+                                    {loading ? (
+                                        <div className="flex items-center justify-center space-x-2">
+                                            <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-indigo-500"></div>
+                                            <span>Carregando...</span>
+                                        </div>
+                                    ) : (
+                                        <span>Nenhum registro encontrado</span>
+                                    )}
                                 </TableCell>
                             </TableRow>
                         )}
                     </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
+            {/* <div className="flex items-center justify-end space-x-2 py-4">
                 <div className="flex items-center gap-2 text-muted-foreground">
                     <Button
                         variant="outline"
@@ -577,7 +547,7 @@ export function DataTable<TData, TValue>({
                         ))}
                     </select>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 }
