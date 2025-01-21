@@ -193,6 +193,15 @@ export function DataTable<TData, TValue>({
         { value: 'Proposta aceita', label: 'Proposta Aceita' },
     ];
 
+    const getColumnValues = (columnId: string) => {
+        const column = table.getColumn(columnId); // Obter a coluna pelo ID
+        if (!column) return []; // Retorna vazio se a coluna não existir
+        return column.getFacetedRowModel().rows.map((row) => row.getValue(columnId));
+    };
+
+    const teste = getColumnValues('loa');
+    console.log(teste);
+
     return (
         <div className="container pb-10 pt-4">
             <div className="relative z-50 mb-14 w-full max-w-2xl">
@@ -257,7 +266,7 @@ export function DataTable<TData, TValue>({
                             {filterColumns
                                 .filter((t) => t.key === 'status')
                                 .map((col) => (
-                                    <div className="relative">
+                                    <div className="relative" key={col.key}>
                                         <label
                                             htmlFor={`filter-${col.key}`}
                                             className="text-sm font-medium text-zinc-700 dark:text-zinc-300"

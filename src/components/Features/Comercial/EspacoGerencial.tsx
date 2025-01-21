@@ -8,7 +8,7 @@ import { PaginationState } from '@tanstack/react-table';
 import React, { useState } from 'react';
 
 async function fetchData() {
-    const response = await api.get(`/api/comercial/coordenador/BeatrizRodolfo/`);
+    const response = await api.get(`/api/comercial/coordenador/Thais/`);
     return response.data;
 }
 
