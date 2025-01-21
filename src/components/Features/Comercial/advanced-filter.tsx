@@ -61,7 +61,7 @@ export function AdvancedFilter({ columns, onFilterChange }: AdvancedFilterProps)
       <PopoverContent className="w-[300px] p-0" align="start">
         <Command>
           <CommandInput placeholder="Add a filter..." />
-          <CommandEmpty>No filters found.</CommandEmpty>
+          <CommandEmpty>Nenhum filtro encontrado</CommandEmpty>
           <CommandGroup>
             {filters.map((filter) => (
               <div key={filter.id} className="flex items-center p-2">
@@ -105,7 +105,7 @@ export function AdvancedFilter({ columns, onFilterChange }: AdvancedFilterProps)
           </CommandGroup>
         </Command>
         <div className="flex justify-end p-2">
-          <Button onClick={applyFilters}>Apply Filters</Button>
+          <Button onClick={applyFilters}>Aplicar filtros</Button>
         </div>
       </PopoverContent>
     </Popover>
