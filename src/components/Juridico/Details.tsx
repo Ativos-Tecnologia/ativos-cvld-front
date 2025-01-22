@@ -2466,6 +2466,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                 {data?.properties["Memória de Cálculo Ordinário"].url && (
                   <Link
                     href={data?.properties["Memória de Cálculo Ordinário"].url}
+                    target="_blank"
                     className="bg-blue-600 hover:bg-blue-700 text-snow py-2 px-4 2xsm:w-full md:w-fit rounded-md flex items-center justify-center gap-3 transition-colors duration-300 uppercase text-sm"
                   >
                     <GrDocumentText className="h-4 w-4" />

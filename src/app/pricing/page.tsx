@@ -251,10 +251,10 @@ const Pricing = () => {
                     <Link href="#">Sobre nós</Link>
                 </nav>
                 <div className='flex items-center gap-4'>
-                    <Link href='/auth/signin/' className='px-6 py-3 border border-blue-700 rounded-md text-blue-700 hover:-translate-y-1 hover:bg-blue-800 hover:border-blue-800 hover:text-white transition-translate duration-300'>
+                    <Link href='/auth/signin/' target="_blank" className='px-6 py-3 border border-blue-700 rounded-md text-blue-700 hover:-translate-y-1 hover:bg-blue-800 hover:border-blue-800 hover:text-white transition-translate duration-300'>
                         <span>Entrar</span>
                     </Link>
-                    <Link href='/auth/signup/' className='px-6 py-3 bg-blue-700 border border-blue-700 text-white rounded-md hover:-translate-y-1 hover:bg-blue-800 hover:border-blue-800 transition-all duration-300'>
+                    <Link href='/auth/signup/' target="_blank" className='px-6 py-3 bg-blue-700 border border-blue-700 text-white rounded-md hover:-translate-y-1 hover:bg-blue-800 hover:border-blue-800 transition-all duration-300'>
                         <span>Cadastrar</span>
                     </Link>
                 </div>
