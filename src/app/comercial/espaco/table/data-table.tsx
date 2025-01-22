@@ -8,7 +8,6 @@ import {
     getCoreRowModel,
     getFilteredRowModel,
     getSortedRowModel,
-    PaginationState,
     SortingState,
     useReactTable,
     VisibilityState,
@@ -23,27 +22,9 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import React, { useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-    ChevronDown,
-    ChevronsUpDownIcon,
-    FilterIcon,
-    Plus,
-    Search,
-    SlidersHorizontal,
-    X,
-} from 'lucide-react';
-import { BiChevronLeft, BiChevronRight, BiChevronsLeft, BiChevronsRight } from 'react-icons/bi';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Command, CommandEmpty, CommandGroup } from '@/components/ui/command';
-import AmazingFilter from './test';
+
+import { FilterIcon, Search, X } from 'lucide-react';
+
 import { useClickOutside } from '@/hooks/use-click-outside';
 import { cn } from '@/lib/utils';
 
@@ -199,8 +180,9 @@ export function DataTable<TData, TValue>({
         return column.getFacetedRowModel().rows.map((row) => row.getValue(columnId));
     };
 
-    const teste = getColumnValues('loa');
-    console.log(teste);
+    const status = Array.from(new Set(getColumnValues('status'))) as string[];
+    const loaOptions = Array.from(new Set(getColumnValues('loa'))) as string[];
+    const usuarioOptions = Array.from(new Set(getColumnValues('usuario'))) as string[];
 
     return (
         <div className="container pb-10 pt-4">
@@ -302,8 +284,91 @@ export function DataTable<TData, TValue>({
                                     </div>
                                 ))}
 
+                            {filterColumns
+                                .filter((t) => t.key === 'loa')
+                                .map((col) => (
+                                    <div className="relative" key={col.key}>
+                                        <label
+                                            htmlFor={`filter-${col.key}`}
+                                            className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                                        >
+                                            <span>Lei Orçamentária Anual</span>
+                                        </label>
+                                        <select
+                                            id={`filter-${col.key}`}
+                                            value={
+                                                filters.find((f) => f.column === col.key)?.value ||
+                                                ''
+                                            }
+                                            onChange={(e) =>
+                                                addGlobalFilter(col.key, 'equals', e.target.value)
+                                            }
+                                            className={cn(
+                                                'w-full py-1.5 pl-3 pr-8',
+                                                'rounded-md border border-zinc-200 dark:border-zinc-800',
+                                                'bg-white dark:bg-zinc-900',
+                                                'text-sm text-zinc-900 dark:text-zinc-100',
+                                                'focus:outline-none focus:ring-2 focus:ring-indigo-500/20',
+                                            )}
+                                        >
+                                            <option defaultChecked value="">
+                                                Selecione
+                                            </option>
+                                            {loaOptions.map((option) => (
+                                                <option key={option} value={option}>
+                                                    {String(option)}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                ))}
+
+                            {filterColumns
+                                .filter((t) => t.key === 'usuario')
+                                .map((col) => (
+                                    <div className="relative" key={col.key}>
+                                        <label
+                                            htmlFor={`filter-${col.key}`}
+                                            className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                                        >
+                                            <span>Broker</span>
+                                        </label>
+                                        <select
+                                            id={`filter-${col.key}`}
+                                            value={
+                                                filters.find((f) => f.column === col.key)?.value ||
+                                                ''
+                                            }
+                                            onChange={(e) =>
+                                                addGlobalFilter(col.key, 'equals', e.target.value)
+                                            }
+                                            className={cn(
+                                                'w-full py-1.5 pl-3 pr-8',
+                                                'rounded-md border border-zinc-200 dark:border-zinc-800',
+                                                'bg-white dark:bg-zinc-900',
+                                                'text-sm text-zinc-900 dark:text-zinc-100',
+                                                'focus:outline-none focus:ring-2 focus:ring-indigo-500/20',
+                                            )}
+                                        >
+                                            <option defaultChecked value="">
+                                                Selecione
+                                            </option>
+                                            {usuarioOptions.map((option) => (
+                                                <option key={option} value={option}>
+                                                    {String(option)}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                ))}
+
                             {filters
-                                .filter((e) => e.column !== 'status')
+                                .filter(
+                                    (e) =>
+                                        e.column !== 'status' &&
+                                        e.column !== 'loa' &&
+                                        e.column !== 'usuario',
+                                )
                                 .map((filter) => (
                                     <div key={filter.id} className="mb-2 flex items-center gap-2">
                                         <select
@@ -320,7 +385,12 @@ export function DataTable<TData, TValue>({
                                             )}
                                         >
                                             {filterColumns
-                                                .filter((t) => t.key !== 'status')
+                                                .filter(
+                                                    (t) =>
+                                                        t.key !== 'status' &&
+                                                        t.key !== 'loa' &&
+                                                        t.key !== 'usuario',
+                                                )
                                                 .map((col) => (
                                                     <option key={col.key} value={col.key}>
                                                         {col.label}
