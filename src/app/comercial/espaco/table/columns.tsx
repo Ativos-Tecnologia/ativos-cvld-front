@@ -49,15 +49,15 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="flex items-center gap-2"
+                    className="flex max-w-36 items-center gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
-                    Usuário
+                    <p className="flex justify-start">Usuário</p>
                     <ArrowUpDown size={16} />
                 </Button>
             );
         },
-        cell: ({ row }) => <div>{row.getValue('usuario')}</div>,
+        cell: ({ row }) => <p className="max-w-36 truncate">{row.getValue('usuario')}</p>,
     },
     {
         accessorKey: 'loa',
@@ -84,26 +84,26 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
             return <p className="max-w-36 truncate">{row.getValue('observacoes')}</p>;
         },
     },
-    {
-        header: 'Comissão',
-        cell: ({ row }) => {
-            const resumo = row.original;
-            return (
-                <div className="flex items-center">
-                    <span>{numberFormat(resumo.comissao)}</span>
-                </div>
-            );
-        },
-    },
-    {
-        accessorKey: 'proposta_escolhida',
-        header: 'Proposta',
-        cell: ({ row }) => (
-            <div className="flex items-center">
-                <span>{numberFormat(row.getValue('proposta_escolhida'))}</span>
-            </div>
-        ),
-    },
+    // {
+    //     header: 'Comissão',
+    //     cell: ({ row }) => {
+    //         const resumo = row.original;
+    //         return (
+    //             <div className="flex items-center">
+    //                 <span>{numberFormat(resumo.comissao)}</span>
+    //             </div>
+    //         );
+    //     },
+    // },
+    // {
+    //     accessorKey: 'proposta_escolhida',
+    //     header: 'Proposta',
+    //     cell: ({ row }) => (
+    //         <div className="flex items-center">
+    //             <span>{numberFormat(row.getValue('proposta_escolhida'))}</span>
+    //         </div>
+    //     ),
+    // },
     {
         accessorKey: 'valor_liquido_disponivel',
         header: 'Valor Líquido',
@@ -134,7 +134,7 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
         ),
     },
     {
-        accessorKey: 'proposta_maxima',
+        accessorKey: 'credor',
         header: ({ column }) => {
             return (
                 <Button
@@ -142,37 +142,37 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
                     className="flex min-w-2 max-w-36 items-center gap-4"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
-                    Proposta Máxima
+                    Nome do Credor
                     <ArrowUpDown size={16} />
                 </Button>
             );
         },
         cell: ({ row }) => (
             <div className="flex items-center">
-                <span>{numberFormat(row.getValue('proposta_maxima'))}</span>
+                <span>{row.getValue('credor')}</span>
             </div>
         ),
     },
-    {
-        accessorKey: 'proposta_minima',
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    className="flex min-w-2 max-w-36 items-center gap-4"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-                >
-                    Proposta Mínima
-                    <ArrowUpDown size={16} />
-                </Button>
-            );
-        },
-        cell: ({ row }) => (
-            <div className="flex items-center">
-                <span>{numberFormat(row.getValue('proposta_minima'))}</span>
-            </div>
-        ),
-    },
+    // {
+    //     accessorKey: 'proposta_minima',
+    //     header: ({ column }) => {
+    //         return (
+    //             <Button
+    //                 variant="ghost"
+    //                 className="flex min-w-2 max-w-36 items-center gap-4"
+    //                 onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+    //             >
+    //                 Proposta Mínima
+    //                 <ArrowUpDown size={16} />
+    //             </Button>
+    //         );
+    //     },
+    //     cell: ({ row }) => (
+    //         <div className="flex items-center">
+    //             <span>{numberFormat(row.getValue('proposta_minima'))}</span>
+    //         </div>
+    //     ),
+    // },
     {
         accessorKey: 'status',
         header: ({ column }) => {
