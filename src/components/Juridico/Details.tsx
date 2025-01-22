@@ -1840,8 +1840,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
   }, [data]);
 
-  console.log(data)
-
   if (!data) {
     return (
       <JuridicoDetailsSkeleton />
@@ -1850,11 +1848,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
   return (
     <div className="flex flex-col w-full gap-5">
-
-      {/* chart test */}
-      {/* <div className="w-full flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-white dark:bg-boxdark p-5 rounded-md">
-        
-      </div> */}
 
       <div className="flex w-full items-end justify-end rounded-md">
         <Breadcrumb
