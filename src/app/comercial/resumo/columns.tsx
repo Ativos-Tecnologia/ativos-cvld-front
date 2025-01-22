@@ -1,27 +1,27 @@
-import * as React from "react";
-import { ColumnDef, Row } from "@tanstack/react-table";
+import * as React from 'react';
+import { ColumnDef, Row } from '@tanstack/react-table';
 
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
-import { IResumoComercial } from "@/interfaces/IResumoComercial";
-import dateFormater from "@/functions/formaters/dateFormater";
-import { FindCoordinator } from "@/functions/comercial/find_cordinator";
-import api from "@/utils/api";
-import { useMutation } from "@tanstack/react-query";
-import CRMTooltip from "@/components/CrmUi/Tooltip";
-import { toast } from "sonner";
-import { BiCheck } from "react-icons/bi";
-import ModalChangePasswordComponent from "@/components/CrmUi/modal-change-component";
+import { IResumoComercial } from '@/interfaces/IResumoComercial';
+import dateFormater from '@/functions/formaters/dateFormater';
+import { FindCoordinator } from '@/functions/comercial/find_cordinator';
+import api from '@/utils/api';
+import { useMutation } from '@tanstack/react-query';
+import CRMTooltip from '@/components/CrmUi/Tooltip';
+import { toast } from 'sonner';
+import { BiCheck } from 'react-icons/bi';
+import ModalChangePasswordComponent from '@/components/CrmUi/modal-change-component';
 
 // function Filter({ column }: { column: Column<any, unknown> }) {
 //     const columnFilterValue = column.getFilterValue()
@@ -106,237 +106,229 @@ import ModalChangePasswordComponent from "@/components/CrmUi/modal-change-compon
 //   }
 
 const CellComponent = ({ row }: { row: Row<IResumoComercial> }) => {
-  const resumo = row.original;
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
+    const resumo = row.original;
+    const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-  function handleCopyPhone() {
-    navigator.clipboard.writeText(`${resumo.phone}`);
-  }
+    function handleCopyPhone() {
+        navigator.clipboard.writeText(`${resumo.phone}`);
+    }
 
-  async function handleConfirmUser() {
-    return await api.patch(`/api/comercial/confirm-user/${resumo.id}/`);
-  }
+    async function handleConfirmUser() {
+        return await api.patch(`/api/comercial/confirm-user/${resumo.id}/`);
+    }
 
-  async function handleChangePassword(new_password: string) {
-    return await api.patch(`/api/user/change-password/${resumo.id}/`, {
-      password: new_password,
+    async function handleChangePassword(new_password: string) {
+        return await api.patch(`/api/user/change-password/${resumo.id}/`, {
+            password: new_password,
+        });
+    }
+
+    const { mutateAsync: mutateChangePassword } = useMutation({
+        mutationFn: handleChangePassword,
+        onSuccess: () => {
+            toast.success('Senha alterada com sucesso', {
+                classNames: {
+                    toast: 'bg-white dark:bg-boxdark',
+                    title: 'text-black-2 dark:text-white',
+                    actionButton:
+                        'bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300',
+                },
+                icon: <BiCheck className="fill-green-400 text-lg" />,
+            });
+            setIsModalOpen(false);
+        },
+        onError: (error) => {
+            console.error('Erro ao alterar senha:', error);
+            toast.error('Erro ao alterar senha', {
+                classNames: {
+                    toast: 'bg-white dark:bg-boxdark',
+                    title: 'text-black-2 dark:text-white',
+                },
+            });
+        },
     });
-  }
 
-  const { mutateAsync: mutateChangePassword } = useMutation({
-    mutationFn: handleChangePassword,
-    onSuccess: () => {
-      toast.success("Senha alterada com sucesso", {
-        classNames: {
-          toast: "bg-white dark:bg-boxdark",
-          title: "text-black-2 dark:text-white",
-          actionButton:
-            "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300",
+    const handleConfirmMutation = useMutation({
+        mutationFn: handleConfirmUser,
+        onMutate() {
+            const prevData = document.getElementById(String(resumo.id))!.textContent;
+            resumo.is_confirmed = true;
+            document.getElementById(String(resumo.id))!.textContent = 'Sim';
+            return { prevData };
         },
-        icon: <BiCheck className="fill-green-400 text-lg" />,
-      });
-      setIsModalOpen(false);
-    },
-    onError: (error) => {
-      console.error("Erro ao alterar senha:", error);
-      toast.error("Erro ao alterar senha", {
-        classNames: {
-          toast: "bg-white dark:bg-boxdark",
-          title: "text-black-2 dark:text-white",
+        onSuccess: () => {
+            toast.success('Usuário confirmado', {
+                classNames: {
+                    toast: 'bg-white dark:bg-boxdark',
+                    title: 'text-black-2 dark:text-white',
+                    actionButton:
+                        'bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300',
+                },
+                icon: <BiCheck className="fill-green-400 text-lg" />,
+                action: {
+                    label: 'OK',
+                    onClick() {
+                        toast.dismiss();
+                    },
+                },
+            });
         },
-      });
-    },
-  });
+        onError: (error, paramsObj, context) => {
+            resumo.is_confirmed = false;
+            document.getElementById(String(resumo.id))!.textContent = context?.prevData as string;
+            toast.error('Erro ao confirmar usuário', {
+                classNames: {
+                    toast: 'bg-white dark:bg-boxdark',
+                    title: 'text-black-2 dark:text-white',
+                },
+            });
+        },
+    });
 
-  const handleConfirmMutation = useMutation({
-    mutationFn: handleConfirmUser,
-    onMutate() {
-      const prevData = document.getElementById(String(resumo.id))!.textContent;
-      resumo.is_confirmed = true;
-      document.getElementById(String(resumo.id))!.textContent = "Sim";
-      return { prevData };
-    },
-    onSuccess: () => {
-      toast.success("Usuário confirmado", {
-        classNames: {
-          toast: "bg-white dark:bg-boxdark",
-          title: "text-black-2 dark:text-white",
-          actionButton:
-            "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300",
-        },
-        icon: <BiCheck className="fill-green-400 text-lg" />,
-        action: {
-          label: "OK",
-          onClick() {
-            toast.dismiss();
-          },
-        },
-      });
-    },
-    onError: (error, paramsObj, context) => {
-      resumo.is_confirmed = false;
-      document.getElementById(String(resumo.id))!.textContent =
-        context?.prevData as string;
-      toast.error("Erro ao confirmar usuário", {
-        classNames: {
-          toast: "bg-white dark:bg-boxdark",
-          title: "text-black-2 dark:text-white",
-        },
-      });
-    },
-  });
+    const handleConfirm = async () => {
+        await handleConfirmMutation.mutateAsync();
+    };
 
-  const handleConfirm = async () => {
-    await handleConfirmMutation.mutateAsync();
-  };
-
-  return (
-    <div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Abrir menu</span>
-            <MoreHorizontal />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="bg-white dark:bg-boxdark-2">
-          <DropdownMenuLabel>Ações</DropdownMenuLabel>
-          <DropdownMenuItem onClick={handleCopyPhone}>
-            Copiar telefone
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            disabled={resumo.is_confirmed}
-            onClick={handleConfirm}
-          >
-            Confirmar usuário
-          </DropdownMenuItem>
-          <DropdownMenuItem disabled>Solicitar designação</DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => setIsModalOpen(true)}
-            className="cursor-pointer"
-            typeof="button"
-          >
-            Redefinir senha
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <ModalChangePasswordComponent
-        className="text-graydark dark:bg-boxdark dark:text-white"
-        nameUser={resumo.username}
-        onSubmit={async (password: string) => {
-          await mutateChangePassword(password);
-        }}
-        setOpenModal={setIsModalOpen}
-        openModal={isModalOpen}
-      />
-    </div>
-  );
+    return (
+        <div>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Abrir menu</span>
+                        <MoreHorizontal />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-white dark:bg-boxdark-2">
+                    <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                    <DropdownMenuItem onClick={handleCopyPhone}>Copiar telefone</DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem disabled={resumo.is_confirmed} onClick={handleConfirm}>
+                        Confirmar usuário
+                    </DropdownMenuItem>
+                    <DropdownMenuItem disabled>Solicitar designação</DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={() => setIsModalOpen(true)}
+                        className="cursor-pointer"
+                        typeof="button"
+                    >
+                        Redefinir senha
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+            <ModalChangePasswordComponent
+                className="text-graydark dark:bg-boxdark dark:text-white"
+                nameUser={resumo.username}
+                onSubmit={async (password: string) => {
+                    await mutateChangePassword(password);
+                }}
+                setOpenModal={setIsModalOpen}
+                openModal={isModalOpen}
+            />
+        </div>
+    );
 };
 
 export default CellComponent;
 
 export const columns: ColumnDef<IResumoComercial>[] = [
-  {
-    accessorKey: "date_joined",
+    {
+        accessorKey: 'date_joined',
 
-    accessorFn: (row) => dateFormater(row.date_joined.split("T")[0]),
-    header: ({ column }) => {
-      return (
-        <Button
-          variant={"ghost"}
-          className="flex items-center gap-2"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Data de Cadastro
-          <ArrowUpDown size={16} />
-        </Button>
-      );
+        accessorFn: (row) => dateFormater(row.date_joined.split('T')[0]),
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant={'ghost'}
+                    className="flex items-center gap-2"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+                >
+                    Data de Cadastro
+                    <ArrowUpDown size={16} />
+                </Button>
+            );
+        },
+        cell: ({ row }) => <div className="lowercase">{row.getValue('date_joined')}</div>,
     },
-    cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("date_joined")}</div>
-    ),
-  },
-  {
-    accessorKey: "username",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant={"ghost"}
-          className="flex items-center gap-2"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Usuário
-          <ArrowUpDown size={16} />
-        </Button>
-      );
+    {
+        accessorKey: 'username',
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant={'ghost'}
+                    className="flex items-center gap-2"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+                >
+                    Usuário
+                    <ArrowUpDown size={16} />
+                </Button>
+            );
+        },
+        cell: ({ row }) => <div>{row.getValue('username')}</div>,
     },
-    cell: ({ row }) => <div>{row.getValue("username")}</div>,
-  },
-  {
-    accessorKey: "phone",
-    header: "Telefone",
-    cell: ({ row }) => (
-      <CRMTooltip text="Seguir para o WhatsApp">
-        <a
-          href={`https://api.whatsapp.com/send?phone=55${(row.getValue("phone") as string)?.replace(/\D/g, "")}`}
-          target="_blank"
-          className="lowercase"
-          rel="noreferrer"
-        >
-          {row.getValue("phone")}
-        </a>
-      </CRMTooltip>
-    ),
-  },
-  {
-    accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          className="flex justify-start gap-2"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          <p className="flex justify-start">Email</p>
-          <ArrowUpDown size={16} />
-        </Button>
-      );
+    {
+        accessorKey: 'phone',
+        header: 'Telefone',
+        cell: ({ row }) => (
+            <CRMTooltip text="Seguir para o WhatsApp">
+                <a
+                    href={`https://api.whatsapp.com/send?phone=55${(row.getValue('phone') as string)?.replace(/\D/g, '')}`}
+                    target="_blank"
+                    className="lowercase"
+                    rel="noreferrer"
+                >
+                    {row.getValue('phone')}
+                </a>
+            </CRMTooltip>
+        ),
     },
-    cell: ({ row }) => (
-      <a
-        href={`mailto:${row.getValue("email")}?subject=Boas%20vindas%20ao%20Celer`}
-        className="lowercase"
-      >
-        {row.getValue("email")}
-      </a>
-    ),
-  },
-  {
-    header: "Coordenador",
-    cell: ({ row }) => {
-      const resumo = row.original;
-      return (
-        <div className="flex items-center">
-          <span>{FindCoordinator(resumo.username)}</span>
-        </div>
-      );
+    {
+        accessorKey: 'email',
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    className="flex justify-start gap-2"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+                >
+                    <p className="flex justify-start">Email</p>
+                    <ArrowUpDown size={16} />
+                </Button>
+            );
+        },
+        cell: ({ row }) => (
+            <a
+                href={`mailto:${row.getValue('email')}?subject=Boas%20vindas%20ao%20Celer`}
+                className="lowercase"
+            >
+                {row.getValue('email')}
+            </a>
+        ),
     },
-  },
-  {
-    accessorKey: "is_confirmed",
-    header: "Confirmado",
-    cell: ({ row }) => (
-      <div id={String(row.original.id)} className="flex items-center">
-        {row.getValue("is_confirmed") ? "Sim" : "Não"}
-      </div>
-    ),
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      return <CellComponent row={row} />;
+    {
+        header: 'Coordenador',
+        cell: ({ row }) => {
+            const resumo = row.original;
+            return (
+                <div className="flex items-center">
+                    <span>{FindCoordinator(resumo.username)}</span>
+                </div>
+            );
+        },
     },
-  },
+    {
+        accessorKey: 'is_confirmed',
+        header: 'Confirmado',
+        cell: ({ row }) => (
+            <div id={String(row.original.id)} className="flex items-center">
+                {row.getValue('is_confirmed') ? 'Sim' : 'Não'}
+            </div>
+        ),
+    },
+    {
+        id: 'actions',
+        enableHiding: false,
+        cell: ({ row }) => {
+            return <CellComponent row={row} />;
+        },
+    },
 ];
