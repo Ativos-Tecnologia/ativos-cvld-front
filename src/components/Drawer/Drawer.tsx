@@ -348,7 +348,7 @@ export function AwesomeDrawer() {
                       <ul>
                         <hr className="border border-stroke dark:border-strokedark my-4" />
                         <li className="text-sm flex text-gray dark:text-gray-400 w-full py-1">
-                          <a href={linkAdapter(item.link_memoria_de_calculo_simples)} className="w-full text-center py-3 flex items-center justify-center text-sm font-semibold text-white rounded-md bg-blue-700 hover:bg-blue-800">
+                          <a href={linkAdapter(item.link_memoria_de_calculo_simples)} target='_blank' className="w-full text-center py-3 flex items-center justify-center text-sm font-semibold text-white rounded-md bg-blue-700 hover:bg-blue-800">
                             <span className="text-[16px] font-medium text-gray">
                               Memória de Cálculo Simples
                             </span>
@@ -361,7 +361,7 @@ export function AwesomeDrawer() {
                         {
                           item.link_memoria_de_calculo_rra && (
                             <li className="text-sm flex text-gray-500 dark:text-gray-400 w-full py-1">
-                              <a href={linkAdapter(item.link_memoria_de_calculo_rra)} className="w-full text-center py-3 flex items-center justify-center text-sm font-semibold text-white rounded-md bg-blue-700 hover:bg-blue-800">
+                              <a href={linkAdapter(item.link_memoria_de_calculo_rra)} target='_blank' className="w-full text-center py-3 flex items-center justify-center text-sm font-semibold text-white rounded-md bg-blue-700 hover:bg-blue-800">
                                 <span className="text-[16px] font-medium">
                                   Memória de Cálculo RRA
                                 </span>

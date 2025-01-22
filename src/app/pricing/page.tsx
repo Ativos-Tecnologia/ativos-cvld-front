@@ -596,7 +596,7 @@ const Pricing = () => {
                                 <span className="ml-3"><span className="text-black">5 TB</span> cloud storage</span>
                             </li>
                         </ul>
-                        <a href="#/" className="flex justify-center items-center bg-indigo-600 rounded-xl py-5 px-4 text-center text-white text-xl">
+                        <a href="#/" target='_blank' className="flex justify-center items-center bg-indigo-600 rounded-xl py-5 px-4 text-center text-white text-xl">
                             Choose Plan
                             <img src="https://res.cloudinary.com/williamsondesign/arrow-right.svg" className="ml-2" />
                         </a>
@@ -624,7 +624,7 @@ const Pricing = () => {
                                 <span className="ml-3"><span className="text-white">15 TB</span> cloud storage</span>
                             </li>
                         </ul>
-                        <a href="#/" className="flex justify-center items-center bg-indigo-600 rounded-xl py-6 px-4 text-center text-white text-2xl">
+                        <a href="#/" target='_blank' className="flex justify-center items-center bg-indigo-600 rounded-xl py-6 px-4 text-center text-white text-2xl">
                             Choose Plan
                             <img src="https://res.cloudinary.com/williamsondesign/arrow-right.svg" className="ml-2" />
                         </a>
@@ -652,7 +652,7 @@ const Pricing = () => {
                                 <span className="ml-3"><span className="text-black">Unlimited</span> cloud storage</span>
                             </li>
                         </ul>
-                        <a href="#/" className="flex justify-center items-center bg-indigo-600 rounded-xl py-5 px-4 text-center text-white text-xl">
+                        <a href="#/" target='_blank' className="flex justify-center items-center bg-indigo-600 rounded-xl py-5 px-4 text-center text-white text-xl">
                             Choose Plan
                             <img src="https://res.cloudinary.com/williamsondesign/arrow-right.svg" className="ml-2" />
                         </a>
