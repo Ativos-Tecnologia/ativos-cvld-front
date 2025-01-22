@@ -20,9 +20,17 @@ type CelerComboboxProps = {
     className?: string;
     onChangeValue: ((value: string) => void) | ((value: string) => Promise<void>);
     value: string;
+    placeholder?: string;
 };
 
-const CelerAppCombobox = ({ list, size, className, value, onChangeValue }: CelerComboboxProps) => {
+const CelerAppCombobox = ({
+    list,
+    size,
+    className,
+    value,
+    onChangeValue,
+    placeholder,
+}: CelerComboboxProps) => {
     const [open, setOpen] = useState<boolean>(false);
 
     return (
@@ -43,7 +51,7 @@ const CelerAppCombobox = ({ list, size, className, value, onChangeValue }: Celer
                 </PopoverTrigger>
                 <PopoverContent className={`w-[${size}] p-0`}>
                     <Command>
-                        <CommandInput placeholder="Buscar broker..." />
+                        <CommandInput placeholder={`${placeholder}`} />
                         <CommandList>
                             <CommandEmpty>Sem resultados</CommandEmpty>
                             <CommandGroup>

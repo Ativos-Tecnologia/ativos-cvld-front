@@ -11,7 +11,7 @@ const CustomSkeleton = ({ className, type = "title", ...props }: React.HTMLAttri
     type: keyof typeof skeletonTypes
 }) => {
     return (
-        <div {...props} className={cn(`relative w-full h-full rounded-md overflow-hidden ${skeletonTypes[type]} before:content-[''] before:w-[50%] before:h-full before:absolute before:top-0 before:left-0 before:blur before:-translate-x-100 before:animate-skeleton-pass`, className)}></div>
+        <div {...props} className={cn(`relative w-full h-full rounded-md overflow-hidden ${skeletonTypes[type]} before:content-[''] before:w-full before:h-full before:absolute before:top-0 before:left-0 before:blur-xl before:-translate-x-100 before:animate-skeleton-pass`, className)}></div>
     )
 }
 

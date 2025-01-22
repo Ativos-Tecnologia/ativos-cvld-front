@@ -645,8 +645,10 @@ const PJform = ({
     }, [isFormModified]);
 
     useEffect(() => {
-        const bancoList = bancos.map((banco) => banco.nome_da_instituicao);
-        setBanco(bancoList);
+        const bancolist = bancos.map(
+            (banco) => `${banco.codigo + ' - ' + banco.nome_da_instituicao}`,
+        );
+        setBanco(bancolist);
     }, []);
 
     return (
@@ -1109,10 +1111,13 @@ const PJform = ({
                                 <>
                                     <CelerAppCombobox
                                         list={banco}
+                                        placeholder="Selecione o Banco"
                                         className="w-full"
                                         value={field.value}
                                         onChangeValue={(value) => {
-                                            setBanco([value]);
+                                            if (!banco.includes(value)) {
+                                                setBanco([value, ...banco]);
+                                            }
                                             setValue('banco', value);
                                         }}
                                     />
