@@ -124,7 +124,7 @@ export const CelerInputField = React.memo(
                 );
             case InputFieldVariant.SELECT:
                 return (
-                    <div className="flex rounded-md gap-4 mt-2 w-full">
+                    <div className={cn("flex rounded-md gap-4 mt-2 w-full", props.className)}>
                         {props.iconSrc && <div className="flex items-center">{props.iconSrc}</div>}
                         <Select onValueChange={(selectedValue) => handleChange(selectedValue)} value={value} defaultValue={value} disabled={props.disabled || props.isLoading}>
                             <SelectTrigger className="shad-select-trigger">

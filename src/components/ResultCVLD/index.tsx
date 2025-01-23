@@ -420,7 +420,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                     {
                       result.result[0].link_memoria_de_calculo_rra && (
                         <li className="text-sm flex  w-full py-1">
-                          <a href={linkAdapter(result.result[0].link_memoria_de_calculo_rra)} className="w-full text-center p-4 flex items-center justify-center text-sm font-semibold text-white rounded-md bg-blue-700 hover:bg-blue-800">
+                          <a href={linkAdapter(result.result[0].link_memoria_de_calculo_rra)} target='_blank' className="w-full text-center p-4 flex items-center justify-center text-sm font-semibold text-white rounded-md bg-blue-700 hover:bg-blue-800">
                             <span className="text-[16px] font-medium">
                               Memória de Cálculo RRA
                             </span>
@@ -433,7 +433,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                       )
                     }
                     <li className="text-sm flex  w-full py-1">
-                      <a href={linkAdapter(result.result[0].link_memoria_de_calculo_simples)} className="w-full text-center p-4 flex result.result[0]s-center justify-center text-sm font-semibold text-white rounded-md bg-blue-700 hover:bg-blue-800">
+                      <a href={linkAdapter(result.result[0].link_memoria_de_calculo_simples)} target='_blank' className="w-full text-center p-4 flex result.result[0]s-center justify-center text-sm font-semibold text-white rounded-md bg-blue-700 hover:bg-blue-800">
                         <span className="text-[16px] font-medium">
                           Memória de Cálculo Simples
                         </span>
@@ -446,7 +446,7 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                     {
                       result.result[0].link_cvld && (
                         <li className="text-sm flex w-full py-1">
-                          <a href={linkAdapter(result.result[0].link_cvld)} className="w-full text-center p-4 flex items-center justify-center text-sm font-semibold text-white rounded-md bg-blue-700 hover:bg-blue-800">
+                          <a href={linkAdapter(result.result[0].link_cvld)} target='_blank' className="w-full text-center p-4 flex items-center justify-center text-sm font-semibold text-white rounded-md bg-blue-700 hover:bg-blue-800">
                             <span className="text-[16px] font-medium">
                               Baixar CVLD
                             </span>

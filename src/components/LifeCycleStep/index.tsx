@@ -28,7 +28,10 @@ const steps = [
         alias: "Due",
         subLabels: [
             "Due em Andamento",
-            "Revisão de Due Diligence"
+            "Revisão de Due Diligence",
+            "Revisão Valor/LOA",
+            "Pré-Due Ativo",
+            "Pré-Due Cedente"
         ],
         icon: <MdOutlineContentPasteSearch className="text-2xl" />
     },

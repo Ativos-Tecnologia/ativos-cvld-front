@@ -71,7 +71,7 @@ export const Balance = () => {
                     }
                 >
 
-                    <a href="#" className="flex relative items-center justify-center rounded-full text-sm px-2 py-[2px] border-[0.5px] border-stroke dark:border-strokedark dark:bg-meta-4 dark:text-white">
+                    <a href="#" target='_blank' className="flex relative items-center justify-center rounded-full text-sm px-2 py-[2px] border-[0.5px] border-stroke dark:border-strokedark dark:bg-meta-4 dark:text-white">
 
                         {credits.available_credits <= 10 && (
                             <div className="absolute -top-1 -left-1 w-4 h-4 rounded-full flex items-center justify-center bg-meta-1">
