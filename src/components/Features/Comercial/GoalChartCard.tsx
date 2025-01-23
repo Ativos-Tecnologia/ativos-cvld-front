@@ -1,4 +1,5 @@
 import { GoalChart } from '@/components/Charts/GoalChart';
+import GoalChartSkeleton from '@/components/Skeletons/GoalChartSkeleton';
 
 type Result = {
     id: string;
@@ -19,6 +20,10 @@ interface GoalChartCardProps {
 }
 
 export function GoalChartCard({ results }: GoalChartCardProps) {
+    if (!results || results.length === 0) {
+        return <GoalChartSkeleton />;
+    }
+
     function groupByUsuario(results: Result[]) {
         return results.reduce((acc, result) => {
             const { usuario } = result;
@@ -30,36 +35,58 @@ export function GoalChartCard({ results }: GoalChartCardProps) {
         }, {} as GroupedResults);
     }
 
-    const generateColor = (index: number) => {
-        const hue = (index * 137) % 360;
-        return `hsl(${hue}, 70%, 45%)`;
-    };
+    function generateColor(color: 'red' | 'yellow' | 'green', index: number, steps: number) {
+        const baseHues = {
+            red: 0,
+            yellow: 60,
+            green: 120,
+        };
+
+        const baseHue = baseHues[color];
+        const saturation = 70;
+
+        const minLightness = 25;
+        const maxLightness = 55;
+        const stepSize = (maxLightness - minLightness) / (steps - 1);
+
+        const lightness = maxLightness - index * stepSize;
+
+        return `hsl(${baseHue}, ${saturation}%, ${lightness}%)`;
+    }
 
     function groupChartDataByGoal(
         groupedResults: GroupedResults,
         goal: 'meta_1' | 'meta_2' | 'meta_3',
+        color: 'red' | 'yellow' | 'green',
     ) {
-        return Object.entries(groupedResults).map(([usuario, results], index) => {
+        const chartData = Object.entries(groupedResults).map(([usuario, results]) => {
             const total = Number(results.reduce((sum, item) => sum + item[goal], 0).toFixed(2));
-            return {
-                usuario,
-                total,
-                fill: generateColor(index),
-            };
+            return { usuario, total };
         });
+
+        chartData.sort((a, b) => b.total - a.total);
+
+        return chartData.map((data, index) => ({
+            ...data,
+            fill: generateColor(color, index, chartData.length),
+        }));
     }
 
     const groupedResults = groupByUsuario(results);
 
-    const meta1Data = groupChartDataByGoal(groupedResults, 'meta_1');
-    const meta2Data = groupChartDataByGoal(groupedResults, 'meta_2');
-    const meta3Data = groupChartDataByGoal(groupedResults, 'meta_3');
+    const meta1Data = groupChartDataByGoal(groupedResults, 'meta_1', 'red');
+    const meta2Data = groupChartDataByGoal(groupedResults, 'meta_2', 'yellow');
+    const meta3Data = groupChartDataByGoal(groupedResults, 'meta_3', 'green');
 
     return (
-        <section className="flex w-full flex-col justify-between gap-2 rounded-md bg-white py-2 pl-4 dark:bg-boxdark lg:flex-row">
-            <GoalChart footerText={'Cenário 1'} chartData={meta1Data} />
-            <GoalChart footerText={'Cenário 2'} chartData={meta2Data} />
-            <GoalChart footerText={'Cenário 3'} chartData={meta3Data} />
+        <section className="flex min-h-fit w-full flex-col justify-between gap-2 rounded-md bg-white py-2 pl-4 dark:bg-boxdark lg:flex-row">
+            {meta1Data && meta2Data && meta3Data && (
+                <>
+                    <GoalChart footerText={'META ATÉ 2.5MM'} chartData={meta1Data} />
+                    <GoalChart footerText={'META 2.5MM ATÉ 3.75MM'} chartData={meta2Data} />
+                    <GoalChart footerText={'META ACIMA DE 3.75MM'} chartData={meta3Data} />
+                </>
+            )}
         </section>
     );
 }
