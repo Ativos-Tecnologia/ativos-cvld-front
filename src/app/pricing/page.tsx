@@ -251,10 +251,10 @@ const Pricing = () => {
                     <Link href="#">Sobre nós</Link>
                 </nav>
                 <div className='flex items-center gap-4'>
-                    <Link href='/auth/signin/' className='px-6 py-3 border border-blue-700 rounded-md text-blue-700 hover:-translate-y-1 hover:bg-blue-800 hover:border-blue-800 hover:text-white transition-translate duration-300'>
+                    <Link href='/auth/signin/' target="_blank" className='px-6 py-3 border border-blue-700 rounded-md text-blue-700 hover:-translate-y-1 hover:bg-blue-800 hover:border-blue-800 hover:text-white transition-translate duration-300'>
                         <span>Entrar</span>
                     </Link>
-                    <Link href='/auth/signup/' className='px-6 py-3 bg-blue-700 border border-blue-700 text-white rounded-md hover:-translate-y-1 hover:bg-blue-800 hover:border-blue-800 transition-all duration-300'>
+                    <Link href='/auth/signup/' target="_blank" className='px-6 py-3 bg-blue-700 border border-blue-700 text-white rounded-md hover:-translate-y-1 hover:bg-blue-800 hover:border-blue-800 transition-all duration-300'>
                         <span>Cadastrar</span>
                     </Link>
                 </div>
@@ -596,7 +596,7 @@ const Pricing = () => {
                                 <span className="ml-3"><span className="text-black">5 TB</span> cloud storage</span>
                             </li>
                         </ul>
-                        <a href="#/" className="flex justify-center items-center bg-indigo-600 rounded-xl py-5 px-4 text-center text-white text-xl">
+                        <a href="#/" target='_blank' className="flex justify-center items-center bg-indigo-600 rounded-xl py-5 px-4 text-center text-white text-xl">
                             Choose Plan
                             <img src="https://res.cloudinary.com/williamsondesign/arrow-right.svg" className="ml-2" />
                         </a>
@@ -624,7 +624,7 @@ const Pricing = () => {
                                 <span className="ml-3"><span className="text-white">15 TB</span> cloud storage</span>
                             </li>
                         </ul>
-                        <a href="#/" className="flex justify-center items-center bg-indigo-600 rounded-xl py-6 px-4 text-center text-white text-2xl">
+                        <a href="#/" target='_blank' className="flex justify-center items-center bg-indigo-600 rounded-xl py-6 px-4 text-center text-white text-2xl">
                             Choose Plan
                             <img src="https://res.cloudinary.com/williamsondesign/arrow-right.svg" className="ml-2" />
                         </a>
@@ -652,7 +652,7 @@ const Pricing = () => {
                                 <span className="ml-3"><span className="text-black">Unlimited</span> cloud storage</span>
                             </li>
                         </ul>
-                        <a href="#/" className="flex justify-center items-center bg-indigo-600 rounded-xl py-5 px-4 text-center text-white text-xl">
+                        <a href="#/" target='_blank' className="flex justify-center items-center bg-indigo-600 rounded-xl py-5 px-4 text-center text-white text-xl">
                             Choose Plan
                             <img src="https://res.cloudinary.com/williamsondesign/arrow-right.svg" className="ml-2" />
                         </a>

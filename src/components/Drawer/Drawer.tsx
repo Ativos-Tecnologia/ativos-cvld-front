@@ -455,6 +455,7 @@ export function AwesomeDrawer() {
                                                     href={linkAdapter(
                                                         item.link_memoria_de_calculo_simples,
                                                     )}
+                                                    target="_blank"
                                                     className="flex w-full items-center justify-center rounded-md bg-blue-700 py-3 text-center text-sm font-semibold text-white hover:bg-blue-800"
                                                 >
                                                     <span className="text-[16px] font-medium text-gray">
@@ -475,6 +476,7 @@ export function AwesomeDrawer() {
                                                         href={linkAdapter(
                                                             item.link_memoria_de_calculo_rra,
                                                         )}
+                                                        target="_blank"
                                                         className="flex w-full items-center justify-center rounded-md bg-blue-700 py-3 text-center text-sm font-semibold text-white hover:bg-blue-800"
                                                     >
                                                         <span className="text-[16px] font-medium">
