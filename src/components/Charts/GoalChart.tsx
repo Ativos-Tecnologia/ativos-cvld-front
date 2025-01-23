@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Label, Pie, PieChart } from 'recharts';
 
-import { CardContent, CardFooter } from '@/components/ui/card';
+import { CardFooter } from '@/components/ui/card';
 import {
     ChartConfig,
     ChartContainer,
@@ -29,8 +29,8 @@ export function GoalChart({ footerText, chartData }: GoalChartProps) {
     const total = chartData.reduce((acc, { total }) => acc + total, 0);
 
     return (
-        <div className="flex flex-col">
-            <CardContent className="flex-1 pb-0">
+        <div className="flex min-h-60 min-w-60 flex-col">
+            <div className="flex-1 pb-0">
                 <ChartContainer
                     config={chartConfig}
                     className="mx-auto aspect-square max-h-[250px]"
@@ -45,7 +45,7 @@ export function GoalChart({ footerText, chartData }: GoalChartProps) {
                                         return (
                                             <>
                                                 <div
-                                                    className={`size-3 rounded`}
+                                                    className="size-3 rounded"
                                                     style={{
                                                         backgroundColor: hslColor,
                                                     }}
@@ -101,7 +101,7 @@ export function GoalChart({ footerText, chartData }: GoalChartProps) {
                         </Pie>
                     </PieChart>
                 </ChartContainer>
-            </CardContent>
+            </div>
             <CardFooter className="flex-col gap-2 text-sm">
                 <span className="font-medium">{footerText}</span>
             </CardFooter>
