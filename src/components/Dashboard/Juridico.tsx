@@ -34,6 +34,9 @@ enum navItems {
   EM_LIQUIDACAO = "Em liquidação",
   EM_CESSAO = "Em cessão",
   REPACTUACAO = "Repactuação",
+  REVISAO_VALOR_LOA = "Revisão Valor/LOA",
+  PRE_DUE_ATIVO = "Pré-Due Ativo",
+  PRE_DUE_CEDENTE = "Pré-Due Cedente",
 }
 
 export type SimpleNotionData = {

@@ -806,8 +806,6 @@ const DashbrokersCard = ({ oficio }:
 
     }, [mainData]);
 
-
-    console.log(oficio)
     /**
      * Define o tipo de indentificação do credor do ofício
      * que pode ser CPF ou CNPJ

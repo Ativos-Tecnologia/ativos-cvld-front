@@ -1,1466 +1,1471 @@
-import { ACCESS_TOKEN } from "@/constants/constants";
-import {
-  UserInfoAPIContext,
-  UserInfoContextType,
-} from "@/context/UserInfoContext";
-import statusOficio from "@/enums/statusOficio.enum";
-import tipoOficio from "@/enums/tipoOficio.enum";
-import numberFormat from "@/functions/formaters/numberFormat";
-import UseMySwal from "@/hooks/useMySwal";
-import { JWTToken } from "@/types/jwtToken";
-import api from "@/utils/api";
-import Cleave from "cleave.js/react";
-import { jwtDecode } from "jwt-decode";
-import { Slash } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import React, { useContext, useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import {
-  AiOutlineLoading,
-  AiOutlineReload,
-  AiOutlineWarning,
-} from "react-icons/ai";
-import {
-  BiChevronRight,
-  BiLineChart,
-  BiLogoUpwork,
-  BiMinus,
-  BiPlus,
-} from "react-icons/bi";
+import { ACCESS_TOKEN } from '@/constants/constants';
+import { UserInfoAPIContext, UserInfoContextType } from '@/context/UserInfoContext';
+import statusOficio from '@/enums/statusOficio.enum';
+import tipoOficio from '@/enums/tipoOficio.enum';
+import numberFormat from '@/functions/formaters/numberFormat';
+import UseMySwal from '@/hooks/useMySwal';
+import { JWTToken } from '@/types/jwtToken';
+import api from '@/utils/api';
+import Cleave from 'cleave.js/react';
+import { jwtDecode } from 'jwt-decode';
+import { Slash } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import React, { useContext, useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { AiOutlineLoading, AiOutlineReload, AiOutlineWarning } from 'react-icons/ai';
+import { BiChevronRight, BiLineChart, BiLogoUpwork, BiMinus, BiPlus } from 'react-icons/bi';
 import { TableNotionContext } from '@/context/NotionTableContext';
 
-import backendNumberFormat from "@/functions/formaters/backendNumberFormat";
-import { CvldFormInputsProps } from "@/types/cvldform";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { UpdatePrecatorioButton } from "../Button/UpdatePrecatorioButton";
-import CustomCheckbox from "../CrmUi/Checkbox";
-import { DrawerConta } from "../Drawer/DrawerConta";
-import { ErrorMessage } from "../ErrorMessage/ErrorMessage";
-import { ShadSelect } from "../ShadSelect";
-import { SelectItem } from "../ui/select";
+import backendNumberFormat from '@/functions/formaters/backendNumberFormat';
+import { CvldFormInputsProps } from '@/types/cvldform';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { UpdatePrecatorioButton } from '../Button/UpdatePrecatorioButton';
+import CustomCheckbox from '../CrmUi/Checkbox';
+import { DrawerConta } from '../Drawer/DrawerConta';
+import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
+import { ShadSelect } from '../ShadSelect';
+import { SelectItem } from '../ui/select';
 
 interface ChartTwoState {
-  series: {
-    name: string;
-    data: number[];
-  }[];
+    series: {
+        name: string;
+        data: number[];
+    }[];
 }
 
 type CVLDFormProps = {
-  dataCallback: (data: any) => void;
-  setCalcStep: (stage: string) => void;
-  setDataToAppend: (data: any) => void;
+    dataCallback: (data: any) => void;
+    setCalcStep: (stage: string) => void;
+    setDataToAppend: (data: any) => void;
 };
 
-const MainForm: React.FC<CVLDFormProps> = ({
-  dataCallback,
-  setCalcStep,
-  setDataToAppend,
-}) => {
-  const {
-    register,
-    control,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm<Partial<CvldFormInputsProps>>({
-    defaultValues: {
-      ja_possui_destacamento: true,
-      percentual_a_ser_adquirido: 100,
-      esfera: "FEDERAL",
-      tipo_do_oficio: "PRECATÓRIO",
-      especie: "PRINCIPAL",
-    },
-  });
+const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataToAppend }) => {
+    const {
+        register,
+        control,
+        handleSubmit,
+        watch,
+        setValue,
+        formState: { errors },
+    } = useForm<Partial<CvldFormInputsProps>>({
+        defaultValues: {
+            ja_possui_destacamento: true,
+            percentual_a_ser_adquirido: 100,
+            esfera: 'FEDERAL',
+            tipo_do_oficio: 'PRECATÓRIO',
+            especie: 'PRINCIPAL',
+        },
+    });
 
-  const queryClient = useQueryClient();
-  const enumOficiosList = Object.values(statusOficio);
-  const enumTipoOficiosList = Object.values(tipoOficio);
+    const queryClient = useQueryClient();
+    const enumOficiosList = Object.values(statusOficio);
+    const enumTipoOficiosList = Object.values(tipoOficio);
 
-  const { data } = useContext<UserInfoContextType>(UserInfoAPIContext);
-  const { setSaveInfoToNotion, usersList } = useContext(TableNotionContext);
+    const { data } = useContext<UserInfoContextType>(UserInfoAPIContext);
+    const { setSaveInfoToNotion, usersList } = useContext(TableNotionContext);
 
-  const estados = [
-    { id: "AC", nome: "Acre" },
-    { id: "AL", nome: "Alagoas" },
-    { id: "AP", nome: "Amapá" },
-    { id: "AM", nome: "Amazonas" },
-    { id: "BA", nome: "Bahia" },
-    { id: "CE", nome: "Ceará" },
-    { id: "DF", nome: "Distrito Federal" },
-    { id: "ES", nome: "Espírito Santo" },
-    { id: "GO", nome: "Goiás" },
-    { id: "MA", nome: "Maranhão" },
-    { id: "MT", nome: "Mato Grosso" },
-    { id: "MS", nome: "Mato Grosso do Sul" },
-    { id: "MG", nome: "Minas Gerais" },
-    { id: "PA", nome: "Pará" },
-    { id: "PB", nome: "Paraíba" },
-    { id: "PR", nome: "Paraná" },
-    { id: "PE", nome: "Pernambuco" },
-    { id: "PI", nome: "Piauí" },
-    { id: "RJ", nome: "Rio de Janeiro" },
-    { id: "RN", nome: "Rio Grande do Norte" },
-    { id: "RS", nome: "Rio Grande do Sul" },
-    { id: "RO", nome: "Rondônia" },
-    { id: "RR", nome: "Roraima" },
-    { id: "SC", nome: "Santa Catarina" },
-    { id: "SP", nome: "São Paulo" },
-    { id: "SE", nome: "Sergipe" },
-    { id: "TO", nome: "Tocantins" },
-  ];
+    const estados = [
+        { id: 'AC', nome: 'Acre' },
+        { id: 'AL', nome: 'Alagoas' },
+        { id: 'AP', nome: 'Amapá' },
+        { id: 'AM', nome: 'Amazonas' },
+        { id: 'BA', nome: 'Bahia' },
+        { id: 'CE', nome: 'Ceará' },
+        { id: 'DF', nome: 'Distrito Federal' },
+        { id: 'ES', nome: 'Espírito Santo' },
+        { id: 'GO', nome: 'Goiás' },
+        { id: 'MA', nome: 'Maranhão' },
+        { id: 'MT', nome: 'Mato Grosso' },
+        { id: 'MS', nome: 'Mato Grosso do Sul' },
+        { id: 'MG', nome: 'Minas Gerais' },
+        { id: 'PA', nome: 'Pará' },
+        { id: 'PB', nome: 'Paraíba' },
+        { id: 'PR', nome: 'Paraná' },
+        { id: 'PE', nome: 'Pernambuco' },
+        { id: 'PI', nome: 'Piauí' },
+        { id: 'RJ', nome: 'Rio de Janeiro' },
+        { id: 'RN', nome: 'Rio Grande do Norte' },
+        { id: 'RS', nome: 'Rio Grande do Sul' },
+        { id: 'RO', nome: 'Rondônia' },
+        { id: 'RR', nome: 'Roraima' },
+        { id: 'SC', nome: 'Santa Catarina' },
+        { id: 'SP', nome: 'São Paulo' },
+        { id: 'SE', nome: 'Sergipe' },
+        { id: 'TO', nome: 'Tocantins' },
+    ];
 
-  const tribunais = [
-    { id: "TRF1", nome: "Tribunal Regional Federal - 1ª Região" },
-    { id: "TRF2", nome: "Tribunal Regional Federal - 2ª Região" },
-    { id: "TRF3", nome: "Tribunal Regional Federal - 3ª Região" },
-    { id: "TRF4", nome: "Tribunal Regional Federal - 4ª Região" },
-    { id: "TRF5", nome: "Tribunal Regional Federal - 5ª Região" },
-    { id: "TRF6", nome: "Tribunal Regional Federal - 6ª Região" },
-    { id: "STF", nome: "Supremo Tribunal Federal" },
-    { id: "STJ", nome: "Superior Tribunal de Justiça" },
-    { id: "TST", nome: "Tribunal Superior do Trabalho" },
-    { id: "TSE", nome: "Tribunal Superior Eleitoral" },
-    { id: "STM", nome: "Superior Tribunal Militar" },
-    { id: "TJAC", nome: "Tribunal de Justiça do Acre" },
-    { id: "TJAL", nome: "Tribunal de Justiça de Alagoas" },
-    { id: "TJAP", nome: "Tribunal de Justiça do Amapá" },
-    { id: "TJAM", nome: "Tribunal de Justiça do Amazonas" },
-    { id: "TJBA", nome: "Tribunal de Justiça da Bahia" },
-    { id: "TJCE", nome: "Tribunal de Justiça do Ceará" },
-    {
-      id: "TJDFT",
-      nome: "Tribunal de Justiça do Distrito Federal e dos Territórios",
-    },
-    { id: "TJES", nome: "Tribunal de Justiça do Espírito Santo" },
-    { id: "TJGO", nome: "Tribunal de Justiça de Goiás" },
-    { id: "TJMA", nome: "Tribunal de Justiça do Maranhão" },
-    { id: "TJMT", nome: "Tribunal de Justiça do Mato Grosso" },
-    { id: "TJMS", nome: "Tribunal de Justiça do Mato Grosso do Sul" },
-    { id: "TJMG", nome: "Tribunal de Justiça de Minas Gerais" },
-    { id: "TJPA", nome: "Tribunal de Justiça do Pará" },
-    { id: "TJPB", nome: "Tribunal de Justiça da Paraíba" },
-    { id: "TJPE", nome: "Tribunal de Justiça de Pernambuco" },
-    { id: "TJPI", nome: "Tribunal de Justiça do Piauí" },
-    { id: "TJPR", nome: "Tribunal de Justiça do Paraná" },
-    { id: "TJRJ", nome: "Tribunal de Justiça do Rio de Janeiro" },
-    { id: "TJRN", nome: "Tribunal de Justiça do Rio Grande do Norte" },
-    { id: "TJRO", nome: "Tribunal de Justiça de Rondônia" },
-    { id: "TJRR", nome: "Tribunal de Justiça de Roraima" },
-    { id: "TJRS", nome: "Tribunal de Justiça do Rio Grande do Sul" },
-    { id: "TJSC", nome: "Tribunal de Justiça de Santa Catarina" },
-    { id: "TJSE", nome: "Tribunal de Justiça de Sergipe" },
-    { id: "TJSP", nome: "Tribunal de Justiça de São Paulo" },
-    { id: "TJTO", nome: "Tribunal de Justiça do Tocantins" },
-    { id: "TRT1", nome: "Tribunal Regional do Trabalho da 1ª Região" },
-    { id: "TRT2", nome: "Tribunal Regional do Trabalho da 2ª Região" },
-    { id: "TRT3", nome: "Tribunal Regional do Trabalho da 3ª Região" },
-    { id: "TRT4", nome: "Tribunal Regional do Trabalho da 4ª Região" },
-    { id: "TRT5", nome: "Tribunal Regional do Trabalho da 5ª Região" },
-    { id: "TRT6", nome: "Tribunal Regional do Trabalho da 6ª Região" },
-    { id: "TRT7", nome: "Tribunal Regional do Trabalho da 7ª Região" },
-    { id: "TRT8", nome: "Tribunal Regional do Trabalho da 8ª Região" },
-    { id: "TRT9", nome: "Tribunal Regional do Trabalho da 9ª Região" },
-    { id: "TRT10", nome: "Tribunal Regional do Trabalho da 10ª Região" },
-    { id: "TRT11", nome: "Tribunal Regional do Trabalho da 11ª Região" },
-    { id: "TRT12", nome: "Tribunal Regional do Trabalho da 12ª Região" },
-    { id: "TRT13", nome: "Tribunal Regional do Trabalho da 13ª Região" },
-    { id: "TRT14", nome: "Tribunal Regional do Trabalho da 14ª Região" },
-    { id: "TRT15", nome: "Tribunal Regional do Trabalho da 15ª Região" },
-    { id: "TRT16", nome: "Tribunal Regional do Trabalho da 16ª Região" },
-    { id: "TRT17", nome: "Tribunal Regional do Trabalho da 17ª Região" },
-    { id: "TRT18", nome: "Tribunal Regional do Trabalho da 18ª Região" },
-    { id: "TRT19", nome: "Tribunal Regional do Trabalho da 19ª Região" },
-    { id: "TRT20", nome: "Tribunal Regional do Trabalho da 20ª Região" },
-    { id: "TRT21", nome: "Tribunal Regional do Trabalho da 21ª Região" },
-    { id: "TRT22", nome: "Tribunal Regional do Trabalho da 22ª Região" },
-    { id: "TRT23", nome: "Tribunal Regional do Trabalho da 23ª Região" },
-    { id: "TRT24", nome: "Tribunal Regional do Trabalho da 24ª Região" },
-  ].sort((a, b) => a.nome.localeCompare(b.nome));
+    const tribunais = [
+        { id: 'TRF1', nome: 'Tribunal Regional Federal - 1ª Região' },
+        { id: 'TRF2', nome: 'Tribunal Regional Federal - 2ª Região' },
+        { id: 'TRF3', nome: 'Tribunal Regional Federal - 3ª Região' },
+        { id: 'TRF4', nome: 'Tribunal Regional Federal - 4ª Região' },
+        { id: 'TRF5', nome: 'Tribunal Regional Federal - 5ª Região' },
+        { id: 'TRF6', nome: 'Tribunal Regional Federal - 6ª Região' },
+        { id: 'STF', nome: 'Supremo Tribunal Federal' },
+        { id: 'STJ', nome: 'Superior Tribunal de Justiça' },
+        { id: 'TST', nome: 'Tribunal Superior do Trabalho' },
+        { id: 'TSE', nome: 'Tribunal Superior Eleitoral' },
+        { id: 'STM', nome: 'Superior Tribunal Militar' },
+        { id: 'TJAC', nome: 'Tribunal de Justiça do Acre' },
+        { id: 'TJAL', nome: 'Tribunal de Justiça de Alagoas' },
+        { id: 'TJAP', nome: 'Tribunal de Justiça do Amapá' },
+        { id: 'TJAM', nome: 'Tribunal de Justiça do Amazonas' },
+        { id: 'TJBA', nome: 'Tribunal de Justiça da Bahia' },
+        { id: 'TJCE', nome: 'Tribunal de Justiça do Ceará' },
+        {
+            id: 'TJDFT',
+            nome: 'Tribunal de Justiça do Distrito Federal e dos Territórios',
+        },
+        { id: 'TJES', nome: 'Tribunal de Justiça do Espírito Santo' },
+        { id: 'TJGO', nome: 'Tribunal de Justiça de Goiás' },
+        { id: 'TJMA', nome: 'Tribunal de Justiça do Maranhão' },
+        { id: 'TJMT', nome: 'Tribunal de Justiça do Mato Grosso' },
+        { id: 'TJMS', nome: 'Tribunal de Justiça do Mato Grosso do Sul' },
+        { id: 'TJMG', nome: 'Tribunal de Justiça de Minas Gerais' },
+        { id: 'TJPA', nome: 'Tribunal de Justiça do Pará' },
+        { id: 'TJPB', nome: 'Tribunal de Justiça da Paraíba' },
+        { id: 'TJPE', nome: 'Tribunal de Justiça de Pernambuco' },
+        { id: 'TJPI', nome: 'Tribunal de Justiça do Piauí' },
+        { id: 'TJPR', nome: 'Tribunal de Justiça do Paraná' },
+        { id: 'TJRJ', nome: 'Tribunal de Justiça do Rio de Janeiro' },
+        { id: 'TJRN', nome: 'Tribunal de Justiça do Rio Grande do Norte' },
+        { id: 'TJRO', nome: 'Tribunal de Justiça de Rondônia' },
+        { id: 'TJRR', nome: 'Tribunal de Justiça de Roraima' },
+        { id: 'TJRS', nome: 'Tribunal de Justiça do Rio Grande do Sul' },
+        { id: 'TJSC', nome: 'Tribunal de Justiça de Santa Catarina' },
+        { id: 'TJSE', nome: 'Tribunal de Justiça de Sergipe' },
+        { id: 'TJSP', nome: 'Tribunal de Justiça de São Paulo' },
+        { id: 'TJTO', nome: 'Tribunal de Justiça do Tocantins' },
+        { id: 'TRT1', nome: 'Tribunal Regional do Trabalho da 1ª Região' },
+        { id: 'TRT2', nome: 'Tribunal Regional do Trabalho da 2ª Região' },
+        { id: 'TRT3', nome: 'Tribunal Regional do Trabalho da 3ª Região' },
+        { id: 'TRT4', nome: 'Tribunal Regional do Trabalho da 4ª Região' },
+        { id: 'TRT5', nome: 'Tribunal Regional do Trabalho da 5ª Região' },
+        { id: 'TRT6', nome: 'Tribunal Regional do Trabalho da 6ª Região' },
+        { id: 'TRT7', nome: 'Tribunal Regional do Trabalho da 7ª Região' },
+        { id: 'TRT8', nome: 'Tribunal Regional do Trabalho da 8ª Região' },
+        { id: 'TRT9', nome: 'Tribunal Regional do Trabalho da 9ª Região' },
+        { id: 'TRT10', nome: 'Tribunal Regional do Trabalho da 10ª Região' },
+        { id: 'TRT11', nome: 'Tribunal Regional do Trabalho da 11ª Região' },
+        { id: 'TRT12', nome: 'Tribunal Regional do Trabalho da 12ª Região' },
+        { id: 'TRT13', nome: 'Tribunal Regional do Trabalho da 13ª Região' },
+        { id: 'TRT14', nome: 'Tribunal Regional do Trabalho da 14ª Região' },
+        { id: 'TRT15', nome: 'Tribunal Regional do Trabalho da 15ª Região' },
+        { id: 'TRT16', nome: 'Tribunal Regional do Trabalho da 16ª Região' },
+        { id: 'TRT17', nome: 'Tribunal Regional do Trabalho da 17ª Região' },
+        { id: 'TRT18', nome: 'Tribunal Regional do Trabalho da 18ª Região' },
+        { id: 'TRT19', nome: 'Tribunal Regional do Trabalho da 19ª Região' },
+        { id: 'TRT20', nome: 'Tribunal Regional do Trabalho da 20ª Região' },
+        { id: 'TRT21', nome: 'Tribunal Regional do Trabalho da 21ª Região' },
+        { id: 'TRT22', nome: 'Tribunal Regional do Trabalho da 22ª Região' },
+        { id: 'TRT23', nome: 'Tribunal Regional do Trabalho da 23ª Região' },
+        { id: 'TRT24', nome: 'Tribunal Regional do Trabalho da 24ª Região' },
+    ].sort((a, b) => a.nome.localeCompare(b.nome));
 
-  const [oficioForm, setOficioForm] = useState<any>(null);
-  const mySwal = UseMySwal();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [toggleNovaConta, setToggleNovaConta] = useState<boolean>(false);
+    const [oficioForm, setOficioForm] = useState<any>(null);
+    const mySwal = UseMySwal();
+    const [loading, setLoading] = useState<boolean>(false);
+    const [toggleNovaConta, setToggleNovaConta] = useState<boolean>(false);
 
-  const [contatoNumberCount, setContatoNumberCount] = useState<number>(1);
+    const [contatoNumberCount, setContatoNumberCount] = useState<number>(1);
 
-  const [state, setState] = useState<ChartTwoState>({
-    series: [
-      {
-        name: "Valor Principal",
-        data: [0, 0],
-      },
-      {
-        name: "Valor Juros",
-        data: [0, 0],
-      },
-    ],
-  });
-
-  useEffect(() => {
-    if (oficioForm) {
-      setValue("natureza", oficioForm.result[0].natureza);
-      setValue(
-        "valor_principal",
-        numberFormat(oficioForm.result[0].valor_principal).replace("R$", ""),
-      );
-      setValue(
-        "valor_juros",
-        numberFormat(oficioForm.result[0].valor_juros).replace("R$", ""),
-      );
-      setValue(
-        "data_base",
-        oficioForm.result[0].data_base.split("/").reverse().join("-"),
-      );
-
-      if (oficioForm.result[0].data_base < "2021-12-01") {
-        setValue("incidencia_juros_moratorios", true);
-      }
-
-      setValue(
-        "data_requisicao",
-        oficioForm.result[0].data_requisicao.split("/").reverse().join("-"),
-      );
-      setValue("ir_incidente_rra", oficioForm.result[0].incidencia_rra_ir);
-
-      if (oficioForm.result[0].incidencia_juros_moratorios) {
-        setValue("incidencia_juros_moratorios", true);
-      } else {
-        setValue("incidencia_juros_moratorios", false);
-      }
-      setValue("numero_de_meses", oficioForm.result[0].numero_de_meses);
-      setValue(
-        "incidencia_pss",
-        oficioForm.result[0].valor_pss > 0 ? true : false,
-      );
-      setValue(
-        "valor_pss",
-        numberFormat(oficioForm.result[0].valor_pss).replace("R$", ""),
-      );
-    }
-  }, [oficioForm, setValue]);
-
-  const vincularUsuario = watch("vincular_usuario");
-  useEffect(() => {
-    if (vincularUsuario) {
-      setSaveInfoToNotion(true);
-    } else {
-      setSaveInfoToNotion(false);
-    }
-  }, [setSaveInfoToNotion, vincularUsuario]);
-
-  const isUserAdmin = () => {
-    const token = localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`);
-    const decoded: JWTToken = jwtDecode(token!);
-    return decoded.is_staff;
-  };
-
-  const postNotionData = async (data: any) => {
-    const response = await api.post("/api/extrato/create/", data);
-    return response;
-  };
-
-  const mutation = useMutation({
-    mutationFn: (newData) => {
-      return postNotionData(newData);
-    },
-    onMutate: async (newData) => {
-      queryClient.cancelQueries({ queryKey: ["notion_list"] });
-    },
-    onSuccess: (data) => {
-      queryClient.setQueryData(["notion_list"], (oldData: any) => {
-        return {
-          ...oldData,
-          results: [data.data.result[1], ...oldData.results],
-        };
-      });
-    },
-  });
-
-  const onSubmit = async (data: any) => {
-    data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
-    data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
-    data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
-    data.percentual_a_ser_adquirido /= 100;
-
-    //#TODO colocar essa condicional dentro de uma função utilitária
-    if (!data.data_limite_de_atualizacao_check) {
-      const dateInSaoPaulo = new Date().toLocaleDateString("pt-BR", {
-        timeZone: "America/Sao_Paulo",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      });
-
-      const formattedDate = dateInSaoPaulo.split("/").reverse().join("-");
-      data.data_limite_de_atualizacao = formattedDate;
-    }
-
-    if (!data.status) {
-      data.status = "Realizar Primeiro Contato";
-    }
-
-    if (!data.natureza) {
-      data.natureza = "NÃO TRIBUTÁRIA";
-    }
-
-    if (!data.esfera) {
-      data.esfera = "FEDERAL";
-    }
-
-    if (!data.regime) {
-      data.regime = "GERAL";
-    }
-
-    if (!data.ir_incidente_rra) {
-      data.numero_de_meses = undefined;
-    }
-
-    if (!data.incidencia_pss) {
-      data.valor_pss = 0;
-    }
-
-    if (data.gerar_cvld) {
-      data.upload_notion = true;
-    }
-
-    if (!data.npu) {
-      data.npu = "0000000-00.0000.0.00.0000";
-    }
-
-    if (!data.numero_de_meses) {
-      data.numero_de_meses = 0;
-    }
-
-    if (data.upload_notion) {
-      data.notion_db_id = "notion_central_de_prec_db_id";
-    }
-
-    if (!data.vincular_usuario) {
-      data.username = undefined;
-    }
-
-    if (data.ja_possui_destacamento) {
-      data.percentual_de_honorarios = 0;
-    } else {
-      data.percentual_de_honorarios /= 100;
-    }
-
-    if (data.valor_aquisicao_total) {
-      data.percentual_a_ser_adquirido = 1;
-    }
-
-    if (!data.estado_ente_devedor) {
-      data.estado_ente_devedor = null;
-    }
-
-    setLoading(true);
-    try {
-      setCalcStep("calculating");
-
-      const response = data.gerar_cvld
-        ? await mutation.mutateAsync(data)
-        : await api.post("/api/extrato/query/", data);
-
-      response.status === 200
-        ? dataCallback(response.data)
-        : (setDataToAppend(response.data), dataCallback(response.data));
-
-      if (response.status === 201 || response.status === 200) {
-        // setCredits({
-        //   ...credits,
-        //   available_credits:
-        //     credits.available_credits - response.data.result[0].price,
-        // });
-
-        dataCallback(response.data);
-
-        setCalcStep("done");
-
-        const formatedPrincipal = parseFloat(data.valor_principal).toFixed(2);
-        const formatedUpdatedPrincipal = parseFloat(
-          response.data.result[0].principal_atualizado_requisicao,
-        ).toFixed(2);
-
-        if (data.natureza === "TRIBUTÁRIA") {
-          const series = [
+    const [state, setState] = useState<ChartTwoState>({
+        series: [
             {
-              name: "Valor Principal",
-              data: [
-                Number(parseFloat(formatedPrincipal)),
-                Number(parseFloat(formatedPrincipal)),
-              ],
+                name: 'Valor Principal',
+                data: [0, 0],
             },
             {
-              name: "Valor Juros",
-              data: [
-                Number(parseFloat(data.valor_juros).toFixed(2)),
-                Number(
-                  parseFloat(response.data.result[0].juros_atualizado).toFixed(
-                    2,
-                  ),
-                ),
-              ],
+                name: 'Valor Juros',
+                data: [0, 0],
             },
-            {
-              name: "Total",
-              data: [
-                Number(
-                  parseFloat(response.data.result[0].valor_inscrito).toFixed(2),
-                ),
-                Number(
-                  parseFloat(
-                    response.data.result[0].valor_liquido_disponivel,
-                  ).toFixed(2),
-                ),
-              ],
-            },
-          ];
+        ],
+    });
 
-          setState({ series });
-        } else {
-          const series = [
-            {
-              name: "Valor Principal",
-              data: [
-                Number(parseFloat(formatedPrincipal)),
-                Number(parseFloat(formatedUpdatedPrincipal)),
-              ],
-            },
-            {
-              name: "Valor Juros",
-              data: [
-                Number(parseFloat(data.valor_juros).toFixed(2)),
-                Number(
-                  parseFloat(
-                    response.data.result[0].juros_atualizados_requisicao,
-                  ).toFixed(2),
-                ),
-              ],
-            },
-            {
-              name: "Total",
-              data: [
-                Number(
-                  parseFloat(response.data.result[0].valor_inscrito).toFixed(2),
-                ),
-                Number(
-                  parseFloat(
-                    response.data.result[0].valor_liquido_disponivel,
-                  ).toFixed(2),
-                ),
-              ],
-            },
-          ];
-          setState({ series });
+    useEffect(() => {
+        if (oficioForm) {
+            setValue('natureza', oficioForm.result[0].natureza);
+            setValue(
+                'valor_principal',
+                numberFormat(oficioForm.result[0].valor_principal).replace('R$', ''),
+            );
+            setValue(
+                'valor_juros',
+                numberFormat(oficioForm.result[0].valor_juros).replace('R$', ''),
+            );
+            setValue('data_base', oficioForm.result[0].data_base.split('/').reverse().join('-'));
+
+            if (oficioForm.result[0].data_base < '2021-12-01') {
+                setValue('incidencia_juros_moratorios', true);
+            }
+
+            setValue(
+                'data_requisicao',
+                oficioForm.result[0].data_requisicao.split('/').reverse().join('-'),
+            );
+            setValue('ir_incidente_rra', oficioForm.result[0].incidencia_rra_ir);
+
+            if (oficioForm.result[0].incidencia_juros_moratorios) {
+                setValue('incidencia_juros_moratorios', true);
+            } else {
+                setValue('incidencia_juros_moratorios', false);
+            }
+            setValue('numero_de_meses', oficioForm.result[0].numero_de_meses);
+            setValue('incidencia_pss', oficioForm.result[0].valor_pss > 0 ? true : false);
+            setValue('valor_pss', numberFormat(oficioForm.result[0].valor_pss).replace('R$', ''));
         }
-      }
-      setLoading(false);
-    } catch (error: any) {
-      if (
-        error.response?.status === 401 &&
-        error.response?.data.code === "token_not_valid"
-      ) {
-        mySwal.fire({
-          icon: "error",
-          title: "Erro",
-          text: "Sua sessão expirou. Faça login novamente.",
-        });
-        localStorage.clear();
-        window.location.href = "auth/signin";
-      } else if (
-        error.response?.status === 400 &&
-        (error.response.data.subject == "NO_CASH" ||
-          error.response.data.subject == "INSUFFICIENT_CASH")
-      ) {
-        mySwal.fire({
-          icon: "warning",
-          title: "Saldo insuficiente",
-          showConfirmButton: false,
-          showCloseButton: true,
-          html: (
-            <div className="flex flex-col rounded-md border border-stroke dark:border-strokedark dark:bg-boxdark">
-              <div className="my-2 flex items-center justify-center">
-                <p className="text-md font-semibold dark:text-white">
-                  Escolha uma das opções de recarga e continue utilizando a
-                  plataforma
-                </p>
-              </div>
-              <div className="mt-2 flex flex-col rounded-md border border-stroke p-4 dark:border-strokedark dark:bg-boxdark">
-                <Link
-                  href="#"
-                  className="text-md group flex flex-row items-center justify-center font-semibold text-primary dark:text-white"
-                >
-                  Adquirir Créditos
-                  <BiChevronRight
-                    style={{
-                      width: "22px",
-                      height: "22px",
-                    }}
-                    className="ml-1 inline-block transition-all duration-300 group-hover:translate-x-1"
-                  />
-                </Link>
-              </div>
-            </div>
-          ),
-        });
-      } else if (error.response?.status === 403) {
-        mySwal.fire({
-          icon: "warning",
-          title: "Erro",
-          text: "Alguns campos estão incorretos. Verifique e tente novamente.",
-        });
-      } else {
-        mySwal.fire({
-          icon: "error",
-          title: "Erro",
-          text: error.response?.data.detail,
-        });
-      }
-    }
-    setLoading(false);
-  };
+    }, [oficioForm, setValue]);
 
-  return (
-    <div className="col-span-12 rounded-md border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
-      <div className="flex-col flex-wrap items-start justify-between gap-3 pb-0 sm:flex-nowrap">
-        <div className="flex w-full justify-center align-middle">
-          <h2 className="mt-1.5 flex select-none flex-col justify-center font-nexa text-3xl font-normal text-primary antialiased">
-            Celer
-          </h2>
-          <p className="flex flex-col justify-center text-xs font-semibold text-primary">
-            <Slash className="-mr-3 mt-1 h-5 w-5 -rotate-45 text-gray-200" />
-          </p>
-          <Image
-            src="/images/logo/celer-ia-only-logo.svg"
-            alt="Celer IA Engine"
-            width={56}
-            height={50}
-            className="mt-[6.1px] select-none antialiased"
-            aria-selected={false}
-            draggable={false}
-          />
-        </div>
-        <p className="apexcharts-legend-text mt-0 text-center text-sm font-normal">
-          Nosso modelo de atualização de valores de precatórios e RPVs
-        </p>
-      </div>
-      <div className="flex w-full flex-col items-center">
-        <UpdatePrecatorioButton setStateFunction={setOficioForm} />
-      </div>
-      {
-        <form className="mt-8 space-y-5" onSubmit={handleSubmit(onSubmit)}>
-          <input type="hidden" {...register("conta")} />
-          <div className="grid grid-cols-2 gap-5 sm:grid-cols-2">
-            <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-              <label
-                htmlFor="natureza"
-                className="font-nexa text-xs font-semibold uppercase text-meta-5"
-              >
-                Natureza
-              </label>
+    const vincularUsuario = watch('vincular_usuario');
+    useEffect(() => {
+        if (vincularUsuario) {
+            setSaveInfoToNotion(true);
+        } else {
+            setSaveInfoToNotion(false);
+        }
+    }, [setSaveInfoToNotion, vincularUsuario]);
 
-              <ShadSelect
-                aria-labelledby="natureza"
-                name="natureza"
-                control={control}
-                defaultValue={"NÃO TRIBUTÁRIA"}
+    const isUserAdmin = () => {
+        const token = localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`);
+        const decoded: JWTToken = jwtDecode(token!);
+        return decoded.is_staff;
+    };
 
-                // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
-              >
-                <SelectItem
-                  defaultValue="NÃO TRIBUTÁRIA"
-                  value="NÃO TRIBUTÁRIA"
-                >
-                  Não Tributária
-                </SelectItem>
-                <SelectItem value="TRIBUTÁRIA">Tributária</SelectItem>
-              </ShadSelect>
-            </div>
-            <div className="invisible w-full flex-col gap-2 2xsm:hidden sm:col-span-1 sm:flex "></div>
+    const postNotionData = async (data: any) => {
+        const response = await api.post('/api/extrato/create/', data);
+        return response;
+    };
 
-            <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-              <label
-                htmlFor="valor_principal"
-                className="font-nexa text-xs font-semibold uppercase text-meta-5"
-              >
-                Valor Principal
-              </label>
-              <Controller
-                name="valor_principal"
-                data-testid="valor_principal"
-                control={control}
-                defaultValue={0}
-                rules={{
-                  min: { value: 0.01, message: "O valor deve ser maior que 0" },
-                }}
-                render={({ field, fieldState: { error } }) => (
-                  <>
-                    <Cleave
-                      {...field}
-                      data-testid="valor_principal"
-                      className={`w-full rounded-md border-stroke ${error ? "border-red" : "dark:border-strokedark"} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
-                      options={{
-                        numeral: true,
-                        numeralThousandsGroupStyle: "thousand",
-                        numeralDecimalScale: 2,
-                        numeralDecimalMark: ",",
-                        delimiter: ".",
-                        prefix: "R$ ",
-                        rawValueTrimPrefix: true,
-                      }}
-                    />
-                    {error && (
-                      <span className="text-xs font-medium text-red">
-                        {error.message}
-                      </span>
-                    )}
-                  </>
-                )}
-              />
-            </div>
-            <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-              <label
-                htmlFor="valor_juros"
-                className="font-nexa text-xs font-semibold uppercase text-meta-5"
-              >
-                Juros
-              </label>
-              <Controller
-                name="valor_juros"
-                control={control}
-                defaultValue={0}
-                rules={{
-                  min: {
-                    value: 0,
-                    message: "O valor deve ser maior ou igual a 0",
-                  },
-                }}
-                render={({ field, fieldState: { error } }) => (
-                  <>
-                    <Cleave
-                      {...field}
-                      data-testid="valor_juros"
-                      className={`w-full rounded-md border-stroke ${error ? "border-red" : "border-stroke dark:border-strokedark"} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
-                      options={{
-                        numeral: true,
-                        numeralPositiveOnly: true,
-                        numeralThousandsGroupStyle: "thousand",
-                        numeralDecimalScale: 2,
-                        numeralDecimalMark: ",",
-                        delimiter: ".",
-                        prefix: "R$ ",
-                        rawValueTrimPrefix: true,
-                      }}
-                    />
-                    {error && (
-                      <span className="text-xs font-medium text-red">
-                        {error.message}
-                      </span>
-                    )}
-                  </>
-                )}
-              />
-            </div>
+    // const mutation = useMutation({
+    //     mutationFn: (newData) => {
+    //         return postNotionData(newData);
+    //     },
+    //     onMutate: async (newData) => {
+    //         queryClient.cancelQueries({ queryKey: ['notion_list'] });
+    //     },
+    //     onSuccess: (data) => {
+    //         queryClient.setQueryData(['notion_list'], (oldData: any) => {
+    //             return {
+    //                 ...oldData,
+    //                 results: [data.data.result[1], ...oldData.results],
+    //             };
+    //         });
+    //     },
+    // });
 
-            <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-              <div className="relative flex flex-col justify-between">
-                <label
-                  htmlFor="data_base"
-                  className="mb-1 font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Data Base
-                </label>
-                <input
-                  type="date"
-                  id="data_base"
-                  data-testid="data_base"
-                  className={`${errors.data_base && "!border-rose-400 !ring-0"} w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
-                  {...register("data_base", {
-                    required: "Campo obrigatório",
-                  })}
-                  aria-invalid={errors.data_base ? "true" : "false"}
-                />
-                <ErrorMessage errors={errors} field="data_base" />
-              </div>
-            </div>
+    const onSubmit = async (data: any) => {
+        data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
+        data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
+        data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
+        data.percentual_a_ser_adquirido /= 100;
 
-            <div className="flex flex-col gap-2 2xsm:col-span-2 2xsm:mt-3 sm:col-span-1 sm:mt-0">
-              <div className="relative flex flex-col justify-between">
-                <label
-                  htmlFor="data_requisicao"
-                  className="mb-1 font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Data de Requisição / Recebimento
-                </label>
-                <input
-                  type="date"
-                  id="data_requisicao"
-                  data-testid="data_requisicao"
-                  className={`${errors.data_requisicao && "!border-rose-400 !ring-0"} w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
-                  {...register("data_requisicao", {
-                    required: "Campo obrigatório",
-                  })}
-                />
-                <ErrorMessage errors={errors} field="data_requisicao" />
-              </div>
-            </div>
+        //#TODO colocar essa condicional dentro de uma função utilitária
+        if (!data.data_limite_de_atualizacao_check) {
+            const dateInSaoPaulo = new Date().toLocaleDateString('pt-BR', {
+                timeZone: 'America/Sao_Paulo',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+            });
 
-            <div className="col-span-2 flex w-full flex-col justify-between gap-4 sm:flex-row">
-                      <div
-                        className={`flex flex-row ${watch("ja_possui_destacamento") ? "items-center" : "items-start"} w-full gap-2 2xsm:col-span-2 sm:col-span-1`}
-                      >
-                        <CustomCheckbox
-                          check={watch("ja_possui_destacamento")}
-                          id={"ja_possui_destacamento"}
-                          register={register("ja_possui_destacamento")}
-                          defaultChecked
-                        />
+            const formattedDate = dateInSaoPaulo.split('/').reverse().join('-');
+            data.data_limite_de_atualizacao = formattedDate;
+        }
 
-                        <label
-                          htmlFor="ja_possui_destacamento"
-                          className={`${!watch("ja_possui_destacamento") && "mt-1"} font-nexa text-xs font-semibold uppercase text-meta-5`}
-                        >
-                          Já possui destacamento de honorários?
-                        </label>
-                      </div>
-                      {watch("ja_possui_destacamento") === false && (
-                        <div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
-                          <div className="flex w-full flex-col gap-2 sm:col-span-1">
-                            <label
-                              htmlFor="percentual_de_honorarios"
-                              className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                            >
-                              Percentual
-                            </label>
-                            <input
-                              type="number"
-                              id="percentual_de_honorarios"
-                              defaultValue={30}
-                              className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                              {...register("percentual_de_honorarios", {})}
-                            />
-                          </div>
+        if (!data.status) {
+            data.status = 'Realizar Primeiro Contato';
+        }
+
+        if (!data.natureza) {
+            data.natureza = 'NÃO TRIBUTÁRIA';
+        }
+
+        if (!data.esfera) {
+            data.esfera = 'FEDERAL';
+        }
+
+        if (!data.regime) {
+            data.regime = 'GERAL';
+        }
+
+        if (!data.ir_incidente_rra) {
+            data.numero_de_meses = undefined;
+        }
+
+        if (!data.incidencia_pss) {
+            data.valor_pss = 0;
+        }
+
+        if (data.gerar_cvld) {
+            data.upload_notion = true;
+        }
+
+        if (!data.npu) {
+            data.npu = '0000000-00.0000.0.00.0000';
+        }
+
+        if (!data.numero_de_meses) {
+            data.numero_de_meses = 0;
+        }
+
+        if (data.upload_notion) {
+            data.notion_db_id = 'notion_central_de_prec_db_id';
+        }
+
+        if (!data.vincular_usuario) {
+            data.username = undefined;
+        }
+
+        if (data.ja_possui_destacamento) {
+            data.percentual_de_honorarios = 0;
+        } else {
+            data.percentual_de_honorarios /= 100;
+        }
+
+        if (data.valor_aquisicao_total) {
+            data.percentual_a_ser_adquirido = 1;
+        }
+
+        if (!data.estado_ente_devedor) {
+            data.estado_ente_devedor = null;
+        }
+
+        if (!data.tribunal) {
+            data.tribunal = 'TRF1';
+        }
+
+        setLoading(true);
+        try {
+            setCalcStep('calculating');
+
+            const response = data.gerar_cvld
+                ? await postNotionData(data)
+                : await api.post('/api/extrato/query/', data);
+
+            response.status === 200
+                ? dataCallback(response.data)
+                : (setDataToAppend(response.data), dataCallback(response.data));
+
+            if (response.status === 201 || response.status === 200) {
+                // setCredits({
+                //   ...credits,
+                //   available_credits:
+                //     credits.available_credits - response.data.result[0].price,
+                // });
+
+                dataCallback(response.data);
+
+                setCalcStep('done');
+
+                const formatedPrincipal = parseFloat(data.valor_principal).toFixed(2);
+                const formatedUpdatedPrincipal = parseFloat(
+                    response.data.result[0].principal_atualizado_requisicao,
+                ).toFixed(2);
+
+                if (data.natureza === 'TRIBUTÁRIA') {
+                    const series = [
+                        {
+                            name: 'Valor Principal',
+                            data: [
+                                Number(parseFloat(formatedPrincipal)),
+                                Number(parseFloat(formatedPrincipal)),
+                            ],
+                        },
+                        {
+                            name: 'Valor Juros',
+                            data: [
+                                Number(parseFloat(data.valor_juros).toFixed(2)),
+                                Number(
+                                    parseFloat(response.data.result[0].juros_atualizado).toFixed(2),
+                                ),
+                            ],
+                        },
+                        {
+                            name: 'Total',
+                            data: [
+                                Number(
+                                    parseFloat(response.data.result[0].valor_inscrito).toFixed(2),
+                                ),
+                                Number(
+                                    parseFloat(
+                                        response.data.result[0].valor_liquido_disponivel,
+                                    ).toFixed(2),
+                                ),
+                            ],
+                        },
+                    ];
+
+                    setState({ series });
+                } else {
+                    const series = [
+                        {
+                            name: 'Valor Principal',
+                            data: [
+                                Number(parseFloat(formatedPrincipal)),
+                                Number(parseFloat(formatedUpdatedPrincipal)),
+                            ],
+                        },
+                        {
+                            name: 'Valor Juros',
+                            data: [
+                                Number(parseFloat(data.valor_juros).toFixed(2)),
+                                Number(
+                                    parseFloat(
+                                        response.data.result[0].juros_atualizados_requisicao,
+                                    ).toFixed(2),
+                                ),
+                            ],
+                        },
+                        {
+                            name: 'Total',
+                            data: [
+                                Number(
+                                    parseFloat(response.data.result[0].valor_inscrito).toFixed(2),
+                                ),
+                                Number(
+                                    parseFloat(
+                                        response.data.result[0].valor_liquido_disponivel,
+                                    ).toFixed(2),
+                                ),
+                            ],
+                        },
+                    ];
+                    setState({ series });
+                }
+            }
+            setLoading(false);
+        } catch (error: any) {
+            if (error.response?.status === 401 && error.response?.data.code === 'token_not_valid') {
+                mySwal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: 'Sua sessão expirou. Faça login novamente.',
+                });
+                localStorage.clear();
+                window.location.href = 'auth/signin';
+            } else if (
+                error.response?.status === 400 &&
+                (error.response.data.subject == 'NO_CASH' ||
+                    error.response.data.subject == 'INSUFFICIENT_CASH')
+            ) {
+                mySwal.fire({
+                    icon: 'warning',
+                    title: 'Saldo insuficiente',
+                    showConfirmButton: false,
+                    showCloseButton: true,
+                    html: (
+                        <div className="flex flex-col rounded-md border border-stroke dark:border-strokedark dark:bg-boxdark">
+                            <div className="my-2 flex items-center justify-center">
+                                <p className="text-md font-semibold dark:text-white">
+                                    Escolha uma das opções de recarga e continue utilizando a
+                                    plataforma
+                                </p>
+                            </div>
+                            <div className="mt-2 flex flex-col rounded-md border border-stroke p-4 dark:border-strokedark dark:bg-boxdark">
+                                <Link
+                                    href="#"
+                                    className="text-md group flex flex-row items-center justify-center font-semibold text-primary dark:text-white"
+                                >
+                                    Adquirir Créditos
+                                    <BiChevronRight
+                                        style={{
+                                            width: '22px',
+                                            height: '22px',
+                                        }}
+                                        className="ml-1 inline-block transition-all duration-300 group-hover:translate-x-1"
+                                    />
+                                </Link>
+                            </div>
                         </div>
-                      )}
-                    </div>
+                    ),
+                });
+            } else if (error.response?.status === 403) {
+                mySwal.fire({
+                    icon: 'warning',
+                    title: 'Erro',
+                    text: 'Alguns campos estão incorretos. Verifique e tente novamente.',
+                });
+            } else {
+                mySwal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: error.response?.data.detail,
+                });
 
-            <div
-              className={`col-span-2 flex max-h-6 items-center gap-2 md:col-span-1`}
-            >
-              <CustomCheckbox
-                check={watch("valor_aquisicao_total")}
-                id={"valor_aquisicao_total"}
-                defaultChecked
-                register={register("valor_aquisicao_total")}
-              />
+                console.error(error);
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
 
-              <label
-                htmlFor="valor_aquisicao_total"
-                className="font-nexa text-xs font-semibold uppercase text-meta-5"
-              >
-                Aquisição total
-              </label>
+    return (
+        <div className="col-span-12 rounded-md border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
+            <div className="flex-col flex-wrap items-start justify-between gap-3 pb-0 sm:flex-nowrap">
+                <div className="flex w-full justify-center align-middle">
+                    <h2 className="mt-1.5 flex select-none flex-col justify-center font-nexa text-3xl font-normal text-primary antialiased">
+                        Celer
+                    </h2>
+                    <p className="flex flex-col justify-center text-xs font-semibold text-primary">
+                        <Slash className="-mr-3 mt-1 h-5 w-5 -rotate-45 text-gray-200" />
+                    </p>
+                    <Image
+                        src="/images/logo/celer-ia-only-logo.svg"
+                        alt="Celer IA Engine"
+                        width={56}
+                        height={50}
+                        className="mt-[6.1px] select-none antialiased"
+                        aria-selected={false}
+                        draggable={false}
+                    />
+                </div>
+                <p className="apexcharts-legend-text mt-0 text-center text-sm font-normal">
+                    Nosso modelo de atualização de valores de precatórios e RPVs
+                </p>
             </div>
+            <div className="flex w-full flex-col items-center">
+                <UpdatePrecatorioButton setStateFunction={setOficioForm} />
+            </div>
+            {
+                <form className="mt-8 space-y-5" onSubmit={handleSubmit(onSubmit)}>
+                    <input type="hidden" {...register('conta')} />
+                    <div className="grid grid-cols-2 gap-5 sm:grid-cols-2">
+                        <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                            <label
+                                htmlFor="natureza"
+                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                            >
+                                Natureza
+                            </label>
 
-            {/* ====> label PERCENTUAL DE AQUISIÇÃO <==== */}
-            {watch("valor_aquisicao_total") === false ? (
-              <div className="mt-1 flex flex-col gap-2 overflow-hidden 2xsm:col-span-2 md:col-span-1">
-                <label
-                  htmlFor="percentual_a_ser_adquirido"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Percentual de aquisição (%)
-                </label>
-                <input
-                  type="number"
-                  id="percentual_a_ser_adquirido"
-                  data-testid="percentual_a_ser_adquirido"
-                  defaultValue={100}
-                  className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                  min={0}
-                  {...register("percentual_a_ser_adquirido", {
-                    required: "Campo obrigatório",
-                    setValueAs: (value) => {
-                      return parseInt(value);
-                    },
-                  })}
-                />
-              </div>
-            ) : (
-              <div className="col-span-1 hidden md:block"></div>
-            )}
-            {/* ====> end label PERCENTUAL DE AQUISIÇÃO <==== */}
+                            <ShadSelect
+                                aria-labelledby="natureza"
+                                name="natureza"
+                                control={control}
+                                defaultValue={'NÃO TRIBUTÁRIA'}
 
-            <div
-              className={`col-span-2 flex items-center gap-2 md:col-span-1 ${watch("data_base")! < "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
-            >
-              <CustomCheckbox
-                check={watch("incidencia_juros_moratorios")}
-                id={"incidencia_juros_moratorios"}
-                defaultChecked
-                register={register("incidencia_juros_moratorios")}
-              />
+                                // className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-xs font-bold dark:border-strokedark dark:bg-boxdark uppercase"
+                            >
+                                <SelectItem defaultValue="NÃO TRIBUTÁRIA" value="NÃO TRIBUTÁRIA">
+                                    Não Tributária
+                                </SelectItem>
+                                <SelectItem value="TRIBUTÁRIA">Tributária</SelectItem>
+                            </ShadSelect>
+                        </div>
+                        <div className="invisible w-full flex-col gap-2 2xsm:hidden sm:col-span-1 sm:flex "></div>
 
-              {/* <input
+                        <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                            <label
+                                htmlFor="valor_principal"
+                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                            >
+                                Valor Principal
+                            </label>
+                            <Controller
+                                name="valor_principal"
+                                data-testid="valor_principal"
+                                control={control}
+                                defaultValue={0}
+                                rules={{
+                                    min: { value: 0.01, message: 'O valor deve ser maior que 0' },
+                                }}
+                                render={({ field, fieldState: { error } }) => (
+                                    <>
+                                        <Cleave
+                                            {...field}
+                                            data-testid="valor_principal"
+                                            className={`w-full rounded-md border-stroke ${error ? 'border-red' : 'dark:border-strokedark'} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
+                                            options={{
+                                                numeral: true,
+                                                numeralThousandsGroupStyle: 'thousand',
+                                                numeralDecimalScale: 2,
+                                                numeralDecimalMark: ',',
+                                                delimiter: '.',
+                                                prefix: 'R$ ',
+                                                rawValueTrimPrefix: true,
+                                            }}
+                                        />
+                                        {error && (
+                                            <span className="text-xs font-medium text-red">
+                                                {error.message}
+                                            </span>
+                                        )}
+                                    </>
+                                )}
+                            />
+                        </div>
+                        <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                            <label
+                                htmlFor="valor_juros"
+                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                            >
+                                Juros
+                            </label>
+                            <Controller
+                                name="valor_juros"
+                                control={control}
+                                defaultValue={0}
+                                rules={{
+                                    min: {
+                                        value: 0,
+                                        message: 'O valor deve ser maior ou igual a 0',
+                                    },
+                                }}
+                                render={({ field, fieldState: { error } }) => (
+                                    <>
+                                        <Cleave
+                                            {...field}
+                                            data-testid="valor_juros"
+                                            className={`w-full rounded-md border-stroke ${error ? 'border-red' : 'border-stroke dark:border-strokedark'} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
+                                            options={{
+                                                numeral: true,
+                                                numeralPositiveOnly: true,
+                                                numeralThousandsGroupStyle: 'thousand',
+                                                numeralDecimalScale: 2,
+                                                numeralDecimalMark: ',',
+                                                delimiter: '.',
+                                                prefix: 'R$ ',
+                                                rawValueTrimPrefix: true,
+                                            }}
+                                        />
+                                        {error && (
+                                            <span className="text-xs font-medium text-red">
+                                                {error.message}
+                                            </span>
+                                        )}
+                                    </>
+                                )}
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                            <div className="relative flex flex-col justify-between">
+                                <label
+                                    htmlFor="data_base"
+                                    className="mb-1 font-nexa text-xs font-semibold uppercase text-meta-5"
+                                >
+                                    Data Base
+                                </label>
+                                <input
+                                    type="date"
+                                    id="data_base"
+                                    data-testid="data_base"
+                                    className={`${errors.data_base && '!border-rose-400 !ring-0'} w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
+                                    {...register('data_base', {
+                                        required: 'Campo obrigatório',
+                                    })}
+                                    aria-invalid={errors.data_base ? 'true' : 'false'}
+                                />
+                                <ErrorMessage errors={errors} field="data_base" />
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col gap-2 2xsm:col-span-2 2xsm:mt-3 sm:col-span-1 sm:mt-0">
+                            <div className="relative flex flex-col justify-between">
+                                <label
+                                    htmlFor="data_requisicao"
+                                    className="mb-1 font-nexa text-xs font-semibold uppercase text-meta-5"
+                                >
+                                    Data de Requisição / Recebimento
+                                </label>
+                                <input
+                                    type="date"
+                                    id="data_requisicao"
+                                    data-testid="data_requisicao"
+                                    className={`${errors.data_requisicao && '!border-rose-400 !ring-0'} w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
+                                    {...register('data_requisicao', {
+                                        required: 'Campo obrigatório',
+                                    })}
+                                />
+                                <ErrorMessage errors={errors} field="data_requisicao" />
+                            </div>
+                        </div>
+
+                        <div className="col-span-2 flex w-full flex-col justify-between gap-4 sm:flex-row">
+                            <div
+                                className={`flex flex-row ${watch('ja_possui_destacamento') ? 'items-center' : 'items-start'} w-full gap-2 2xsm:col-span-2 sm:col-span-1`}
+                            >
+                                <CustomCheckbox
+                                    check={watch('ja_possui_destacamento')}
+                                    id={'ja_possui_destacamento'}
+                                    register={register('ja_possui_destacamento')}
+                                    defaultChecked
+                                />
+
+                                <label
+                                    htmlFor="ja_possui_destacamento"
+                                    className={`${!watch('ja_possui_destacamento') && 'mt-1'} font-nexa text-xs font-semibold uppercase text-meta-5`}
+                                >
+                                    Já possui destacamento de honorários?
+                                </label>
+                            </div>
+                            {watch('ja_possui_destacamento') === false && (
+                                <div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                                    <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                                        <label
+                                            htmlFor="percentual_de_honorarios"
+                                            className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                        >
+                                            Percentual
+                                        </label>
+                                        <input
+                                            type="number"
+                                            id="percentual_de_honorarios"
+                                            defaultValue={30}
+                                            className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                            {...register('percentual_de_honorarios', {})}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className={`col-span-2 flex max-h-6 items-center gap-2 md:col-span-1`}>
+                            <CustomCheckbox
+                                check={watch('valor_aquisicao_total')}
+                                id={'valor_aquisicao_total'}
+                                defaultChecked
+                                register={register('valor_aquisicao_total')}
+                            />
+
+                            <label
+                                htmlFor="valor_aquisicao_total"
+                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                            >
+                                Aquisição total
+                            </label>
+                        </div>
+
+                        {/* ====> label PERCENTUAL DE AQUISIÇÃO <==== */}
+                        {watch('valor_aquisicao_total') === false ? (
+                            <div className="mt-1 flex flex-col gap-2 overflow-hidden 2xsm:col-span-2 md:col-span-1">
+                                <label
+                                    htmlFor="percentual_a_ser_adquirido"
+                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                >
+                                    Percentual de aquisição (%)
+                                </label>
+                                <input
+                                    type="number"
+                                    id="percentual_a_ser_adquirido"
+                                    data-testid="percentual_a_ser_adquirido"
+                                    defaultValue={100}
+                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                    min={0}
+                                    {...register('percentual_a_ser_adquirido', {
+                                        required: 'Campo obrigatório',
+                                        setValueAs: (value) => {
+                                            return parseInt(value);
+                                        },
+                                    })}
+                                />
+                            </div>
+                        ) : (
+                            <div className="col-span-1 hidden md:block"></div>
+                        )}
+                        {/* ====> end label PERCENTUAL DE AQUISIÇÃO <==== */}
+
+                        <div
+                            className={`col-span-2 flex items-center gap-2 md:col-span-1 ${watch('data_base')! < '2021-12-01' && watch('natureza') !== 'TRIBUTÁRIA' ? '' : 'hidden'}`}
+                        >
+                            <CustomCheckbox
+                                check={watch('incidencia_juros_moratorios')}
+                                id={'incidencia_juros_moratorios'}
+                                defaultChecked
+                                register={register('incidencia_juros_moratorios')}
+                            />
+
+                            {/* <input
                   type="checkbox"
                   id="incidencia_juros_moratorios"
                   className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                   defaultChecked
                   {...register("incidencia_juros_moratorios")}
                 /> */}
-              <label
-                htmlFor="incidencia_juros_moratorios"
-                className="font-nexa text-xs font-semibold uppercase text-meta-5"
-              >
-                Juros de Mora fixados em sentença
-              </label>
-            </div>
-            <div
-              className={`col-span-2 flex items-center gap-2 ${watch("data_base")! > "2021-12-01" && watch("natureza") !== "TRIBUTÁRIA" ? "" : "hidden"}`}
-            >
-              <CustomCheckbox
-                check={watch("nao_incide_selic_no_periodo_db_ate_abril")}
-                id={"nao_incide_selic_no_periodo_db_ate_abril"}
-                register={register("nao_incide_selic_no_periodo_db_ate_abril")}
-              />
+                            <label
+                                htmlFor="incidencia_juros_moratorios"
+                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                            >
+                                Juros de Mora fixados em sentença
+                            </label>
+                        </div>
+                        <div
+                            className={`col-span-2 flex items-center gap-2 ${watch('data_base')! > '2021-12-01' && watch('natureza') !== 'TRIBUTÁRIA' ? '' : 'hidden'}`}
+                        >
+                            <CustomCheckbox
+                                check={watch('nao_incide_selic_no_periodo_db_ate_abril')}
+                                id={'nao_incide_selic_no_periodo_db_ate_abril'}
+                                register={register('nao_incide_selic_no_periodo_db_ate_abril')}
+                            />
 
-              {/* <input
+                            {/* <input
                   type="checkbox"
                   id="nao_incide_selic_no_periodo_db_ate_abril"
                   className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                   defaultChecked
                   {...register("nao_incide_selic_no_periodo_db_ate_abril")}
                 /> */}
-              <label
-                htmlFor="nao_incide_selic_no_periodo_db_ate_abril"
-                className="font-nexa text-xs font-semibold uppercase text-meta-5"
-              >
-                SELIC somente sobre o principal
-              </label>
-            </div>
-            <div className="col-span-2 flex items-center gap-2">
-              <CustomCheckbox
-                check={watch("incidencia_rra_ir")}
-                id={"incidencia_rra_ir"}
-                defaultChecked
-                register={register("incidencia_rra_ir")}
-              />
-              {/* <input
+                            <label
+                                htmlFor="nao_incide_selic_no_periodo_db_ate_abril"
+                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                            >
+                                SELIC somente sobre o principal
+                            </label>
+                        </div>
+                        <div className="col-span-2 flex items-center gap-2">
+                            <CustomCheckbox
+                                check={watch('incidencia_rra_ir')}
+                                id={'incidencia_rra_ir'}
+                                defaultChecked
+                                register={register('incidencia_rra_ir')}
+                            />
+                            {/* <input
                 type="checkbox"
                 id="incidencia_rra_ir"
                 className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                 defaultChecked
                 {...register("incidencia_rra_ir")}
               /> */}
-              <label
-                htmlFor="incidencia_rra_ir"
-                className="font-nexa text-xs font-semibold uppercase text-meta-5"
-              >
-                Incidência de IR
-              </label>
-            </div>
-            {watch("natureza") === "TRIBUTÁRIA" ||
-            watch("incidencia_rra_ir") === false ? (
-              <>
-                {/* {watch("natureza") === "TRIBUTÁRIA" && watch("incidencia_rra_ir") === false ? null : (
+                            <label
+                                htmlFor="incidencia_rra_ir"
+                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                            >
+                                Incidência de IR
+                            </label>
+                        </div>
+                        {watch('natureza') === 'TRIBUTÁRIA' ||
+                        watch('incidencia_rra_ir') === false ? (
+                            <>
+                                {/* {watch("natureza") === "TRIBUTÁRIA" && watch("incidencia_rra_ir") === false ? null : (
                   <div className="flex items-center col-span-1">&nbsp;</div>
                 )} */}
-              </>
-            ) : (
-              <div
-                className={`flex gap-2 ${watch("ir_incidente_rra") ? "items-start" : "items-center"} 2xsm:col-span-2 sm:col-span-1`}
-              >
-                <CustomCheckbox
-                  check={watch("ir_incidente_rra")}
-                  id={"ir_incidente_rra"}
-                  register={register("ir_incidente_rra")}
-                />
-                {/* <input
+                            </>
+                        ) : (
+                            <div
+                                className={`flex gap-2 ${watch('ir_incidente_rra') ? 'items-start' : 'items-center'} 2xsm:col-span-2 sm:col-span-1`}
+                            >
+                                <CustomCheckbox
+                                    check={watch('ir_incidente_rra')}
+                                    id={'ir_incidente_rra'}
+                                    register={register('ir_incidente_rra')}
+                                />
+                                {/* <input
                   type="checkbox"
                   id="ir_incidente_rra"
                   className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                   {...register("ir_incidente_rra")}
                 /> */}
-                <label
-                  htmlFor="ir_incidente_rra"
-                  className="mt-1 font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  IR incidente sobre RRA?
-                </label>
-              </div>
-            )}
-            {watch("ir_incidente_rra") === true &&
-            watch("natureza") !== "TRIBUTÁRIA" ? (
-              <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                <label
-                  htmlFor="numero_de_meses"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Número de meses
-                </label>
-                <input
-                  type="number"
-                  id="numero_de_meses"
-                  data-testid="numero_de_meses"
-                  className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                  min={0}
-                  {...register("numero_de_meses", {
-                    required: "Campo obrigatório",
-                    setValueAs: (value) => {
-                      return parseInt(value);
-                    },
-                  })}
-                />
-              </div>
-            ) : (
-              <>
-                {watch("natureza") === "TRIBUTÁRIA" ||
-                watch("incidencia_rra_ir") === false ? null : (
-                  <div className="col-span-1 hidden sm:block">&nbsp;</div>
-                )}
-              </>
-            )}
-            {watch("natureza") !== "TRIBUTÁRIA" ? (
-              <div
-                className={`flex gap-2 ${watch("incidencia_pss") ? "items-start" : "items-center"} 2xsm:col-span-2 sm:col-span-1`}
-              >
-                <CustomCheckbox
-                  check={watch("incidencia_pss")}
-                  id={"incidencia_pss"}
-                  register={register("incidencia_pss")}
-                />
-                {/* <input
+                                <label
+                                    htmlFor="ir_incidente_rra"
+                                    className="mt-1 font-nexa text-xs font-semibold uppercase text-meta-5"
+                                >
+                                    IR incidente sobre RRA?
+                                </label>
+                            </div>
+                        )}
+                        {watch('ir_incidente_rra') === true &&
+                        watch('natureza') !== 'TRIBUTÁRIA' ? (
+                            <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                <label
+                                    htmlFor="numero_de_meses"
+                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                >
+                                    Número de meses
+                                </label>
+                                <input
+                                    type="number"
+                                    id="numero_de_meses"
+                                    data-testid="numero_de_meses"
+                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                    min={0}
+                                    {...register('numero_de_meses', {
+                                        required: 'Campo obrigatório',
+                                        setValueAs: (value) => {
+                                            return parseInt(value);
+                                        },
+                                    })}
+                                />
+                            </div>
+                        ) : (
+                            <>
+                                {watch('natureza') === 'TRIBUTÁRIA' ||
+                                watch('incidencia_rra_ir') === false ? null : (
+                                    <div className="col-span-1 hidden sm:block">&nbsp;</div>
+                                )}
+                            </>
+                        )}
+                        {watch('natureza') !== 'TRIBUTÁRIA' ? (
+                            <div
+                                className={`flex gap-2 ${watch('incidencia_pss') ? 'items-start' : 'items-center'} 2xsm:col-span-2 sm:col-span-1`}
+                            >
+                                <CustomCheckbox
+                                    check={watch('incidencia_pss')}
+                                    id={'incidencia_pss'}
+                                    register={register('incidencia_pss')}
+                                />
+                                {/* <input
                   type="checkbox"
                   id="incidencia_pss"
                   className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                   {...register("incidencia_pss")}
                 /> */}
-                <label
-                  htmlFor="incidencia_pss"
-                  className="mt-1 font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Incide PSS?
-                </label>
-              </div>
-            ) : null}
-            {watch("incidencia_pss") && watch("natureza") !== "TRIBUTÁRIA" ? (
-              <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                <label
-                  htmlFor="valor_pss"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  PSS
-                </label>
-                <Controller
-                  name="valor_pss"
-                  data-testid="valor_pss"
-                  control={control}
-                  defaultValue={0}
-                  render={({ field }) => (
-                    <Cleave
-                      {...field}
-                      data-testid="valor_pss"
-                      className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                      options={{
-                        numeral: true,
-                        numeralThousandsGroupStyle: "thousand",
-                        numeralDecimalScale: 2,
-                        numeralDecimalMark: ",",
-                        delimiter: ".",
-                        prefix: "R$ ",
-                        rawValueTrimPrefix: true,
-                      }}
-                    />
-                  )}
-                />
-              </div>
-            ) : (
-              <>
-                {watch("natureza") === "TRIBUTÁRIA" ? null : (
-                  <div className="col-span-1 hidden sm:block">&nbsp;</div>
-                )}
-              </>
-            )}
-            <div
-              className={`flex gap-2 ${watch("data_limite_de_atualizacao_check") ? "items-start" : "items-center"} 2xsm:col-span-2 sm:col-span-1`}
-            >
-              <CustomCheckbox
-                check={watch("data_limite_de_atualizacao_check")}
-                id={"data_limite_de_atualizacao_check"}
-                register={register("data_limite_de_atualizacao_check")}
-              />
-              {/* <input
+                                <label
+                                    htmlFor="incidencia_pss"
+                                    className="mt-1 font-nexa text-xs font-semibold uppercase text-meta-5"
+                                >
+                                    Incide PSS?
+                                </label>
+                            </div>
+                        ) : null}
+                        {watch('incidencia_pss') && watch('natureza') !== 'TRIBUTÁRIA' ? (
+                            <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                <label
+                                    htmlFor="valor_pss"
+                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                >
+                                    PSS
+                                </label>
+                                <Controller
+                                    name="valor_pss"
+                                    data-testid="valor_pss"
+                                    control={control}
+                                    defaultValue={0}
+                                    render={({ field }) => (
+                                        <Cleave
+                                            {...field}
+                                            data-testid="valor_pss"
+                                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                            options={{
+                                                numeral: true,
+                                                numeralThousandsGroupStyle: 'thousand',
+                                                numeralDecimalScale: 2,
+                                                numeralDecimalMark: ',',
+                                                delimiter: '.',
+                                                prefix: 'R$ ',
+                                                rawValueTrimPrefix: true,
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </div>
+                        ) : (
+                            <>
+                                {watch('natureza') === 'TRIBUTÁRIA' ? null : (
+                                    <div className="col-span-1 hidden sm:block">&nbsp;</div>
+                                )}
+                            </>
+                        )}
+                        <div
+                            className={`flex gap-2 ${watch('data_limite_de_atualizacao_check') ? 'items-start' : 'items-center'} 2xsm:col-span-2 sm:col-span-1`}
+                        >
+                            <CustomCheckbox
+                                check={watch('data_limite_de_atualizacao_check')}
+                                id={'data_limite_de_atualizacao_check'}
+                                register={register('data_limite_de_atualizacao_check')}
+                            />
+                            {/* <input
                 type="checkbox"
                 id="data_limite_de_atualizacao_check"
                 className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                 {...register("data_limite_de_atualizacao_check")}
               /> */}
-              <label
-                htmlFor="data_limite_de_atualizacao_check"
-                className="mt-1 font-nexa text-xs font-semibold uppercase text-meta-5"
-              >
-                Atualizar para data passada?
-              </label>
-            </div>
-            {watch("data_limite_de_atualizacao_check") ? (
-              <div className="flex flex-col justify-between gap-2 2xsm:col-span-2 sm:col-span-1">
-                <label
-                  htmlFor="data_limite_de_atualizacao"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Atualizado até:
-                </label>
-                <input
-                  type="date"
-                  id="data_limite_de_atualizacao"
-                  data-testid="data_limite_de_atualizacao"
-                  className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                  {...register("data_limite_de_atualizacao", {})}
-                  min={watch("data_requisicao")}
-                  max={new Date().toISOString().split("T")[0]}
-                />
-                {watch("data_limite_de_atualizacao")! <
-                watch("data_requisicao")! ? (
-                  <span
-                    role="alert"
-                    className="absolute right-4 top-4 text-sm text-red-500"
-                  >
-                    Data de atualização deve ser maior que a data de requisição
-                  </span>
-                ) : null}
-              </div>
-            ) : null}
+                            <label
+                                htmlFor="data_limite_de_atualizacao_check"
+                                className="mt-1 font-nexa text-xs font-semibold uppercase text-meta-5"
+                            >
+                                Atualizar para data passada?
+                            </label>
+                        </div>
+                        {watch('data_limite_de_atualizacao_check') ? (
+                            <div className="flex flex-col justify-between gap-2 2xsm:col-span-2 sm:col-span-1">
+                                <label
+                                    htmlFor="data_limite_de_atualizacao"
+                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                >
+                                    Atualizado até:
+                                </label>
+                                <input
+                                    type="date"
+                                    id="data_limite_de_atualizacao"
+                                    data-testid="data_limite_de_atualizacao"
+                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                    {...register('data_limite_de_atualizacao', {})}
+                                    min={watch('data_requisicao')}
+                                    max={new Date().toISOString().split('T')[0]}
+                                />
+                                {watch('data_limite_de_atualizacao')! <
+                                watch('data_requisicao')! ? (
+                                    <span
+                                        role="alert"
+                                        className="absolute right-4 top-4 text-sm text-red-500"
+                                    >
+                                        Data de atualização deve ser maior que a data de requisição
+                                    </span>
+                                ) : null}
+                            </div>
+                        ) : null}
 
-            {/* CVLD */}
-            <div className="col-span-2 flex flex-col gap-2">
-              <div className="flex items-center gap-2 ">
-                <CustomCheckbox
-                  check={watch("gerar_cvld")}
-                  id={"gerar_cvld"}
-                  register={register("gerar_cvld")}
-                />
-                {/* <input
+                        {/* CVLD */}
+                        <div className="col-span-2 flex flex-col gap-2">
+                            <div className="flex items-center gap-2 ">
+                                <CustomCheckbox
+                                    check={watch('gerar_cvld')}
+                                    id={'gerar_cvld'}
+                                    register={register('gerar_cvld')}
+                                />
+                                {/* <input
                   type="checkbox"
                   id="gerar_cvld"
                   className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                   {...register("gerar_cvld")}
                 /> */}
-                {/* <label htmlFor="gerar_cvld" className="text-sm font-medium text-meta-5">
+                                {/* <label htmlFor="gerar_cvld" className="text-sm font-medium text-meta-5">
                     Emitir Certidão de Valor Líquido Disponível (CVLD)?
                   </label> */}
-                <label
-                  htmlFor="gerar_cvld"
-                  className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                >
-                  Salvar informações de ofício e recálculo?
-                </label>
-              </div>
-              <div className="mt-8 flex flex-col gap-2">
-                {watch("gerar_cvld") ? (
-                  <>
-                    {/* <span className="text-lg font-semibold text-black dark:text-white">Dados do Principal</span> */}
-                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2"></div>
-
-                    <div className="mb-4 flex w-full justify-end gap-2 2xsm:flex-col sm:col-span-2 sm:flex-row">
-                      <span className="text-md w-full self-center font-semibold">
-                        Dados de Identificação
-                      </span>
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <label
-                        htmlFor="credor"
-                        className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                      >
-                        Nome/Razão Social
-                      </label>
-                      <input
-                        type="text"
-                        id="credor"
-                        data-testid="credor"
-                        className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                        {...register("credor", {})}
-                      />
-                    </div>
-                    <div className="my-4 flex w-full flex-row justify-between gap-4 sm:col-span-2">
-                      <div className="flex w-full flex-col gap-2 sm:col-span-1">
-                        <label
-                          htmlFor="cpf_cnpj"
-                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                        >
-                          CPF/CNPJ
-                        </label>
-                        <input
-                          type="text"
-                          id="cpf_cnpj"
-                          data-testid="cpf_cnpj"
-                          className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                          {...register("cpf_cnpj", {})}
-                        />
-                      </div>
-                      <div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
-                        <div className="flex w-full flex-col gap-2 sm:col-span-1">
-                          <label
-                            htmlFor="especie"
-                            className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                          >
-                            Espécie
-                          </label>
-                          <ShadSelect
-                            name="especie"
-                            control={control}
-                            defaultValue="PRINCIPAL"
-                          >
-                            <SelectItem value="PRINCIPAL">PRINCIPAL</SelectItem>
-                            <SelectItem value="HONORARIOS_CONTRATUAIS">
-                              HONORÁRIOS CONTRATUAIS
-                            </SelectItem>
-                            <SelectItem value="HONORARIOS_SUCUMBENCIAs">
-                              HONORÁRIOS SUCUMBENCIAIS
-                            </SelectItem>
-                          </ShadSelect>
-                        </div>
-                      </div>
-                      {/* <div className="invisible flex w-full flex-col gap-2 sm:col-span-1 "></div> */}
-                    </div>
-                    
-
-                    <span className="text-md w-full self-center font-semibold">
-                      Dados do Processo
-                    </span>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                        <label
-                          htmlFor="npu"
-                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                        >
-                          NPU (requisitório)
-                        </label>
-                        <Controller
-                          name="npu"
-                          control={control}
-                          defaultValue=""
-                          render={({ field }) => (
-                            <Cleave
-                              {...field}
-                              data-testid="npu"
-                              className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                              options={{
-                                blocks: [7, 2, 4, 1, 2, 4],
-                                delimiters: ["-", ".", ".", ".", "."],
-                                numericOnly: true,
-                              }}
-                            />
-                          )}
-                        />
-                      </div>
-
-                      <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                        <label
-                          htmlFor="npu_originario"
-                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                        >
-                          NPU (originario)
-                        </label>
-                        <Controller
-                          name="npu_originario"
-                          control={control}
-                          defaultValue=""
-                          render={({ field }) => (
-                            <Cleave
-                              {...field}
-                              data-testid="npu_originario"
-                              className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                              options={{
-                                blocks: [7, 2, 4, 1, 2, 4],
-                                delimiters: ["-", ".", ".", ".", "."],
-                                numericOnly: true,
-                              }}
-                            />
-                          )}
-                        />
-                      </div>
-
-                      <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                        <label
-                          htmlFor="esfera"
-                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                        >
-                          Esfera
-                        </label>
-                        <ShadSelect
-                          defaultValue="FEDERAL"
-                          name="esfera"
-                          aria-labelledby="esfera"
-                          control={control}
-                        >
-                          <SelectItem value="FEDERAL">Federal</SelectItem>
-                          <SelectItem value="ESTADUAL">Estadual</SelectItem>
-                          <SelectItem value="MUNICIPAL">Municipal</SelectItem>
-                        </ShadSelect>
-                      </div>
-
-                      {watch("esfera") !== "FEDERAL" &&
-                      watch("esfera") !== undefined ? (
-                        <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                          <label
-                            htmlFor="natureza"
-                            className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                          >
-                            Regime
-                          </label>
-                          <ShadSelect
-                            name="regime"
-                            control={control}
-                            defaultValue="GERAL"
-                          >
-                            <SelectItem value="GERAL">GERAL</SelectItem>
-                            <SelectItem value="ESPECIAL">ESPECIAL</SelectItem>
-                          </ShadSelect>
-                        </div>
-                      ) : null}
-
-                      {watch("esfera") && watch("esfera") !== "FEDERAL" && (
-                        <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                          <label
-                            htmlFor="estado_ente_devedor"
-                            className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                          >
-                            Estado do Ente Devedor
-                          </label>
-                          <ShadSelect
-                            name="estado_ente_devedor"
-                            aria-labelledby="estado_ente_devedor"
-                            control={control}
-                          >
-                            {estados.map((estado) => (
-                              <SelectItem key={estado.id} value={estado.id}>
-                                {estado.nome}
-                              </SelectItem>
-                            ))}
-                          </ShadSelect>
-                        </div>
-                      )}
-
-                      <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                        <label
-                          htmlFor="ente_devedor"
-                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                        >
-                          Ente Devedor
-                        </label>
-                        <input
-                          type="text"
-                          id="ente_devedor"
-                          data-testid="ente_devedor"
-                          className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                          {...register("ente_devedor", {})}
-                        />
-                      </div>
-
-                      <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                        <label
-                          htmlFor="juizo_vara"
-                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                        >
-                          Juízo/Vara
-                        </label>
-                        <input
-                          type="text"
-                          id="juizo_vara"
-                          data-testid="juizo_vara"
-                          className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                          {...register("juizo_vara", {})}
-                        />
-                      </div>
-
-                      <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                        <label
-                          htmlFor="tribunal"
-                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                        >
-                          Tribunal
-                        </label>
-                        <ShadSelect
-                          name="tribunal"
-                          control={control}
-                          data-testid="tribunal"
-                          defaultValue={tribunais[0].nome}
-                        >
-                          {tribunais.map((tribunal) => (
-                            <SelectItem key={tribunal.id} value={tribunal.id}>
-                              {tribunal.nome}
-                            </SelectItem>
-                          ))}
-                        </ShadSelect>
-                      </div>
-
-                      <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                        <label
-                          htmlFor="tipo"
-                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                        >
-                          Tipo
-                        </label>
-
-                        <ShadSelect
-                          name="tipo_do_oficio"
-                          control={control}
-                          data-testid="tipo_do_oficio"
-                          defaultValue={enumTipoOficiosList[0]}
-                        >
-                          {enumTipoOficiosList.map((status) => (
-                            <SelectItem key={status} value={status}>
-                              {status}
-                            </SelectItem>
-                          ))}
-                        </ShadSelect>
-                      </div>
-
-                      <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                        <label
-                          htmlFor="status"
-                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                        >
-                          Status
-                        </label>
-                        <ShadSelect
-                          name="status"
-                          control={control}
-                          defaultValue={enumOficiosList[0]}
-                        >
-                          {enumOficiosList.map((status) => (
-                            <SelectItem key={status} value={status}>
-                              {status}
-                            </SelectItem>
-                          ))}
-                        </ShadSelect>
-                      </div>
-                    </div>
-
-                    {/* campos de e-mail/telefones */}
-                    <span className="mt-8 text-lg font-semibold">Contato</span>
-                    <div className="grid w-full grid-cols-2 justify-between gap-4 sm:col-span-2">
-                      <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                        <label
-                          htmlFor="email_contato"
-                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                        >
-                          Email de Contato
-                        </label>
-
-                        <input
-                          type="email"
-                          id="email_contato"
-                          placeholder="ada@lovelace.com"
-                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                          {...register("email_contato", {})}
-                        />
-                      </div>
-
-                      <div className="relative flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                        <label
-                          htmlFor="telefone_contato"
-                          className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                        >
-                          Telefone de Contato
-                        </label>
-
-                        <input
-                          type="tel"
-                          id="telefone_contato"
-                          placeholder="(00) 00000-0000"
-                          className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                          {...register("telefone_contato", {})}
-                        />
-                        {contatoNumberCount === 1 && (
-                          <div
-                            title="Adicionar telefone de contato"
-                            data-testid="add-telefone-contato"
-                            onClick={() => setContatoNumberCount(2)}
-                            className="absolute right-2 top-0 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
-                          >
-                            <BiPlus />
-                          </div>
-                        )}
-                      </div>
-
-                      {contatoNumberCount > 1 && (
-                        <>
-                          <div className="relative flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                            <label
-                              htmlFor="telefone_contato_2"
-                              className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                            >
-                              Telefone de Contato (2)
-                            </label>
-
-                            <input
-                              type="tel"
-                              id="telefone_contato"
-                              placeholder="(00) 00000-0000"
-                              className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                              {...register("telefone_contato_2", {})}
-                            />
-                            {contatoNumberCount === 2 && (
-                              <>
-                                <div
-                                  title="Adicionar telefone de contato"
-                                  onClick={() => setContatoNumberCount(3)}
-                                  className="absolute right-7 top-0 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
+                                <label
+                                    htmlFor="gerar_cvld"
+                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
                                 >
-                                  <BiPlus />
-                                </div>
-                                <div
-                                  title="Remover telefone de contato"
-                                  data-testid="remove-telefone-contato"
-                                  onClick={() => setContatoNumberCount(1)}
-                                  className="absolute right-2 top-0 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
-                                >
-                                  <BiMinus />
-                                </div>
-                              </>
-                            )}
-                          </div>
-                          {contatoNumberCount > 2 && (
-                            <div className="relative flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                              <label
-                                htmlFor="telefone_contato_3"
-                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                              >
-                                Telefone de Contato (3)
-                              </label>
-
-                              <input
-                                type="tel"
-                                id="telefone_contato"
-                                placeholder="(00) 00000-0000"
-                                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                                {...register("telefone_contato_3", {})}
-                              />
-                              {contatoNumberCount === 3 && (
-                                <div
-                                  title="Remover telefone de contato"
-                                  onClick={() => setContatoNumberCount(2)}
-                                  className="absolute right-2 top-0 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
-                                >
-                                  <BiMinus />
-                                </div>
-                              )}
+                                    Salvar informações de ofício e recálculo?
+                                </label>
                             </div>
-                          )}
-                        </>
-                      )}
-                    </div>
+                            <div className="mt-8 flex flex-col gap-2">
+                                {watch('gerar_cvld') ? (
+                                    <>
+                                        {/* <span className="text-lg font-semibold text-black dark:text-white">Dados do Principal</span> */}
+                                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2"></div>
 
-                    {/* end campos de e-mail/telefones */}
-                    {/* <span className="text-lg font-semibold mt-8">Contato</span> */}
-                    <div className="relative flex w-full flex-row justify-between gap-4 sm:col-span-2">
-                      {/* <div className="flex flex-col gap-2 w-full sm:col-span-1">
+                                        <div className="mb-4 flex w-full justify-end gap-2 2xsm:flex-col sm:col-span-2 sm:flex-row">
+                                            <span className="text-md w-full self-center font-semibold">
+                                                Dados de Identificação
+                                            </span>
+                                        </div>
+
+                                        <div className="flex flex-col gap-2">
+                                            <label
+                                                htmlFor="credor"
+                                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                            >
+                                                Nome/Razão Social
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="credor"
+                                                data-testid="credor"
+                                                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                                {...register('credor', {})}
+                                            />
+                                        </div>
+                                        <div className="my-4 flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                                            <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                                                <label
+                                                    htmlFor="cpf_cnpj"
+                                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                                >
+                                                    CPF/CNPJ
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="cpf_cnpj"
+                                                    data-testid="cpf_cnpj"
+                                                    className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                                    {...register('cpf_cnpj', {})}
+                                                />
+                                            </div>
+                                            <div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                                                <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                                                    <label
+                                                        htmlFor="especie"
+                                                        className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                                    >
+                                                        Espécie
+                                                    </label>
+                                                    <ShadSelect
+                                                        name="especie"
+                                                        control={control}
+                                                        defaultValue="PRINCIPAL"
+                                                    >
+                                                        <SelectItem value="PRINCIPAL">
+                                                            PRINCIPAL
+                                                        </SelectItem>
+                                                        <SelectItem value="HONORARIOS_CONTRATUAIS">
+                                                            HONORÁRIOS CONTRATUAIS
+                                                        </SelectItem>
+                                                        <SelectItem value="HONORARIOS_SUCUMBENCIAs">
+                                                            HONORÁRIOS SUCUMBENCIAIS
+                                                        </SelectItem>
+                                                    </ShadSelect>
+                                                </div>
+                                            </div>
+                                            {/* <div className="invisible flex w-full flex-col gap-2 sm:col-span-1 "></div> */}
+                                        </div>
+
+                                        <span className="text-md w-full self-center font-semibold">
+                                            Dados do Processo
+                                        </span>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                                <label
+                                                    htmlFor="npu"
+                                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                                >
+                                                    NPU (requisitório)
+                                                </label>
+                                                <Controller
+                                                    name="npu"
+                                                    control={control}
+                                                    defaultValue=""
+                                                    render={({ field }) => (
+                                                        <Cleave
+                                                            {...field}
+                                                            data-testid="npu"
+                                                            className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                                            options={{
+                                                                blocks: [7, 2, 4, 1, 2, 4],
+                                                                delimiters: [
+                                                                    '-',
+                                                                    '.',
+                                                                    '.',
+                                                                    '.',
+                                                                    '.',
+                                                                ],
+                                                                numericOnly: true,
+                                                            }}
+                                                        />
+                                                    )}
+                                                />
+                                            </div>
+
+                                            <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                                <label
+                                                    htmlFor="npu_originario"
+                                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                                >
+                                                    NPU (originario)
+                                                </label>
+                                                <Controller
+                                                    name="npu_originario"
+                                                    control={control}
+                                                    defaultValue=""
+                                                    render={({ field }) => (
+                                                        <Cleave
+                                                            {...field}
+                                                            data-testid="npu_originario"
+                                                            className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                                            options={{
+                                                                blocks: [7, 2, 4, 1, 2, 4],
+                                                                delimiters: [
+                                                                    '-',
+                                                                    '.',
+                                                                    '.',
+                                                                    '.',
+                                                                    '.',
+                                                                ],
+                                                                numericOnly: true,
+                                                            }}
+                                                        />
+                                                    )}
+                                                />
+                                            </div>
+
+                                            <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                                <label
+                                                    htmlFor="esfera"
+                                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                                >
+                                                    Esfera
+                                                </label>
+                                                <ShadSelect
+                                                    defaultValue="FEDERAL"
+                                                    name="esfera"
+                                                    aria-labelledby="esfera"
+                                                    control={control}
+                                                >
+                                                    <SelectItem value="FEDERAL">Federal</SelectItem>
+                                                    <SelectItem value="ESTADUAL">
+                                                        Estadual
+                                                    </SelectItem>
+                                                    <SelectItem value="MUNICIPAL">
+                                                        Municipal
+                                                    </SelectItem>
+                                                </ShadSelect>
+                                            </div>
+
+                                            {watch('esfera') !== 'FEDERAL' &&
+                                            watch('esfera') !== undefined ? (
+                                                <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                                    <label
+                                                        htmlFor="natureza"
+                                                        className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                                    >
+                                                        Regime
+                                                    </label>
+                                                    <ShadSelect
+                                                        name="regime"
+                                                        control={control}
+                                                        defaultValue="GERAL"
+                                                    >
+                                                        <SelectItem value="GERAL">GERAL</SelectItem>
+                                                        <SelectItem value="ESPECIAL">
+                                                            ESPECIAL
+                                                        </SelectItem>
+                                                    </ShadSelect>
+                                                </div>
+                                            ) : null}
+
+                                            {watch('esfera') && watch('esfera') !== 'FEDERAL' && (
+                                                <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                                    <label
+                                                        htmlFor="estado_ente_devedor"
+                                                        className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                                    >
+                                                        Estado do Ente Devedor
+                                                    </label>
+                                                    <ShadSelect
+                                                        name="estado_ente_devedor"
+                                                        aria-labelledby="estado_ente_devedor"
+                                                        control={control}
+                                                    >
+                                                        {estados.map((estado) => (
+                                                            <SelectItem
+                                                                key={estado.id}
+                                                                value={estado.id}
+                                                            >
+                                                                {estado.nome}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </ShadSelect>
+                                                </div>
+                                            )}
+
+                                            <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                                <label
+                                                    htmlFor="ente_devedor"
+                                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                                >
+                                                    Ente Devedor
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="ente_devedor"
+                                                    data-testid="ente_devedor"
+                                                    className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                                    {...register('ente_devedor', {})}
+                                                />
+                                            </div>
+
+                                            <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                                <label
+                                                    htmlFor="juizo_vara"
+                                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                                >
+                                                    Juízo/Vara
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="juizo_vara"
+                                                    data-testid="juizo_vara"
+                                                    className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                                    {...register('juizo_vara', {})}
+                                                />
+                                            </div>
+
+                                            <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                                <label
+                                                    htmlFor="tribunal"
+                                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                                >
+                                                    Tribunal
+                                                </label>
+                                                <ShadSelect
+                                                    name="tribunal"
+                                                    control={control}
+                                                    data-testid="tribunal"
+                                                    defaultValue={tribunais[0].nome}
+                                                >
+                                                    {tribunais.map((tribunal) => (
+                                                        <SelectItem
+                                                            key={tribunal.id}
+                                                            value={tribunal.id}
+                                                        >
+                                                            {tribunal.nome}
+                                                        </SelectItem>
+                                                    ))}
+                                                </ShadSelect>
+                                            </div>
+
+                                            <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                                <label
+                                                    htmlFor="tipo"
+                                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                                >
+                                                    Tipo
+                                                </label>
+
+                                                <ShadSelect
+                                                    name="tipo_do_oficio"
+                                                    control={control}
+                                                    data-testid="tipo_do_oficio"
+                                                    defaultValue={enumTipoOficiosList[0]}
+                                                >
+                                                    {enumTipoOficiosList.map((status) => (
+                                                        <SelectItem key={status} value={status}>
+                                                            {status}
+                                                        </SelectItem>
+                                                    ))}
+                                                </ShadSelect>
+                                            </div>
+
+                                            <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                                <label
+                                                    htmlFor="status"
+                                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                                >
+                                                    Status
+                                                </label>
+                                                <ShadSelect
+                                                    name="status"
+                                                    control={control}
+                                                    defaultValue={enumOficiosList[0]}
+                                                >
+                                                    {enumOficiosList.map((status) => (
+                                                        <SelectItem key={status} value={status}>
+                                                            {status}
+                                                        </SelectItem>
+                                                    ))}
+                                                </ShadSelect>
+                                            </div>
+                                        </div>
+
+                                        {/* campos de e-mail/telefones */}
+                                        <span className="mt-8 text-lg font-semibold">Contato</span>
+                                        <div className="grid w-full grid-cols-2 justify-between gap-4 sm:col-span-2">
+                                            <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                                <label
+                                                    htmlFor="email_contato"
+                                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                                >
+                                                    Email de Contato
+                                                </label>
+
+                                                <input
+                                                    type="email"
+                                                    id="email_contato"
+                                                    placeholder="ada@lovelace.com"
+                                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                                    {...register('email_contato', {})}
+                                                />
+                                            </div>
+
+                                            <div className="relative flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                                <label
+                                                    htmlFor="telefone_contato"
+                                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                                >
+                                                    Telefone de Contato
+                                                </label>
+
+                                                <input
+                                                    type="tel"
+                                                    id="telefone_contato"
+                                                    placeholder="(00) 00000-0000"
+                                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                                    {...register('telefone_contato', {})}
+                                                />
+                                                {contatoNumberCount === 1 && (
+                                                    <div
+                                                        title="Adicionar telefone de contato"
+                                                        data-testid="add-telefone-contato"
+                                                        onClick={() => setContatoNumberCount(2)}
+                                                        className="absolute right-2 top-0 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
+                                                    >
+                                                        <BiPlus />
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {contatoNumberCount > 1 && (
+                                                <>
+                                                    <div className="relative flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                                        <label
+                                                            htmlFor="telefone_contato_2"
+                                                            className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                                        >
+                                                            Telefone de Contato (2)
+                                                        </label>
+
+                                                        <input
+                                                            type="tel"
+                                                            id="telefone_contato"
+                                                            placeholder="(00) 00000-0000"
+                                                            className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                                            {...register('telefone_contato_2', {})}
+                                                        />
+                                                        {contatoNumberCount === 2 && (
+                                                            <>
+                                                                <div
+                                                                    title="Adicionar telefone de contato"
+                                                                    onClick={() =>
+                                                                        setContatoNumberCount(3)
+                                                                    }
+                                                                    className="absolute right-7 top-0 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
+                                                                >
+                                                                    <BiPlus />
+                                                                </div>
+                                                                <div
+                                                                    title="Remover telefone de contato"
+                                                                    data-testid="remove-telefone-contato"
+                                                                    onClick={() =>
+                                                                        setContatoNumberCount(1)
+                                                                    }
+                                                                    className="absolute right-2 top-0 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
+                                                                >
+                                                                    <BiMinus />
+                                                                </div>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                    {contatoNumberCount > 2 && (
+                                                        <div className="relative flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                                            <label
+                                                                htmlFor="telefone_contato_3"
+                                                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                                            >
+                                                                Telefone de Contato (3)
+                                                            </label>
+
+                                                            <input
+                                                                type="tel"
+                                                                id="telefone_contato"
+                                                                placeholder="(00) 00000-0000"
+                                                                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                                                {...register(
+                                                                    'telefone_contato_3',
+                                                                    {},
+                                                                )}
+                                                            />
+                                                            {contatoNumberCount === 3 && (
+                                                                <div
+                                                                    title="Remover telefone de contato"
+                                                                    onClick={() =>
+                                                                        setContatoNumberCount(2)
+                                                                    }
+                                                                    className="absolute right-2 top-0 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-700"
+                                                                >
+                                                                    <BiMinus />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </>
+                                            )}
+                                        </div>
+
+                                        {/* end campos de e-mail/telefones */}
+                                        {/* <span className="text-lg font-semibold mt-8">Contato</span> */}
+                                        <div className="relative flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                                            {/* <div className="flex flex-col gap-2 w-full sm:col-span-1">
                           <label htmlFor="email_contato" className="text-xs text-meta-5 font-semibold font-nexa uppercase">
                             Email de Contato
                           </label>
@@ -1504,7 +1509,7 @@ const MainForm: React.FC<CVLDFormProps> = ({
                             className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
                             {...register("telefone_contato", {})}
                           /> */}
-                      {/* {contatoNumberCount === 1 && (
+                                            {/* {contatoNumberCount === 1 && (
                           <div
                             title='Adicionar telefone de contato'
                             onClick={() => setContatoNumberCount(2)}
@@ -1512,9 +1517,9 @@ const MainForm: React.FC<CVLDFormProps> = ({
                             <BiPlus />
                           </div>
                         )} */}
-                    </div>
+                                        </div>
 
-                    {/* <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4">
+                                        {/* <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-4">
                           <span className="text-lg font-semibold text-primary mt-8">Dados do Colaborador</span>
                           &nbsp;
                           <div className="flex flex-col gap-2">
@@ -1846,23 +1851,23 @@ const MainForm: React.FC<CVLDFormProps> = ({
                               {...register("n_precatorio", {})} />
                           </div>
                         </div> */}
-                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2"></div>
-                  </>
-                ) : null}
-              </div>
-              {(data.role === "ativos" || data.role === "judit") &&
-              watch("gerar_cvld") ? (
-                <>
-                  <hr className="col-span-2 my-8 border border-stroke dark:border-strokedark" />
-                  <div className="flex flex-col gap-2">
-                    <div className="flex flex-col gap-2 sm:col-span-2">
-                      <div className="invisible flex gap-2">
-                        <CustomCheckbox
-                          check={watch("upload_notion")}
-                          id={"upload_notion"}
-                          register={register("upload_notion")}
-                        />
-                        {/* <input
+                                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2"></div>
+                                    </>
+                                ) : null}
+                            </div>
+                            {(data.role === 'ativos' || data.role === 'judit') &&
+                            watch('gerar_cvld') ? (
+                                <>
+                                    <hr className="col-span-2 my-8 border border-stroke dark:border-strokedark" />
+                                    <div className="flex flex-col gap-2">
+                                        <div className="flex flex-col gap-2 sm:col-span-2">
+                                            <div className="invisible flex gap-2">
+                                                <CustomCheckbox
+                                                    check={watch('upload_notion')}
+                                                    id={'upload_notion'}
+                                                    register={register('upload_notion')}
+                                                />
+                                                {/* <input
                           type="checkbox"
                           id="upload_notion"
                           disabled={watch("regime") === "ESPECIAL" ? true : false}
@@ -1870,29 +1875,31 @@ const MainForm: React.FC<CVLDFormProps> = ({
                           className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark disabled:opacity-50 disabled:cursor-not-allowed`}
                           {...register("upload_notion")}
                         /> */}
-                        <label
-                          htmlFor="upload_notion"
-                          aria-disabled={
-                            watch("regime") === "ESPECIAL" ? true : false
-                          }
-                          className="cursor-pointer text-sm font-medium text-meta-5 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          Fazer upload para o Notion{" "}
-                          <span className="text-xs text-meta-7">
-                            {watch("regime") === "ESPECIAL"
-                              ? " - não negociamos ofícios do regime especial"
-                              : null}
-                          </span>
-                        </label>
-                      </div>
-                      {(watch("upload_notion") === true &&
-                        data.role === "ativos" &&
-                        watch("regime") !== "ESPECIAL") ||
-                      watch("regime") === undefined ? (
-                        <>
-                          <div className="flex justify-between">
-                            <div className="flex items-center gap-2">
-                              {/* <CustomCheckbox
+                                                <label
+                                                    htmlFor="upload_notion"
+                                                    aria-disabled={
+                                                        watch('regime') === 'ESPECIAL'
+                                                            ? true
+                                                            : false
+                                                    }
+                                                    className="cursor-pointer text-sm font-medium text-meta-5 disabled:cursor-not-allowed disabled:opacity-50"
+                                                >
+                                                    Fazer upload para o Notion{' '}
+                                                    <span className="text-xs text-meta-7">
+                                                        {watch('regime') === 'ESPECIAL'
+                                                            ? ' - não negociamos ofícios do regime especial'
+                                                            : null}
+                                                    </span>
+                                                </label>
+                                            </div>
+                                            {(watch('upload_notion') === true &&
+                                                data.role === 'ativos' &&
+                                                watch('regime') !== 'ESPECIAL') ||
+                                            watch('regime') === undefined ? (
+                                                <>
+                                                    <div className="flex justify-between">
+                                                        <div className="flex items-center gap-2">
+                                                            {/* <CustomCheckbox
                                 check={watch("vincular_usuario")}
                                 id={"vincular_usuario"}
                                 register={register("vincular_usuario")}
@@ -1902,23 +1909,22 @@ const MainForm: React.FC<CVLDFormProps> = ({
                                   }
                                 }
                               /> */}
-                              <input
-                                type="checkbox"
-                                id="vincular_usuario"
-                                
-                                className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
-                                {...register("vincular_usuario")}
-                              />
-                              <label
-                                htmlFor="vincular_usuario"
-                                data-testid="vincular_usuario"
-                                className="align-self-baseline flex cursor-pointer flex-row text-sm font-medium text-meta-5"
-                              >
-                                <BiLogoUpwork className="mr-2 mt-0.5 h-4 w-4" />{" "}
-                                Vincular a outro usuário?
-                              </label>
-                            </div>
-                            {/* {(watch("novo_usuario") === false ||
+                                                            <input
+                                                                type="checkbox"
+                                                                id="vincular_usuario"
+                                                                className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
+                                                                {...register('vincular_usuario')}
+                                                            />
+                                                            <label
+                                                                htmlFor="vincular_usuario"
+                                                                data-testid="vincular_usuario"
+                                                                className="align-self-baseline flex cursor-pointer flex-row text-sm font-medium text-meta-5"
+                                                            >
+                                                                <BiLogoUpwork className="mr-2 mt-0.5 h-4 w-4" />{' '}
+                                                                Vincular a outro usuário?
+                                                            </label>
+                                                        </div>
+                                                        {/* {(watch("novo_usuario") === false ||
                               watch("novo_usuario") === undefined) &&
                               watch("vincular_usuario") === true && (
                                 <div className="flex items-center gap-2">
@@ -1956,96 +1962,105 @@ const MainForm: React.FC<CVLDFormProps> = ({
                                   )}
                                 </div>
                               )} */}
-                          </div>
-                          {watch("vincular_usuario") === true ? (
-                            <div className="flex flex-col gap-2">
-                              {(watch("novo_usuario") === false ||
-                                watch("novo_usuario") === undefined) &&
-                                watch("vincular_usuario") === true && (
-                                  <select
-                                    id="username"
-                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                    {...register("username")}
-                                  >
-                                    <option value={data.user}>
-                                      {data.user}
-                                    </option>
-                                    {usersList
-                                      .filter((user) => user !== data.user)
-                                      .map((user) => (
-                                        <option key={user} value={user}>
-                                          {user}
-                                        </option>
-                                      ))}
-                                  </select>
-                                )}
-                              <div className="flex flex-col gap-2">
-                                <div>
-                                  <label
-                                    htmlFor="novo_usuario"
-                                    className="flex cursor-pointer items-center gap-1 text-sm font-medium text-meta-5"
-                                  >
-                                    {/* <span className="text-meta-7 text-xs">👤</span> */}
-                                    <CustomCheckbox
-                                      check={watch("novo_usuario")}
-                                      id={"novo_usuario"}
-                                      register={register("novo_usuario")}
-                                    />
-                                    <span>
-                                      O nome não está na lista? Crie um novo
-                                      usuário!
-                                    </span>
-                                    {/* <input
+                                                    </div>
+                                                    {watch('vincular_usuario') === true ? (
+                                                        <div className="flex flex-col gap-2">
+                                                            {(watch('novo_usuario') === false ||
+                                                                watch('novo_usuario') ===
+                                                                    undefined) &&
+                                                                watch('vincular_usuario') ===
+                                                                    true && (
+                                                                    <select
+                                                                        id="username"
+                                                                        className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                                                        {...register('username')}
+                                                                    >
+                                                                        <option value={data.user}>
+                                                                            {data.user}
+                                                                        </option>
+                                                                        {usersList
+                                                                            .filter(
+                                                                                (user) =>
+                                                                                    user !==
+                                                                                    data.user,
+                                                                            )
+                                                                            .map((user) => (
+                                                                                <option
+                                                                                    key={user}
+                                                                                    value={user}
+                                                                                >
+                                                                                    {user}
+                                                                                </option>
+                                                                            ))}
+                                                                    </select>
+                                                                )}
+                                                            <div className="flex flex-col gap-2">
+                                                                <div>
+                                                                    <label
+                                                                        htmlFor="novo_usuario"
+                                                                        className="flex cursor-pointer items-center gap-1 text-sm font-medium text-meta-5"
+                                                                    >
+                                                                        {/* <span className="text-meta-7 text-xs">👤</span> */}
+                                                                        <CustomCheckbox
+                                                                            check={watch(
+                                                                                'novo_usuario',
+                                                                            )}
+                                                                            id={'novo_usuario'}
+                                                                            register={register(
+                                                                                'novo_usuario',
+                                                                            )}
+                                                                        />
+                                                                        <span>
+                                                                            O nome não está na
+                                                                            lista? Crie um novo
+                                                                            usuário!
+                                                                        </span>
+                                                                        {/* <input
                                       type="checkbox"
                                       id="novo_usuario"
                                       className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
                                       {...register("novo_usuario")}
                                     /> */}
-                                  </label>
-                                </div>
-                                {watch("novo_usuario") === true && (
-                                  <input
-                                    type="text"
-                                    id="username"
-                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                    {...register("username")}
-                                  />
-                                )}
-                              </div>
-                            </div>
-                          ) : null}
-                        </>
-                      ) : null}
+                                                                    </label>
+                                                                </div>
+                                                                {watch('novo_usuario') === true && (
+                                                                    <input
+                                                                        type="text"
+                                                                        id="username"
+                                                                        className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                                                        {...register('username')}
+                                                                    />
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ) : null}
+                                                </>
+                                            ) : null}
+                                        </div>
+                                    </div>
+                                </>
+                            ) : null}
+                        </div>
                     </div>
-                  </div>
-                </>
-              ) : null}
-            </div>
-          </div>
-          <div className="my-8 flex justify-center">
-            <button
-              type="submit"
-              className="my-8 flex cursor-pointer items-center justify-center rounded-lg bg-blue-700 px-5 py-3 text-sm text-white transition-all duration-200 hover:bg-blue-800 focus:z-0"
-            >
-              <span className="text-[16px] font-medium" aria-disabled={loading}>
-                {loading ? "Fazendo cálculo..." : "Calcular"}
-              </span>
-              {!loading ? (
-                <BiLineChart className="ml-2 mt-[0.2rem] h-4 w-4" />
-              ) : (
-                <AiOutlineLoading className="ml-2 mt-[0.2rem] h-4 w-4 animate-spin" />
-              )}
-            </button>
-          </div>
-        </form>
-      }
-      <DrawerConta
-        open={toggleNovaConta}
-        setOpen={setToggleNovaConta}
-        loading={loading}
-      />
-    </div>
-  );
+                    <div className="my-8 flex justify-center">
+                        <button
+                            type="submit"
+                            className="my-8 flex cursor-pointer items-center justify-center rounded-lg bg-blue-700 px-5 py-3 text-sm text-white transition-all duration-200 hover:bg-blue-800 focus:z-0"
+                        >
+                            <span className="text-[16px] font-medium" aria-disabled={loading}>
+                                {loading ? 'Fazendo cálculo...' : 'Calcular'}
+                            </span>
+                            {!loading ? (
+                                <BiLineChart className="ml-2 mt-[0.2rem] h-4 w-4" />
+                            ) : (
+                                <AiOutlineLoading className="ml-2 mt-[0.2rem] h-4 w-4 animate-spin" />
+                            )}
+                        </button>
+                    </div>
+                </form>
+            }
+        </div>
+    );
 };
 
 export default MainForm;
