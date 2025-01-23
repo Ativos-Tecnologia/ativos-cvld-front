@@ -1,15 +1,17 @@
-import { PaginatedResponse } from '@/components/TaskElements';
 import statusOficio from '@/enums/statusOficio.enum';
 import tipoOficio from '@/enums/tipoOficio.enum';
+import { ICelerResponse } from '@/interfaces/ICelerResponse';
 import { CVLDResultProps } from '@/interfaces/IResultCVLD';
 import api from '@/utils/api';
 
-const useUpdateOficio = (data: PaginatedResponse<CVLDResultProps>, setData: React.Dispatch<React.SetStateAction<PaginatedResponse<CVLDResultProps>>>) => {
-
+const useUpdateOficio = (
+    data: ICelerResponse<CVLDResultProps>,
+    setData: React.Dispatch<React.SetStateAction<ICelerResponse<CVLDResultProps>>>,
+) => {
     const updateOficioStatus = async (id: string, status: statusOficio, page_id?: string) => {
         try {
             const response = await api.put(`/api/extrato/update/status/${id}/`, {
-                status
+                status,
             });
 
             // if (page_id) {
@@ -30,8 +32,8 @@ const useUpdateOficio = (data: PaginatedResponse<CVLDResultProps>, setData: Reac
                 if (item.id === id) {
                     return {
                         ...item,
-                        status: response.data.status
-                    }
+                        status: response.data.status,
+                    };
                 }
 
                 return item;
@@ -39,27 +41,25 @@ const useUpdateOficio = (data: PaginatedResponse<CVLDResultProps>, setData: Reac
 
             setData({
                 ...data,
-                results: updatedData
+                results: updatedData,
             });
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
     const updateOficioTipo = async (id: string, tipo: tipoOficio, page_id?: string) => {
         try {
             const response = await api.put(`/api/extrato/update/tipo/${id}/`, {
-                tipo_do_oficio: tipo
+                tipo_do_oficio: tipo,
             });
-
-
 
             const updatedData = data?.results.map((item: CVLDResultProps) => {
                 if (item.id === id) {
                     return {
                         ...item,
-                        tipo_do_oficio: response.data.tipo_do_oficio
-                    }
+                        tipo_do_oficio: response.data.tipo_do_oficio,
+                    };
                 }
 
                 return item;
@@ -67,7 +67,7 @@ const useUpdateOficio = (data: PaginatedResponse<CVLDResultProps>, setData: Reac
 
             setData({
                 ...data,
-                results: updatedData
+                results: updatedData,
             });
 
             // const resNotion = await api.patch(`api/notion-api/update/${page_id}/`, {
@@ -84,13 +84,12 @@ const useUpdateOficio = (data: PaginatedResponse<CVLDResultProps>, setData: Reac
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
     return {
         updateOficioStatus,
-        updateOficioTipo
-    }
-
-}
+        updateOficioTipo,
+    };
+};
 
 export default useUpdateOficio;

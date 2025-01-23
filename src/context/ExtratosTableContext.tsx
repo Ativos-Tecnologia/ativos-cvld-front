@@ -1,66 +1,66 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
-import React, { createContext, useEffect, useRef, useState } from "react";
-import api from "@/utils/api";
-import { PaginatedResponse } from "@/components/TaskElements";
-import { CVLDResultProps } from "@/interfaces/IResultCVLD";
-import statusOficio from "@/enums/statusOficio.enum";
-import tipoOficio from "@/enums/tipoOficio.enum";
-import { toast } from "sonner";
-import useUpdateOficio from "@/hooks/useUpdateOficio";
-import { NotionResponse } from "@/interfaces/INotion";
+'use client';
+import React, { createContext, useEffect, useRef, useState } from 'react';
+import api from '@/utils/api';
+import { CVLDResultProps } from '@/interfaces/IResultCVLD';
+import statusOficio from '@/enums/statusOficio.enum';
+import tipoOficio from '@/enums/tipoOficio.enum';
+import { toast } from 'sonner';
+import useUpdateOficio from '@/hooks/useUpdateOficio';
+import { NotionResponse } from '@/interfaces/INotion';
+import { ICelerResponse } from '@/interfaces/ICelerResponse';
 
 // types
-export type ActiveState = "ALL" | "PRECATÓRIO" | "R.P.V" | "CREDITÓRIO";
+export type ActiveState = 'ALL' | 'PRECATÓRIO' | 'R.P.V' | 'CREDITÓRIO';
 
 export type Tabs = 'GERAL' | 'ARQUIVADOS' | 'WORKSPACE NOTION';
 
 export type LocalExtractViewProps = {
     type: string;
-}
+};
 
 export type LocalShowOptionsProps = {
     key: string;
     active: boolean;
-}
+};
 
 export type ModalOptionsProps = {
-    open: boolean,
-    items: CVLDResultProps[] | never[]
-}
+    open: boolean;
+    items: CVLDResultProps[] | never[];
+};
 
 export interface IEditableLabels {
-    id: string,
-    nameCredor: boolean,
+    id: string;
+    nameCredor: boolean;
     phone: {
-        one: boolean,
-        two: boolean,
-        three: boolean
-    }
-    email: boolean,
-    proposalPrice: boolean,
+        one: boolean;
+        two: boolean;
+        three: boolean;
+    };
+    email: boolean;
+    proposalPrice: boolean;
     fup: {
-        first: boolean,
-        second: boolean,
-        third: boolean,
-        fourth: boolean,
-        fifth: boolean,
-    },
-    identification: boolean,
-    npuOrig: boolean,
-    npuPrec: boolean,
-    court: boolean,
+        first: boolean;
+        second: boolean;
+        third: boolean;
+        fourth: boolean;
+        fifth: boolean;
+    };
+    identification: boolean;
+    npuOrig: boolean;
+    npuPrec: boolean;
+    court: boolean;
 }
 
 // main interface
 export interface IExtratosTable {
     /*  ====> states <===== */
-    data: PaginatedResponse<CVLDResultProps>;
-    setData: React.Dispatch<React.SetStateAction<PaginatedResponse<CVLDResultProps>>>;
-    auxData: PaginatedResponse<CVLDResultProps>;
-    setAuxData: React.Dispatch<React.SetStateAction<PaginatedResponse<CVLDResultProps>>>;
+    data: ICelerResponse<CVLDResultProps>;
+    setData: React.Dispatch<React.SetStateAction<ICelerResponse<CVLDResultProps>>>;
+    auxData: ICelerResponse<CVLDResultProps>;
+    setAuxData: React.Dispatch<React.SetStateAction<ICelerResponse<CVLDResultProps>>>;
     statusSelectValue: statusOficio | null;
     setStatusSelectValue: React.Dispatch<React.SetStateAction<statusOficio | null>>;
     oficioSelectValue: tipoOficio | null;
@@ -89,21 +89,19 @@ export interface IExtratosTable {
     setOpenDetailsDrawer: React.Dispatch<React.SetStateAction<boolean>>;
     currentPage: number;
     setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
-    modalOptions: ModalOptionsProps
+    modalOptions: ModalOptionsProps;
     setModalOptions: React.Dispatch<React.SetStateAction<ModalOptionsProps>>;
     notionWorkspaceData: NotionResponse;
     setNotionWorkspaceData: React.Dispatch<React.SetStateAction<NotionResponse>>;
-    tanstackRefatch: any
+    tanstackRefatch: any;
     setTanstackRefatch: React.Dispatch<React.SetStateAction<any>>;
-
-
 
     /* ====> refs <==== */
     mainRef: any;
 
     /*  ====> functions <===== */
-    handleOficio: (id: string, tipo: tipoOficio, page_id?: string) => void,
-    handleStatus: (id: string, status: statusOficio, page_id?: string) => void,
+    handleOficio: (id: string, tipo: tipoOficio, page_id?: string) => void;
+    handleStatus: (id: string, status: statusOficio, page_id?: string) => void;
     fetchData: (query: string, username?: string) => Promise<void>;
     fetchDelete: (ids: string[]) => Promise<void>;
     fetchDataById: (id: string) => Promise<void>;
@@ -119,31 +117,30 @@ export interface IExtratosTable {
     setDontShowAgainDeleteExtractAlert: (key: string) => void;
     setExtractListView: (type: string) => void;
     callScrollTop: (ref: HTMLDivElement | null) => void;
-
 }
 
 /* ===================> Context <================== */
 export const ExtratosTableContext = createContext<IExtratosTable>({
     /*  ====> states <===== */
-    data: { results: [], count: 0, next: "", previous: "" },
-    setData: () => { },
-    auxData: { results: [], count: 0, next: "", previous: "" },
-    setAuxData: () => { },
+    data: { results: [], count: 0, next: '', previous: '' },
+    setData: () => {},
+    auxData: { results: [], count: 0, next: '', previous: '' },
+    setAuxData: () => {},
     statusSelectValue: null,
-    setStatusSelectValue: () => { },
+    setStatusSelectValue: () => {},
     oficioSelectValue: null,
-    setOficioSelectValue: () => { },
-    activeFilter: "ALL",
-    setActiveFilter: () => { },
-    activedTab: "GERAL",
-    setActivedTab: () => { },
+    setOficioSelectValue: () => {},
+    activeFilter: 'ALL',
+    setActiveFilter: () => {},
+    activedTab: 'GERAL',
+    setActivedTab: () => {},
     editableLabel: {
         id: '',
         nameCredor: false,
         phone: {
             one: false,
             two: false,
-            three: false
+            three: false,
         },
         email: false,
         proposalPrice: false,
@@ -159,69 +156,76 @@ export const ExtratosTableContext = createContext<IExtratosTable>({
         npuPrec: false,
         court: false,
     },
-    setEditableLabel: () => { },
+    setEditableLabel: () => {},
     item: {},
-    setItem: () => { },
+    setItem: () => {},
     loading: false,
-    setLoading: () => { },
-    viewOption: { type: "table" },
-    setViewOption: () => { },
-    responseStatus: "",
-    setResponseStatus: () => { },
+    setLoading: () => {},
+    viewOption: { type: 'table' },
+    setViewOption: () => {},
+    responseStatus: '',
+    setResponseStatus: () => {},
     checkedList: [],
-    setCheckedList: () => { },
+    setCheckedList: () => {},
     localShowOptions: [],
-    setLocalShowOptions: () => { },
+    setLocalShowOptions: () => {},
     showModalMessage: true,
-    setShowModalMessage: () => { },
+    setShowModalMessage: () => {},
     openDetailsDrawer: false,
-    setOpenDetailsDrawer: () => { },
+    setOpenDetailsDrawer: () => {},
     currentPage: 1,
-    setCurrentPage: () => { },
+    setCurrentPage: () => {},
     modalOptions: {
         open: false,
-        items: []
+        items: [],
     },
-    setModalOptions: () => { },
+    setModalOptions: () => {},
     notionWorkspaceData: {
-        object: "list",
+        object: 'list',
         next_cursor: null,
         has_more: false,
-        results: []
+        results: [],
     },
-    setNotionWorkspaceData: () => { },
-    tanstackRefatch: () => { },
-    setTanstackRefatch: () => { },
-
-
+    setNotionWorkspaceData: () => {},
+    tanstackRefatch: () => {},
+    setTanstackRefatch: () => {},
 
     mainRef: null,
 
     /*  ====> functions <===== */
-    handleOficio: () => { },
-    handleStatus: () => { },
-    fetchData: async () => { },
-    fetchDelete: async () => { },
-    fetchDataById: async () => { },
-    fetchStateFromLocalStorage: () => { },
-    onPageChange: async () => { },
-    handleRestoreData: async () => { },
-    handleUnarchiveExtrato: async () => { },
-    handleArchiveExtrato: async () => { },
-    handleSelectAllRows: () => { },
-    handleDeleteExtrato: () => { },
-    handleSelectRow: () => { },
-    updateCreditorName: async () => { },
-    setDontShowAgainDeleteExtractAlert: () => { },
-    setExtractListView: () => { },
-    callScrollTop: () => { },
+    handleOficio: () => {},
+    handleStatus: () => {},
+    fetchData: async () => {},
+    fetchDelete: async () => {},
+    fetchDataById: async () => {},
+    fetchStateFromLocalStorage: () => {},
+    onPageChange: async () => {},
+    handleRestoreData: async () => {},
+    handleUnarchiveExtrato: async () => {},
+    handleArchiveExtrato: async () => {},
+    handleSelectAllRows: () => {},
+    handleDeleteExtrato: () => {},
+    handleSelectRow: () => {},
+    updateCreditorName: async () => {},
+    setDontShowAgainDeleteExtractAlert: () => {},
+    setExtractListView: () => {},
+    callScrollTop: () => {},
 });
 
 export const ExtratosTableProvider = ({ children }: { children: React.ReactNode }) => {
-
     /*  ====> states <===== */
-    const [data, setData] = useState<PaginatedResponse<CVLDResultProps>>({ results: [], count: 0, next: "", previous: "" });
-    const [auxData, setAuxData] = useState<PaginatedResponse<CVLDResultProps>>({ results: [], count: 0, next: "", previous: "" });
+    const [data, setData] = useState<ICelerResponse<CVLDResultProps>>({
+        results: [],
+        count: 0,
+        next: '',
+        previous: '',
+    });
+    const [auxData, setAuxData] = useState<ICelerResponse<CVLDResultProps>>({
+        results: [],
+        count: 0,
+        next: '',
+        previous: '',
+    });
     const [statusSelectValue, setStatusSelectValue] = useState<statusOficio | null>(null);
     const [oficioSelectValue, setOficioSelectValue] = useState<tipoOficio | null>(null);
     const [activeFilter, setActiveFilter] = useState<ActiveState>('ALL');
@@ -232,7 +236,7 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
         phone: {
             one: false,
             two: false,
-            three: false
+            three: false,
         },
         email: false,
         proposalPrice: false,
@@ -251,7 +255,7 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
     const [item, setItem] = useState<CVLDResultProps | {}>({});
     const [loading, setLoading] = useState<boolean>(false);
     const [viewOption, setViewOption] = useState<LocalExtractViewProps>({
-        type: 'table'
+        type: 'table',
     });
     const [responseStatus, setResponseStatus] = useState<string>('');
     const [checkedList, setCheckedList] = useState<CVLDResultProps[] | never[]>([]);
@@ -259,22 +263,21 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
     const [showModalMessage, setShowModalMessage] = useState<boolean>(true);
     const [openDetailsDrawer, setOpenDetailsDrawer] = useState<boolean>(false);
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [modalOptions, setModalOptions] = useState<{ open: boolean, items: CVLDResultProps[] | never[] }>({
+    const [modalOptions, setModalOptions] = useState<{
+        open: boolean;
+        items: CVLDResultProps[] | never[];
+    }>({
         open: false,
-        items: []
+        items: [],
     });
     const [notionWorkspaceData, setNotionWorkspaceData] = useState<NotionResponse>({
-        object: "list",
+        object: 'list',
         has_more: false,
         next_cursor: null,
-        results: []
+        results: [],
     });
 
     const [tanstackRefatch, setTanstackRefatch] = useState<any>();
-
-
-
-
 
     const { updateOficioStatus, updateOficioTipo } = useUpdateOficio(data, setData);
 
@@ -290,88 +293,88 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
         setData(response.data);
         setAuxData(response.data);
         setLoading(false);
-    }
-
+    };
 
     /* função que busca um extrato único para drawer de detalhes */
     const fetchDataById = async (id: string) => {
         setLoading(true);
         setItem((await api.get(`api/extrato/${id}/`)).data);
         setLoading(false);
-    }
-
+    };
 
     /* função que deleta uma lista (ou item único) da tabela de extratos */
     const fetchDelete = async (ids: string[]) => {
         try {
             setLoading(true);
             await api.post(`api/extrato/bulk-action/?action=delete`, {
-                ids: ids
+                ids: ids,
             });
 
             if (showModalMessage) {
                 setResponseStatus('ok');
             } else {
-                toast(`${ids.length > 1 ? 'Extratos deletados com sucesso!' : 'Extrato deletado com sucesso!'}`, {
-                    classNames: {
-                        toast: "dark:bg-form-strokedark",
-                        title: "dark:text-snow",
-                        description: "dark:text-snow",
-                        actionButton: "!bg-slate-100 dark:bg-form-strokedark"
+                toast(
+                    `${ids.length > 1 ? 'Extratos deletados com sucesso!' : 'Extrato deletado com sucesso!'}`,
+                    {
+                        classNames: {
+                            toast: 'dark:bg-form-strokedark',
+                            title: 'dark:text-snow',
+                            description: 'dark:text-snow',
+                            actionButton: '!bg-slate-100 dark:bg-form-strokedark',
+                        },
+                        action: {
+                            label: 'Desfazer',
+                            onClick: () => handleRestoreData(),
+                        },
                     },
-                    action: {
-                        label: "Desfazer",
-                        onClick: () => handleRestoreData()
-                    }
-                })
+                );
             }
 
             fetchData('');
             setCheckedList([]);
-
         } catch (error) {
             if (showModalMessage) {
                 setResponseStatus('error');
             } else {
                 toast('Houve um erro ao excluir o extrato', {
                     classNames: {
-                        toast: "dark:bg-form-strokedark",
-                        title: "dark:text-snow",
-                        description: "dark:text-snow",
-                        actionButton: "!bg-slate-100 dark:bg-form-strokedark"
+                        toast: 'dark:bg-form-strokedark',
+                        title: 'dark:text-snow',
+                        description: 'dark:text-snow',
+                        actionButton: '!bg-slate-100 dark:bg-form-strokedark',
                     },
                     action: {
-                        label: "Fechar",
-                        onClick: () => console.log('ok')
-                    }
-                })
+                        label: 'Fechar',
+                        onClick: () => console.log('ok'),
+                    },
+                });
             }
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     /* função que puxa do LocalStorage um estado de configuração para mostrar
     ou não o modal de alerta de exclusão/arquivamento */
     const fetchStateFromLocalStorage = () => {
-        const configs = localStorage.getItem("dont_show_again_configs");
+        const configs = localStorage.getItem('dont_show_again_configs');
         if (configs !== null) {
             const parsedValue = JSON.parse(configs);
             setLocalShowOptions(parsedValue);
-            localShowOptions.forEach(element => {
-                if (element.key === "show_delete_extract_alert") {
-                    setShowModalMessage(!element.active)
+            localShowOptions.forEach((element) => {
+                if (element.key === 'show_delete_extract_alert') {
+                    setShowModalMessage(!element.active);
                 }
             });
         }
 
         // fetching the view mode configs
-        const viewMode = localStorage.getItem("extract_list_view_mode");
+        const viewMode = localStorage.getItem('extract_list_view_mode');
         if (viewMode !== null) {
             const parsedValue = JSON.parse(viewMode);
             setViewOption(parsedValue);
         }
-    }
+    };
 
     /* função que faz a mudança de página no componente de pagination */
     const onPageChange = async (page: number) => {
@@ -380,12 +383,12 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
         const response = await api.get(`api/extratos/?page=${page}`);
         setData(response.data);
         setLoading(false);
-    }
+    };
 
     /* função que desfaz uma ação de exclusão/arquivamento de ofícios */
     const handleRestoreData = async () => {
         const response = await api.post(`api/extrato/bulk-action/?action=restore-delete`, {
-            ids: checkedList.map(item => item.id)
+            ids: checkedList.map((item) => item.id),
         });
 
         if (response.status !== 200) {
@@ -398,17 +401,17 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
         if (showModalMessage) {
             setModalOptions({
                 open: false,
-                items: []
+                items: [],
             });
             setResponseStatus('');
             setCheckedList([]);
         }
-    }
+    };
 
     /* função que realiza o desarquivamento do(s) extrato(s) */
     const handleUnarchiveExtrato = async () => {
         const response = await api.post(`api/extrato/bulk-action/?action=restore-archive`, {
-            ids: checkedList.map(item => item.id)
+            ids: checkedList.map((item) => item.id),
         });
 
         if (response.status !== 200) {
@@ -416,62 +419,65 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
             return;
         }
 
-        if (activedTab === "GERAL") {
+        if (activedTab === 'GERAL') {
             fetchData('');
         } else {
-
-            toast(`${checkedList.length > 1 ? 'Extratos desarquivados!' : 'Extrato desarquivado!'}`, {
-                classNames: {
-                    toast: "dark:bg-form-strokedark",
-                    title: "dark:text-snow",
-                    description: "dark:text-snow",
-                    actionButton: "!bg-slate-100 dark:bg-form-strokedark"
+            toast(
+                `${checkedList.length > 1 ? 'Extratos desarquivados!' : 'Extrato desarquivado!'}`,
+                {
+                    classNames: {
+                        toast: 'dark:bg-form-strokedark',
+                        title: 'dark:text-snow',
+                        description: 'dark:text-snow',
+                        actionButton: '!bg-slate-100 dark:bg-form-strokedark',
+                    },
+                    description: `${checkedList.length > 1 ? 'Os extratos retornaram para a aba GERAL.' : 'O extrato retornou para a aba GERAL.'}`,
+                    action: {
+                        label: 'Desfazer',
+                        onClick: () => handleUnarchiveExtrato(),
+                    },
                 },
-                description: `${checkedList.length > 1 ? 'Os extratos retornaram para a aba GERAL.' : 'O extrato retornou para a aba GERAL.'}`,
-                action: {
-                    label: "Desfazer",
-                    onClick: () => handleUnarchiveExtrato()
-                }
-            })
+            );
 
             fetchData('?showMode=archived');
         }
         setCheckedList([]);
-    }
+    };
 
     /* função que realiza o arquivamento do(s) extrato(s) */
     const handleArchiveExtrato = async () => {
         try {
-
             const response = await api.post('api/extrato/bulk-action/?action=archive', {
-                ids: checkedList.map(item => item.id)
+                ids: checkedList.map((item) => item.id),
             });
 
-            toast(`${checkedList.length > 1 ? 'Extratos movidos para guia arquivados!' : 'Extrato movido para guia arquivados!'}`, {
-                classNames: {
-                    toast: "dark:bg-form-strokedark",
-                    title: "dark:text-snow",
-                    description: "dark:text-snow",
-                    actionButton: "!bg-slate-100 dark:bg-form-strokedark"
+            toast(
+                `${checkedList.length > 1 ? 'Extratos movidos para guia arquivados!' : 'Extrato movido para guia arquivados!'}`,
+                {
+                    classNames: {
+                        toast: 'dark:bg-form-strokedark',
+                        title: 'dark:text-snow',
+                        description: 'dark:text-snow',
+                        actionButton: '!bg-slate-100 dark:bg-form-strokedark',
+                    },
+                    action: {
+                        label: 'Desfazer',
+                        onClick: () => handleUnarchiveExtrato(),
+                    },
                 },
-                action: {
-                    label: "Desfazer",
-                    onClick: () => handleUnarchiveExtrato()
-                }
-            })
+            );
 
             fetchData('');
             setCheckedList([]);
-
         } catch (error) {
             console.log('error');
         }
-    }
+    };
 
     /* função que seleciona todos os extratos da paginação */
     const handleSelectAllRows = () => {
-        setCheckedList(data.results.map((item: CVLDResultProps) => item))
-    }
+        setCheckedList(data.results.map((item: CVLDResultProps) => item));
+    };
 
     /* função que realiza a exclusão do(s) extrato(s) */
     const handleDeleteExtrato = () => {
@@ -479,105 +485,93 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
             if (checkedList && checkedList.length >= 1) {
                 setModalOptions({
                     open: true,
-                    items: checkedList
+                    items: checkedList,
                 });
             }
         } else {
             if (checkedList && checkedList.length >= 1) {
-                fetchDelete(checkedList.map(item => item.id))
+                fetchDelete(checkedList.map((item) => item.id));
             }
         }
-    }
+    };
 
     /* função que seleciona somente um extrato */
     const handleSelectRow = (item: CVLDResultProps) => {
-
         if (checkedList.length === 0) {
             setCheckedList([item]);
             return;
         }
 
-        const alreadySelected = checkedList.some(target => target.id === item.id);
+        const alreadySelected = checkedList.some((target) => target.id === item.id);
 
         if (alreadySelected) {
-            setCheckedList(checkedList.filter(target => target.id !== item.id));
+            setCheckedList(checkedList.filter((target) => target.id !== item.id));
         } else {
             setCheckedList([...checkedList, item]);
         }
-
-    }
+    };
 
     const handleOficio = (id: string, tipo: tipoOficio, page_id?: string) => {
-
         updateOficioTipo(id, tipo, page_id);
-        const newAuxData = auxData.results.map(item => {
+        const newAuxData = auxData.results.map((item: CVLDResultProps) => {
             if (item.id === id) {
                 item.tipo_do_oficio = tipo;
             }
             return item;
         });
         setAuxData({ ...auxData, results: newAuxData });
-
-    }
+    };
 
     const handleStatus = async (id: string, status: statusOficio, page_id?: string) => {
-
         updateOficioStatus(id, status, page_id);
 
-
-
-        const newAuxData = auxData.results.map(item => {
+        const newAuxData = auxData.results.map((item: CVLDResultProps) => {
             if (item.id === id) {
                 item.status = status;
             }
             return item;
         });
         setAuxData({ ...auxData, results: newAuxData });
-
-    }
+    };
 
     /* função que manipula a troca de nome do credor em todas as views */
     const updateCreditorName = async (id: string, value: string, page_id?: string) => {
-
         // setEditableLabel(null);
 
         const res = await api.patch(`/api/extrato/update/credor/${id}/`, {
-            credor: value
-        })
-
-
+            credor: value,
+        });
 
         if (res.status === 200) {
             const newResults = data.results.map((item: CVLDResultProps) => {
                 if (item.id === id) {
                     return {
                         ...item,
-                        credor: value
-                    }
+                        credor: value,
+                    };
                 }
                 return item;
-            })
+            });
 
             setData({
                 ...data,
-                results: newResults
+                results: newResults,
             });
         } else {
             toast(`houve um erro inesperado ao salvar os dados. Erro ${res.status}`, {
                 classNames: {
-                    toast: "dark:bg-form-strokedark",
-                    title: "dark:text-snow",
-                    description: "dark:text-snow",
-                    actionButton: "!bg-slate-100 dark:bg-form-strokedark"
+                    toast: 'dark:bg-form-strokedark',
+                    title: 'dark:text-snow',
+                    description: 'dark:text-snow',
+                    actionButton: '!bg-slate-100 dark:bg-form-strokedark',
                 },
                 action: {
-                    label: "Fechar",
-                    onClick: () => console.log('done')
-                }
-            })
+                    label: 'Fechar',
+                    onClick: () => console.log('done'),
+                },
+            });
         }
-
-    }
+    };
 
     /* função que faz o toggle entre true e false da opção de mostrar ou não
     o modal de alerta de exclusão/arquivamento */
@@ -585,65 +579,61 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
         /* setting key on localStorage if don't exist.
           if exist, update localOptions w/ preferences value
         */
-        if (!localStorage.getItem("dont_show_again_configs")) {
+        if (!localStorage.getItem('dont_show_again_configs')) {
             const config = {
                 key: key,
-                active: true
-            }
-            localStorage.setItem("dont_show_again_configs", JSON.stringify([config]));
-            const configs = localStorage.getItem("dont_show_again_configs");
+                active: true,
+            };
+            localStorage.setItem('dont_show_again_configs', JSON.stringify([config]));
+            const configs = localStorage.getItem('dont_show_again_configs');
             if (configs !== null) {
                 const parsedValue = JSON.parse(configs);
                 setLocalShowOptions(parsedValue);
             }
         } else {
-            const configs = localStorage.getItem("dont_show_again_configs");
+            const configs = localStorage.getItem('dont_show_again_configs');
             if (configs !== null) {
                 const parsedValue = JSON.parse(configs);
                 parsedValue.forEach((item: LocalShowOptionsProps) => {
                     if (item.key === key) {
                         item.active = item.active ? false : true;
                     }
-                })
-                localStorage.setItem("dont_show_again_configs", JSON.stringify(parsedValue));
+                });
+                localStorage.setItem('dont_show_again_configs', JSON.stringify(parsedValue));
                 setLocalShowOptions(parsedValue);
             }
         }
-    }
+    };
 
     /* função que altera o modo de visualização da extratos table (table/cards) */
     const setExtractListView = (type: string): void => {
-        if (!localStorage.getItem("extract_list_view_mode")) {
-
+        if (!localStorage.getItem('extract_list_view_mode')) {
             const config: LocalExtractViewProps = {
-                type: type
-            }
-            localStorage.setItem("extract_list_view_mode", JSON.stringify(config));
-            const configs = localStorage.getItem("extract_list_view_mode");
+                type: type,
+            };
+            localStorage.setItem('extract_list_view_mode', JSON.stringify(config));
+            const configs = localStorage.getItem('extract_list_view_mode');
             if (configs !== null) {
                 const parsedValue = JSON.parse(configs);
                 setViewOption(parsedValue);
             }
-
         } else {
-
-            const configs = localStorage.getItem("extract_list_view_mode");
+            const configs = localStorage.getItem('extract_list_view_mode');
             if (configs !== null) {
                 const parsedValue = JSON.parse(configs);
                 parsedValue.type = type;
-                localStorage.setItem("extract_list_view_mode", JSON.stringify(parsedValue));
+                localStorage.setItem('extract_list_view_mode', JSON.stringify(parsedValue));
                 setViewOption(parsedValue);
             }
-
         }
-    }
+    };
 
     /* função que realiza o scroll Y da tela quando há paginação */
     const callScrollTop = (ref: HTMLDivElement | null) => {
         if (ref) {
-            ref.scrollIntoView({ behavior: "smooth", block: "start" });
+            ref.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-    }
+    };
 
     /* ====> useEffects <===== */
 
@@ -659,9 +649,9 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
     useEffect(() => {
         if (localShowOptions.length <= 0) return;
 
-        localShowOptions.forEach(element => {
-            if (element.key === "show_delete_extract_alert") {
-                setShowModalMessage(!element.active)
+        localShowOptions.forEach((element) => {
+            if (element.key === 'show_delete_extract_alert') {
+                setShowModalMessage(!element.active);
             }
         });
     }, [localShowOptions]);
@@ -669,7 +659,7 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
     /* altera o auxData se ele for vazio (sempre que o componente é remontado) */
     useEffect(() => {
         if (auxData.results.length === 0 && data.results.length > 0) {
-            setAuxData(data)
+            setAuxData(data);
         }
     }, [data]);
 
@@ -680,62 +670,80 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
             if (keyCode !== 46) return;
 
             if (checkedList.length >= 1) {
-                fetchDelete(checkedList.map(item => item.id))
+                fetchDelete(checkedList.map((item) => item.id));
             }
-
         };
-        document.addEventListener("keydown", keyHandler);
-        return () => document.removeEventListener("keydown", keyHandler);
+        document.addEventListener('keydown', keyHandler);
+        return () => document.removeEventListener('keydown', keyHandler);
     });
 
     return (
-        <ExtratosTableContext.Provider value={{
-            /*  ====> states <===== */
-            data, setData,
-            auxData, setAuxData,
-            statusSelectValue, setStatusSelectValue,
-            oficioSelectValue, setOficioSelectValue,
-            activeFilter, setActiveFilter,
-            activedTab, setActivedTab,
-            editableLabel, setEditableLabel,
-            item, setItem,
-            loading, setLoading,
-            viewOption, setViewOption,
-            responseStatus, setResponseStatus,
-            checkedList, setCheckedList,
-            localShowOptions, setLocalShowOptions,
-            showModalMessage, setShowModalMessage,
-            openDetailsDrawer, setOpenDetailsDrawer,
-            currentPage, setCurrentPage,
-            modalOptions, setModalOptions,
-            notionWorkspaceData, setNotionWorkspaceData,
-            tanstackRefatch,
-            setTanstackRefatch,
+        <ExtratosTableContext.Provider
+            value={{
+                /*  ====> states <===== */
+                data,
+                setData,
+                auxData,
+                setAuxData,
+                statusSelectValue,
+                setStatusSelectValue,
+                oficioSelectValue,
+                setOficioSelectValue,
+                activeFilter,
+                setActiveFilter,
+                activedTab,
+                setActivedTab,
+                editableLabel,
+                setEditableLabel,
+                item,
+                setItem,
+                loading,
+                setLoading,
+                viewOption,
+                setViewOption,
+                responseStatus,
+                setResponseStatus,
+                checkedList,
+                setCheckedList,
+                localShowOptions,
+                setLocalShowOptions,
+                showModalMessage,
+                setShowModalMessage,
+                openDetailsDrawer,
+                setOpenDetailsDrawer,
+                currentPage,
+                setCurrentPage,
+                modalOptions,
+                setModalOptions,
+                notionWorkspaceData,
+                setNotionWorkspaceData,
+                tanstackRefatch,
+                setTanstackRefatch,
 
-            /* ====> refs <==== */
-            mainRef,
+                /* ====> refs <==== */
+                mainRef,
 
-            /* ====> functions <==== */
-            fetchData,
-            fetchDelete,
-            fetchDataById,
-            fetchStateFromLocalStorage,
-            onPageChange,
-            handleRestoreData,
-            handleUnarchiveExtrato,
-            handleArchiveExtrato,
-            handleSelectAllRows,
-            handleDeleteExtrato,
-            handleSelectRow,
-            handleOficio,
-            handleStatus,
-            updateCreditorName,
-            setDontShowAgainDeleteExtractAlert,
-            setExtractListView,
-            callScrollTop
-        }}>
+                /* ====> functions <==== */
+                fetchData,
+                fetchDelete,
+                fetchDataById,
+                fetchStateFromLocalStorage,
+                onPageChange,
+                handleRestoreData,
+                handleUnarchiveExtrato,
+                handleArchiveExtrato,
+                handleSelectAllRows,
+                handleDeleteExtrato,
+                handleSelectRow,
+                handleOficio,
+                handleStatus,
+                updateCreditorName,
+                setDontShowAgainDeleteExtractAlert,
+                setExtractListView,
+                callScrollTop,
+            }}
+        >
             {children}
         </ExtratosTableContext.Provider>
     );
-
-}
+};
