@@ -60,6 +60,12 @@ type JuridicoDetailsProps = {
   id: string;
 };
 
+type InputErrorTypes = "Revisão de Due Diligence" |
+  "Pré-Due Ativo" |
+  "Revisão Valor/LOA" |
+  "Pré-Due Cedente" |
+  "Due em Andamento";
+
 export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   const {
     data: { first_name, user },
@@ -73,7 +79,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   } = useContext(BrokersContext);
 
   const [credorIdentificationType, setCredorIdentificationType] = useState<IdentificationType>(null);
-  const [requiredDueInputsError, setRequiredDueInputsError] = useState<boolean>(false);
+  const [requiredInputsErrorType, setRequiredInputsErrorType] = useState<InputErrorTypes | null>(null);
   const [vlData, setVlData] = useState<IWalletResponse>({
     id: "",
     valor_investido: 0,
@@ -99,35 +105,6 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   const [recalculationData, setRecalculationData] = useState<any>(null);
   const [isLoadingRecalculation, setIsLoadingRecalculation] = useState<boolean>(false);
   const [loadingUpdateState, setLoadingUpdateState] = useState<string | null>(null);
-  // const [loadingUpdateState, setLoadingUpdateState] = useState({
-  //   nomeCredor: false,
-  //   cpfCnpj: false,
-  //   npuOriginario: false,
-  //   npuPrecatorio: false,
-  //   juizoVara: false,
-  //   enteDevedor: false,
-  //   estadoEnteDevedor: false,
-  //   formValores: false,
-  //   sliderValores: false,
-  //   observacoes: false,
-  //   responsavel: false,
-  //   previsaoDePagamento: false,
-  //   linkDue: false,
-  //   revisaoCalculo: false,
-  //   espelhoOficio: false,
-  //   estoquePrecatorio: false,
-  //   estadoCivil: false,
-  //   certidaoEmitidas: false,
-  //   possuiProcessos: false,
-  //   returnDue: false,
-  //   oficioRequisitorio: false,
-  //   memoriaCalculo: false,
-  //   autosAtivo: false,
-  //   possuiRecurso: false,
-  //   certidaoReceita: false,
-  //   certidaoEnteDevedor: false,
-  //   relatorioResumido: false
-  // });
   const [editLock, setEditLock] = useState<boolean>(false);
   const [disabledSaveButton, setDisabledSaveButton] = useState<boolean>(true);
   const [sliderError, setSliderError] = useState<boolean>(false);
@@ -298,14 +275,6 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
   const form = useForm();
   const isFormModified = Object.keys(form.watch()).some((key) => form.watch()[key] !== formData?.[key]);
 
-  // TODO: documentar todas as funções desse componente com JSDocs
-  const handleChangeCreditorName = async (value: string, page_id: string) => {
-    await creditorNameMutation.mutateAsync({
-      page_id,
-      value
-    });
-  }
-
   /**
    * @description
    * Essa função é utilizada para lidar com a mudança no campo de identificação (CPF/CNPJ)
@@ -314,7 +283,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
    * @param {string} page_id - ID da página do Notion
    * @returns {Promise<void>}
    */
-  const handleChangeIdentification = async (value: string, page_id: string): Promise<void> => {
+  const handleChangeIdentification = async (value: string, page_id: string, fieldName: string): Promise<void> => {
 
     if (value.length === 11) {
       value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
@@ -322,9 +291,10 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
       value = value.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
     }
 
-    await identificationMutation.mutateAsync({
+    await updateDataRichTextMutation.mutateAsync({
+      value,
       page_id,
-      value
+      fieldName
     });
   }
 
@@ -333,39 +303,28 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
    * Essa função é utilizada para lidar com a mudança no campo de NPU
    * 
    * @param {string} value - Valor do campo de NPU
-   * @param {string} type - Tipo do campo de NPU (ex: 'NPU')
+   * @param {string} fieldName - Tipo do campo de NPU (ex: 'NPU')
    * @param {string} page_id - ID da página do Notion
    * @returns {Promise<void>}
    */
-  const handleChangeNpu = async (value: string, type: string, page_id: string) => {
+  const handleChangeNpu = async (value: string, page_id: string, fieldName: string): Promise<void> => {
 
     value = value.replace(/(\d{7})(\d{2})(\d{4})(\d{1})(\d{2})(\d{4})/, "$1-$2.$3.$4.$5.$6");
 
-    await npuMutation.mutateAsync({
+    await updateDataRichTextMutation.mutateAsync({
+      value,
       page_id,
-      type,
-      value
+      fieldName
     });
   }
 
-  const handleChangeJuizo = async (value: string, page_id: string) => {
-    await juizoMutation.mutateAsync({
-      page_id,
-      value
-    });
-  }
+  const handleUpdateEmissaoProcesso = async (value: string, page_id: string, fieldName: string) => {
+    const check = value === "SIM" ? true : false;
 
-  const handleChangeEnteDevedor = async (value: string, page_id: string) => {
-    await enteDevedorMutation.mutateAsync({
+    await updateDataCheckboxMutation.mutateAsync({
+      value: check,
       page_id,
-      value
-    });
-  }
-
-  const handleChangeEstadoEnteDevedor = async (value: string, page_id: string) => {
-    await estadoEnteDevedorMutation.mutateAsync({
-      page_id,
-      value
+      fieldName
     });
   }
 
@@ -478,97 +437,14 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     });
   }
 
-  const handleUpdateObservation = async (value: string, page_id: string) => {
-    await observationMutation.mutateAsync({
-      page_id,
-      value
-    });
-  }
-
-  const handleUpdateDueLink = async (value: string, page_id: string) => {
-    await dueLinkMutation.mutateAsync({
-      page_id,
-      value
-    })
-  }
-
   const handleCopyDueLink = () => {
     if (linkDueInputRef.current) {
+      setLinkCopied(true)
       const value = linkDueInputRef.current.value;
       navigator.clipboard.writeText(value);
       navigator.vibrate(200);
       setTimeout(() => setLinkCopied(false), 2000);
     }
-  }
-
-  const handleUpdateRevisaoCalculo = async (value: boolean, page_id: string) => {
-    await revisaoCalculoMutation.mutateAsync({
-      value,
-      page_id
-    })
-  }
-
-  const handleUpdateEspelhoDoOficio = async (value: string, page_id: string) => {
-    await espelhoOficioMutation.mutateAsync({
-      value,
-      page_id
-    })
-  }
-
-  const handleUpdateEstoquePrecatorio = async (value: string, page_id: string) => {
-    await estoquePrecatoriosMutation.mutateAsync({
-      value,
-      page_id
-    })
-  }
-
-  const handleUpdateCertidoesEmitidas = async (value: string, page_id: string) => {
-    await certidaoEmitidaMutation.mutateAsync({
-      page_id,
-      value
-    });
-  }
-
-  const handleUpdatePossuiProcessos = async (value: string, page_id: string) => {
-    await possuiProcessosMutation.mutateAsync({
-      page_id,
-      value
-    });
-  }
-
-  const handleUpdateEstadoCivil = async (value: string, page_id: string) => {
-    await estadoCivilMutation.mutateAsync({
-      page_id,
-      value
-    });
-  }
-
-  const handleReturnDueRevision = async () => {
-    await returnDueRevisionMutation.mutateAsync({
-      page_id: id
-    });
-  }
-
-  const handleUpdateRevisaoChecks = async (value: boolean, page_id: string, type: string) => {
-    await revisãoOficioChecksMutation.mutateAsync({
-      value,
-      page_id,
-      type
-    })
-  }
-
-  const handleUpdateAutosAtivo = async (value: boolean, page_id: string) => {
-    await autosAtivoMutation.mutateAsync({
-      value,
-      page_id
-    })
-  }
-
-  const handleUpdateRecursoAutos = async (value: string, page_id: string) => {
-    await recursoAutosMutation.mutateAsync({
-      value,
-      page_id
-    })
   }
 
   const handleRepactuacao = () => {
@@ -611,44 +487,54 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     })
   }
 
-  const handleUpdateDuePhase = async (phase: string) => {
-    swal.fire({
-      title: 'Mudança de Etapa',
-      text: 'Deseja enviar ofício para ' + phase + '?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Sim',
-      cancelButtonText: 'Não',
-      confirmButtonColor: '#4CAF50',
-      cancelButtonColor: '#F44336',
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        const response = await api.patch(`api/notion-api/update/${id}/`, {
-          "Status Diligência": {
-            "select": {
-              "name": phase
+  const handleUpdateDuePhase = async (phase: string, fieldsCheck?: (boolean | undefined)[]) => {
+    const requiredInputsCheck = fieldsCheck ? fieldsCheck.every((value) => value === true) : true;
+    if (requiredInputsCheck) {
+      swal.fire({
+        title: 'Mudança de Etapa',
+        text: 'Deseja enviar ofício para ' + phase + '?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sim',
+        cancelButtonText: 'Não',
+        confirmButtonColor: '#4CAF50',
+        cancelButtonColor: '#F44336',
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const response = await api.patch(`api/notion-api/update/${id}/`, {
+            "Status Diligência": {
+              "select": {
+                "name": phase
+              }
             }
+          });
+          if (response.status !== 202) {
+            swal.fire({
+              title: 'Erro',
+              text: 'Houve um erro ao enviar para ' + phase,
+              icon: 'error',
+              confirmButtonText: 'OK'
+            });
           }
-        });
-        if (response.status !== 202) {
+
+          refetch();
+
           swal.fire({
-            title: 'Erro',
-            text: 'Houve um erro ao enviar para ' + phase,
-            icon: 'error',
+            title: 'Registro Salvo.',
+            text: 'O Oficio seguiu para a ' + phase,
+            icon: 'success',
             confirmButtonText: 'OK'
           });
         }
-
-        refetch();
-
-        swal.fire({
-          title: 'Registro Salvo.',
-          text: 'O Oficio seguiu para a ' + phase,
-          icon: 'success',
-          confirmButtonText: 'OK'
-        });
-      }
-    })
+      })
+    } else {
+      swal.fire({
+        icon: "warning",
+        title: "Aviso",
+        text: "Existem campos obrigatórios que ainda não foram preenchidos. Por favor, revise o formulário.",
+      });
+      setRequiredInputsErrorType(data?.properties["Status Diligência"].select?.name as InputErrorTypes);
+    }
   }
 
   const handleDueDiligence = () => {
@@ -837,6 +723,11 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               }
             ]
           },
+          "Status Diligência": {
+            "select": {
+              "name": "Informar arquivamento"
+            }
+          }
         });
 
         if (response.status !== 202) {
@@ -866,7 +757,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
       swal.fire({
         title: 'Due em Andamento',
-        text: 'Deseja mesmo deixar o Due em Andamento?',
+        text: 'Deseja mesmo alterar para Due em Andamento?',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Sim',
@@ -908,7 +799,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         title: "Aviso",
         text: "Existem campos obrigatórios que ainda não foram preenchidos. Por favor, revise o formulário.",
       });
-      setRequiredDueInputsError(true);
+      setRequiredInputsErrorType("Due em Andamento");
     }
   }
 
@@ -959,18 +850,50 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         title: "Aviso",
         text: "Existem campos obrigatórios que ainda não foram preenchidos. Por favor, revise o formulário.",
       });
-      setRequiredDueInputsError(true);
+      setRequiredInputsErrorType("Revisão de Due Diligence");
     }
   }
 
   // TODO: Funções de handle que serão dinâmicas para um determinado grupo
   // de campos do notion ficarão abaixo
   const handleUpdateDataCheckbox = async (value: boolean, page_id: string, fieldName: string) => {
-    await updateNotionCheckboxMutation.mutateAsync({
+    await updateDataCheckboxMutation.mutateAsync({
       value,
       page_id,
       fieldName
     });
+  }
+
+  const handleUpdateDataSelect = async (value: string, page_id: string, fieldName: string) => {
+    await updateDataSelectMutation.mutateAsync({
+      value,
+      page_id,
+      fieldName
+    })
+  }
+
+  const handleUpdateDataUrl = async (value: string, page_id: string, fieldName: string) => {
+    await updateDataUrlMutation.mutateAsync({
+      value,
+      page_id,
+      fieldName
+    })
+  }
+
+  const handleUpdateDataTitle = async (value: string, page_id: string, fieldName: string) => {
+    await updateDataTitleMutation.mutateAsync({
+      value,
+      page_id,
+      fieldName
+    })
+  }
+
+  const handleUpdateDataRichText = async (value: string, page_id: string, fieldName: string) => {
+    await updateDataRichTextMutation.mutateAsync({
+      value,
+      page_id,
+      fieldName
+    })
   }
 
 
@@ -978,7 +901,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
   // TODO: mutations que serão dinâmicas para um determinado grupo
   // de campos do notion ficarão abaixo
-  const updateNotionCheckboxMutation = useMutation({
+  const updateDataCheckboxMutation = useMutation({
     mutationFn: async (paramsObj: { value: boolean, page_id: string, fieldName: string }) => {
       const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
         [paramsObj.fieldName]: {
@@ -1017,7 +940,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         timer: 3000,
         timerProgressBar: true,
         icon: 'error',
-        text: `Houve um erro ao atualizar o check de ${paramsObj.fieldName}`,
+        text: `Houve um erro ao atualizar o check de ${paramsObj.fieldName.replace("?", "")}`,
         position: "bottom-right",
         showConfirmButton: false,
       });
@@ -1028,7 +951,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         timer: 3000,
         timerProgressBar: true,
         icon: 'success',
-        text: `Estado de ${paramsObj.fieldName} atualizado com sucesso!`,
+        text: `${paramsObj.fieldName.replace("?", "")} atualizado com sucesso!`,
         position: "bottom-right",
         showConfirmButton: false,
       });
@@ -1037,14 +960,12 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       setEditLock(false);
       setLoadingUpdateState(null);
     }
-  })
+  });
 
-
-
-  const recursoAutosMutation = useMutation({
-    mutationFn: async (paramsObj: { value: string, page_id: string }) => {
+  const updateDataSelectMutation = useMutation({
+    mutationFn: async (paramsObj: { value: string, page_id: string, fieldName: string }) => {
       const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-        "Há algum recurso?": {
+        [paramsObj.fieldName]: {
           "select": {
             "name": paramsObj.value
           }
@@ -1058,7 +979,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       return response.data
     },
     onMutate: async (paramsObj) => {
-      setLoadingUpdateState("Há algum recurso?");
+      setLoadingUpdateState(paramsObj.fieldName);
       setEditLock(true);
       const prevData = globalQueryClient.getQueryData(['page', id]);
       globalQueryClient.setQueryData(['page', id], (prev: any) => {
@@ -1066,10 +987,10 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
           ...prev,
           properties: {
             ...prev?.properties,
-            "Há algum recurso?": {
-              ...prev?.properties["Há algum recurso?"],
+            [paramsObj.fieldName]: {
+              ...prev?.properties[paramsObj.fieldName],
               select: {
-                ...prev?.properties["Há algum recurso?"]?.select,
+                ...prev?.properties[paramsObj.fieldName]?.select,
                 name: paramsObj.value
               }
             }
@@ -1085,238 +1006,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         timer: 3000,
         timerProgressBar: true,
         icon: 'error',
-        text: "Houve um erro ao atualizar o campo de recurso",
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSuccess: () => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'success',
-        text: "Estado de recursos atualizado com sucesso!",
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSettled: () => {
-      setEditLock(false);
-      setLoadingUpdateState(null);
-    }
-  })
-
-  const autosAtivoMutation = useMutation({
-    mutationFn: async (paramsObj: { value: boolean, page_id: string }) => {
-      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-        "Autos do Ativo Judicial Baixado": {
-          "checkbox": paramsObj.value
-        }
-      });
-
-      if (response.status !== 202) {
-        throw new Error('houve um erro ao salvar os dados no notion');
-      }
-
-      return response.data
-    },
-    onMutate: async (paramsObj) => {
-      setLoadingUpdateState("Autos do Ativo Judicial Baixado");
-      setEditLock(true);
-      const prevData = globalQueryClient.getQueryData(['page', id]);
-      globalQueryClient.setQueryData(['page', id], (prev: any) => {
-        return {
-          ...prev,
-          properties: {
-            ...prev?.properties,
-            "Autos do Ativo Judicial Baixado": {
-              ...prev?.properties["Autos do Ativo Judicial Baixado"],
-              checkbox: paramsObj.value
-            }
-          }
-        }
-      });
-      return { prevData }
-    },
-    onError: (error, paramsObj, context) => {
-      globalQueryClient.setQueryData(['page', id], context?.prevData);
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'error',
-        text: "Houve um erro ao atualizar o check de Autos do Ativo",
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSuccess: () => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'success',
-        text: "Estado de Autos do Ativo atualizado com sucesso!",
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSettled: () => {
-      setEditLock(false);
-      setLoadingUpdateState(null);
-    }
-  })
-
-  const revisãoOficioChecksMutation = useMutation({
-    mutationFn: async (paramsObj: { value: boolean, page_id: string, type: string }) => {
-      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-        [paramsObj.type]: {
-          "checkbox": paramsObj.value
-        }
-      });
-
-      if (response.status !== 202) {
-        throw new Error('houve um erro ao salvar os dados no notion');
-      }
-
-      return response.data
-    },
-    onMutate: async (paramsObj) => {
-      setLoadingUpdateState(paramsObj.type);
-      setEditLock(true);
-      const prevData = globalQueryClient.getQueryData(['page', id]);
-      globalQueryClient.setQueryData(['page', id], (prev: any) => {
-        return {
-          ...prev,
-          properties: {
-            ...prev?.properties,
-            [paramsObj.type]: {
-              ...prev?.properties[paramsObj.type],
-              checkbox: paramsObj.value
-            }
-          }
-        }
-      });
-      return { prevData }
-    },
-    onError: (error, paramsObj, context) => {
-      globalQueryClient.setQueryData(['page', id], context?.prevData);
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'error',
-        text: "Houve um erro ao atualizar o check de preenchimento",
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSuccess: () => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'success',
-        text: "Estado de preenchimento atualizado com sucesso!",
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSettled: () => {
-      setEditLock(false);
-        setLoadingUpdateState(null);
-    }
-  })
-
-  const returnDueRevisionMutation = useMutation({
-    mutationFn: async (paramsObj: { page_id: string }) => {
-      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-        "Status Diligência": {
-          "select": {
-            "name": "Revisão de Due Diligence"
-          }
-        }
-      });
-
-      if (response.status !== 202) {
-        throw new Error('houve um erro ao salvar os dados no notion');
-      }
-
-      return response.data
-    },
-    onMutate: async (paramsObj) => {
-      setLoadingUpdateState("Revisão de Due Diligence");
-      setEditLock(true);
-    },
-    onError: () => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'error',
-        text: "Houve um erro ao atualizar o status de diligência",
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSuccess: () => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'success',
-        text: "Status de Diligência atualizado com sucesso",
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSettled: () => {
-      setEditLock(false);
-      setLoadingUpdateState(null);
-    }
-  })
-
-  const estoquePrecatoriosMutation = useMutation({
-    mutationFn: async (paramsObj: { value: string, page_id: string }) => {
-      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-        "Estoque de Precatórios Baixado": {
-          "checkbox": paramsObj.value
-        }
-      });
-
-      if (response.status !== 202) {
-        throw new Error('houve um erro ao salvar os dados no notion');
-      }
-
-      return response.data
-    },
-    onMutate: async (paramsObj) => {
-      setLoadingUpdateState("Estoque de Precatórios Baixado");
-      setEditLock(true);
-      const prevData = globalQueryClient.getQueryData(['page', id]);
-      globalQueryClient.setQueryData(['page', id], (old: NotionPage) => {
-        return {
-          ...old,
-          properties: {
-            ...old?.properties,
-            "Estoque de Precatórios Baixado": {
-              ...old?.properties["Estoque de Precatórios Baixado"],
-              checkbox: paramsObj.value,
-            },
-          },
-        };
-      });
-      return { prevData }
-    },
-    onError: (error, paramsObj, context) => {
-      globalQueryClient.setQueryData(['details', id], context?.prevData);
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'error',
-        text: "Houve um erro ao atualizar campo Estoque de Precatórios",
+        text: `Houve um erro ao atualizar o campo de ${paramsObj.fieldName.replace("?", "")}`,
         position: "bottom-right",
         showConfirmButton: false,
       });
@@ -1327,7 +1017,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         timer: 3000,
         timerProgressBar: true,
         icon: 'success',
-        text: "Campo Estoque de Precatórios atualizado com sucesso",
+        text: `${paramsObj.fieldName.replace("?", "")} atualizado com sucesso!`,
         position: "bottom-right",
         showConfirmButton: false,
       });
@@ -1336,139 +1026,17 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       setEditLock(false);
       setLoadingUpdateState(null);
     }
-  })
+  });
 
-  const espelhoOficioMutation = useMutation({
-    mutationFn: async (paramsObj: { value: string, page_id: string }) => {
-      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-        "Espelho do ofício": {
-          "checkbox": paramsObj.value
-        }
-      });
-
-      if (response.status !== 202) {
-        throw new Error('houve um erro ao salvar os dados no notion');
-      }
-
-      return response.data
-    },
-    onMutate: async (paramsObj) => {
-      setLoadingUpdateState("Espelho do ofício");
-      setEditLock(true);
-      const prevData = globalQueryClient.getQueryData(['page', id]);
-      globalQueryClient.setQueryData(['page', id], (old: NotionPage) => {
-        return {
-          ...old,
-          properties: {
-            ...old?.properties,
-            "Espelho do ofício": {
-              ...old?.properties["Espelho do ofício"],
-              checkbox: paramsObj.value,
-            },
-          },
-        };
-      });
-      return { prevData }
-    },
-    onError: (error, paramsObj, context) => {
-      globalQueryClient.setQueryData(['details', id], context?.prevData);
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'error',
-        text: "Houve um erro ao atualizar Espelho do ofício",
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSuccess: (data, paramsObj) => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'success',
-        text: "Campo Espelho do ofício atualizado com sucesso",
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSettled: () => {
-      setEditLock(false);
-      setLoadingUpdateState(null);
-    }
-  })
-
-  const revisaoCalculoMutation = useMutation({
-    mutationFn: async (paramsObj: { value: boolean, page_id: string }) => {
-      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-        "Cálculo Revisado": {
-          "checkbox": paramsObj.value
-        }
-      });
-
-      if (response.status !== 202) {
-        throw new Error('houve um erro ao salvar os dados no notion');
-      }
-
-      return response.data
-    },
-    onMutate: async (paramsObj) => {
-      setLoadingUpdateState("Cálculo Revisado");
-      setEditLock(true);
-      const prevData = globalQueryClient.getQueryData(['page', id]);
-      globalQueryClient.setQueryData(['page', id], (old: NotionPage) => {
-        return {
-          ...old,
-          properties: {
-            ...old.properties,
-            "Cálculo Revisado": {
-              ...old.properties["Cálculo Revisado"],
-              checkbox: paramsObj.value,
-            },
-          },
-        };
-      });
-      return { prevData }
-    },
-    onError: (error, paramsObj, context) => {
-      globalQueryClient.setQueryData(['details', id], context?.prevData);
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'error',
-        text: "Houve um erro ao atualizar Revisão de Cálculo",
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSuccess: (data, paramsObj) => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'success',
-        text: "Campo Revisão de Cálculo atualizado com sucesso",
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSettled: () => {
-      setEditLock(false);
-      setLoadingUpdateState(null);
-    }
-  })
-
-  const dueLinkMutation = useMutation({
-    mutationFn: async (paramsObj: { page_id: string, value: string | null }) => {
+  const updateDataUrlMutation = useMutation({
+    mutationFn: async (paramsObj: { value: string | null, page_id: string, fieldName: string }) => {
 
       if (paramsObj.value === "") {
         paramsObj.value = null
       }
 
       const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-        "Link de Due Diligence": {
+        [paramsObj.fieldName]: {
           "url": paramsObj.value
         }
       });
@@ -1479,28 +1047,28 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
       return response.data
     },
-    onMutate: async () => {
-      setLoadingUpdateState("Link de Due Diligence");
+    onMutate: async (paramsObj) => {
+      setLoadingUpdateState(paramsObj.fieldName);
       setEditLock(true);
     },
-    onError: () => {
+    onError: (error, paramsObj) => {
       swal.fire({
         toast: true,
         timer: 3000,
         timerProgressBar: true,
         icon: 'error',
-        text: "Houve um erro ao atualizar o campo Link do Ofício",
+        text: `Houve um erro ao atualizar o campo ${paramsObj.fieldName}`,
         position: "bottom-right",
         showConfirmButton: false,
       });
     },
-    onSuccess: () => {
+    onSuccess: (data, paramsObj) => {
       swal.fire({
         toast: true,
         timer: 3000,
         timerProgressBar: true,
         icon: 'success',
-        text: "Campo Link do Ofício atualizado com sucesso",
+        text: `${paramsObj.fieldName} atualizado com sucesso`,
         position: "bottom-right",
         showConfirmButton: false,
       });
@@ -1512,59 +1080,10 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     }
   });
 
-  // const resposavelMutation = useMutation({
-  //   mutationFn: async (paramsObj: { page_id: string }) => {
-  //     const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-  //       // pegar os responsáveis do ofício e adicionar o usuário logado. Exemplo: henrique, jarbas, joao, maria
-  //       "Responsável - Celer": {
-  //         "multi_select": [
-  //           {
-  //             "name": data?.properties["Responsável - Celer"]?.multi_select?.map((item: any) => item.name).join(",") + `${user}`
-  //           }
-  //         ]
-  //       }
-  //     });
-  //     if (response.status !== 202) {
-  //       throw new Error('houve um erro ao salvar os dados no notion');
-  //     }
-  //     return response.data
-  //   },
-  //   onMutate: async () => {
-  //     setLoadingUpdateState(prev => ({ ...prev, responsavel: true }));
-  //     setEditLock(true);
-  //   },
-  //   onError: () => {
-  //     swal.fire({
-  //       toast: true,
-  //       timer: 3000,
-  //       timerProgressBar: true,
-  //       icon: 'error',
-  //       text: "Houve um erro ao atualizar o campo Responsável",
-  //       position: "bottom-right",
-  //       showConfirmButton: false,
-  //     });
-  //   },
-  //   onSuccess: () => {
-  //     swal.fire({
-  //       toast: true,
-  //       timer: 3000,
-  //       timerProgressBar: true,
-  //       icon: 'success',
-  //       text: "Campo Responsável atualizado com sucesso",
-  //       position: "bottom-right",
-  //       showConfirmButton: false,
-  //     });
-  //   },
-  //   onSettled: () => {
-  //     setEditLock(false);
-  //     setLoadingUpdateState(prev => ({ ...prev, responsavel: false }));
-  //   }
-  // });
-
-  const creditorNameMutation = useMutation({
-    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+  const updateDataTitleMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string, fieldName: string }) => {
       const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-        "Credor": {
+        [paramsObj.fieldName]: {
           "title": [
             {
               "text": {
@@ -1581,26 +1100,26 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     },
     onMutate: async (paramsObj: any) => {
       setEditLock(true);
-      setLoadingUpdateState("Credor");
+      setLoadingUpdateState(paramsObj.fieldName);
     },
-    onError: () => {
+    onError: (error, paramsObj) => {
       swal.fire({
         toast: true,
         timer: 3000,
         timerProgressBar: true,
         icon: 'error',
-        text: "Houve um erro ao atualizar o campo Nome do Credor",
+        text: `Houve um erro ao atualizar o campo ${paramsObj.fieldName}`,
         position: "bottom-right",
         showConfirmButton: false,
       })
     },
-    onSuccess: () => {
+    onSuccess: (data, paramsObj) => {
       swal.fire({
         toast: true,
         timer: 3000,
         timerProgressBar: true,
         icon: 'success',
-        text: "Nome do Credor atualizado com sucesso",
+        text: `${paramsObj.fieldName} atualizado com sucesso`,
         position: "bottom-right",
         showConfirmButton: false,
       })
@@ -1611,10 +1130,10 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     }
   });
 
-  const observationMutation = useMutation({
-    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
+  const updateDataRichTextMutation = useMutation({
+    mutationFn: async (paramsObj: { page_id: string, value: string, fieldName: string }) => {
       const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-        "Observação": {
+        [paramsObj.fieldName]: {
           "rich_text": [
             {
               "text": {
@@ -1630,27 +1149,27 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       return response.data;
     },
     onMutate: async (paramsObj: any) => {
-      setLoadingUpdateState("Observação");
+      setLoadingUpdateState(paramsObj.fieldName);
       setEditLock(true);
     },
-    onError: () => {
+    onError: (error, paramsObj) => {
       swal.fire({
         toast: true,
         timer: 3000,
         timerProgressBar: true,
         icon: 'error',
-        text: "Houve um erro ao atualizar o campo Observações",
+        text: `Houve um erro ao atualizar o campo ${paramsObj.fieldName}`,
         position: "bottom-right",
         showConfirmButton: false,
       });
     },
-    onSuccess: () => {
+    onSuccess: (data, paramsObj) => {
       swal.fire({
         toast: true,
         timer: 3000,
         timerProgressBar: true,
         icon: 'success',
-        text: "Observações atualizadas com sucesso",
+        text: `${paramsObj.fieldName} atualizadas com sucesso`,
         position: "bottom-right",
         showConfirmButton: false,
       });
@@ -1659,56 +1178,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     onSettled: () => {
       setEditLock(false);
       setLoadingUpdateState(null);
-    }
-  });
-
-  const identificationMutation = useMutation({
-    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
-      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-        "CPF/CNPJ": {
-          "rich_text": [
-            {
-              "text": {
-                "content": paramsObj.value
-              }
-            }
-          ]
-        }
-      });
-      if (response.status !== 202) {
-        throw new Error('houve um erro ao salvar os dados no notion');
-      }
-      return response.data;
-    },
-    onMutate: async (paramsObj: any) => {
-      setLoadingUpdateState("CPF/CNPJ");
-      setEditLock(true);
-    },
-    onError: () => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'error',
-        text: "Houve um erro ao atualizar o campo CPF/CNPJ",
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSuccess: () => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'success',
-        text: "CPF/CNPJ atualizado com sucesso",
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSettled: () => {
-      setLoadingUpdateState(null);
-      setEditLock(false);
     }
   });
 
@@ -1768,361 +1237,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     onSettled: () => {
       setLoadingUpdateState(null);
       setEditLock(false);
-    }
-  });
-
-  const npuMutation = useMutation({
-    mutationFn: async (paramsObj: { page_id: string, type: string, value: string }) => {
-      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-        [paramsObj.type]: {
-          "rich_text": [
-            {
-              "text": {
-                "content": paramsObj.value
-              }
-            }
-          ]
-        }
-      });
-      if (response.status !== 202) {
-        console.error('houve um erro ao salvar os dados no notion');
-      }
-      return response.data
-    },
-    onMutate: async (paramsObj) => {
-      setLoadingUpdateState(paramsObj.type);
-    },
-    onError: (error, paramsObj) => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'error',
-        text: `Houve um erro ao atualizar o campo ${paramsObj.type}`,
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSuccess: (data, paramsObj) => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'success',
-        text: `Campo ${paramsObj.type} alterado com sucesso.`,
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSettled: () => {
-      setEditLock(false);
-        setLoadingUpdateState(null);
-    }
-  });
-
-  const juizoMutation = useMutation({
-    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
-      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-        "Juízo": {
-          "rich_text": [
-            {
-              "text": {
-                "content": paramsObj.value
-              }
-            }
-          ]
-        }
-      });
-      if (response.status !== 202) {
-        throw new Error('houve um erro ao salvar os dados no notion');
-      }
-      return response.data
-    },
-    onMutate: async () => {
-      setLoadingUpdateState("Juízo");
-      setEditLock(true);
-    },
-    onError: () => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'error',
-        text: `Houve um erro ao atualizar o campo Juízo.`,
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSuccess: () => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'success',
-        text: `Campo Juízo alterado com sucesso.`,
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSettled: () => {
-      setEditLock(false);
-      setLoadingUpdateState(null);
-    }
-  });
-
-  const enteDevedorMutation = useMutation({
-    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
-      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-        "Ente Devedor": {
-          "select": {
-            "name": paramsObj.value
-          }
-        }
-      });
-      if (response.status !== 202) {
-        throw new Error('houve um erro ao salvar os dados no notion');
-      }
-      return response.data
-    },
-    onMutate: async () => {
-      setLoadingUpdateState("Ente Devedor");
-      setEditLock(true);
-    },
-    onError: () => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'error',
-        text: `Houve um erro ao atualizar o campo Ente Devedor`,
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSuccess: () => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'success',
-        text: `Campo Ente Devedor alterado com sucesso.`,
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSettled: () => {
-      setEditLock(false);
-      setLoadingUpdateState(null);
-    }
-  });
-
-  const estadoEnteDevedorMutation = useMutation({
-    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
-      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-        "Estado do Ente Devedor": {
-          "select": {
-            "name": paramsObj.value
-          }
-        }
-      });
-      if (response.status !== 202) {
-        throw new Error('houve um erro ao salvar os dados no notion');
-      }
-      return response.data
-    },
-    onMutate: async () => {
-      setLoadingUpdateState("Estado do Ente Devedor");
-      setEditLock(true);
-    },
-    onError: () => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'error',
-        text: `Houve um erro ao atualizar o campo Estado do Ente Devedor`,
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSuccess: () => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'success',
-        text: `Campo Estado do Ente Devedor alterado com sucesso.`,
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSettled: () => {
-      setEditLock(false);
-      setLoadingUpdateState(null);
-    }
-  });
-
-  const certidaoEmitidaMutation = useMutation({
-    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
-      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-        "Certidões emitidas": {
-          "checkbox": paramsObj.value === "SIM" ? true : false
-        }
-      });
-      if (response.status !== 202) {
-        throw new Error('houve um erro ao salvar os dados no notion');
-      }
-      return response.data
-    },
-    onMutate: async (paramsObj) => {
-      setLoadingUpdateState("Certidões emitidas");
-      setEditLock(true);
-      const prevData = globalQueryClient.getQueryData(['page', id]);
-      globalQueryClient.setQueryData(['page', id], (old: NotionPage) => {
-        return {
-          ...old,
-          properties: {
-            ...old?.properties,
-            "Certidões emitidas": {
-              ...old?.properties["Certidões emitidas"],
-              checkbox: paramsObj.value,
-            },
-          },
-        };
-      });
-      return { prevData }
-    },
-    onError: (error, paramsObj, context) => {
-      globalQueryClient.setQueryData(['page', id], context?.prevData);
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'error',
-        text: `Houve um erro ao atualizar o campo Certidões Emitidas`,
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSuccess: () => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'success',
-        text: `Campo Certidões Emitidas foi alterado com sucesso.`,
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSettled: () => {
-      setEditLock(false);
-      setLoadingUpdateState(null);
-    }
-  });
-
-  const possuiProcessosMutation = useMutation({
-    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
-      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-        "Possui processos?": {
-          "checkbox": paramsObj.value === "SIM" ? true : false
-        }
-      });
-      if (response.status !== 202) {
-        throw new Error('houve um erro ao salvar os dados no notion');
-      }
-      return response.data
-    },
-    onMutate: async (paramsObj) => {
-      setLoadingUpdateState("Possui processos?");
-      setEditLock(true);
-      const prevData = globalQueryClient.getQueryData(['page', id]);
-      globalQueryClient.setQueryData(['page', id], (old: NotionPage) => {
-        return {
-          ...old,
-          properties: {
-            ...old?.properties,
-            "Possui processos?": {
-              ...old?.properties["Possui processos?"],
-              checkbox: paramsObj.value,
-            },
-          },
-        };
-      });
-      return { prevData }
-    },
-    onError: (error, paramsObj, context) => {
-      globalQueryClient.setQueryData(['page', id], context?.prevData);
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'error',
-        text: `Houve um erro ao atualizar o campo Possui Processos`,
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSuccess: () => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'success',
-        text: `Campo Possui Processos foi alterado com sucesso.`,
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSettled: () => {
-      setEditLock(false);
-      setLoadingUpdateState(null);
-    }
-  });
-
-  const estadoCivilMutation = useMutation({
-    mutationFn: async (paramsObj: { page_id: string, value: string }) => {
-      const response = await api.patch(`api/notion-api/update/${paramsObj.page_id}/`, {
-        "Estado Civil": {
-          "select": {
-            "name": paramsObj.value
-          }
-        }
-      });
-      if (response.status !== 202) {
-        throw new Error('houve um erro ao salvar os dados no notion');
-      }
-      return response.data
-    },
-    onMutate: async () => {
-      setLoadingUpdateState("Estado Civil");
-      setEditLock(true);
-    },
-    onError: () => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'error',
-        text: `Houve um erro ao atualizar o campo Estado Civil`,
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSuccess: () => {
-      swal.fire({
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'success',
-        text: `Campo Estado Civil alterado com sucesso.`,
-        position: "bottom-right",
-        showConfirmButton: false,
-      });
-    },
-    onSettled: () => {
-      setEditLock(false);
-      setLoadingUpdateState(null);
     }
   });
 
@@ -2242,7 +1356,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                   className="self-center" />}
                 iconAlt="user"
                 className="w-full"
-                onSubmit={(_, value) => handleChangeCreditorName(value, id)}
+                onSubmit={(_, value) => handleUpdateDataTitle(value, id, "Credor")}
                 isLoading={loadingUpdateState === "Credor"}
                 disabled={editLock}
               />
@@ -2265,7 +1379,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                   className="self-center" />}
                 iconAlt="document"
                 className="w-full"
-                onSubmit={(_, value) => handleChangeIdentification(value, id)}
+                onSubmit={(_, value) => handleChangeIdentification(value, id, "CPF/CNPJ")}
                 isLoading={loadingUpdateState === "CPF/CNPJ"}
                 disabled={editLock}
               />
@@ -2274,6 +1388,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
           {(statusDiligence !== "Revisão Valor/LOA"
             && statusDiligence !== "Pré-Due Ativo"
+            && statusDiligence !== "Pré-Due Cedente"
           ) && (
               <section id="cedentes" className="form-inputs-container">
                 <div className="col-span-4 w-full">
@@ -2290,17 +1405,18 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                         fieldType={InputFieldVariant.SELECT}
                         label={`Certidões Emitidas ?`}
                         defaultValue={data?.properties["Certidões emitidas"]?.checkbox ? "SIM" : "NÃO"}
-                        onValueChange={(_, value) => handleUpdateCertidoesEmitidas(value, id)}
+                        onValueChange={(_, value) => handleUpdateEmissaoProcesso(value, id, "Certidões emitidas")}
                         isLoading={loadingUpdateState === "Certidões emitidas"}
                         disabled={editLock}
+                        required
                         className="w-full"
                       >
                         <SelectItem value="SIM">Sim</SelectItem>
                         <SelectItem value="NÃO">Não</SelectItem>
                       </CelerInputField>
 
-                      {(!data?.properties["Certidões emitidas"]?.checkbox && requiredDueInputsError) && (
-                        <p className="text-red-500 dark:text-red-400 text-xs mt-2">Campo obrigatório para due</p>
+                      {(!data?.properties["Certidões emitidas"]?.checkbox && requiredInputsErrorType === "Revisão de Due Diligence") && (
+                        <p className="text-red-500 dark:text-red-400 text-xs mt-2">Preenchimento obrigatório</p>
                       )}
                     </div>
 
@@ -2310,17 +1426,18 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                         fieldType={InputFieldVariant.SELECT}
                         label={`Possui Processos ?`}
                         defaultValue={data?.properties["Possui processos?"]?.checkbox ? "SIM" : "NÃO"}
-                        onValueChange={(_, value) => handleUpdatePossuiProcessos(value, id)}
+                        onValueChange={(_, value) => handleUpdateEmissaoProcesso(value, id, "Possui processos?")}
                         isLoading={loadingUpdateState === "Possui processos?"}
                         disabled={editLock}
+                        required
                         className="w-full"
                       >
                         <SelectItem value="SIM">Sim</SelectItem>
                         <SelectItem value="NÃO">Não</SelectItem>
                       </CelerInputField>
 
-                      {(!data?.properties["Possui processos?"]?.checkbox && requiredDueInputsError) && (
-                        <p className="text-red-500 dark:text-red-400 text-xs mt-2">Campo obrigatório para due</p>
+                      {(!data?.properties["Possui processos?"]?.checkbox && requiredInputsErrorType === "Revisão de Due Diligence") && (
+                        <p className="text-red-500 dark:text-red-400 text-xs mt-2">Preenchimento obrigatório</p>
                       )}
                     </div>
 
@@ -2336,12 +1453,13 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                             ? cedenteDataPF?.properties["Estado Civil"]?.select?.name || ''
                             : socioData?.properties["Estado Civil"]?.select?.name || ''
                         }
-                        onValueChange={(_, value) => handleUpdateEstadoCivil(value,
+                        onValueChange={(_, value) => handleUpdateDataSelect(value,
                           credorIdentificationType === "CPF"
                             ? cedenteDataPF?.id!
                             : socioData?.id!
-                        )}
+                          , "Estado Civil")}
                         isLoading={loadingUpdateState === "Estado Civil"}
+                        required
                         disabled={editLock}
                       >
                         {tipoRegime.map((item, index) => (
@@ -2359,12 +1477,12 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                         ))}
                       </CelerInputField>
 
-                      {credorIdentificationType === "CPF" && !cedenteDataPF?.properties["Estado Civil"]?.select?.name && requiredDueInputsError && (
-                        <p className="text-red-500 dark:text-red-400 text-xs mt-2">Campo obrigatório para due</p>
+                      {credorIdentificationType === "CPF" && !cedenteDataPF?.properties["Estado Civil"]?.select?.name && requiredInputsErrorType === "Revisão de Due Diligence" && (
+                        <p className="text-red-500 dark:text-red-400 text-xs mt-2">Preenchimento obrigatório</p>
                       )}
 
-                      {credorIdentificationType === "CNPJ" && !socioData?.properties["Estado Civil"]?.select?.name && requiredDueInputsError && (
-                        <p className="text-red-500 dark:text-red-400 text-xs mt-2">Campo obrigatório para due</p>
+                      {credorIdentificationType === "CNPJ" && !socioData?.properties["Estado Civil"]?.select?.name && requiredInputsErrorType === "Revisão de Due Diligence" && (
+                        <p className="text-red-500 dark:text-red-400 text-xs mt-2">Preenchimento obrigatório</p>
                       )}
                     </div>
                   </div>
@@ -2439,7 +1557,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                 iconSrc={<FaBuildingColumns className="self-center" />}
                 iconAlt="law"
                 className="w-full"
-                onSubmit={(_, value) => handleChangeJuizo(value, id)}
+                onSubmit={(_, value) => handleUpdateDataRichText(value, id, "Juízo")}
                 isLoading={loadingUpdateState === "Juizo"}
                 disabled={editLock}
               />
@@ -2453,7 +1571,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                 iconSrc={<FaBuilding className="self-center" />}
                 iconAlt="law"
                 className="w-full"
-                onSubmit={(_, value) => handleChangeEnteDevedor(value, id)}
+                onSubmit={(_, value) => handleUpdateDataSelect(value, id, "Ente Devedor")}
                 isLoading={loadingUpdateState === "Ente Devedor"}
                 disabled={editLock}
               />
@@ -2467,7 +1585,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                 iconSrc={<FaMapMarkedAlt className="self-center" />}
                 iconAlt="law"
                 className="w-full"
-                onValueChange={(_, value) => handleChangeEstadoEnteDevedor(value, id)}
+                onValueChange={(_, value) => handleUpdateDataSelect(value, id, "Estado do Ente Devedor")}
                 isLoading={loadingUpdateState === "Estado do Ente Devedor"}
                 disabled={editLock}
               >
@@ -2884,13 +2002,13 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             isLoading={loadingUpdateState === "Link de Due Diligence"}
             defaultValue={data?.properties["Link de Due Diligence"]?.url || "Sem link disponível"}
             className="2xsm:wfull md:w-100 !h-10"
-            onSubmit={(_, value) => handleUpdateDueLink(value, id)}
+            onSubmit={(_, value) => handleUpdateDataUrl(value, id, "Link de Due Diligence")}
           />
 
           <Button
             disabled={!data?.properties["Link de Due Diligence"]?.url || editLock}
             className="disabled:opacity-50 disabled:cursor-not-allowed mt-2"
-            onClick={() => window.open(data?.properties["Link da Due"]?.url, '_blank')}
+            onClick={() => window.open(data?.properties["Link de Due Diligence"]?.url, '_blank')}
           >
             <FaLink />
             Visualizar Due
@@ -2921,112 +2039,154 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
           <h3 className="text-bodydark2 font-medium mb-8">
             Revisão de Preço e Tempo de Pagamento
           </h3>
+
           <div className="flex gap-6">
+            <div>
+              <CelerInputField
+                name="preenchimento_oficio_requisitorio"
+                fieldType={InputFieldVariant.CHECKBOX}
+                checked={data?.properties["Preenchimento Correto"].checkbox}
+                label="Preenchimento de acordo com o Oficio Requisitorio"
+                isLoading={loadingUpdateState === "Preenchimento Correto"}
+                disabled={editLock}
+                onValueChange={(_, value) => handleUpdateDataCheckbox(value, id, "Preenchimento Correto")}
+                required
+                className="text-sm font-medium"
+              />
+              {!data?.properties["Preenchimento Correto"].checkbox && requiredInputsErrorType === "Revisão Valor/LOA" && (
+                <p className="text-red-500 dark:text-red-400 text-xs mt-2">Preenchimento obrigatório</p>
+              )}
+            </div>
 
-            <CelerInputField
-              name="preenchimento_oficio_requisitorio"
-              fieldType={InputFieldVariant.CHECKBOX}
-              checked={data?.properties["Preenchimento Correto"].checkbox}
-              label="Preenchimento de acordo com o Oficio Requisitorio"
-              isLoading={loadingUpdateState === "Preenchimento Correto"}
-              disabled={editLock}
-              onValueChange={(_, value) => handleUpdateRevisaoChecks(value, id, "Preenchimento Correto")}
-              className="text-sm font-medium"
-            />
-
-            <CelerInputField
-              name="memoria_calculo"
-              fieldType={InputFieldVariant.CHECKBOX}
-              checked={data?.properties["Memória de Cálculo"].checkbox}
-              label="Memória de cálculo de acordo com o ofício"
-              isLoading={loadingUpdateState === "Memória de Cálculo"}
-              disabled={editLock}
-              onValueChange={(_, value) => handleUpdateRevisaoChecks(value, id, "Memória de Cálculo")}
-              className="text-sm font-medium"
-            />
+            <div>
+              <CelerInputField
+                name="memoria_calculo"
+                fieldType={InputFieldVariant.CHECKBOX}
+                checked={data?.properties["Memória de Cálculo"].checkbox}
+                label="Memória de cálculo de acordo com o ofício"
+                isLoading={loadingUpdateState === "Memória de Cálculo"}
+                disabled={editLock}
+                onValueChange={(_, value) => handleUpdateDataCheckbox(value, id, "Memória de Cálculo")}
+                required
+                className="text-sm font-medium"
+              />
+              {!data?.properties["Memória de Cálculo"].checkbox && requiredInputsErrorType === "Revisão Valor/LOA" && (
+                <p className="text-red-500 dark:text-red-400 text-xs mt-2">Preenchimento obrigatório</p>
+              )}
+            </div>
           </div>
         </section>
       )}
 
       {statusDiligence === "Pré-Due Ativo" && (
-        <section id="revisao_preco_pagamento" className="p-4 rounded-md bg-white dark:bg-boxdark">
+        <section id="pre_due_ativo" className="p-4 rounded-md bg-white dark:bg-boxdark">
           <h3 className="text-bodydark2 font-medium mb-8 max-w-sm">
             Revisão do Ativo Pré-Due
           </h3>
           <div className="flex flex-col gap-4">
 
-            <CelerInputField
-              name="autos_do_ativo_check"
-              fieldType={InputFieldVariant.CHECKBOX}
-              checked={data?.properties["Autos do Ativo Judicial Baixado"].checkbox}
-              label="Autos do Ativo Judicial Baixado"
-              isLoading={loadingUpdateState === "Autos do Ativo Judicial Baixado"}
-              disabled={editLock}
-              onValueChange={(_, value) => handleUpdateAutosAtivo(value, id)}
-              className="text-sm font-medium"
-            />
+            <div>
+              <CelerInputField
+                name="autos_do_ativo_check"
+                fieldType={InputFieldVariant.CHECKBOX}
+                checked={data?.properties["Autos do Ativo Judicial Baixado"].checkbox}
+                label="Autos do Ativo Judicial Baixado"
+                isLoading={loadingUpdateState === "Autos do Ativo Judicial Baixado"}
+                disabled={editLock}
+                onValueChange={(_, value) => handleUpdateDataCheckbox(value, id, "Autos do Ativo Judicial Baixado")}
+                required
+                className="text-sm font-medium"
+              />
+              {!data?.properties["Autos do Ativo Judicial Baixado"].checkbox && requiredInputsErrorType === "Pré-Due Ativo" && (
+                <p className="text-red-500 dark:text-red-400 text-xs mt-2">Preenchimento obrigatório</p>
+              )}
+            </div>
 
             <hr className="border border-stroke dark:border-strokedark" />
 
-            <CelerInputField
-              name="possiu_recurso"
-              fieldType={InputFieldVariant.SELECT}
-              label={`Há algum recurso ?`}
-              defaultValue={data?.properties["Há algum recurso?"].select?.name || ""}
-              onValueChange={(_, value) => handleUpdateRecursoAutos(value, id)}
-              isLoading={loadingUpdateState === "Há algum recurso?"}
-              disabled={editLock}
-              className="max-w-[230px]"
-            >
-              <SelectItem value="Não">Não</SelectItem>
-              <SelectItem value="Sim sobre o valor total">Sim, sobre o valor total</SelectItem>
-              <SelectItem value="Sim sobre o valor parcial">Sim, sobre o valor parcial</SelectItem>
-            </CelerInputField>
+            <div>
+              <CelerInputField
+                name="possiu_recurso"
+                fieldType={InputFieldVariant.SELECT}
+                label={`Há algum recurso ?`}
+                defaultValue={data?.properties["Há algum recurso?"].select?.name || ""}
+                onValueChange={(_, value) => handleUpdateDataSelect(value, id, "Há algum recurso?")}
+                isLoading={loadingUpdateState === "Há algum recurso?"}
+                disabled={editLock}
+                required
+                className="max-w-[230px]"
+              >
+                <SelectItem value="Não">Não</SelectItem>
+                <SelectItem value="Sim sobre o valor total">Sim, sobre o valor total</SelectItem>
+                <SelectItem value="Sim sobre o valor parcial">Sim, sobre o valor parcial</SelectItem>
+              </CelerInputField>
+              {!data?.properties["Há algum recurso?"].select?.name && requiredInputsErrorType === "Pré-Due Ativo" && (
+                <p className="text-red-500 dark:text-red-400 text-xs mt-2">Preenchimento obrigatório</p>
+              )}
+            </div>
           </div>
         </section>
       )}
 
       {statusDiligence === "Pré-Due Cedente" && (
-        <section id="revisao_preco_pagamento" className="p-4 rounded-md bg-white dark:bg-boxdark">
+        <section id="pre_due_cedente" className="p-4 rounded-md bg-white dark:bg-boxdark">
           <h3 className="text-bodydark2 font-medium mb-8 max-w-sm">
             Revisão do Cedente Pré-Due
           </h3>
           <div className="flex flex-col gap-4">
 
-            <CelerInputField
-              name="certidao_receita_federal"
-              fieldType={InputFieldVariant.CHECKBOX}
-              checked={data?.properties["Certidão Receita Federal/PGFN"].checkbox}
-              label="Certidão Receita Federal/PGFN"
-              isLoading={loadingUpdateState === "Certidão Receita Federal/PGFN"}
-              disabled={editLock}
-              onValueChange={(_, value) => handleUpdateDataCheckbox(value, id, "Certidão Receita Federal/PGFN")}
-              className="text-sm font-medium"
-            />
-
-            {data?.properties["Esfera"].select?.name !== "FEDERAL" && (
+            <div>
               <CelerInputField
-                name="certidao_ente_devedor"
+                name="certidao_receita_federal"
                 fieldType={InputFieldVariant.CHECKBOX}
-                checked={data?.properties["Certidão do Ente Devedor"].checkbox}
-                label="Certidão do Ente Devedor"
-                isLoading={loadingUpdateState === "Certidão do Ente Devedor"}
+                checked={data?.properties["Certidão Receita Federal/PGFN"].checkbox}
+                label="Certidão Receita Federal/PGFN"
+                isLoading={loadingUpdateState === "Certidão Receita Federal/PGFN"}
                 disabled={editLock}
-                onValueChange={(_, value) => handleUpdateDataCheckbox(value, id, "Certidão do Ente Devedor")}
+                onValueChange={(_, value) => handleUpdateDataCheckbox(value, id, "Certidão Receita Federal/PGFN")}
+                required
                 className="text-sm font-medium"
               />
+              {!data?.properties["Certidão Receita Federal/PGFN"].checkbox && requiredInputsErrorType === "Pré-Due Cedente" && (
+                <p className="text-red-500 dark:text-red-400 text-xs mt-2">Preenchimento obrigatório</p>
+              )}
+            </div>
+
+            {data?.properties["Esfera"].select?.name !== "FEDERAL" && (
+              <div>
+                <CelerInputField
+                  name="certidao_ente_devedor"
+                  fieldType={InputFieldVariant.CHECKBOX}
+                  checked={data?.properties["Certidão do Ente Devedor"].checkbox}
+                  label="Certidão do Ente Devedor"
+                  isLoading={loadingUpdateState === "Certidão do Ente Devedor"}
+                  disabled={editLock}
+                  onValueChange={(_, value) => handleUpdateDataCheckbox(value, id, "Certidão do Ente Devedor")}
+                  required
+                  className="text-sm font-medium"
+                />
+                {!data?.properties["Certidão do Ente Devedor"].checkbox && requiredInputsErrorType === "Pré-Due Cedente" && (
+                  <p className="text-red-500 dark:text-red-400 text-xs mt-2">Preenchimento obrigatório</p>
+                )}
+              </div>
             )}
 
-            <CelerInputField
-              name="relatorio_resumido_processual"
-              fieldType={InputFieldVariant.CHECKBOX}
-              checked={data?.properties["Relatório Resumido Processual"].checkbox}
-              label="Relatório Resumido Processual"
-              isLoading={loadingUpdateState === "Relatório Resumido Processual"}
-              disabled={editLock}
-              onValueChange={(_, value) => handleUpdateDataCheckbox(value, id, "Relatório Resumido Processual")}
-              className="text-sm font-medium"
-            />
+            <div>
+              <CelerInputField
+                name="relatorio_resumido_processual"
+                fieldType={InputFieldVariant.CHECKBOX}
+                checked={data?.properties["Relatório Resumido Processual"].checkbox}
+                label="Relatório Resumido Processual"
+                isLoading={loadingUpdateState === "Relatório Resumido Processual"}
+                disabled={editLock}
+                onValueChange={(_, value) => handleUpdateDataCheckbox(value, id, "Relatório Resumido Processual")}
+                required
+                className="text-sm font-medium"
+              />
+              {!data?.properties["Relatório Resumido Processual"].checkbox && requiredInputsErrorType === "Pré-Due Cedente" && (
+                <p className="text-red-500 dark:text-red-400 text-xs mt-2">Preenchimento obrigatório</p>
+              )}
+            </div>
 
           </div>
         </section>
@@ -3280,7 +2440,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             checked={data?.properties["Cálculo Revisado"].checkbox}
             label="Cálculo Revisado"
             isLoading={loadingUpdateState === "Cálculo Revisado"}
-            onValueChange={(_, value) => handleUpdateRevisaoCalculo(value, id)}
+            onValueChange={(_, value) => handleUpdateDataCheckbox(value, id, "Cálculo Revisado")}
             className="text-sm font-medium"
           />
         </div>
@@ -3398,7 +2558,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
                   <hr className="border border-stroke dark:border-strokedark col-span-2" />
 
-                  <div className="col-span-2">
+                  <div className="col-span-2 flex gap-5 items-center">
                     <CelerInputField
                       name="espelho_oficio_check"
                       fieldType={InputFieldVariant.CHECKBOX}
@@ -3406,14 +2566,18 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                       defaultValue={data?.properties["Espelho do ofício"].checkbox}
                       checked={data?.properties["Espelho do ofício"].checkbox}
                       className="text-sm font-medium"
-                      onValueChange={(_, value) => handleUpdateEspelhoDoOficio(value, id)}
+                      onValueChange={(_, value) => handleUpdateDataCheckbox(value, id, "Espelho do ofício")}
                       isLoading={loadingUpdateState === "Espelho do ofício"}
+                      required
                       disabled={editLock}
                     />
+                    {(!data?.properties["Espelho do ofício"]?.checkbox && requiredInputsErrorType === "Revisão de Due Diligence") && (
+                      <p className="text-red-500 dark:text-red-400 text-xs">Preenchimento obrigatório</p>
+                    )}
                   </div>
 
                   {data?.properties["Esfera"].select?.name !== "FEDERAL" && (
-                    <div className="col-span-2">
+                    <div className="col-span-2 flex gap-5 items-center">
                       <CelerInputField
                         name="espelho_oficio_check"
                         fieldType={InputFieldVariant.CHECKBOX}
@@ -3421,10 +2585,14 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                         defaultValue={data?.properties["Estoque de Precatórios Baixado"].checkbox}
                         checked={data?.properties["Estoque de Precatórios Baixado"].checkbox}
                         className="text-sm font-medium"
-                        onValueChange={(_, value) => handleUpdateEstoquePrecatorio(value, id)}
+                        onValueChange={(_, value) => handleUpdateDataCheckbox(value, id, "Estoque de Precatórios Baixado")}
                         isLoading={loadingUpdateState === "Estoque de Precatórios Baixado"}
+                        required
                         disabled={editLock}
                       />
+                      {(!data?.properties["Estoque de Precatórios Baixado"]?.checkbox && requiredInputsErrorType === "Revisão de Due Diligence") && (
+                        <p className="text-red-500 dark:text-red-400 text-xs">Preenchimento obrigatório</p>
+                      )}
                     </div>
                   )}
 
@@ -3449,15 +2617,9 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             />
             <Button
               variant='ghost'
-              onClick={() => handleUpdateObservation(observation, id)}
+              onClick={() => handleUpdateDataRichText(observation, id, "Observação")}
               className='absolute z-2 bottom-3 right-2 py-1 text-sm px-1 bg-slate-100 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70'>
-              {/* {
-                                            savingObservation ? (
-                                                <AiOutlineLoading className="text-lg animate-spin" />
-                                            ) : ( */}
               <BiSave className="text-lg" />
-              {/* )
-                                        } */}
             </Button>
           </div>
         </div>
@@ -3494,8 +2656,10 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
           <Button
             variant="success"
-            disabled={!data?.properties["Memória de Cálculo"].checkbox || !data?.properties["Preenchimento Correto"].checkbox} className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium disabled:opacity-50 disabled:pointer-events-none"
-            onClick={() => handleUpdateDuePhase("Pré-Due Ativo")}
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium disabled:opacity-50 disabled:pointer-events-none"
+            onClick={() => handleUpdateDuePhase("Pré-Due Ativo",
+              [data?.properties["Preenchimento Correto"].checkbox, data?.properties["Memória de Cálculo"].checkbox]
+            )}
           >
             <TiArrowForward className="h-4 w-4" />
             <span>Seguir para Pré-Due Ativo</span>
@@ -3534,8 +2698,11 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
           <Button
             variant="success"
-            disabled={!data?.properties["Autos do Ativo Judicial Baixado"].checkbox || !data?.properties["Há algum recurso?"].select?.name} className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium disabled:opacity-50 disabled:pointer-events-none"
-            onClick={() => handleUpdateDuePhase("Pré-Due Cedente")}
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium disabled:opacity-50 disabled:pointer-events-none"
+            onClick={() => handleUpdateDuePhase("Pré-Due Cedente", [
+              data?.properties["Autos do Ativo Judicial Baixado"].checkbox,
+              data?.properties["Há algum recurso?"].select?.name ? true : false
+            ])}
           >
             <TiArrowForward className="h-4 w-4" />
             <span>Seguir para Pré-Due Cedente</span>
@@ -3574,11 +2741,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
           <Button
             variant="success"
-            disabled={
-              data?.properties["Esfera"].select?.name === "FEDERAL"
-              ? !data?.properties["Certidão Receita Federal/PGFN"].checkbox || !data?.properties["Relatório Resumido Processual"].checkbox
-              : !data?.properties["Certidão Receita Federal/PGFN"].checkbox || !data?.properties["Relatório Resumido Processual"].checkbox || !data?.properties["Certidão do Ente Devedor"].checkbox
-            }
             className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium disabled:opacity-50 disabled:pointer-events-none"
             onClick={() => handleUpdateDuePhase("Due Diligence")}
           >
@@ -3619,15 +2781,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
           >
             <BiX className="h-4 w-4" />
             <span>Pendência a Sanar</span>
-          </Button>
-
-          <Button
-            variant="info"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleDueAndamento()}
-          >
-            <MdOutlineDownloading className="h-4 w-4" />
-            <span>Pendência Sanada</span>
           </Button>
 
           <Button
@@ -3769,7 +2922,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
           <Button
             variant="warning"
             className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleReturnDueRevision()}
+            onClick={() => handleUpdateDataSelect("Revisão de Due Diligence", id, "Status Diligência")}
           >
             {loadingUpdateState === "Revisão de Due Diligence" ? <AiOutlineLoading className="animate-spin h-4 w-4" /> : <TbStatusChange className="h-4 w-4" />}
             <span>Retornar para revisão de Due</span>
@@ -3788,6 +2941,29 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
           </Button>
         </div>
       )}
+
+      {statusDiligence === "Pendência a Sanar" && (
+        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleArchiving()}
+          >
+            <MdOutlineArchive className="h-4 w-4" />
+            <span>Arquivar</span>
+          </Button>
+
+          <Button
+            variant="info"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleDueAndamento()}
+          >
+            <MdOutlineDownloading className="h-4 w-4" />
+            <span>Pendência Sanada</span>
+          </Button>
+        </div>
+      )}
+
       {cedenteModal !== null && <BrokerModal />}
       {docModalInfo !== null && <DocForm />}
     </div>
