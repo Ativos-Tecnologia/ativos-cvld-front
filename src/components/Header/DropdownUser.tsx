@@ -96,6 +96,7 @@ const DropdownUser = () => {
         >
           <Link
           href="/profile"
+          target="_blank"
           className="flex w-full p-2 items-center gap-2.5 !text-sm font-medium duration-300 ease-in-out lg:text-base cursor-pointer bg-transparent border-transparent hover:bg-blue-50 dark:hover:bg-graydark/30 dark:border-transparent hover:rounded-md"
           >
           <CgProfile className='w-4.5 h-4.5 fill-current'/>

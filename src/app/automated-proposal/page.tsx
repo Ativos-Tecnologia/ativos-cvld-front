@@ -1190,6 +1190,7 @@ E abaixo, uma memória das informações de entrada:
                       {/* register button */}
                       <Link
                         href={APP_ROUTES.public.register.name}
+                        target="_blank"
                         className="flex h-14 min-w-[305px] items-center justify-center rounded-md bg-blue-700 px-4 py-2 text-sm font-medium uppercase text-snow transition-all duration-300 hover:bg-blue-800 2xsm:w-[295px] md:w-fit"
                       >
                         Cadastrar este ativo no Celer
