@@ -47,15 +47,6 @@ function EspacoGerencial() {
             <section className="mt-6 flex min-h-fit rounded-md bg-white dark:bg-boxdark">
                 <GoalChartCard results={chartData?.results || []} />
             </section>
-
-            <SheetCelerComponent
-                children={<SheetViewComercial id="1" key={5} />}
-                side="right"
-                nameButton="Visualizar Dados do Cedente"
-                className="mt-5 w-fit"
-                classNameContent="w-fit overflow-y-auto overflow-x-hidden"
-            />
-
             {/* Seção da Tabela Gerencial */}
             <section className="mt-6 flex flex-col rounded-md bg-white dark:bg-boxdark">
                 <DataTable columns={columns} data={data?.results || []} loading={isLoading} />

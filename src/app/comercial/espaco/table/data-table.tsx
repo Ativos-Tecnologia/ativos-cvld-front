@@ -27,6 +27,8 @@ import { FilterIcon, Search, X } from 'lucide-react';
 
 import { useClickOutside } from '@/hooks/use-click-outside';
 import { cn } from '@/lib/utils';
+import { SheetCelerComponent } from '@/components/CrmUi/Sheet';
+import { SheetViewComercial } from '@/components/Features/Comercial/SheetViewComercial';
 
 type ColumnDef<TData, TValue> = BaseColumnDef<TData, TValue> & {
     filterVariant?: 'range' | 'select' | 'text';
@@ -529,6 +531,21 @@ export function DataTable<TData, TValue>({
                                             )}
                                         </TableCell>
                                     ))}
+                                    <SheetCelerComponent
+                                        children={flexRender(
+                                            <SheetViewComercial
+                                                sheetData={row.original}
+                                                id={row.id}
+                                            />,
+                                            {
+                                                row,
+                                            },
+                                        )}
+                                        side="right"
+                                        nameButton="Visualizar"
+                                        className="mt-5 w-fit"
+                                        classNameContent="w-fit overflow-y-auto overflow-x-hidden"
+                                    />
                                 </TableRow>
                             ))
                         ) : (

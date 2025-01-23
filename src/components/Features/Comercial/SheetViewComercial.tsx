@@ -28,7 +28,14 @@ import Link from 'next/link';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { AiOutlineLoading } from 'react-icons/ai';
-import { BiInfoCircle, BiSave, BiSolidCalculator, BiSolidCoinStack, BiX } from 'react-icons/bi';
+import {
+    BiCheck,
+    BiInfoCircle,
+    BiSave,
+    BiSolidCalculator,
+    BiSolidCoinStack,
+    BiX,
+} from 'react-icons/bi';
 import { BsCalendar2HeartFill, BsPencilSquare } from 'react-icons/bs';
 import { CgSearchLoading } from 'react-icons/cg';
 import { FaBalanceScale, FaIdCard, FaMapMarkedAlt, FaRegFilePdf } from 'react-icons/fa';
@@ -54,43 +61,42 @@ import CRMTooltip from '@/components/CrmUi/Tooltip';
 import DocForm from '@/components/Modals/BrokersDocs';
 import { Fade } from 'react-awesome-reveal';
 import Image from 'next/image';
-import DashbrokersCard from '@/components/Cards/DashbrokersCard';
+import DashbrokersCard, { ChecksProps } from '@/components/Cards/DashbrokersCard';
+import { toast } from 'sonner';
+import { formatCurrency } from '@/functions/formaters/formatCurrency';
 
 type SheetViewComercialProps = {
     id: string;
+    sheetData: any;
     grafico?: React.ReactNode;
 };
 
-export const SheetViewComercial = ({ id, grafico }: SheetViewComercialProps) => {
+export const SheetViewComercial = ({ id, grafico, sheetData }: SheetViewComercialProps) => {
     const {
-        data: { first_name, user },
+        data: { user },
     } = useContext<UserInfoContextType>(UserInfoAPIContext);
 
-    const { cedenteModal, setCedenteModal, docModalInfo, setDocModalInfo } =
-        useContext(BrokersContext);
+    /* ====> context imports <==== */
+    const {
+        cedenteModal,
+        setCedenteModal,
+        docModalInfo,
+        setDocModalInfo,
+        fetchCardData,
+        deleteModalLock,
+        isFetchAllowed,
+        setIsFetchAllowed,
+        setDeleteModalLock,
+        fetchDetailCardData,
+        specificCardData,
+        setSpecificCardData,
+        selectedUser,
+        setEditModalId,
+    } = useContext(BrokersContext);
 
     const [credorIdentificationType, setCredorIdentificationType] =
         useState<IdentificationType>(null);
     const [requiredDueInputsError, setRequiredDueInputsError] = useState<boolean>(false);
-    const [vlData, setVlData] = useState<IWalletResponse>({
-        id: '',
-        valor_investido: 0,
-        valor_projetado: 0,
-        previsao_de_pgto: '',
-        rentabilidade_anual: 0,
-        data_de_aquisicao: '',
-        result: [
-            {
-                data_atualizacao: '',
-                valor_principal: 0,
-                valor_juros: 0,
-                valor_inscrito: 0,
-                valor_bruto_atualizado_final: 0,
-                valor_liquido_disponivel: 0,
-            },
-        ],
-    });
-    const [linkCopied, setLinkCopied] = useState<boolean>(false);
     const [observation, setObservation] = useState<string>('');
     const [formData, setFormData] = useState<Record<string, any> | null>(null);
     const [happenedRecalculation, setHappenedRecalculation] = useState<boolean>(false);
@@ -124,9 +130,10 @@ export const SheetViewComercial = ({ id, grafico }: SheetViewComercialProps) => 
     const [sliderValues, setSliderValues] = useState({
         rentabilidade: 0,
         desembolso: 0,
+        proposal: 0,
+        comission: 0,
     });
     const [statusDiligence, setStatusDiligence] = useState<string>('');
-    const [visibleData, setVisibleData] = useState<NotionPage[]>([]);
 
     const swal = UseMySwal();
     const { globalQueryClient } = useContext(ReactGlobalQueryContext);
@@ -134,7 +141,373 @@ export const SheetViewComercial = ({ id, grafico }: SheetViewComercialProps) => 
     /* refs */
     const rentabilidadeSlideRef = useRef<HTMLInputElement>(null);
     const desembolsoSlideRef = useRef<HTMLInputElement>(null);
-    const linkDueInputRef = useRef<HTMLInputElement>(null);
+    /* ====> value states <==== */
+    const [auxValues, setAuxValues] = useState<{ proposal: number; commission: number }>({
+        proposal: 0,
+        commission: 0,
+    });
+    const [savingProposalAndComission, setSavingProposalAndComission] = useState<boolean>(false);
+    const [isDeleting, setIsDeleting] = useState<boolean>(false);
+    const [isUpdatingDiligence, setIsUpdatingDiligence] = useState<boolean>(false);
+    const [isFetchingData, setIsFetchingData] = useState<boolean>(false);
+    const [savingObservation, setSavingObservation] = useState<boolean>(false);
+    const [isProposalButtonDisabled, setIsProposalButtonDisabled] = useState<boolean>(true);
+    const [isProposalChanging, setIsProposalChanging] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<boolean>(false);
+
+    const proposalRef = useRef<HTMLInputElement | null>(null);
+    const comissionRef = useRef<HTMLInputElement | null>(null);
+    const observationRef = useRef<HTMLTextAreaElement | null>(null);
+    const proposalRangeRef = useRef<HTMLInputElement | null>(null);
+    const isFirstLoad = useRef(true); // referência: 'isFirstLoad' sempre apontará para o mesmo objeto retornado por useRef
+    const [loading, setLoading] = useState<boolean>(false);
+    const documentRef = useRef<HTMLDivElement>(null);
+
+    const [checks, setChecks] = useState<ChecksProps>({
+        is_precatorio_complete: false,
+        is_cedente_complete: false,
+        are_docs_complete: false,
+        isFetching: false,
+    });
+
+    const fetchAllChecks = async (): Promise<void> => {
+        setChecks((old) => ({
+            ...old,
+            isFetching: true,
+        }));
+
+        const cedenteType = credorIdentificationType === 'CPF' ? 'Cedente PF' : 'Cedente PJ';
+
+        const idCedente = data?.properties[cedenteType].relation?.[0]
+            ? data.properties[cedenteType].relation?.[0].id
+            : null;
+
+        try {
+            const req =
+                credorIdentificationType === 'CPF'
+                    ? await api.get(
+                          `/api/checker/pf/complete/precatorio/${data?.id}/cedente/${idCedente}/`,
+                      )
+                    : await api.get(
+                          `/api/checker/pj/complete/precatorio/${data?.id}/cedente/${idCedente}/`,
+                      );
+
+            if (req.status === 200) {
+                setChecks((old) => ({
+                    ...old,
+                    is_precatorio_complete: req.data.is_precatorio_complete,
+                    is_cedente_complete: req.data.is_cedente_complete,
+                    are_docs_complete: req.data.are_docs_complete,
+                }));
+            }
+        } catch (error) {
+            toast.error('Erro ao buscar info dos checks', {
+                classNames: {
+                    toast: 'bg-white dark:bg-boxdark',
+                    title: 'text-black-2 dark:text-white',
+                    actionButton:
+                        'bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300',
+                },
+                icon: <BiX className="fill-red-500 text-lg" />,
+                action: {
+                    label: 'OK',
+                    onClick() {
+                        toast.dismiss();
+                    },
+                },
+            });
+        } finally {
+            setChecks((old) => ({
+                ...old,
+                isFetching: false,
+            }));
+        }
+    };
+
+    /**
+     * Função para atualizar a proposta e ajustar a comissão proporcionalmente
+     * @param {string} value - valor da proposta
+     * @param {boolean} sliderChange - indica se a mudança vem de um slider
+     * @returns {void}
+     */
+    const handleProposalSliderChange = (value: string, sliderChange: boolean): void => {
+        if (data) {
+            const newProposalSliderValue = parseFloat(value);
+
+            if (newProposalSliderValue !== auxValues.proposal) {
+                setIsProposalButtonDisabled(false);
+                setErrorMessage(false);
+            } else {
+                setIsProposalButtonDisabled(true);
+            }
+
+            // seta o valor do slide como o valor atual
+            setSliderValues((oldValues) => {
+                return { ...oldValues, proposal: newProposalSliderValue };
+            });
+
+            // Calcular a proporção em relação a proposta e ajustar a comissão
+            const proportion =
+                (newProposalSliderValue -
+                    (data?.properties['(R$) Proposta Mínima - Celer'].number || 0)) /
+                ((data?.properties['(R$) Proposta Máxima - Celer'].number || 0) -
+                    (data?.properties['(R$) Proposta Mínima - Celer'].number || 0));
+
+            // define o novo valor da comissão em relação a proporção
+            const newComissionSliderValue =
+                (data?.properties['(R$) Comissão Máxima - Celer'].number || 0) -
+                proportion *
+                    ((data?.properties['(R$) Comissão Máxima - Celer'].number || 0) -
+                        (data?.properties['(R$) Comissão Mínima - Celer'].number || 0));
+
+            setSliderValues((oldValues) => {
+                return { ...oldValues, comission: newComissionSliderValue };
+            });
+
+            if (comissionRef.current && proposalRef.current) {
+                comissionRef.current.value = numberFormat(newComissionSliderValue);
+                if (sliderChange) {
+                    proposalRef.current.value = numberFormat(newProposalSliderValue);
+                }
+            }
+        }
+    };
+
+    /**
+     * Função para atualizar a comissão e ajustar a proposta proporcionalmente
+     * @param {string} value - valor da comissão
+     * @param {boolean} sliderChange - indica se a mudança vem de um slider
+     * @returns {void}
+     */
+    const handleComissionSliderChange = (value: string, sliderChange: boolean): void => {
+        if (data) {
+            // seta o valor da slider como o atual
+            const newComissionSliderValue = parseFloat(value);
+            setSliderValues((oldValues) => {
+                return { ...oldValues, comission: newComissionSliderValue };
+            });
+
+            // Calcular a proporção em relação a comissão e ajustar a proposta
+            const proportion =
+                (newComissionSliderValue -
+                    (data.properties['(R$) Comissão Mínima - Celer'].number || 0)) /
+                ((data.properties['(R$) Comissão Máxima - Celer'].number || 0) -
+                    (data.properties['(R$) Comissão Mínima - Celer'].number || 0));
+
+            //  define o novo valor da proposta em relação a proporção
+            const newProposalSliderValue =
+                (data.properties['(R$) Proposta Máxima - Celer'].number || 0) -
+                proportion *
+                    ((data.properties['(R$) Proposta Máxima - Celer'].number || 0) -
+                        (data.properties['(R$) Proposta Mínima - Celer'].number || 0));
+
+            if (newProposalSliderValue !== auxValues.commission) {
+                setIsProposalButtonDisabled(false);
+                setErrorMessage(false);
+            } else {
+                setIsProposalButtonDisabled(true);
+            }
+
+            setSliderValues((oldValues) => {
+                return { ...oldValues, proposal: newProposalSliderValue };
+            });
+
+            if (proposalRef.current && comissionRef.current) {
+                proposalRef.current.value = numberFormat(newProposalSliderValue);
+                if (sliderChange) {
+                    comissionRef.current.value = numberFormat(newComissionSliderValue);
+                }
+            }
+        }
+    };
+
+    /**
+     * Função para atualizar proposta/comissão com os dados dos inputs
+     *
+     * @param {string} inputField - campo input que foi alterado
+     * @param {string} value - valor do campo input
+     * @returns {void}
+     */
+    const changeInputValues = (inputField: string, value: string): void => {
+        const rawValue = value
+            .replace(/R\$\s*/g, '')
+            .replaceAll('.', '')
+            .replaceAll(',', '.');
+        const numericalValue = parseFloat(rawValue);
+
+        switch (inputField) {
+            case 'proposal':
+                if (
+                    numericalValue >=
+                        (data?.properties['(R$) Proposta Mínima - Celer'].number || 0) &&
+                    numericalValue <=
+                        (data?.properties['(R$) Proposta Máxima - Celer'].number || 0) &&
+                    !isNaN(numericalValue) &&
+                    numericalValue !== auxValues.proposal
+                ) {
+                    setIsProposalButtonDisabled(false);
+                } else {
+                    setIsProposalButtonDisabled(true);
+                }
+
+                if (
+                    numericalValue <
+                        (data?.properties['(R$) Proposta Mínima - Celer'].number || 0) ||
+                    numericalValue >
+                        (data?.properties['(R$) Proposta Máxima - Celer'].number || 0) ||
+                    isNaN(numericalValue)
+                ) {
+                    setErrorMessage(true);
+                    return;
+                } else {
+                    setErrorMessage(false);
+                }
+
+                setSliderValues((old) => {
+                    return {
+                        ...old,
+                        proposal: parseFloat(rawValue),
+                    };
+                });
+                handleProposalSliderChange(rawValue, false);
+                break;
+            case 'comission':
+                if (
+                    numericalValue >=
+                        (data?.properties['(R$) Comissão Mínima - Celer'].number || 0) &&
+                    numericalValue <=
+                        (data?.properties['(R$) Comissão Máxima - Celer'].number || 0) &&
+                    !isNaN(numericalValue) &&
+                    numericalValue !== auxValues.commission
+                ) {
+                    setIsProposalButtonDisabled(false);
+                } else {
+                    setIsProposalButtonDisabled(true);
+                }
+
+                if (
+                    numericalValue <
+                        (data?.properties['(R$) Comissão Mínima - Celer'].number || 0) ||
+                    numericalValue >
+                        (data?.properties['(R$) Comissão Máxima - Celer'].number || 0) ||
+                    isNaN(numericalValue)
+                ) {
+                    setErrorMessage(true);
+                    return;
+                } else {
+                    setErrorMessage(false);
+                }
+                setSliderValues((old) => {
+                    return {
+                        ...old,
+                        comission: parseFloat(rawValue),
+                    };
+                });
+                handleComissionSliderChange(rawValue, false);
+                break;
+            default:
+                break;
+        }
+    };
+
+    /**
+     * Função para salvar os valores de proposta e comissão
+     *
+     * @returns {Promise<void>}
+     */
+    const saveProposalAndComission = async (): Promise<void> => {
+        setSavingProposalAndComission(true);
+        setIsFetchAllowed(false);
+        const req = await api.patch(`/api/notion-api/broker/negotiation/${data?.id}/`, {
+            proposal: sliderValues.proposal,
+            commission: sliderValues.comission,
+        });
+
+        if (req.status === 202) {
+            toast.success('Proposta e comissão salvas com sucesso!', {
+                icon: <BiCheck className="fill-green-400 text-lg" />,
+            });
+            setAuxValues({
+                proposal: sliderValues.proposal,
+                commission: sliderValues.comission,
+            });
+            setIsProposalButtonDisabled(true);
+            fetchDetailCardData(data!.id);
+        }
+
+        if (req.status === 400) {
+            toast.error('Erro ao salvar proposta e comissão!', {
+                icon: <BiX className="fill-red-500 text-lg" />,
+            });
+        }
+        setIsFetchAllowed(true);
+        setSavingProposalAndComission(false);
+    };
+
+    const updateObservation = useMutation({
+        mutationFn: async (message: string) => {
+            const req = await api.patch(`api/notion-api/update/${data?.id}/`, {
+                Observação: {
+                    rich_text: [
+                        {
+                            text: {
+                                content: message,
+                            },
+                        },
+                    ],
+                },
+            });
+            return req.status;
+        },
+        onMutate: async (message: string) => {
+            setSavingObservation(true);
+            setIsFetchAllowed(false);
+            const previousData = data;
+            return { previousData };
+        },
+        onError: (error, message, context) => {
+            globalQueryClient.setQueryData(
+                ['page', sheetData.id],
+                context?.previousData as NotionPage,
+            );
+            toast.error('Erro ao atualizar a observação!', {
+                classNames: {
+                    toast: 'bg-white dark:bg-boxdark',
+                    title: 'text-black-2 dark:text-white',
+                    actionButton:
+                        'bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300',
+                },
+                icon: <BiX className="fill-red-500 text-lg" />,
+                action: {
+                    label: 'OK',
+                    onClick() {
+                        toast.dismiss();
+                    },
+                },
+            });
+        },
+        onSuccess: () => {
+            toast.success('Campo atualizado!', {
+                classNames: {
+                    toast: 'bg-white dark:bg-boxdark',
+                    title: 'text-black-2 dark:text-white',
+                    actionButton:
+                        'bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300',
+                },
+                icon: <BiCheck className="fill-green-400 text-lg" />,
+                action: {
+                    label: 'OK',
+                    onClick() {
+                        toast.dismiss();
+                    },
+                },
+            });
+        },
+        onSettled: () => {
+            setSavingObservation(false);
+            setIsFetchAllowed(true);
+        },
+    });
 
     const handleDueDiligence = () => {
         swal.fire({
@@ -445,12 +818,8 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
         }
     };
 
-    const handleCession = () => {
-        /** code here */
-    };
-
     async function fetchData() {
-        const response = await api.get(`/api/notion-api/list/page/${id}/`);
+        const response = await api.get(`/api/notion-api/list/page/${sheetData.id}/`);
         return response.data;
     }
     async function fetchCedenteData(cedenteId: string) {
@@ -460,7 +829,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
     }
 
     const { data, isLoading, refetch } = useQuery<NotionPage>({
-        queryKey: ['page', id],
+        queryKey: ['page', sheetData.id],
         queryFn: fetchData,
         refetchOnWindowFocus: false,
     });
@@ -694,10 +1063,11 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
             setSliderError(false);
         }
 
-        setSliderValues({
+        setSliderValues((oldValues) => ({
+            ...oldValues,
             rentabilidade: newRentabilidade,
             desembolso: newDesembolso,
-        });
+        }));
 
         if (rentabilidadeSlideRef.current && desembolsoSlideRef.current) {
             rentabilidadeSlideRef.current.value = `${(newRentabilidade * 100).toFixed(2).replace('.', ',')}%`;
@@ -734,10 +1104,11 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
             setSliderError(false);
         }
 
-        setSliderValues({
+        setSliderValues((oldValues) => ({
+            ...oldValues,
             rentabilidade: newRentabilidade,
             desembolso: newDesembolso,
-        });
+        }));
 
         if (rentabilidadeSlideRef.current && desembolsoSlideRef.current) {
             desembolsoSlideRef.current.value = numberFormat(newDesembolso);
@@ -802,15 +1173,6 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
             page_id,
             value,
         });
-    };
-
-    const handleCopyDueLink = () => {
-        if (linkDueInputRef.current) {
-            const value = linkDueInputRef.current.value;
-            navigator.clipboard.writeText(value);
-            navigator.vibrate(200);
-            setTimeout(() => setLinkCopied(false), 2000);
-        }
     };
 
     const handleUpdateRevisaoCalculo = async (value: boolean, page_id: string) => {
@@ -1848,33 +2210,13 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
             setFormData(form.watch);
 
             setSliderValues({
-                rentabilidade: data?.properties['Rentabilidade Anual'].number || 0,
-                desembolso: data?.properties['Nova Fórmula do Desembolso'].formula?.number || 0,
+                rentabilidade: data?.properties['Rentabilidade Anual']?.number || 0,
+                desembolso: data?.properties['Nova Fórmula do Desembolso']?.formula?.number || 0,
+                proposal: sliderValues.proposal,
+                comission: sliderValues.comission,
             });
 
             setObservation(data?.properties['Observação']?.rich_text?.[0]?.text?.content || '');
-        }
-    }, [data]);
-
-    const fetchUpdatedVL = async (oficio: NotionPage) => {
-        // Essa função recebe um objeto do tipo NotionPage e retorna um objeto do tipo IWalletResponse com os valores atualizados
-        try {
-            const response = await api.post('/api/extrato/wallet/', {
-                oficio,
-                from_today: data?.properties['Data de aquisição do precatório'].date?.start
-                    ? false
-                    : true,
-            });
-            setVlData(response.data);
-            // refetch();
-        } catch (error: any) {
-            throw new Error(error.message);
-        }
-    };
-
-    useEffect(() => {
-        if (data) {
-            fetchUpdatedVL(data);
         }
     }, [data]);
 
@@ -1893,17 +2235,56 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
         setStatusDiligence(dataStatusDiligence || '');
     }, [data]);
 
+    useEffect(() => {
+        if (data) {
+            setSliderValues((prevData) => ({
+                ...prevData,
+                proposal:
+                    data.properties['Proposta Escolhida - Celer'].number ||
+                    data.properties['(R$) Proposta Mínima - Celer'].number ||
+                    0,
+                comission:
+                    data.properties['Comissão - Celer'].number ||
+                    data.properties['(R$) Comissão Máxima - Celer'].number ||
+                    0,
+            }));
+
+            setAuxValues({
+                proposal:
+                    data.properties['Proposta Escolhida - Celer'].number ||
+                    data.properties['(R$) Proposta Mínima - Celer'].number ||
+                    0,
+                commission:
+                    data.properties['Comissão - Celer'].number ||
+                    data.properties['(R$) Comissão Mínima - Celer'].number ||
+                    0,
+            });
+
+            if (proposalRef.current && comissionRef.current && observationRef.current) {
+                proposalRef.current.value = numberFormat(
+                    data.properties['Proposta Escolhida - Celer'].number ||
+                        data.properties['(R$) Proposta Mínima - Celer'].number ||
+                        0,
+                );
+
+                comissionRef.current.value = numberFormat(
+                    data.properties['Comissão - Celer'].number ||
+                        data.properties['(R$) Comissão Máxima - Celer'].number ||
+                        0,
+                );
+
+                observationRef.current.value =
+                    data?.properties?.['Observação']?.rich_text!.length > 0
+                        ? data.properties['Observação'].rich_text![0].text.content
+                        : '';
+            }
+        }
+    }, [data]);
+
+    console.log('Valores do Slider: ', sliderValues);
+
     return (
         <div className="flex w-full flex-col gap-5">
-            <div className="flex w-full items-end justify-end rounded-md">
-                <Breadcrumb
-                    customIcon={<FaBalanceScale className="h-[32px] w-[32px]" />}
-                    altIcon="Espaço de trabalho do time jurídico"
-                    pageName="Jurídico / Detalhes"
-                    title={`Olá, ${first_name}`}
-                />
-            </div>
-            <LifeCycleStep status={data?.properties['Status Diligência'].select?.name ?? 'ops'} />
             <Form {...form}>
                 <div className="space-y-6 rounded-md">
                     <section id="info_credor" className="form-inputs-container">
@@ -2204,443 +2585,626 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                             </CelerInputField>
                         </div>
                     </section>
-
-                    <section id="info_valores" className="rounded-md bg-white p-4 dark:bg-boxdark">
-                        <form onSubmit={form.handleSubmit(onSubmitForm)}>
-                            <div className="grid grid-cols-4 gap-6 3xl:grid-cols-5">
-                                {/* tipo */}
-                                <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
-                                    <CelerInputFormField
-                                        control={form.control}
-                                        name="tipo_do_oficio"
-                                        label="Tipo"
-                                        fieldType={InputFieldVariant.SELECT}
-                                        defaultValue={data?.properties['Tipo'].select?.name ?? ''}
-                                        className="w-full"
-                                    >
-                                        <SelectItem value="PRECATÓRIO">PRECATÓRIO</SelectItem>
-                                        <SelectItem value="CREDITÓRIO">CREDITÓRIO</SelectItem>
-                                        <SelectItem value="R.P.V.">R.P.V.</SelectItem>
-                                    </CelerInputFormField>
-                                </div>
-                                {/* natureza */}
-                                <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
-                                    <CelerInputFormField
-                                        control={form.control}
-                                        name="natureza"
-                                        label="Natureza"
-                                        fieldType={InputFieldVariant.SELECT}
-                                        defaultValue={
-                                            data?.properties['Natureza'].select?.name ?? ''
-                                        }
-                                        className="w-full"
-                                    >
-                                        <SelectItem value="NÃO TRIBUTÁRIA">
-                                            NÃO TRIBUTÁRIA
-                                        </SelectItem>
-                                        <SelectItem value="TRIBUTÁRIA">TRIBUTÁRIA</SelectItem>
-                                    </CelerInputFormField>
-                                </div>
-                                {/* esfera */}
-                                <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
-                                    <CelerInputFormField
-                                        control={form.control}
-                                        name="esfera"
-                                        label="Esfera"
-                                        fieldType={InputFieldVariant.SELECT}
-                                        defaultValue={data?.properties['Esfera'].select?.name ?? ''}
-                                        className="w-full"
-                                    >
-                                        <SelectItem value="FEDERAL">FEDERAL</SelectItem>
-                                        <SelectItem value="ESTADUAL">ESTADUAL</SelectItem>
-                                        <SelectItem value="MUNICIPAL">MUNICIPAL</SelectItem>
-                                    </CelerInputFormField>
-                                </div>
-                                {/* regime */}
-                                {form.watch('esfera') !== 'FEDERAL' && (
+                    {/* Proposta */}
+                    <div className="flex flex-row gap-4">
+                        <section
+                            id="info_valores"
+                            className="rounded-md bg-white p-4 dark:bg-boxdark"
+                        >
+                            <form onSubmit={form.handleSubmit(onSubmitForm)}>
+                                <div className="grid grid-cols-2 gap-6 3xl:grid-cols-2">
+                                    {/* tipo */}
                                     <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
                                         <CelerInputFormField
                                             control={form.control}
-                                            name="regime"
-                                            label="Regime"
+                                            name="tipo_do_oficio"
+                                            label="Tipo"
                                             fieldType={InputFieldVariant.SELECT}
                                             defaultValue={
-                                                data?.properties['Regime'].select?.name ?? ''
+                                                data?.properties['Tipo'].select?.name ?? ''
                                             }
                                             className="w-full"
                                         >
-                                            <SelectItem value="GERAL">GERAL</SelectItem>
-                                            <SelectItem value="ESPECIAL">ESPECIAL</SelectItem>
+                                            <SelectItem value="PRECATÓRIO">PRECATÓRIO</SelectItem>
+                                            <SelectItem value="CREDITÓRIO">CREDITÓRIO</SelectItem>
+                                            <SelectItem value="R.P.V.">R.P.V.</SelectItem>
                                         </CelerInputFormField>
                                     </div>
-                                )}
-                                {/* tribunal */}
-                                <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
-                                    <CelerInputFormField
-                                        control={form.control}
-                                        name="tribunal"
-                                        label="Tribunal"
-                                        fieldType={InputFieldVariant.SELECT}
-                                        defaultValue={
-                                            data?.properties['Tribunal'].select?.name ?? ''
-                                        }
-                                        className="w-full"
-                                    >
-                                        {tribunais.map((tribunal) => (
-                                            <SelectItem key={tribunal.id} value={tribunal.id}>
-                                                {tribunal.nome}
+                                    {/* natureza */}
+                                    <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+                                        <CelerInputFormField
+                                            control={form.control}
+                                            name="natureza"
+                                            label="Natureza"
+                                            fieldType={InputFieldVariant.SELECT}
+                                            defaultValue={
+                                                data?.properties['Natureza'].select?.name ?? ''
+                                            }
+                                            className="w-full"
+                                        >
+                                            <SelectItem value="NÃO TRIBUTÁRIA">
+                                                NÃO TRIBUTÁRIA
                                             </SelectItem>
-                                        ))}
-                                    </CelerInputFormField>
-                                </div>
-                                {/* valor principal */}
-                                <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
-                                    <CelerInputFormField
-                                        control={form.control}
-                                        name="valor_principal"
-                                        label="Valor Principal"
-                                        fieldType={InputFieldVariant.NUMBER}
-                                        currencyFormat="R$ "
-                                        defaultValue={
-                                            data?.properties['Valor Principal'].number ?? 0
-                                        }
-                                        className="w-full"
-                                    />
-                                </div>
-                                {/* valor juros */}
-                                <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
-                                    <CelerInputFormField
-                                        control={form.control}
-                                        name="valor_juros"
-                                        label="Juros"
-                                        fieldType={InputFieldVariant.NUMBER}
-                                        currencyFormat="R$ "
-                                        defaultValue={data?.properties['Valor Juros'].number ?? 0}
-                                        className="w-full"
-                                    />
-                                </div>
-                                {/* data base */}
-                                <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
-                                    <CelerInputFormField
-                                        control={form.control}
-                                        name="data_base"
-                                        label="Data Base"
-                                        fieldType={InputFieldVariant.DATE}
-                                        defaultValue={
-                                            data?.properties['Data Base'].date?.start ?? ''
-                                        }
-                                        className="w-full"
-                                    />
-                                </div>
-                                {/* data requisição */}
-                                <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
-                                    <CelerInputFormField
-                                        control={form.control}
-                                        name="data_requisicao"
-                                        label="Data Requisição"
-                                        fieldType={InputFieldVariant.DATE}
-                                        defaultValue={
-                                            data?.properties['Data do Recebimento'].date?.start ??
-                                            ''
-                                        }
-                                        className="w-full"
-                                    />
-                                </div>
-                            </div>
-
-                            <hr className="mt-6 border border-stroke dark:border-strokedark" />
-
-                            <div className="mt-6 grid gap-6 md:grid-cols-4 xl:grid-cols-4 3xl:grid-cols-5">
-                                <div className="grid gap-6 2xsm:col-span-4 xl:col-span-2 xl:grid-cols-2 3xl:col-span-3">
-                                    {/* percentual adquirido */}
-                                    <div className="2xsm:col-span-4 xl:col-span-1">
+                                            <SelectItem value="TRIBUTÁRIA">TRIBUTÁRIA</SelectItem>
+                                        </CelerInputFormField>
+                                    </div>
+                                    {/* esfera */}
+                                    <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
                                         <CelerInputFormField
                                             control={form.control}
-                                            name="valor_aquisicao_total"
-                                            label="Aquisição Total"
-                                            fieldType={InputFieldVariant.CHECKBOX}
+                                            name="esfera"
+                                            label="Esfera"
+                                            fieldType={InputFieldVariant.SELECT}
+                                            defaultValue={
+                                                data?.properties['Esfera'].select?.name ?? ''
+                                            }
+                                            className="w-full"
+                                        >
+                                            <SelectItem value="FEDERAL">FEDERAL</SelectItem>
+                                            <SelectItem value="ESTADUAL">ESTADUAL</SelectItem>
+                                            <SelectItem value="MUNICIPAL">MUNICIPAL</SelectItem>
+                                        </CelerInputFormField>
+                                    </div>
+                                    {/* regime */}
+                                    {form.watch('esfera') !== 'FEDERAL' && (
+                                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+                                            <CelerInputFormField
+                                                control={form.control}
+                                                name="regime"
+                                                label="Regime"
+                                                fieldType={InputFieldVariant.SELECT}
+                                                defaultValue={
+                                                    data?.properties['Regime'].select?.name ?? ''
+                                                }
+                                                className="w-full"
+                                            >
+                                                <SelectItem value="GERAL">GERAL</SelectItem>
+                                                <SelectItem value="ESPECIAL">ESPECIAL</SelectItem>
+                                            </CelerInputFormField>
+                                        </div>
+                                    )}
+                                    {/* tribunal */}
+                                    <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+                                        <CelerInputFormField
+                                            control={form.control}
+                                            name="tribunal"
+                                            label="Tribunal"
+                                            fieldType={InputFieldVariant.SELECT}
+                                            defaultValue={
+                                                data?.properties['Tribunal'].select?.name ?? ''
+                                            }
+                                            className="w-full"
+                                        >
+                                            {tribunais.map((tribunal) => (
+                                                <SelectItem key={tribunal.id} value={tribunal.id}>
+                                                    {tribunal.nome}
+                                                </SelectItem>
+                                            ))}
+                                        </CelerInputFormField>
+                                    </div>
+                                    {/* valor principal */}
+                                    <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+                                        <CelerInputFormField
+                                            control={form.control}
+                                            name="valor_principal"
+                                            label="Valor Principal"
+                                            fieldType={InputFieldVariant.NUMBER}
+                                            currencyFormat="R$ "
+                                            defaultValue={
+                                                data?.properties['Valor Principal'].number ?? 0
+                                            }
                                             className="w-full"
                                         />
                                     </div>
-                                    {form.watch('valor_aquisicao_total') === false ? (
+                                    {/* valor juros */}
+                                    <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+                                        <CelerInputFormField
+                                            control={form.control}
+                                            name="valor_juros"
+                                            label="Juros"
+                                            fieldType={InputFieldVariant.NUMBER}
+                                            currencyFormat="R$ "
+                                            defaultValue={
+                                                data?.properties['Valor Juros'].number ?? 0
+                                            }
+                                            className="w-full"
+                                        />
+                                    </div>
+                                    {/* data base */}
+                                    <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+                                        <CelerInputFormField
+                                            control={form.control}
+                                            name="data_base"
+                                            label="Data Base"
+                                            fieldType={InputFieldVariant.DATE}
+                                            defaultValue={
+                                                data?.properties['Data Base'].date?.start ?? ''
+                                            }
+                                            className="w-full"
+                                        />
+                                    </div>
+                                    {/* data requisição */}
+                                    <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+                                        <CelerInputFormField
+                                            control={form.control}
+                                            name="data_requisicao"
+                                            label="Data Requisição"
+                                            fieldType={InputFieldVariant.DATE}
+                                            defaultValue={
+                                                data?.properties['Data do Recebimento'].date
+                                                    ?.start ?? ''
+                                            }
+                                            className="w-full"
+                                        />
+                                    </div>
+                                </div>
+
+                                <hr className="mt-6 border border-stroke dark:border-strokedark" />
+
+                                <div className="mt-6 grid gap-6 md:grid-cols-4">
+                                    <div className="grid gap-6 2xsm:col-span-4 xl:col-span-2 xl:grid-cols-2 3xl:col-span-3">
+                                        {/* percentual adquirido */}
                                         <div className="2xsm:col-span-4 xl:col-span-1">
                                             <CelerInputFormField
                                                 control={form.control}
-                                                name="percentual_a_ser_adquirido"
-                                                label="Percentual de Aquisição (%)"
-                                                fieldType={InputFieldVariant.NUMBER}
+                                                name="valor_aquisicao_total"
+                                                label="Aquisição Total"
+                                                fieldType={InputFieldVariant.CHECKBOX}
                                                 className="w-full"
                                             />
                                         </div>
-                                    ) : (
-                                        <div className="2xsm:hidden xl:col-span-1 xl:block">
-                                            &nbsp;
-                                        </div>
-                                    )}
+                                        {form.watch('valor_aquisicao_total') === false ? (
+                                            <div className="2xsm:col-span-4 xl:col-span-1">
+                                                <CelerInputFormField
+                                                    control={form.control}
+                                                    name="percentual_a_ser_adquirido"
+                                                    label="Percentual de Aquisição (%)"
+                                                    fieldType={InputFieldVariant.NUMBER}
+                                                    className="w-full"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="2xsm:hidden xl:col-span-1 xl:block">
+                                                &nbsp;
+                                            </div>
+                                        )}
 
-                                    {/* destacamento de honorários */}
-                                    <div className="flex gap-6 2xsm:col-span-4 xl:col-span-1">
-                                        <CelerInputFormField
-                                            control={form.control}
-                                            name="ja_possui_destacamento"
-                                            label="Já Possui Destacamento de Honorários?"
-                                            fieldType={InputFieldVariant.CHECKBOX}
-                                            className="w-full"
-                                        />
-                                    </div>
-
-                                    {!form.watch('ja_possui_destacamento') ? (
-                                        <div className="2xsm:col-span-4 xl:col-span-1">
+                                        {/* destacamento de honorários */}
+                                        <div className="flex gap-6 2xsm:col-span-4 xl:col-span-1">
                                             <CelerInputFormField
                                                 control={form.control}
-                                                name="percentual_de_honorarios"
-                                                label="Percentual de Honorários (%)"
-                                                fieldType={InputFieldVariant.NUMBER}
+                                                name="ja_possui_destacamento"
+                                                label="Já Possui Destacamento de Honorários?"
+                                                fieldType={InputFieldVariant.CHECKBOX}
                                                 className="w-full"
                                             />
                                         </div>
-                                    ) : (
-                                        <div className="2xsm:hidden xl:col-span-1 xl:block">
-                                            &nbsp;
+
+                                        {!form.watch('ja_possui_destacamento') ? (
+                                            <div className="2xsm:col-span-4 xl:col-span-1">
+                                                <CelerInputFormField
+                                                    control={form.control}
+                                                    name="percentual_de_honorarios"
+                                                    label="Percentual de Honorários (%)"
+                                                    fieldType={InputFieldVariant.NUMBER}
+                                                    className="w-full"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="2xsm:hidden xl:col-span-1 xl:block">
+                                                &nbsp;
+                                            </div>
+                                        )}
+
+                                        {/* juros moratórios */}
+                                        <div
+                                            className={`col-span-2 ${form.watch('data_base') && form.watch('data_base').split('/').reverse().join('-') < '2021-12-01' && form.watch('natureza') !== 'TRIBUTÁRIA' ? '' : 'hidden'}`}
+                                        >
+                                            <CelerInputFormField
+                                                control={form.control}
+                                                name="incidencia_juros_moratorios"
+                                                label="Juros de Mora Fixados em Sentença"
+                                                fieldType={InputFieldVariant.CHECKBOX}
+                                                className="w-full"
+                                            />
                                         </div>
-                                    )}
 
-                                    {/* juros moratórios */}
-                                    <div
-                                        className={`col-span-2 ${form.watch('data_base') && form.watch('data_base').split('/').reverse().join('-') < '2021-12-01' && form.watch('natureza') !== 'TRIBUTÁRIA' ? '' : 'hidden'}`}
-                                    >
-                                        <CelerInputFormField
-                                            control={form.control}
-                                            name="incidencia_juros_moratorios"
-                                            label="Juros de Mora Fixados em Sentença"
-                                            fieldType={InputFieldVariant.CHECKBOX}
-                                            className="w-full"
-                                        />
-                                    </div>
+                                        {/* incide selic */}
+                                        <div
+                                            className={`2xsm:col-span-4 xl:col-span-2 ${form.watch('data_base') && form.watch('data_base').split('/').reverse().join('-') > '2021-12-01' && form.watch('natureza') !== 'TRIBUTÁRIA' ? '' : 'hidden'}`}
+                                        >
+                                            <CelerInputFormField
+                                                control={form.control}
+                                                name="nao_incide_selic_no_periodo_db_ate_abril"
+                                                label="SELIC Somente Sobre o Principal"
+                                                fieldType={InputFieldVariant.CHECKBOX}
+                                                className="w-full"
+                                            />
+                                        </div>
 
-                                    {/* incide selic */}
-                                    <div
-                                        className={`2xsm:col-span-4 xl:col-span-2 ${form.watch('data_base') && form.watch('data_base').split('/').reverse().join('-') > '2021-12-01' && form.watch('natureza') !== 'TRIBUTÁRIA' ? '' : 'hidden'}`}
-                                    >
-                                        <CelerInputFormField
-                                            control={form.control}
-                                            name="nao_incide_selic_no_periodo_db_ate_abril"
-                                            label="SELIC Somente Sobre o Principal"
-                                            fieldType={InputFieldVariant.CHECKBOX}
-                                            className="w-full"
-                                        />
-                                    </div>
+                                        {/* incidência IR */}
+                                        <div className="2xsm:col-span-4 xl:col-span-2">
+                                            <CelerInputFormField
+                                                control={form.control}
+                                                name="incidencia_rra_ir"
+                                                label="Incidência de IR"
+                                                fieldType={InputFieldVariant.CHECKBOX}
+                                                className="w-full"
+                                            />
+                                        </div>
 
-                                    {/* incidência IR */}
-                                    <div className="2xsm:col-span-4 xl:col-span-2">
-                                        <CelerInputFormField
-                                            control={form.control}
-                                            name="incidencia_rra_ir"
-                                            label="Incidência de IR"
-                                            fieldType={InputFieldVariant.CHECKBOX}
-                                            className="w-full"
-                                        />
-                                    </div>
-
-                                    {/* Incidência de IR sobre RRA */}
-                                    {form.watch('natureza') !== 'TRIBUTÁRIA' &&
-                                    form.watch('incidencia_rra_ir') === true ? (
-                                        <>
-                                            <div className="2xsm:col-span-4 xl:col-span-1">
-                                                <CelerInputFormField
-                                                    control={form.control}
-                                                    name="ir_incidente_rra"
-                                                    label="IR Incidente sobre RRA?"
-                                                    fieldType={InputFieldVariant.CHECKBOX}
-                                                    className="w-full"
-                                                />
-                                            </div>
-                                            {form.watch('ir_incidente_rra') === true ? (
-                                                <div className="col-span-1">
-                                                    <CelerInputFormField
-                                                        control={form.control}
-                                                        name="numero_de_meses"
-                                                        label="Número de Meses"
-                                                        fieldType={InputFieldVariant.INPUT}
-                                                        className="w-full"
-                                                    />
-                                                </div>
-                                            ) : (
-                                                <div className="2xsm:hidden xl:col-span-1 xl:block">
-                                                    &nbsp;
-                                                </div>
-                                            )}
-                                        </>
-                                    ) : null}
-
-                                    {/* incidência de PSS */}
-                                    {form.watch('natureza') !== 'TRIBUTÁRIA' && (
-                                        <>
-                                            <div className="2xsm:col-span-4 xl:col-span-1">
-                                                <CelerInputFormField
-                                                    control={form.control}
-                                                    name="incidencia_pss"
-                                                    label="Incide PSS?"
-                                                    fieldType={InputFieldVariant.CHECKBOX}
-                                                    className="w-full"
-                                                />
-                                            </div>
-                                            {form.watch('incidencia_pss') === true ? (
+                                        {/* Incidência de IR sobre RRA */}
+                                        {form.watch('natureza') !== 'TRIBUTÁRIA' &&
+                                        form.watch('incidencia_rra_ir') === true ? (
+                                            <>
                                                 <div className="2xsm:col-span-4 xl:col-span-1">
                                                     <CelerInputFormField
                                                         control={form.control}
-                                                        name="valor_pss"
-                                                        label="Valor PSS"
-                                                        fieldType={InputFieldVariant.NUMBER}
-                                                        currencyFormat={'R$ '}
+                                                        name="ir_incidente_rra"
+                                                        label="IR Incidente sobre RRA?"
+                                                        fieldType={InputFieldVariant.CHECKBOX}
                                                         className="w-full"
                                                     />
                                                 </div>
-                                            ) : (
-                                                <div className="2xsm:hidden xl:col-span-1 xl:block">
-                                                    &nbsp;
+                                                {form.watch('ir_incidente_rra') === true ? (
+                                                    <div className="col-span-1">
+                                                        <CelerInputFormField
+                                                            control={form.control}
+                                                            name="numero_de_meses"
+                                                            label="Número de Meses"
+                                                            fieldType={InputFieldVariant.INPUT}
+                                                            className="w-full"
+                                                        />
+                                                    </div>
+                                                ) : (
+                                                    <div className="2xsm:hidden xl:col-span-1 xl:block">
+                                                        &nbsp;
+                                                    </div>
+                                                )}
+                                            </>
+                                        ) : null}
+
+                                        {/* incidência de PSS */}
+                                        {form.watch('natureza') !== 'TRIBUTÁRIA' && (
+                                            <>
+                                                <div className="2xsm:col-span-4 xl:col-span-1">
+                                                    <CelerInputFormField
+                                                        control={form.control}
+                                                        name="incidencia_pss"
+                                                        label="Incide PSS?"
+                                                        fieldType={InputFieldVariant.CHECKBOX}
+                                                        className="w-full"
+                                                    />
                                                 </div>
-                                            )}
-                                        </>
-                                    )}
+                                                {form.watch('incidencia_pss') === true ? (
+                                                    <div className="2xsm:col-span-4 xl:col-span-1">
+                                                        <CelerInputFormField
+                                                            control={form.control}
+                                                            name="valor_pss"
+                                                            label="Valor PSS"
+                                                            fieldType={InputFieldVariant.NUMBER}
+                                                            currencyFormat={'R$ '}
+                                                            className="w-full"
+                                                        />
+                                                    </div>
+                                                ) : (
+                                                    <div className="2xsm:hidden xl:col-span-1 xl:block">
+                                                        &nbsp;
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
 
-                                    {/* data limite de atualização */}
-                                    <div className="2xsm:col-span-4 xl:col-span-1">
-                                        <CelerInputFormField
-                                            control={form.control}
-                                            name="data_limite_de_atualizacao_check"
-                                            label="Atualiza Para Data Passada?"
-                                            fieldType={InputFieldVariant.CHECKBOX}
-                                            className="w-full"
-                                        />
-                                    </div>
-
-                                    {form.watch('data_limite_de_atualizacao_check') === true ? (
+                                        {/* data limite de atualização */}
                                         <div className="2xsm:col-span-4 xl:col-span-1">
                                             <CelerInputFormField
                                                 control={form.control}
-                                                name="data_limite_de_atualizacao"
-                                                label="Atualizado Até:"
-                                                fieldType={InputFieldVariant.DATE}
+                                                name="data_limite_de_atualizacao_check"
+                                                label="Atualiza Para Data Passada?"
+                                                fieldType={InputFieldVariant.CHECKBOX}
                                                 className="w-full"
                                             />
                                         </div>
-                                    ) : (
-                                        <div className="2xsm:hidden xl:col-span-1 xl:block">
-                                            &nbsp;
-                                        </div>
-                                    )}
 
-                                    {form.watch('data_limite_de_atualizacao') &&
-                                        form
-                                            .watch('data_limite_de_atualizacao')
-                                            .split('/')
-                                            .reverse()
-                                            .join('-') <
+                                        {form.watch('data_limite_de_atualizacao_check') === true ? (
+                                            <div className="2xsm:col-span-4 xl:col-span-1">
+                                                <CelerInputFormField
+                                                    control={form.control}
+                                                    name="data_limite_de_atualizacao"
+                                                    label="Atualizado Até:"
+                                                    fieldType={InputFieldVariant.DATE}
+                                                    className="w-full"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="2xsm:hidden xl:col-span-1 xl:block">
+                                                &nbsp;
+                                            </div>
+                                        )}
+
+                                        {form.watch('data_limite_de_atualizacao') &&
                                             form
-                                                .watch('data_requisicao')
+                                                .watch('data_limite_de_atualizacao')
                                                 .split('/')
                                                 .reverse()
-                                                .join('-') && (
-                                            <span className="col-span-2 text-xs text-red-500 dark:text-red-400">
-                                                Data de atualização não pode ser menor que a data da
-                                                requisição
-                                            </span>
-                                        )}
+                                                .join('-') <
+                                                form
+                                                    .watch('data_requisicao')
+                                                    .split('/')
+                                                    .reverse()
+                                                    .join('-') && (
+                                                <span className="col-span-2 text-xs text-red-500 dark:text-red-400">
+                                                    Data de atualização não pode ser menor que a
+                                                    data da requisição
+                                                </span>
+                                            )}
+                                    </div>
+
+                                    <div className="col-span-4 flex w-full justify-center">
+                                        <hr className="my-6 border border-stroke dark:border-strokedark" />
+                                        <CelerInputFormField
+                                            name="observacao"
+                                            control={form.control}
+                                            fieldType={InputFieldVariant.TEXTAREA}
+                                            label="Motivo da Atualização"
+                                            required={true}
+                                            placeholder="Insira o motivo da atualização do ativo"
+                                            iconSrc={<IoIosPaper className="self-center" />}
+                                            iconAlt="law"
+                                            className="w-full"
+                                            rows={7}
+                                            disabled={editLock}
+                                        />
+                                    </div>
+
+                                    <div className="col-span-4 justify-center">
+                                        <h3 className="text-sm font-medium text-bodydark2 2xsm:text-center md:text-left">
+                                            Atenção: A atualização dos valores, datas, percentuais
+                                            etc implica na modificação do valor líquido do ativo.
+                                            Caso o status do ativo será alterado para Repactuação,
+                                            ele retornará para o broker para re-negociação.
+                                        </h3>
+                                    </div>
                                 </div>
 
-                                <div className="col-span-4">
-                                    <hr className="my-6 border border-stroke dark:border-strokedark" />
-                                    <CelerInputFormField
-                                        name="observacao"
-                                        control={form.control}
-                                        fieldType={InputFieldVariant.TEXTAREA}
-                                        label="Motivo da Atualização"
-                                        required={true}
-                                        placeholder="Insira o motivo da atualização do ativo"
-                                        iconSrc={<IoIosPaper className="self-center" />}
-                                        iconAlt="law"
-                                        className="w-full"
-                                        rows={7}
-                                        disabled={editLock}
-                                    />
-                                </div>
+                                <hr className="mt-6 border border-stroke dark:border-strokedark" />
 
-                                <div className="col-span-4">
-                                    <h3 className="text-sm font-medium text-bodydark2 2xsm:text-center md:text-left">
-                                        Atenção: A atualização dos valores, datas, percentuais etc
-                                        implica na modificação do valor líquido do ativo. Caso o
-                                        status do ativo será alterado para Repactuação, ele
-                                        retornará para o broker para re-negociação.
-                                    </h3>
-                                </div>
-                            </div>
-
-                            <hr className="mt-6 border border-stroke dark:border-strokedark" />
-
-                            <div className="mt-6 flex items-center justify-center gap-6">
-                                <p>Valor Líquido: </p>
-                                {!isLoading && (
-                                    <span className="font-medium">
-                                        {numberFormat(
-                                            happenedRecalculation === false
-                                                ? data?.properties[
-                                                      'Valor Líquido (Com Reserva dos Honorários)'
-                                                  ]?.formula?.number || 0
-                                                : recalculationData.result.net_mount_to_be_assigned,
-                                        )}
-                                    </span>
-                                )}
-                            </div>
-
-                            <div className="mt-6 flex items-center justify-center 2xsm:flex-col 2xsm:gap-3 lg:flex-row lg:gap-6">
-                                <Button
-                                    type="submit"
-                                    variant="success"
-                                    isLoading={isLoadingRecalculation}
-                                    disabled={!isFormModified}
-                                    className="flex items-center gap-3 rounded-md px-4 py-2 text-sm uppercase disabled:opacity-50 disabled:hover:bg-green-500 2xsm:w-full md:w-fit"
-                                >
-                                    <BiSolidCalculator className="h-4 w-4" />
-                                    <span className="font-medium">Recalcular</span>
-                                </Button>
-
-                                {data?.properties['Memória de Cálculo Ordinário'].url && (
-                                    <Link
-                                        href={data?.properties['Memória de Cálculo Ordinário'].url}
-                                        className="flex items-center justify-center gap-3 rounded-md bg-blue-600 px-4 py-2 text-sm uppercase text-snow transition-colors duration-300 hover:bg-blue-700 2xsm:w-full md:w-fit"
-                                    >
-                                        <GrDocumentText className="h-4 w-4" />
+                                <div className="mt-6 flex items-center justify-center gap-6">
+                                    <p>Valor Líquido: </p>
+                                    {!isLoading && (
                                         <span className="font-medium">
-                                            Memória de Cálculo Simples
+                                            {numberFormat(
+                                                happenedRecalculation === false
+                                                    ? data?.properties[
+                                                          'Valor Líquido (Com Reserva dos Honorários)'
+                                                      ]?.formula?.number || 0
+                                                    : recalculationData.result
+                                                          .net_mount_to_be_assigned,
+                                            )}
                                         </span>
-                                    </Link>
-                                )}
+                                    )}
+                                </div>
 
-                                {data?.properties['Memória de Cálculo RRA'].url && (
-                                    <Link
-                                        href={data?.properties['Memória de Cálculo RRA'].url}
-                                        target="_blank"
-                                        referrerPolicy="no-referrer"
-                                        className="flex items-center justify-center gap-3 rounded-md bg-blue-600 px-4 py-2 text-sm uppercase text-snow transition-colors duration-300 hover:bg-blue-700 2xsm:w-full md:w-fit"
+                                <div className="mt-6 flex items-center justify-center 2xsm:flex-col 2xsm:gap-3 lg:flex-row lg:gap-6">
+                                    <Button
+                                        type="submit"
+                                        variant="success"
+                                        isLoading={isLoadingRecalculation}
+                                        disabled={!isFormModified}
+                                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm uppercase disabled:opacity-50 disabled:hover:bg-green-500 2xsm:w-full md:w-fit"
                                     >
-                                        <GrDocumentText className="h-4 w-4" />
-                                        <span className="font-medium">Memória de Cálculo RRA</span>
-                                    </Link>
+                                        <BiSolidCalculator className="h-4 w-4" />
+                                        <span className="font-medium">Recalcular</span>
+                                    </Button>
+
+                                    {data?.properties['Memória de Cálculo Ordinário'].url && (
+                                        <Link
+                                            href={
+                                                data?.properties['Memória de Cálculo Ordinário'].url
+                                            }
+                                            className="flex items-center justify-center gap-3 rounded-md bg-blue-600 px-4 py-2 text-sm uppercase text-snow transition-colors duration-300 hover:bg-blue-700 2xsm:w-full md:w-fit"
+                                        >
+                                            <GrDocumentText className="h-4 w-4" />
+                                            <span className="font-medium">
+                                                Memória de Cálculo Simples
+                                            </span>
+                                        </Link>
+                                    )}
+
+                                    {data?.properties['Memória de Cálculo RRA'].url && (
+                                        <Link
+                                            href={data?.properties['Memória de Cálculo RRA'].url}
+                                            target="_blank"
+                                            referrerPolicy="no-referrer"
+                                            className="flex items-center justify-center gap-3 rounded-md bg-blue-600 px-4 py-2 text-sm uppercase text-snow transition-colors duration-300 hover:bg-blue-700 2xsm:w-full md:w-fit"
+                                        >
+                                            <GrDocumentText className="h-4 w-4" />
+                                            <span className="font-medium">
+                                                Memória de Cálculo RRA
+                                            </span>
+                                        </Link>
+                                    )}
+                                </div>
+                            </form>
+                        </section>
+
+                        <div className="grid w-full gap-5 border-l-0 border-t-2 border-stroke bg-white pl-0 pt-5 dark:border-strokedark dark:bg-boxdark md:mt-0 md:border-l-2 md:border-t-0 md:pl-3 md:pt-5">
+                            <div className="relative flex h-fit flex-col gap-5 p-8 sm:pb-0">
+                                <div className="flex items-center justify-between gap-6 2xsm:flex-col md:flex-row">
+                                    <div className="flex w-full flex-1 flex-col items-center gap-4 pb-2 2xsm:pb-0 md:pb-2">
+                                        <div className="flex items-center text-sm font-medium">
+                                            <p className="w-full text-sm">Proposta:</p>
+                                            <input
+                                                ref={proposalRef}
+                                                type="text"
+                                                disabled={
+                                                    (data?.properties['Status'].status?.name ===
+                                                        'Proposta aceita' &&
+                                                        data?.properties['Status Diligência'].select
+                                                            ?.name === 'Due Diligence') ||
+                                                    (data?.properties['Status'].status?.name ===
+                                                        'Proposta aceita' &&
+                                                        data?.properties['Status Diligência'].select
+                                                            ?.name === 'Em liquidação') ||
+                                                    (data?.properties['Status'].status?.name ===
+                                                        'Proposta aceita' &&
+                                                        data?.properties['Status Diligência'].select
+                                                            ?.name === 'Juntar Documentos') ||
+                                                    (data?.properties['Status'].status?.name ===
+                                                        'Proposta aceita' &&
+                                                        data?.properties['Status Diligência'].select
+                                                            ?.name === 'Pendência a Sanar')
+                                                }
+                                                onBlur={(e) => {
+                                                    e.target.value = formatCurrency(e.target.value);
+                                                }}
+                                                onChange={(e) =>
+                                                    changeInputValues('proposal', e.target.value)
+                                                }
+                                                className="ml-2 max-w-35 rounded-md border-none bg-gray-100 py-2 pl-1 pr-2 text-center text-sm font-medium text-body focus-visible:ring-body disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:bg-boxdark-2/50 dark:text-bodydark dark:focus-visible:ring-snow"
+                                            />
+                                        </div>
+                                        <input
+                                            // ref={proposalRangeRef}
+                                            type="range"
+                                            step="0.01"
+                                            disabled={
+                                                (data?.properties['Status'].status?.name ===
+                                                    'Proposta aceita' &&
+                                                    data?.properties['Status Diligência'].select
+                                                        ?.name === 'Due Diligence') ||
+                                                (data?.properties['Status'].status?.name ===
+                                                    'Proposta aceita' &&
+                                                    data?.properties['Status Diligência'].select
+                                                        ?.name === 'Em liquidação') ||
+                                                (data?.properties['Status'].status?.name ===
+                                                    'Proposta aceita' &&
+                                                    data?.properties['Status Diligência'].select
+                                                        ?.name === 'Juntar Documentos') ||
+                                                (data?.properties['Status'].status?.name ===
+                                                    'Proposta aceita' &&
+                                                    data?.properties['Status Diligência'].select
+                                                        ?.name === 'Pendência a Sanar')
+                                            }
+                                            min={
+                                                data?.properties['(R$) Proposta Mínima - Celer']
+                                                    .number || 0
+                                            }
+                                            max={
+                                                data?.properties['(R$) Proposta Máxima - Celer']
+                                                    .number || 0
+                                            }
+                                            value={sliderValues.proposal}
+                                            onChange={(e) =>
+                                                handleProposalSliderChange(e.target.value, true)
+                                            }
+                                            className="range-slider w-full disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="relative flex items-center justify-between gap-5 rounded-xl 2xsm:flex-col md:flex-row">
+                                    <div className="flex w-full flex-1 flex-col items-center gap-4 rounded-xl">
+                                        <div className="flex items-center text-sm font-medium ">
+                                            <p className="text-sm">Comissão:</p>
+                                            <input
+                                                ref={comissionRef}
+                                                type="text"
+                                                disabled={
+                                                    (data?.properties['Status'].status?.name ===
+                                                        'Proposta aceita' &&
+                                                        data?.properties['Status Diligência'].select
+                                                            ?.name === 'Due Diligence') ||
+                                                    (data?.properties['Status'].status?.name ===
+                                                        'Proposta aceita' &&
+                                                        data?.properties['Status Diligência'].select
+                                                            ?.name === 'Em liquidação') ||
+                                                    (data?.properties['Status'].status?.name ===
+                                                        'Proposta aceita' &&
+                                                        data?.properties['Status Diligência'].select
+                                                            ?.name === 'Juntar Documentos') ||
+                                                    (data?.properties['Status'].status?.name ===
+                                                        'Proposta aceita' &&
+                                                        data?.properties['Status Diligência'].select
+                                                            ?.name === 'Pendência a Sanar')
+                                                }
+                                                onBlur={(e) => {
+                                                    e.target.value = formatCurrency(e.target.value);
+                                                }}
+                                                onChange={(e) =>
+                                                    changeInputValues('comission', e.target.value)
+                                                }
+                                                className="ml-2 max-w-35 rounded-md border-none bg-gray-100 py-2 pl-1 pr-2 text-center text-sm font-medium text-body focus-visible:ring-body disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:bg-boxdark-2/50 dark:text-bodydark dark:focus-visible:ring-snow"
+                                            />
+                                        </div>
+                                        <input
+                                            type="range"
+                                            step="0.01"
+                                            disabled={
+                                                (data?.properties['Status'].status?.name ===
+                                                    'Proposta aceita' &&
+                                                    data?.properties['Status Diligência'].select
+                                                        ?.name === 'Due Diligence') ||
+                                                (data?.properties['Status'].status?.name ===
+                                                    'Proposta aceita' &&
+                                                    data?.properties['Status Diligência'].select
+                                                        ?.name === 'Em liquidação') ||
+                                                (data?.properties['Status'].status?.name ===
+                                                    'Proposta aceita' &&
+                                                    data?.properties['Status Diligência'].select
+                                                        ?.name === 'Juntar Documentos') ||
+                                                (data?.properties['Status'].status?.name ===
+                                                    'Proposta aceita' &&
+                                                    data?.properties['Status Diligência'].select
+                                                        ?.name === 'Pendência a Sanar')
+                                            }
+                                            min={
+                                                data?.properties['(R$) Comissão Mínima - Celer']
+                                                    .number || 0
+                                            }
+                                            max={
+                                                data?.properties['(R$) Comissão Máxima - Celer']
+                                                    .number || 0
+                                            }
+                                            value={sliderValues.comission}
+                                            onChange={(e) =>
+                                                handleComissionSliderChange(e.target.value, true)
+                                            }
+                                            className="range-slider-reverse [::-webkit-slider-thumb]::-webkit-slider-thumb {background-color: #FFF;} w-full disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-2">
+                                    <Button
+                                        disabled={isProposalButtonDisabled}
+                                        onClick={saveProposalAndComission}
+                                        className="h-8 w-full px-2 py-1 text-sm font-medium transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
+                                    >
+                                        {savingProposalAndComission
+                                            ? 'Salvando...'
+                                            : 'Salvar Oferta'}
+                                    </Button>
+                                </div>
+
+                                {errorMessage && (
+                                    <div className="absolute -bottom-4 w-full text-center text-xs text-red">
+                                        Valor&#40;res&#41; fora do escopo definido
+                                    </div>
                                 )}
                             </div>
-                        </form>
-                    </section>
+                        </div>
+                    </div>
                 </div>
             </Form>
 
-            <section className="grid grid-cols-12 gap-5">
+            <section className="grid grid-cols-12 justify-center gap-5">
                 <div
                     id="cedentes"
-                    className="col-span-8 grid gap-6 rounded-md bg-white p-4 dark:bg-boxdark"
+                    className={`${grafico ? 'col-span-8' : 'col-span-12'} grid gap-6 rounded-md bg-white p-8 dark:bg-boxdark`}
                 >
                     <h3 className="font-medium text-bodydark2">Detalhes do precatório</h3>
-                    <div className="grid grid-cols-4 gap-6 3xl:grid-cols-5">
+                    <div className="grid grid-cols-4 gap-6 3xl:grid-cols-6">
                         <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
                             <CelerInputField
                                 name="vl_com_reservas"
@@ -2870,36 +3434,16 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                         />
                     </div>
                 </div>
-                <div className="col-span-4">
-                    {visibleData.length > 0 ? (
-                        <Fade cascade damping={0.1} triggerOnce>
-                            {visibleData.map((oficio: any, index: number) => (
-                                <DashbrokersCard oficio={oficio} key={index} />
-                            ))}
-                        </Fade>
-                    ) : (
-                        <div className="col-span-2 my-10 flex flex-col items-center justify-center gap-5">
-                            <Image
-                                src="/images/documents.svg"
-                                alt="documentos com botão de adicionar"
-                                width={210}
-                                height={210}
-                            />
-                            <p className="text-center font-medium tracking-wider">
-                                Sem registros de ofício para exibir.
-                            </p>
-                        </div>
-                    )}
-                </div>
-            </section>
-
-            {grafico && (
-                <section id="valores_grafico">
-                    <div className="grid gap-4 2xsm:grid-cols-2 md:gap-6 xl:grid-cols-12 2xl:gap-7.5">
-                        <div className="col-span-8 3xl:col-span-8">{grafico}</div>
+                {grafico && (
+                    <div className="col-span-4">
+                        <section id="valores_grafico">
+                            <div className="grid gap-4 2xsm:grid-cols-2 md:gap-6 xl:grid-cols-12 2xl:gap-7.5">
+                                <div className="col-span-8 3xl:col-span-8">{grafico}</div>
+                            </div>
+                        </section>
                     </div>
-                </section>
-            )}
+                )}
+            </section>
 
             <section id="observacao" className="form-inputs-container">
                 <div className="col-span-5">
@@ -3120,7 +3664,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                         disabled
                         variant="info"
                         className="flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium uppercase disabled:pointer-events-none disabled:opacity-50 2xsm:w-full md:w-fit"
-                        onClick={() => handleCession()}
+                        onClick={() => handleCessao()}
                     >
                         <BiSolidCoinStack className="h-4 w-4" />
                         <span>Marcar Cessão</span>
