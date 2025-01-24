@@ -15,7 +15,7 @@ import React from 'react';
 
 interface SheetProps {
     side: 'top' | 'right' | 'bottom' | 'left';
-    nameButton: string;
+    nameButton: any;
     id?: string | number;
     children: React.ReactNode;
     className?: string;

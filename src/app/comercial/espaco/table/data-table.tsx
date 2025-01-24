@@ -29,6 +29,7 @@ import { useClickOutside } from '@/hooks/use-click-outside';
 import { cn } from '@/lib/utils';
 import { SheetCelerComponent } from '@/components/CrmUi/Sheet';
 import { SheetViewComercial } from '@/components/Features/Comercial/SheetViewComercial';
+import { RiSidebarUnfoldLine } from 'react-icons/ri';
 
 type ColumnDef<TData, TValue> = BaseColumnDef<TData, TValue> & {
     filterVariant?: 'range' | 'select' | 'text';
@@ -542,7 +543,7 @@ export function DataTable<TData, TValue>({
                                             },
                                         )}
                                         side="right"
-                                        nameButton="Visualizar"
+                                        nameButton={<RiSidebarUnfoldLine />}
                                         className="mt-5 w-fit"
                                         classNameContent="w-fit overflow-y-auto overflow-x-hidden"
                                     />

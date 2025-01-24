@@ -2281,8 +2281,6 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
         }
     }, [data]);
 
-    console.log('Valores do Slider: ', sliderValues);
-
     return (
         <div className="flex w-full flex-col gap-5">
             <Form {...form}>
@@ -2957,7 +2955,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                         />
                                     </div>
 
-                                    <div className="col-span-4 justify-center">
+                                    <div className="col-span-4 w-full justify-center">
                                         <h3 className="text-sm font-medium text-bodydark2 2xsm:text-center md:text-left">
                                             Atenção: A atualização dos valores, datas, percentuais
                                             etc implica na modificação do valor líquido do ativo.
@@ -3028,7 +3026,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                             </form>
                         </section>
 
-                        <div className="grid w-full gap-5 border-l-0 border-t-2 border-stroke bg-white pl-0 pt-5 dark:border-strokedark dark:bg-boxdark md:mt-0 md:border-l-2 md:border-t-0 md:pl-3 md:pt-5">
+                        <div className="grid w-full gap-5 border-l-0 border-t-2 border-stroke bg-white pl-0 pt-5 text-[#333] dark:border-strokedark dark:bg-boxdark dark:text-white md:mt-0 md:border-l-2 md:border-t-0 md:pl-3 md:pt-5">
                             <div className="relative flex h-fit flex-col gap-5 p-8 sm:pb-0">
                                 <div className="flex items-center justify-between gap-6 2xsm:flex-col md:flex-row">
                                     <div className="flex w-full flex-1 flex-col items-center gap-4 pb-2 2xsm:pb-0 md:pb-2">
@@ -3058,6 +3056,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                                 onBlur={(e) => {
                                                     e.target.value = formatCurrency(e.target.value);
                                                 }}
+                                                value={numberFormat(sliderValues.proposal)}
                                                 onChange={(e) =>
                                                     changeInputValues('proposal', e.target.value)
                                                 }
@@ -3131,6 +3130,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                                 onBlur={(e) => {
                                                     e.target.value = formatCurrency(e.target.value);
                                                 }}
+                                                value={numberFormat(sliderValues.comission)}
                                                 onChange={(e) =>
                                                     changeInputValues('comission', e.target.value)
                                                 }
@@ -3175,7 +3175,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                     </div>
                                 </div>
 
-                                <div className="flex gap-2">
+                                <div className="flex w-fit gap-2">
                                     <Button
                                         disabled={isProposalButtonDisabled}
                                         onClick={saveProposalAndComission}
@@ -3474,203 +3474,6 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                     </div>
                 </div>
             </section>
-
-            {statusDiligence === 'Repactuação' && (
-                <div className="flex items-center justify-center gap-6 rounded-md bg-white p-4 dark:bg-boxdark 2xsm:flex-col md:flex-row">
-                    <Button
-                        variant="info"
-                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium uppercase 2xsm:w-full md:w-fit"
-                        onClick={() => handleDueAndamento()}
-                    >
-                        <MdOutlineDownloading className="h-4 w-4" />
-                        <span>Pendência Sanada</span>
-                    </Button>
-
-                    <Button
-                        variant="danger"
-                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium uppercase 2xsm:w-full md:w-fit"
-                        onClick={() => handleArchiving()}
-                    >
-                        <MdOutlineArchive className="h-4 w-4" />
-                        <span>Arquivar</span>
-                    </Button>
-                </div>
-            )}
-
-            {statusDiligence === 'Due Diligence' && (
-                <div className="flex items-center justify-center gap-6 rounded-md bg-white p-4 dark:bg-boxdark 2xsm:flex-col md:flex-row">
-                    <Button
-                        variant="danger"
-                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium uppercase 2xsm:w-full md:w-fit"
-                        onClick={() => handlePendencia()}
-                    >
-                        <BiX className="h-4 w-4" />
-                        <span>Pendência a Sanar</span>
-                    </Button>
-
-                    <Button
-                        variant="info"
-                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium uppercase 2xsm:w-full md:w-fit"
-                        onClick={() => handleDueAndamento()}
-                    >
-                        <MdOutlineDownloading className="h-4 w-4" />
-                        <span>Pendência Sanada</span>
-                    </Button>
-
-                    <Button
-                        variant="warning"
-                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium uppercase 2xsm:w-full md:w-fit"
-                        onClick={() => handleRevisaoDueDiligence()}
-                    >
-                        <CgSearchLoading className="h-4 w-4" />
-                        <span>Revisão de Due Diligence</span>
-                    </Button>
-
-                    <Button
-                        variant="danger"
-                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium uppercase 2xsm:w-full md:w-fit"
-                        onClick={() => handleArchiving()}
-                    >
-                        <MdOutlineArchive className="h-4 w-4" />
-                        <span>Arquivar</span>
-                    </Button>
-                </div>
-            )}
-            {statusDiligence === 'Due em Andamento' && (
-                <div className="flex items-center justify-center gap-6 rounded-md bg-white p-4 dark:bg-boxdark 2xsm:flex-col md:flex-row">
-                    <Button
-                        variant="danger"
-                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium uppercase 2xsm:w-full md:w-fit"
-                        onClick={() => handlePendencia()}
-                    >
-                        <BiX className="h-4 w-4" />
-                        <span>Pendência a Sanar</span>
-                    </Button>
-
-                    <Button
-                        variant="warning"
-                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium uppercase 2xsm:w-full md:w-fit"
-                        onClick={() => handleRevisaoDueDiligence()}
-                    >
-                        <CgSearchLoading className="h-4 w-4" />
-                        <span>Revisão de Due Diligence</span>
-                    </Button>
-
-                    <Button
-                        variant="success"
-                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium uppercase 2xsm:w-full md:w-fit"
-                        onClick={() => handleDueDiligence()}
-                    >
-                        <BiSolidCoinStack className="h-4 w-4" />
-                        <span>Enviar para Liquidação</span>
-                    </Button>
-
-                    <Button
-                        variant="danger"
-                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium uppercase 2xsm:w-full md:w-fit"
-                        onClick={() => handleArchiving()}
-                    >
-                        <MdOutlineArchive className="h-4 w-4" />
-                        <span>Arquivar</span>
-                    </Button>
-                </div>
-            )}
-            {statusDiligence === 'Em cessão' && (
-                <div className="flex items-center justify-center gap-6 rounded-md bg-white p-4 dark:bg-boxdark 2xsm:flex-col md:flex-row">
-                    <Button
-                        variant="danger"
-                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium uppercase 2xsm:w-full md:w-fit"
-                        onClick={() => handlePendencia()}
-                    >
-                        <BiX className="h-4 w-4" />
-                        <span>Pendência a Sanar</span>
-                    </Button>
-
-                    <Button
-                        variant="success"
-                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium uppercase 2xsm:w-full md:w-fit"
-                        onClick={() => handleCessao()}
-                    >
-                        <BiSolidCoinStack className="h-4 w-4" />
-                        <span>Enviar pra Registro de Cessão</span>
-                    </Button>
-
-                    <Button
-                        variant="danger"
-                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium uppercase 2xsm:w-full md:w-fit"
-                        onClick={() => handleArchiving()}
-                    >
-                        <MdOutlineArchive className="h-4 w-4" />
-                        <span>Arquivar</span>
-                    </Button>
-                </div>
-            )}
-            {statusDiligence === 'Revisão de Due Diligence' && (
-                <div className="flex items-center justify-center gap-6 rounded-md bg-white p-4 dark:bg-boxdark 2xsm:flex-col md:flex-row">
-                    <Button
-                        variant="danger"
-                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium uppercase 2xsm:w-full md:w-fit"
-                        onClick={() => handlePendencia()}
-                    >
-                        <BiX className="h-4 w-4" />
-                        <span>Pendência a Sanar</span>
-                    </Button>
-
-                    <Button
-                        variant="success"
-                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium uppercase 2xsm:w-full md:w-fit"
-                        onClick={() => handleDueDiligence()}
-                    >
-                        <BiSolidCoinStack className="h-4 w-4" />
-                        <span>Enviar para Liquidação</span>
-                    </Button>
-
-                    <Button
-                        variant="danger"
-                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium uppercase 2xsm:w-full md:w-fit"
-                        onClick={() => handleArchiving()}
-                    >
-                        <MdOutlineArchive className="h-4 w-4" />
-                        <span>Arquivar</span>
-                    </Button>
-                </div>
-            )}
-
-            {statusDiligence === 'Em liquidação' && (
-                <div className="flex items-center justify-center gap-6 rounded-md bg-white p-4 dark:bg-boxdark 2xsm:flex-col md:flex-row">
-                    <Button
-                        variant="danger"
-                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium uppercase 2xsm:w-full md:w-fit"
-                        onClick={() => handleArchiving()}
-                    >
-                        <MdOutlineArchive className="h-4 w-4" />
-                        <span>Arquivar</span>
-                    </Button>
-
-                    <Button
-                        variant="warning"
-                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium uppercase 2xsm:w-full md:w-fit"
-                        onClick={() => handleReturnDueRevision()}
-                    >
-                        {loadingUpdateState.returnDue ? (
-                            <AiOutlineLoading className="h-4 w-4 animate-spin" />
-                        ) : (
-                            <TbStatusChange className="h-4 w-4" />
-                        )}
-                        <span>Retornar para revisão de Due</span>
-                    </Button>
-
-                    <Button
-                        disabled
-                        variant="info"
-                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium uppercase disabled:pointer-events-none disabled:opacity-50 2xsm:w-full md:w-fit"
-                        onClick={() => handleCessao()}
-                    >
-                        <BiSolidCoinStack className="h-4 w-4" />
-                        <span>Marcar Cessão</span>
-                    </Button>
-                </div>
-            )}
             {cedenteModal !== null && <BrokerModal />}
             {docModalInfo !== null && <DocForm />}
         </div>
