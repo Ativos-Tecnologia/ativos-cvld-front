@@ -2742,7 +2742,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                 <div className="mt-6 grid gap-6 md:grid-cols-4">
                                     <div className="grid gap-6 2xsm:col-span-4 xl:col-span-2 xl:grid-cols-2 3xl:col-span-3">
                                         {/* percentual adquirido */}
-                                        <div className="2xsm:col-span-4 xl:col-span-1">
+                                        <div className="2xsm:col-span-4 xl:col-span-4">
                                             <CelerInputFormField
                                                 control={form.control}
                                                 name="valor_aquisicao_total"
@@ -2752,7 +2752,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                             />
                                         </div>
                                         {form.watch('valor_aquisicao_total') === false ? (
-                                            <div className="2xsm:col-span-4 xl:col-span-1">
+                                            <div className="2xsm:col-span-4 xl:col-span-4">
                                                 <CelerInputFormField
                                                     control={form.control}
                                                     name="percentual_a_ser_adquirido"
@@ -2761,14 +2761,10 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                                     className="w-full"
                                                 />
                                             </div>
-                                        ) : (
-                                            <div className="2xsm:hidden xl:col-span-1 xl:block">
-                                                &nbsp;
-                                            </div>
-                                        )}
+                                        ) : null}
 
                                         {/* destacamento de honorários */}
-                                        <div className="flex gap-6 2xsm:col-span-4 xl:col-span-1">
+                                        <div className="flex gap-6 2xsm:col-span-4 xl:col-span-4">
                                             <CelerInputFormField
                                                 control={form.control}
                                                 name="ja_possui_destacamento"
@@ -2779,7 +2775,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                         </div>
 
                                         {!form.watch('ja_possui_destacamento') ? (
-                                            <div className="2xsm:col-span-4 xl:col-span-1">
+                                            <div className="2xsm:col-span-4 xl:col-span-4">
                                                 <CelerInputFormField
                                                     control={form.control}
                                                     name="percentual_de_honorarios"
@@ -2788,15 +2784,11 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                                     className="w-full"
                                                 />
                                             </div>
-                                        ) : (
-                                            <div className="2xsm:hidden xl:col-span-1 xl:block">
-                                                &nbsp;
-                                            </div>
-                                        )}
+                                        ) : null}
 
                                         {/* juros moratórios */}
                                         <div
-                                            className={`col-span-2 ${form.watch('data_base') && form.watch('data_base').split('/').reverse().join('-') < '2021-12-01' && form.watch('natureza') !== 'TRIBUTÁRIA' ? '' : 'hidden'}`}
+                                            className={`col-span-4 ${form.watch('data_base') && form.watch('data_base').split('/').reverse().join('-') < '2021-12-01' && form.watch('natureza') !== 'TRIBUTÁRIA' ? '' : 'hidden'}`}
                                         >
                                             <CelerInputFormField
                                                 control={form.control}
@@ -2809,7 +2801,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
 
                                         {/* incide selic */}
                                         <div
-                                            className={`2xsm:col-span-4 xl:col-span-2 ${form.watch('data_base') && form.watch('data_base').split('/').reverse().join('-') > '2021-12-01' && form.watch('natureza') !== 'TRIBUTÁRIA' ? '' : 'hidden'}`}
+                                            className={`2xsm:col-span-4 xl:col-span-4 ${form.watch('data_base') && form.watch('data_base').split('/').reverse().join('-') > '2021-12-01' && form.watch('natureza') !== 'TRIBUTÁRIA' ? '' : 'hidden'}`}
                                         >
                                             <CelerInputFormField
                                                 control={form.control}
@@ -2821,7 +2813,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                         </div>
 
                                         {/* incidência IR */}
-                                        <div className="2xsm:col-span-4 xl:col-span-2">
+                                        <div className="2xsm:col-span-4 xl:col-span-4">
                                             <CelerInputFormField
                                                 control={form.control}
                                                 name="incidencia_rra_ir"
@@ -2835,7 +2827,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                         {form.watch('natureza') !== 'TRIBUTÁRIA' &&
                                         form.watch('incidencia_rra_ir') === true ? (
                                             <>
-                                                <div className="2xsm:col-span-4 xl:col-span-1">
+                                                <div className="2xsm:col-span-4 xl:col-span-4">
                                                     <CelerInputFormField
                                                         control={form.control}
                                                         name="ir_incidente_rra"
@@ -2854,18 +2846,14 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                                             className="w-full"
                                                         />
                                                     </div>
-                                                ) : (
-                                                    <div className="2xsm:hidden xl:col-span-1 xl:block">
-                                                        &nbsp;
-                                                    </div>
-                                                )}
+                                                ) : null}
                                             </>
                                         ) : null}
 
                                         {/* incidência de PSS */}
                                         {form.watch('natureza') !== 'TRIBUTÁRIA' && (
                                             <>
-                                                <div className="2xsm:col-span-4 xl:col-span-1">
+                                                <div className="2xsm:col-span-4 xl:col-span-4">
                                                     <CelerInputFormField
                                                         control={form.control}
                                                         name="incidencia_pss"
@@ -2875,7 +2863,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                                     />
                                                 </div>
                                                 {form.watch('incidencia_pss') === true ? (
-                                                    <div className="2xsm:col-span-4 xl:col-span-1">
+                                                    <div className="2xsm:col-span-4 xl:col-span-4">
                                                         <CelerInputFormField
                                                             control={form.control}
                                                             name="valor_pss"
@@ -2885,16 +2873,12 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                                             className="w-full"
                                                         />
                                                     </div>
-                                                ) : (
-                                                    <div className="2xsm:hidden xl:col-span-1 xl:block">
-                                                        &nbsp;
-                                                    </div>
-                                                )}
+                                                ) : null}
                                             </>
                                         )}
 
                                         {/* data limite de atualização */}
-                                        <div className="2xsm:col-span-4 xl:col-span-1">
+                                        <div className="2xsm:col-span-4 xl:col-span-4">
                                             <CelerInputFormField
                                                 control={form.control}
                                                 name="data_limite_de_atualizacao_check"
@@ -2905,7 +2889,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                         </div>
 
                                         {form.watch('data_limite_de_atualizacao_check') === true ? (
-                                            <div className="2xsm:col-span-4 xl:col-span-1">
+                                            <div className="2xsm:col-span-4 xl:col-span-4">
                                                 <CelerInputFormField
                                                     control={form.control}
                                                     name="data_limite_de_atualizacao"
@@ -2914,11 +2898,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                                     className="w-full"
                                                 />
                                             </div>
-                                        ) : (
-                                            <div className="2xsm:hidden xl:col-span-1 xl:block">
-                                                &nbsp;
-                                            </div>
-                                        )}
+                                        ) : null}
 
                                         {form.watch('data_limite_de_atualizacao') &&
                                             form
@@ -3003,7 +2983,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                             className="flex items-center justify-center gap-3 rounded-md bg-blue-600 px-4 py-2 text-sm uppercase text-snow transition-colors duration-300 hover:bg-blue-700 2xsm:w-full md:w-fit"
                                         >
                                             <GrDocumentText className="h-4 w-4" />
-                                            <span className="font-medium">
+                                            <span className="text-[12px] font-medium">
                                                 Memória de Cálculo Simples
                                             </span>
                                         </Link>
@@ -3026,7 +3006,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                             </form>
                         </section>
 
-                        <div className="grid w-full gap-5 border-l-0 border-t-2 border-stroke bg-white pl-0 pt-5 text-[#333] dark:border-strokedark dark:bg-boxdark dark:text-white md:mt-0 md:border-l-2 md:border-t-0 md:pl-3 md:pt-5">
+                        <div className="grid w-fit gap-5 border-l-0 border-t-2 border-stroke bg-white pl-0 pt-5 text-[#333] dark:border-strokedark dark:bg-boxdark dark:text-white md:mt-0 md:border-l-2 md:border-t-0 md:pl-3 md:pt-5">
                             <div className="relative flex h-fit flex-col gap-5 p-4 sm:pb-0">
                                 <div className="flex items-center justify-between gap-6 2xsm:flex-col md:flex-row ">
                                     <div className="flex w-full flex-1 flex-col items-center gap-4 pb-2 2xsm:pb-0 md:pb-2">

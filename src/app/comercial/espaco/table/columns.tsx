@@ -28,6 +28,7 @@ import { SheetCelerComponent } from '@/components/CrmUi/Sheet';
 import { SheetViewComercial } from '@/components/Features/Comercial/SheetViewComercial';
 import { RiSidebarUnfoldLine } from 'react-icons/ri';
 import ChartFour from '@/components/Charts/ChartFour';
+import { CoordinatorParticipationChart } from '@/components/Charts/CommissionParticipationChart';
 
 export const columns: ColumnDef<ITabelaGerencial>[] = [
     {
@@ -62,24 +63,8 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
             );
         },
         cell: ({ row }) => (
-            <div className="flex items-center gap-2">
-                <p className="w-full truncate">{row.getValue('usuario')}</p>
-                <SheetCelerComponent
-                    children={flexRender(
-                        <SheetViewComercial
-                            sheetData={row.original}
-                            id={row.id}
-                            grafico={<ChartFour />}
-                        />,
-                        {
-                            row,
-                        },
-                    )}
-                    side="right"
-                    nameButton={<RiSidebarUnfoldLine />}
-                    className="w-fit items-center justify-center opacity-0 transition-opacity duration-200 hover:opacity-100"
-                    classNameContent="w-fit overflow-y-auto overflow-x-hidden"
-                />
+            <div className="w-33 gap-2">
+                <p className="truncate">{row.getValue('usuario')}</p>
             </div>
         ),
     },
@@ -90,7 +75,7 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
         },
         cell: ({ row }) => (
             <div
-                className="flex w-64 items-center overflow-auto text-nowrap"
+                className="flex max-w-64 items-center overflow-auto text-nowrap"
                 style={{
                     scrollbarWidth: 'thin',
                     scrollbarColor: 'rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.1)',
@@ -98,6 +83,62 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
             >
                 <span className="">{row.getValue('credor')}</span>
             </div>
+        ),
+    },
+    {
+        accessorKey: 'sheet',
+        header: ({ column }) => {
+            return null;
+        },
+        cell: ({ row }) => (
+            <SheetCelerComponent
+                children={flexRender(
+                    <SheetViewComercial
+                        sheetData={row.original}
+                        id={row.id}
+                        grafico={
+                            <CoordinatorParticipationChart
+                                chartData={{
+                                    ...row.original,
+                                    properties: {
+                                        'META 1 - Comissão Interna (Comercial)': {
+                                            title: 'META 1 - Comissão Interna (Comercial)',
+                                            type: 'number',
+                                            formula: {
+                                                type: 'number',
+                                                number: row?.original?.meta_1,
+                                            },
+                                        },
+                                        'META 2 - Comissão Interna (Comercial)': {
+                                            title: 'META 2 - Comissão Interna (Comercial)',
+                                            type: 'number',
+                                            formula: {
+                                                type: 'number',
+                                                number: row?.original?.meta_2,
+                                            },
+                                        },
+                                        'META 3 - Comissão Interna (Comercial)': {
+                                            title: 'META 3 - Comissão Interna (Comercial)',
+                                            type: 'number',
+                                            formula: {
+                                                type: 'number',
+                                                number: row?.original?.meta_3,
+                                            },
+                                        },
+                                    },
+                                }}
+                            />
+                        }
+                    />,
+                    {
+                        row,
+                    },
+                )}
+                side="right"
+                nameButton={<RiSidebarUnfoldLine />}
+                className="col-span-2 grid w-fit items-center opacity-0 transition-opacity duration-200 hover:opacity-100"
+                classNameContent="w-fit overflow-y-auto overflow-x-hidden"
+            />
         ),
     },
     {
