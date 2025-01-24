@@ -16,11 +16,20 @@ export type Result = {
 
 interface GoalChartCardProps {
     results: Result[];
+    isLoading: boolean;
 }
 
-export function GoalChartCard({ results }: GoalChartCardProps) {
-    if (!results || results.length === 0) {
-        return <GoalChartSkeleton />;
+export function GoalChartCard({ results, isLoading }: GoalChartCardProps) {
+    if (isLoading) return <GoalChartSkeleton />;
+
+    if (results.length === 0) {
+        return (
+            <section className="flex min-h-fit w-full justify-center gap-2 rounded-md bg-white p-4 dark:bg-boxdark lg:flex-row">
+                <p className="scroll-m-20 text-center text-2xl font-semibold tracking-tight">
+                    Nenhum dado de metas disponível.
+                </p>
+            </section>
+        );
     }
 
     function groupChartDataByGoal(
@@ -48,7 +57,7 @@ export function GoalChartCard({ results }: GoalChartCardProps) {
     const meta3Data = groupChartDataByGoal(groupedResults, 'meta_3', 'green');
 
     return (
-        <section className="flex min-h-fit w-full flex-col justify-between gap-2 rounded-md bg-white py-2 pl-4 dark:bg-boxdark lg:flex-row">
+        <section className="flex min-h-fit w-full flex-col justify-between gap-2 rounded-md bg-white p-5 dark:bg-boxdark lg:flex-row">
             {meta1Data && meta2Data && meta3Data && (
                 <>
                     <GoalChart footerText={'META ATÉ 2.5MM'} chartData={meta1Data} />
