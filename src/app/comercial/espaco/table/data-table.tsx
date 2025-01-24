@@ -532,21 +532,6 @@ export function DataTable<TData, TValue>({
                                             )}
                                         </TableCell>
                                     ))}
-                                    <SheetCelerComponent
-                                        children={flexRender(
-                                            <SheetViewComercial
-                                                sheetData={row.original}
-                                                id={row.id}
-                                            />,
-                                            {
-                                                row,
-                                            },
-                                        )}
-                                        side="right"
-                                        nameButton={<RiSidebarUnfoldLine />}
-                                        className="mt-5 w-fit"
-                                        classNameContent="w-fit overflow-y-auto overflow-x-hidden"
-                                    />
                                 </TableRow>
                             ))
                         ) : (

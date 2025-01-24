@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ColumnDef, Row } from '@tanstack/react-table';
+import { ColumnDef, flexRender, Row } from '@tanstack/react-table';
 
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 
@@ -24,6 +24,9 @@ import { BiCheck } from 'react-icons/bi';
 import { ITabelaGerencial } from '@/interfaces/ITabelaGerencialResponse';
 import numberFormat from '@/functions/formaters/numberFormat';
 import percentageFormater from '@/functions/formaters/percentFormater';
+import { SheetCelerComponent } from '@/components/CrmUi/Sheet';
+import { SheetViewComercial } from '@/components/Features/Comercial/SheetViewComercial';
+import { RiSidebarUnfoldLine } from 'react-icons/ri';
 
 export const columns: ColumnDef<ITabelaGerencial>[] = [
     {
@@ -49,15 +52,31 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="flex max-w-36 items-center gap-2"
+                    className="flex items-center gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
-                    <p className="flex justify-start">Usuário</p>
+                    Usuário
                     <ArrowUpDown size={16} />
                 </Button>
             );
         },
-        cell: ({ row }) => <p className="max-w-36 truncate">{row.getValue('usuario')}</p>,
+        cell: ({ row }) => (
+            <div className="flex items-center gap-2">
+                <p className="w-full truncate">{row.getValue('usuario')}</p>
+                <SheetCelerComponent
+                    children={flexRender(
+                        <SheetViewComercial sheetData={row.original} id={row.id} />,
+                        {
+                            row,
+                        },
+                    )}
+                    side="right"
+                    nameButton={<RiSidebarUnfoldLine />}
+                    className="w-fit items-center justify-center"
+                    classNameContent="w-fit overflow-y-auto overflow-x-hidden"
+                />
+            </div>
+        ),
     },
     {
         accessorKey: 'loa',
