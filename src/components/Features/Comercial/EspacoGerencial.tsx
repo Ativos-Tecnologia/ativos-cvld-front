@@ -35,7 +35,11 @@ function EspacoGerencial() {
         placeholderData: keepPreviousData,
     });
 
-    const { data: chartData, refetch: refetchChart } = useQuery({
+    const {
+        data: chartData,
+        refetch: refetchChart,
+        isLoading: isChartDataLoading,
+    } = useQuery({
         queryKey: ['espaco-gerencial-chart'],
         queryFn: () => fetchChartData(),
         placeholderData: keepPreviousData,
@@ -82,11 +86,14 @@ function EspacoGerencial() {
             </section>
             {/* Seção do Gráfico de Metas */}
             <section className="mt-6 flex min-h-fit rounded-md bg-white dark:bg-boxdark">
-                <GoalChartCard results={chartData?.results || []} />
+                <GoalChartCard results={chartData?.results || []} isLoading={isChartDataLoading} />
             </section>
             {/* Seção do Gráfico de Metas de Valor Líquido */}
             <section className="mt-6 flex min-h-fit rounded-md bg-white dark:bg-boxdark">
-                <TotalLiquidAvailableChart results={chartData?.results || []} />
+                <TotalLiquidAvailableChart
+                    results={chartData?.results || []}
+                    isLoading={isChartDataLoading}
+                />
             </section>
             {/* Seção da Tabela de Dados */}
             <section className="mt-6 flex max-h-[40rem] max-w-screen-md flex-col overflow-auto rounded-md bg-white dark:bg-boxdark">
