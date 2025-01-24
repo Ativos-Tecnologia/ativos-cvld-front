@@ -124,18 +124,11 @@ export const AwesomeFilter: React.FC<AwesomeFilterProps> = ({
                         'bg-white dark:bg-zinc-900',
                         'border border-zinc-200 dark:border-zinc-800',
                         'rounded-lg shadow-lg',
-                        'z-50', // Add this
+                        'z-50',
                     )}
                 >
                     <div className="mb-4 flex items-center justify-between">
                         <h3 className="font-medium">Filtros</h3>
-                        {/* <button
-                            type="button"
-                            onClick={addFilter}
-                            className="text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
-                        >
-                            Adicionar
-                        </button> */}
                     </div>
 
                     {filterColumns
@@ -168,6 +161,41 @@ export const AwesomeFilter: React.FC<AwesomeFilterProps> = ({
                                     {statusOptions.map((option) => (
                                         <option key={option.value} value={option.value}>
                                             {option.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        ))}
+                    {filterColumns
+                        .filter((t) => t.key === 'status_diligencia')
+                        .map((col) => (
+                            <div className="relative py-2" key={col.key}>
+                                <label
+                                    htmlFor={`filter-${col.key}`}
+                                    className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                                >
+                                    Status da Diligência
+                                </label>
+                                <select
+                                    id={`filter-${col.key}`}
+                                    value={filters.find((f) => f.column === col.key)?.value || ''}
+                                    onChange={(e) =>
+                                        addGlobalFilter(col.key, 'equals', e.target.value)
+                                    }
+                                    className={cn(
+                                        'mt-2 w-full py-1.5 pl-3 pr-8',
+                                        'rounded-md border border-zinc-200 dark:border-zinc-800',
+                                        'bg-white dark:bg-zinc-900',
+                                        'text-sm text-zinc-900 dark:text-zinc-100',
+                                        'focus:outline-none focus:ring-2 focus:ring-indigo-500/20',
+                                    )}
+                                >
+                                    <option defaultChecked value="">
+                                        Selecione
+                                    </option>
+                                    {statusDiligencia.map((option) => (
+                                        <option key={option} value={option}>
+                                            {option.toString()}
                                         </option>
                                     ))}
                                 </select>
@@ -532,14 +560,15 @@ export function DataTable<TData, TValue>({
     const status = Array.from(new Set(getColumnValues('status'))) as string[];
     const loaOptions = Array.from(new Set(getColumnValues('loa'))) as string[];
     const usuarioOptions = Array.from(new Set(getColumnValues('usuario'))) as string[];
-    const statusDiligencia = [
-        'Repactuação',
-        'Pendência a Sanar',
-        'Due Diligence',
-        'Em liquidação',
-        'Em cessão',
-        'Transação Concluída',
-    ];
+    // const statusDiligencia = [
+    //     'Repactuação',
+    //     'Pendência a Sanar',
+    //     'Due Diligence',
+    //     'Em liquidação',
+    //     'Em cessão',
+    //     'Transação Concluída',
+    // ];
+    const statusDiligencia = Array.from(new Set(getColumnValues('status_diligencia'))) as string[];
 
     return (
         <div className="container pb-10 pt-4">
