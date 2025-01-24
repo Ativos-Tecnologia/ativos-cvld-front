@@ -2982,47 +2982,6 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                         </span>
                                     )}
                                 </div>
-
-                                <div className="mt-6 flex items-center justify-center 2xsm:flex-col 2xsm:gap-3 lg:flex-row lg:gap-6">
-                                    <Button
-                                        type="submit"
-                                        variant="success"
-                                        isLoading={isLoadingRecalculation}
-                                        disabled={!isFormModified}
-                                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm uppercase disabled:opacity-50 disabled:hover:bg-green-500 2xsm:w-full md:w-fit"
-                                    >
-                                        <BiSolidCalculator className="h-4 w-4" />
-                                        <span className="font-medium">Recalcular</span>
-                                    </Button>
-
-                                    {data?.properties['Memória de Cálculo Ordinário'].url && (
-                                        <Link
-                                            href={
-                                                data?.properties['Memória de Cálculo Ordinário'].url
-                                            }
-                                            className="flex items-center justify-center gap-3 rounded-md bg-blue-600 px-4 py-2 text-sm uppercase text-snow transition-colors duration-300 hover:bg-blue-700 2xsm:w-full md:w-fit"
-                                        >
-                                            <GrDocumentText className="h-4 w-4" />
-                                            <span className="font-medium">
-                                                Memória de Cálculo Simples
-                                            </span>
-                                        </Link>
-                                    )}
-
-                                    {data?.properties['Memória de Cálculo RRA'].url && (
-                                        <Link
-                                            href={data?.properties['Memória de Cálculo RRA'].url}
-                                            target="_blank"
-                                            referrerPolicy="no-referrer"
-                                            className="flex items-center justify-center gap-3 rounded-md bg-blue-600 px-4 py-2 text-sm uppercase text-snow transition-colors duration-300 hover:bg-blue-700 2xsm:w-full md:w-fit"
-                                        >
-                                            <GrDocumentText className="h-4 w-4" />
-                                            <span className="font-medium">
-                                                Memória de Cálculo RRA
-                                            </span>
-                                        </Link>
-                                    )}
-                                </div>
                             </form>
                         </section>
 
