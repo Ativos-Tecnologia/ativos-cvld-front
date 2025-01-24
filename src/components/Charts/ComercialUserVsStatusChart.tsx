@@ -64,7 +64,7 @@ const ComercialUserVsStatusChart = ({ chartData }: { chartData: ITabelaGerencial
             }
 
             // verificando a existência do status de diligência no usuario do array
-            if (item.status_diligencia !== 'Sem Status') {
+            if (item.status_diligencia !== 'Sem status') {
                 counterObj[item.usuario][item.status_diligencia] = {
                     counter: (counterObj[item.usuario][item.status_diligencia]?.counter || 0) + 1,
                     total:
@@ -93,6 +93,9 @@ const ComercialUserVsStatusChart = ({ chartData }: { chartData: ITabelaGerencial
         if (!chartData) return;
         handleChartData(chartData);
     }, [chartData]);
+
+    console.log(chartData)
+    console.log(data)
 
     if (!data) {
         return <ComercialBrokersChartSkeleton />;

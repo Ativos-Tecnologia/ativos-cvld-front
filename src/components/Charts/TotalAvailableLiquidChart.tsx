@@ -18,6 +18,7 @@ type Result = {
 
 interface TotalLiquidAvailableChartProps {
     results: Result[];
+    isLoading: boolean;
 }
 
 const chartConfig = {
@@ -27,8 +28,8 @@ const chartConfig = {
     },
 } satisfies ChartConfig;
 
-export function TotalLiquidAvailableChart({ results }: TotalLiquidAvailableChartProps) {
-    if (!results) return <TotalLiquidAvailableChartSkeleton />;
+export function TotalLiquidAvailableChart({ results, isLoading }: TotalLiquidAvailableChartProps) {
+    if (isLoading) return <TotalLiquidAvailableChartSkeleton />;
 
     function handleResults() {
         const groupedData = groupResultsByUsuario(results);
@@ -60,8 +61,10 @@ export function TotalLiquidAvailableChart({ results }: TotalLiquidAvailableChart
 
     return (
         <div
-            style={{ height: Math.max(results.length * 40, 450) }}
-            className="grid w-full gap-5 p-5"
+            style={{
+                height: results.length > 0 ? Math.max(results.length * 40, 450) : 'fit-content',
+            }}
+            className="grid w-full gap-5 p-4"
         >
             <div className="flex w-full justify-between pb-2">
                 <h2 className="text-2xl font-medium">Valor Liquido a Ser Cedido</h2>
@@ -69,46 +72,54 @@ export function TotalLiquidAvailableChart({ results }: TotalLiquidAvailableChart
                     Total: <span className="font-bold">{numberFormat(total)}</span>
                 </p>
             </div>
-            <ChartContainer config={chartConfig} className="aspect-[none] min-h-[250px] w-full">
-                <BarChart
-                    accessibilityLayer
-                    data={coloredChartData}
-                    layout="vertical"
-                    barSize={40}
-                    barGap={20}
-                >
-                    <CartesianGrid horizontal={false} stroke="#454b52" />
-                    <XAxis
-                        type="number"
-                        dataKey="valor_liquido_disponivel"
-                        tickFormatter={(value) =>
-                            value.toLocaleString('pt-BR', {
-                                style: 'currency',
-                                currency: 'BRL',
-                            })
-                        }
-                        axisLine={false}
-                        tickLine={false}
-                    />
-                    <YAxis
-                        dataKey="usuario"
-                        type="category"
-                        axisLine={false}
-                        tickLine={false}
-                        tickMargin={10}
-                        width={100}
-                        tickFormatter={(value) =>
-                            value.length > 10 ? value.slice(0, 10).concat('...') : value
-                        }
-                    />
-                    <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-                    <Bar
-                        dataKey="valor_liquido_disponivel"
-                        fill="var(--color-valor_liquido_disponivel)"
-                        radius={5}
-                    />
-                </BarChart>
-            </ChartContainer>
+            {results.length > 0 ? (
+                <ChartContainer config={chartConfig} className="aspect-[none] min-h-[250px] w-full">
+                    <BarChart
+                        accessibilityLayer
+                        data={coloredChartData}
+                        layout="vertical"
+                        barSize={40}
+                        barGap={20}
+                    >
+                        <CartesianGrid horizontal={false} stroke="#454b52" />
+                        <XAxis
+                            type="number"
+                            dataKey="valor_liquido_disponivel"
+                            tickFormatter={(value) =>
+                                value.toLocaleString('pt-BR', {
+                                    style: 'currency',
+                                    currency: 'BRL',
+                                })
+                            }
+                            axisLine={false}
+                            tickLine={false}
+                        />
+                        <YAxis
+                            dataKey="usuario"
+                            type="category"
+                            axisLine={false}
+                            tickLine={false}
+                            tickMargin={10}
+                            width={100}
+                            tickFormatter={(value) =>
+                                value.length > 10 ? value.slice(0, 10).concat('...') : value
+                            }
+                        />
+                        <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+                        <Bar
+                            dataKey="valor_liquido_disponivel"
+                            fill="var(--color-valor_liquido_disponivel)"
+                            radius={5}
+                        />
+                    </BarChart>
+                </ChartContainer>
+            ) : (
+                <section className="flex h-fit w-full justify-center gap-2 rounded-md bg-white px-4 py-2 dark:bg-boxdark lg:flex-row">
+                    <p className="scroll-m-20 text-center text-2xl font-semibold tracking-tight">
+                        Nenhum dado disponível.
+                    </p>
+                </section>
+            )}
         </div>
     );
 }
