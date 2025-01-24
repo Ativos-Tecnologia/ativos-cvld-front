@@ -51,12 +51,45 @@ type AwesomeFilterProps = {
     resetFilters: () => void;
     getActiveFilterCount: () => number;
     addFilter: () => void;
-    statusOptions: { value: string; label: string }[];
+    statusOptions: string[];
     statusDiligencia: string[];
     loaOptions: string[];
     usuarioOptions: string[];
     auxFn: (e: any) => void;
 };
+
+const FilterSelect: React.FC<{
+    id: string;
+    label: string;
+    value: string;
+    options: string[];
+    onChange: (value: string) => void;
+}> = ({ id, label, value, options, onChange }) => (
+    <div className="relative py-2">
+        <label htmlFor={id} className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            {label}
+        </label>
+        <select
+            id={id}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className={cn(
+                'mt-2 w-full py-1.5 pl-3 pr-8',
+                'rounded-md border border-zinc-200 dark:border-zinc-800',
+                'bg-white dark:bg-zinc-900',
+                'text-sm text-zinc-900 dark:text-zinc-100',
+                'focus:outline-none focus:ring-2 focus:ring-indigo-500/20',
+            )}
+        >
+            <option value="">Selecione</option>
+            {options.map((option) => (
+                <option key={option} value={option}>
+                    {String(option)}
+                </option>
+            ))}
+        </select>
+    </div>
+);
 
 export const AwesomeFilter: React.FC<AwesomeFilterProps> = ({
     auxFn,
@@ -91,7 +124,9 @@ export const AwesomeFilter: React.FC<AwesomeFilterProps> = ({
                         'focus:outline-none focus:ring-2 focus:ring-indigo-500/20',
                         'placeholder:text-zinc-400 dark:placeholder:text-zinc-600',
                     )}
-                    onChange={(e) => auxFn(e)}
+                    onChange={(e) => {
+                        auxFn(e);
+                    }}
                 />
                 <div className="absolute right-2 flex items-center gap-1">
                     <button
@@ -134,6 +169,58 @@ export const AwesomeFilter: React.FC<AwesomeFilterProps> = ({
                     {filterColumns
                         .filter((t) => t.key === 'status')
                         .map((col) => (
+                            <FilterSelect
+                                key={col.key}
+                                id={`filter-${col.key}`}
+                                label="Status"
+                                value={filters.find((f) => f.column === col.key)?.value || ''}
+                                options={statusOptions}
+                                onChange={(value) => addGlobalFilter(col.key, 'equals', value)}
+                            />
+                        ))}
+
+                    {filterColumns
+                        .filter((t) => t.key === 'status_diligencia')
+                        .map((col) => (
+                            <FilterSelect
+                                key={col.key}
+                                id={`filter-${col.key}`}
+                                label="Status da Diligência"
+                                value={filters.find((f) => f.column === col.key)?.value || ''}
+                                options={statusDiligencia}
+                                onChange={(value) => addGlobalFilter(col.key, 'equals', value)}
+                            />
+                        ))}
+
+                    {filterColumns
+                        .filter((t) => t.key === 'loa')
+                        .map((col) => (
+                            <FilterSelect
+                                key={col.key}
+                                id={`filter-${col.key}`}
+                                label="Lei Orçamentária Anual"
+                                value={filters.find((f) => f.column === col.key)?.value || ''}
+                                options={loaOptions}
+                                onChange={(value) => addGlobalFilter(col.key, 'equals', value)}
+                            />
+                        ))}
+
+                    {filterColumns
+                        .filter((t) => t.key === 'usuario')
+                        .map((col) => (
+                            <FilterSelect
+                                key={col.key}
+                                id={`filter-${col.key}`}
+                                label="Broker"
+                                value={filters.find((f) => f.column === col.key)?.value || ''}
+                                options={usuarioOptions}
+                                onChange={(value) => addGlobalFilter(col.key, 'equals', value)}
+                            />
+                        ))}
+
+                    {/* {filterColumns
+                        .filter((t) => t.key === 'status')
+                        .map((col) => (
                             <div className="relative py-2" key={col.key}>
                                 <label
                                     htmlFor={`filter-${col.key}`}
@@ -159,14 +246,16 @@ export const AwesomeFilter: React.FC<AwesomeFilterProps> = ({
                                         Selecione
                                     </option>
                                     {statusOptions.map((option) => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.label}
+                                        <option key={option} value={option}>
+                                            {option}
                                         </option>
                                     ))}
                                 </select>
                             </div>
                         ))}
-                    {filterColumns
+
+                    {
+                        filterColumns
                         .filter((t) => t.key === 'status_diligencia')
                         .map((col) => (
                             <div className="relative py-2" key={col.key}>
@@ -273,9 +362,9 @@ export const AwesomeFilter: React.FC<AwesomeFilterProps> = ({
                                     ))}
                                 </select>
                             </div>
-                        ))}
+                        ))} */}
 
-                    {filters
+                    {/* {filters
                         .filter(
                             (e) =>
                                 e.column !== 'status' &&
@@ -351,7 +440,7 @@ export const AwesomeFilter: React.FC<AwesomeFilterProps> = ({
                                     <X className="h-4 w-4" />
                                 </button>
                             </div>
-                        ))}
+                        ))} */}
                     {/* {filters.length > 0 && ( */}
                     <div className="mt-4 flex justify-end">
                         {/* <button
@@ -543,31 +632,19 @@ export function DataTable<TData, TValue>({
 
     const getActiveFilterCount = () => filters.length;
 
-    const statusOptions = [
-        { value: 'Negociação em Andamento', label: 'Negociação em Andamento' },
-        { value: 'Proposta aceita', label: 'Proposta Aceita' },
-    ];
-
     const getColumnValues = (columnId: string) => {
         const column = table.getColumn(columnId);
         if (!column) return [];
         return column.getFacetedRowModel().rows.map((row) => row.getValue(columnId));
     };
 
-    const filterByCredorName = (e: { target: { value: any } }) =>
+    const filterByCredorName = (e: { target: { value: any } }) => {
         table.getColumn('credor')?.setFilterValue(e.target.value);
+    };
 
-    const status = Array.from(new Set(getColumnValues('status'))) as string[];
+    const statusOptions = Array.from(new Set(getColumnValues('status'))) as string[];
     const loaOptions = Array.from(new Set(getColumnValues('loa'))) as string[];
     const usuarioOptions = Array.from(new Set(getColumnValues('usuario'))) as string[];
-    // const statusDiligencia = [
-    //     'Repactuação',
-    //     'Pendência a Sanar',
-    //     'Due Diligence',
-    //     'Em liquidação',
-    //     'Em cessão',
-    //     'Transação Concluída',
-    // ];
     const statusDiligencia = Array.from(new Set(getColumnValues('status_diligencia'))) as string[];
 
     return (
