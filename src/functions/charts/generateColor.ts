@@ -15,7 +15,10 @@ export function generateColor(
 
     const minLightness = 25;
     const maxLightness = 55;
-    const stepSize = (maxLightness - minLightness) / (steps - 1);
+    const stepSize =
+        steps > 1
+            ? (maxLightness - minLightness) / (steps - 1)
+            : (maxLightness - minLightness) / steps;
 
     const lightness = maxLightness - index * stepSize;
 
