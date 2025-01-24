@@ -837,8 +837,6 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
             }
         }
     }, [mainData]);
-
-    console.log(oficio);
     /**
      * Define o tipo de indentificação do credor do ofício
      * que pode ser CPF ou CNPJ
@@ -885,6 +883,19 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
             setLoading(false);
         },
     });
+
+    const validateStatusLocked =
+        mainData?.properties['Status Diligência'].select?.name === 'Due Diligence'.valueOf() ||
+        mainData?.properties['Status Diligência'].select?.name === 'Revisão Valor/LOA'.valueOf();
+
+    const validateIfItsLockedWhenStatusDiligenceBeEqual =
+        mainData?.properties['Status Diligência'].select?.name === 'Em liquidação' ||
+        validateStatusLocked;
+
+    const validateIfItsLockedWhenStatusDiligenceBeDifferent =
+        mainData?.properties['Status Diligência'].select?.name !== 'Due Diligence' &&
+        mainData?.properties['Status Diligência'].select?.name !== 'Em liquidação' &&
+        mainData?.properties['Status Diligência'].select?.name !== 'Revisão Valor/LOA';
 
     return (
         <div className="relative col-span-1 gap-5 rounded-md border border-stroke bg-white p-5 dark:border-strokedark dark:bg-boxdark">
@@ -996,6 +1007,8 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
                                 'Due Diligence' &&
                                 mainData?.properties['Status Diligência'].select?.name !==
                                     'Em liquidação' &&
+                                mainData?.properties['Status Diligência'].select?.name !==
+                                    'Revisão Valor/LOA' &&
                                 mainData?.properties['Status'].status?.name === 'Proposta aceita' &&
                                 checks.is_cedente_complete === true &&
                                 checks.is_precatorio_complete === true &&
@@ -1005,13 +1018,12 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
 
                             <button
                                 onClick={handleLiquidateCard}
-                                className={`${mainData?.properties['Status Diligência'].select?.name.valueOf() !== 'Due Diligence' && mainData?.properties['Status Diligência'].select?.name !== 'Em liquidação' && mainData?.properties['Status'].status?.name === 'Proposta aceita' && checks.is_cedente_complete === true && checks.is_precatorio_complete === true && checks.are_docs_complete === true ? 'bg-green-400 text-black-2 hover:bg-green-500 hover:text-snow' : 'pointer-events-none cursor-not-allowed bg-slate-100 opacity-50 dark:bg-boxdark-2/50'} relative z-2 my-1 flex w-full items-center justify-center gap-2 rounded-md px-4 py-1 text-sm transition-colors duration-200`}
+                                className={`${mainData?.properties['Status Diligência'].select?.name.valueOf() !== 'Due Diligence' && mainData?.properties['Status Diligência'].select?.name !== 'Em liquidação' && mainData?.properties['Status Diligência'].select?.name !== 'Revisão Valor/LOA' && mainData?.properties['Status'].status?.name === 'Proposta aceita' && checks.is_cedente_complete === true && checks.is_precatorio_complete === true && checks.are_docs_complete === true ? 'bg-green-400 text-black-2 hover:bg-green-500 hover:text-snow' : 'pointer-events-none cursor-not-allowed bg-slate-100 opacity-50 dark:bg-boxdark-2/50'} relative z-2 my-1 flex w-full items-center justify-center gap-2 rounded-md px-4 py-1 text-sm transition-colors duration-200`}
                             >
                                 {isUpdatingDiligence ? (
                                     <>
                                         <AiOutlineLoading className="h-4 w-4 animate-spin" />
-                                        {mainData?.properties['Status Diligência'].select?.name ===
-                                            'Due Diligence' &&
+                                        {validateIfItsLockedWhenStatusDiligenceBeDifferent &&
                                         mainData?.properties['Status'].status?.name ===
                                             'Proposta aceita'
                                             ? 'Liquidando...'
@@ -1019,8 +1031,7 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
                                     </>
                                 ) : (
                                     <>
-                                        {mainData?.properties['Status Diligência'].select?.name ===
-                                            'Due Diligence' &&
+                                        {validateStatusLocked &&
                                         mainData?.properties['Status'].status?.name ===
                                             'Proposta aceita' ? (
                                             <>
@@ -1054,12 +1065,9 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
                                 checks.isFetching ||
                                 (mainData?.properties['Status'].status?.name ===
                                     'Proposta aceita' &&
-                                    mainData?.properties['Status Diligência'].select?.name ===
-                                        'Due Diligence') ||
-                                (mainData?.properties['Status'].status?.name ===
-                                    'Proposta aceita' &&
-                                    mainData?.properties['Status Diligência'].select?.name ===
-                                        'Em liquidação') ||
+                                    validateIfItsLockedWhenStatusDiligenceBeEqual) ||
+                                mainData?.properties['Status Diligência'].select?.name ===
+                                    'Em liquidação' ||
                                 (mainData?.properties['Status'].status?.name ===
                                     'Proposta aceita' &&
                                     mainData?.properties['Status Diligência'].select?.name ===
@@ -1213,12 +1221,7 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
                                         disabled={
                                             (mainData?.properties['Status'].status?.name ===
                                                 'Proposta aceita' &&
-                                                mainData?.properties['Status Diligência'].select
-                                                    ?.name === 'Due Diligence') ||
-                                            (mainData?.properties['Status'].status?.name ===
-                                                'Proposta aceita' &&
-                                                mainData?.properties['Status Diligência'].select
-                                                    ?.name === 'Em liquidação') ||
+                                                validateIfItsLockedWhenStatusDiligenceBeEqual) ||
                                             (mainData?.properties['Status'].status?.name ===
                                                 'Proposta aceita' &&
                                                 mainData?.properties['Status Diligência'].select
@@ -1244,12 +1247,7 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
                                     disabled={
                                         (mainData?.properties['Status'].status?.name ===
                                             'Proposta aceita' &&
-                                            mainData?.properties['Status Diligência'].select
-                                                ?.name === 'Due Diligence') ||
-                                        (mainData?.properties['Status'].status?.name ===
-                                            'Proposta aceita' &&
-                                            mainData?.properties['Status Diligência'].select
-                                                ?.name === 'Em liquidação') ||
+                                            validateIfItsLockedWhenStatusDiligenceBeEqual) ||
                                         (mainData?.properties['Status'].status?.name ===
                                             'Proposta aceita' &&
                                             mainData?.properties['Status Diligência'].select
@@ -1286,12 +1284,7 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
                                         disabled={
                                             (mainData?.properties['Status'].status?.name ===
                                                 'Proposta aceita' &&
-                                                mainData?.properties['Status Diligência'].select
-                                                    ?.name === 'Due Diligence') ||
-                                            (mainData?.properties['Status'].status?.name ===
-                                                'Proposta aceita' &&
-                                                mainData?.properties['Status Diligência'].select
-                                                    ?.name === 'Em liquidação') ||
+                                                validateIfItsLockedWhenStatusDiligenceBeEqual) ||
                                             (mainData?.properties['Status'].status?.name ===
                                                 'Proposta aceita' &&
                                                 mainData?.properties['Status Diligência'].select
@@ -1316,12 +1309,7 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
                                     disabled={
                                         (mainData?.properties['Status'].status?.name ===
                                             'Proposta aceita' &&
-                                            mainData?.properties['Status Diligência'].select
-                                                ?.name === 'Due Diligence') ||
-                                        (mainData?.properties['Status'].status?.name ===
-                                            'Proposta aceita' &&
-                                            mainData?.properties['Status Diligência'].select
-                                                ?.name === 'Em liquidação') ||
+                                            validateIfItsLockedWhenStatusDiligenceBeEqual) ||
                                         (mainData?.properties['Status'].status?.name ===
                                             'Proposta aceita' &&
                                             mainData?.properties['Status Diligência'].select

@@ -41,7 +41,7 @@ const UnloggedHeader = ({ theme }: IUnloggedHeaderProps) => {
       <div
         className={`fixed z-10 font-nexa ${isHeaderFixed ? "translate-y-full" : "-translate-y-full"} -top-11 left-1/2 -translate-x-1/2 rounded-full ${themeClasses[theme].header} flex items-center justify-between bg-clip-padding px-5 py-3 backdrop-blur-sm backdrop-filter transition-all duration-500 2xsm:w-11/12 xl:w-4/5 3xl:w-3/5`}
       >
-        <Link href="/auth/signin" className="overflow-hidden">
+        <Link href="/auth/signin" target="_blank" className="overflow-hidden">
           {/* desktop */}
           <Image
             src={"/images/logo/new-logo-text-dark.png"}
@@ -80,6 +80,7 @@ const UnloggedHeader = ({ theme }: IUnloggedHeaderProps) => {
           </Link>
           <Link
             href="/auth/signup"
+            target="_blank"
             className={`rounded-full ${themeClasses[theme].buttonFilled} p-2 font-semibold text-snow transition-all duration-300`}
           >
             <span>Cadastrar</span>

@@ -316,6 +316,17 @@ export const columns: ColumnDef<IResumoComercial>[] = [
         },
     },
     {
+        header: 'Coordenador',
+        cell: ({ row }) => {
+            const resumo = row.original;
+            return (
+                <div className="flex items-center">
+                    <span>{FindCoordinator(resumo.username)}</span>
+                </div>
+            );
+        },
+    },
+    {
         accessorKey: 'is_confirmed',
         header: 'Confirmado',
         cell: ({ row }) => (

@@ -54,6 +54,7 @@ const DocVisualizer: React.FC<ModalProps> = ({ isOpen, onClose, src }) => {
                     <Link
                         title='Baixar documento'
                         href={src}
+                        target="_blank"
                         className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md transition-colors duration-300 hover:bg-slate-700"
                     >
                         <FaFileDownload className="text-xl text-white" />

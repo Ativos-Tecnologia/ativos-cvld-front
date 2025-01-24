@@ -175,6 +175,7 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
             setValue("percentual_a_ser_adquirido", tFormatado);
             setValue("ja_possui_destacamento", mainData.properties["Honorários já destacados?"].checkbox);
             setValue("percentual_de_honorarios", mainData.properties["Percentual de Honorários Não destacados"].number! * 100 || 0);
+            setValue("nao_incide_selic_no_periodo_db_ate_abril", mainData.properties["Incide Selic Somente Sobre Principal"].checkbox)
             setValue("incidencia_rra_ir", mainData.properties["Incidencia RRA/IR"].checkbox);
             setValue("ir_incidente_rra", mainData.properties["IR Incidente sobre RRA"].checkbox);
             setValue("incidencia_pss", mainData.properties["PSS"].number! > 0);

@@ -1,10 +1,10 @@
-import { PaginatedResponse } from "@/components/TaskElements";
+import { ICelerResponse } from "@/interfaces/ICelerResponse";
 import { CVLDResultProps } from "@/interfaces/IResultCVLD";
 import React, { Dispatch } from "react";
 
 export type ExtractTableProps = {
     className?: string;
-    data: PaginatedResponse<CVLDResultProps> | any;
+    data: ICelerResponse<CVLDResultProps> | any;
     setData: React.Dispatch<React.SetStateAction<any>>;
     showModalMessage: boolean;
     loading: boolean;

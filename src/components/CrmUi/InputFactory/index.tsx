@@ -24,131 +24,133 @@ interface ICelerInputField extends ICelerInputFormField {
 
 export const CelerInputField = React.memo(
     React.forwardRef<HTMLInputElement, ICelerInputField>((props, ref) => {
-    const [value, setValue] = useState(props.defaultValue ?? "");
+        const [value, setValue] = useState(props.defaultValue ?? "");
 
-    useEffect(() => {
-        if (props.defaultValue !== undefined) {
-            setValue(props.defaultValue);
-        }
-    }, [props.defaultValue]);
-
-    const handleChange = (newValue: any) => {
-
-        /**
-         * Código abaixo comentado para evitar o não disparamento
-         * das funções de set e valueChange quando ocorrer um erro
-         * ao tentar mudar o estado do input
-         */
-
-        // if (newValue !== value) {
-        //     setValue(newValue);
-        //     props.onValueChange?.(props.name, newValue);
-        // }
-
-        setValue(newValue);
-        props.onValueChange?.(props.name, newValue);
-    };
-
-    const handleKeyDown = (event: React.KeyboardEvent) => {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            if (props.onSubmit) {
-                props.onSubmit(props.name, value);
+        useEffect(() => {
+            if (props.defaultValue !== undefined) {
+                setValue(props.defaultValue);
             }
-        }
-    };
+        }, [props.defaultValue]);
 
-    const commonProps = {
-        value,
-        onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleChange(e.target.value),
-        onKeyDown: handleKeyDown,
-        placeholder: props.placeholder || "Digite aqui",
-        disabled: props.disabled || props.isLoading,
-    };
+        const handleChange = (newValue: any) => {
 
-    const renderInput = () => {
-        switch (props.fieldType) {
-            case InputFieldVariant.INPUT:
-                return (
-                    <div className="flex rounded-md gap-4 mt-2 w-full">
-                        {props.iconSrc && <div className="flex items-center">{props.iconSrc}</div>}
-                        <Input ref={ref} className={cn("shad-input border border-stroke dark:border-strokedark", props.className)} {...commonProps} />
-                    </div>
-                );
-            case InputFieldVariant.TEXTAREA:
-                return <Textarea rows={props.rows} cols={props.cols} required={props.required} className="shad-textArea" {...commonProps} />;
-            case InputFieldVariant.PHONE_INPUT:
-                return (
-                    <PhoneInput
-                        value={value}
-                        onChange={handleChange}
-                        defaultCountry="BR"
-                        placeholder={props.placeholder || "Digite o número"}
-                        international
-                        withCountryCallingCode
-                        disabled={props.disabled}
-                        className="input-phone"
-                    />
-                );
-            case InputFieldVariant.CHECKBOX:
-                return (
-                    <div className="flex items-center gap-4">
-                        <Checkbox
-                            id={props.name}
-                            checked={props.checked}
-                            onCheckedChange={(isChecked) => handleChange(isChecked)}
-                            disabled={props.disabled || props.isLoading}
+            /**
+             * Código abaixo comentado para evitar o não disparamento
+             * das funções de set e valueChange quando ocorrer um erro
+             * ao tentar mudar o estado do input
+             */
+
+            // if (newValue !== value) {
+            //     setValue(newValue);
+            //     props.onValueChange?.(props.name, newValue);
+            // }
+
+            setValue(newValue);
+            props.onValueChange?.(props.name, newValue);
+        };
+
+        const handleKeyDown = (event: React.KeyboardEvent) => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                if (props.onSubmit) {
+                    props.onSubmit(props.name, value);
+                }
+            }
+        };
+
+        const commonProps = {
+            value,
+            onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleChange(e.target.value),
+            onKeyDown: handleKeyDown,
+            placeholder: props.placeholder || "Digite aqui",
+            disabled: props.disabled || props.isLoading,
+        };
+
+        const renderInput = () => {
+            switch (props.fieldType) {
+                case InputFieldVariant.INPUT:
+                    return (
+                        <div className="flex rounded-md gap-4 mt-2 w-full">
+                            {props.iconSrc && <div className="flex items-center">{props.iconSrc}</div>}
+                            <Input ref={ref} className={cn("shad-input border border-stroke dark:border-strokedark", props.className)} {...commonProps} />
+                        </div>
+                    );
+                case InputFieldVariant.TEXTAREA:
+                    return <Textarea rows={props.rows} cols={props.cols} required={props.required} className="shad-textArea" {...commonProps} />;
+                case InputFieldVariant.PHONE_INPUT:
+                    return (
+                        <PhoneInput
                             value={value}
-                            className="border-1 relative box-border block cursor-pointer appearance-none rounded-md border-[#d9d9d9] bg-slate-200 transition-all duration-300 before:absolute before:left-2/4 before:top-[42%] before:h-[10px] before:w-[6px] before:-translate-x-2/4 before:-translate-y-2/4 before:rotate-45 before:scale-0 before:border-b-2 before:border-r-2 before:border-solid before:border-b-white before:border-r-white before:opacity-0 before:transition-all before:delay-100 before:duration-100 before:ease-in before:content-[''] after:absolute after:inset-0 after:rounded-[7px] after:opacity-0 after:shadow-[0_0_0_calc(30px_/_2.5)_#1677ff] after:transition-all after:duration-500 after:ease-in after:content-[''] checked:border-transparent checked:bg-[#1677ff] checked:before:-translate-x-2/4 checked:before:-translate-y-2/4 checked:before:rotate-45 checked:before:scale-x-[1.4] checked:before:scale-y-[1.4] checked:before:opacity-100 checked:before:transition-all checked:before:delay-100 checked:before:duration-200 checked:before:ease-in hover:border-[#1677ff] focus:outline-[#1677ff] [&:active:not(:checked)]:after:opacity-100 [&:active:not(:checked)]:after:shadow-none [&:active:not(:checked)]:after:transition-none"
+                            onChange={handleChange}
+                            defaultCountry="BR"
+                            placeholder={props.placeholder || "Digite o número"}
+                            international
+                            withCountryCallingCode
+                            disabled={props.disabled}
+                            className="input-phone"
                         />
-                        <label htmlFor={props.name} className={cn("shad-label", props.className)}>
-                            {props.label}
-                        </label>
-                    </div>
-                );
-            case InputFieldVariant.DATE:
-                return (
-                    <div className="flex gap-4 rounded-md w-full mt-2">
-                        {props.iconSrc && <div className="flex items-center">{props.iconSrc}</div>}
-                        <Cleave
-                            {...commonProps}
-                            defaultValue={props.defaultValue}
-                            className={`w-full rounded-md border-stroke py-2 px-3 h-11 text-sm font-medium dark:bg-boxdark-2 dark:border-strokedark dark:text-bodydark`}
-                            options={{
-                                date: true,
-                                datePattern: ["d", "m", "Y"],
-                                delimiter: "/"
-                            }}
-                        />
-                    </div>
-                );
-            case InputFieldVariant.SELECT:
-                return (
-                    <div className="flex rounded-md gap-4 mt-2 w-full">
-                        {props.iconSrc && <div className="flex items-center">{props.iconSrc}</div>}
-                        <Select onValueChange={(selectedValue) => handleChange(selectedValue)} value={value} defaultValue={value} disabled={props.disabled || props.isLoading}>
-                            <SelectTrigger className="shad-select-trigger">
-                                <SelectValue placeholder={props.placeholder || "Selecione uma opção"} />
-                            </SelectTrigger>
-                            <SelectContent className="shad-select-content">{props.children}</SelectContent>
-                        </Select>
-                    </div>
-                );
-            default:
-                return null;
-        }
-    };
+                    );
+                case InputFieldVariant.CHECKBOX:
+                    return (
+                        <div className="flex items-center gap-4">
+                            <Checkbox
+                                id={props.name}
+                                checked={props.checked}
+                                onCheckedChange={(isChecked) => handleChange(isChecked)}
+                                disabled={props.disabled || props.isLoading}
+                                value={value}
+                                className="border-1 relative box-border block cursor-pointer appearance-none rounded-md border-[#d9d9d9] bg-slate-200 transition-all duration-300 before:absolute before:left-2/4 before:top-[42%] before:h-[10px] before:w-[6px] before:-translate-x-2/4 before:-translate-y-2/4 before:rotate-45 before:scale-0 before:border-b-2 before:border-r-2 before:border-solid before:border-b-white before:border-r-white before:opacity-0 before:transition-all before:delay-100 before:duration-100 before:ease-in before:content-[''] after:absolute after:inset-0 after:rounded-[7px] after:opacity-0 after:shadow-[0_0_0_calc(30px_/_2.5)_#1677ff] after:transition-all after:duration-500 after:ease-in after:content-[''] checked:border-transparent checked:bg-[#1677ff] checked:before:-translate-x-2/4 checked:before:-translate-y-2/4 checked:before:rotate-45 checked:before:scale-x-[1.4] checked:before:scale-y-[1.4] checked:before:opacity-100 checked:before:transition-all checked:before:delay-100 checked:before:duration-200 checked:before:ease-in hover:border-[#1677ff] focus:outline-[#1677ff] [&:active:not(:checked)]:after:opacity-100 [&:active:not(:checked)]:after:shadow-none [&:active:not(:checked)]:after:transition-none"
+                            />
+                            <label htmlFor={props.name} className={cn("shad-label", props.className)}>
+                                {props.label} {props.required && <sup className="text-red-500 dark:text-red-400">*</sup>}
+                            </label>
+                        </div>
+                    );
+                case InputFieldVariant.DATE:
+                    return (
+                        <div className="flex gap-4 rounded-md w-full mt-2">
+                            {props.iconSrc && <div className="flex items-center">{props.iconSrc}</div>}
+                            <Cleave
+                                {...commonProps}
+                                defaultValue={props.defaultValue}
+                                className={`w-full rounded-md border-stroke py-2 px-3 h-11 text-sm font-medium dark:bg-boxdark-2 dark:border-strokedark dark:text-bodydark`}
+                                options={{
+                                    date: true,
+                                    datePattern: ["d", "m", "Y"],
+                                    delimiter: "/"
+                                }}
+                            />
+                        </div>
+                    );
+                case InputFieldVariant.SELECT:
+                    return (
+                        <div className={cn("flex rounded-md gap-4 mt-2 w-full", props.className)}>
+                            {props.iconSrc && <div className="flex items-center">{props.iconSrc}</div>}
+                            <Select onValueChange={(selectedValue) => handleChange(selectedValue)} value={value} defaultValue={value} disabled={props.disabled || props.isLoading}>
+                                <SelectTrigger className="shad-select-trigger">
+                                    <SelectValue placeholder={props.placeholder || "Selecione uma opção"} />
+                                </SelectTrigger>
+                                <SelectContent className="shad-select-content">{props.children}</SelectContent>
+                            </Select>
+                        </div>
+                    );
+                default:
+                    return null;
+            }
+        };
 
-    return (
-        <div className="col-span-1">
-            {(props.label && props.fieldType !== InputFieldVariant.CHECKBOX) && <Label className="shad-input-label">{props.label}</Label>}
-            <div className="flex items-center gap-2">
-                {renderInput()}
-                {props.isLoading && <AiOutlineLoading className="animate-spin w-5 h-5" />}
+        return (
+            <div className="col-span-1">
+                {(props.label && props.fieldType !== InputFieldVariant.CHECKBOX) && (
+                    <Label className="shad-input-label">{props.label} {props.required && <sup className="text-red-500 dark:text-red-400">*</sup>}</Label>
+                )}
+                <div className="flex items-center gap-2">
+                    {renderInput()}
+                    {props.isLoading && <AiOutlineLoading className="animate-spin w-5 h-5" />}
+                </div>
+                {props.error && <p className="text-red-500 text-sm mt-1">{props.error}</p>}
             </div>
-            {props.error && <p className="text-red-500 text-sm mt-1">{props.error}</p>}
-        </div>
-    );
-}));
+        );
+    }));
 
 CelerInputField.displayName = "CelerInputField";
