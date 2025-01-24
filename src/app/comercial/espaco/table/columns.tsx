@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ColumnDef, flexRender, Row } from '@tanstack/react-table';
 
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
+import { ArrowUpDown, ChartArea, ChartColumn, MoreHorizontal } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -27,6 +27,7 @@ import percentageFormater from '@/functions/formaters/percentFormater';
 import { SheetCelerComponent } from '@/components/CrmUi/Sheet';
 import { SheetViewComercial } from '@/components/Features/Comercial/SheetViewComercial';
 import { RiSidebarUnfoldLine } from 'react-icons/ri';
+import ChartFour from '@/components/Charts/ChartFour';
 
 export const columns: ColumnDef<ITabelaGerencial>[] = [
     {
@@ -65,14 +66,18 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
                 <p className="w-full truncate">{row.getValue('usuario')}</p>
                 <SheetCelerComponent
                     children={flexRender(
-                        <SheetViewComercial sheetData={row.original} id={row.id} />,
+                        <SheetViewComercial
+                            sheetData={row.original}
+                            id={row.id}
+                            grafico={<ChartFour />}
+                        />,
                         {
                             row,
                         },
                     )}
                     side="right"
                     nameButton={<RiSidebarUnfoldLine />}
-                    className="w-fit items-center justify-center"
+                    className="w-fit items-center justify-center opacity-0 transition-opacity duration-200 hover:opacity-100"
                     classNameContent="w-fit overflow-y-auto overflow-x-hidden"
                 />
             </div>

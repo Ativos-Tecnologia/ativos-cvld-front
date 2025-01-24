@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import React from 'react';
+import React, { FormEvent } from 'react';
 import { Form } from '@/components/ui/form';
 import { estados } from '@/constants/estados';
 import { tipoRegime } from '@/constants/regime-casamento';
@@ -2982,14 +2982,55 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                         </span>
                                     )}
                                 </div>
+                                <div className="mt-6 flex items-center justify-center 2xsm:flex-col 2xsm:gap-3 lg:flex-row lg:gap-6">
+                                    <Button
+                                        type="submit"
+                                        variant="success"
+                                        isLoading={isLoadingRecalculation}
+                                        disabled={!isFormModified}
+                                        className="flex items-center gap-3 rounded-md px-4 py-2 text-sm uppercase disabled:opacity-50 disabled:hover:bg-green-500 2xsm:w-full md:w-fit"
+                                    >
+                                        <BiSolidCalculator className="h-4 w-4" />
+                                        <span className="font-medium">Recalcular</span>
+                                    </Button>
+
+                                    {data?.properties['Memória de Cálculo Ordinário'].url && (
+                                        <Link
+                                            href={
+                                                data?.properties['Memória de Cálculo Ordinário'].url
+                                            }
+                                            target="_blank"
+                                            className="flex items-center justify-center gap-3 rounded-md bg-blue-600 px-4 py-2 text-sm uppercase text-snow transition-colors duration-300 hover:bg-blue-700 2xsm:w-full md:w-fit"
+                                        >
+                                            <GrDocumentText className="h-4 w-4" />
+                                            <span className="font-medium">
+                                                Memória de Cálculo Simples
+                                            </span>
+                                        </Link>
+                                    )}
+
+                                    {data?.properties['Memória de Cálculo RRA'].url && (
+                                        <Link
+                                            href={data?.properties['Memória de Cálculo RRA'].url}
+                                            target="_blank"
+                                            referrerPolicy="no-referrer"
+                                            className="flex items-center justify-center gap-3 rounded-md bg-blue-600 px-4 py-2 text-sm uppercase text-snow transition-colors duration-300 hover:bg-blue-700 2xsm:w-full md:w-fit"
+                                        >
+                                            <GrDocumentText className="h-4 w-4" />
+                                            <span className="font-medium">
+                                                Memória de Cálculo RRA
+                                            </span>
+                                        </Link>
+                                    )}
+                                </div>
                             </form>
                         </section>
 
                         <div className="grid w-full gap-5 border-l-0 border-t-2 border-stroke bg-white pl-0 pt-5 text-[#333] dark:border-strokedark dark:bg-boxdark dark:text-white md:mt-0 md:border-l-2 md:border-t-0 md:pl-3 md:pt-5">
-                            <div className="relative flex h-fit flex-col gap-5 p-8 sm:pb-0">
-                                <div className="flex items-center justify-between gap-6 2xsm:flex-col md:flex-row">
+                            <div className="relative flex h-fit flex-col gap-5 p-4 sm:pb-0">
+                                <div className="flex items-center justify-between gap-6 2xsm:flex-col md:flex-row ">
                                     <div className="flex w-full flex-1 flex-col items-center gap-4 pb-2 2xsm:pb-0 md:pb-2">
-                                        <div className="flex items-center text-sm font-medium">
+                                        <div className="flex items-center text-sm font-medium ">
                                             <p className="w-full text-sm">Proposta:</p>
                                             <input
                                                 ref={proposalRef}
@@ -3151,6 +3192,48 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                         Valor&#40;res&#41; fora do escopo definido
                                     </div>
                                 )}
+
+                                {grafico && (
+                                    <>
+                                        <hr className="mt-6 border border-stroke dark:border-strokedark" />
+                                        {grafico}
+                                    </>
+                                )}
+
+                                <hr className="mt-6 border border-stroke dark:border-strokedark" />
+
+                                <div id="observacao" className="form-inputs-container">
+                                    <div className="col-span-8">
+                                        <p className="mb-2">Observações:</p>
+                                        <div className="relative">
+                                            <textarea
+                                                defaultValue={
+                                                    data?.properties['Observação']?.rich_text?.[0]
+                                                        ?.plain_text || ''
+                                                }
+                                                className="w-full resize-none rounded-md border-stroke placeholder:text-sm dark:border-strokedark dark:bg-boxdark-2/50"
+                                                onChange={(e) => setObservation(e.target.value)}
+                                                rows={10}
+                                                placeholder="Insira uma observação"
+                                            />
+                                            <Button
+                                                variant="ghost"
+                                                onClick={() =>
+                                                    handleUpdateObservation(observation, id)
+                                                }
+                                                className="absolute bottom-3 right-2 z-2 bg-slate-100 px-1 py-1 text-sm hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70"
+                                            >
+                                                {/* {
+                                            savingObservation ? (
+                                                <AiOutlineLoading className="text-lg animate-spin" />
+                                            ) : ( */}
+                                                <BiSave className="text-lg" />
+                                                {/* )
+                                        } */}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -3160,7 +3243,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
             <section className="grid grid-cols-12 justify-center gap-5">
                 <div
                     id="cedentes"
-                    className={`${grafico ? 'col-span-8' : 'col-span-12'} grid gap-6 rounded-md bg-white p-8 dark:bg-boxdark`}
+                    className="col-span-12 grid gap-6 rounded-md bg-white p-8 dark:bg-boxdark"
                 >
                     <h3 className="font-medium text-bodydark2">Detalhes do precatório</h3>
                     <div className="grid grid-cols-4 gap-6 3xl:grid-cols-6">
@@ -3391,45 +3474,6 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                             onValueChange={(_, value) => handleUpdateRevisaoCalculo(value, id)}
                             className="text-sm font-medium"
                         />
-                    </div>
-                </div>
-                {grafico && (
-                    <div className="col-span-4">
-                        <section id="valores_grafico">
-                            <div className="grid gap-4 2xsm:grid-cols-2 md:gap-6 xl:grid-cols-12 2xl:gap-7.5">
-                                <div className="col-span-8 3xl:col-span-8">{grafico}</div>
-                            </div>
-                        </section>
-                    </div>
-                )}
-            </section>
-
-            <section id="observacao" className="form-inputs-container">
-                <div className="col-span-5">
-                    <p className="mb-2">Observações:</p>
-                    <div className="relative">
-                        <textarea
-                            defaultValue={
-                                data?.properties['Observação']?.rich_text?.[0]?.plain_text || ''
-                            }
-                            className="w-full resize-none rounded-md border-stroke placeholder:text-sm dark:border-strokedark dark:bg-boxdark-2/50"
-                            onChange={(e) => setObservation(e.target.value)}
-                            rows={10}
-                            placeholder="Insira uma observação"
-                        />
-                        <Button
-                            variant="ghost"
-                            onClick={() => handleUpdateObservation(observation, id)}
-                            className="absolute bottom-3 right-2 z-2 bg-slate-100 px-1 py-1 text-sm hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70"
-                        >
-                            {/* {
-                                            savingObservation ? (
-                                                <AiOutlineLoading className="text-lg animate-spin" />
-                                            ) : ( */}
-                            <BiSave className="text-lg" />
-                            {/* )
-                                        } */}
-                        </Button>
                     </div>
                 </div>
             </section>
