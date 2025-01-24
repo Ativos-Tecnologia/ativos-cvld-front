@@ -12,12 +12,13 @@ import { BiUser } from 'react-icons/bi';
 import Show from '@/components/Show';
 import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import { TotalLiquidAvailableChart } from '@/components/Charts/TotalAvailableLiquidChart';
+import { Spotlight } from '@/components/ui/spotlight-new';
 
 function EspacoGerencial() {
     const {
-        data: { product },
+        data: { product, first_name },
     } = useContext(UserInfoAPIContext);
-    const [selectedCoordinator, setSelectedCoordinator] = useState<string>('BeatrizRodolfo');
+    const [selectedCoordinator, setSelectedCoordinator] = useState<string>('Ativos');
 
     async function fetchData() {
         const response = await api.get(`/api/comercial/coordenador/${selectedCoordinator}/`);
@@ -53,10 +54,6 @@ function EspacoGerencial() {
 
     return (
         <>
-            <div className="flex w-full flex-col rounded-md bg-white py-2 pl-4 dark:bg-boxdark">
-                <h1>Espaço Gerencial</h1>
-                <p>Ecossistema de gestão da esteira comercial de ofícios da Ativos.</p>
-            </div>
             {/* Seção dos Filtros Administrativos */}
             <Show when={product === 'global'}>
                 <section className="mt-6 flex min-h-fit flex-col rounded-md bg-white dark:bg-boxdark">
@@ -92,7 +89,7 @@ function EspacoGerencial() {
                 <TotalLiquidAvailableChart results={chartData?.results || []} />
             </section>
             {/* Seção da Tabela de Dados */}
-            <section className="mt-6 flex flex-col rounded-md bg-white dark:bg-boxdark">
+            <section className="mt-6 flex max-h-[40rem] max-w-screen-md flex-col overflow-auto rounded-md bg-white dark:bg-boxdark">
                 <DataTable columns={columns} data={data?.results || []} loading={isLoading} />
             </section>
         </>
