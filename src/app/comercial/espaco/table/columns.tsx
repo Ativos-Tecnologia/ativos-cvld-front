@@ -33,7 +33,7 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="flex items-center gap-2"
+                    className="flex max-w-20 items-center gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
                     Criado em
@@ -41,7 +41,7 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
                 </Button>
             );
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue('criado_em')}</div>,
+        cell: ({ row }) => <div className="max-w-20 lowercase">{row.getValue('criado_em')}</div>,
     },
     {
         accessorKey: 'usuario',
@@ -60,30 +60,47 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
         cell: ({ row }) => <p className="max-w-36 truncate">{row.getValue('usuario')}</p>,
     },
     {
+        accessorKey: 'credor',
+        header: () => {
+            return <span className="flex min-w-2 max-w-36 items-center gap-4">Nome do Credor</span>;
+        },
+        cell: ({ row }) => (
+            <div
+                className="flex w-64 items-center overflow-auto text-nowrap"
+                style={{
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: 'rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.1)',
+                }}
+            >
+                <span className="">{row.getValue('credor')}</span>
+            </div>
+        ),
+    },
+    {
         accessorKey: 'loa',
         header: 'LOA',
         cell: ({ row }) => (
             <CRMTooltip text="Lei Orçamentária Anual">{row.getValue('loa')}</CRMTooltip>
         ),
     },
-    {
-        accessorKey: 'observacoes',
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    className="flex justify-start gap-2"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-                >
-                    <p className="flex justify-start">Observações</p>
-                    <ArrowUpDown size={16} />
-                </Button>
-            );
-        },
-        cell: ({ row }) => {
-            return <p className="max-w-36 truncate">{row.getValue('observacoes')}</p>;
-        },
-    },
+    // {
+    //     accessorKey: 'observacoes',
+    //     header: ({ column }) => {
+    //         return (
+    //             <Button
+    //                 variant="ghost"
+    //                 className="flex justify-start gap-2"
+    //                 onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+    //             >
+    //                 <p className="flex justify-start">Observações</p>
+    //                 <ArrowUpDown size={16} />
+    //             </Button>
+    //         );
+    //     },
+    //     cell: ({ row }) => {
+    //         return <p className="max-w-36 truncate">{row.getValue('observacoes')}</p>;
+    //     },
+    // },
     // {
     //     header: 'Comissão',
     //     cell: ({ row }) => {
@@ -133,26 +150,7 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
             </div>
         ),
     },
-    {
-        accessorKey: 'credor',
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    className="flex min-w-2 max-w-36 items-center gap-4"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-                >
-                    Nome do Credor
-                    <ArrowUpDown size={16} />
-                </Button>
-            );
-        },
-        cell: ({ row }) => (
-            <div className="flex items-center">
-                <span>{row.getValue('credor')}</span>
-            </div>
-        ),
-    },
+
     // {
     //     accessorKey: 'proposta_minima',
     //     header: ({ column }) => {
@@ -181,6 +179,17 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
         cell: ({ row }) => (
             <div className="flex items-center">
                 <p className="max-w-30 truncate">{row.getValue('status')}</p>
+            </div>
+        ),
+    },
+    {
+        accessorKey: 'status_diligencia',
+        header: ({ column }) => {
+            return <p className="max-w-30 items-center gap-2 truncate">Status Diligência</p>;
+        },
+        cell: ({ row }) => (
+            <div className="flex items-center">
+                <p className="max-w-30 truncate">{row.getValue('status_diligencia')}</p>
             </div>
         ),
     },
