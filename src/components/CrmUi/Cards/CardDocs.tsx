@@ -7,7 +7,7 @@ import { LuFileX2 } from 'react-icons/lu';
 
 const CardDocs = ({ children, ...props }: HTMLAttributes<HTMLDivElement> & { children?: React.ReactNode }) => {
     return (
-        <div {...props} className={cn('2xsm:col-span-2 lg:col-span-1 grid gap-4 bg-white shadow-6 dark:bg-boxdark-2 rounded-md p-5', props.className)}>
+        <div {...props} className={cn('2xsm:col-span-2 lg:col-span-1 grid gap-4 bg-white shadow-6 dark:bg-boxdark rounded-md p-5', props.className)}>
             {children}
         </div>
     )
@@ -31,7 +31,7 @@ const CardDocsDocPreviewWrapper = ({ children, ...props }: HTMLAttributes<HTMLDi
     children: React.ReactNode
 }) => {
     return (
-        <div {...props} className={cn('2xsm:col-span-6 md:col-span-3 lg:col-span-6 xl:col-span-3 grid gap-4 xl:border-r xl:border-stroke xl:dark:border-boxdark', props.className)}>
+        <div {...props} className={cn('2xsm:col-span-6 md:col-span-3 lg:col-span-6 xl:col-span-3 grid gap-4 xl:border-r xl:border-stroke xl:dark:border-form-strokedark', props.className)}>
             {children}
         </div>
     )
@@ -63,13 +63,21 @@ const CardDocsPreview = ({ url, ...props }: { url: string } & HTMLAttributes<HTM
 
                     {/* hover effect */}
                     <div
-                        onClick={props.onClick}
+                        onClick={(e) => {
+                            if (docType !== "pdf") {
+                                props.onClick;
+                            } else {
+                                e.stopPropagation();
+                            }
+                        }}
                         className='absolute w-full h-full flex flex-col gap-5 items-center justify-center text-snow text-sm bg-black-2/70 transition-opacity duration-300 group-hover:opacity-100 opacity-0 cursor-pointer'
                     >
                         <p className='max-w-[150px] break-words line-clamp-3'>
                             {docName.toUpperCase()}
                         </p>
-                        <p className='font-medium'>Clique para visualizar</p>
+                        {docType !== "pdf" && (
+                            <p className='font-medium'>Clique para visualizar</p>
+                        )}
                     </div>
                 </>
             )} 
