@@ -14,6 +14,25 @@ import { SheetCelerComponent } from '@/components/CrmUi/Sheet';
 import { SheetViewComercial } from '@/components/Features/Comercial/SheetViewComercial';
 import { RiSidebarUnfoldLine } from 'react-icons/ri';
 import { CoordinatorParticipationChart } from '@/components/Charts/CommissionParticipationChart';
+import { ComercialContext } from '@/context/ComercialContext';
+
+const CellComponent = (row: { original: any }) => {
+    const { setSheetOpen, sheetOpen, setSheetOpenId } = React.useContext(ComercialContext);
+    const resumo = row.original;
+
+    function handleOpenSheet() {
+        setSheetOpen(!sheetOpen);
+        setSheetOpenId(resumo.id);
+    }
+
+    return (
+        <div className="flex items-center gap-2">
+            <Button variant="ghost" className="flex items-center gap-2" onClick={handleOpenSheet}>
+                <RiSidebarUnfoldLine size={20} />
+            </Button>
+        </div>
+    );
+};
 
 export const columns: ColumnDef<ITabelaGerencial>[] = [
     {
@@ -75,63 +94,7 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
         header: ({ column }) => {
             return null;
         },
-        cell: ({ row }) => (
-            <SheetCelerComponent
-                children={flexRender(
-                    <SheetViewComercial
-                        sheetData={row.original}
-                        id={row.original.id}
-                        grafico={
-                            <CoordinatorParticipationChart
-                                chartData={{
-                                    ...row.original,
-                                    properties: {
-                                        'META 1 - Comissão Interna (Comercial)': {
-                                            title: 'META 1 - Comissão Interna (Comercial)',
-                                            type: 'number',
-                                            formula: {
-                                                type: 'number',
-                                                number: row?.original?.meta_1,
-                                            },
-                                        },
-                                        'META 2 - Comissão Interna (Comercial)': {
-                                            title: 'META 2 - Comissão Interna (Comercial)',
-                                            type: 'number',
-                                            formula: {
-                                                type: 'number',
-                                                number: row?.original?.meta_2,
-                                            },
-                                        },
-                                        'META 3 - Comissão Interna (Comercial)': {
-                                            title: 'META 3 - Comissão Interna (Comercial)',
-                                            type: 'number',
-                                            formula: {
-                                                type: 'number',
-                                                number: row?.original?.meta_3,
-                                            },
-                                        },
-                                    },
-                                }}
-                            />
-                        }
-                    />,
-                    {
-                        row,
-                    },
-                )}
-                side="right"
-                nameButton={<RiSidebarUnfoldLine />}
-                className="col-span-2 grid w-fit items-center opacity-0 transition-opacity duration-200 hover:opacity-100"
-                classNameContent="w-fit overflow-y-auto overflow-x-hidden"
-            />
-        ),
-    },
-    {
-        accessorKey: 'loa',
-        header: 'LOA',
-        cell: ({ row }) => (
-            <CRMTooltip text="Lei Orçamentária Anual">{row.getValue('loa')}</CRMTooltip>
-        ),
+        cell: ({ row }) => <CellComponent original={row.original} />,
     },
     // {
     //     accessorKey: 'observacoes',

@@ -24,6 +24,7 @@ interface SheetProps {
     footer?: React.ReactNode;
     footerButton?: string;
     onSubmit?: () => void | Promise<void>;
+    open?: boolean;
 }
 
 /**
@@ -56,11 +57,11 @@ export function SheetCelerComponent({
     footer,
     footerButton,
     onSubmit,
+    open,
 }: SheetProps) {
-
     return (
         <div className="grid grid-cols-2 gap-2">
-            <Sheet key={side}>
+            <Sheet open={open} key={side}>
                 <SheetTrigger asChild>
                     <Button variant="outline" className={`${className}`}>
                         {nameButton}

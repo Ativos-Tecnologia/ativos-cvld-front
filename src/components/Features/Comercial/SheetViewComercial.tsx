@@ -26,14 +26,9 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import {
-    BiCheck,
-    BiSave,
-    BiSolidCalculator,
-    BiX,
-} from 'react-icons/bi';
+import { BiCheck, BiSave, BiSolidCalculator, BiX } from 'react-icons/bi';
 import { BsCalendar2HeartFill, BsPencilSquare } from 'react-icons/bs';
-import {  FaIdCard, FaMapMarkedAlt, FaRegFilePdf } from 'react-icons/fa';
+import { FaIdCard, FaMapMarkedAlt, FaRegFilePdf } from 'react-icons/fa';
 import { FaBuilding, FaBuildingColumns, FaLink, FaUser } from 'react-icons/fa6';
 import { GiPayMoney, GiReceiveMoney, GiTakeMyMoney } from 'react-icons/gi';
 import { GrDocumentText, GrDocumentUser, GrMoney } from 'react-icons/gr';
@@ -56,19 +51,18 @@ import Image from 'next/image';
 import DashbrokersCard, { ChecksProps } from '@/components/Cards/DashbrokersCard';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/functions/formaters/formatCurrency';
+import { ComercialContext } from '@/context/ComercialContext';
 
 type SheetViewComercialProps = {
     id: string;
-    sheetData: any;
-    grafico?: React.ReactNode;
-    setIsOpenSwall?: (value: boolean) => void;
-    isOpenSwall?: boolean;
 };
 
-export const SheetViewComercial = ({ id, grafico, sheetData, isOpenSwall, setIsOpenSwall }: SheetViewComercialProps) => {
+export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
     const {
         data: { user },
     } = useContext<UserInfoContextType>(UserInfoAPIContext);
+
+    const { setSheetOpen } = useContext(ComercialContext);
 
     /* ====> context imports <==== */
     const {
@@ -76,16 +70,8 @@ export const SheetViewComercial = ({ id, grafico, sheetData, isOpenSwall, setIsO
         setCedenteModal,
         docModalInfo,
         setDocModalInfo,
-        fetchCardData,
-        deleteModalLock,
-        isFetchAllowed,
         setIsFetchAllowed,
-        setDeleteModalLock,
         fetchDetailCardData,
-        specificCardData,
-        setSpecificCardData,
-        selectedUser,
-        setEditModalId,
     } = useContext(BrokersContext);
 
     const [credorIdentificationType, setCredorIdentificationType] =
@@ -460,10 +446,7 @@ export const SheetViewComercial = ({ id, grafico, sheetData, isOpenSwall, setIsO
             return { previousData };
         },
         onError: (error, message, context) => {
-            globalQueryClient.setQueryData(
-                ['page', sheetData.id],
-                context?.previousData as NotionPage,
-            );
+            globalQueryClient.setQueryData(['page', id], context?.previousData as NotionPage);
             toast.error('Erro ao atualizar a observação!', {
                 classNames: {
                     toast: 'bg-white dark:bg-boxdark',
@@ -502,209 +485,6 @@ export const SheetViewComercial = ({ id, grafico, sheetData, isOpenSwall, setIsO
             setIsFetchAllowed(true);
         },
     });
-
-    const handleDueDiligence = () => {
-        swal.fire({
-            title: 'Diligência',
-            text: 'Deseja mesmo finalizar a diligência?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Sim',
-            cancelButtonText: 'Não',
-            confirmButtonColor: '#4CAF50',
-            cancelButtonColor: '#F44336',
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                const response = await api.patch(`api/notion-api/update/${id}/`, {
-                    'Status Diligência': {
-                        select: {
-                            name: 'Em liquidação',
-                        },
-                    },
-                });
-                if (response.status !== 202) {
-                    swal.fire({
-                        title: 'Erro',
-                        text: 'Houve um erro ao finalizar a diligência',
-                        icon: 'error',
-                        confirmButtonText: 'OK',
-                    });
-                }
-
-                refetch();
-
-                swal.fire({
-                    title: 'Diligência Finalizada',
-                    text: 'A diligência foi Finalizada com sucesso! O ofício agora está em liquidação.',
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                });
-            }
-        });
-    };
-    const handleCessao = () => {
-        swal.fire({
-            title: 'Cessão',
-            text: 'Deseja mesmo Enviar o Registro de Cessão?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Sim',
-            cancelButtonText: 'Não',
-            confirmButtonColor: '#4CAF50',
-            cancelButtonColor: '#F44336',
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                const response = await api.patch(`api/notion-api/update/${id}/`, {
-                    'Status Diligência': {
-                        select: {
-                            name: 'Registro de cessão',
-                        },
-                    },
-                });
-                if (response.status !== 202) {
-                    swal.fire({
-                        title: 'Erro',
-                        text: 'Houve um erro ao Enviar Registro de Cessão',
-                        icon: 'error',
-                        confirmButtonText: 'OK',
-                    });
-                }
-
-                refetch();
-
-                swal.fire({
-                    title: 'Registro Salvo.',
-                    text: 'O Oficio seguiu para a parte de cessão.',
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                });
-            }
-        });
-    };
-
-    const handlePendencia = () => {
-        swal.fire({
-            title: 'Pendência a Sanar',
-            input: 'textarea',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Sim',
-            cancelButtonText: 'Não',
-            confirmButtonColor: '#4CAF50',
-            cancelButtonColor: '#F44336',
-            inputLabel: 'Informe a pendência a ser sanada pelo cedente',
-            inputPlaceholder: 'Ex: Falta de documentação. Favor enviar o documento X',
-
-            inputValidator: (value) => {
-                if (!value) {
-                    return 'Você precisa informar a pendência';
-                }
-            },
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                const response = await api.patch(`api/notion-api/update/${id}/`, {
-                    'Status Diligência': {
-                        select: {
-                            name: 'Pendência a Sanar',
-                        },
-                    },
-                    Observação: {
-                        rich_text: [
-                            {
-                                text: {
-                                    content: `
-- Motivo do Retorno: ${result.value}
-- Encaminhado por: ${user} em ${new Date().toLocaleString()}
--------------------------------
-${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
-                  `,
-                                },
-                            },
-                        ],
-                    },
-                });
-                if (response.status !== 202) {
-                    swal.fire({
-                        title: 'Erro',
-                        text: 'Houve um erro ao encaminhar o ofício para repactuação',
-                        icon: 'error',
-                        confirmButtonText: 'OK',
-                    });
-                }
-
-                refetch();
-
-                swal.fire({
-                    title: 'Diligência Repactuada',
-                    text: 'O ofício foi encaminhado para repactuação com sucesso!',
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                });
-            }
-        });
-    };
-    const handleArchiving = () => {
-        swal.fire({
-            title: 'Arquivar Ofício',
-            input: 'textarea',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Arquivar definitivamente',
-            cancelButtonText: 'Não arquivar',
-            confirmButtonColor: '#4CAF50',
-            cancelButtonColor: '#F44336',
-            inputLabel: 'Informe o motivo do arquivamento',
-            inputPlaceholder: 'Ex: Desistência do credor.',
-
-            inputValidator: (value) => {
-                if (!value) {
-                    return 'Você precisa informar a motivo';
-                }
-            },
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                const response = await api.patch(`api/notion-api/update/${id}/`, {
-                    Status: {
-                        status: {
-                            name: 'ARQUIVADO',
-                        },
-                    },
-                    Observação: {
-                        rich_text: [
-                            {
-                                text: {
-                                    content: `
-- Motivo do Arquivamento: ${result.value}
-- Encaminhado por: ${user} em ${new Date().toLocaleString()}
--------------------------------
-${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
-                  `,
-                                },
-                            },
-                        ],
-                    },
-                });
-
-                if (response.status !== 202) {
-                    swal.fire({
-                        title: 'Erro',
-                        text: 'Houve um erro ao arquivar o ofício.',
-                        icon: 'error',
-                        confirmButtonText: 'OK',
-                    });
-                }
-
-                refetch();
-
-                swal.fire({
-                    title: 'Ofício Arquivado',
-                    text: 'O ofício arquivado com sucesso!',
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                });
-            }
-        });
-    };
 
     const handleDueAndamento = () => {
         const requiredInputsCheck = verifyRequiredInputsToDue(
@@ -759,61 +539,8 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
         }
     };
 
-    const handleRevisaoDueDiligence = () => {
-        const requiredInputsCheck = verifyRequiredInputsToDue(
-            data && data,
-            credorIdentificationType === 'CPF' ? cedenteDataPF : socioData,
-        );
-        if (requiredInputsCheck) {
-            swal.fire({
-                title: 'Revisão de Due Diligence',
-                text: 'Deseja mesmo enviar para Revisão de Due Diligence?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Sim',
-                cancelButtonText: 'Não',
-                confirmButtonColor: '#4CAF50',
-                cancelButtonColor: '#F44336',
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    const response = await api.patch(`api/notion-api/update/${id}/`, {
-                        'Status Diligência': {
-                            select: {
-                                name: 'Revisão de Due Diligence',
-                            },
-                        },
-                    });
-                    if (response.status !== 202) {
-                        swal.fire({
-                            title: 'Erro',
-                            text: 'Houve um erro ao Enviar para Revisão da Due Diligence',
-                            icon: 'error',
-                            confirmButtonText: 'OK',
-                        });
-                    }
-
-                    refetch();
-
-                    swal.fire({
-                        title: 'Registro da Due está em Andamento',
-                        text: 'A diligência está em andamento.',
-                        icon: 'success',
-                        confirmButtonText: 'OK',
-                    });
-                }
-            });
-        } else {
-            swal.fire({
-                icon: 'warning',
-                title: 'Aviso',
-                text: 'Existem campos obrigatórios que ainda não foram preenchidos. Por favor, revise o formulário.',
-            });
-            setRequiredDueInputsError(true);
-        }
-    };
-
     async function fetchData() {
-        const response = await api.get(`/api/notion-api/list/page/${sheetData.id}/`);
+        const response = await api.get(`/api/notion-api/list/page/${id}/`);
         return response.data;
     }
     async function fetchCedenteData(cedenteId: string) {
@@ -823,7 +550,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
     }
 
     const { data, isLoading, refetch } = useQuery<NotionPage>({
-        queryKey: ['page', sheetData.id],
+        queryKey: ['page', id],
         queryFn: fetchData,
         refetchOnWindowFocus: false,
     });
@@ -855,8 +582,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
 
     const onSubmitForm = async (formData: any) => {
         setIsLoadingRecalculation(true);
-        setIsOpenSwall?.(true);
-        
+        setSheetOpen(false);
         if (formData.observacao) {
             formData.observacao = `
 💭 Comentários: ${formData.observacao}
@@ -937,19 +663,21 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
             }
 
             try {
-                const response = await api.patch(`/api/juridico/update/precatorio/${sheetData.id}`, formData);
+                setSheetOpen(true);
+                const response = await api.patch(
+                    `/api/juridico/update/precatorio/${id}/`,
+                    formData,
+                );
                 setHappenedRecalculation(true);
                 setRecalculationData(response.data);
 
-                swal.fire({
-                    title: 'Sucesso',
-                    text: 'Dados atualizados com sucesso!',
-                    icon: 'success',
-                    confirmButtonText: 'OK',
+                toast.success('Dados atualizados com sucesso!', {
+                    icon: <BiCheck className="fill-green-400 text-lg" />,
                 });
 
                 refetch();
             } catch (error: AxiosError | any) {
+                setSheetOpen(true);
                 swal.fire({
                     title: 'Erro',
                     text: `${error.response?.data?.detail || error.message}`,
@@ -959,7 +687,6 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                 console.error(error);
             } finally {
                 setIsLoadingRecalculation(false);
-                setIsOpenSwall?.(false);
             }
         });
     };
@@ -1069,90 +796,6 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                 desembolsoSlideRef.current.value = numberFormat(newDesembolso);
             }
         }
-    };
-
-    const handleChangeDesembolsoSlider = (value: string, fromSlider?: boolean) => {
-        if (!value) return;
-        const rawValue = !fromSlider
-            ? Number(
-                  value
-                      .replace(/R\$\s*/g, '')
-                      .replaceAll('.', '')
-                      .replaceAll(',', '.'),
-              )
-            : Number(value);
-
-        const newDesembolso = rawValue;
-        const newRentabilidade = findRentabilidadeAoAnoThroughDesembolso(
-            Number(newDesembolso),
-            data,
-        ).rentabilidade_ao_ano;
-
-        if (
-            newDesembolso > handleDesembolsoVsRentabilidade(0, data).desembolso ||
-            newDesembolso < handleDesembolsoVsRentabilidade(2, data).desembolso
-        ) {
-            setSliderError(true);
-            return;
-        } else {
-            setSliderError(false);
-        }
-
-        setSliderValues((oldValues) => ({
-            ...oldValues,
-            rentabilidade: newRentabilidade,
-            desembolso: newDesembolso,
-        }));
-
-        if (rentabilidadeSlideRef.current && desembolsoSlideRef.current) {
-            desembolsoSlideRef.current.value = numberFormat(newDesembolso);
-            if (fromSlider) {
-                rentabilidadeSlideRef.current.value = `${(newRentabilidade * 100).toFixed(2).replace('.', ',')}%`;
-            }
-        }
-    };
-
-    const handleSaveValues = async () => {
-        setLoadingUpdateState((prev) => ({ ...prev, formValores: true }));
-        try {
-            const factor = Math.pow(10, 5);
-            const newRentabilidade = Math.floor(sliderValues.rentabilidade * factor) / factor;
-            const res = await api.post(`/api/juridico/desembolso/${id}/`, {
-                rentabilidade_anual: newRentabilidade,
-            });
-
-            if (res.status === 200) {
-                swal.fire({
-                    toast: true,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    icon: 'success',
-                    text: 'Valores salvos com sucesso',
-                    position: 'bottom-right',
-                    showConfirmButton: false,
-                });
-                refetch();
-            }
-        } catch (error) {
-            swal.fire({
-                toast: true,
-                timer: 3000,
-                timerProgressBar: true,
-                icon: 'error',
-                text: 'Erro ao salvar os valores',
-                position: 'bottom-right',
-                showConfirmButton: false,
-            });
-        } finally {
-            setLoadingUpdateState((prev) => ({ ...prev, formValores: false }));
-        }
-    };
-
-    const handleUpdatePrevisaoDePagamento = async (value: string, page_id: string) => {
-        await previsaoDePagamentoMutation.mutateAsync({
-            page_id,
-            value,
-        });
     };
 
     const handleUpdateObservation = async (value: string, page_id: string) => {
@@ -2912,7 +2555,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                             )}
                                     </div>
 
-                                    <div className={`col-span-4 flex w-full justify-center ${isOpenSwall ? 'hidden' : ''}`}>
+                                    <div className={`col-span-4 flex w-full justify-center`}>
                                         <hr className="my-6 border border-stroke dark:border-strokedark" />
                                         <CelerInputFormField
                                             name="observacao"
@@ -3167,12 +2810,12 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                     </div>
                                 )}
 
-                                {grafico && (
+                                {/* {grafico && (
                                     <>
                                         <hr className="mt-6 border border-stroke dark:border-strokedark" />
                                         {grafico}
                                     </>
-                                )}
+                                )} */}
 
                                 <hr className="mt-6 border border-stroke dark:border-strokedark" />
 

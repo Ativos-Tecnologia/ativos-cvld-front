@@ -21,7 +21,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import React, { useRef } from 'react';
+import React, { useContext, useRef } from 'react';
 
 import { FilterIcon, Search, X } from 'lucide-react';
 
@@ -30,6 +30,7 @@ import { cn } from '@/lib/utils';
 import { SheetCelerComponent } from '@/components/CrmUi/Sheet';
 import { SheetViewComercial } from '@/components/Features/Comercial/SheetViewComercial';
 import { RiSidebarUnfoldLine } from 'react-icons/ri';
+import { ComercialContext } from '@/context/ComercialContext';
 
 type ColumnDef<TData, TValue> = BaseColumnDef<TData, TValue> & {
     filterVariant?: 'range' | 'select' | 'text';
@@ -563,14 +564,7 @@ export function DataTable<TData, TValue>({
     const status = Array.from(new Set(getColumnValues('status'))) as string[];
     const loaOptions = Array.from(new Set(getColumnValues('loa'))) as string[];
     const usuarioOptions = Array.from(new Set(getColumnValues('usuario'))) as string[];
-    // const statusDiligencia = [
-    //     'Repactuação',
-    //     'Pendência a Sanar',
-    //     'Due Diligence',
-    //     'Em liquidação',
-    //     'Em cessão',
-    //     'Transação Concluída',
-    // ];
+
     const statusDiligencia = Array.from(new Set(getColumnValues('status_diligencia'))) as string[];
 
     return (
