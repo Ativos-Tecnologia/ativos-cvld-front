@@ -52,6 +52,7 @@ import DashbrokersCard, { ChecksProps } from '@/components/Cards/DashbrokersCard
 import { toast } from 'sonner';
 import { formatCurrency } from '@/functions/formaters/formatCurrency';
 import { ComercialContext } from '@/context/ComercialContext';
+import JuridicoDetailsSkeleton from '@/components/Skeletons/JuridicoDetailsSkeleton';
 
 type SheetViewComercialProps = {
     id: string;
@@ -63,6 +64,7 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
     } = useContext<UserInfoContextType>(UserInfoAPIContext);
 
     const { setSheetOpen } = useContext(ComercialContext);
+    const [previousId, setPreviousId] = useState<string | null>(null);
 
     /* ====> context imports <==== */
     const {
@@ -127,7 +129,6 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
         commission: 0,
     });
     const [savingProposalAndComission, setSavingProposalAndComission] = useState<boolean>(false);
-    const [isDeleting, setIsDeleting] = useState<boolean>(false);
     const [isUpdatingDiligence, setIsUpdatingDiligence] = useState<boolean>(false);
     const [isFetchingData, setIsFetchingData] = useState<boolean>(false);
     const [savingObservation, setSavingObservation] = useState<boolean>(false);
@@ -541,18 +542,21 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
 
     async function fetchData() {
         const response = await api.get(`/api/notion-api/list/page/${id}/`);
+        setPreviousId(id);
         return response.data;
     }
+
     async function fetchCedenteData(cedenteId: string) {
         if (!cedenteId) return;
         const response = await api.get(`/api/notion-api/list/page/${cedenteId}/`);
         return response.data;
     }
 
-    const { data, isLoading, refetch } = useQuery<NotionPage>({
+    const { data, isLoading, refetch, isFetching } = useQuery<NotionPage>({
         queryKey: ['page', id],
         queryFn: fetchData,
         refetchOnWindowFocus: false,
+        refetchOnReconnect: true,
     });
 
     const { data: cedenteDataPF } = useQuery<NotionPage>({
@@ -1917,6 +1921,10 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
             }
         }
     }, [data]);
+
+    if (loading || !data || isFetching) {
+        return <JuridicoDetailsSkeleton />;
+    }
 
     return (
         <div className="flex w-full flex-col gap-5">

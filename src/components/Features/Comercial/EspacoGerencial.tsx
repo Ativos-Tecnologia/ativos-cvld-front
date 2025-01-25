@@ -24,11 +24,12 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/components/ui/sheet';
+import { Spotlight } from '@/components/ui/spotlight-new';
 
 function EspacoGerencial() {
     const { sheetOpen, setSheetOpen, sheetOpenId } = useContext(ComercialContext);
     const {
-        data: { product },
+        data: { product, first_name },
     } = useContext(UserInfoAPIContext);
     const [selectedCoordinator, setSelectedCoordinator] = useState<string>('Ativos');
 
@@ -41,7 +42,7 @@ function EspacoGerencial() {
         const response = await api.get(`/api/comercial/coordenador/${selectedCoordinator}/targets`);
         return response.data;
     }
-    const { data, isLoading, refetch } = useQuery({
+    const { data, isFetching, refetch } = useQuery({
         queryKey: ['espaco-gerencial'],
         queryFn: () => fetchData(),
         placeholderData: keepPreviousData,
@@ -70,9 +71,13 @@ function EspacoGerencial() {
 
     return (
         <>
-            <div className="flex w-full flex-col rounded-md bg-white py-2 pl-4 dark:bg-boxdark">
-                <h1>Espaço Gerencial</h1>
-                <p>Ecossistema de gestão da esteira comercial de ofícios da Ativos.</p>
+            <div className="bg-grid-white/[0.02] relative flex h-[15rem] max-w-screen-xsm overflow-hidden rounded-md bg-white/[0.96] antialiased dark:bg-boxdark dark:bg-opacity-50 md:mx-auto md:h-[40rem] md:max-w-screen-2xl md:flex-col md:items-center md:justify-center md:overflow-hidden md:bg-opacity-50 md:antialiased md:shadow-md md:dark:rounded-md md:dark:bg-boxdark md:dark:bg-opacity-50">
+                <Spotlight />
+                <div className="relative z-10 w-full pt-20 md:w-3/4 md:pt-0">
+                    <h1 className="bg-opacity-50 bg-gradient-to-b from-slate-500 to-neutral-600 bg-clip-text text-center text-4xl font-bold text-transparent dark:from-neutral-50 dark:to-neutral-400 md:w-full md:max-w-[1000px] md:text-7xl">
+                        Espaço Gerencial <br /> {first_name}
+                    </h1>
+                </div>
             </div>
             {/* Seção dos Filtros Administrativos */}
             <Show when={product === 'global'}>
@@ -98,22 +103,25 @@ function EspacoGerencial() {
             {/* Fim da Seção dos Filtros Administrativos */}
             {/* Seção do Gráfico de Usuários X status X VL */}
             <section className="mt-6 flex min-h-fit rounded-md bg-white dark:bg-boxdark">
-                <ComercialUserVsStatusChart chartData={data?.results} />
+                <ComercialUserVsStatusChart chartData={data?.results} isLoading={isFetching} />
             </section>
             {/* Seção do Gráfico de Metas */}
             <section className="mt-6 flex min-h-fit rounded-md bg-white dark:bg-boxdark">
-                <GoalChartCard results={chartData?.results || []} isLoading={isChartDataLoading} />
+                <GoalChartCard
+                    results={chartData?.results || []}
+                    isLoading={isChartDataLoading || isFetching}
+                />
             </section>
             {/* Seção do Gráfico de Metas de Valor Líquido */}
             <section className="mt-6 flex min-h-fit rounded-md bg-white dark:bg-boxdark">
                 <TotalLiquidAvailableChart
                     results={chartData?.results || []}
-                    isLoading={isChartDataLoading}
+                    isLoading={isChartDataLoading || isFetching}
                 />
             </section>
             {/* Seção da Tabela de Dados */}
-            <section className="mt-6 flex flex-col rounded-md bg-white dark:bg-boxdark">
-                <DataTable columns={columns} data={data?.results || []} loading={isLoading} />
+            <section className="mt-6 flex max-w-screen-2xl flex-col overflow-auto rounded-md bg-white dark:bg-boxdark">
+                <DataTable columns={columns} data={data?.results || []} loading={isFetching} />
                 <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                     <SheetContent
                         className="w-fit overflow-y-auto overflow-x-hidden"
