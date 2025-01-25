@@ -306,6 +306,7 @@ export const columns: ColumnDef<IResumoComercial>[] = [
     cell: ({ row }) => (
       <a
         href={`mailto:${row.getValue("email")}?subject=Boas%20vindas%20ao%20Celer`}
+        target="_blank"
         className="lowercase"
       >
         {row.getValue("email")}

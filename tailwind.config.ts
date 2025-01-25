@@ -412,10 +412,10 @@ const config = {
   			},
   			'skeleton-pass': {
   				'0%': {
-  					transform: 'translateX(-400%)'
+  					transform: 'translateX(-100%)'
   				},
   				'100%': {
-  					transform: 'translateX(1000px)'
+  					transform: 'translateX(+200%)'
   				}
   			},
   			fade: {
