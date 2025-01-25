@@ -28,7 +28,7 @@ function EspacoGerencial() {
         const response = await api.get(`/api/comercial/coordenador/${selectedCoordinator}/targets`);
         return response.data;
     }
-    const { data, isLoading, refetch } = useQuery({
+    const { data, isFetching, refetch } = useQuery({
         queryKey: ['espaco-gerencial'],
         queryFn: () => fetchData(),
         placeholderData: keepPreviousData,
@@ -85,7 +85,7 @@ function EspacoGerencial() {
             {/* Fim da Seção dos Filtros Administrativos */}
             {/* Seção do Gráfico de Usuários X status X VL */}
             <section className="mt-6 flex min-h-fit rounded-md bg-white dark:bg-boxdark">
-                <ComercialUserVsStatusChart chartData={data?.results} />
+                <ComercialUserVsStatusChart chartData={data?.results} isLoading={isFetching} />
             </section>
             {/* Seção do Gráfico de Metas */}
             <section className="mt-6 flex min-h-fit rounded-md bg-white dark:bg-boxdark">
@@ -100,7 +100,7 @@ function EspacoGerencial() {
             </section>
             {/* Seção da Tabela de Dados */}
             <section className="mt-6 flex flex-col rounded-md bg-white dark:bg-boxdark">
-                <DataTable columns={columns} data={data?.results || []} loading={isLoading} />
+                <DataTable columns={columns} data={data?.results || []} loading={isFetching} />
             </section>
         </>
     );
