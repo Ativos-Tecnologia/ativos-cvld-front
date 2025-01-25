@@ -90,7 +90,7 @@ function EspacoGerencial() {
             {/* Fim da Seção dos Filtros Administrativos */}
             {/* Seção do Gráfico de Usuários X status X VL */}
             <section className="mt-6 flex min-h-fit rounded-md bg-white dark:bg-boxdark">
-                <ComercialUserVsStatusChart chartData={data?.results} />
+                <ComercialUserVsStatusChart chartData={data?.results} isLoading={isFetching} />
             </section>
             {/* Seção do Gráfico de Metas */}
             <section className="mt-6 flex min-h-fit rounded-md bg-white dark:bg-boxdark">
