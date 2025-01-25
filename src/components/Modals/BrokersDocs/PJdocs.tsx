@@ -318,7 +318,7 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
 
   // função de submit só para que o hook form funcione (temporário)
   const submitDocument = async (data: any) => {
-    console.log(data);
+ 
   };
 
   // função que faz fetch nos dados do cedente

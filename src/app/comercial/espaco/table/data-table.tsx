@@ -21,12 +21,16 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import React, { useRef } from 'react';
+import React, { useContext, useRef } from 'react';
 
 import { FilterIcon, Search, X } from 'lucide-react';
 
 import { useClickOutside } from '@/hooks/use-click-outside';
 import { cn } from '@/lib/utils';
+import { SheetCelerComponent } from '@/components/CrmUi/Sheet';
+import { SheetViewComercial } from '@/components/Features/Comercial/SheetViewComercial';
+import { RiSidebarUnfoldLine } from 'react-icons/ri';
+import { ComercialContext } from '@/context/ComercialContext';
 
 type ColumnDef<TData, TValue> = BaseColumnDef<TData, TValue> & {
     filterVariant?: 'range' | 'select' | 'text';

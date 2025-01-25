@@ -504,7 +504,6 @@ const NewForm = () => {
   const vincularUsuario = watch("vincular_usuario");
   useEffect(() => {
     if (vincularUsuario) {
-      console.log("Vincular usuário");
       setSaveInfoToNotion(true);
     } else {
       setSaveInfoToNotion(false);

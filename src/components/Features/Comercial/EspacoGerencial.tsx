@@ -7,14 +7,27 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import React, { useContext, useEffect, useState } from 'react';
 import { GoalChartCard } from './GoalChartCard';
 import ComercialUserVsStatusChart from '@/components/Charts/ComercialUserVsStatusChart';
+import { SheetCelerComponent } from '@/components/CrmUi/Sheet';
+import { SheetViewComercial } from './SheetViewComercial';
 import CelerAppCombobox from '@/components/CrmUi/Combobox';
 import { BiUser } from 'react-icons/bi';
 import Show from '@/components/Show';
 import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import { TotalLiquidAvailableChart } from '@/components/Charts/TotalAvailableLiquidChart';
+import { ComercialContext, ComercialProvider } from '@/context/ComercialContext';
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from '@/components/ui/sheet';
 import { Spotlight } from '@/components/ui/spotlight-new';
 
 function EspacoGerencial() {
+    const { sheetOpen, setSheetOpen, sheetOpenId } = useContext(ComercialContext);
     const {
         data: { product, first_name },
     } = useContext(UserInfoAPIContext);
@@ -109,6 +122,22 @@ function EspacoGerencial() {
             {/* Seção da Tabela de Dados */}
             <section className="mt-6 flex max-w-screen-2xl flex-col overflow-auto rounded-md bg-white dark:bg-boxdark">
                 <DataTable columns={columns} data={data?.results || []} loading={isFetching} />
+                <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+                    <SheetContent
+                        className="w-fit overflow-y-auto overflow-x-hidden"
+                        style={{
+                            scrollbarWidth: 'thin',
+                        }}
+                    >
+                        <SheetHeader>
+                            <SheetTitle>Detalhes</SheetTitle>
+                            <SheetDescription className="pb-4">
+                                Veja os detalhes do ofício selecionado
+                            </SheetDescription>
+                        </SheetHeader>
+                        <SheetViewComercial id={sheetOpenId} />
+                    </SheetContent>
+                </Sheet>
             </section>
         </>
     );
