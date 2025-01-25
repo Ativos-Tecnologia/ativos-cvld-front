@@ -53,6 +53,7 @@ import { toast } from 'sonner';
 import { formatCurrency } from '@/functions/formaters/formatCurrency';
 import { ComercialContext } from '@/context/ComercialContext';
 import JuridicoDetailsSkeleton from '@/components/Skeletons/JuridicoDetailsSkeleton';
+import { CoordinatorParticipationChart } from '@/components/Charts/CommissionParticipationChart';
 
 type SheetViewComercialProps = {
     id: string;
@@ -2818,12 +2819,8 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                                     </div>
                                 )}
 
-                                {/* {grafico && (
-                                    <>
-                                        <hr className="mt-6 border border-stroke dark:border-strokedark" />
-                                        {grafico}
-                                    </>
-                                )} */}
+                                <hr className="mt-6 border border-stroke dark:border-strokedark" />
+                                <CoordinatorParticipationChart chartData={data} />
 
                                 <hr className="mt-6 border border-stroke dark:border-strokedark" />
 
