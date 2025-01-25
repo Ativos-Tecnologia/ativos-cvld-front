@@ -11,7 +11,6 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/components/ui/sheet';
-import React from 'react';
 
 interface SheetProps {
     side: 'top' | 'right' | 'bottom' | 'left';
@@ -58,6 +57,7 @@ export function SheetCelerComponent({
     footerButton,
     onSubmit,
 }: SheetProps) {
+
     return (
         <div className="grid grid-cols-2 gap-2">
             <Sheet key={side}>
@@ -66,7 +66,7 @@ export function SheetCelerComponent({
                         {nameButton}
                     </Button>
                 </SheetTrigger>
-                <SheetContent side={side} className={classNameContent}>
+                <SheetContent side={side} className={`${classNameContent}`}>
                     {title && (
                         <SheetHeader>
                             <SheetTitle>{title}</SheetTitle>

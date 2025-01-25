@@ -21,37 +21,29 @@ import {
 } from '@/functions/juridico/solverDesembolsoVsRentabilidade';
 import UseMySwal from '@/hooks/useMySwal';
 import { NotionPage } from '@/interfaces/INotion';
-import { IWalletResponse } from '@/interfaces/IWallet';
 import api from '@/utils/api';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { AiOutlineLoading } from 'react-icons/ai';
 import {
     BiCheck,
-    BiInfoCircle,
     BiSave,
     BiSolidCalculator,
-    BiSolidCoinStack,
     BiX,
 } from 'react-icons/bi';
 import { BsCalendar2HeartFill, BsPencilSquare } from 'react-icons/bs';
-import { CgSearchLoading } from 'react-icons/cg';
-import { FaBalanceScale, FaIdCard, FaMapMarkedAlt, FaRegFilePdf } from 'react-icons/fa';
+import {  FaIdCard, FaMapMarkedAlt, FaRegFilePdf } from 'react-icons/fa';
 import { FaBuilding, FaBuildingColumns, FaLink, FaUser } from 'react-icons/fa6';
 import { GiPayMoney, GiReceiveMoney, GiTakeMyMoney } from 'react-icons/gi';
 import { GrDocumentText, GrDocumentUser, GrMoney } from 'react-icons/gr';
 import { IoIosPaper } from 'react-icons/io';
 import { IoCalendar, IoDocumentTextSharp, IoGlobeOutline } from 'react-icons/io5';
-import { LuClipboardCheck, LuCopy, LuHandshake } from 'react-icons/lu';
-import { MdOutlineArchive, MdOutlineDownloading } from 'react-icons/md';
+import { LuHandshake } from 'react-icons/lu';
 import { TbMoneybag, TbStatusChange } from 'react-icons/tb';
 import verifyRequiredInputsToDue from '@/functions/juridico/verifyRequiredInputsToDue';
 import { AxiosError } from 'axios';
 import BrokerModal, { IdentificationType } from '@/components/Modals/BrokersCedente';
-import LifeCycleStep from '@/components/LifeCycleStep';
-import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
 import { CelerInputField } from '@/components/CrmUi/InputFactory';
 import { SelectItem } from '@/components/ui/select';
 import CelerInputFormField from '@/components/Forms/CustomFormField';
@@ -69,9 +61,11 @@ type SheetViewComercialProps = {
     id: string;
     sheetData: any;
     grafico?: React.ReactNode;
+    setIsOpenSwall?: (value: boolean) => void;
+    isOpenSwall?: boolean;
 };
 
-export const SheetViewComercial = ({ id, grafico, sheetData }: SheetViewComercialProps) => {
+export const SheetViewComercial = ({ id, grafico, sheetData, isOpenSwall, setIsOpenSwall }: SheetViewComercialProps) => {
     const {
         data: { user },
     } = useContext<UserInfoContextType>(UserInfoAPIContext);
@@ -861,6 +855,8 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
 
     const onSubmitForm = async (formData: any) => {
         setIsLoadingRecalculation(true);
+        setIsOpenSwall?.(true);
+        
         if (formData.observacao) {
             formData.observacao = `
 💭 Comentários: ${formData.observacao}
@@ -941,10 +937,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
             }
 
             try {
-                const response = await api.patch(
-                    `/api/juridico/update/precatorio/${id}/`,
-                    formData,
-                );
+                const response = await api.patch(`/api/juridico/update/precatorio/${sheetData.id}`, formData);
                 setHappenedRecalculation(true);
                 setRecalculationData(response.data);
 
@@ -966,6 +959,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                 console.error(error);
             } finally {
                 setIsLoadingRecalculation(false);
+                setIsOpenSwall?.(false);
             }
         });
     };
@@ -2918,7 +2912,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                             )}
                                     </div>
 
-                                    <div className="col-span-4 flex w-full justify-center">
+                                    <div className={`col-span-4 flex w-full justify-center ${isOpenSwall ? 'hidden' : ''}`}>
                                         <hr className="my-6 border border-stroke dark:border-strokedark" />
                                         <CelerInputFormField
                                             name="observacao"

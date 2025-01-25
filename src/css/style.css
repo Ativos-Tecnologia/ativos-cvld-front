@@ -854,7 +854,7 @@ input[type='range']::-webkit-slider-thumb {
 } */
 
 /* Essa classe esconde qualquer div em um evento disparado, exemplo: voce abre um modal e por algum erro, ele abre outro que não deveria abrir, coloca essa classe que resolve o problema. */
-.resolveFocus {
+.tdah {
     position: absolute;
     width: 1px;
     height: 1px;

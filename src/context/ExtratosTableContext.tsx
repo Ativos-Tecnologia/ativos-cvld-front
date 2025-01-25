@@ -415,7 +415,7 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
         });
 
         if (response.status !== 200) {
-            console.log('houve um erro ao tentar desarquivar os dados');
+            console.error('houve um erro ao tentar desarquivar os dados');
             return;
         }
 
@@ -470,7 +470,7 @@ export const ExtratosTableProvider = ({ children }: { children: React.ReactNode 
             fetchData('');
             setCheckedList([]);
         } catch (error) {
-            console.log('error');
+            console.error('error');
         }
     };
 

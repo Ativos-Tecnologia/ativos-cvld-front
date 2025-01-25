@@ -94,9 +94,6 @@ const ComercialUserVsStatusChart = ({ chartData }: { chartData: ITabelaGerencial
         handleChartData(chartData);
     }, [chartData]);
 
-    console.log(chartData)
-    console.log(data)
-
     if (!data) {
         return <ComercialBrokersChartSkeleton />;
     }

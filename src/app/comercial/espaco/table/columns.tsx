@@ -1,33 +1,18 @@
 import * as React from 'react';
-import { ColumnDef, flexRender, Row } from '@tanstack/react-table';
+import { ColumnDef, flexRender } from '@tanstack/react-table';
 
-import { ArrowUpDown, ChartArea, ChartColumn, MoreHorizontal } from 'lucide-react';
+import { ArrowUpDown } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
-import { IResumoComercial } from '@/interfaces/IResumoComercial';
 import dateFormater from '@/functions/formaters/dateFormater';
-import { FindCoordinator } from '@/functions/comercial/find_cordinator';
-import api from '@/utils/api';
-import { useMutation } from '@tanstack/react-query';
 import CRMTooltip from '@/components/CrmUi/Tooltip';
-import { toast } from 'sonner';
-import { BiCheck } from 'react-icons/bi';
 import { ITabelaGerencial } from '@/interfaces/ITabelaGerencialResponse';
 import numberFormat from '@/functions/formaters/numberFormat';
 import percentageFormater from '@/functions/formaters/percentFormater';
 import { SheetCelerComponent } from '@/components/CrmUi/Sheet';
 import { SheetViewComercial } from '@/components/Features/Comercial/SheetViewComercial';
 import { RiSidebarUnfoldLine } from 'react-icons/ri';
-import ChartFour from '@/components/Charts/ChartFour';
 import { CoordinatorParticipationChart } from '@/components/Charts/CommissionParticipationChart';
 
 export const columns: ColumnDef<ITabelaGerencial>[] = [
@@ -95,7 +80,7 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
                 children={flexRender(
                     <SheetViewComercial
                         sheetData={row.original}
-                        id={row.id}
+                        id={row.original.id}
                         grafico={
                             <CoordinatorParticipationChart
                                 chartData={{
