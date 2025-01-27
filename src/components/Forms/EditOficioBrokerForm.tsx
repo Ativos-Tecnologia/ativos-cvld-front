@@ -925,7 +925,7 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
                                             <CPFAndCNPJInput
                                                 value={CPFOrCNPJValue}
                                                 setValue={setCPFOrCNPJValue}
-                                                className={`${CPFOrCNPJValue.length > 0 && !isCPFOrCNPJValid(CPFOrCNPJValue) && 'border-2 !border-rose-400 !ring-0'} h-9.5 w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
+                                                className={`${CPFOrCNPJValue.length > 0 && !isCPFOrCNPJValid(CPFOrCNPJValue) && 'border-2 !border-rose-400 !ring-0'} h-9.5 w-full rounded-md bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
                                             />
                                         </div>
 
