@@ -6,6 +6,7 @@ export type CvldFormInputsProps = {
     tribunal: string;
     valor_principal: number | string;
     valor_juros: number | string;
+    outros_descontos: number | string;
     data_base: string;
     data_requisicao: string;
     valor_aquisicao_total: boolean;
