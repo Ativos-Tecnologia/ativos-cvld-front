@@ -15,10 +15,10 @@ export function CPFAndCNPJInput({ value, setValue, ...props }: CPFAndCNPJInputPr
 
     return (
         <Input
-            {...props}
             onChange={handleChangeMask}
             value={value}
             placeholder={'CPF ou CNPJ'}
+            {...props}
             className={`focus-visible:ring-1 focus-visible:ring-blue-600 focus-visible:ring-offset-0 ${props.className}`}
         />
     );
