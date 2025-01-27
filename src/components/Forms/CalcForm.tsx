@@ -24,8 +24,6 @@ interface ICalcFormProps {
     formConfigs: UseFormReturn<Partial<CvldFormInputsProps>, any, undefined>;
     hasDropzone?: boolean;
     isLoading?: boolean;
-    cpfOrCnpjValue: string;
-    setCPFOrCNPJValue: React.Dispatch<React.SetStateAction<string>>;
     formMode?: 'create' | 'update';
 }
 
@@ -36,8 +34,6 @@ const CalcForm = ({
     formConfigs,
     hasDropzone = true,
     isLoading = false,
-    cpfOrCnpjValue,
-    setCPFOrCNPJValue,
     formMode = 'create',
 }: ICalcFormProps) => {
     // hook form imports
@@ -122,10 +118,6 @@ const CalcForm = ({
             setValue('juizo_vara', data.properties['Juízo'].rich_text?.[0]?.text.content || '');
             setValue('status', data.properties['Status'].status?.name || '');
             setValue('upload_notion', true);
-
-            if (data.properties['CPF/CNPJ'].rich_text?.[0]?.text.content) {
-                setCPFOrCNPJValue(data.properties['CPF/CNPJ'].rich_text?.[0]?.text.content);
-            }
 
             // update auxDataSetter if exists
             auxDataSetter && auxDataSetter(watch());
@@ -881,10 +873,11 @@ const CalcForm = ({
                                             >
                                                 CPF/CNPJ
                                             </label>
-                                            <CPFAndCNPJInput
-                                                value={cpfOrCnpjValue!}
-                                                setValue={setCPFOrCNPJValue}
-                                                className={`${cpfOrCnpjValue && cpfOrCnpjValue.length > 0 && !isCPFOrCNPJValid(cpfOrCnpjValue) && 'border-2 !border-rose-400 !ring-0'} h-9.5 w-full rounded-md bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
+                                            <input
+                                                type="text"
+                                                id="cpf_cnpj"
+                                                className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                                {...register('cpf_cnpj', {})}
                                             />
                                         </div>
 

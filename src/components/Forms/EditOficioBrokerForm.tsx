@@ -198,8 +198,6 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
                     formConfigs={form}
                     formMode="update"
                     isLoading={isSavingEdit}
-                    cpfOrCnpjValue={CPFOrCNPJValue}
-                    setCPFOrCNPJValue={setCPFOrCNPJValue}
                     auxDataSetter={setDefaultFormValues}
                 />
             </div>

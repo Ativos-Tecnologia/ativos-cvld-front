@@ -43,7 +43,6 @@ type CVLDFormProps = {
 };
 
 const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataToAppend }) => {
-
     const form = useForm<Partial<CvldFormInputsProps>>({
         defaultValues: {
             ja_possui_destacamento: true,
@@ -274,7 +273,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
         if (data.valor_aquisicao_total) {
             data.percentual_a_ser_adquirido = 1;
         } else {
-            data.percentual_a_ser_adquirido = data.percentual_a_ser_adquirido / 100
+            data.percentual_a_ser_adquirido = data.percentual_a_ser_adquirido / 100;
         }
 
         if (!data.estado_ente_devedor) {
@@ -474,11 +473,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                     Nosso modelo de atualização de valores de precatórios e RPVs
                 </p>
             </div>
-            <CalcForm
-                onSubmitForm={onSubmit}
-                formConfigs={form}
-                isLoading={loading}
-            />
+            <CalcForm onSubmitForm={onSubmit} formConfigs={form} isLoading={loading} />
         </div>
     );
 };
