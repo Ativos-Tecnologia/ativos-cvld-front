@@ -1,29 +1,38 @@
 import * as React from 'react';
-import { ColumnDef, Row } from '@tanstack/react-table';
+import { ColumnDef, flexRender } from '@tanstack/react-table';
 
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
+import { ArrowUpDown } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
-import { IResumoComercial } from '@/interfaces/IResumoComercial';
 import dateFormater from '@/functions/formaters/dateFormater';
-import { FindCoordinator } from '@/functions/comercial/find_cordinator';
-import api from '@/utils/api';
-import { useMutation } from '@tanstack/react-query';
 import CRMTooltip from '@/components/CrmUi/Tooltip';
-import { toast } from 'sonner';
-import { BiCheck } from 'react-icons/bi';
 import { ITabelaGerencial } from '@/interfaces/ITabelaGerencialResponse';
 import numberFormat from '@/functions/formaters/numberFormat';
 import percentageFormater from '@/functions/formaters/percentFormater';
+import { SheetCelerComponent } from '@/components/CrmUi/Sheet';
+import { SheetViewComercial } from '@/components/Features/Comercial/SheetViewComercial';
+import { RiSidebarUnfoldLine } from 'react-icons/ri';
+import { CoordinatorParticipationChart } from '@/components/Charts/CommissionParticipationChart';
+import { ComercialContext } from '@/context/ComercialContext';
+
+const CellComponent = (row: { original: any }) => {
+    const { setSheetOpen, sheetOpen, setSheetOpenId } = React.useContext(ComercialContext);
+    const resumo = row.original;
+
+    function handleOpenSheet() {
+        setSheetOpen(!sheetOpen);
+        setSheetOpenId(resumo.id);
+    }
+
+    return (
+        <div className="flex items-center gap-2">
+            <Button variant="ghost" className="flex items-center gap-2" onClick={handleOpenSheet}>
+                <RiSidebarUnfoldLine size={20} />
+            </Button>
+        </div>
+    );
+};
 
 export const columns: ColumnDef<ITabelaGerencial>[] = [
     {
@@ -49,15 +58,19 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="flex max-w-36 items-center gap-2"
+                    className="flex items-center gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
-                    <p className="flex justify-start">Usuário</p>
+                    Usuário
                     <ArrowUpDown size={16} />
                 </Button>
             );
         },
-        cell: ({ row }) => <p className="max-w-36 truncate">{row.getValue('usuario')}</p>,
+        cell: ({ row }) => (
+            <div className="w-33 gap-2">
+                <p className="truncate">{row.getValue('usuario')}</p>
+            </div>
+        ),
     },
     {
         accessorKey: 'credor',
@@ -66,7 +79,7 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
         },
         cell: ({ row }) => (
             <div
-                className="flex w-64 items-center overflow-auto text-nowrap"
+                className="flex max-w-64 items-center overflow-auto text-nowrap"
                 style={{
                     scrollbarWidth: 'thin',
                     scrollbarColor: 'rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.1)',
@@ -77,11 +90,11 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
         ),
     },
     {
-        accessorKey: 'loa',
-        header: 'LOA',
-        cell: ({ row }) => (
-            <CRMTooltip text="Lei Orçamentária Anual">{row.getValue('loa')}</CRMTooltip>
-        ),
+        accessorKey: 'sheet',
+        header: ({ column }) => {
+            return null;
+        },
+        cell: ({ row }) => <CellComponent original={row.original} />,
     },
     // {
     //     accessorKey: 'observacoes',

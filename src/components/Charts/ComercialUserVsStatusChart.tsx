@@ -12,7 +12,12 @@ import ComercialBrokersChartSkeleton from '../Skeletons/ComercialBrokersChartSke
 import { ITabelaGerencialResponse } from '@/interfaces/ITabelaGerencialResponse';
 import { UserVsStatusChartProps } from '@/types/userVsStatusChart';
 
-const ComercialUserVsStatusChart = ({ chartData }: { chartData: ITabelaGerencialResponse }) => {
+interface ComercialUserVsStatusChartProps {
+    chartData: ITabelaGerencialResponse;
+    isLoading: boolean;
+}
+
+const ComercialUserVsStatusChart = ({ chartData, isLoading }: ComercialUserVsStatusChartProps) => {
     const [data, setData] = React.useState<UserVsStatusChartProps[] | null>(null);
 
     const chartConfig = {
@@ -94,40 +99,50 @@ const ComercialUserVsStatusChart = ({ chartData }: { chartData: ITabelaGerencial
         handleChartData(chartData);
     }, [chartData]);
 
-    console.log(chartData)
-    console.log(data)
-
-    if (!data) {
+    if (isLoading || !data) {
         return <ComercialBrokersChartSkeleton />;
     }
 
     return (
-        <div style={{ height: Math.max(data.length * 40, 450) }} className="grid w-full gap-5 p-5">
+        <div
+            style={{
+                height: data && data.length > 0 ? Math.max(data.length * 40, 450) : 'fit-content',
+            }}
+            className="grid w-full gap-5 p-5"
+        >
             <h2 className="p-5 text-2xl font-medium">Usuário x Status x Valor Líquido</h2>
-            <ChartContainer config={chartConfig} className="aspect-[none] min-h-[250px] w-full">
-                <BarChart data={data} layout="vertical" barSize={40} barGap={20}>
-                    <CartesianGrid horizontal={false} stroke="#454b52" />
-                    <XAxis type="number" tickFormatter={(value) => numberFormat(value)} />
-                    <YAxis
-                        dataKey="user"
-                        type="category"
-                        width={100}
-                        tickFormatter={(value) =>
-                            value.length > 10 ? value.slice(0, 10).concat('...') : value
-                        }
-                    />
-                    <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-                    <Legend className="gap-5" />
-                    {Object.keys(chartConfig).map((key: string) => (
-                        <Bar
-                            key={key}
-                            dataKey={key}
-                            stackId={'a'}
-                            fill={chartConfig[key as keyof typeof chartConfig]?.color || '#ccc'}
+            {data && data.length > 0 ? (
+                <ChartContainer config={chartConfig} className="aspect-[none] min-h-[250px] w-full">
+                    <BarChart data={data} layout="vertical" barSize={40} barGap={20}>
+                        <CartesianGrid horizontal={false} stroke="#454b52" />
+                        <XAxis type="number" tickFormatter={(value) => numberFormat(value)} />
+                        <YAxis
+                            dataKey="user"
+                            type="category"
+                            width={100}
+                            tickFormatter={(value) =>
+                                value.length > 10 ? value.slice(0, 10).concat('...') : value
+                            }
                         />
-                    ))}
-                </BarChart>
-            </ChartContainer>
+                        <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+                        <Legend className="gap-5" />
+                        {Object.keys(chartConfig).map((key: string) => (
+                            <Bar
+                                key={key}
+                                dataKey={key}
+                                stackId={'a'}
+                                fill={chartConfig[key as keyof typeof chartConfig]?.color || '#ccc'}
+                            />
+                        ))}
+                    </BarChart>
+                </ChartContainer>
+            ) : (
+                <section className="flex h-fit w-full justify-center gap-2 rounded-md bg-white px-4 py-2 dark:bg-boxdark lg:flex-row">
+                    <p className="scroll-m-20 text-center text-2xl font-semibold tracking-tight">
+                        Nenhum dado disponível.
+                    </p>
+                </section>
+            )}
         </div>
     );
 };

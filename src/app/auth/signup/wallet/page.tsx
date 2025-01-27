@@ -95,7 +95,6 @@ const SignUpWallet: React.FC = () => {
         const response = await api
           .post("/api/user/wallet/register/", formData)
           .then((res) => {
-            console.log(res.data);
             if (res.status === 201) {
               localStorage.setItem(
                 `ATIVOS_${ACCESS_TOKEN}`,

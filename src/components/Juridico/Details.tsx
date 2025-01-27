@@ -1323,8 +1323,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
   }, [data]);
 
-  console.log(data)
-
   if (!data) {
     return (
       <JuridicoDetailsSkeleton />

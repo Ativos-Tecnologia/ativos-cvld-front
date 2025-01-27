@@ -41,8 +41,8 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
 
   const { fetchDetailCardData, setDocModalInfo, setIsFetchAllowed } = useContext(BrokersContext)
   const {
-        data: { role },
-    } = useContext<UserInfoContextType>(UserInfoAPIContext);
+    data: { role },
+  } = useContext<UserInfoContextType>(UserInfoAPIContext);
   const [cedenteInfo, setCedenteInfo] = useState<NotionPage | null>(null);
   const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
   const [showDoc, setShowDoc] = useState<boolean>(false);
@@ -63,17 +63,17 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
   });
 
   const [loadingUpdateState, setLoadingUpdateState] = useState({
-      contrato_social: false,
-      oficio_requisitorio: false,
-      rg: false,
-      certidao_nasc_cas: false,
-      comprovante_de_residencia: false,
-    });
+    contrato_social: false,
+    oficio_requisitorio: false,
+    rg: false,
+    certidao_nasc_cas: false,
+    comprovante_de_residencia: false,
+  });
 
   const [editLock, setEditLock] = useState<boolean>(false);
   const swal = UseMySwal()
-  
-    
+
+
 
   // função para cadastrar o documento rg
   async function setDocument(id: string, data: FormData, documentType: string) {
@@ -262,7 +262,6 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
 
   // função de submit só para que o hook form funcione (temporário)
   const submitDocument = async (data: any) => {
-    console.log(data);
   };
 
   // função que faz fetch nos dados do cedente
@@ -514,30 +513,30 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                       />
 
                       {cedenteInfo?.properties["Doc. Ofício Requisitório"].url ? (
-                        <div className='pr-5'>
-                        <CelerInputField
-                        fieldType={InputFieldVariant.SELECT}
-                        name='status_doc'
-                        className='mr-4'
-                        disabled={role !== "ativos" && role !== "juridico"}
-                        defaultValue={cedenteInfo.properties["Doc. Ofício Requisitório Status"].select?.name || ""}
-                        onValueChange={(_, value) => {
-                          if (cedenteInfo) {
-                            handleChangeDocStatusOficioRequisitorio(cedenteInfo.id, value);
-                          }
-                        }}
-                        >
-                          <SelectItem value={cedenteInfo.properties["Doc. Ofício Requisitório Status"].select?.name || ""}>
-                            {
-                              cedenteInfo.properties["Doc. Ofício Requisitório Status"].select?.name || ""
-                            }
+                        <div>
+                          <CelerInputField
+                            fieldType={InputFieldVariant.SELECT}
+                            name='status_doc'
+                            className='mr-4'
+                            disabled={role !== "ativos" && role !== "juridico"}
+                            defaultValue={cedenteInfo.properties["Doc. Ofício Requisitório Status"].select?.name || ""}
+                            onValueChange={(_, value) => {
+                              if (cedenteInfo) {
+                                handleChangeDocStatusOficioRequisitorio(cedenteInfo.id, value);
+                              }
+                            }}
+                          >
+                            <SelectItem value={cedenteInfo.properties["Doc. Ofício Requisitório Status"].select?.name || ""}>
+                              {
+                                cedenteInfo.properties["Doc. Ofício Requisitório Status"].select?.name || ""
+                              }
                             </SelectItem>
                             {
                               Object.values(DocStatus).filter(item => item !== cedenteInfo.properties["Doc. Ofício Requisitório Status"].select?.name).map((item, index) => (
                                 <SelectItem className='shad-select-item' key={index} value={item}>{item}</SelectItem>
                               ))
                             }
-                        </CelerInputField>
+                          </CelerInputField>
                         </div>
                       ) : (
                         <p className='text-sm text-center'>Nenhum documento vinculado</p>
@@ -636,31 +635,31 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                   />
 
                   {cedenteInfo?.properties["Doc. RG"].url ? (
-                     <div className='pr-5'>
+                    <div>
                       <CelerInputField
-                      fieldType={InputFieldVariant.SELECT}
-                      name='status_doc'
-                      className='mr-4'
-                      disabled={role !== "ativos" && role !== "juridico"}
-                      defaultValue={cedenteInfo.properties["Doc. RG Status"].select?.name || ""}
-                      onValueChange={(_, value) => {
-                        if (cedenteInfo) {
-                          handleChangeDocStatusRg(cedenteInfo.id, value);
-                        }
-                      }}
+                        fieldType={InputFieldVariant.SELECT}
+                        name='status_doc'
+                        className='mr-4'
+                        disabled={role !== "ativos" && role !== "juridico"}
+                        defaultValue={cedenteInfo.properties["Doc. RG Status"].select?.name || ""}
+                        onValueChange={(_, value) => {
+                          if (cedenteInfo) {
+                            handleChangeDocStatusRg(cedenteInfo.id, value);
+                          }
+                        }}
                       >
                         <SelectItem value={cedenteInfo.properties["Doc. RG Status"].select?.name || ""}>
                           {
                             cedenteInfo.properties["Doc. RG Status"].select?.name || ""
                           }
-                          </SelectItem>
-                          {
-                            Object.values(DocStatus).filter(item => item !== cedenteInfo.properties["Doc. RG Status"].select?.name).map((item, index) => (
-                              <SelectItem className='shad-select-item' key={index} value={item}>{item}</SelectItem>
-                            ))
-                          }
+                        </SelectItem>
+                        {
+                          Object.values(DocStatus).filter(item => item !== cedenteInfo.properties["Doc. RG Status"].select?.name).map((item, index) => (
+                            <SelectItem className='shad-select-item' key={index} value={item}>{item}</SelectItem>
+                          ))
+                        }
                       </CelerInputField>
-                      </div>
+                    </div>
                   ) : (
                     <p className='text-sm text-center'>Nenhum documento vinculado</p>
                   )}
@@ -756,30 +755,30 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                   />
 
                   {cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"].url ? (
-                    <div className='pr-5'>
-                    <CelerInputField
-                    fieldType={InputFieldVariant.SELECT}
-                    name='status_doc'
-                    className='mr-4'
-                    disabled={role !== "ativos" && role !== "juridico"}
-                    defaultValue={cedenteInfo.properties["Doc. Certidão Nascimento/Casamento Status"].select?.name || ""}
-                    onValueChange={(_, value) => {
-                      if (cedenteInfo) {
-                        handleChangeDocStatusCertidao(cedenteInfo.id, value);
-                      }
-                    }}
-                    >
-                      <SelectItem value={cedenteInfo.properties["Doc. Certidão Nascimento/Casamento Status"].select?.name || ""}>
-                        {
-                          cedenteInfo.properties["Doc. Certidão Nascimento/Casamento Status"].select?.name || ""
-                        }
+                    <div>
+                      <CelerInputField
+                        fieldType={InputFieldVariant.SELECT}
+                        name='status_doc'
+                        className='mr-4'
+                        disabled={role !== "ativos" && role !== "juridico"}
+                        defaultValue={cedenteInfo.properties["Doc. Certidão Nascimento/Casamento Status"].select?.name || ""}
+                        onValueChange={(_, value) => {
+                          if (cedenteInfo) {
+                            handleChangeDocStatusCertidao(cedenteInfo.id, value);
+                          }
+                        }}
+                      >
+                        <SelectItem value={cedenteInfo.properties["Doc. Certidão Nascimento/Casamento Status"].select?.name || ""}>
+                          {
+                            cedenteInfo.properties["Doc. Certidão Nascimento/Casamento Status"].select?.name || ""
+                          }
                         </SelectItem>
                         {
                           Object.values(DocStatus).filter(item => item !== cedenteInfo.properties["Doc. Certidão Nascimento/Casamento Status"].select?.name).map((item, index) => (
                             <SelectItem className='shad-select-item' key={index} value={item}>{item}</SelectItem>
                           ))
                         }
-                    </CelerInputField>
+                      </CelerInputField>
                     </div>
                   ) : (
                     <p className='text-sm text-center'>Nenhum documento vinculado</p>
@@ -876,39 +875,30 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                   />
 
                   {cedenteInfo?.properties["Doc. Comprovante de Residência"].url ? (
-                    // <Badge
-                    //   color={cedenteInfo?.properties["Doc. Comprovante de Residência Status"].select?.color || ""}
-                    //   isANotionPage={true}
-                    //   className='w-[165px] mx-auto text-sm capitalize'
-                    // >
-                    //   {cedenteInfo?.properties[
-                    //     "Doc. Comprovante de Residência Status"
-                    //   ].select?.name || ""}
-                    // </Badge>
-                    <div className='pr-5'>
-                    <CelerInputField
-                    fieldType={InputFieldVariant.SELECT}
-                    name='status_doc'
-                    className='mr-4'
-                    disabled={role !== "ativos" && role !== "juridico"}
-                    defaultValue={cedenteInfo.properties["Doc. Comprovante de Residência Status"].select?.name || ""}
-                    onValueChange={(_, value) => {
-                      if (cedenteInfo) {
-                        handleChangeDocStatusComprovanteResidencia(cedenteInfo.id, value);
-                      }
-                    }}
-                    >
-                      <SelectItem value={cedenteInfo.properties["Doc. Comprovante de Residência Status"].select?.name || ""}>
-                        {
-                          cedenteInfo.properties["Doc. Comprovante de Residência Status"].select?.name || ""
-                        }
+                    <div>
+                      <CelerInputField
+                        fieldType={InputFieldVariant.SELECT}
+                        name='status_doc'
+                        className='mr-4'
+                        disabled={role !== "ativos" && role !== "juridico"}
+                        defaultValue={cedenteInfo.properties["Doc. Comprovante de Residência Status"].select?.name || ""}
+                        onValueChange={(_, value) => {
+                          if (cedenteInfo) {
+                            handleChangeDocStatusComprovanteResidencia(cedenteInfo.id, value);
+                          }
+                        }}
+                      >
+                        <SelectItem value={cedenteInfo.properties["Doc. Comprovante de Residência Status"].select?.name || ""}>
+                          {
+                            cedenteInfo.properties["Doc. Comprovante de Residência Status"].select?.name || ""
+                          }
                         </SelectItem>
                         {
                           Object.values(DocStatus).filter(item => item !== cedenteInfo.properties["Doc. Comprovante de Residência Status"].select?.name).map((item, index) => (
                             <SelectItem className='shad-select-item' key={index} value={item}>{item}</SelectItem>
                           ))
                         }
-                    </CelerInputField>
+                      </CelerInputField>
                     </div>
                   ) : (
                     <p className='text-sm text-center'>Nenhum documento vinculado</p>
@@ -1003,7 +993,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
         cedenteInfo?.properties["Doc. RG"].url ||
         cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"].url ||
         cedenteInfo?.properties["Doc. Comprovante de Residência"].url) && (
-          <div className='col-span-2 bg-white dark:bg-boxdark-2 p-3 shadow-6 rounded-md'>
+          <div className='col-span-2 bg-white dark:bg-boxdark p-3 shadow-6 rounded-md'>
             <fieldset className="flex items-center justify-center gap-5 border-t border-stroke py-3 dark:border-form-strokedark 2xsm:flex-col 2xsm:gap-3 md:flex-row">
               <legend className="px-2 text-xs uppercase">Outras opções</legend>
 
