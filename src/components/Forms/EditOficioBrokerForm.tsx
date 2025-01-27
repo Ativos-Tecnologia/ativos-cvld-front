@@ -18,6 +18,8 @@ import api from '@/utils/api';
 import { toast } from 'sonner';
 import { verifyUpdateFields } from '@/functions/verifiers/verifyValues';
 import numberFormat from '@/functions/formaters/numberFormat';
+import CalcForm from './CalcForm';
+import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
 import { CPFAndCNPJInput } from '../CrmUi/CPFAndCNPFInput';
 import UseMySwal from '@/hooks/useMySwal';
 import { isCPFOrCNPJValid } from '@/functions/verifiers/isCPFOrCNPJValid';
@@ -116,13 +118,19 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
             data.need_to_recalculate_proposal = false;
         }
 
-        if (typeof data.percentual_a_ser_adquirido === 'string') {
-            data.percentual_a_ser_adquirido = Number(
-                (
-                    data.percentual_a_ser_adquirido.replace(/[^0-9,]/g, '').replace(',', '.') / 100
-                ).toFixed(4),
-            );
+        if (data.valor_aquisicao_total) {
+            data.percentual_a_ser_adquirido = 1;
+        } else {
+            if (typeof data.percentual_a_ser_adquirido === 'string') {
+                // data.percentual_a_ser_adquirido = Number((data.percentual_a_ser_adquirido.replace(/[^0-9,]/g, "").replace(",", ".") / 100).toFixed(4))
+                data.percentual_a_ser_adquirido =
+                    parseFloat(data.percentual_a_ser_adquirido.replace('%', '')) / 100;
+            } else {
+                data.percentual_a_ser_adquirido = data.percentual_a_ser_adquirido / 100;
+            }
         }
+
+        data.cpf_cnpj = applyMaskCpfCnpj(data.cpf_cnpj);
 
         if (!isCPFOrCNPJValid(CPFOrCNPJValue)) {
             MySwal.fire({
@@ -236,10 +244,6 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
             setValue('juizo_vara', mainData.properties['Juízo'].rich_text?.[0]?.text.content || '');
             setValue('status', mainData.properties['Status'].status?.name || '');
             setValue('upload_notion', true);
-
-            if (mainData.properties['CPF/CNPJ'].rich_text?.[0]?.text.content) {
-                setCPFOrCNPJValue(mainData.properties['CPF/CNPJ'].rich_text?.[0]?.text.content);
-            }
 
             // setando valores iniciais no formulário
             setDefaultFormValues(watch());
@@ -922,10 +926,11 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
                                             >
                                                 CPF/CNPJ
                                             </label>
-                                            <CPFAndCNPJInput
-                                                value={CPFOrCNPJValue}
-                                                setValue={setCPFOrCNPJValue}
-                                                className={`${CPFOrCNPJValue.length > 0 && !isCPFOrCNPJValid(CPFOrCNPJValue) && 'border-2 !border-rose-400 !ring-0'} h-9.5 w-full rounded-md bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
+                                            <input
+                                                type="text"
+                                                id="cpf_cnpj"
+                                                className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                                {...register('cpf_cnpj', {})}
                                             />
                                         </div>
 

@@ -5,7 +5,7 @@
 import React from "react";
 import { Form } from "@/components/ui/form";
 import { estados } from "@/constants/estados";
-import { tipoRegime } from "@/constants/regime-casamento";
+import { estadoCivil } from "@/constants/estado-civil";
 import { tribunais } from "@/constants/tribunais";
 import { BrokersContext } from "@/context/BrokersContext";
 import { ReactGlobalQueryContext } from "@/context/ReactGlobalQueryContext";
@@ -1460,7 +1460,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                         required
                         disabled={editLock}
                       >
-                        {tipoRegime.map((item, index) => (
+                        {estadoCivil.map((item, index) => (
                           <SelectItem
                             defaultChecked={
                               credorIdentificationType === "CPF"
