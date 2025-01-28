@@ -13,24 +13,29 @@ import { LuChevronsUpDown } from 'react-icons/lu';
 import { BiCheck } from 'react-icons/bi';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
+import { FieldValues, UseFormRegister } from 'react-hook-form';
 
-type CelerComboboxProps = {
-    list: Array<string>;
+type CelerComboboxProps<T extends FieldValues> = {
+    list: Array<string | Record<string, string | number>>;
     size?: string | '250px';
     className?: string;
     onChangeValue: ((value: string) => void) | ((value: string) => Promise<void>);
     value: string;
     placeholder?: string;
+    register?: ReturnType<UseFormRegister<T>>;
+    name?: keyof T;
 };
 
-const CelerAppCombobox = ({
+const CelerAppCombobox = <T extends FieldValues>({
     list,
     size,
     className,
     value,
     onChangeValue,
     placeholder,
-}: CelerComboboxProps) => {
+    register,
+    name,
+}: CelerComboboxProps<T>) => {
     const [open, setOpen] = useState<boolean>(false);
 
     return (
@@ -41,11 +46,9 @@ const CelerAppCombobox = ({
                         variant="outline"
                         role="combobox"
                         aria-expanded={open}
-                        className={`min-w-[${size}] ${className} justify-between`}
+                        className={`min-w-[${size}] ${className} justify-between border-stroke dark:border-strokedark`}
                     >
-                        {value
-                            ? list.find((item: any) => item === value)
-                            : 'Selecione para filtro...'}
+                        {value || 'Selecione...'}
                         <LuChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
@@ -55,10 +58,18 @@ const CelerAppCombobox = ({
                         <CommandList>
                             <CommandEmpty>Sem resultados</CommandEmpty>
                             <CommandGroup>
-                                {list.map((item: any) => (
+                                {list.map((item: string | Record<string, string | number>) => (
                                     <CommandItem
-                                        key={item}
-                                        value={item}
+                                        key={
+                                            typeof item === 'string'
+                                                ? item
+                                                : item[Object.keys(item)[0]]
+                                        }
+                                        value={
+                                            typeof item === 'string'
+                                                ? item
+                                                : String(item[Object.keys(item)[0]])
+                                        }
                                         onSelect={(currentValue) => {
                                             onChangeValue!(
                                                 currentValue === value ? '' : currentValue,
@@ -66,15 +77,35 @@ const CelerAppCombobox = ({
                                             setOpen(false);
                                         }}
                                     >
-                                        <p title={item} className={` ${className} truncate`}>
-                                            {item}
+                                        <p
+                                            title={
+                                                typeof item === 'string'
+                                                    ? item
+                                                    : String(item[Object.keys(item)[0]])
+                                            }
+                                            className={` ${className} truncate uppercase`}
+                                        >
+                                            {typeof item === 'string'
+                                                ? item.toUpperCase()
+                                                : String(item[Object.keys(item)[1]])}
                                         </p>
-                                        <BiCheck
-                                            className={cn(
-                                                'mr-2 h-4 w-4',
-                                                value === item ? 'opacity-100' : 'opacity-0',
-                                            )}
-                                        />
+                                        {typeof item === 'string' ? (
+                                            <BiCheck
+                                                className={cn(
+                                                    'mr-2 h-4 w-4',
+                                                    value === item ? 'opacity-100' : 'opacity-0',
+                                                )}
+                                            />
+                                        ) : (
+                                            <BiCheck
+                                                className={cn(
+                                                    'mr-2 h-4 w-4',
+                                                    value === item[Object.keys(item)[1]]
+                                                        ? 'opacity-100'
+                                                        : 'opacity-0',
+                                                )}
+                                            />
+                                        )}
                                     </CommandItem>
                                 ))}
                             </CommandGroup>
@@ -82,6 +113,13 @@ const CelerAppCombobox = ({
                     </Command>
                 </PopoverContent>
             </Popover>
+            {register && (
+                <input
+                    type="hidden"
+                    {...register} // Conecta o campo ao hookform
+                    value={value} // Valor controlado
+                />
+            )}
         </>
     );
 };

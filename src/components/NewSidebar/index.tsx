@@ -95,17 +95,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 url: '#',
                 icon: BriefcaseBusiness,
                 isActive: usePath().includes('/comercial'),
-                when: product === 'global',
+                when: product === 'global' || sub_role === 'coodernador',
                 items: [
                     {
                         title: 'Resumo',
                         url: '/comercial/resumo',
-                        when: product === 'global',
+                        when: product === 'global' || sub_role === 'coodernador',
                     },
                     {
                         title: 'Espaço Gerencial',
                         url: '/comercial/espaco',
-                        when: 'dev' as const,
+                        when: product === 'global' || sub_role === 'coodernador',
                     },
                 ],
             },

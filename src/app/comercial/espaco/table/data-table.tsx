@@ -21,12 +21,16 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import React, { useRef } from 'react';
+import React, { useContext, useRef } from 'react';
 
 import { FilterIcon, Search, X } from 'lucide-react';
 
 import { useClickOutside } from '@/hooks/use-click-outside';
 import { cn } from '@/lib/utils';
+import { SheetCelerComponent } from '@/components/CrmUi/Sheet';
+import { SheetViewComercial } from '@/components/Features/Comercial/SheetViewComercial';
+import { RiSidebarUnfoldLine } from 'react-icons/ri';
+import { ComercialContext } from '@/context/ComercialContext';
 
 type ColumnDef<TData, TValue> = BaseColumnDef<TData, TValue> & {
     filterVariant?: 'range' | 'select' | 'text';
@@ -119,10 +123,10 @@ export const AwesomeFilter: React.FC<AwesomeFilterProps> = ({
                     placeholder="Pesquisar nome do credor"
                     className={cn(
                         'w-full py-2 pl-10 pr-20',
-                        'rounded-lg border border-zinc-200 dark:border-zinc-800',
-                        'bg-white dark:bg-zinc-900',
+                        'rounded-lg border border-stroke dark:border-strokedark',
+                        'bg-white dark:bg-boxdark-2',
                         'focus:outline-none focus:ring-2 focus:ring-indigo-500/20',
-                        'placeholder:text-zinc-400 dark:placeholder:text-zinc-600',
+                        'placeholder:text-slate-400 dark:placeholder:text-slate-600',
                     )}
                     onChange={(e) => {
                         auxFn(e);
@@ -677,7 +681,7 @@ export function DataTable<TData, TValue>({
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
                                     return (
-                                        <TableHead key={header.id}>
+                                        <TableHead className='w-90' key={header.id}>
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
@@ -696,9 +700,10 @@ export function DataTable<TData, TValue>({
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && 'selected'}
+                                    className='group'
                                 >
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
+                                        <TableCell className='relative' key={cell.id}>
                                             {flexRender(
                                                 cell.column.columnDef.cell,
                                                 cell.getContext(),
