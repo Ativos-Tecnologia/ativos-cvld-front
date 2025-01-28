@@ -88,8 +88,8 @@ const CalcForm = ({
     React.useEffect(() => {
         if (enteDevedorSelecionado && estadoSelecionado) {
             const regime = estadoRegimeEnteDevedor[estadoSelecionado]?.GERAL?.includes(enteDevedorSelecionado)
-            ? "GERAL"
-            : "ESPECIAL";
+                ? "GERAL"
+                : "ESPECIAL";
             setValue('regime', regime);
         }
     }, [enteDevedorSelecionado, estadoSelecionado])
@@ -317,7 +317,25 @@ const CalcForm = ({
                             Tribunal
                         </label>
 
-                        <select
+                        <CelerAppCombobox
+                            list={tribunais}
+                            onChangeValue={(value) =>
+                                setValue('tribunal', value)
+                            }
+                            value={
+                                tribunais.filter(
+                                    (estado) =>
+                                        estado.id ===
+                                        watch('tribunal'),
+                                )[0]?.nome || ''
+                            }
+                            register={register('tribunal')}
+                            name="tribunal"
+                            placeholder="BUSQUE POR ESTADO"
+                            className='h-[37px]'
+                        />
+
+                        {/* <select
                             defaultValue={''}
                             className="flex h-[37px] w-full cursor-pointer items-center justify-between rounded-md border border-stroke bg-background px-2 py-2 font-satoshi text-xs font-semibold uppercase ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 dark:border-strokedark dark:bg-boxdark-2 [&>span]:line-clamp-1"
                             {...register('tribunal')}
@@ -327,7 +345,7 @@ const CalcForm = ({
                                     {tribunal.nome}
                                 </option>
                             ))}
-                        </select>
+                        </select> */}
                     </div>
 
                     <div className="relative flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
@@ -1026,7 +1044,7 @@ const CalcForm = ({
                                                     </select> */}
                                             </div>
                                         )}
-                                        <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                        <div className="relative flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                                             <label
                                                 htmlFor="ente_devedor"
                                                 className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -1051,10 +1069,20 @@ const CalcForm = ({
                                                             estado === watch('ente_devedor'),
                                                     )[0] || ''
                                                 }
-                                                register={register('ente_devedor')}
+                                                register={register('ente_devedor', {
+                                                    required: {
+                                                        value: true,
+                                                        message: 'Esse campo é obrigatório',
+                                                    }
+                                                })}
                                                 name="ente_devedor"
                                                 placeholder="BUSQUE PELO ENTE DEVEDOR"
                                             />
+                                            {errors.ente_devedor && (
+                                                <span className="absolute right-8.5 top-8.5 text-xs font-medium text-red">
+                                                    campo obrigatório
+                                                </span>
+                                            )}
                                         </div>
 
                                         <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
