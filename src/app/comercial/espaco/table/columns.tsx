@@ -26,9 +26,10 @@ const CellComponent = (row: { original: any }) => {
     }
 
     return (
-        <div className="flex items-center gap-2">
-            <Button variant="ghost" className="flex items-center gap-2" onClick={handleOpenSheet}>
+        <div className="absolute top-1/2 -translate-y-1/2 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center gap-2">
+            <Button variant="ghost" className="flex items-center gap-2 px-2 py-1 bg-slate-100 dark:bg-slate-700 h-fit" onClick={handleOpenSheet}>
                 <RiSidebarUnfoldLine size={20} />
+                <p className='text-sm'>ABRIR</p>
             </Button>
         </div>
     );
@@ -79,23 +80,24 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
         },
         cell: ({ row }) => (
             <div
-                className="flex max-w-64 items-center overflow-auto text-nowrap"
+                className="flex max-w-90 items-center overflow-auto text-nowrap"
                 style={{
                     scrollbarWidth: 'thin',
                     scrollbarColor: 'rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.1)',
                 }}
             >
                 <span className="">{row.getValue('credor')}</span>
+                <CellComponent original={row.original} />
             </div>
         ),
     },
-    {
-        accessorKey: 'sheet',
-        header: ({ column }) => {
-            return null;
-        },
-        cell: ({ row }) => <CellComponent original={row.original} />,
-    },
+    // {
+    //     accessorKey: 'sheet',
+    //     header: ({ column }) => {
+    //         return null;
+    //     },
+    //     cell: ({ row }) => <CellComponent original={row.original} />,
+    // },
     // {
     //     accessorKey: 'observacoes',
     //     header: ({ column }) => {
