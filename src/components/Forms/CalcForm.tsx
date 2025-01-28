@@ -14,6 +14,7 @@ import { AiOutlineLoading } from 'react-icons/ai';
 import { NotionPage } from '@/interfaces/INotion';
 import numberFormat from '@/functions/formaters/numberFormat';
 import CelerAppCombobox from '../CrmUi/Combobox';
+import { estadoRegimeEnteDevedor } from '@/constants/estado-regime-enteDevedor';
 import { isCPFOrCNPJValid } from '@/functions/verifiers/isCPFOrCNPJValid';
 import { CPFAndCNPJInput } from '../CrmUi/CPFAndCNPFInput';
 
@@ -189,15 +190,30 @@ const CalcForm = ({
                 );
             }
             setValue('especie', oficioForm.result[0].especie);
-            setValue('ente_devedor', oficioForm.result[0].ente_devedor);
             setValue('tipo_do_oficio', oficioForm.result[0].tipo_do_oficio);
             if (oficioForm.result[0].ja_possui_destacamento) {
                 setValue('ja_possui_destacamento', true);
                 setValue('percentual_de_honorarios', oficioForm.result[0].percentual_de_honorarios);
             }
             setValue('esfera', oficioForm.result[0].esfera);
+            setValue('ente_devedor', oficioForm.result[0].ente_devedor);
+
+            if (oficioForm.result[0].cpf_cnpj) {
+                setCPFOrCNPJValue(oficioForm.result[0].cpf_cnpj);
+            }
         }
     }, [oficioForm]);
+
+    const esfera = watch('esfera');
+    const regimeSelecionado = esfera === 'FEDERAL' ? 'GERAL' : watch('regime');
+    const estadoSelecionado =
+        esfera === 'FEDERAL' || esfera === undefined ? 'FEDERAL' : watch('estado_ente_devedor');
+    const opcoesEnteDevedor =
+        estadoSelecionado && regimeSelecionado && estadoSelecionado in estadoRegimeEnteDevedor
+            ? estadoRegimeEnteDevedor[estadoSelecionado as keyof typeof estadoRegimeEnteDevedor]?.[
+                  regimeSelecionado as 'GERAL' | 'ESPECIAL'
+              ] || []
+            : [];
 
     return (
         <React.Fragment>
@@ -219,6 +235,7 @@ const CalcForm = ({
                         <select
                             defaultValue={'PRECATÓRIO'}
                             className="flex h-[37px] w-full cursor-pointer items-center justify-between rounded-md border border-stroke bg-background px-2 py-2 font-satoshi text-xs font-semibold uppercase ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 dark:border-strokedark dark:bg-boxdark-2 [&>span]:line-clamp-1"
+                            {...register('tipo_do_oficio')}
                             {...register('tipo_do_oficio')}
                         >
                             {ENUM_TIPO_OFICIO_LIST.map((status) => (
@@ -260,7 +277,9 @@ const CalcForm = ({
                             className="flex h-[37px] w-full cursor-pointer items-center justify-between rounded-md border border-stroke bg-background px-2 py-2 font-satoshi text-xs font-semibold uppercase ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 dark:border-strokedark dark:bg-boxdark-2 [&>span]:line-clamp-1"
                             {...register('esfera')}
                         >
-                            <option value="FEDERAL">Federal</option>
+                            <option defaultChecked value="FEDERAL">
+                                Federal
+                            </option>
                             <option value="ESTADUAL">Estadual</option>
                             <option value="MUNICIPAL">Municipal</option>
                         </select>
@@ -970,21 +989,6 @@ const CalcForm = ({
                                             />
                                         </div>
 
-                                        <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                                            <label
-                                                htmlFor="ente_devedor"
-                                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                                            >
-                                                Ente Devedor
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="ente_devedor"
-                                                className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                                                {...register('ente_devedor', {})}
-                                            />
-                                        </div>
-
                                         {watch('esfera') && watch('esfera') !== 'FEDERAL' && (
                                             <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                                                 <label
@@ -1024,6 +1028,36 @@ const CalcForm = ({
                                                     </select> */}
                                             </div>
                                         )}
+                                        <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                            <label
+                                                htmlFor="ente_devedor"
+                                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                            >
+                                                Ente Devedor
+                                            </label>
+                                            {/* <input
+                                                type="text"
+                                                id="ente_devedor"
+                                                className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                                {...register('ente_devedor', {})}
+                                            /> */}
+
+                                            <CelerAppCombobox
+                                                list={opcoesEnteDevedor}
+                                                onChangeValue={(value) =>
+                                                    setValue('ente_devedor', value)
+                                                }
+                                                value={
+                                                    opcoesEnteDevedor.filter(
+                                                        (estado) =>
+                                                            estado === watch('ente_devedor'),
+                                                    )[0] || ''
+                                                }
+                                                register={register('ente_devedor')}
+                                                name="ente_devedor"
+                                                placeholder="BUSQUE PELO ENTE DEVEDOR"
+                                            />
+                                        </div>
 
                                         <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                                             <label
