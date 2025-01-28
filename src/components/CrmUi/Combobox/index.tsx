@@ -15,7 +15,6 @@ import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { FieldValues, UseFormRegister } from 'react-hook-form';
 
-
 type CelerComboboxProps<T extends FieldValues> = {
     list: Array<string | Record<string, string | number>>;
     size?: string | '250px';
@@ -35,7 +34,7 @@ const CelerAppCombobox = <T extends FieldValues>({
     onChangeValue,
     placeholder,
     register,
-    name
+    name,
 }: CelerComboboxProps<T>) => {
     const [open, setOpen] = useState<boolean>(false);
 
@@ -49,7 +48,7 @@ const CelerAppCombobox = <T extends FieldValues>({
                         aria-expanded={open}
                         className={`min-w-[${size}] ${className} justify-between`}
                     >
-                        {value || 'Selecione para filtro...'}
+                        {value || 'Selecione...'}
                         <LuChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
@@ -61,8 +60,16 @@ const CelerAppCombobox = <T extends FieldValues>({
                             <CommandGroup>
                                 {list.map((item: string | Record<string, string | number>) => (
                                     <CommandItem
-                                        key={typeof item === 'string' ? item : item[Object.keys(item)[0]]}
-                                        value={typeof item === 'string' ? item : String(item[Object.keys(item)[0]])}
+                                        key={
+                                            typeof item === 'string'
+                                                ? item
+                                                : item[Object.keys(item)[0]]
+                                        }
+                                        value={
+                                            typeof item === 'string'
+                                                ? item
+                                                : String(item[Object.keys(item)[0]])
+                                        }
                                         onSelect={(currentValue) => {
                                             onChangeValue!(
                                                 currentValue === value ? '' : currentValue,
@@ -70,12 +77,19 @@ const CelerAppCombobox = <T extends FieldValues>({
                                             setOpen(false);
                                         }}
                                     >
-                                        <p title={typeof item === 'string' ? item : String(item[Object.keys(item)[0]])}
+                                        <p
+                                            title={
+                                                typeof item === 'string'
+                                                    ? item
+                                                    : String(item[Object.keys(item)[0]])
+                                            }
                                             className={` ${className} truncate`}
                                         >
-                                            {typeof item === 'string' ? item : String(item[Object.keys(item)[1]])}
+                                            {typeof item === 'string'
+                                                ? item
+                                                : String(item[Object.keys(item)[1]])}
                                         </p>
-                                        {typeof item === "string" ? (
+                                        {typeof item === 'string' ? (
                                             <BiCheck
                                                 className={cn(
                                                     'mr-2 h-4 w-4',
@@ -86,7 +100,9 @@ const CelerAppCombobox = <T extends FieldValues>({
                                             <BiCheck
                                                 className={cn(
                                                     'mr-2 h-4 w-4',
-                                                    value === item[Object.keys(item)[1]] ? 'opacity-100' : 'opacity-0',
+                                                    value === item[Object.keys(item)[1]]
+                                                        ? 'opacity-100'
+                                                        : 'opacity-0',
                                                 )}
                                             />
                                         )}
