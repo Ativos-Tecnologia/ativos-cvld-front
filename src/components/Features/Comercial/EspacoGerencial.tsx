@@ -29,9 +29,9 @@ import { Spotlight } from '@/components/ui/spotlight-new';
 function EspacoGerencial() {
     const { sheetOpen, setSheetOpen, sheetOpenId } = useContext(ComercialContext);
     const {
-        data: { product, first_name },
+        data: { product, first_name, user },
     } = useContext(UserInfoAPIContext);
-    const [selectedCoordinator, setSelectedCoordinator] = useState<string>('Ativos');
+    const [selectedCoordinator, setSelectedCoordinator] = useState<string>(user);
 
     async function fetchData() {
         const response = await api.get(`/api/comercial/coordenador/${selectedCoordinator}/`);
