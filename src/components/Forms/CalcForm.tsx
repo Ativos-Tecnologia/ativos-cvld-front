@@ -15,6 +15,8 @@ import { NotionPage } from '@/interfaces/INotion';
 import numberFormat from '@/functions/formaters/numberFormat';
 import CelerAppCombobox from '../CrmUi/Combobox';
 import { estadoRegimeEnteDevedor } from '@/constants/estado-regime-enteDevedor';
+import { isCPFOrCNPJValid } from '@/functions/verifiers/isCPFOrCNPJValid';
+import { CPFAndCNPJInput } from '../CrmUi/CPFAndCNPFInput';
 
 // interface
 interface ICalcFormProps {
@@ -25,6 +27,8 @@ interface ICalcFormProps {
     hasDropzone?: boolean;
     isLoading?: boolean;
     formMode?: 'create' | 'update';
+    CPFOrCNPJValue: string;
+    setCPFOrCNPJValue: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const CalcForm = ({
@@ -35,6 +39,8 @@ const CalcForm = ({
     hasDropzone = true,
     isLoading = false,
     formMode = 'create',
+    CPFOrCNPJValue,
+    setCPFOrCNPJValue,
 }: ICalcFormProps) => {
     // hook form imports
     const {
@@ -119,6 +125,10 @@ const CalcForm = ({
             setValue('status', data.properties['Status'].status?.name || '');
             setValue('upload_notion', true);
 
+            if (data.properties['CPF/CNPJ'].rich_text?.[0]?.text.content) {
+                setCPFOrCNPJValue(data.properties['CPF/CNPJ'].rich_text?.[0]?.text.content);
+            }
+
             // update auxDataSetter if exists
             auxDataSetter && auxDataSetter(watch());
         }
@@ -187,12 +197,15 @@ const CalcForm = ({
             }
             setValue('esfera', oficioForm.result[0].esfera);
             setValue('ente_devedor', oficioForm.result[0].ente_devedor);
+
+            if (oficioForm.result[0].cpf_cnpj) {
+                setCPFOrCNPJValue(oficioForm.result[0].cpf_cnpj);
+            }
         }
     }, [oficioForm]);
 
     const esfera = watch('esfera');
     const regimeSelecionado = esfera === 'FEDERAL' ? 'GERAL' : watch('regime');
-    console.log('esfera', esfera);
     const estadoSelecionado =
         esfera === 'FEDERAL' || esfera === undefined ? 'FEDERAL' : watch('estado_ente_devedor');
     const opcoesEnteDevedor =
@@ -222,6 +235,7 @@ const CalcForm = ({
                         <select
                             defaultValue={'PRECATÓRIO'}
                             className="flex h-[37px] w-full cursor-pointer items-center justify-between rounded-md border border-stroke bg-background px-2 py-2 font-satoshi text-xs font-semibold uppercase ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 dark:border-strokedark dark:bg-boxdark-2 [&>span]:line-clamp-1"
+                            {...register('tipo_do_oficio')}
                             {...register('tipo_do_oficio')}
                         >
                             {ENUM_TIPO_OFICIO_LIST.map((status) => (
@@ -887,11 +901,10 @@ const CalcForm = ({
                                             >
                                                 CPF/CNPJ
                                             </label>
-                                            <input
-                                                type="text"
-                                                id="cpf_cnpj"
-                                                className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                                                {...register('cpf_cnpj', {})}
+                                            <CPFAndCNPJInput
+                                                value={CPFOrCNPJValue}
+                                                setValue={setCPFOrCNPJValue}
+                                                className={`${CPFOrCNPJValue && !isCPFOrCNPJValid(CPFOrCNPJValue) && 'focus-visible:ring-meta-1'} h-9.5 w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
                                             />
                                         </div>
 
