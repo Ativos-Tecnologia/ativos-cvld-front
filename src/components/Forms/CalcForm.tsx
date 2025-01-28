@@ -74,7 +74,7 @@ const CalcForm = ({
             setValue('tipo_do_oficio', data.properties['Tipo'].select?.name || 'PRECATÓRIO');
             setValue('natureza', data.properties['Natureza'].select?.name || 'NÃO TRIBUTÁRIA');
             setValue('esfera', data.properties['Esfera'].select?.name || 'FEDERAL');
-            setValue('regime', regime_por_ente || 'GERAL');
+            setValue('regime', data.properties['Regime'].select?.name || 'GERAL');
             setValue('tribunal', data.properties['Tribunal'].select?.name || 'STJ');
             setValue(
                 'valor_principal',
@@ -201,6 +201,7 @@ const CalcForm = ({
             if (oficioForm.result[0].cpf_cnpj) {
                 setCPFOrCNPJValue(oficioForm.result[0].cpf_cnpj);
             }
+            setValue('regime', oficioForm.result[0].regime);
         }
     }, [oficioForm]);
 
