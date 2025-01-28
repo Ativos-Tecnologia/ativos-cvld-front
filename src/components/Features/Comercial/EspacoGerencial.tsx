@@ -124,7 +124,7 @@ function EspacoGerencial() {
                 <DataTable columns={columns} data={data?.results || []} loading={isFetching} />
                 <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                     <SheetContent
-                        className="w-fit overflow-y-auto overflow-x-hidden"
+                        className="w-fit overflow-y-auto overflow-x-hidden bg-[#f4f4f4] drop-shadow-2xl dark:bg-boxdark-2"
                         style={{
                             scrollbarWidth: 'thin',
                         }}

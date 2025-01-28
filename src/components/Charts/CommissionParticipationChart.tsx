@@ -16,21 +16,26 @@ import {
     ChartTooltipContent,
 } from '@/components/ui/chart';
 import { NotionPage } from '@/interfaces/INotion';
+import { generateColor } from '@/functions/charts/generateColor';
 
-const COLORS = ['#2662D9', '#2EB88A', '#E88C30'];
+const COLORS = {
+    red: generateColor('red', 0, 1),
+    yellow: generateColor('yellow', 0, 1),
+    green: generateColor('green', 0, 1),
+};
 
 const chartConfig = {
     meta1: {
-        label: 'Cenário 1',
-        color: COLORS[0],
+        label: 'Meta até 2.5MM',
+        color: COLORS.red,
     },
     meta2: {
-        label: 'Cenário 2',
-        color: COLORS[1],
+        label: 'Meta 2.5MM até 3.75MM',
+        color: COLORS.yellow,
     },
     meta3: {
-        label: 'Cenário 3',
-        color: COLORS[2],
+        label: 'Meta acima de 3.75MM',
+        color: COLORS.green,
     },
 } satisfies ChartConfig;
 
@@ -78,19 +83,25 @@ export function CoordinatorParticipationChart({
                     </BarChart>
                 </ChartContainer>
             </CardContent>
-            <CardFooter className="flex-col items-start gap-2 text-sm">
+            <CardFooter>
                 <div className="flex w-full flex-row justify-center gap-2 font-medium sm:gap-6">
-                    <span className="flex items-center gap-2">
-                        <div className="size-3 rounded" style={{ backgroundColor: COLORS[0] }} />
-                        Cenário 1
+                    <span className="flex items-center gap-1 text-xs">
+                        <div className="size-3 rounded" style={{ backgroundColor: COLORS.red }} />
+                        Meta até 2.5MM
                     </span>
-                    <span className="flex items-center gap-2">
-                        <span className="size-3 rounded" style={{ backgroundColor: COLORS[1] }} />
-                        Cenário 2
+                    <span className="flex items-center gap-1 text-xs">
+                        <span
+                            className="size-3 rounded"
+                            style={{ backgroundColor: COLORS.yellow }}
+                        />
+                        Meta 2.5MM até 3.75MM
                     </span>
-                    <span className="flex items-center gap-2">
-                        <span className="size-3 rounded" style={{ backgroundColor: COLORS[2] }} />
-                        Cenário 3
+                    <span className="flex items-center gap-1 text-xs">
+                        <span
+                            className="size-3 rounded"
+                            style={{ backgroundColor: COLORS.green }}
+                        />
+                        Meta acima de 3.75MM
                     </span>
                 </div>
             </CardFooter>

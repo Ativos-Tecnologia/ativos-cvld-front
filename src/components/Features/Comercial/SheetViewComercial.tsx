@@ -63,13 +63,7 @@ type SheetViewComercialProps = {
 
 export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
     const {
-        data: { 
-            user,
-            profile_picture,
-            first_name,
-            last_name,
-            phone,
-         },
+        data: { user, profile_picture, first_name, last_name, phone },
     } = useContext<UserInfoContextType>(UserInfoAPIContext);
 
     const { setSheetOpen } = useContext(ComercialContext);
@@ -1931,22 +1925,22 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
         }
     }, [data]);
 
-     /**
-         * Função para gerar PDF da Proposta
-         */
-    
-        const handleGeneratePDF = useReactToPrint({
-            contentRef: documentRef,
-            documentTitle: 'Proposta',
-            onBeforePrint: async () => setSheetOpen(false),
-            onAfterPrint: () => setSheetOpen(true),
-            preserveAfterPrint: true,
-            copyShadowRoots: true,
-            onPrintError: (errorLocation, error) => {
-                console.error('Erro na geração do PDF:', errorLocation, error);
-                setLoading(false);
-            },
-        });
+    /**
+     * Função para gerar PDF da Proposta
+     */
+
+    const handleGeneratePDF = useReactToPrint({
+        contentRef: documentRef,
+        documentTitle: 'Proposta',
+        onBeforePrint: async () => setSheetOpen(false),
+        onAfterPrint: () => setSheetOpen(true),
+        preserveAfterPrint: true,
+        copyShadowRoots: true,
+        onPrintError: (errorLocation, error) => {
+            console.error('Erro na geração do PDF:', errorLocation, error);
+            setLoading(false);
+        },
+    });
 
     if (loading || !data || isFetching) {
         return <JuridicoDetailsSkeleton />;
@@ -2826,11 +2820,11 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                                     </div>
                                 </div>
 
-                                <div className="flex w-full justify-center items-center gap-2">
+                                <div className="flex w-full items-center justify-center gap-2">
                                     <Button
                                         disabled={isProposalButtonDisabled}
                                         onClick={saveProposalAndComission}
-                                        className="h-8 w-fit px-2 py-1 text-md font-medium items-center transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
+                                        className="text-md h-8 w-fit items-center px-2 py-1 font-medium transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
                                     >
                                         {savingProposalAndComission
                                             ? 'Salvando...'
@@ -2839,7 +2833,7 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                                     <Button
                                         isLoading={loading}
                                         onClick={() => handleGeneratePDF()}
-                                        className="h-8 w-fit px-2 text-md items-center font-medium transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
+                                        className="text-md h-8 w-fit items-center px-2 font-medium transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
                                     >
                                         Gerar Proposta
                                     </Button>
@@ -2895,28 +2889,28 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
             </Form>
 
             {/* Esse componente tem a função apenas de gerar um PDF, por isso hidden */}
-                                <div className="hidden">
-                                    <div ref={documentRef} className="bg-[#F4F4F4]">
-                                        <PrintPDF
-                                            nomeDoCredor={data?.properties['Credor'].title[0]?.text.content}
-                                            valorDaProposta={
-                                                data?.properties['Proposta Escolhida - Celer'].number ||
-                                                data?.properties['(R$) Proposta Mínima - Celer'].number ||
-                                                0
-                                            }
-                                            nomeDoBroker={first_name + ' ' + last_name}
-                                            fotoDoBroker={profile_picture}
-                                            phone={phone ? phone : null}
-                                        />
-                                    </div>
-                                </div>
+            <div className="hidden">
+                <div ref={documentRef} className="bg-[#F4F4F4]">
+                    <PrintPDF
+                        nomeDoCredor={data?.properties['Credor'].title[0]?.text.content}
+                        valorDaProposta={
+                            data?.properties['Proposta Escolhida - Celer'].number ||
+                            data?.properties['(R$) Proposta Mínima - Celer'].number ||
+                            0
+                        }
+                        nomeDoBroker={first_name + ' ' + last_name}
+                        fotoDoBroker={profile_picture}
+                        phone={phone ? phone : null}
+                    />
+                </div>
+            </div>
 
             <section className="grid grid-cols-12 justify-center gap-5">
                 <div
                     id="cedentes"
                     className="col-span-12 grid gap-6 rounded-md bg-white p-8 dark:bg-boxdark"
                 >
-                    <h3 className="font-medium text-bodydark2">Detalhes do precatório</h3>
+                    <h3 className="font-medium dark:text-bodydark2">Detalhes do precatório</h3>
                     <div className="grid grid-cols-4 gap-6 3xl:grid-cols-6">
                         <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
                             <CelerInputField
