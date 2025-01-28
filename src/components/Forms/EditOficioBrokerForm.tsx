@@ -1,25 +1,18 @@
-"use client";
-import { tribunais } from '@/constants/tribunais';
+'use client';
 import { BrokersContext } from '@/context/BrokersContext';
-import tipoOficio from '@/enums/tipoOficio.enum';
-import { NotionNumberFormater } from '@/functions/formaters/notionNumberFormater';
 import { NotionPage } from '@/interfaces/INotion';
 import { CvldFormInputsProps } from '@/types/cvldform';
-import Cleave from 'cleave.js/react';
-import React, { useContext, useEffect, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form';
+import React, { useContext, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { BiCheck, BiX } from 'react-icons/bi';
-import CustomCheckbox from '../CrmUi/Checkbox';
-import { estados } from '@/constants/estados';
-import { AiOutlineLoading } from 'react-icons/ai';
 import backendNumberFormat from '@/functions/formaters/backendNumberFormat';
 import { useMutation } from '@tanstack/react-query';
 import api from '@/utils/api';
 import { toast } from 'sonner';
 import { verifyUpdateFields } from '@/functions/verifiers/verifyValues';
-import numberFormat from '@/functions/formaters/numberFormat';
 import CalcForm from './CalcForm';
-import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
+import { isCPFOrCNPJValid } from '@/functions/verifiers/isCPFOrCNPJValid';
+import UseMySwal from '@/hooks/useMySwal';
 
 interface IFormBroker {
     mainData: NotionPage | null;
@@ -27,24 +20,24 @@ interface IFormBroker {
 
 /**
  * Componente de formulário para edição do oficio (dashbrokers)
- * 
- * @param {IFormBroker} props - Interface com propriedades do componente 
+ *
+ * @param {IFormBroker} props - Interface com propriedades do componente
  * @returns {React.JSX.Element} - O formulário renderizado
- * 
+ *
  */
 
 const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
+    const MySwal = UseMySwal();
 
     /* ====> dados inicias do formulário */
     const [defaultFormValues, setDefaultFormValues] = useState<any>(null);
+    const [CPFOrCNPJValue, setCPFOrCNPJValue] = useState<string>('');
 
     /* ====> form imports <==== */
-    const form = useForm<Partial<CvldFormInputsProps>>()
+    const form = useForm<Partial<CvldFormInputsProps>>();
 
-    const { 
-        editModalId, setEditModalId, setIsFetchAllowed,
-        fetchDetailCardData
-     } = useContext(BrokersContext);
+    const { editModalId, setEditModalId, setIsFetchAllowed, fetchDetailCardData } =
+        useContext(BrokersContext);
     const [isSavingEdit, setIsSavingEdit] = useState<boolean>(false);
 
     // mutation de alteração dos dados do oficio
@@ -60,116 +53,127 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
         onError: () => {
             toast.error('Erro ao atualizar ofício', {
                 classNames: {
-                    toast: "bg-white dark:bg-boxdark",
-                    title: "text-black-2 dark:text-white",
-                    actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+                    toast: 'bg-white dark:bg-boxdark',
+                    title: 'text-black-2 dark:text-white',
+                    actionButton:
+                        'bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300',
                 },
-                icon: <BiX className="text-lg fill-red-500" />,
+                icon: <BiX className="fill-red-500 text-lg" />,
                 action: {
-                    label: "OK",
+                    label: 'OK',
                     onClick() {
                         toast.dismiss();
                     },
-                }
+                },
             });
         },
         onSuccess: async () => {
             await fetchDetailCardData(mainData!.id);
             setEditModalId(null);
-            toast.success("Dados do ofício atualizados.", {
+            toast.success('Dados do ofício atualizados.', {
                 classNames: {
-                    toast: "bg-white dark:bg-boxdark",
-                    title: "text-black-2 dark:text-white",
-                    actionButton: "bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300"
+                    toast: 'bg-white dark:bg-boxdark',
+                    title: 'text-black-2 dark:text-white',
+                    actionButton:
+                        'bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover-bg-slate-700 transition-colors duration-300',
                 },
-                icon: <BiCheck className="text-lg fill-green-400" />,
+                icon: <BiCheck className="fill-green-400 text-lg" />,
                 action: {
-                    label: "OK",
+                    label: 'OK',
                     onClick() {
                         toast.dismiss();
                     },
-                }
+                },
             });
         },
         onSettled: () => {
             setIsSavingEdit(false);
             setIsFetchAllowed(true);
-        }
+        },
     });
 
     // função para alterar os dados do oficio (submit)
     async function onSubmit(data: any) {
         if (verifyUpdateFields(defaultFormValues, data)) {
-            data.need_to_recalculate_proposal = true
+            data.need_to_recalculate_proposal = true;
         } else {
-            data.need_to_recalculate_proposal = false
+            data.need_to_recalculate_proposal = false;
         }
+
+        if (!isCPFOrCNPJValid(CPFOrCNPJValue)) {
+            MySwal.fire({
+                title: 'Ok, Houston...Temos um problema!',
+                text: 'O CPF ou CNPJ inserido é inválido. Por favor, tente novamente.',
+                icon: 'error',
+                showConfirmButton: true,
+            });
+            return;
+        }
+
+        data.cpf_cnpj = CPFOrCNPJValue;
 
         if (data.valor_aquisicao_total) {
             data.percentual_a_ser_adquirido = 1;
-        } else  {
-            if (typeof data.percentual_a_ser_adquirido === "string") {
+        } else {
+            if (typeof data.percentual_a_ser_adquirido === 'string') {
                 // data.percentual_a_ser_adquirido = Number((data.percentual_a_ser_adquirido.replace(/[^0-9,]/g, "").replace(",", ".") / 100).toFixed(4))
-                data.percentual_a_ser_adquirido = parseFloat(data.percentual_a_ser_adquirido.replace("%", "")) / 100
-            } else  {
-                data.percentual_a_ser_adquirido = data.percentual_a_ser_adquirido / 100
+                data.percentual_a_ser_adquirido =
+                    parseFloat(data.percentual_a_ser_adquirido.replace('%', '')) / 100;
+            } else {
+                data.percentual_a_ser_adquirido = data.percentual_a_ser_adquirido / 100;
             }
         }
 
-        data.cpf_cnpj = applyMaskCpfCnpj(data.cpf_cnpj);
-
         data.percentual_de_honorarios /= 100;
-        
-        
-        if (typeof data.valor_principal === "string") {
+
+        if (typeof data.valor_principal === 'string') {
             data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
             data.valor_principal = parseFloat(data.valor_principal);
         }
-        
-        if (typeof data.valor_juros === "string") {
+
+        if (typeof data.valor_juros === 'string') {
             data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
             data.valor_juros = parseFloat(data.valor_juros);
         }
 
-        if (typeof data.outros_descontos === "string") {
+        if (typeof data.outros_descontos === 'string') {
             data.outros_descontos = backendNumberFormat(data.outros_descontos) || 0;
             data.outros_descontos = parseFloat(data.outros_descontos);
         }
 
-        
         if (typeof data.valor_pss) {
             data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
             data.valor_pss = parseFloat(data.valor_pss);
         }
 
         if (!data.ir_incidente_rra) {
-            data.numero_de_meses = 0
+            data.numero_de_meses = 0;
         }
 
         if (!data.incidencia_pss) {
-            data.valor_pss = 0
+            data.valor_pss = 0;
         }
 
         if (!data.data_limite_de_atualizacao_check && data.data_limite_de_atualizacao) {
-            delete data.data_limite_de_atualizacao
+            delete data.data_limite_de_atualizacao;
         }
-        
-        // console.log(data)
-        // return
 
         await updateOficio.mutateAsync(data);
     }
 
     return (
-        <div className={`absolute top-0 left-0 z-3 bg-white dark:bg-boxdark w-full ${editModalId === mainData?.id ? "max-h-full overflow-y-scroll border border-snow rounded-md" : "max-h-0 overflow-hidden"} grid grid-cols-2 gap-2 transition-all duration-300`}>
-            <div className='p-5 col-span-2'>
-
-                <h2 className='text-xl font-medium text-center mb-8'>Edite as informações do ofício</h2>
+        <div
+            className={`absolute left-0 top-0 z-3 w-full bg-white dark:bg-boxdark ${editModalId === mainData?.id ? 'max-h-full overflow-y-scroll rounded-md border border-snow' : 'max-h-0 overflow-hidden'} grid grid-cols-2 gap-2 transition-all duration-300`}
+        >
+            <div className="col-span-2 p-5">
+                <h2 className="mb-8 text-center text-xl font-medium">
+                    Edite as informações do ofício
+                </h2>
 
                 {/* ----> close button <---- */}
                 <button
                     onClick={() => setEditModalId(null)}
-                    className='absolute right-0 top-0 p-1 rounded-bl-sm hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors duration-300'
+                    className="absolute right-0 top-0 rounded-bl-sm p-1 transition-colors duration-300 hover:bg-slate-100 dark:hover:bg-slate-600"
                 >
                     <BiX className="text-2xl" />
                 </button>
@@ -181,13 +185,15 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
                     hasDropzone={false}
                     onSubmitForm={onSubmit}
                     formConfigs={form}
-                    formMode='update'
+                    formMode="update"
                     isLoading={isSavingEdit}
                     auxDataSetter={setDefaultFormValues}
+                    CPFOrCNPJValue={CPFOrCNPJValue}
+                    setCPFOrCNPJValue={setCPFOrCNPJValue}
                 />
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default EditOficioBrokerForm
+export default EditOficioBrokerForm;

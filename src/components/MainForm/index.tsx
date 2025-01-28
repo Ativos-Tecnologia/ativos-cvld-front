@@ -1,33 +1,20 @@
 import { ACCESS_TOKEN } from '@/constants/constants';
-import { UserInfoAPIContext, UserInfoContextType } from '@/context/UserInfoContext';
-import statusOficio from '@/enums/statusOficio.enum';
-import tipoOficio from '@/enums/tipoOficio.enum';
-import numberFormat from '@/functions/formaters/numberFormat';
 import UseMySwal from '@/hooks/useMySwal';
 import { JWTToken } from '@/types/jwtToken';
 import api from '@/utils/api';
-import Cleave from 'cleave.js/react';
 import { jwtDecode } from 'jwt-decode';
 import { Slash } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useContext, useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { AiOutlineLoading, AiOutlineReload, AiOutlineWarning } from 'react-icons/ai';
-import { BiChevronRight, BiLineChart, BiLogoUpwork, BiMinus, BiPlus } from 'react-icons/bi';
+import { useForm } from 'react-hook-form';
+import { BiChevronRight } from 'react-icons/bi';
 import { TableNotionContext } from '@/context/NotionTableContext';
 
 import backendNumberFormat from '@/functions/formaters/backendNumberFormat';
 import { CvldFormInputsProps } from '@/types/cvldform';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { UpdatePrecatorioButton } from '../Button/UpdatePrecatorioButton';
-import CustomCheckbox from '../CrmUi/Checkbox';
-import { DrawerConta } from '../Drawer/DrawerConta';
-import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
-import { ShadSelect } from '../ShadSelect';
-import { SelectItem } from '../ui/select';
 import CalcForm from '../Forms/CalcForm';
-import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
+import { isCPFOrCNPJValid } from '@/functions/verifiers/isCPFOrCNPJValid';
 
 interface ChartTwoState {
     series: {
@@ -43,7 +30,6 @@ type CVLDFormProps = {
 };
 
 const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataToAppend }) => {
-
     const form = useForm<Partial<CvldFormInputsProps>>({
         defaultValues: {
             ja_possui_destacamento: true,
@@ -54,117 +40,13 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
         },
     });
 
-    const queryClient = useQueryClient();
-    const enumOficiosList = Object.values(statusOficio);
-    const enumTipoOficiosList = Object.values(tipoOficio);
+    const MySwal = UseMySwal();
 
-    const { data } = useContext<UserInfoContextType>(UserInfoAPIContext);
-    const { setSaveInfoToNotion, usersList } = useContext(TableNotionContext);
+    const { setSaveInfoToNotion } = useContext(TableNotionContext);
 
-    const estados = [
-        { id: 'AC', nome: 'Acre' },
-        { id: 'AL', nome: 'Alagoas' },
-        { id: 'AP', nome: 'Amapá' },
-        { id: 'AM', nome: 'Amazonas' },
-        { id: 'BA', nome: 'Bahia' },
-        { id: 'CE', nome: 'Ceará' },
-        { id: 'DF', nome: 'Distrito Federal' },
-        { id: 'ES', nome: 'Espírito Santo' },
-        { id: 'GO', nome: 'Goiás' },
-        { id: 'MA', nome: 'Maranhão' },
-        { id: 'MT', nome: 'Mato Grosso' },
-        { id: 'MS', nome: 'Mato Grosso do Sul' },
-        { id: 'MG', nome: 'Minas Gerais' },
-        { id: 'PA', nome: 'Pará' },
-        { id: 'PB', nome: 'Paraíba' },
-        { id: 'PR', nome: 'Paraná' },
-        { id: 'PE', nome: 'Pernambuco' },
-        { id: 'PI', nome: 'Piauí' },
-        { id: 'RJ', nome: 'Rio de Janeiro' },
-        { id: 'RN', nome: 'Rio Grande do Norte' },
-        { id: 'RS', nome: 'Rio Grande do Sul' },
-        { id: 'RO', nome: 'Rondônia' },
-        { id: 'RR', nome: 'Roraima' },
-        { id: 'SC', nome: 'Santa Catarina' },
-        { id: 'SP', nome: 'São Paulo' },
-        { id: 'SE', nome: 'Sergipe' },
-        { id: 'TO', nome: 'Tocantins' },
-    ];
-
-    const tribunais = [
-        { id: 'TRF1', nome: 'Tribunal Regional Federal - 1ª Região' },
-        { id: 'TRF2', nome: 'Tribunal Regional Federal - 2ª Região' },
-        { id: 'TRF3', nome: 'Tribunal Regional Federal - 3ª Região' },
-        { id: 'TRF4', nome: 'Tribunal Regional Federal - 4ª Região' },
-        { id: 'TRF5', nome: 'Tribunal Regional Federal - 5ª Região' },
-        { id: 'TRF6', nome: 'Tribunal Regional Federal - 6ª Região' },
-        { id: 'STF', nome: 'Supremo Tribunal Federal' },
-        { id: 'STJ', nome: 'Superior Tribunal de Justiça' },
-        { id: 'TST', nome: 'Tribunal Superior do Trabalho' },
-        { id: 'TSE', nome: 'Tribunal Superior Eleitoral' },
-        { id: 'STM', nome: 'Superior Tribunal Militar' },
-        { id: 'TJAC', nome: 'Tribunal de Justiça do Acre' },
-        { id: 'TJAL', nome: 'Tribunal de Justiça de Alagoas' },
-        { id: 'TJAP', nome: 'Tribunal de Justiça do Amapá' },
-        { id: 'TJAM', nome: 'Tribunal de Justiça do Amazonas' },
-        { id: 'TJBA', nome: 'Tribunal de Justiça da Bahia' },
-        { id: 'TJCE', nome: 'Tribunal de Justiça do Ceará' },
-        {
-            id: 'TJDFT',
-            nome: 'Tribunal de Justiça do Distrito Federal e dos Territórios',
-        },
-        { id: 'TJES', nome: 'Tribunal de Justiça do Espírito Santo' },
-        { id: 'TJGO', nome: 'Tribunal de Justiça de Goiás' },
-        { id: 'TJMA', nome: 'Tribunal de Justiça do Maranhão' },
-        { id: 'TJMT', nome: 'Tribunal de Justiça do Mato Grosso' },
-        { id: 'TJMS', nome: 'Tribunal de Justiça do Mato Grosso do Sul' },
-        { id: 'TJMG', nome: 'Tribunal de Justiça de Minas Gerais' },
-        { id: 'TJPA', nome: 'Tribunal de Justiça do Pará' },
-        { id: 'TJPB', nome: 'Tribunal de Justiça da Paraíba' },
-        { id: 'TJPE', nome: 'Tribunal de Justiça de Pernambuco' },
-        { id: 'TJPI', nome: 'Tribunal de Justiça do Piauí' },
-        { id: 'TJPR', nome: 'Tribunal de Justiça do Paraná' },
-        { id: 'TJRJ', nome: 'Tribunal de Justiça do Rio de Janeiro' },
-        { id: 'TJRN', nome: 'Tribunal de Justiça do Rio Grande do Norte' },
-        { id: 'TJRO', nome: 'Tribunal de Justiça de Rondônia' },
-        { id: 'TJRR', nome: 'Tribunal de Justiça de Roraima' },
-        { id: 'TJRS', nome: 'Tribunal de Justiça do Rio Grande do Sul' },
-        { id: 'TJSC', nome: 'Tribunal de Justiça de Santa Catarina' },
-        { id: 'TJSE', nome: 'Tribunal de Justiça de Sergipe' },
-        { id: 'TJSP', nome: 'Tribunal de Justiça de São Paulo' },
-        { id: 'TJTO', nome: 'Tribunal de Justiça do Tocantins' },
-        { id: 'TRT1', nome: 'Tribunal Regional do Trabalho da 1ª Região' },
-        { id: 'TRT2', nome: 'Tribunal Regional do Trabalho da 2ª Região' },
-        { id: 'TRT3', nome: 'Tribunal Regional do Trabalho da 3ª Região' },
-        { id: 'TRT4', nome: 'Tribunal Regional do Trabalho da 4ª Região' },
-        { id: 'TRT5', nome: 'Tribunal Regional do Trabalho da 5ª Região' },
-        { id: 'TRT6', nome: 'Tribunal Regional do Trabalho da 6ª Região' },
-        { id: 'TRT7', nome: 'Tribunal Regional do Trabalho da 7ª Região' },
-        { id: 'TRT8', nome: 'Tribunal Regional do Trabalho da 8ª Região' },
-        { id: 'TRT9', nome: 'Tribunal Regional do Trabalho da 9ª Região' },
-        { id: 'TRT10', nome: 'Tribunal Regional do Trabalho da 10ª Região' },
-        { id: 'TRT11', nome: 'Tribunal Regional do Trabalho da 11ª Região' },
-        { id: 'TRT12', nome: 'Tribunal Regional do Trabalho da 12ª Região' },
-        { id: 'TRT13', nome: 'Tribunal Regional do Trabalho da 13ª Região' },
-        { id: 'TRT14', nome: 'Tribunal Regional do Trabalho da 14ª Região' },
-        { id: 'TRT15', nome: 'Tribunal Regional do Trabalho da 15ª Região' },
-        { id: 'TRT16', nome: 'Tribunal Regional do Trabalho da 16ª Região' },
-        { id: 'TRT17', nome: 'Tribunal Regional do Trabalho da 17ª Região' },
-        { id: 'TRT18', nome: 'Tribunal Regional do Trabalho da 18ª Região' },
-        { id: 'TRT19', nome: 'Tribunal Regional do Trabalho da 19ª Região' },
-        { id: 'TRT20', nome: 'Tribunal Regional do Trabalho da 20ª Região' },
-        { id: 'TRT21', nome: 'Tribunal Regional do Trabalho da 21ª Região' },
-        { id: 'TRT22', nome: 'Tribunal Regional do Trabalho da 22ª Região' },
-        { id: 'TRT23', nome: 'Tribunal Regional do Trabalho da 23ª Região' },
-        { id: 'TRT24', nome: 'Tribunal Regional do Trabalho da 24ª Região' },
-    ].sort((a, b) => a.nome.localeCompare(b.nome));
-
-    const [oficioForm, setOficioForm] = useState<any>(null);
     const mySwal = UseMySwal();
     const [loading, setLoading] = useState<boolean>(false);
-    const [toggleNovaConta, setToggleNovaConta] = useState<boolean>(false);
-
-    const [contatoNumberCount, setContatoNumberCount] = useState<number>(1);
+    const [CPFOrCNPJValue, setCPFOrCNPJValue] = useState<string>('');
 
     const [state, setState] = useState<ChartTwoState>({
         series: [
@@ -219,7 +101,17 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
             data.data_limite_de_atualizacao = formattedDate;
         }
 
-        data.cpf_cnpj = applyMaskCpfCnpj(data.cpf_cnpj);
+        if (!isCPFOrCNPJValid(CPFOrCNPJValue)) {
+            MySwal.fire({
+                title: 'Ok, Houston...Temos um problema!',
+                text: 'O CPF ou CNPJ inserido é inválido. Por favor, tente novamente.',
+                icon: 'error',
+                showConfirmButton: true,
+            });
+            return;
+        }
+
+        data.cpf_cnpj = CPFOrCNPJValue;
 
         if (!data.status) {
             data.status = 'Realizar Primeiro Contato';
@@ -274,7 +166,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
         if (data.valor_aquisicao_total) {
             data.percentual_a_ser_adquirido = 1;
         } else {
-            data.percentual_a_ser_adquirido = data.percentual_a_ser_adquirido / 100
+            data.percentual_a_ser_adquirido = data.percentual_a_ser_adquirido / 100;
         }
 
         if (!data.estado_ente_devedor) {
@@ -478,6 +370,8 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                 onSubmitForm={onSubmit}
                 formConfigs={form}
                 isLoading={loading}
+                CPFOrCNPJValue={CPFOrCNPJValue}
+                setCPFOrCNPJValue={setCPFOrCNPJValue}
             />
         </div>
     );
