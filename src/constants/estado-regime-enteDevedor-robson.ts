@@ -45,6 +45,7 @@ const EstadoRegimeEnteDevedorRobson = {
             'MUNICÍPIO DE SENADOR GUIOMARD',
             'MUNICÍPIO DE TARAUACÁ',
             'MUNICÍPIO DE XAPURI',
+            'Estado do Acre',
         ],
     },
     AL: {
