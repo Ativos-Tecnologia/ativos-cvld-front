@@ -12,9 +12,7 @@ const verifyRequiredInputsToDue = (mainData: NotionPage | undefined, secondaryDa
 
     if (!mainData || !secondaryData) return false;
 
-    const t = mainData.properties["Certidões emitidas"].checkbox &&
-    mainData.properties["Possui processos?"].checkbox &&
-    secondaryData.properties["Estado Civil"].select?.name &&
+    const t = secondaryData.properties["Estado Civil"].select?.name &&
     mainData.properties["Cálculo Revisado"].checkbox &&
     mainData.properties["Espelho do ofício"].checkbox &&
     mainData.properties["Esfera"].select?.name === "FEDERAL" ? true : mainData.properties["Estoque de Precatórios Baixado"].checkbox
