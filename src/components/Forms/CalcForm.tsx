@@ -2,17 +2,18 @@ import { tribunais } from '@/constants/tribunais';
 import tipoOficio from '@/enums/tipoOficio.enum';
 import { CvldFormInputsProps } from '@/types/cvldform';
 import React from 'react';
-import { Controller, useForm, UseFormReturn } from 'react-hook-form';
+import { Controller, UseFormReturn } from 'react-hook-form';
 import { UpdatePrecatorioButton } from '../Button/UpdatePrecatorioButton';
 import Cleave from 'cleave.js/react';
 import CustomCheckbox from '../CrmUi/Checkbox';
 import { estados } from '@/constants/estados';
 import { UserInfoAPIContext, UserInfoContextType } from '@/context/UserInfoContext';
-import { BiCheck, BiLineChart, BiLogoUpwork, BiSolidCalculator } from 'react-icons/bi';
+import { BiCheck, BiLogoUpwork, BiSolidCalculator } from 'react-icons/bi';
 import { TableNotionContext } from '@/context/NotionTableContext';
 import { AiOutlineLoading } from 'react-icons/ai';
 import { NotionPage } from '@/interfaces/INotion';
 import numberFormat from '@/functions/formaters/numberFormat';
+import CelerAppCombobox from '../CrmUi/Combobox';
 import { isCPFOrCNPJValid } from '@/functions/verifiers/isCPFOrCNPJValid';
 import { CPFAndCNPJInput } from '../CrmUi/CPFAndCNPFInput';
 
@@ -986,17 +987,34 @@ const CalcForm = ({
                                                     Estado do Ente Devedor
                                                 </label>
 
-                                                <select
-                                                    defaultValue={''}
-                                                    className="flex h-[37px] w-full cursor-pointer items-center justify-between rounded-md border border-stroke bg-background px-2 py-2 font-satoshi text-xs font-semibold uppercase ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 dark:border-strokedark dark:bg-boxdark-2 [&>span]:line-clamp-1"
-                                                    {...register('estado_ente_devedor')}
-                                                >
-                                                    {estados.map((estado) => (
-                                                        <option key={estado.id} value={estado.id}>
-                                                            {estado.nome}
-                                                        </option>
-                                                    ))}
-                                                </select>
+                                                <CelerAppCombobox
+                                                    list={estados}
+                                                    onChangeValue={(value) =>
+                                                        setValue('estado_ente_devedor', value)
+                                                    }
+                                                    value={
+                                                        estados.filter(
+                                                            (estado) =>
+                                                                estado.id ===
+                                                                watch('estado_ente_devedor'),
+                                                        )[0]?.nome || ''
+                                                    }
+                                                    register={register('estado_ente_devedor')}
+                                                    name="estado_ente_devedor"
+                                                    placeholder="BUSQUE POR ESTADO"
+                                                />
+
+                                                {/* <select
+                                                        defaultValue={""}
+                                                        className="flex h-[37px] w-full cursor-pointer items-center justify-between rounded-md border border-stroke bg-background px-2 py-2 font-satoshi text-xs font-semibold uppercase ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 dark:border-strokedark dark:bg-boxdark-2 [&>span]:line-clamp-1"
+                                                        {...register("estado_ente_devedor")}
+                                                    >
+                                                        {estados.map((estado) => (
+                                                            <option key={estado.id} value={estado.id}>
+                                                                {estado.nome}
+                                                            </option>
+                                                        ))}
+                                                    </select> */}
                                             </div>
                                         )}
 
