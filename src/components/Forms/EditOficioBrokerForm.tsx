@@ -1,25 +1,16 @@
 'use client';
-import { tribunais } from '@/constants/tribunais';
 import { BrokersContext } from '@/context/BrokersContext';
-import tipoOficio from '@/enums/tipoOficio.enum';
-import { NotionNumberFormater } from '@/functions/formaters/notionNumberFormater';
 import { NotionPage } from '@/interfaces/INotion';
 import { CvldFormInputsProps } from '@/types/cvldform';
-import Cleave from 'cleave.js/react';
-import React, { useContext, useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import React, { useContext, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { BiCheck, BiX } from 'react-icons/bi';
-import CustomCheckbox from '../CrmUi/Checkbox';
-import { estados } from '@/constants/estados';
-import { AiOutlineLoading } from 'react-icons/ai';
 import backendNumberFormat from '@/functions/formaters/backendNumberFormat';
 import { useMutation } from '@tanstack/react-query';
 import api from '@/utils/api';
 import { toast } from 'sonner';
 import { verifyUpdateFields } from '@/functions/verifiers/verifyValues';
-import numberFormat from '@/functions/formaters/numberFormat';
 import CalcForm from './CalcForm';
-import { applyMaskCpfCnpj } from '@/functions/formaters/maskCpfCnpj';
 import { isCPFOrCNPJValid } from '@/functions/verifiers/isCPFOrCNPJValid';
 import UseMySwal from '@/hooks/useMySwal';
 
@@ -133,8 +124,6 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
             }
         }
 
-        data.cpf_cnpj = applyMaskCpfCnpj(data.cpf_cnpj);
-
         data.percentual_de_honorarios /= 100;
 
         if (typeof data.valor_principal === 'string') {
@@ -199,6 +188,8 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
                     formMode="update"
                     isLoading={isSavingEdit}
                     auxDataSetter={setDefaultFormValues}
+                    CPFOrCNPJValue={CPFOrCNPJValue}
+                    setCPFOrCNPJValue={setCPFOrCNPJValue}
                 />
             </div>
         </div>
