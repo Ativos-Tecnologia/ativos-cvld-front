@@ -62,7 +62,39 @@ const CalcForm = ({
     const { data: userData } = React.useContext<UserInfoContextType>(UserInfoAPIContext);
     const { usersList } = React.useContext(TableNotionContext);
 
+    // others constants
+    const esfera = watch('esfera');
+    const estadoSelecionado =
+        esfera === 'FEDERAL' || esfera === undefined ? 'FEDERAL' : watch('estado_ente_devedor');
+
+    const enteDevedorSelecionado = watch('ente_devedor');
+
+    const opcoesEntesDevedores = estadoSelecionado
+        ? [
+            ...(estadoRegimeEnteDevedor[estadoSelecionado]?.GERAL || []),
+            ...(estadoRegimeEnteDevedor[estadoSelecionado]?.ESPECIAL || []),
+        ]
+        : [];
+
+    const regime_por_ente =
+        estadoSelecionado &&
+            enteDevedorSelecionado &&
+            estadoRegimeEnteDevedor[estadoSelecionado]?.GERAL?.includes(enteDevedorSelecionado)
+            ? 'GERAL'
+            : 'ESPECIAL';
+
+
     // effects
+    React.useEffect(() => {
+        if (enteDevedorSelecionado && estadoSelecionado) {
+            const regime = estadoRegimeEnteDevedor[estadoSelecionado]?.GERAL?.includes(enteDevedorSelecionado)
+            ? "GERAL"
+            : "ESPECIAL";
+            setValue('regime', regime);
+        }
+    }, [enteDevedorSelecionado, estadoSelecionado])
+
+
     React.useEffect(() => {
         if (data && formMode === 'update') {
             // const t = Number((data.properties["Percentual a ser adquirido"].number! * 100).toFixed(2))
@@ -205,26 +237,6 @@ const CalcForm = ({
         }
     }, [oficioForm]);
 
-    const esfera = watch('esfera');
-    const estadoSelecionado =
-        esfera === 'FEDERAL' || esfera === undefined ? 'FEDERAL' : watch('estado_ente_devedor');
-
-    const enteDevedorSelecionado = watch('ente_devedor');
-
-    const opcoesEntesDevedores = estadoSelecionado
-        ? [
-              ...(estadoRegimeEnteDevedor[estadoSelecionado]?.GERAL || []),
-              ...(estadoRegimeEnteDevedor[estadoSelecionado]?.ESPECIAL || []),
-          ]
-        : [];
-
-    const regime_por_ente =
-        estadoSelecionado &&
-        enteDevedorSelecionado &&
-        estadoRegimeEnteDevedor[estadoSelecionado]?.GERAL?.includes(enteDevedorSelecionado)
-            ? 'GERAL'
-            : 'ESPECIAL';
-
     return (
         <React.Fragment>
             {hasDropzone && (
@@ -295,7 +307,7 @@ const CalcForm = ({
                         </select>
                     </div>
 
-                    <input type="hidden" {...register('regime')} value={regime_por_ente} />
+                    <input type="hidden" {...register('regime')} onChange={() => { setValue("regime", regime_por_ente) }} />
 
                     <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                         <label
@@ -500,10 +512,6 @@ const CalcForm = ({
 
                     <div className="col-span-1 hidden sm:block" />
 
-                    {watch('esfera') !== 'FEDERAL' && watch('esfera') !== undefined && (
-                        <div className="col-span-1"></div>
-                    )}
-
                     <div className={`col-span-2 flex max-h-6 items-center gap-2 md:col-span-1`}>
                         <CustomCheckbox
                             check={watch('valor_aquisicao_total')}
@@ -703,8 +711,8 @@ const CalcForm = ({
                     )}
 
                     {watch('ir_incidente_rra') &&
-                    watch('incidencia_rra_ir') === true &&
-                    watch('natureza') !== 'TRIBUTÁRIA' ? (
+                        watch('incidencia_rra_ir') === true &&
+                        watch('natureza') !== 'TRIBUTÁRIA' ? (
                         <div className="mt-1 flex flex-col gap-2 overflow-hidden 2xsm:col-span-2 sm:col-span-1">
                             <label
                                 htmlFor="numero_de_meses"
@@ -728,8 +736,8 @@ const CalcForm = ({
                     ) : (
                         <>
                             {!watch('ir_incidente_rra') &&
-                            watch('incidencia_rra_ir') &&
-                            watch('natureza') === 'NÃO TRIBUTÁRIA' ? (
+                                watch('incidencia_rra_ir') &&
+                                watch('natureza') === 'NÃO TRIBUTÁRIA' ? (
                                 <div className="col-span-1 hidden md:block"></div>
                             ) : null}
                         </>
@@ -860,7 +868,7 @@ const CalcForm = ({
                         )}
                         <div className="mt-8 flex flex-col gap-2">
                             {(watch('gerar_cvld') && formMode === 'create') ||
-                            formMode === 'update' ? (
+                                formMode === 'update' ? (
                                 <>
                                     <div className="mb-4 w-full">
                                         <span className="text-md w-full self-center font-semibold">
@@ -1090,14 +1098,14 @@ const CalcForm = ({
                             ) : null}
                         </div>
                         {(userData.role === 'ativos' || userData.role === 'judit') &&
-                        watch('gerar_cvld') &&
-                        formMode === 'create' ? (
+                            watch('gerar_cvld') &&
+                            formMode === 'create' ? (
                             <>
                                 <hr className="col-span-2 my-8 border border-stroke dark:border-strokedark" />
                                 <div className="flex flex-col gap-2">
                                     {(userData.role === 'ativos' &&
                                         watch('regime') !== 'ESPECIAL') ||
-                                    watch('regime') === undefined ? (
+                                        watch('regime') === undefined ? (
                                         <>
                                             <div className="flex justify-between">
                                                 <div className="flex items-center gap-2">
