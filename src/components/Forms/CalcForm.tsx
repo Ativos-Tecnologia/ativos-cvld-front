@@ -68,7 +68,7 @@ const CalcForm = ({
             setValue('tipo_do_oficio', data.properties['Tipo'].select?.name || 'PRECATÓRIO');
             setValue('natureza', data.properties['Natureza'].select?.name || 'NÃO TRIBUTÁRIA');
             setValue('esfera', data.properties['Esfera'].select?.name || 'FEDERAL');
-            setValue('regime', data.properties['Regime'].select?.name || 'GERAL');
+            setValue('regime', regime_por_ente || 'GERAL');
             setValue('tribunal', data.properties['Tribunal'].select?.name || 'STJ');
             setValue(
                 'valor_principal',
@@ -191,16 +191,25 @@ const CalcForm = ({
     }, [oficioForm]);
 
     const esfera = watch('esfera');
-    const regimeSelecionado = esfera === 'FEDERAL' ? 'GERAL' : watch('regime');
-    console.log('esfera', esfera);
+
     const estadoSelecionado =
         esfera === 'FEDERAL' || esfera === undefined ? 'FEDERAL' : watch('estado_ente_devedor');
-    const opcoesEnteDevedor =
-        estadoSelecionado && regimeSelecionado && estadoSelecionado in estadoRegimeEnteDevedor
-            ? estadoRegimeEnteDevedor[estadoSelecionado as keyof typeof estadoRegimeEnteDevedor]?.[
-                  regimeSelecionado as 'GERAL' | 'ESPECIAL'
-              ] || []
-            : [];
+
+    const enteDevedorSelecionado = watch('ente_devedor');
+
+    const opcoesEntesDevedores = estadoSelecionado
+        ? [
+              ...(estadoRegimeEnteDevedor[estadoSelecionado]?.GERAL || []),
+              ...(estadoRegimeEnteDevedor[estadoSelecionado]?.ESPECIAL || []),
+          ]
+        : [];
+
+    const regime_por_ente =
+        estadoSelecionado &&
+        enteDevedorSelecionado &&
+        estadoRegimeEnteDevedor[estadoSelecionado]?.GERAL?.includes(enteDevedorSelecionado)
+            ? 'GERAL'
+            : 'ESPECIAL';
 
     return (
         <React.Fragment>
@@ -270,28 +279,8 @@ const CalcForm = ({
                             <option value="MUNICIPAL">Municipal</option>
                         </select>
                     </div>
-                    {watch('esfera') !== 'FEDERAL' && watch('esfera') !== undefined && (
-                        <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                            <label
-                                htmlFor="regime"
-                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                            >
-                                Regime
-                            </label>
-                            <select
-                                defaultValue={''}
-                                className="flex h-[37px] w-full cursor-pointer items-center justify-between rounded-md border border-stroke bg-background px-2 py-2 font-satoshi text-xs font-semibold uppercase ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 dark:border-strokedark dark:bg-boxdark-2 [&>span]:line-clamp-1"
-                                {...register('regime')}
-                            >
-                                <option value="GERAL">geral</option>
-                                <option value="ESPECIAL">especial</option>
-                            </select>
-                            {/* <ShadSelect name="regime" control={control} defaultValue="GERAL">
-                                                <SelectItem value="GERAL">GERAL</SelectItem>
-                                                <SelectItem value="ESPECIAL">ESPECIAL</SelectItem>
-                                            </ShadSelect> */}
-                        </div>
-                    )}
+
+                    <input type="hidden" {...register('regime')} value={regime_por_ente} />
 
                     <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                         <label
@@ -1030,12 +1019,12 @@ const CalcForm = ({
                                             /> */}
 
                                             <CelerAppCombobox
-                                                list={opcoesEnteDevedor}
+                                                list={opcoesEntesDevedores}
                                                 onChangeValue={(value) =>
                                                     setValue('ente_devedor', value)
                                                 }
                                                 value={
-                                                    opcoesEnteDevedor.filter(
+                                                    opcoesEntesDevedores.filter(
                                                         (estado) =>
                                                             estado === watch('ente_devedor'),
                                                     )[0] || ''
