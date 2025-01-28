@@ -165,7 +165,6 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     refetchOnWindowFocus: false,
     enabled: !!cedenteDataPJ?.properties["Sócio Representante"]?.relation?.[0]?.id
   });
-  console.log(data)
   const onSubmitForm = async (formData: any) => {
     setIsLoadingRecalculation(true);
     if (formData.observacao) {
