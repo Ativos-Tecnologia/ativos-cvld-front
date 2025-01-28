@@ -286,17 +286,19 @@ const NewForm = () => {
             data.data_limite_de_atualizacao = formattedDate;
         }
 
-        if (!isCPFOrCNPJValid(CPFOrCNPJValue)) {
-            MySwal.fire({
-                title: 'Ok, Houston...Temos um problema!',
-                text: 'O CPF ou CNPJ inserido é inválido. Por favor, tente novamente.',
-                icon: 'error',
-                showConfirmButton: true,
-            });
-            return;
-        }
+        if (data.gerar_cvld) {
+            if (!isCPFOrCNPJValid(CPFOrCNPJValue)) {
+                MySwal.fire({
+                    title: 'Ok, Houston...Temos um problema!',
+                    text: 'O CPF ou CNPJ inserido é inválido. Por favor, tente novamente.',
+                    icon: 'error',
+                    showConfirmButton: true,
+                });
+                return;
+            }
 
-        data.cpf_cnpj = CPFOrCNPJValue;
+            data.cpf_cnpj = CPFOrCNPJValue;
+        }
 
         try {
             const response = data.gerar_cvld
@@ -452,79 +454,24 @@ const NewForm = () => {
                                     <>
                                         {showResults ? (
                                             <div
-                                                className={`relative flex flex-col ${form.watch('data_requisicao')! <= '2023-04-02' && form.watch('esfera') === 'FEDERAL' && form.watch('tipo_do_oficio') !== 'CREDITÓRIO' ? 'pointer-events-none' : ''}`}
+                                                className={`relative flex flex-col ${form.watch('regime') === 'ESPECIAL' ? 'pointer-events-none' : ''}`}
                                             >
-                                                {form.watch('data_requisicao')! <= '2023-04-02' &&
-                                                    form.watch('esfera') === 'FEDERAL' &&
-                                                    form.watch('tipo_do_oficio') !==
-                                                        'CREDITÓRIO' && (
+                                                {form.watch("regime") === "ESPECIAL" && (
                                                         <div className="absolute flex min-h-full w-full flex-col items-center justify-center bg-slate-700/90">
                                                             <h2 className="text-md w-full p-4 text-center font-satoshi font-medium uppercase">
-                                                                Não é possível calcular valores de
-                                                                proposta e comissão para ativos{' '}
+                                                                Para ativos de regime{' '}
                                                                 <span className="underline">
-                                                                    federais
+                                                                    especial
                                                                 </span>{' '}
-                                                                com{' '}
-                                                                <span
-                                                                    title="Lei Oçamentária Anual"
-                                                                    className="underline"
-                                                                >
-                                                                    L.O.A
-                                                                </span>{' '}
-                                                                inferior (ou igual) a 2024
+                                                                , os valores de proposta e comissão serão reavaliados conforme o ente devedor.
                                                             </h2>
                                                             <h3>
-                                                                <span className="text-center text-xs">
-                                                                    Para mais informações, contate o
-                                                                    coordenador de sua equipe
+                                                                <span className="text-center text-sm">
+                                                                    Contate um consultor Ativos para maiores informações
                                                                 </span>
                                                             </h3>
                                                         </div>
                                                     )}
-                                                {form.watch('data_requisicao')! <= '2023-04-02' &&
-                                                    (form.watch('esfera') === 'ESTADUAL' ||
-                                                        form.watch('esfera') === 'MUNICIPAL') &&
-                                                    form.watch('tipo_do_oficio') !==
-                                                        'CREDITÓRIO' && (
-                                                        <div className="absolute flex min-h-full w-full flex-col items-center justify-center bg-slate-700/90">
-                                                            <h2 className="text-md w-full p-4 text-center font-satoshi font-medium uppercase">
-                                                                Não é possível calcular valores de
-                                                                proposta e comissão para ativos com{' '}
-                                                                <span
-                                                                    title="Lei Oçamentária Anual"
-                                                                    className="underline"
-                                                                >
-                                                                    L.O.A
-                                                                </span>{' '}
-                                                                inferior (ou igual) a 2024
-                                                            </h2>
-                                                            <h3>
-                                                                <span className="text-center text-xs">
-                                                                    Para mais informações, contate o
-                                                                    coordenador de sua equipe
-                                                                </span>
-                                                            </h3>
-                                                            <div className="mt-8">
-                                                                {form.watch('gerar_cvld') ? (
-                                                                    <p className="px-4 text-xs text-muted-foreground">
-                                                                        Seu precatório foi salvo sem
-                                                                        proposta e comissionamento
-                                                                        definidos
-                                                                    </p>
-                                                                ) : (
-                                                                    <p className="flex items-center gap-4 px-4 text-xs text-muted-foreground">
-                                                                        <BiHighlight className="h-5 w-5" />{' '}
-                                                                        Você ainda pode cadastrar o
-                                                                        ofício atualizado - ele será
-                                                                        salvo sem proposta e
-                                                                        comissionamento definidos
-                                                                    </p>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    )}
-
                                                 <div className="mb-6 flex flex-col gap-2">
                                                     <h2 className="text-xl font-medium uppercase">
                                                         Tudo pronto!
@@ -665,7 +612,7 @@ const NewForm = () => {
                                                         <Button
                                                             disabled={isProposalButtonDisabled}
                                                             onClick={saveProposalAndComission}
-                                                            className="mx-auto mt-4 flex items-center justify-center gap-2 font-medium disabled:cursor-not-allowed disabled:opacity-50"
+                                                            className={`mx-auto mt-4 flex items-center justify-center gap-2 font-medium disabled:cursor-not-allowed disabled:opacity-50 ${form.watch("regime") === "ESPECIAL" && "!opacity-0"}`}
                                                         >
                                                             {savingProposalAndComission ? (
                                                                 <>
