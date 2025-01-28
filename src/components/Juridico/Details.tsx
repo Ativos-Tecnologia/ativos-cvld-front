@@ -165,7 +165,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
     refetchOnWindowFocus: false,
     enabled: !!cedenteDataPJ?.properties["Sócio Representante"]?.relation?.[0]?.id
   });
-
+  console.log(data)
   const onSubmitForm = async (formData: any) => {
     setIsLoadingRecalculation(true);
     if (formData.observacao) {
@@ -1050,8 +1050,23 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     onMutate: async (paramsObj) => {
       setLoadingUpdateState(paramsObj.fieldName);
       setEditLock(true);
+      const prevData = globalQueryClient.getQueryData(['page', id]);
+      globalQueryClient.setQueryData(['page', id], (prev: any) => {
+        return {
+          ...prev,
+          properties: {
+            ...prev?.properties,
+            [paramsObj.fieldName]: {
+              ...prev?.properties[paramsObj.fieldName],
+              url: paramsObj.value
+            }
+          }
+        }
+      });
+      return {prevData}
     },
-    onError: (error, paramsObj) => {
+    onError: (error, paramsObj, context) => {
+      globalQueryClient.setQueryData(['page', id], context?.prevData);
       swal.fire({
         toast: true,
         timer: 3000,
@@ -1101,8 +1116,31 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
     onMutate: async (paramsObj: any) => {
       setEditLock(true);
       setLoadingUpdateState(paramsObj.fieldName);
+      const prevData = globalQueryClient.getQueryData(['page', id]);
+      globalQueryClient.setQueryData(['page', id], (prev: any) => {
+        return {
+          ...prev,
+          properties: {
+            ...prev?.properties,
+            [paramsObj.fieldName]: {
+              ...prev?.properties[paramsObj.fieldName],
+              title: [
+                {
+                  ...prev?.properties[paramsObj.fieldName]?.title,
+                  text: {
+                    ...prev?.properties[paramsObj.fieldName]?.title?.text,
+                    content: paramsObj.value
+                  }
+                }
+              ]
+            }
+          }
+        }
+      });
+      return { prevData }
     },
-    onError: (error, paramsObj) => {
+    onError: (error, paramsObj, context) => {
+      globalQueryClient.setQueryData(['page', id], context?.prevData);
       swal.fire({
         toast: true,
         timer: 3000,
@@ -1406,7 +1444,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                         onValueChange={(_, value) => handleUpdateEmissaoProcesso(value, id, "Certidões emitidas")}
                         isLoading={loadingUpdateState === "Certidões emitidas"}
                         disabled={editLock}
-                        required
                         className="w-full"
                       >
                         <SelectItem value="SIM">Sim</SelectItem>
@@ -1427,7 +1464,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                         onValueChange={(_, value) => handleUpdateEmissaoProcesso(value, id, "Possui processos?")}
                         isLoading={loadingUpdateState === "Possui processos?"}
                         disabled={editLock}
-                        required
                         className="w-full"
                       >
                         <SelectItem value="SIM">Sim</SelectItem>

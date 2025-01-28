@@ -192,7 +192,6 @@ const CalcForm = ({
 
     const esfera = watch('esfera');
     const regimeSelecionado = esfera === 'FEDERAL' ? 'GERAL' : watch('regime');
-    console.log('esfera', esfera);
     const estadoSelecionado =
         esfera === 'FEDERAL' || esfera === undefined ? 'FEDERAL' : watch('estado_ente_devedor');
     const opcoesEnteDevedor =
