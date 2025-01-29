@@ -63,14 +63,15 @@ const CelerAppCombobox = <T extends FieldValues>({
                                         key={
                                             typeof item === 'string'
                                                 ? item
-                                                : item[Object.keys(item)[0]]
+                                                : item[Object.keys(item)[1]]
                                         }
                                         value={
                                             typeof item === 'string'
                                                 ? item
-                                                : String(item[Object.keys(item)[0]])
+                                                : String(item[Object.keys(item)[1]])
                                         }
                                         onSelect={(currentValue) => {
+
                                             onChangeValue!(
                                                 currentValue === value ? '' : currentValue,
                                             );
@@ -83,7 +84,7 @@ const CelerAppCombobox = <T extends FieldValues>({
                                                     ? item
                                                     : String(item[Object.keys(item)[0]])
                                             }
-                                            className={` ${className} truncate uppercase`}
+                                            className={`truncate uppercase`}
                                         >
                                             {typeof item === 'string'
                                                 ? item.toUpperCase()

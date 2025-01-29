@@ -27,8 +27,6 @@ interface ICalcFormProps {
     hasDropzone?: boolean;
     isLoading?: boolean;
     formMode?: 'create' | 'update';
-    CPFOrCNPJValue: string;
-    setCPFOrCNPJValue: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const CalcForm = ({
@@ -39,8 +37,6 @@ const CalcForm = ({
     hasDropzone = true,
     isLoading = false,
     formMode = 'create',
-    CPFOrCNPJValue,
-    setCPFOrCNPJValue,
 }: ICalcFormProps) => {
     // hook form imports
     const {
@@ -157,10 +153,6 @@ const CalcForm = ({
             setValue('status', data.properties['Status'].status?.name || '');
             setValue('upload_notion', true);
 
-            if (data.properties['CPF/CNPJ'].rich_text?.[0]?.text.content) {
-                setCPFOrCNPJValue(data.properties['CPF/CNPJ'].rich_text?.[0]?.text.content);
-            }
-
             // update auxDataSetter if exists
             auxDataSetter && auxDataSetter(watch());
         }
@@ -230,9 +222,6 @@ const CalcForm = ({
             setValue('esfera', oficioForm.result[0].esfera);
             setValue('ente_devedor', oficioForm.result[0].ente_devedor);
 
-            if (oficioForm.result[0].cpf_cnpj) {
-                setCPFOrCNPJValue(oficioForm.result[0].cpf_cnpj);
-            }
             setValue('regime', oficioForm.result[0].regime);
         }
     }, [oficioForm]);
@@ -319,9 +308,10 @@ const CalcForm = ({
 
                         <CelerAppCombobox
                             list={tribunais}
-                            onChangeValue={(value) =>
-                                setValue('tribunal', value)
-                            }
+                            onChangeValue={(value) => {
+                                const tribunal = tribunais.filter((tribunal) => tribunal.nome === value)[0]
+                                setValue('tribunal', tribunal.id)
+                            }}
                             value={
                                 tribunais.filter(
                                     (estado) =>
@@ -331,8 +321,8 @@ const CalcForm = ({
                             }
                             register={register('tribunal')}
                             name="tribunal"
-                            placeholder="BUSQUE POR ESTADO"
-                            className='h-[37px]'
+                            placeholder="BUSQUE POR TRIBUNAL"
+                            className='h-[37px] uppercase text-sm'
                         />
 
                         {/* <select
@@ -475,6 +465,8 @@ const CalcForm = ({
                         />
                     </div>
 
+                    <div className='col-span-1 hidden sm:block' />
+
                     <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                         <div className="relative flex flex-col justify-between">
                             <label
@@ -528,7 +520,91 @@ const CalcForm = ({
                         <div className="col-span-1 hidden sm:block"></div>
                     )}
 
-                    <div className="col-span-1 hidden sm:block" />
+                    {watch('esfera') && watch('esfera') !== 'FEDERAL' && (
+                        <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                            <label
+                                htmlFor="estado_ente_devedor"
+                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                            >
+                                Estado do Ente Devedor
+                            </label>
+
+                            <CelerAppCombobox
+                                list={estados}
+                                onChangeValue={(value) => {
+                                    const estado = estados.filter(estado => estado.nome === value)[0];
+                                    setValue('estado_ente_devedor', estado.id)
+                                }}
+                                value={
+                                    estados.filter(
+                                        (estado) =>
+                                            estado.id ===
+                                            watch('estado_ente_devedor'),
+                                    )[0]?.nome || ''
+                                }
+                                register={register('estado_ente_devedor')}
+                                name="estado_ente_devedor"
+                                placeholder="BUSQUE POR ESTADO"
+                                className='uppercase text-sm'
+                            />
+
+                            {/* <select
+                                                        defaultValue={""}
+                                                        className="flex h-[37px] w-full cursor-pointer items-center justify-between rounded-md border border-stroke bg-background px-2 py-2 font-satoshi text-xs font-semibold uppercase ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 dark:border-strokedark dark:bg-boxdark-2 [&>span]:line-clamp-1"
+                                                        {...register("estado_ente_devedor")}
+                                                    >
+                                                        {estados.map((estado) => (
+                                                            <option key={estado.id} value={estado.id}>
+                                                                {estado.nome}
+                                                            </option>
+                                                        ))}
+                                                    </select> */}
+                        </div>
+                    )}
+
+                    <div className="relative flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                        <label
+                            htmlFor="ente_devedor"
+                            className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                        >
+                            Ente Devedor
+                        </label>
+                        {/* <input
+                                                type="text"
+                                                id="ente_devedor"
+                                                className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                                {...register('ente_devedor', {})}
+                                            /> */}
+
+                        <CelerAppCombobox
+                            list={opcoesEntesDevedores}
+                            onChangeValue={(value) =>
+                                setValue('ente_devedor', value)
+                            }
+                            value={
+                                opcoesEntesDevedores.filter(
+                                    (estado) =>
+                                        estado === watch('ente_devedor'),
+                                )[0] || ''
+                            }
+                            register={register('ente_devedor', {
+                                required: {
+                                    value: true,
+                                    message: 'Esse campo é obrigatório',
+                                }
+                            })}
+                            name="ente_devedor"
+                            placeholder="BUSQUE PELO ENTE DEVEDOR"
+                            className={`${errors.ente_devedor && "!border-red"} uppercase text-sm`}
+                        />
+                        {errors.ente_devedor && (
+                            <span className="absolute right-8.5 top-8.5 text-xs font-medium text-red">
+                                campo obrigatório
+                            </span>
+                        )}
+                    </div>
+
+                    {watch('esfera') && watch('esfera') === 'FEDERAL' && <div className='col-span-1 hidden sm:block'/>}
 
                     <div className={`col-span-2 flex max-h-6 items-center gap-2 md:col-span-1`}>
                         <CustomCheckbox
@@ -918,10 +994,22 @@ const CalcForm = ({
                                                 CPF/CNPJ
                                             </label>
                                             <CPFAndCNPJInput
-                                                value={CPFOrCNPJValue}
-                                                setValue={setCPFOrCNPJValue}
-                                                className={`${CPFOrCNPJValue && !isCPFOrCNPJValid(CPFOrCNPJValue) && 'focus-visible:ring-meta-1'} h-9.5 w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
+                                                value={watch("cpf_cnpj") || ""}
+                                                setValue={setValue}
+                                                className={`h-9.5 w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
                                             />
+                                            {/* <Controller
+                                                name='cpf_cnpj'
+                                                control={control}
+                                                render={({ field }) => (
+                                                    <CPFAndCNPJInput
+                                                        {...field}
+                                                        value={watch("cpf_cnpj") || ""}
+                                                        setValue={setValue}
+                                                    // className={`${CPFOrCNPJValue && !isCPFOrCNPJValid(CPFOrCNPJValue) && 'focus-visible:ring-meta-1'} h-9.5 w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
+                                                    />
+                                                )}
+                                            /> */}
                                         </div>
 
                                         <div className=" flex w-full flex-row justify-between gap-4 2xsm:col-span-2 sm:col-span-1">
@@ -1003,86 +1091,6 @@ const CalcForm = ({
                                                     />
                                                 )}
                                             />
-                                        </div>
-
-                                        {watch('esfera') && watch('esfera') !== 'FEDERAL' && (
-                                            <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                                                <label
-                                                    htmlFor="estado_ente_devedor"
-                                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                                                >
-                                                    Estado do Ente Devedor
-                                                </label>
-
-                                                <CelerAppCombobox
-                                                    list={estados}
-                                                    onChangeValue={(value) =>
-                                                        setValue('estado_ente_devedor', value)
-                                                    }
-                                                    value={
-                                                        estados.filter(
-                                                            (estado) =>
-                                                                estado.id ===
-                                                                watch('estado_ente_devedor'),
-                                                        )[0]?.nome || ''
-                                                    }
-                                                    register={register('estado_ente_devedor')}
-                                                    name="estado_ente_devedor"
-                                                    placeholder="BUSQUE POR ESTADO"
-                                                />
-
-                                                {/* <select
-                                                        defaultValue={""}
-                                                        className="flex h-[37px] w-full cursor-pointer items-center justify-between rounded-md border border-stroke bg-background px-2 py-2 font-satoshi text-xs font-semibold uppercase ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 dark:border-strokedark dark:bg-boxdark-2 [&>span]:line-clamp-1"
-                                                        {...register("estado_ente_devedor")}
-                                                    >
-                                                        {estados.map((estado) => (
-                                                            <option key={estado.id} value={estado.id}>
-                                                                {estado.nome}
-                                                            </option>
-                                                        ))}
-                                                    </select> */}
-                                            </div>
-                                        )}
-                                        <div className="relative flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
-                                            <label
-                                                htmlFor="ente_devedor"
-                                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                                            >
-                                                Ente Devedor
-                                            </label>
-                                            {/* <input
-                                                type="text"
-                                                id="ente_devedor"
-                                                className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                                                {...register('ente_devedor', {})}
-                                            /> */}
-
-                                            <CelerAppCombobox
-                                                list={opcoesEntesDevedores}
-                                                onChangeValue={(value) =>
-                                                    setValue('ente_devedor', value)
-                                                }
-                                                value={
-                                                    opcoesEntesDevedores.filter(
-                                                        (estado) =>
-                                                            estado === watch('ente_devedor'),
-                                                    )[0] || ''
-                                                }
-                                                register={register('ente_devedor', {
-                                                    required: {
-                                                        value: true,
-                                                        message: 'Esse campo é obrigatório',
-                                                    }
-                                                })}
-                                                name="ente_devedor"
-                                                placeholder="BUSQUE PELO ENTE DEVEDOR"
-                                            />
-                                            {errors.ente_devedor && (
-                                                <span className="absolute right-8.5 top-8.5 text-xs font-medium text-red">
-                                                    campo obrigatório
-                                                </span>
-                                            )}
                                         </div>
 
                                         <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">

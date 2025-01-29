@@ -46,7 +46,6 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
 
     const mySwal = UseMySwal();
     const [loading, setLoading] = useState<boolean>(false);
-    const [CPFOrCNPJValue, setCPFOrCNPJValue] = useState<string>('');
 
     const [state, setState] = useState<ChartTwoState>({
         series: [
@@ -101,17 +100,19 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
             data.data_limite_de_atualizacao = formattedDate;
         }
 
-        if (!isCPFOrCNPJValid(CPFOrCNPJValue)) {
-            MySwal.fire({
-                title: 'Ok, Houston...Temos um problema!',
-                text: 'O CPF ou CNPJ inserido é inválido. Por favor, tente novamente.',
-                icon: 'error',
-                showConfirmButton: true,
-            });
-            return;
-        }
+        if (data.gerar_cvld) {
+            if (!isCPFOrCNPJValid(form.watch('cpf_cnpj') || "")) {
+                MySwal.fire({
+                    title: 'Ok, Houston...Temos um problema!',
+                    text: 'O CPF ou CNPJ inserido é inválido. Por favor, tente novamente.',
+                    icon: 'error',
+                    showConfirmButton: true,
+                });
+                return;
+            }
 
-        data.cpf_cnpj = CPFOrCNPJValue;
+            data.cpf_cnpj = form.watch("cpf_cnpj");
+        }
 
         if (!data.status) {
             data.status = 'Realizar Primeiro Contato';
@@ -370,8 +371,6 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                 onSubmitForm={onSubmit}
                 formConfigs={form}
                 isLoading={loading}
-                CPFOrCNPJValue={CPFOrCNPJValue}
-                setCPFOrCNPJValue={setCPFOrCNPJValue}
             />
         </div>
     );

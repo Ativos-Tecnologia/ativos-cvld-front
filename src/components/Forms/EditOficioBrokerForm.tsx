@@ -31,7 +31,6 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
 
     /* ====> dados inicias do formulário */
     const [defaultFormValues, setDefaultFormValues] = useState<any>(null);
-    const [CPFOrCNPJValue, setCPFOrCNPJValue] = useState<string>('');
 
     /* ====> form imports <==== */
     const form = useForm<Partial<CvldFormInputsProps>>();
@@ -100,17 +99,19 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
             data.need_to_recalculate_proposal = false;
         }
 
-        if (!isCPFOrCNPJValid(CPFOrCNPJValue)) {
-            MySwal.fire({
-                title: 'Ok, Houston...Temos um problema!',
-                text: 'O CPF ou CNPJ inserido é inválido. Por favor, tente novamente.',
-                icon: 'error',
-                showConfirmButton: true,
-            });
-            return;
-        }
+        if (data.gerar_cvld) {
+            if (!isCPFOrCNPJValid(form.watch('cpf_cnpj') || "")) {
+                MySwal.fire({
+                    title: 'Ok, Houston...Temos um problema!',
+                    text: 'O CPF ou CNPJ inserido é inválido. Por favor, tente novamente.',
+                    icon: 'error',
+                    showConfirmButton: true,
+                });
+                return;
+            }
 
-        data.cpf_cnpj = CPFOrCNPJValue;
+            data.cpf_cnpj = form.watch("cpf_cnpj");
+        }
 
         if (data.valor_aquisicao_total) {
             data.percentual_a_ser_adquirido = 1;
@@ -188,8 +189,6 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
                     formMode="update"
                     isLoading={isSavingEdit}
                     auxDataSetter={setDefaultFormValues}
-                    CPFOrCNPJValue={CPFOrCNPJValue}
-                    setCPFOrCNPJValue={setCPFOrCNPJValue}
                 />
             </div>
         </div>

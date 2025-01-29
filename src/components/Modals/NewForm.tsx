@@ -23,12 +23,13 @@ import { GiResize } from 'react-icons/gi';
 import CalcForm from '../Forms/CalcForm';
 import { isCPFOrCNPJValid } from '@/functions/verifiers/isCPFOrCNPJValid';
 import UseMySwal from '@/hooks/useMySwal';
+import { regimeEspecialExceptions } from '@/constants/excecoes-regime-especial';
 
 const NewForm = () => {
     const { setSaveInfoToNotion, usersList } = useContext(TableNotionContext);
     const MySwal = UseMySwal();
 
-    const [CPFOrCNPJValue, setCPFOrCNPJValue] = useState<string>('');
+    // const [CPFOrCNPJValue, setCPFOrCNPJValue] = useState<string>('');
     const [auxValues, setAuxValues] = useState<{ proposal: number; commission: number }>({
         proposal: 0,
         commission: 0,
@@ -64,7 +65,7 @@ const NewForm = () => {
         defaultValues: {
             numero_de_meses: 0,
             gerar_cvld: true,
-        },
+        }
     });
 
     // Função para atualizar a proposta e ajustar a comissão proporcionalmente
@@ -287,7 +288,7 @@ const NewForm = () => {
         }
 
         if (data.gerar_cvld) {
-            if (!isCPFOrCNPJValid(CPFOrCNPJValue)) {
+            if (!isCPFOrCNPJValid(form.watch('cpf_cnpj') || "")) {
                 MySwal.fire({
                     title: 'Ok, Houston...Temos um problema!',
                     text: 'O CPF ou CNPJ inserido é inválido. Por favor, tente novamente.',
@@ -297,7 +298,7 @@ const NewForm = () => {
                 return;
             }
 
-            data.cpf_cnpj = CPFOrCNPJValue;
+            data.cpf_cnpj = form.watch("cpf_cnpj");
         }
 
         try {
@@ -438,8 +439,6 @@ const NewForm = () => {
                                     onSubmitForm={onSubmit}
                                     formConfigs={form}
                                     hasDropzone={false}
-                                    CPFOrCNPJValue={CPFOrCNPJValue}
-                                    setCPFOrCNPJValue={setCPFOrCNPJValue}
                                 />
                             </div>
 
@@ -454,9 +453,9 @@ const NewForm = () => {
                                     <>
                                         {showResults ? (
                                             <div
-                                                className={`relative flex flex-col ${form.watch('regime') === 'ESPECIAL' ? 'pointer-events-none' : ''}`}
+                                                className={`relative flex flex-col ${form.watch('regime') === 'ESPECIAL' && !regimeEspecialExceptions.includes(form.watch("ente_devedor")!) ? 'pointer-events-none' : ''}`}
                                             >
-                                                {form.watch("regime") === "ESPECIAL" && (
+                                                {form.watch("regime") === "ESPECIAL" && !regimeEspecialExceptions.includes(form.watch("ente_devedor")!) && (
                                                         <div className="absolute flex min-h-full w-full flex-col items-center justify-center bg-slate-700/90">
                                                             <h2 className="text-md w-full p-4 text-center font-satoshi font-medium uppercase">
                                                                 Para ativos de regime{' '}
