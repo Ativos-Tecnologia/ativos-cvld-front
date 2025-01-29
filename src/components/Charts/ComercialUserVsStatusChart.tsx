@@ -12,6 +12,20 @@ import ComercialBrokersChartSkeleton from '../Skeletons/ComercialBrokersChartSke
 import { ITabelaGerencialResponse } from '@/interfaces/ITabelaGerencialResponse';
 import { UserVsStatusChartProps } from '@/types/userVsStatusChart';
 
+interface CounterItem {
+    counter: number;
+    total: number;
+}
+
+interface Counter {
+    [key: string]: CounterItem;
+}
+
+interface UserData {
+    user: string;
+    counter: Counter;
+}
+
 interface ComercialUserVsStatusChartProps {
     chartData: ITabelaGerencialResponse;
     isLoading: boolean;
@@ -33,7 +47,7 @@ const ComercialUserVsStatusChart = ({ chartData, isLoading }: ComercialUserVsSta
             label: 'Repactuação',
             color: '#60a5fa',
         },
-        'pendência a sanar': {
+        'Pendência a Sanar': {
             label: 'Pendência a Sanar',
             color: '#F59E0B',
         },
@@ -91,7 +105,13 @@ const ComercialUserVsStatusChart = ({ chartData, isLoading }: ComercialUserVsSta
             counter,
         }));
 
-        setData(transformChartData(chartData as InputData[]));
+        const totalValue = (user: UserData): number => {
+            return Object.values(user.counter).reduce((acc, curr) => acc + curr.total, 0);
+        };
+
+        const orderedData = (chartData as UserData[]).sort((a, b) => totalValue(b) - totalValue(a));
+
+        setData(transformChartData(orderedData as InputData[]));
     };
 
     useEffect(() => {

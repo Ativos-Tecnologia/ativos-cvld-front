@@ -611,7 +611,7 @@ const NewForm = () => {
                                                         <Button
                                                             disabled={isProposalButtonDisabled}
                                                             onClick={saveProposalAndComission}
-                                                            className={`mx-auto mt-4 flex items-center justify-center gap-2 font-medium disabled:cursor-not-allowed disabled:opacity-50 ${form.watch("regime") === "ESPECIAL" && "!opacity-0"}`}
+                                                            className={`mx-auto mt-4 flex items-center justify-center gap-2 font-medium disabled:cursor-not-allowed disabled:opacity-50 ${(form.watch("regime") === "ESPECIAL" && !regimeEspecialExceptions.includes(form.watch("ente_devedor")!)) && "!opacity-0"}`}
                                                         >
                                                             {savingProposalAndComission ? (
                                                                 <>
