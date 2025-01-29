@@ -604,7 +604,7 @@ const CalcForm = ({
                         )}
                     </div>
 
-                    {watch('esfera') && watch('esfera') === 'FEDERAL' && <div className='col-span-1 hidden sm:block'/>}
+                    {watch('esfera') && watch('esfera') === 'FEDERAL' && <div className='col-span-1 hidden sm:block' />}
 
                     <div className={`col-span-2 flex max-h-6 items-center gap-2 md:col-span-1`}>
                         <CustomCheckbox
@@ -1139,87 +1139,82 @@ const CalcForm = ({
                             <>
                                 <hr className="col-span-2 my-8 border border-stroke dark:border-strokedark" />
                                 <div className="flex flex-col gap-2">
-                                    {(userData.role === 'ativos' &&
-                                        watch('regime') !== 'ESPECIAL') ||
-                                        watch('regime') === undefined ? (
-                                        <>
-                                            <div className="flex justify-between">
-                                                <div className="flex items-center gap-2">
-                                                    <input
-                                                        type="checkbox"
-                                                        id="vincular_usuario"
-                                                        className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
-                                                        {...register('vincular_usuario')}
-                                                    />
 
-                                                    <label
-                                                        htmlFor="vincular_usuario"
-                                                        className="align-self-baseline flex cursor-pointer flex-row text-sm font-medium text-meta-5"
+                                    <div className="flex justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                id="vincular_usuario"
+                                                className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
+                                                {...register('vincular_usuario')}
+                                            />
+
+                                            <label
+                                                htmlFor="vincular_usuario"
+                                                className="align-self-baseline flex cursor-pointer flex-row text-sm font-medium text-meta-5"
+                                            >
+                                                <BiLogoUpwork className="mr-2 mt-0.5 h-4 w-4" />{' '}
+                                                Vincular a outro usuário?
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {watch('vincular_usuario') === true ? (
+                                        <div className="flex flex-col gap-2">
+                                            {(watch('novo_usuario') === false ||
+                                                watch('novo_usuario') === undefined) &&
+                                                watch('vincular_usuario') === true && (
+                                                    <select
+                                                        id="username"
+                                                        className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                                        {...register('username')}
                                                     >
-                                                        <BiLogoUpwork className="mr-2 mt-0.5 h-4 w-4" />{' '}
-                                                        Vincular a outro usuário?
+                                                        <option value={userData.user}>
+                                                            {userData.user}
+                                                        </option>
+                                                        {usersList
+                                                            .filter(
+                                                                (user) =>
+                                                                    user !== userData.user,
+                                                            )
+                                                            .map((user) => (
+                                                                <option
+                                                                    key={user}
+                                                                    value={user}
+                                                                >
+                                                                    {user}
+                                                                </option>
+                                                            ))}
+                                                    </select>
+                                                )}
+                                            <div className="flex flex-col gap-2">
+                                                <div>
+                                                    <label
+                                                        htmlFor="novo_usuario"
+                                                        className="flex cursor-pointer items-center gap-1 text-sm font-medium text-meta-5"
+                                                    >
+                                                        <CustomCheckbox
+                                                            check={watch('novo_usuario')}
+                                                            id={'novo_usuario'}
+                                                            register={register(
+                                                                'novo_usuario',
+                                                            )}
+                                                        />
+                                                        <span>
+                                                            O nome não está na lista? Crie
+                                                            um novo usuário!
+                                                        </span>
                                                     </label>
                                                 </div>
+                                                {watch('novo_usuario') === true && (
+                                                    <input
+                                                        type="text"
+                                                        id="username"
+                                                        className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                                        {...register('username')}
+                                                    />
+                                                )}
                                             </div>
-                                            {watch('vincular_usuario') === true ? (
-                                                <div className="flex flex-col gap-2">
-                                                    {(watch('novo_usuario') === false ||
-                                                        watch('novo_usuario') === undefined) &&
-                                                        watch('vincular_usuario') === true && (
-                                                            <select
-                                                                id="username"
-                                                                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                                                {...register('username')}
-                                                            >
-                                                                <option value={userData.user}>
-                                                                    {userData.user}
-                                                                </option>
-                                                                {usersList
-                                                                    .filter(
-                                                                        (user) =>
-                                                                            user !== userData.user,
-                                                                    )
-                                                                    .map((user) => (
-                                                                        <option
-                                                                            key={user}
-                                                                            value={user}
-                                                                        >
-                                                                            {user}
-                                                                        </option>
-                                                                    ))}
-                                                            </select>
-                                                        )}
-                                                    <div className="flex flex-col gap-2">
-                                                        <div>
-                                                            <label
-                                                                htmlFor="novo_usuario"
-                                                                className="flex cursor-pointer items-center gap-1 text-sm font-medium text-meta-5"
-                                                            >
-                                                                <CustomCheckbox
-                                                                    check={watch('novo_usuario')}
-                                                                    id={'novo_usuario'}
-                                                                    register={register(
-                                                                        'novo_usuario',
-                                                                    )}
-                                                                />
-                                                                <span>
-                                                                    O nome não está na lista? Crie
-                                                                    um novo usuário!
-                                                                </span>
-                                                            </label>
-                                                        </div>
-                                                        {watch('novo_usuario') === true && (
-                                                            <input
-                                                                type="text"
-                                                                id="username"
-                                                                className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                                                {...register('username')}
-                                                            />
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            ) : null}
-                                        </>
+                                        </div>
                                     ) : null}
                                 </div>
                             </>
