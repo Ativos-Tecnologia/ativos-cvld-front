@@ -2109,8 +2109,8 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-span-4 gap-4">
-                            <div className="flex  flex-col items-center gap-4 sm:w-fit sm:flex-row">
+                        <div className="col-span-5 gap-4">
+                            <div className="flex w-full flex-col items-center gap-4 sm:w-fit sm:flex-row">
                                 <button
                                     onClick={() => data && setCedenteModal(data)}
                                     className="flex w-full items-center gap-3 rounded-md border border-strokedark/20 px-4 py-2 text-sm font-medium uppercase text-slate-600 transition-colors duration-200 hover:bg-strokedark/20 dark:border-stroke/20 dark:text-white dark:hover:bg-stroke/20 sm:w-fit"
@@ -2242,8 +2242,6 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                     </section>
                     {/* Proposta */}
                     <div className="flex flex-col gap-4 lg:flex-row">
-                        {' '}
-                        {/* wrapper */}
                         <section
                             id="info_valores"
                             className="rounded-md bg-white p-4 dark:bg-boxdark lg:w-[50%]"
@@ -2664,7 +2662,7 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                                 </div>
                             </form>
                         </section>
-                        <div className="grid w-full gap-5 border-l-0 border-t-2 border-stroke bg-white py-5 text-[#333] dark:border-strokedark dark:bg-boxdark dark:text-white md:mt-0 md:border-l-2 md:border-t-0 md:px-3 md:py-5 lg:w-[50%]">
+                        <div className="grid w-full gap-5 rounded-md bg-white py-5 text-[#333] dark:border-strokedark dark:bg-boxdark dark:text-white md:mt-0 md:px-3 md:py-5 lg:w-[50%]">
                             <div className="relative flex h-fit w-full flex-col gap-5 p-4 sm:pb-0">
                                 <div className="flex w-full items-center justify-between gap-6 2xsm:flex-col md:flex-row ">
                                     <div className="flex w-full flex-1 flex-col items-center gap-4 pb-2 2xsm:pb-0 md:pb-2">
