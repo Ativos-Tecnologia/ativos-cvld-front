@@ -225,6 +225,9 @@ const PJform = ({
         (value) => value !== '' && value !== id,
     );
 
+    console.log(watch())
+    console.log(registeredCedentesList.listPf)
+
     const { theme } = useContext(GeneralUIContext);
     const [banco, setBanco] = useState<string[]>([]);
 
@@ -540,6 +543,9 @@ const PJform = ({
         if (data.celular) {
             data.celular = data.celular.replace(/\D/g, ''); // remove tudo que não for dígito
         }
+
+        data.socio_representante = registeredCedentesList.listPf?.find(
+            (cedente) => cedente.name === data.socio_representante)?.id
 
         if (mode === 'edit') {
             await updateCedente.mutateAsync(data);
