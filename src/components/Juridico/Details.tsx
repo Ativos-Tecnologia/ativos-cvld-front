@@ -2723,6 +2723,15 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
           <Button
             variant="danger"
             className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handlePendencia()}
+          >
+            <BiX className="h-4 w-4" />
+            <span>Pendência a Sanar</span>
+          </Button>
+
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
             onClick={() => handleArchiving()}
           >
             <MdOutlineArchive className="h-4 w-4" />
@@ -2766,6 +2775,15 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
           <Button
             variant="danger"
             className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handlePendencia()}
+          >
+            <BiX className="h-4 w-4" />
+            <span>Pendência a Sanar</span>
+          </Button>
+
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
             onClick={() => handleArchiving()}
           >
             <MdOutlineArchive className="h-4 w-4" />
@@ -2797,6 +2815,15 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
           <Button
             variant="danger"
             className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handlePendencia()}
+          >
+            <BiX className="h-4 w-4" />
+            <span>Pendência a Sanar</span>
+          </Button>
+
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
             onClick={() => handleArchiving()}
           >
             <MdOutlineArchive className="h-4 w-4" />
@@ -2807,14 +2834,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
       {statusDiligence === "Due Diligence" && (
         <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handlePendencia()}
-          >
-            <BiX className="h-4 w-4" />
-            <span>Pendência a Sanar</span>
-          </Button>
 
           <Button
             variant="warning"
@@ -2823,6 +2842,15 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
           >
             <CgSearchLoading className="h-4 w-4" />
             <span>Revisão de Due Diligence</span>
+          </Button>
+
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handlePendencia()}
+          >
+            <BiX className="h-4 w-4" />
+            <span>Pendência a Sanar</span>
           </Button>
 
           <Button
@@ -2837,14 +2865,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       )}
       {statusDiligence === "Due em Andamento" && (
         <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handlePendencia()}
-          >
-            <BiX className="h-4 w-4" />
-            <span>Pendência a Sanar</span>
-          </Button>
 
           <Button
             variant="warning"
@@ -2864,6 +2884,15 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             <span>
               Enviar para Liquidação
             </span>
+          </Button>
+
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handlePendencia()}
+          >
+            <BiX className="h-4 w-4" />
+            <span>Pendência a Sanar</span>
           </Button>
 
           <Button
@@ -2879,15 +2908,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       {statusDiligence === "Em cessão" && (
         <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
           <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handlePendencia()}
-          >
-            <BiX className="h-4 w-4" />
-            <span>Pendência a Sanar</span>
-          </Button>
-
-          <Button
             variant="success"
             className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
             onClick={() => handleCessao()}
@@ -2896,6 +2916,15 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             <span>
               Enviar pra Registro de Cessão
             </span>
+          </Button>
+
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handlePendencia()}
+          >
+            <BiX className="h-4 w-4" />
+            <span>Pendência a Sanar</span>
           </Button>
 
           <Button
@@ -2911,15 +2940,6 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
       {statusDiligence === "Revisão de Due Diligence" && (
         <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
           <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handlePendencia()}
-          >
-            <BiX className="h-4 w-4" />
-            <span>Pendência a Sanar</span>
-          </Button>
-
-          <Button
             variant="success"
             className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
             onClick={() => handleDueDiligence()}
@@ -2928,6 +2948,15 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             <span>
               Enviar para Liquidação
             </span>
+          </Button>
+
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handlePendencia()}
+          >
+            <BiX className="h-4 w-4" />
+            <span>Pendência a Sanar</span>
           </Button>
 
           <Button
@@ -2943,6 +2972,16 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
       {statusDiligence === "Em liquidação" && (
         <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
+
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handlePendencia()}
+          >
+            <BiX className="h-4 w-4" />
+            <span>Pendência a Sanar</span>
+          </Button>
+
           <Button
             variant="danger"
             className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
@@ -2960,7 +2999,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             {loadingUpdateState === "Revisão de Due Diligence" ? <AiOutlineLoading className="animate-spin h-4 w-4" /> : <TbStatusChange className="h-4 w-4" />}
             <span>Retornar para revisão de Due</span>
           </Button>
-
+  
           <Button
             disabled
             variant="info"
@@ -2984,6 +3023,15 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
           >
             <MdOutlineArchive className="h-4 w-4" />
             <span>Arquivar</span>
+          </Button>
+
+          <Button
+            variant="danger"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handlePendencia()}
+          >
+            <BiX className="h-4 w-4" />
+            <span>Pendência a Sanar</span>
           </Button>
 
           <Button
