@@ -99,7 +99,7 @@ const ComercialUserVsStatusChart = ({ chartData, isLoading }: ComercialUserVsSta
         handleChartData(chartData);
     }, [chartData]);
 
-    if (isLoading || !data) {
+    if (isLoading) {
         return <ComercialBrokersChartSkeleton />;
     }
 
