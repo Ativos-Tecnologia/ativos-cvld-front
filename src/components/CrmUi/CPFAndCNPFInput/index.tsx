@@ -1,22 +1,24 @@
 import { Input } from '@/components/ui/input';
 import { CPFAndCNPJMask } from '@/functions/formaters/CPFAndCNPJInput';
+import { CvldFormInputsProps } from '@/types/cvldform';
+import { UseFormSetValue } from 'react-hook-form';
 
 interface CPFAndCNPJInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     value: string;
-    setValue: (value: string) => void;
+    setValue: UseFormSetValue<Partial<CvldFormInputsProps>>;
 }
 
 export function CPFAndCNPJInput({ value, setValue, ...props }: CPFAndCNPJInputProps) {
     function handleChangeMask(event: React.ChangeEvent<HTMLInputElement>) {
         const { value } = event.target;
 
-        setValue(CPFAndCNPJMask(value));
+        setValue("cpf_cnpj", CPFAndCNPJMask(value));
     }
 
     return (
         <Input
-            onChange={handleChangeMask}
             value={value}
+            onChange={handleChangeMask}
             placeholder={'CPF ou CNPJ'}
             {...props}
             className={`focus-visible:ring-1 focus-visible:ring-blue-600 focus-visible:ring-offset-0 ${props.className}`}
