@@ -85,7 +85,7 @@ function EspacoGerencial() {
                     <span className="pl-4 pt-2">
                         Filtros Administr<b>ativos</b>
                     </span>
-                    <div className="flex max-w-[200px] flex-col gap-4 p-4">
+                    <div className="flex 2xsm:w-full lg:max-w-[200px] flex-col gap-4 p-4">
                         <label className="flex items-center gap-2">
                             <BiUser className="text-xl" />
                             Coordenador
@@ -102,7 +102,7 @@ function EspacoGerencial() {
             </Show>
             {/* Fim da Seção dos Filtros Administrativos */}
             {/* Seção do Gráfico de Usuários X status X VL */}
-            <section className="mt-6 flex min-h-fit rounded-md bg-white dark:bg-boxdark">
+            <section className="mt-6 min-h-fit rounded-md bg-white dark:bg-boxdark">
                 <ComercialUserVsStatusChart chartData={data?.results} isLoading={isFetching} />
             </section>
             {/* Seção do Gráfico de Metas */}

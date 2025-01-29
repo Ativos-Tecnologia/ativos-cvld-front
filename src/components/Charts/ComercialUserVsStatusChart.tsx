@@ -110,7 +110,7 @@ const ComercialUserVsStatusChart = ({ chartData, isLoading }: ComercialUserVsSta
             }}
             className="grid w-full gap-5 p-5"
         >
-            <h2 className="p-5 text-2xl font-medium">Usuário x Status x Valor Líquido</h2>
+            <h2 className="p-5 2xsm:text-[18px] md:text-2xl font-medium">Usuário x Status x Valor Líquido</h2>
             {data && data.length > 0 ? (
                 <ChartContainer config={chartConfig} className="aspect-[none] min-h-[250px] w-full">
                     <BarChart data={data} layout="vertical" barSize={40} barGap={20}>
