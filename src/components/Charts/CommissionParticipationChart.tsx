@@ -57,8 +57,6 @@ export function CoordinatorParticipationChart({
         },
     ];
 
-    console.log(data);
-
     return (
         <div className="relative flex h-full w-full max-w-fit flex-col items-center justify-center">
             <CardHeader>
