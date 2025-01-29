@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import React, { FormEvent } from 'react';
+import React from 'react';
 import { Form } from '@/components/ui/form';
 import { estados } from '@/constants/estados';
 import { estadoCivil } from '@/constants/estado-civil';
@@ -12,13 +12,9 @@ import { ReactGlobalQueryContext } from '@/context/ReactGlobalQueryContext';
 import { UserInfoAPIContext, UserInfoContextType } from '@/context/UserInfoContext';
 import { InputFieldVariant } from '@/enums/inputFieldVariants.enum';
 import backendNumberFormat from '@/functions/formaters/backendNumberFormat';
-import dateFormater from '@/functions/formaters/dateFormater';
 import numberFormat from '@/functions/formaters/numberFormat';
 import percentageFormater from '@/functions/formaters/percentFormater';
-import {
-    findRentabilidadeAoAnoThroughDesembolso,
-    handleDesembolsoVsRentabilidade,
-} from '@/functions/juridico/solverDesembolsoVsRentabilidade';
+import { handleDesembolsoVsRentabilidade } from '@/functions/juridico/solverDesembolsoVsRentabilidade';
 import UseMySwal from '@/hooks/useMySwal';
 import { NotionPage } from '@/interfaces/INotion';
 import api from '@/utils/api';
@@ -29,7 +25,7 @@ import { useForm } from 'react-hook-form';
 import { BiCheck, BiSave, BiSolidCalculator, BiX } from 'react-icons/bi';
 import { BsCalendar2HeartFill, BsPencilSquare } from 'react-icons/bs';
 import { FaIdCard, FaMapMarkedAlt, FaRegFilePdf } from 'react-icons/fa';
-import { FaBuilding, FaBuildingColumns, FaLink, FaUser } from 'react-icons/fa6';
+import { FaBuilding, FaBuildingColumns, FaUser } from 'react-icons/fa6';
 import { GiPayMoney, GiReceiveMoney, GiTakeMyMoney } from 'react-icons/gi';
 import { GrDocumentText, GrDocumentUser, GrMoney } from 'react-icons/gr';
 import { IoIosPaper } from 'react-icons/io';
@@ -43,12 +39,7 @@ import { CelerInputField } from '@/components/CrmUi/InputFactory';
 import { SelectItem } from '@/components/ui/select';
 import CelerInputFormField from '@/components/Forms/CustomFormField';
 import { Button } from '@/components/Button';
-import RentabilityChart from '@/components/Charts/RentabilityChart';
-import CRMTooltip from '@/components/CrmUi/Tooltip';
-import DocForm from '@/components/Modals/BrokersDocs';
-import { Fade } from 'react-awesome-reveal';
-import Image from 'next/image';
-import DashbrokersCard, { ChecksProps } from '@/components/Cards/DashbrokersCard';
+import { ChecksProps } from '@/components/Cards/DashbrokersCard';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/functions/formaters/formatCurrency';
 import { ComercialContext } from '@/context/ComercialContext';
@@ -56,6 +47,7 @@ import JuridicoDetailsSkeleton from '@/components/Skeletons/JuridicoDetailsSkele
 import { CoordinatorParticipationChart } from '@/components/Charts/CommissionParticipationChart';
 import { useReactToPrint } from 'react-to-print';
 import { PrintPDF } from '@/components/PrintPDF';
+import DocForm from '@/components/Modals/BrokersDocs';
 
 type SheetViewComercialProps = {
     id: string;
@@ -1997,13 +1989,13 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                                 Informações sobre o cedente
                             </h3>
                         </div>
-                        <div className="col-span-4 gap-4">
-                            <div className="grid grid-cols-6 gap-6">
-                                <div className="grid min-w-40 md:col-span-3 lg:col-span-2 xl:col-span-2">
+                        <div className="col-span-5 gap-4">
+                            <div className="flex w-full flex-col justify-between gap-4 sm:flex-row">
+                                <div className="flex-1">
                                     <CelerInputField
                                         name="emissao_certidao_check"
                                         fieldType={InputFieldVariant.SELECT}
-                                        label={`Certidões Emitidas ?`}
+                                        label={`Certidões Emitidas?`}
                                         defaultValue={
                                             data?.properties['Certidões emitidas']?.checkbox
                                                 ? 'SIM'
@@ -2028,11 +2020,11 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                                         )}
                                 </div>
 
-                                <div className="grid min-w-40 md:col-span-3 lg:col-span-2 xl:col-span-2">
+                                <div className="flex-1">
                                     <CelerInputField
                                         name="possui_processos_check"
                                         fieldType={InputFieldVariant.SELECT}
-                                        label={`Possui Processos ?`}
+                                        label={`Possui Processos?`}
                                         defaultValue={
                                             data?.properties['Possui processos?']?.checkbox
                                                 ? 'SIM'
@@ -2057,7 +2049,7 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                                         )}
                                 </div>
 
-                                <div className="grid 2xsm:w-full md:col-span-6 md:w-115 xl:col-span-2">
+                                <div className="flex-1">
                                     <CelerInputField
                                         className="w-full gap-2"
                                         fieldType={InputFieldVariant.SELECT}
@@ -2118,10 +2110,10 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                             </div>
                         </div>
                         <div className="col-span-4 gap-4">
-                            <div className="flex items-center gap-4">
+                            <div className="flex  flex-col items-center gap-4 sm:w-fit sm:flex-row">
                                 <button
                                     onClick={() => data && setCedenteModal(data)}
-                                    className="flex items-center gap-3 rounded-md border border-strokedark/20 px-4 py-2 text-sm font-medium uppercase text-slate-600 transition-colors duration-200 hover:bg-strokedark/20 dark:border-stroke/20 dark:text-white dark:hover:bg-stroke/20"
+                                    className="flex w-full items-center gap-3 rounded-md border border-strokedark/20 px-4 py-2 text-sm font-medium uppercase text-slate-600 transition-colors duration-200 hover:bg-strokedark/20 dark:border-stroke/20 dark:text-white dark:hover:bg-stroke/20 sm:w-fit"
                                 >
                                     {data?.properties['Cedente PF'].relation?.[0] ||
                                     data?.properties['Cedente PJ'].relation?.[0] ? (
@@ -2138,7 +2130,7 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                                 </button>
                                 <button
                                     onClick={() => data && setDocModalInfo(data)}
-                                    className="flex items-center gap-3 rounded-md border border-strokedark/20 px-4 py-2 text-sm font-medium uppercase text-slate-600 transition-colors duration-200 hover:bg-strokedark/20 dark:border-stroke/20 dark:text-white dark:hover:bg-stroke/20"
+                                    className="flex w-full items-center gap-3 rounded-md border border-strokedark/20 px-4 py-2 text-sm font-medium uppercase text-slate-600 transition-colors duration-200 hover:bg-strokedark/20 dark:border-stroke/20 dark:text-white dark:hover:bg-stroke/20 sm:w-fit"
                                 >
                                     <FaRegFilePdf />
                                     Gerir Documentos
@@ -2249,10 +2241,12 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                         </div>
                     </section>
                     {/* Proposta */}
-                    <div className="flex flex-row gap-4">
+                    <div className="flex flex-col gap-4 lg:flex-row">
+                        {' '}
+                        {/* wrapper */}
                         <section
                             id="info_valores"
-                            className="rounded-md bg-white p-4 dark:bg-boxdark"
+                            className="rounded-md bg-white p-4 dark:bg-boxdark lg:w-[50%]"
                         >
                             <form onSubmit={form.handleSubmit(onSubmitForm)}>
                                 <div className="grid grid-cols-2 gap-6 3xl:grid-cols-2">
@@ -2670,10 +2664,9 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                                 </div>
                             </form>
                         </section>
-
-                        <div className="grid w-fit gap-5 border-l-0 border-t-2 border-stroke bg-white pl-0 pt-5 text-[#333] dark:border-strokedark dark:bg-boxdark dark:text-white md:mt-0 md:border-l-2 md:border-t-0 md:pl-3 md:pt-5">
-                            <div className="relative flex h-fit flex-col gap-5 p-4 sm:pb-0">
-                                <div className="flex items-center justify-between gap-6 2xsm:flex-col md:flex-row ">
+                        <div className="grid w-full gap-5 border-l-0 border-t-2 border-stroke bg-white py-5 text-[#333] dark:border-strokedark dark:bg-boxdark dark:text-white md:mt-0 md:border-l-2 md:border-t-0 md:px-3 md:py-5 lg:w-[50%]">
+                            <div className="relative flex h-fit w-full flex-col gap-5 p-4 sm:pb-0">
+                                <div className="flex w-full items-center justify-between gap-6 2xsm:flex-col md:flex-row ">
                                     <div className="flex w-full flex-1 flex-col items-center gap-4 pb-2 2xsm:pb-0 md:pb-2">
                                         <div className="flex items-center text-sm font-medium ">
                                             <p className="w-full text-sm">Proposta:</p>
@@ -2705,7 +2698,7 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                                                 onChange={(e) =>
                                                     changeInputValues('proposal', e.target.value)
                                                 }
-                                                className="ml-2 max-w-35 rounded-md border-none bg-gray-100 py-2 pl-1 pr-2 text-center text-sm font-medium text-body focus-visible:ring-body disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:bg-boxdark-2/50 dark:text-bodydark dark:focus-visible:ring-snow"
+                                                className="ml-2 max-w-full rounded-md border-none bg-gray-100 py-2 pl-1 pr-2 text-center text-sm font-medium text-body focus-visible:ring-body disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:bg-boxdark-2/50 dark:text-bodydark dark:focus-visible:ring-snow"
                                             />
                                         </div>
                                         <input
@@ -2846,11 +2839,14 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                                 )}
 
                                 <hr className="mt-6 border border-stroke dark:border-strokedark" />
-                                <CoordinatorParticipationChart chartData={data} />
+                                <CoordinatorParticipationChart
+                                    chartData={data}
+                                    className="h-34 w-full sm:h-50"
+                                />
 
                                 <hr className="mt-6 border border-stroke dark:border-strokedark" />
 
-                                <div id="observacao" className="form-inputs-container">
+                                <div id="observacao" className="form-inputs-container max-w-full">
                                     <div className="col-span-8">
                                         <p className="mb-2">Observações:</p>
                                         <div className="relative">

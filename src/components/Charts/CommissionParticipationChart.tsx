@@ -57,6 +57,8 @@ export function CoordinatorParticipationChart({
         },
     ];
 
+    console.log(data);
+
     return (
         <div className="relative flex h-full w-full max-w-fit flex-col items-center justify-center">
             <CardHeader>
@@ -64,11 +66,8 @@ export function CoordinatorParticipationChart({
                 <CardDescription>Metas de um único precatório</CardDescription>
             </CardHeader>
             <CardContent>
-                <ChartContainer
-                    config={chartConfig}
-                    className={`h-[300px] w-[280px] sm:w-full ${className}`}
-                >
-                    <BarChart data={data} layout="vertical" width={0} height={0}>
+                <ChartContainer config={chartConfig} className={className}>
+                    <BarChart data={data} layout="vertical">
                         <XAxis type="number" />
                         <YAxis
                             dataKey="commission"
