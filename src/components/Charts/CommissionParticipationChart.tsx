@@ -58,17 +58,14 @@ export function CoordinatorParticipationChart({
     ];
 
     return (
-        <div className="relative flex h-full w-full max-w-fit flex-col items-center justify-center">
-            <CardHeader>
+        <div className="relative mx-auto flex h-full w-full max-w-fit flex-col items-center justify-center">
+            <CardHeader className="p-0">
                 <CardTitle>Participação da Comissão do Coordenador</CardTitle>
                 <CardDescription>Metas de um único precatório</CardDescription>
             </CardHeader>
-            <CardContent>
-                <ChartContainer
-                    config={chartConfig}
-                    className={`h-[300px] w-[280px] sm:w-full ${className}`}
-                >
-                    <BarChart data={data} layout="vertical" width={0} height={0}>
+            <CardContent className="px-0">
+                <ChartContainer config={chartConfig} className={`h-[300px] w-[280px] ${className}`}>
+                    <BarChart data={data} layout="vertical">
                         <XAxis type="number" />
                         <YAxis
                             dataKey="commission"
@@ -83,25 +80,25 @@ export function CoordinatorParticipationChart({
                     </BarChart>
                 </ChartContainer>
             </CardContent>
-            <CardFooter>
-                <div className="flex w-full flex-row justify-center gap-2 font-medium sm:gap-6">
-                    <span className="flex items-center gap-1 text-xs">
+            <CardFooter className="justify-center p-0">
+                <div className="flex w-full max-w-full flex-row flex-wrap justify-center gap-2 font-medium sm:gap-4">
+                    <span className="flex items-center gap-1 whitespace-nowrap text-xs">
                         <div className="size-3 rounded" style={{ backgroundColor: COLORS.red }} />
-                        Meta até 2.5MM
+                        <span className="hidden sm:inline">Meta </span>até 2.5MM
                     </span>
-                    <span className="flex items-center gap-1 text-xs">
+                    <span className="flex items-center gap-1 whitespace-nowrap text-xs">
                         <span
                             className="size-3 rounded"
                             style={{ backgroundColor: COLORS.yellow }}
                         />
-                        Meta 2.5MM até 3.75MM
+                        <span className="hidden sm:inline">Meta </span>2.5MM até 3.75MM
                     </span>
-                    <span className="flex items-center gap-1 text-xs">
+                    <span className="flex items-center gap-1 whitespace-nowrap text-xs">
                         <span
                             className="size-3 rounded"
                             style={{ backgroundColor: COLORS.green }}
                         />
-                        Meta acima de 3.75MM
+                        <span className="hidden sm:inline">Meta </span>acima de 3.75MM
                     </span>
                 </div>
             </CardFooter>
