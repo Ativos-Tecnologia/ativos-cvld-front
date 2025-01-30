@@ -58,7 +58,6 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
     const {
         data: { user, profile_picture, first_name, last_name, phone, role, sub_role, product },
     } = useContext<UserInfoContextType>(UserInfoAPIContext);
-    console.log(role, sub_role, product);
 
     const showField = sub_role === 'coordenador' || product === 'global';
 
@@ -1993,8 +1992,8 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                                 Informações sobre o cedente
                             </h3>
                         </div>
-                        <div className="col-span-5 gap-4">
-                            <Show when={showField}>
+                        <Show when={showField}>
+                            <div className="col-span-5 gap-4">
                                 <div className="flex w-full flex-col justify-between gap-4 sm:flex-row">
                                     <div className="flex-1">
                                         <CelerInputField
@@ -2115,8 +2114,8 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                                             )}
                                     </div>
                                 </div>
-                            </Show>
-                        </div>
+                            </div>
+                        </Show>
                         <div className="col-span-5 gap-4">
                             <div className="flex w-full flex-col items-center gap-4 sm:w-fit sm:flex-row">
                                 <button
