@@ -26,14 +26,10 @@ const CellComponent = (row: { original: any }) => {
     }
 
     return (
-        <div className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center gap-2 opacity-0 transition-all duration-300 group-hover:opacity-100">
-            <Button
-                variant="ghost"
-                className="flex h-fit items-center gap-2 bg-slate-100 px-2 py-1 dark:bg-slate-700"
-                onClick={handleOpenSheet}
-            >
+        <div className="absolute top-1/2 -translate-y-1/2 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center gap-2">
+            <Button variant="ghost" className="flex items-center gap-2 px-2 py-1 bg-slate-100 dark:bg-slate-700 h-fit" onClick={handleOpenSheet}>
                 <RiSidebarUnfoldLine size={20} />
-                <p className="text-sm">ABRIR</p>
+                <p className='text-sm'>ABRIR</p>
             </Button>
         </div>
     );
