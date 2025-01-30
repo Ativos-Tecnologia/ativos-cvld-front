@@ -13,7 +13,7 @@ interface SubmitButtonProps
   verticalAdjust?: string;
 }
 
-const variants = {
+export const variants = {
   default: "bg-blue-600 hover:bg-blue-700 text-white",
   danger: "bg-[#cc4b4c] hover:bg-[#cc4b4c]/80 text-white",
   outlined:
