@@ -120,7 +120,7 @@ function EspacoGerencial() {
                 />
             </section>
             {/* Seção da Tabela de Dados */}
-            <section className="mt-6 flex max-w-screen-2xl flex-col overflow-auto rounded-md bg-white dark:bg-boxdark">
+            <section className="mt-6 flex 2xsm:max-w-screen-2xl md:max-w-[750px] lg:max-w-[1050px] xl:max-w-screen-2xl flex-col overflow-auto rounded-md bg-white dark:bg-boxdark">
                 <DataTable columns={columns} data={data?.results || []} loading={isFetching} />
                 <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                     <SheetContent
