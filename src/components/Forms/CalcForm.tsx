@@ -17,6 +17,7 @@ import CelerAppCombobox from '../CrmUi/Combobox';
 import { estadoRegimeEnteDevedor } from '@/constants/estado-regime-enteDevedor';
 import { isCPFOrCNPJValid } from '@/functions/verifiers/isCPFOrCNPJValid';
 import { CPFAndCNPJInput } from '../CrmUi/CPFAndCNPFInput';
+import { regimeEspecialExceptions } from '@/constants/excecoes-regime-especial';
 
 // interface
 interface ICalcFormProps {
@@ -111,6 +112,7 @@ const CalcForm = ({
             setValue('valor_juros', numberFormat(data.properties['Valor Juros'].number || 0));
             setValue('data_base', data.properties['Data Base'].date?.start || '');
             setValue('data_requisicao', data.properties['Data do Recebimento'].date?.start || '');
+            setValue('incide_contribuicao_previdenciaria', data.properties['Incide Contribuição Previdenciária'].checkbox);
             setValue(
                 'valor_aquisicao_total',
                 data.properties['Percentual a ser adquirido'].number! === 1,
@@ -169,6 +171,7 @@ const CalcForm = ({
                 'valor_juros',
                 numberFormat(oficioForm.result[0].valor_juros).replace('R$', ''),
             );
+            // setValue('incide_contribuicao_previdenciaria', oficioForm.result[0].properties['Incide Contribuição Previdenciária'].checkbox);
             setValue('data_base', oficioForm.result[0].data_base.split('/').reverse().join('-'));
 
             if (oficioForm.result[0].data_base < '2021-12-01') {
@@ -606,7 +609,7 @@ const CalcForm = ({
 
                     {watch('esfera') && watch('esfera') === 'FEDERAL' && <div className='col-span-1 hidden sm:block' />}
 
-                    {watch("natureza") === "NÃO TRIBUTÁRIA" && watch("regime") === "ESPECIAL" && (
+                    {watch("natureza") === "NÃO TRIBUTÁRIA" && regimeEspecialExceptions.includes(watch("ente_devedor") || "") && (
                         <div className={`col-span-2 flex max-h-6 items-center gap-2`}>
                             <CustomCheckbox
                                 check={watch('incide_contribuicao_previdenciaria')}
@@ -853,7 +856,7 @@ const CalcForm = ({
                             ) : null}
                         </>
                     )}
-                    {watch('natureza') === 'NÃO TRIBUTÁRIA' && !watch("incide_contribuicao_previdenciaria")  ? (
+                    {watch('natureza') === 'NÃO TRIBUTÁRIA' && !watch("incide_contribuicao_previdenciaria") ? (
                         <div
                             className={`flex gap-2 ${watch('incidencia_pss') ? 'items-start' : 'items-center'} 2xsm:col-span-2 sm:col-span-1`}
                         >
@@ -1175,28 +1178,44 @@ const CalcForm = ({
                                             {(watch('novo_usuario') === false ||
                                                 watch('novo_usuario') === undefined) &&
                                                 watch('vincular_usuario') === true && (
-                                                    <select
-                                                        id="username"
-                                                        className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
-                                                        {...register('username')}
-                                                    >
-                                                        <option value={userData.user}>
-                                                            {userData.user}
-                                                        </option>
-                                                        {usersList
-                                                            .filter(
-                                                                (user) =>
-                                                                    user !== userData.user,
-                                                            )
-                                                            .map((user) => (
-                                                                <option
-                                                                    key={user}
-                                                                    value={user}
-                                                                >
-                                                                    {user}
-                                                                </option>
-                                                            ))}
-                                                    </select>
+                                                    <CelerAppCombobox
+                                                        list={usersList.filter(user => user !== userData.user)}
+                                                        onChangeValue={(value) => {
+                                                            setValue('username', value)
+                                                        }}
+                                                        value={
+                                                            usersList.filter(
+                                                                (user) => user !== watch('username'),
+                                                            )[0] || ''
+                                                        }
+                                                        register={register('username')}
+                                                        name="username"
+                                                        placeholder="BUSQUE POR USUÁRIO"
+                                                        className='uppercase text-sm'
+                                                        size={"400px"}
+                                                    />
+                                                    // <select
+                                                    //     id="username"
+                                                    //     className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark"
+                                                    //     {...register('username')}
+                                                    // >
+                                                    //     <option value={userData.user}>
+                                                    //         {userData.user}
+                                                    //     </option>
+                                                    //     {usersList
+                                                    //         .filter(
+                                                    //             (user) =>
+                                                    //                 user !== userData.user,
+                                                    //         )
+                                                    //         .map((user) => (
+                                                    //             <option
+                                                    //                 key={user}
+                                                    //                 value={user}
+                                                    //             >
+                                                    //                 {user}
+                                                    //             </option>
+                                                    //         ))}
+                                                    // </select>
                                                 )}
                                             <div className="flex flex-col gap-2">
                                                 <div>
