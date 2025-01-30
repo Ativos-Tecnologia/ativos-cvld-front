@@ -67,7 +67,7 @@ export function TotalLiquidAvailableChart({ results, isLoading }: TotalLiquidAva
             className="grid w-full gap-5 p-4"
         >
             <div className="flex w-full justify-between pb-2">
-                <h2 className="text-2xl font-medium">Valor Liquido a Ser Cedido</h2>
+                <h2 className="text-2xl font-medium">Valor Liquido Fechado</h2>
                 <p className="text-xl">
                     Total: <span className="font-bold">{numberFormat(total)}</span>
                 </p>
