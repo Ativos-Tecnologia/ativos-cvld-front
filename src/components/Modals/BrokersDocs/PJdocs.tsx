@@ -50,7 +50,7 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
   } = useContext(BrokersContext)
 
   const {
-      data: { role },
+    data: { role, sub_role },
   } = useContext<UserInfoContextType>(UserInfoAPIContext);
 
   const [cedenteInfo, setCedenteInfo] = useState<NotionPage | null>(null);
@@ -73,7 +73,7 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
     certidao_nasc_cas: false,
     comprovante_de_residencia: false,
   });
-  
+
   const [isUnlinkingDoc, setIsUnlinkingDoc] = useState<Record<string, boolean>>({
     contrato_social: false,
     oficio_requisitorio: false,
@@ -89,8 +89,8 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
 
   const [editLock, setEditLock] = useState<boolean>(false);
   const swal = UseMySwal()
-  
-  
+
+
 
   // função para cadastrar o documento rg
   async function setDocument(id: string, data: FormData, documentType: string, from: string) {
@@ -318,7 +318,7 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
 
   // função de submit só para que o hook form funcione (temporário)
   const submitDocument = async (data: any) => {
- 
+
   };
 
   // função que faz fetch nos dados do cedente
@@ -339,7 +339,7 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
           "select": {
             "name": paramsObj.value
           }
-            
+
         }
       });
       if (response.status !== 202) {
@@ -640,28 +640,26 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
                       url={cedenteInfo?.properties["Doc. Contrato Social"].url || ""}
                     />
 
-                    {cedenteInfo?.properties["Doc. Contrato Social"].url ? (
-                      <div className='pr-5'>
+                    {cedenteInfo?.properties["Doc. Contrato Social"].url && sub_role !== "coordenador_externo" ? (
                       <CelerInputField
-                      fieldType={InputFieldVariant.SELECT}
-                      name='status_doc'
-                      className='mr-4'
-                      disabled={role !== "ativos" && role !== "juridico"}
-                      defaultValue={cedenteInfo?.properties["Doc. Contrato Social Status"].select?.name || ""}
-                      onValueChange={(_, value) => handleChangeDocStatus(cedenteInfo.id, value)}
+                        fieldType={InputFieldVariant.SELECT}
+                        name='status_doc'
+                        className='mr-4'
+                        disabled={role !== "ativos" && role !== "juridico"}
+                        defaultValue={cedenteInfo?.properties["Doc. Contrato Social Status"].select?.name || ""}
+                        onValueChange={(_, value) => handleChangeDocStatus(cedenteInfo.id, value)}
                       >
                         <SelectItem value={cedenteInfo?.properties["Doc. Contrato Social Status"].select?.name || ""}>
                           {
                             cedenteInfo?.properties["Doc. Contrato Social Status"].select?.name || ""
                           }
-                          </SelectItem>
-                          {
-                            Object.values(DocStatus).filter(item => item !== cedenteInfo?.properties["Doc. Contrato Social Status"].select?.name).map((item, index) => (
-                              <SelectItem className='shad-select-item' key={index} value={item}>{item}</SelectItem>
-                            ))
-                          }
+                        </SelectItem>
+                        {
+                          Object.values(DocStatus).filter(item => item !== cedenteInfo?.properties["Doc. Contrato Social Status"].select?.name).map((item, index) => (
+                            <SelectItem className='shad-select-item' key={index} value={item}>{item}</SelectItem>
+                          ))
+                        }
                       </CelerInputField>
-                      </div>
                     ) : (
                       <p className='text-sm text-center'>Nenhum documento vinculado</p>
                     )}
@@ -767,8 +765,8 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
 
           {(representanteState.data === null && !representanteState.isFetching) && (
             <p className='text-center text-sm'>Não há representante vinculado a esse cedente.</p>
-          )} 
-          
+          )}
+
           {representanteState.data && (
             <>
               {(tipoDoOficio === "PRECATÓRIO" || tipoDoOficio === "RPV") && (
@@ -785,32 +783,30 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
                           url={representanteState.data?.properties["Doc. Ofício Requisitório"].url || ""}
                         />
 
-                        {representanteState.data?.properties["Doc. Ofício Requisitório"].url ? (
-                          <div className='pr-5'>
-                          <CelerInputField
-                          fieldType={InputFieldVariant.SELECT}
-                          name='status_doc'
-                          className='mr-4'
-                          disabled={role !== "ativos" && role !== "juridico"}
-                          defaultValue={representanteState.data?.properties["Doc. Ofício Requisitório Status"].select?.name || ""}
-                          onValueChange={(_, value) => {
-                            if (representanteState.data) {
-                              handleChangeDocStatusOficioRequisitorio(representanteState.data.id, value);
-                            }
-                          }}
-                          >
-                            <SelectItem value={representanteState.data?.properties["Doc. Ofício Requisitório Status"].select?.name || ""}>
-                              {
-                                representanteState.data?.properties["Doc. Ofício Requisitório Status"].select?.name || ""
-                              }
+                        {representanteState.data?.properties["Doc. Ofício Requisitório"].url && sub_role !== "coordenador_externo" ? (
+                            <CelerInputField
+                              fieldType={InputFieldVariant.SELECT}
+                              name='status_doc'
+                              className='mr-4'
+                              disabled={role !== "ativos" && role !== "juridico"}
+                              defaultValue={representanteState.data?.properties["Doc. Ofício Requisitório Status"].select?.name || ""}
+                              onValueChange={(_, value) => {
+                                if (representanteState.data) {
+                                  handleChangeDocStatusOficioRequisitorio(representanteState.data.id, value);
+                                }
+                              }}
+                            >
+                              <SelectItem value={representanteState.data?.properties["Doc. Ofício Requisitório Status"].select?.name || ""}>
+                                {
+                                  representanteState.data?.properties["Doc. Ofício Requisitório Status"].select?.name || ""
+                                }
                               </SelectItem>
                               {
                                 Object.values(DocStatus).filter(item => item !== representanteState.data?.properties["Doc. Ofício Requisitório Status"].select?.name).map((item, index) => (
                                   <SelectItem className='shad-select-item' key={index} value={item}>{item}</SelectItem>
                                 ))
                               }
-                          </CelerInputField>
-                          </div>
+                            </CelerInputField>
                         ) : (
                           <p className='text-sm text-center'>Nenhum documento vinculado</p>
                         )}
@@ -909,32 +905,30 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
                       url={representanteState.data?.properties["Doc. RG"].url || ""}
                     />
 
-                    {representanteState.data?.properties["Doc. RG"].url ? (
-                      <div className='pr-5'>
-                      <CelerInputField
-                      fieldType={InputFieldVariant.SELECT}
-                      name='status_doc'
-                      className='mr-4'
-                      disabled={role !== "ativos" && role !== "juridico"}
-                      defaultValue={representanteState.data?.properties["Doc. RG Status"].select?.name || ""}
-                      onValueChange={(_, value) => {
-                        if (representanteState.data) {
-                          handleChangeDocStatusRg(representanteState.data.id, value);
-                        }
-                      }}
-                      >
-                        <SelectItem value={representanteState.data?.properties["Doc. RG Status"].select?.name || ""}>
-                          {
-                            representanteState.data?.properties["Doc. RG Status"].select?.name || ""
-                          }
+                    {representanteState.data?.properties["Doc. RG"].url && sub_role !== "coordenador_externo" ? (
+                        <CelerInputField
+                          fieldType={InputFieldVariant.SELECT}
+                          name='status_doc'
+                          className='mr-4'
+                          disabled={role !== "ativos" && role !== "juridico"}
+                          defaultValue={representanteState.data?.properties["Doc. RG Status"].select?.name || ""}
+                          onValueChange={(_, value) => {
+                            if (representanteState.data) {
+                              handleChangeDocStatusRg(representanteState.data.id, value);
+                            }
+                          }}
+                        >
+                          <SelectItem value={representanteState.data?.properties["Doc. RG Status"].select?.name || ""}>
+                            {
+                              representanteState.data?.properties["Doc. RG Status"].select?.name || ""
+                            }
                           </SelectItem>
                           {
                             Object.values(DocStatus).filter(item => item !== representanteState.data?.properties["Doc. RG Status"].select?.name).map((item, index) => (
                               <SelectItem className='shad-select-item' key={index} value={item}>{item}</SelectItem>
                             ))
                           }
-                      </CelerInputField>
-                      </div>
+                        </CelerInputField>
                     ) : (
                       <p className='text-sm text-center'>Nenhum documento vinculado</p>
                     )}
@@ -1031,32 +1025,30 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
                       url={representanteState.data?.properties["Doc. Certidão Nascimento/Casamento"].url || ""}
                     />
 
-                    {representanteState.data?.properties["Doc. Certidão Nascimento/Casamento"].url ? (
-                      <div className='pr-5'>
-                      <CelerInputField
-                      fieldType={InputFieldVariant.SELECT}
-                      name='status_doc'
-                      className='mr-4'
-                      disabled={role !== "ativos" && role !== "juridico"}
-                      defaultValue={representanteState.data?.properties["Doc. Certidão Nascimento/Casamento Status"].select?.name || ""}
-                      onValueChange={(_, value) => {
-                        if (representanteState.data) {
-                          handleChangeDocStatusCertidao(representanteState.data.id, value);
-                        }
-                      }}
-                      >
-                        <SelectItem value={representanteState.data?.properties["Doc. Certidão Nascimento/Casamento Status"].select?.name || ""}>
-                          {
-                            representanteState.data?.properties["Doc. Certidão Nascimento/Casamento Status"].select?.name || ""
-                          }
+                    {representanteState.data?.properties["Doc. Certidão Nascimento/Casamento"].url && sub_role !== "coordenador_externo" ? (
+                        <CelerInputField
+                          fieldType={InputFieldVariant.SELECT}
+                          name='status_doc'
+                          className='mr-4'
+                          disabled={role !== "ativos" && role !== "juridico"}
+                          defaultValue={representanteState.data?.properties["Doc. Certidão Nascimento/Casamento Status"].select?.name || ""}
+                          onValueChange={(_, value) => {
+                            if (representanteState.data) {
+                              handleChangeDocStatusCertidao(representanteState.data.id, value);
+                            }
+                          }}
+                        >
+                          <SelectItem value={representanteState.data?.properties["Doc. Certidão Nascimento/Casamento Status"].select?.name || ""}>
+                            {
+                              representanteState.data?.properties["Doc. Certidão Nascimento/Casamento Status"].select?.name || ""
+                            }
                           </SelectItem>
                           {
                             Object.values(DocStatus).filter(item => item !== representanteState.data?.properties["Doc. Certidão Nascimento/Casamento Status"].select?.name).map((item, index) => (
                               <SelectItem className='shad-select-item' key={index} value={item}>{item}</SelectItem>
                             ))
                           }
-                      </CelerInputField>
-                      </div>
+                        </CelerInputField>
                     ) : (
                       <p className='text-sm text-center'>Nenhum documento vinculado</p>
                     )}
@@ -1153,33 +1145,30 @@ const PJdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: {
                       url={representanteState.data?.properties["Doc. Comprovante de Residência"].url || ""}
                     />
 
-                    {representanteState.data?.properties["Doc. Comprovante de Residência"].url ? (
-                      
-                      <div className='pr-5'>
-                      <CelerInputField
-                      fieldType={InputFieldVariant.SELECT}
-                      name='status_doc'
-                      className='mr-4'
-                      disabled={role !== "ativos" && role !== "juridico"}
-                      defaultValue={representanteState.data?.properties["Doc. Comprovante de Residência Status"].select?.name || ""}
-                      onValueChange={(_, value) => {
-                        if (representanteState.data) {
-                          handleChangeDocStatusComprovanteResidencia(representanteState.data.id, value);
-                        }
-                      }}
-                      >
-                        <SelectItem value={representanteState.data?.properties["Doc. Comprovante de Residência Status"].select?.name || ""}>
-                          {
-                            representanteState.data?.properties["Doc. Comprovante de Residência Status"].select?.name || ""
-                          }
+                    {representanteState.data?.properties["Doc. Comprovante de Residência"].url && sub_role !== "coordenador_externo" ? (
+                        <CelerInputField
+                          fieldType={InputFieldVariant.SELECT}
+                          name='status_doc'
+                          className='mr-4'
+                          disabled={role !== "ativos" && role !== "juridico"}
+                          defaultValue={representanteState.data?.properties["Doc. Comprovante de Residência Status"].select?.name || ""}
+                          onValueChange={(_, value) => {
+                            if (representanteState.data) {
+                              handleChangeDocStatusComprovanteResidencia(representanteState.data.id, value);
+                            }
+                          }}
+                        >
+                          <SelectItem value={representanteState.data?.properties["Doc. Comprovante de Residência Status"].select?.name || ""}>
+                            {
+                              representanteState.data?.properties["Doc. Comprovante de Residência Status"].select?.name || ""
+                            }
                           </SelectItem>
                           {
                             Object.values(DocStatus).filter(item => item !== representanteState.data?.properties["Doc. Comprovante de Residência Status"].select?.name).map((item, index) => (
                               <SelectItem className='shad-select-item' key={index} value={item}>{item}</SelectItem>
                             ))
                           }
-                      </CelerInputField>
-                      </div>
+                        </CelerInputField>
                     ) : (
                       <p className='text-sm text-center'>Nenhum documento vinculado</p>
                     )}
