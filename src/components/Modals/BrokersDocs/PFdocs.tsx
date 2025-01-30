@@ -41,7 +41,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
 
   const { fetchDetailCardData, setDocModalInfo, setIsFetchAllowed } = useContext(BrokersContext)
   const {
-    data: { role },
+    data: { role, sub_role },
   } = useContext<UserInfoContextType>(UserInfoAPIContext);
   const [cedenteInfo, setCedenteInfo] = useState<NotionPage | null>(null);
   const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
@@ -512,7 +512,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                         url={cedenteInfo?.properties["Doc. Ofício Requisitório"].url || ""}
                       />
 
-                      {cedenteInfo?.properties["Doc. Ofício Requisitório"].url ? (
+                      {cedenteInfo?.properties["Doc. Ofício Requisitório"].url && sub_role !== "coordenador_externo" ? (
                         <div>
                           <CelerInputField
                             fieldType={InputFieldVariant.SELECT}
@@ -634,7 +634,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                     url={cedenteInfo?.properties["Doc. RG"].url || ""}
                   />
 
-                  {cedenteInfo?.properties["Doc. RG"].url ? (
+                  {cedenteInfo?.properties["Doc. RG"].url && sub_role !== "coordenador_externo" ? (
                     <div>
                       <CelerInputField
                         fieldType={InputFieldVariant.SELECT}
@@ -754,7 +754,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                     url={cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"].url || ""}
                   />
 
-                  {cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"].url ? (
+                  {cedenteInfo?.properties["Doc. Certidão Nascimento/Casamento"].url && sub_role !== "coordenador_externo" ? (
                     <div>
                       <CelerInputField
                         fieldType={InputFieldVariant.SELECT}
@@ -874,7 +874,7 @@ const PFdocs = ({ cedenteId, idPrecatorio, tipoDoOficio }: { cedenteId: string |
                     url={cedenteInfo?.properties["Doc. Comprovante de Residência"].url || ""}
                   />
 
-                  {cedenteInfo?.properties["Doc. Comprovante de Residência"].url ? (
+                  {cedenteInfo?.properties["Doc. Comprovante de Residência"].url && sub_role !== "coordenador_externo" ? (
                     <div>
                       <CelerInputField
                         fieldType={InputFieldVariant.SELECT}
