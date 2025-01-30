@@ -17,7 +17,7 @@ import { FieldValues, UseFormRegister } from 'react-hook-form';
 
 type CelerComboboxProps<T extends FieldValues> = {
     list: Array<string | Record<string, string | number>>;
-    size?: string | '250px';
+    size?: string;
     className?: string;
     onChangeValue: ((value: string) => void) | ((value: string) => Promise<void>);
     value: string;
@@ -48,7 +48,7 @@ const CelerAppCombobox = <T extends FieldValues>({
                         aria-expanded={open}
                         className={`min-w-[${size}] ${className} justify-between border-stroke dark:border-strokedark`}
                     >
-                        {value || 'Selecione...'}
+                        <p className="truncate">{value || 'Selecione...'}</p>
                         <LuChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>

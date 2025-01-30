@@ -9,6 +9,7 @@ export type CvldFormInputsProps = {
     outros_descontos: number | string;
     data_base: string;
     data_requisicao: string;
+    incide_contribuicao_previdenciaria: boolean;
     valor_aquisicao_total: boolean;
     percentual_a_ser_adquirido: number | string;
     ja_possui_destacamento: boolean;
