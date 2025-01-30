@@ -31,7 +31,7 @@ import { GrDocumentText, GrDocumentUser, GrMoney } from 'react-icons/gr';
 import { IoIosPaper } from 'react-icons/io';
 import { IoCalendar, IoDocumentTextSharp, IoGlobeOutline } from 'react-icons/io5';
 import { LuHandshake } from 'react-icons/lu';
-import { TbMoneybag, TbStatusChange } from 'react-icons/tb';
+import { TbMoneybag } from 'react-icons/tb';
 import verifyRequiredInputsToDue from '@/functions/juridico/verifyRequiredInputsToDue';
 import { AxiosError } from 'axios';
 import BrokerModal, { IdentificationType } from '@/components/Modals/BrokersCedente';
@@ -48,6 +48,7 @@ import { CoordinatorParticipationChart } from '@/components/Charts/CommissionPar
 import { useReactToPrint } from 'react-to-print';
 import { PrintPDF } from '@/components/PrintPDF';
 import DocForm from '@/components/Modals/BrokersDocs';
+import Show from '@/components/Show';
 
 type SheetViewComercialProps = {
     id: string;
@@ -58,6 +59,8 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
         data: { user, profile_picture, first_name, last_name, phone, role, sub_role, product },
     } = useContext<UserInfoContextType>(UserInfoAPIContext);
     console.log(role, sub_role, product);
+
+    const showField = sub_role === 'coordenador' || product === 'global';
 
     const { setSheetOpen } = useContext(ComercialContext);
     const [previousId, setPreviousId] = useState<string | null>(null);
@@ -1991,124 +1994,128 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                             </h3>
                         </div>
                         <div className="col-span-5 gap-4">
-                            <div className="flex w-full flex-col justify-between gap-4 sm:flex-row">
-                                <div className="flex-1">
-                                    <CelerInputField
-                                        name="emissao_certidao_check"
-                                        fieldType={InputFieldVariant.SELECT}
-                                        label={`Certidões Emitidas?`}
-                                        defaultValue={
-                                            data?.properties['Certidões emitidas']?.checkbox
-                                                ? 'SIM'
-                                                : 'NÃO'
-                                        }
-                                        onValueChange={(_, value) =>
-                                            handleUpdateCertidoesEmitidas(value, id)
-                                        }
-                                        isLoading={loadingUpdateState.certidaoEmitidas}
-                                        disabled={editLock}
-                                        className="w-full"
-                                    >
-                                        <SelectItem value="SIM">Sim</SelectItem>
-                                        <SelectItem value="NÃO">Não</SelectItem>
-                                    </CelerInputField>
+                            <Show when={showField}>
+                                <div className="flex w-full flex-col justify-between gap-4 sm:flex-row">
+                                    <div className="flex-1">
+                                        <CelerInputField
+                                            name="emissao_certidao_check"
+                                            fieldType={InputFieldVariant.SELECT}
+                                            label={`Certidões Emitidas?`}
+                                            defaultValue={
+                                                data?.properties['Certidões emitidas']?.checkbox
+                                                    ? 'SIM'
+                                                    : 'NÃO'
+                                            }
+                                            onValueChange={(_, value) =>
+                                                handleUpdateCertidoesEmitidas(value, id)
+                                            }
+                                            isLoading={loadingUpdateState.certidaoEmitidas}
+                                            disabled={editLock}
+                                            className="w-full"
+                                        >
+                                            <SelectItem value="SIM">Sim</SelectItem>
+                                            <SelectItem value="NÃO">Não</SelectItem>
+                                        </CelerInputField>
 
-                                    {!data?.properties['Certidões emitidas']?.checkbox &&
-                                        requiredDueInputsError && (
-                                            <p className="mt-2 text-xs text-red-500 dark:text-red-400">
-                                                Campo obrigatório para due
-                                            </p>
-                                        )}
-                                </div>
+                                        {!data?.properties['Certidões emitidas']?.checkbox &&
+                                            requiredDueInputsError && (
+                                                <p className="mt-2 text-xs text-red-500 dark:text-red-400">
+                                                    Campo obrigatório para due
+                                                </p>
+                                            )}
+                                    </div>
 
-                                <div className="flex-1">
-                                    <CelerInputField
-                                        name="possui_processos_check"
-                                        fieldType={InputFieldVariant.SELECT}
-                                        label={`Possui Processos?`}
-                                        defaultValue={
-                                            data?.properties['Possui processos?']?.checkbox
-                                                ? 'SIM'
-                                                : 'NÃO'
-                                        }
-                                        onValueChange={(_, value) =>
-                                            handleUpdatePossuiProcessos(value, id)
-                                        }
-                                        isLoading={loadingUpdateState.possuiProcessos}
-                                        disabled={editLock}
-                                        className="w-full"
-                                    >
-                                        <SelectItem value="SIM">Sim</SelectItem>
-                                        <SelectItem value="NÃO">Não</SelectItem>
-                                    </CelerInputField>
+                                    <div className="flex-1">
+                                        <CelerInputField
+                                            name="possui_processos_check"
+                                            fieldType={InputFieldVariant.SELECT}
+                                            label={`Possui Processos?`}
+                                            defaultValue={
+                                                data?.properties['Possui processos?']?.checkbox
+                                                    ? 'SIM'
+                                                    : 'NÃO'
+                                            }
+                                            onValueChange={(_, value) =>
+                                                handleUpdatePossuiProcessos(value, id)
+                                            }
+                                            isLoading={loadingUpdateState.possuiProcessos}
+                                            disabled={editLock}
+                                            className="w-full"
+                                        >
+                                            <SelectItem value="SIM">Sim</SelectItem>
+                                            <SelectItem value="NÃO">Não</SelectItem>
+                                        </CelerInputField>
 
-                                    {!data?.properties['Possui processos?']?.checkbox &&
-                                        requiredDueInputsError && (
-                                            <p className="mt-2 text-xs text-red-500 dark:text-red-400">
-                                                Campo obrigatório para due
-                                            </p>
-                                        )}
-                                </div>
+                                        {!data?.properties['Possui processos?']?.checkbox &&
+                                            requiredDueInputsError && (
+                                                <p className="mt-2 text-xs text-red-500 dark:text-red-400">
+                                                    Campo obrigatório para due
+                                                </p>
+                                            )}
+                                    </div>
 
-                                <div className="flex-1">
-                                    <CelerInputField
-                                        className="w-full gap-2"
-                                        fieldType={InputFieldVariant.SELECT}
-                                        name="regime_casamento"
-                                        label="Estado Civil"
-                                        iconSrc={<BsCalendar2HeartFill />}
-                                        defaultValue={
-                                            credorIdentificationType === 'CPF'
-                                                ? cedenteDataPF?.properties['Estado Civil']?.select
-                                                      ?.name || ''
-                                                : socioData?.properties['Estado Civil']?.select
-                                                      ?.name || ''
-                                        }
-                                        onValueChange={(_, value) =>
-                                            handleUpdateEstadoCivil(
-                                                value,
+                                    <div className="flex-1">
+                                        <CelerInputField
+                                            className="w-full gap-2"
+                                            fieldType={InputFieldVariant.SELECT}
+                                            name="regime_casamento"
+                                            label="Estado Civil"
+                                            iconSrc={<BsCalendar2HeartFill />}
+                                            defaultValue={
                                                 credorIdentificationType === 'CPF'
-                                                    ? cedenteDataPF?.id!
-                                                    : socioData?.id!,
-                                            )
-                                        }
-                                        isLoading={loadingUpdateState.estadoCivil}
-                                        disabled={editLock}
-                                    >
-                                        {estadoCivil.map((item, index) => (
-                                            <SelectItem
-                                                defaultChecked={
+                                                    ? cedenteDataPF?.properties['Estado Civil']
+                                                          ?.select?.name || ''
+                                                    : socioData?.properties['Estado Civil']?.select
+                                                          ?.name || ''
+                                            }
+                                            onValueChange={(_, value) =>
+                                                handleUpdateEstadoCivil(
+                                                    value,
                                                     credorIdentificationType === 'CPF'
-                                                        ? cedenteDataPF?.properties['Estado Civil']
-                                                              ?.select?.name === item
-                                                        : socioData?.properties['Estado Civil']
-                                                              ?.select?.name === item
-                                                }
-                                                key={index}
-                                                value={item}
-                                            >
-                                                {item}
-                                            </SelectItem>
-                                        ))}
-                                    </CelerInputField>
+                                                        ? cedenteDataPF?.id!
+                                                        : socioData?.id!,
+                                                )
+                                            }
+                                            isLoading={loadingUpdateState.estadoCivil}
+                                            disabled={editLock}
+                                        >
+                                            {estadoCivil.map((item, index) => (
+                                                <SelectItem
+                                                    defaultChecked={
+                                                        credorIdentificationType === 'CPF'
+                                                            ? cedenteDataPF?.properties[
+                                                                  'Estado Civil'
+                                                              ]?.select?.name === item
+                                                            : socioData?.properties['Estado Civil']
+                                                                  ?.select?.name === item
+                                                    }
+                                                    key={index}
+                                                    value={item}
+                                                >
+                                                    {item}
+                                                </SelectItem>
+                                            ))}
+                                        </CelerInputField>
 
-                                    {credorIdentificationType === 'CPF' &&
-                                        !cedenteDataPF?.properties['Estado Civil']?.select?.name &&
-                                        requiredDueInputsError && (
-                                            <p className="mt-2 text-xs text-red-500 dark:text-red-400">
-                                                Campo obrigatório para due
-                                            </p>
-                                        )}
+                                        {credorIdentificationType === 'CPF' &&
+                                            !cedenteDataPF?.properties['Estado Civil']?.select
+                                                ?.name &&
+                                            requiredDueInputsError && (
+                                                <p className="mt-2 text-xs text-red-500 dark:text-red-400">
+                                                    Campo obrigatório para due
+                                                </p>
+                                            )}
 
-                                    {credorIdentificationType === 'CNPJ' &&
-                                        !socioData?.properties['Estado Civil']?.select?.name &&
-                                        requiredDueInputsError && (
-                                            <p className="mt-2 text-xs text-red-500 dark:text-red-400">
-                                                Campo obrigatório para due
-                                            </p>
-                                        )}
+                                        {credorIdentificationType === 'CNPJ' &&
+                                            !socioData?.properties['Estado Civil']?.select?.name &&
+                                            requiredDueInputsError && (
+                                                <p className="mt-2 text-xs text-red-500 dark:text-red-400">
+                                                    Campo obrigatório para due
+                                                </p>
+                                            )}
+                                    </div>
                                 </div>
-                            </div>
+                            </Show>
                         </div>
                         <div className="col-span-5 gap-4">
                             <div className="flex w-full flex-col items-center gap-4 sm:w-fit sm:flex-row">
@@ -3059,66 +3066,70 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                                 disabled={true}
                             />
                         </div>
-                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
-                            <CelerInputField
-                                name="vl_com_reservas"
-                                fieldType={InputFieldVariant.INPUT}
-                                label="Valor Líquido"
-                                defaultValue={numberFormat(
-                                    data?.properties['Valor Líquido (Com Reserva dos Honorários)']
-                                        ?.formula?.number || 0,
-                                )}
-                                iconSrc={<GiReceiveMoney className="self-center" />}
-                                iconAlt="money"
-                                className="w-full disabled:text-boxdark disabled:dark:text-white"
-                                disabled={true}
-                            />
-                        </div>
-                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
-                            <CelerInputField
-                                name="custo_total"
-                                fieldType={InputFieldVariant.INPUT}
-                                label="Custo total do Precatório (absoluto)"
-                                defaultValue={numberFormat(
-                                    (data?.properties['Comissão - Celer'].number || 0) +
-                                        (data?.properties['Proposta Escolhida - Celer'].number ||
-                                            0),
-                                )}
-                                iconSrc={<GiReceiveMoney className="self-center" />}
-                                iconAlt="money"
-                                className="w-full disabled:text-boxdark disabled:dark:text-white"
-                                disabled={true}
-                            />
-                        </div>
-                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
-                            <CelerInputField
-                                name="custo"
-                                fieldType={InputFieldVariant.INPUT}
-                                label="Custo do precatório"
-                                defaultValue={percentageFormater(
-                                    data?.properties['Custo do precatório']?.formula?.number || 0,
-                                )}
-                                iconSrc={<GiReceiveMoney className="self-center" />}
-                                iconAlt="receive_money"
-                                className="w-full disabled:text-boxdark disabled:dark:text-white"
-                                disabled={true}
-                            />
-                        </div>
-                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
-                            <CelerInputField
-                                name="valor_liquido_cedido"
-                                fieldType={InputFieldVariant.INPUT}
-                                label="Valor Líquido a ser Cedido"
-                                defaultValue={numberFormat(
-                                    data?.properties['Valor Líquido a ser cedido']?.formula
-                                        ?.number || 0,
-                                )}
-                                iconSrc={<GiPayMoney className="self-center" />}
-                                iconAlt="money"
-                                className="w-full disabled:text-boxdark disabled:dark:text-white"
-                                disabled={true}
-                            />
-                        </div>
+                        <Show when={showField}>
+                            <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
+                                <CelerInputField
+                                    name="vl_com_reservas"
+                                    fieldType={InputFieldVariant.INPUT}
+                                    label="Valor Líquido"
+                                    defaultValue={numberFormat(
+                                        data?.properties[
+                                            'Valor Líquido (Com Reserva dos Honorários)'
+                                        ]?.formula?.number || 0,
+                                    )}
+                                    iconSrc={<GiReceiveMoney className="self-center" />}
+                                    iconAlt="money"
+                                    className="w-full disabled:text-boxdark disabled:dark:text-white"
+                                    disabled={true}
+                                />
+                            </div>
+                            <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
+                                <CelerInputField
+                                    name="custo_total"
+                                    fieldType={InputFieldVariant.INPUT}
+                                    label="Custo total do Precatório (absoluto)"
+                                    defaultValue={numberFormat(
+                                        (data?.properties['Comissão - Celer'].number || 0) +
+                                            (data?.properties['Proposta Escolhida - Celer']
+                                                .number || 0),
+                                    )}
+                                    iconSrc={<GiReceiveMoney className="self-center" />}
+                                    iconAlt="money"
+                                    className="w-full disabled:text-boxdark disabled:dark:text-white"
+                                    disabled={true}
+                                />
+                            </div>
+                            <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
+                                <CelerInputField
+                                    name="custo"
+                                    fieldType={InputFieldVariant.INPUT}
+                                    label="Custo do precatório"
+                                    defaultValue={percentageFormater(
+                                        data?.properties['Custo do precatório']?.formula?.number ||
+                                            0,
+                                    )}
+                                    iconSrc={<GiReceiveMoney className="self-center" />}
+                                    iconAlt="receive_money"
+                                    className="w-full disabled:text-boxdark disabled:dark:text-white"
+                                    disabled={true}
+                                />
+                            </div>
+                            <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
+                                <CelerInputField
+                                    name="valor_liquido_cedido"
+                                    fieldType={InputFieldVariant.INPUT}
+                                    label="Valor Líquido a ser Cedido"
+                                    defaultValue={numberFormat(
+                                        data?.properties['Valor Líquido a ser cedido']?.formula
+                                            ?.number || 0,
+                                    )}
+                                    iconSrc={<GiPayMoney className="self-center" />}
+                                    iconAlt="money"
+                                    className="w-full disabled:text-boxdark disabled:dark:text-white"
+                                    disabled={true}
+                                />
+                            </div>
+                        </Show>
                     </div>
 
                     <hr className="border border-stroke dark:border-strokedark" />
