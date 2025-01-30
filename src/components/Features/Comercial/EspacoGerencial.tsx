@@ -112,6 +112,11 @@ function EspacoGerencial() {
                     isLoading={isChartDataLoading || isFetching}
                 />
             </section>
+
+            <section className="mt-6 flex 2xsm:max-w-screen-2xl md:max-w-[750px] lg:max-w-[1050px] xl:max-w-screen-2xl flex-col overflow-auto rounded-md bg-white dark:bg-boxdark">
+                {/* <PendingDocTable  /> */}
+            </section>
+
             {/* Seção do Gráfico de Metas de Valor Líquido */}
             <section className="mt-6 flex min-h-fit rounded-md bg-white dark:bg-boxdark">
                 <TotalLiquidAvailableChart
