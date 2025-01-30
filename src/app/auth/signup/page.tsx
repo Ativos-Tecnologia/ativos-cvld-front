@@ -8,7 +8,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { Controller, SubmitHandler, useForm, UseFormSetValue } from 'react-hook-form';
 import {
     BiCheck,
     BiEnvelope,
@@ -41,6 +41,7 @@ export type SignUpInputs = {
     complete_name: string;
     nome_representante: string;
     cpf_representante: string;
+    cpf_cnpj: string;
     phone: string;
     password: string;
     confirm_password: string;
@@ -52,6 +53,8 @@ const SignUp: React.FC = () => {
         register,
         handleSubmit,
         watch,
+        getValues,
+        setValue,
         control,
         formState: { errors },
     } = useForm<SignUpInputs>();
@@ -79,7 +82,7 @@ const SignUp: React.FC = () => {
     const onSubmit: SubmitHandler<SignUpInputs> = async (data) => {
         setLoading(true);
 
-        if (!isCPFOrCNPJValid(CPFOrCNPJValue)) {
+        if (!isCPFOrCNPJValid(getValues('cpf_cnpj') || '')) {
             MySwal.fire({
                 title: 'Ok, Houston...Temos um problema!',
                 text: 'O CPF ou CNPJ inserido é inválido. Por favor, tente novamente.',
@@ -96,7 +99,7 @@ const SignUp: React.FC = () => {
                 email: data.email,
                 complete_name: data.complete_name,
                 password: data.password,
-                cpf_cnpj: CPFOrCNPJValue,
+                cpf_cnpj: data.cpf_cnpj,
                 nome_representante: data.nome_representante,
                 cpf_representante: data.cpf_representante,
                 phone: data.phone,
@@ -344,9 +347,11 @@ const SignUp: React.FC = () => {
                             <div className="flex flex-col gap-2 sm:flex-row">
                                 <div className="relative flex-1">
                                     <CPFAndCNPJInput
-                                        value={CPFOrCNPJValue}
-                                        setValue={setCPFOrCNPJValue}
-                                        className={`${CPFOrCNPJValue.length > 0 && !isCPFOrCNPJValid(CPFOrCNPJValue) && 'border-2 !border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black`}
+                                        value={watch('cpf_cnpj') || ''}
+                                        setValue={
+                                            setValue as UseFormSetValue<Partial<SignUpInputs>>
+                                        }
+                                        className={`${CPFOrCNPJValue.length > 0 && !isCPFOrCNPJValid(watch('cpf_cnpj') || '') && 'border-2 !border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black`}
                                     />
 
                                     <span className="absolute right-4 top-2.5">
@@ -360,102 +365,103 @@ const SignUp: React.FC = () => {
                                     </span>
                                 </div>
                             </div>
-                            {CPFOrCNPJValue.length === 18 && ( // CNPJ
-                                <div className="grid grid-cols-2 gap-5">
-                                    <h3 className="col-span-2 mt-5 block text-center font-semibold uppercase text-black">
-                                        Dados do Representante Legal
-                                    </h3>
-                                    <div className="col-span-2 mb-2">
-                                        <label
-                                            className="mb-2.5 block font-medium text-black"
-                                            htmlFor="repre_name"
-                                        >
-                                            Nome Completo
-                                        </label>
-                                        <div className="relative">
-                                            <input
-                                                type="text"
-                                                placeholder="Nome Completo"
-                                                className={`${errors.nome_representante && 'border-2 !border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
-                                                id="repre_name"
-                                                {...register('nome_representante', {
-                                                    required: 'Campo obrigatório',
-                                                    minLength: {
-                                                        value: 4,
-                                                        message:
-                                                            'O nome deve conter no mínimo 4 caracteres',
-                                                    },
-                                                    maxLength: {
-                                                        value: 30,
-                                                        message:
-                                                            'O nome deve conter no máximo 30 caracteres',
-                                                    },
-                                                    pattern: {
-                                                        value: /^[a-zA-Z\s]+$/, // Regex para permitir apenas letras (maiúsculas e minúsculas) e espaços.
-                                                        message:
-                                                            'O nome deve conter apenas letras e não deve ter espaços ou caracteres especiais',
-                                                    },
-                                                })}
-                                            />
-
-                                            <ErrorMessage errors={errors} field="repre_name" />
-
-                                            <span className="absolute right-4 top-2.5">
-                                                <BiIdCard
-                                                    style={{
-                                                        width: '22px',
-                                                        height: '22px',
-                                                        fill: 'rgb(186, 193, 203)',
-                                                    }}
+                            {getValues('cpf_cnpj') &&
+                                getValues('cpf_cnpj').length === 18 && ( // CNPJ
+                                    <div className="grid grid-cols-2 gap-5">
+                                        <h3 className="col-span-2 mt-5 block text-center font-semibold uppercase text-black">
+                                            Dados do Representante Legal
+                                        </h3>
+                                        <div className="col-span-2 mb-2">
+                                            <label
+                                                className="mb-2.5 block font-medium text-black"
+                                                htmlFor="repre_name"
+                                            >
+                                                Nome Completo
+                                            </label>
+                                            <div className="relative">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Nome Completo"
+                                                    className={`${errors.nome_representante && 'border-2 !border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
+                                                    id="repre_name"
+                                                    {...register('nome_representante', {
+                                                        required: 'Campo obrigatório',
+                                                        minLength: {
+                                                            value: 4,
+                                                            message:
+                                                                'O nome deve conter no mínimo 4 caracteres',
+                                                        },
+                                                        maxLength: {
+                                                            value: 30,
+                                                            message:
+                                                                'O nome deve conter no máximo 30 caracteres',
+                                                        },
+                                                        pattern: {
+                                                            value: /^[a-zA-Z\s]+$/, // Regex para permitir apenas letras (maiúsculas e minúsculas) e espaços.
+                                                            message:
+                                                                'O nome deve conter apenas letras e não deve ter espaços ou caracteres especiais',
+                                                        },
+                                                    })}
                                                 />
-                                            </span>
-                                        </div>
-                                    </div>
 
-                                    <div className="col-span-2 mb-2 ">
-                                        <label
-                                            className="mb-2.5 block font-medium text-black"
-                                            htmlFor="CPF_Repre"
-                                        >
-                                            CPF
-                                        </label>
-                                        <div className="relative">
-                                            <Controller
-                                                name="cpf_representante"
-                                                control={control}
-                                                defaultValue=""
-                                                rules={{
-                                                    required: 'Campo obrigatório',
-                                                    pattern: {
-                                                        value: /^\d{3}\.\d{3}\.\d{3}-\d{2}$/,
-                                                        message: 'CPF inválido',
-                                                    },
-                                                }}
-                                                render={({ field }) => (
-                                                    <InputMask
-                                                        {...field}
-                                                        mask="999.999.999-99"
-                                                        placeholder="Digite seu CPF"
-                                                        className={`${errors.cpf_representante && 'border-2 !border-rose-400 !ring-0'} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
+                                                <ErrorMessage errors={errors} field="repre_name" />
+
+                                                <span className="absolute right-4 top-2.5">
+                                                    <BiIdCard
+                                                        style={{
+                                                            width: '22px',
+                                                            height: '22px',
+                                                            fill: 'rgb(186, 193, 203)',
+                                                        }}
                                                     />
-                                                )}
-                                            />
+                                                </span>
+                                            </div>
+                                        </div>
 
-                                            <ErrorMessage errors={errors} field="repre_cpf" />
-
-                                            <span className="absolute right-4 top-2.5">
-                                                <BiIdCard
-                                                    style={{
-                                                        width: '22px',
-                                                        height: '22px',
-                                                        fill: 'rgb(186, 193, 203)',
+                                        <div className="col-span-2 mb-2 ">
+                                            <label
+                                                className="mb-2.5 block font-medium text-black"
+                                                htmlFor="CPF_Repre"
+                                            >
+                                                CPF
+                                            </label>
+                                            <div className="relative">
+                                                <Controller
+                                                    name="cpf_representante"
+                                                    control={control}
+                                                    defaultValue=""
+                                                    rules={{
+                                                        required: 'Campo obrigatório',
+                                                        pattern: {
+                                                            value: /^\d{3}\.\d{3}\.\d{3}-\d{2}$/,
+                                                            message: 'CPF inválido',
+                                                        },
                                                     }}
+                                                    render={({ field }) => (
+                                                        <InputMask
+                                                            {...field}
+                                                            mask="999.999.999-99"
+                                                            placeholder="Digite seu CPF"
+                                                            className={`${errors.cpf_representante && 'border-2 !border-rose-400 !ring-0'} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
+                                                        />
+                                                    )}
                                                 />
-                                            </span>
+
+                                                <ErrorMessage errors={errors} field="repre_cpf" />
+
+                                                <span className="absolute right-4 top-2.5">
+                                                    <BiIdCard
+                                                        style={{
+                                                            width: '22px',
+                                                            height: '22px',
+                                                            fill: 'rgb(186, 193, 203)',
+                                                        }}
+                                                    />
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
                             <div className="col-span-2 mb-2 ">
                                 <label
                                     className="mb-2.5 block font-medium text-black"
