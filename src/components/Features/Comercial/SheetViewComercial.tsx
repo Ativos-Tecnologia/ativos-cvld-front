@@ -2146,7 +2146,7 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                                 fieldType={InputFieldVariant.INPUT}
                                 label="NPU (Originário)"
                                 defaultValue={
-                                    data?.properties['NPU (Originário)']?.rich_text?.[0].plain_text
+                                    data?.properties['NPU (Originário)']?.rich_text?.[0]?.plain_text
                                 }
                                 iconSrc={<IoDocumentTextSharp className="self-center" />}
                                 iconAlt="law"
