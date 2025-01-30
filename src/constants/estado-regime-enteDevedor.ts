@@ -941,6 +941,7 @@ export const estadoRegimeEnteDevedor: IEstadoRegimeEnteDevedor = {
             'VALEC ENGENHARIA CONSTRUCOES E FERROVIAS S/A',
             'VALEC ENGENHARIA CONSTRUCOES E FERROVIAS SA',
             'FAZENDA NACIONAL (UNIÃO FEDERAL)',
+            'EMPRESA BRASILEIRA DE PESQUISA AGROPECUARIA',
         ],
         ESPECIAL: [],
     },
