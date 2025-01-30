@@ -606,6 +606,23 @@ const CalcForm = ({
 
                     {watch('esfera') && watch('esfera') === 'FEDERAL' && <div className='col-span-1 hidden sm:block' />}
 
+                    {watch("natureza") === "NÃO TRIBUTÁRIA" && watch("regime") === "ESPECIAL" && (
+                        <div className={`col-span-2 flex max-h-6 items-center gap-2`}>
+                            <CustomCheckbox
+                                check={watch('incide_contribuicao_previdenciaria')}
+                                id={'incide_contribuicao_previdenciaria'}
+                                register={register('incide_contribuicao_previdenciaria')}
+                            />
+
+                            <label
+                                htmlFor="incide_contribuicao_previdenciaria"
+                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                            >
+                                Incide Contribuição Previdenciária?
+                            </label>
+                        </div>
+                    )}
+
                     <div className={`col-span-2 flex max-h-6 items-center gap-2 md:col-span-1`}>
                         <CustomCheckbox
                             check={watch('valor_aquisicao_total')}
@@ -836,7 +853,7 @@ const CalcForm = ({
                             ) : null}
                         </>
                     )}
-                    {watch('natureza') !== 'TRIBUTÁRIA' ? (
+                    {watch('natureza') === 'NÃO TRIBUTÁRIA' && !watch("incide_contribuicao_previdenciaria")  ? (
                         <div
                             className={`flex gap-2 ${watch('incidencia_pss') ? 'items-start' : 'items-center'} 2xsm:col-span-2 sm:col-span-1`}
                         >
@@ -845,12 +862,7 @@ const CalcForm = ({
                                 id={'incidencia_pss'}
                                 register={register('incidencia_pss')}
                             />
-                            {/* <input
-                  type="checkbox"
-                  id="incidencia_pss"
-                  className={`h-[15px] w-[15px] cursor-pointer rounded-[3px] border-2 border-body bg-transparent duration-100 selection:ring-0 focus-within:ring-0 dark:border-bodydark`}
-                  {...register("incidencia_pss")}
-                /> */}
+
                             <label
                                 htmlFor="incidencia_pss"
                                 className="mt-1 font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -890,7 +902,7 @@ const CalcForm = ({
                         </div>
                     ) : (
                         <>
-                            {watch('natureza') === 'TRIBUTÁRIA' ? null : (
+                            {watch('natureza') === 'TRIBUTÁRIA' || watch("incide_contribuicao_previdenciaria") ? null : (
                                 <div className="hidden items-center md:flex">&nbsp;</div>
                             )}
                         </>
