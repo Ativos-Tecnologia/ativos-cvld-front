@@ -55,8 +55,9 @@ type SheetViewComercialProps = {
 
 export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
     const {
-        data: { user, profile_picture, first_name, last_name, phone },
+        data: { user, profile_picture, first_name, last_name, phone, role, sub_role, product },
     } = useContext<UserInfoContextType>(UserInfoAPIContext);
+    console.log(role, sub_role, product);
 
     const { setSheetOpen } = useContext(ComercialContext);
     const [previousId, setPreviousId] = useState<string | null>(null);
@@ -1966,12 +1967,12 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                                 fieldType={InputFieldVariant.INPUT}
                                 label={
                                     data?.properties['CPF/CNPJ']?.rich_text?.[0]?.plain_text &&
-                                    data.properties['CPF/CNPJ'].rich_text[0].plain_text.length > 11
+                                    data.properties['CPF/CNPJ'].rich_text[0]?.plain_text.length > 11
                                         ? 'CNPJ'
                                         : 'CPF'
                                 }
                                 defaultValue={
-                                    data?.properties['CPF/CNPJ']?.rich_text?.[0].plain_text || ''
+                                    data?.properties['CPF/CNPJ']?.rich_text?.[0]?.plain_text || ''
                                 }
                                 iconSrc={<FaIdCard className="self-center" />}
                                 iconAlt="document"
@@ -2146,7 +2147,7 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                                 fieldType={InputFieldVariant.INPUT}
                                 label="NPU (Originário)"
                                 defaultValue={
-                                    data?.properties['NPU (Originário)']?.rich_text?.[0].plain_text
+                                    data?.properties['NPU (Originário)']?.rich_text?.[0]?.plain_text
                                 }
                                 iconSrc={<IoDocumentTextSharp className="self-center" />}
                                 iconAlt="law"
@@ -2908,152 +2909,6 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                     <div className="grid grid-cols-4 gap-6 3xl:grid-cols-6">
                         <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
                             <CelerInputField
-                                name="vl_com_reservas"
-                                fieldType={InputFieldVariant.INPUT}
-                                label="Valor Líquido"
-                                defaultValue={numberFormat(
-                                    data?.properties['Valor Líquido (Com Reserva dos Honorários)']
-                                        ?.formula?.number || 0,
-                                )}
-                                iconSrc={<GiReceiveMoney className="self-center" />}
-                                iconAlt="money"
-                                className="w-full disabled:text-boxdark disabled:dark:text-white"
-                                disabled={true}
-                            />
-                        </div>
-
-                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
-                            <CelerInputField
-                                name="proposta"
-                                fieldType={InputFieldVariant.INPUT}
-                                label="Proposta Escolhida"
-                                defaultValue={numberFormat(
-                                    data?.properties['Proposta Escolhida - Celer']?.number || 0,
-                                )}
-                                iconSrc={<LuHandshake className="self-center" />}
-                                iconAlt="deal"
-                                className="w-full disabled:text-boxdark disabled:dark:text-white"
-                                disabled={true}
-                            />
-                        </div>
-                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
-                            <CelerInputField
-                                name="comissao"
-                                fieldType={InputFieldVariant.INPUT}
-                                label="Comissão"
-                                defaultValue={numberFormat(
-                                    data?.properties['Comissão - Celer']?.number || 0,
-                                )}
-                                iconSrc={<TbMoneybag className="self-center" />}
-                                iconAlt="money_bag"
-                                className="w-full disabled:text-boxdark disabled:dark:text-white"
-                                disabled={true}
-                            />
-                        </div>
-                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
-                            <CelerInputField
-                                name="custo_total"
-                                fieldType={InputFieldVariant.INPUT}
-                                label="Custo total do Precatório (absoluto)"
-                                defaultValue={numberFormat(
-                                    (data?.properties['Comissão - Celer'].number || 0) +
-                                        (data?.properties['Proposta Escolhida - Celer'].number ||
-                                            0),
-                                )}
-                                iconSrc={<GiReceiveMoney className="self-center" />}
-                                iconAlt="money"
-                                className="w-full disabled:text-boxdark disabled:dark:text-white"
-                                disabled={true}
-                            />
-                        </div>
-                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
-                            <CelerInputField
-                                name="custo"
-                                fieldType={InputFieldVariant.INPUT}
-                                label="Custo do precatório"
-                                defaultValue={percentageFormater(
-                                    data?.properties['Custo do precatório']?.formula?.number || 0,
-                                )}
-                                iconSrc={<GiReceiveMoney className="self-center" />}
-                                iconAlt="receive_money"
-                                className="w-full disabled:text-boxdark disabled:dark:text-white"
-                                disabled={true}
-                            />
-                        </div>
-                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
-                            <CelerInputField
-                                name="loa"
-                                fieldType={InputFieldVariant.INPUT}
-                                label="LOA"
-                                defaultValue={
-                                    data?.properties['LOA']?.number || 'Sem LOA cadastrada'
-                                }
-                                iconSrc={<IoCalendar className="self-center" />}
-                                iconAlt="calendar"
-                                className="w-full disabled:text-boxdark disabled:dark:text-white"
-                                disabled={true}
-                            />
-                        </div>
-                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
-                            <CelerInputField
-                                name="esfera"
-                                fieldType={InputFieldVariant.INPUT}
-                                label="Esfera"
-                                defaultValue={
-                                    data?.properties['Esfera'].select?.name || 'Não informada'
-                                }
-                                iconSrc={<IoGlobeOutline className="self-center" />}
-                                iconAlt="calendar"
-                                className="w-full disabled:text-boxdark disabled:dark:text-white"
-                                disabled={true}
-                            />
-                        </div>
-                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
-                            <CelerInputField
-                                name="percentual_de_honorarios"
-                                fieldType={InputFieldVariant.INPUT}
-                                label="Destacamento de Honorários"
-                                defaultValue={percentageFormater(
-                                    data?.properties['Percentual de Honorários Não destacados']
-                                        .number || 0,
-                                )}
-                                iconSrc={<GiReceiveMoney className="self-center" />}
-                                iconAlt="money"
-                                className="w-full disabled:text-boxdark disabled:dark:text-white"
-                                disabled={true}
-                            />
-                        </div>
-                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
-                            <CelerInputField
-                                name="percentual_a_ser_adquirido"
-                                fieldType={InputFieldVariant.INPUT}
-                                label="Percentual a ser Adquirido"
-                                defaultValue={percentageFormater(
-                                    data?.properties['Percentual a ser adquirido']?.number || 0,
-                                )}
-                                iconSrc={<GiReceiveMoney className="self-center" />}
-                                iconAlt="money"
-                                className="w-full disabled:text-boxdark disabled:dark:text-white"
-                                disabled={true}
-                            />
-                        </div>
-                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
-                            <CelerInputField
-                                name="valor_liquido_cedido"
-                                fieldType={InputFieldVariant.INPUT}
-                                label="Valor Líquido a ser Cedido"
-                                defaultValue={numberFormat(
-                                    data?.properties['Valor Líquido a ser cedido']?.formula
-                                        ?.number || 0,
-                                )}
-                                iconSrc={<GiPayMoney className="self-center" />}
-                                iconAlt="money"
-                                className="w-full disabled:text-boxdark disabled:dark:text-white"
-                                disabled={true}
-                            />
-                        </div>
-                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
-                            <CelerInputField
                                 name="valor_total_inscrito"
                                 fieldType={InputFieldVariant.INPUT}
                                 label="Valor Total Inscrito"
@@ -3106,6 +2961,21 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                         </div>
                         <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
                             <CelerInputField
+                                name="percentual_de_honorarios"
+                                fieldType={InputFieldVariant.INPUT}
+                                label="Destacamento de Honorários"
+                                defaultValue={percentageFormater(
+                                    data?.properties['Percentual de Honorários Não destacados']
+                                        .number || 0,
+                                )}
+                                iconSrc={<GiReceiveMoney className="self-center" />}
+                                iconAlt="money"
+                                className="w-full disabled:text-boxdark disabled:dark:text-white"
+                                disabled={true}
+                            />
+                        </div>
+                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
+                            <CelerInputField
                                 name="valor_dos_honorarios_nao_destacados"
                                 fieldType={InputFieldVariant.INPUT}
                                 label="Valor dos Honorários"
@@ -3114,6 +2984,136 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
                                         ?.number || 0,
                                 )}
                                 iconSrc={<GiTakeMyMoney className="self-center" />}
+                                iconAlt="money"
+                                className="w-full disabled:text-boxdark disabled:dark:text-white"
+                                disabled={true}
+                            />
+                        </div>
+                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
+                            <CelerInputField
+                                name="esfera"
+                                fieldType={InputFieldVariant.INPUT}
+                                label="Esfera"
+                                defaultValue={
+                                    data?.properties['Esfera'].select?.name || 'Não informada'
+                                }
+                                iconSrc={<IoGlobeOutline className="self-center" />}
+                                iconAlt="calendar"
+                                className="w-full disabled:text-boxdark disabled:dark:text-white"
+                                disabled={true}
+                            />
+                        </div>
+                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
+                            <CelerInputField
+                                name="loa"
+                                fieldType={InputFieldVariant.INPUT}
+                                label="LOA"
+                                defaultValue={
+                                    data?.properties['LOA']?.number || 'Sem LOA cadastrada'
+                                }
+                                iconSrc={<IoCalendar className="self-center" />}
+                                iconAlt="calendar"
+                                className="w-full disabled:text-boxdark disabled:dark:text-white"
+                                disabled={true}
+                            />
+                        </div>
+                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
+                            <CelerInputField
+                                name="percentual_a_ser_adquirido"
+                                fieldType={InputFieldVariant.INPUT}
+                                label="Percentual a ser Adquirido"
+                                defaultValue={percentageFormater(
+                                    data?.properties['Percentual a ser adquirido']?.number || 0,
+                                )}
+                                iconSrc={<GiReceiveMoney className="self-center" />}
+                                iconAlt="money"
+                                className="w-full disabled:text-boxdark disabled:dark:text-white"
+                                disabled={true}
+                            />
+                        </div>
+                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
+                            <CelerInputField
+                                name="proposta"
+                                fieldType={InputFieldVariant.INPUT}
+                                label="Proposta Escolhida"
+                                defaultValue={numberFormat(
+                                    data?.properties['Proposta Escolhida - Celer']?.number || 0,
+                                )}
+                                iconSrc={<LuHandshake className="self-center" />}
+                                iconAlt="deal"
+                                className="w-full disabled:text-boxdark disabled:dark:text-white"
+                                disabled={true}
+                            />
+                        </div>
+                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
+                            <CelerInputField
+                                name="comissao"
+                                fieldType={InputFieldVariant.INPUT}
+                                label="Comissão"
+                                defaultValue={numberFormat(
+                                    data?.properties['Comissão - Celer']?.number || 0,
+                                )}
+                                iconSrc={<TbMoneybag className="self-center" />}
+                                iconAlt="money_bag"
+                                className="w-full disabled:text-boxdark disabled:dark:text-white"
+                                disabled={true}
+                            />
+                        </div>
+                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
+                            <CelerInputField
+                                name="vl_com_reservas"
+                                fieldType={InputFieldVariant.INPUT}
+                                label="Valor Líquido"
+                                defaultValue={numberFormat(
+                                    data?.properties['Valor Líquido (Com Reserva dos Honorários)']
+                                        ?.formula?.number || 0,
+                                )}
+                                iconSrc={<GiReceiveMoney className="self-center" />}
+                                iconAlt="money"
+                                className="w-full disabled:text-boxdark disabled:dark:text-white"
+                                disabled={true}
+                            />
+                        </div>
+                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
+                            <CelerInputField
+                                name="custo_total"
+                                fieldType={InputFieldVariant.INPUT}
+                                label="Custo total do Precatório (absoluto)"
+                                defaultValue={numberFormat(
+                                    (data?.properties['Comissão - Celer'].number || 0) +
+                                        (data?.properties['Proposta Escolhida - Celer'].number ||
+                                            0),
+                                )}
+                                iconSrc={<GiReceiveMoney className="self-center" />}
+                                iconAlt="money"
+                                className="w-full disabled:text-boxdark disabled:dark:text-white"
+                                disabled={true}
+                            />
+                        </div>
+                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
+                            <CelerInputField
+                                name="custo"
+                                fieldType={InputFieldVariant.INPUT}
+                                label="Custo do precatório"
+                                defaultValue={percentageFormater(
+                                    data?.properties['Custo do precatório']?.formula?.number || 0,
+                                )}
+                                iconSrc={<GiReceiveMoney className="self-center" />}
+                                iconAlt="receive_money"
+                                className="w-full disabled:text-boxdark disabled:dark:text-white"
+                                disabled={true}
+                            />
+                        </div>
+                        <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-2">
+                            <CelerInputField
+                                name="valor_liquido_cedido"
+                                fieldType={InputFieldVariant.INPUT}
+                                label="Valor Líquido a ser Cedido"
+                                defaultValue={numberFormat(
+                                    data?.properties['Valor Líquido a ser cedido']?.formula
+                                        ?.number || 0,
+                                )}
+                                iconSrc={<GiPayMoney className="self-center" />}
                                 iconAlt="money"
                                 className="w-full disabled:text-boxdark disabled:dark:text-white"
                                 disabled={true}
