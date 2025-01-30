@@ -84,10 +84,10 @@ const CelerAppCombobox = <T extends FieldValues>({
                                                     ? item
                                                     : String(item[Object.keys(item)[0]])
                                             }
-                                            className={`truncate uppercase`}
+                                            className={`truncate`}
                                         >
                                             {typeof item === 'string'
-                                                ? item.toUpperCase()
+                                                ? item
                                                 : String(item[Object.keys(item)[1]])}
                                         </p>
                                         {typeof item === 'string' ? (
