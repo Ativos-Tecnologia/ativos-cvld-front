@@ -172,16 +172,18 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
       formData.observacao = `
 💭 Comentários: ${formData.observacao}
 `
-    }
+    };
 
     if (formData.valor_aquisicao_total) {
       formData.percentual_a_ser_adquirido = 1;
     } else {
-      formData.percentual_a_ser_adquirido = formData.percentual_a_ser_adquirido / 100;
+      formData.percentual_a_ser_adquirido = Number(formData.percentual_a_ser_adquirido.replace(",", ".")) / 100;
     }
 
     if (!formData.ja_possui_destacamento) {
-      formData.percentual_de_honorarios = formData.percentual_de_honorarios / 100
+      formData.percentual_de_honorarios = Number(formData.percentual_de_honorarios.replace(",", ".")) / 100
+    } else {
+      formData.percentual_de_honorarios = 0
     }
 
     if (typeof formData.valor_principal === "string") {
@@ -227,7 +229,6 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
 
     formData.upload_notion = true;
     formData.need_to_recalculate_proposal = true;
-
 
     swal.fire({
       title: 'Confirmação',
