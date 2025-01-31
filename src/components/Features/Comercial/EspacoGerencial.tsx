@@ -4,7 +4,7 @@ import { columns } from '@/app/comercial/espaco/table/columns';
 import { ITabelaGerencialResponse } from '@/interfaces/ITabelaGerencialResponse';
 import api from '@/utils/api';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { use, useContext, useEffect, useState } from 'react';
 import { GoalChartCard } from './GoalChartCard';
 import ComercialUserVsStatusChart from '@/components/Charts/ComercialUserVsStatusChart';
 import { SheetCelerComponent } from '@/components/CrmUi/Sheet';
@@ -25,6 +25,12 @@ import {
     SheetTrigger,
 } from '@/components/ui/sheet';
 import { Spotlight } from '@/components/ui/spotlight-new';
+import { PendingDocTable } from '@/app/comercial/espaco/pending-docs-table/pending-doc-table';
+import { columnsPendingDoc } from '@/app/comercial/espaco/pending-docs-table/columns';
+import { DueTable } from '@/app/comercial/espaco/pending-due-table copy/due-data-table';
+import { columnsDueDocs } from '@/app/comercial/espaco/pending-due-table copy/columns';
+
+
 
 function EspacoGerencial() {
     const { sheetOpen, setSheetOpen, sheetOpenId } = useContext(ComercialContext);
@@ -37,6 +43,32 @@ function EspacoGerencial() {
         const response = await api.get(`/api/comercial/coordenador/${selectedCoordinator}/`);
         return response.data;
     }
+
+    async function fetchPendingDocData() {
+        const response = await api.get(`api/comercial/coordenador/${selectedCoordinator}/pending-docs`);
+        return response.data;
+    }
+    
+    const { data:docPendingData, isFetching:isFetchingPendingDocs, refetch:refetchPendingData } = useQuery({
+        queryKey: ['pending-docs'],
+        queryFn: () => fetchPendingDocData(),
+        placeholderData: keepPreviousData,
+    });
+    //APAGAR
+    console.log("Dados do Pending Doc: ",docPendingData);
+    
+    async function fetchDueDocData() {
+        const response = await api.get(`api/comercial/coordenador/${selectedCoordinator}/pending-due`);
+        return response.data;
+    }
+
+    const { data:docDueData, isFetching:isFetchingDueData, refetch:refetchDueData } = useQuery({
+        queryKey: ['due-docs'],
+        queryFn: () => fetchDueDocData(),
+        placeholderData: keepPreviousData,
+    });
+    // APAGAR
+    console.log("Dados do Due Doc: ",docDueData);
 
     async function fetchChartData() {
         const response = await api.get(`/api/comercial/coordenador/${selectedCoordinator}/targets`);
@@ -67,7 +99,10 @@ function EspacoGerencial() {
     useEffect(() => {
         refetch();
         refetchChart();
+        refetchPendingData();
+        refetchDueData();
     }, [selectedCoordinator]);
+    
 
     return (
         <>
@@ -101,6 +136,18 @@ function EspacoGerencial() {
                 </section>
             </Show>
             {/* Fim da Seção dos Filtros Administrativos */}
+
+            {/* Tabelas de Documentos */}
+            <section className="mt-6 flex 2xsm:max-w-screen-2xl md:max-w-[750px] lg:max-w-[1050px] xl:max-w-screen-2xl flex-col overflow-auto rounded-md bg-white dark:bg-boxdark">
+                <PendingDocTable columns={columnsPendingDoc} data={docPendingData?.results || []} loading={isFetchingPendingDocs } />
+            </section>
+
+            {/* Tabelas de Documentos */}
+            <section className="mt-6 flex 2xsm:max-w-screen-2xl md:max-w-[750px] lg:max-w-[1050px] xl:max-w-screen-2xl flex-col overflow-auto rounded-md bg-white dark:bg-boxdark">
+                <DueTable columns={columnsDueDocs} data={docDueData?.results || []} loading={isFetchingDueData} />
+            </section>
+
+            {/* Final das tabelas de documentos */}
             {/* Seção do Gráfico de Usuários X status X VL */}
             <section className="mt-6 min-h-fit rounded-md bg-white dark:bg-boxdark">
                 <ComercialUserVsStatusChart chartData={data?.results} isLoading={isFetching} />
@@ -112,6 +159,11 @@ function EspacoGerencial() {
                     isLoading={isChartDataLoading || isFetching}
                 />
             </section>
+
+            <section className="mt-6 flex 2xsm:max-w-screen-2xl md:max-w-[750px] lg:max-w-[1050px] xl:max-w-screen-2xl flex-col overflow-auto rounded-md bg-white dark:bg-boxdark">
+                {/* <PendingDocTable  /> */}
+            </section>
+
             {/* Seção do Gráfico de Metas de Valor Líquido */}
             <section className="mt-6 flex min-h-fit rounded-md bg-white dark:bg-boxdark">
                 <TotalLiquidAvailableChart
