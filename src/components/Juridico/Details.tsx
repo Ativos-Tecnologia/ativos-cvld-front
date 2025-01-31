@@ -53,9 +53,7 @@ import JuridicoDetailsSkeleton from "../Skeletons/JuridicoDetailsSkeleton";
 import { SelectItem } from "../ui/select";
 import verifyRequiredInputsToDue from "@/functions/juridico/verifyRequiredInputsToDue";
 import { AxiosError } from "axios";
-import ChartFive from "../Charts/ChartFive";
 import { TiArrowBack, TiArrowForward } from "react-icons/ti";
-import DetalhesActionButtons from "./ActionButtons";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -2761,8 +2759,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
           </>
         )}
 
-        {statusDiligence === "Repactuação"
-          || statusDiligence === "Pendência a Sanar" && (
+        {(statusDiligence === "Repactuação"
+          || statusDiligence === "Pendência a Sanar") && (
             <Button
               variant="info"
               className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
@@ -2773,7 +2771,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             </Button>
           )}
 
-        {statusDiligence === "Due Diligence" || statusDiligence === "Due em Andamento" && (
+        {(statusDiligence === "Due Diligence" || statusDiligence === "Due em Andamento") && (
           <Button
             variant="warning"
             className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
@@ -2781,6 +2779,17 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
           >
             <CgSearchLoading className="h-4 w-4" />
             <span>Revisão de Due Diligence</span>
+          </Button>
+        )}
+
+        {statusDiligence === "Due Diligence" && (
+          <Button
+            variant="success"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleUpdateDuePhase("Due em Andamento")}
+          >
+            <TiArrowForward className="h-4 w-4" />
+            <span>Enviar para Due em Andamento</span>
           </Button>
         )}
 
