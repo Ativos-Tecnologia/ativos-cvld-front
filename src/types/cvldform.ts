@@ -13,7 +13,7 @@ export type CvldFormInputsProps = {
     valor_aquisicao_total: boolean;
     percentual_a_ser_adquirido: number | string;
     ja_possui_destacamento: boolean;
-    percentual_de_honorarios: number;
+    percentual_de_honorarios: number | string;
     incidencia_juros_moratorios:
     boolean;
     nao_incide_selic_no_periodo_db_ate_abril: boolean;

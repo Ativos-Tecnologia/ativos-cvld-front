@@ -119,7 +119,7 @@ const CalcForm = ({
             );
             setValue(
                 'percentual_a_ser_adquirido',
-                data.properties['Percentual a ser adquirido'].number! * 100,
+                (data.properties['Percentual a ser adquirido'].number! * 100).toFixed(2).replace(".", ","),
             );
             setValue(
                 'ja_possui_destacamento',
@@ -127,7 +127,7 @@ const CalcForm = ({
             );
             setValue(
                 'percentual_de_honorarios',
-                data.properties['Percentual de Honorários Não destacados'].number! * 100 || 0,
+                (data.properties['Percentual de Honorários Não destacados'].number! * 100 || 0).toFixed(2).replace(".", ","),
             );
             setValue(
                 'nao_incide_selic_no_periodo_db_ate_abril',
@@ -228,6 +228,10 @@ const CalcForm = ({
             setValue('regime', oficioForm.result[0].regime);
         }
     }, [oficioForm]);
+
+    if (data) {
+        console.log(data.properties["Credor"].title[0]?.text.content === "LUIZ INALDO - TESTE PERCENTUAIS" ? data : null);
+    }
 
     return (
         <React.Fragment>
@@ -716,12 +720,37 @@ const CalcForm = ({
                                     >
                                         Percentual
                                     </label>
-                                    <input
-                                        type="number"
-                                        id="percentual_de_honorarios"
+                                    <Controller
+                                        name="percentual_de_honorarios"
+                                        control={control}
                                         defaultValue={30}
-                                        className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                                        {...register('percentual_de_honorarios', {})}
+                                        rules={{
+                                            min: {
+                                                value: 1,
+                                                message: 'O valor deve ser maior que 0',
+                                            },
+                                        }}
+                                        render={({ field, fieldState: { error } }) => (
+                                            <>
+                                                <Cleave
+                                                    {...field}
+                                                    className={`w-full rounded-md border-stroke ${error ? 'border-red' : 'dark:border-strokedark'} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
+                                                    options={{
+                                                        numeral: true,
+                                                        numeralThousandsGroupStyle: 'none',
+                                                        numeralDecimalMark: ',',
+                                                        prefix: '%',
+                                                        tailPrefix: true,
+                                                        rawValueTrimPrefix: true,
+                                                    }}
+                                                />
+                                                {error && (
+                                                    <span className="absolute right-2 top-8.5 text-xs font-medium text-red">
+                                                        {error.message}
+                                                    </span>
+                                                )}
+                                            </>
+                                        )}
                                     />
                                 </div>
                             </div>
