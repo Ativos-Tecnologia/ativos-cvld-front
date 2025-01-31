@@ -49,6 +49,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { product, sub_role } = dataUser;
     const { modalOpen, setModalOpen } = React.useContext(DefaultLayoutContext);
 
+    const comercialVisualization =
+        sub_role === 'coodernador' || product === 'global' || sub_role === 'coordenador_externo';
+
     const highlightRef = React.useRef<HTMLButtonElement>(null);
 
     const data = {
@@ -71,12 +74,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     {
                         title: 'Calculadora',
                         url: '/',
-                        when: product === 'global',
+                        when: sub_role === 'coodernador' || product === 'global',
                     },
                     {
                         title: 'Broker',
                         url: '/dashboard/broker',
-                        when: product === 'crm' || product === 'global',
+                        when: product === 'crm' || comercialVisualization,
                     },
                     {
                         title: 'Jurídico',
@@ -95,17 +98,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 url: '#',
                 icon: BriefcaseBusiness,
                 isActive: usePath().includes('/comercial'),
-                when: product === 'global' || sub_role === 'coodernador',
+                when: comercialVisualization,
                 items: [
                     {
                         title: 'Resumo',
                         url: '/comercial/resumo',
-                        when: product === 'global' || sub_role === 'coodernador',
+                        when: comercialVisualization,
                     },
                     {
                         title: 'Espaço Gerencial',
                         url: '/comercial/espaco',
-                        when: product === 'global' || sub_role === 'coodernador',
+                        when: comercialVisualization,
                     },
                 ],
             },
