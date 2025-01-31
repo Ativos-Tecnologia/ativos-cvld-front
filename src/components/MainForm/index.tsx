@@ -85,7 +85,7 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
         data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
         data.outros_descontos = backendNumberFormat(data.outros_descontos) || 0;
         data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
-        data.percentual_a_ser_adquirido /= 100;
+        
 
         //#TODO colocar essa condicional dentro de uma função utilitária
         if (!data.data_limite_de_atualizacao_check) {
@@ -161,13 +161,13 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
         if (data.ja_possui_destacamento) {
             data.percentual_de_honorarios = 0;
         } else {
-            data.percentual_de_honorarios /= 100;
+            data.percentual_de_honorarios = Number(data.percentual_de_honorarios.replace("%", "").replace(",", ".")) / 100;
         }
 
         if (data.valor_aquisicao_total) {
             data.percentual_a_ser_adquirido = 1;
         } else {
-            data.percentual_a_ser_adquirido = data.percentual_a_ser_adquirido / 100;
+            data.percentual_a_ser_adquirido = Number(data.percentual_a_ser_adquirido.replace("%", "").replace(",", ".")) / 100;
         }
 
         if (!data.estado_ente_devedor) {

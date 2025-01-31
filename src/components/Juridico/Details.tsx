@@ -55,6 +55,7 @@ import verifyRequiredInputsToDue from "@/functions/juridico/verifyRequiredInputs
 import { AxiosError } from "axios";
 import ChartFive from "../Charts/ChartFive";
 import { TiArrowBack, TiArrowForward } from "react-icons/ti";
+import DetalhesActionButtons from "./ActionButtons";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -171,16 +172,18 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
       formData.observacao = `
 💭 Comentários: ${formData.observacao}
 `
-    }
+    };
 
     if (formData.valor_aquisicao_total) {
       formData.percentual_a_ser_adquirido = 1;
     } else {
-      formData.percentual_a_ser_adquirido = formData.percentual_a_ser_adquirido / 100;
+      formData.percentual_a_ser_adquirido = Number(formData.percentual_a_ser_adquirido.replace(",", ".")) / 100;
     }
 
     if (!formData.ja_possui_destacamento) {
-      formData.percentual_de_honorarios = formData.percentual_de_honorarios / 100
+      formData.percentual_de_honorarios = Number(formData.percentual_de_honorarios.replace(",", ".")) / 100
+    } else {
+      formData.percentual_de_honorarios = 0
     }
 
     if (typeof formData.valor_principal === "string") {
@@ -226,7 +229,6 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
 
     formData.upload_notion = true;
     formData.need_to_recalculate_proposal = true;
-
 
     swal.fire({
       title: 'Confirmação',
@@ -1062,7 +1064,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
           }
         }
       });
-      return {prevData}
+      return { prevData }
     },
     onError: (error, paramsObj, context) => {
       globalQueryClient.setQueryData(['page', id], context?.prevData);
@@ -2658,35 +2660,47 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
         </div>
       </section>
 
-      {statusDiligence === "Revisão Valor/LOA" && (
-        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
-          <Button
-            variant="info"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleRepactuacao()}
-          >
-            <CgArrowsH className="h-4 w-4" />
-            <span>Repactuação</span>
-          </Button>
+      {/* <DetalhesActionButtons
+        data={data}
+        refetch={refetch}
+      /> */}
 
+      <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
+
+        {statusDiligence !== "Pendência a Sanar" && (
           <Button
-            variant="warning"
+            variant="danger"
             className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
             onClick={() => handlePendencia()}
           >
             <BiX className="h-4 w-4" />
-            <span>Pendência a Sanar</span>
+            <span>Pendencia a Sanar</span>
           </Button>
+        )}
 
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleArchiving()}
-          >
-            <MdOutlineArchive className="h-4 w-4" />
-            <span>Arquivar</span>
-          </Button>
+        <Button
+          variant="danger"
+          className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+          onClick={() => handleArchiving()}
+        >
+          <MdOutlineArchive className="h-4 w-4" />
+          <span>Arquivar</span>
+        </Button>
 
+        {statusDiligence === "Revisão Valor/LOA"
+          || statusDiligence === "Pré-Due Cedente"
+          || statusDiligence === "Pré-Due Ativo" && (
+            <Button
+              variant="info"
+              className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+              onClick={() => handleRepactuacao()}
+            >
+              <CgArrowsH className="h-4 w-4" />
+              <span>Repactuação</span>
+            </Button>
+          )}
+
+        {statusDiligence === "Revisão Valor/LOA" && (
           <Button
             variant="success"
             className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium disabled:opacity-50 disabled:pointer-events-none"
@@ -2697,144 +2711,69 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             <TiArrowForward className="h-4 w-4" />
             <span>Seguir para Pré-Due Ativo</span>
           </Button>
-        </div>
-      )}
+        )}
 
-      {statusDiligence === "Pré-Due Ativo" && (
-        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
-          <Button
-            variant="info"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleRepactuacao()}
-          >
-            <CgArrowsH className="h-4 w-4" />
-            <span>Repactuação</span>
-          </Button>
+        {statusDiligence === "Pré-Due Ativo" && (
+          <>
 
-          <Button
-            variant="warning"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleUpdateDuePhase("Revisão Valor/LOA")}
-          >
-            <TiArrowBack className="h-4 w-4" />
-            <span>Voltar para Revisão de Preço e Tempo</span>
-          </Button>
+            <Button
+              variant="warning"
+              className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+              onClick={() => handleUpdateDuePhase("Revisão Valor/LOA")}
+            >
+              <TiArrowBack className="h-4 w-4" />
+              <span>Voltar para Revisão de Preço e Tempo</span>
+            </Button>
 
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handlePendencia()}
-          >
-            <BiX className="h-4 w-4" />
-            <span>Pendência a Sanar</span>
-          </Button>
+            <Button
+              variant="success"
+              className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium disabled:opacity-50 disabled:pointer-events-none"
+              onClick={() => handleUpdateDuePhase("Pré-Due Cedente", [
+                data?.properties["Autos do Ativo Judicial Baixado"].checkbox,
+                data?.properties["Há algum recurso?"].select?.name ? true : false
+              ])}
+            >
+              <TiArrowForward className="h-4 w-4" />
+              <span>Seguir para Pré-Due Cedente</span>
+            </Button>
+          </>
+        )}
 
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleArchiving()}
-          >
-            <MdOutlineArchive className="h-4 w-4" />
-            <span>Arquivar</span>
-          </Button>
+        {statusDiligence === "Pré-Due Cedente" && (
+          <>
+            <Button
+              variant="warning"
+              className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+              onClick={() => handleUpdateDuePhase("Pré-Due Ativo")}
+            >
+              <TiArrowBack className="h-4 w-4" />
+              <span>Voltar para Pré-Due do Ativo</span>
+            </Button>
 
-          <Button
-            variant="success"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium disabled:opacity-50 disabled:pointer-events-none"
-            onClick={() => handleUpdateDuePhase("Pré-Due Cedente", [
-              data?.properties["Autos do Ativo Judicial Baixado"].checkbox,
-              data?.properties["Há algum recurso?"].select?.name ? true : false
-            ])}
-          >
-            <TiArrowForward className="h-4 w-4" />
-            <span>Seguir para Pré-Due Cedente</span>
-          </Button>
-        </div>
-      )}
+            <Button
+              variant="success"
+              className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium disabled:opacity-50 disabled:pointer-events-none"
+              onClick={() => handleUpdateDuePhase("Due Diligence")}
+            >
+              <TiArrowForward className="h-4 w-4" />
+              <span>Seguir para Due Diligence</span>
+            </Button>
+          </>
+        )}
 
-      {statusDiligence === "Pré-Due Cedente" && (
-        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
-          <Button
-            variant="info"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleRepactuacao()}
-          >
-            <CgArrowsH className="h-4 w-4" />
-            <span>Repactuação</span>
-          </Button>
+        {statusDiligence === "Repactuação"
+          || statusDiligence === "Pendência a Sanar" && (
+            <Button
+              variant="info"
+              className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+              onClick={() => handleDueAndamento()}
+            >
+              <MdOutlineDownloading className="h-4 w-4" />
+              <span>Pendencia Sanada</span>
+            </Button>
+          )}
 
-          <Button
-            variant="warning"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleUpdateDuePhase("Pré-Due Ativo")}
-          >
-            <TiArrowBack className="h-4 w-4" />
-            <span>Voltar para Pré-Due do Ativo</span>
-          </Button>
-
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handlePendencia()}
-          >
-            <BiX className="h-4 w-4" />
-            <span>Pendência a Sanar</span>
-          </Button>
-
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleArchiving()}
-          >
-            <MdOutlineArchive className="h-4 w-4" />
-            <span>Arquivar</span>
-          </Button>
-
-          <Button
-            variant="success"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium disabled:opacity-50 disabled:pointer-events-none"
-            onClick={() => handleUpdateDuePhase("Due Diligence")}
-          >
-            <TiArrowForward className="h-4 w-4" />
-            <span>Seguir para Due Diligence</span>
-          </Button>
-        </div>
-      )}
-
-      {statusDiligence === "Repactuação" && (
-        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
-          <Button
-            variant="info"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleDueAndamento()}
-          >
-            <MdOutlineDownloading className="h-4 w-4" />
-            <span>Pendência Sanada</span>
-          </Button>
-
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handlePendencia()}
-          >
-            <BiX className="h-4 w-4" />
-            <span>Pendência a Sanar</span>
-          </Button>
-
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleArchiving()}
-          >
-            <MdOutlineArchive className="h-4 w-4" />
-            <span>Arquivar</span>
-          </Button>
-        </div>
-      )}
-
-      {statusDiligence === "Due Diligence" && (
-        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
-
+        {statusDiligence === "Due Diligence" || statusDiligence === "Due em Andamento" && (
           <Button
             variant="warning"
             className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
@@ -2843,38 +2782,9 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             <CgSearchLoading className="h-4 w-4" />
             <span>Revisão de Due Diligence</span>
           </Button>
+        )}
 
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handlePendencia()}
-          >
-            <BiX className="h-4 w-4" />
-            <span>Pendência a Sanar</span>
-          </Button>
-
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleArchiving()}
-          >
-            <MdOutlineArchive className="h-4 w-4" />
-            <span>Arquivar</span>
-          </Button>
-        </div>
-      )}
-      {statusDiligence === "Due em Andamento" && (
-        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
-
-          <Button
-            variant="warning"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleRevisaoDueDiligence()}
-          >
-            <CgSearchLoading className="h-4 w-4" />
-            <span>Revisão de Due Diligence</span>
-          </Button>
-
+        {statusDiligence === "Due em Andamento" || statusDiligence === "Revisão de Due Diligence" && (
           <Button
             variant="success"
             className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
@@ -2885,165 +2795,50 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
               Enviar para Liquidação
             </span>
           </Button>
+        )}
 
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handlePendencia()}
-          >
-            <BiX className="h-4 w-4" />
-            <span>Pendência a Sanar</span>
-          </Button>
+        {statusDiligence === "Em cessão" && (
+          <>
+            <Button
+              variant="success"
+              className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+              onClick={() => handleCessao()}
+            >
+              <BiSolidCoinStack className="h-4 w-4" />
+              <span>
+                Enviar pra Registro de Cessão
+              </span>
+            </Button>
+          </>)
+        }
 
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleArchiving()}
-          >
-            <MdOutlineArchive className="h-4 w-4" />
-            <span>Arquivar</span>
-          </Button>
-        </div>
-      )}
-      {statusDiligence === "Em cessão" && (
-        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
-          <Button
-            variant="success"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleCessao()}
-          >
-            <BiSolidCoinStack className="h-4 w-4" />
-            <span>
-              Enviar pra Registro de Cessão
-            </span>
-          </Button>
+        {statusDiligence === "Em liquidação" && (
+          <>
 
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handlePendencia()}
-          >
-            <BiX className="h-4 w-4" />
-            <span>Pendência a Sanar</span>
-          </Button>
+            <Button
+              variant="warning"
+              className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+              onClick={() => handleUpdateDataSelect("Revisão de Due Diligence", id, "Status Diligência")}
+            >
+              {loadingUpdateState === "Revisão de Due Diligence" ? <AiOutlineLoading className="animate-spin h-4 w-4" /> : <TbStatusChange className="h-4 w-4" />}
+              <span>Retornar para revisão de Due</span>
+            </Button>
 
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleArchiving()}
-          >
-            <MdOutlineArchive className="h-4 w-4" />
-            <span>Arquivar</span>
-          </Button>
-        </div>)
-      }
-      {statusDiligence === "Revisão de Due Diligence" && (
-        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
-          <Button
-            variant="success"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleDueDiligence()}
-          >
-            <BiSolidCoinStack className="h-4 w-4" />
-            <span>
-              Enviar para Liquidação
-            </span>
-          </Button>
+            <Button
+              disabled
+              variant="info"
+              className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium disabled:opacity-50 disabled:pointer-events-none"
+              onClick={() => handleCession()}
+            >
+              <BiSolidCoinStack className="h-4 w-4" />
+              <span>
+                Marcar Cessão
+              </span>
+            </Button>
+          </>
+        )}
 
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handlePendencia()}
-          >
-            <BiX className="h-4 w-4" />
-            <span>Pendência a Sanar</span>
-          </Button>
-
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleArchiving()}
-          >
-            <MdOutlineArchive className="h-4 w-4" />
-            <span>Arquivar</span>
-          </Button>
-        </div>)
-      }
-
-      {statusDiligence === "Em liquidação" && (
-        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
-
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handlePendencia()}
-          >
-            <BiX className="h-4 w-4" />
-            <span>Pendência a Sanar</span>
-          </Button>
-
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleArchiving()}
-          >
-            <MdOutlineArchive className="h-4 w-4" />
-            <span>Arquivar</span>
-          </Button>
-
-          <Button
-            variant="warning"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleUpdateDataSelect("Revisão de Due Diligence", id, "Status Diligência")}
-          >
-            {loadingUpdateState === "Revisão de Due Diligence" ? <AiOutlineLoading className="animate-spin h-4 w-4" /> : <TbStatusChange className="h-4 w-4" />}
-            <span>Retornar para revisão de Due</span>
-          </Button>
-  
-          <Button
-            disabled
-            variant="info"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium disabled:opacity-50 disabled:pointer-events-none"
-            onClick={() => handleCession()}
-          >
-            <BiSolidCoinStack className="h-4 w-4" />
-            <span>
-              Marcar Cessão
-            </span>
-          </Button>
-        </div>
-      )}
-
-      {statusDiligence === "Pendência a Sanar" && (
-        <div className="flex items-center 2xsm:flex-col md:flex-row justify-center gap-6 bg-white dark:bg-boxdark p-4 rounded-md">
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleArchiving()}
-          >
-            <MdOutlineArchive className="h-4 w-4" />
-            <span>Arquivar</span>
-          </Button>
-
-          <Button
-            variant="danger"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handlePendencia()}
-          >
-            <BiX className="h-4 w-4" />
-            <span>Pendência a Sanar</span>
-          </Button>
-
-          <Button
-            variant="info"
-            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
-            onClick={() => handleDueAndamento()}
-          >
-            <MdOutlineDownloading className="h-4 w-4" />
-            <span>Pendência Sanada</span>
-          </Button>
-        </div>
-      )}
+      </div>
 
       {cedenteModal !== null && <BrokerModal />}
       {docModalInfo !== null && <DocForm />}
