@@ -29,10 +29,11 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     
-    if (!localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`) && !window.location.href.includes("/auth/signin")) {
+    if (error.response.status !== 400 && !localStorage.getItem(`ATIVOS_${ACCESS_TOKEN}`) && !window.location.href.includes("/auth/signin")) {
         window.location.href = "/auth/signin";
         return Promise.reject(error);
     }
+
 
     if (error.response.data.code === "token_not_valid") {
       localStorage.removeItem(`ATIVOS_${ACCESS_TOKEN}`);
