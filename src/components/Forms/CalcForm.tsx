@@ -15,7 +15,6 @@ import { NotionPage } from '@/interfaces/INotion';
 import numberFormat from '@/functions/formaters/numberFormat';
 import CelerAppCombobox from '../CrmUi/Combobox';
 import { estadoRegimeEnteDevedor } from '@/constants/estado-regime-enteDevedor';
-import { isCPFOrCNPJValid } from '@/functions/verifiers/isCPFOrCNPJValid';
 import { CPFAndCNPJInput } from '../CrmUi/CPFAndCNPFInput';
 import { regimeEspecialExceptions } from '@/constants/excecoes-regime-especial';
 
@@ -68,29 +67,29 @@ const CalcForm = ({
 
     const opcoesEntesDevedores = estadoSelecionado
         ? [
-            ...(estadoRegimeEnteDevedor[estadoSelecionado]?.GERAL || []),
-            ...(estadoRegimeEnteDevedor[estadoSelecionado]?.ESPECIAL || []),
-        ]
+              ...(estadoRegimeEnteDevedor[estadoSelecionado]?.GERAL || []),
+              ...(estadoRegimeEnteDevedor[estadoSelecionado]?.ESPECIAL || []),
+          ]
         : [];
 
     const regime_por_ente =
         estadoSelecionado &&
-            enteDevedorSelecionado &&
-            estadoRegimeEnteDevedor[estadoSelecionado]?.GERAL?.includes(enteDevedorSelecionado)
+        enteDevedorSelecionado &&
+        estadoRegimeEnteDevedor[estadoSelecionado]?.GERAL?.includes(enteDevedorSelecionado)
             ? 'GERAL'
             : 'ESPECIAL';
-
 
     // effects
     React.useEffect(() => {
         if (enteDevedorSelecionado && estadoSelecionado) {
-            const regime = estadoRegimeEnteDevedor[estadoSelecionado]?.GERAL?.includes(enteDevedorSelecionado)
-                ? "GERAL"
-                : "ESPECIAL";
+            const regime = estadoRegimeEnteDevedor[estadoSelecionado]?.GERAL?.includes(
+                enteDevedorSelecionado,
+            )
+                ? 'GERAL'
+                : 'ESPECIAL';
             setValue('regime', regime);
         }
-    }, [enteDevedorSelecionado, estadoSelecionado])
-
+    }, [enteDevedorSelecionado, estadoSelecionado]);
 
     React.useEffect(() => {
         if (data && formMode === 'update') {
@@ -112,7 +111,10 @@ const CalcForm = ({
             setValue('valor_juros', numberFormat(data.properties['Valor Juros'].number || 0));
             setValue('data_base', data.properties['Data Base'].date?.start || '');
             setValue('data_requisicao', data.properties['Data do Recebimento'].date?.start || '');
-            setValue('incide_contribuicao_previdenciaria', data.properties['Incide Contribuição Previdenciária'].checkbox);
+            setValue(
+                'incide_contribuicao_previdenciaria',
+                data.properties['Incide Contribuição Previdenciária'].checkbox,
+            );
             setValue(
                 'valor_aquisicao_total',
                 data.properties['Percentual a ser adquirido'].number! === 1,
@@ -303,7 +305,13 @@ const CalcForm = ({
                         </select>
                     </div>
 
-                    <input type="hidden" {...register('regime')} onChange={() => { setValue("regime", regime_por_ente) }} />
+                    <input
+                        type="hidden"
+                        {...register('regime')}
+                        onChange={() => {
+                            setValue('regime', regime_por_ente);
+                        }}
+                    />
 
                     <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                         <label
@@ -316,20 +324,19 @@ const CalcForm = ({
                         <CelerAppCombobox
                             list={tribunais}
                             onChangeValue={(value) => {
-                                const tribunal = tribunais.filter((tribunal) => tribunal.nome === value)[0]
-                                setValue('tribunal', tribunal.id)
+                                const tribunal = tribunais.filter(
+                                    (tribunal) => tribunal.nome === value,
+                                )[0];
+                                setValue('tribunal', tribunal.id);
                             }}
                             value={
-                                tribunais.filter(
-                                    (estado) =>
-                                        estado.id ===
-                                        watch('tribunal'),
-                                )[0]?.nome || ''
+                                tribunais.filter((estado) => estado.id === watch('tribunal'))[0]
+                                    ?.nome || ''
                             }
                             register={register('tribunal')}
                             name="tribunal"
                             placeholder="BUSQUE POR TRIBUNAL"
-                            className='h-[37px] uppercase text-sm'
+                            className="h-[37px] text-sm uppercase"
                         />
 
                         {/* <select
@@ -472,7 +479,7 @@ const CalcForm = ({
                         />
                     </div>
 
-                    <div className='col-span-1 hidden sm:block' />
+                    <div className="col-span-1 hidden sm:block" />
 
                     <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                         <div className="relative flex flex-col justify-between">
@@ -539,20 +546,20 @@ const CalcForm = ({
                             <CelerAppCombobox
                                 list={estados}
                                 onChangeValue={(value) => {
-                                    const estado = estados.filter(estado => estado.nome === value)[0];
-                                    setValue('estado_ente_devedor', estado.id)
+                                    const estado = estados.filter(
+                                        (estado) => estado.nome === value,
+                                    )[0];
+                                    setValue('estado_ente_devedor', estado.id);
                                 }}
                                 value={
                                     estados.filter(
-                                        (estado) =>
-                                            estado.id ===
-                                            watch('estado_ente_devedor'),
+                                        (estado) => estado.id === watch('estado_ente_devedor'),
                                     )[0]?.nome || ''
                                 }
                                 register={register('estado_ente_devedor')}
                                 name="estado_ente_devedor"
                                 placeholder="BUSQUE POR ESTADO"
-                                className='uppercase text-sm'
+                                className="text-sm uppercase"
                             />
 
                             {/* <select
@@ -585,24 +592,21 @@ const CalcForm = ({
 
                         <CelerAppCombobox
                             list={opcoesEntesDevedores}
-                            onChangeValue={(value) =>
-                                setValue('ente_devedor', value)
-                            }
+                            onChangeValue={(value) => setValue('ente_devedor', value)}
                             value={
                                 opcoesEntesDevedores.filter(
-                                    (estado) =>
-                                        estado === watch('ente_devedor'),
+                                    (estado) => estado === watch('ente_devedor'),
                                 )[0] || ''
                             }
                             register={register('ente_devedor', {
                                 required: {
                                     value: true,
                                     message: 'Esse campo é obrigatório',
-                                }
+                                },
                             })}
                             name="ente_devedor"
                             placeholder="BUSQUE PELO ENTE DEVEDOR"
-                            className={`${errors.ente_devedor && "!border-red"} uppercase text-sm`}
+                            className={`${errors.ente_devedor && '!border-red'} text-sm uppercase`}
                         />
                         {errors.ente_devedor && (
                             <span className="absolute right-8.5 top-8.5 text-xs font-medium text-red">
@@ -611,24 +615,27 @@ const CalcForm = ({
                         )}
                     </div>
 
-                    {watch('esfera') && watch('esfera') === 'FEDERAL' && <div className='col-span-1 hidden sm:block' />}
-
-                    {watch("natureza") === "NÃO TRIBUTÁRIA" && regimeEspecialExceptions.includes(watch("ente_devedor") || "") && (
-                        <div className={`col-span-2 flex max-h-6 items-center gap-2`}>
-                            <CustomCheckbox
-                                check={watch('incide_contribuicao_previdenciaria')}
-                                id={'incide_contribuicao_previdenciaria'}
-                                register={register('incide_contribuicao_previdenciaria')}
-                            />
-
-                            <label
-                                htmlFor="incide_contribuicao_previdenciaria"
-                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                            >
-                                Incide Contribuição Previdenciária?
-                            </label>
-                        </div>
+                    {watch('esfera') && watch('esfera') === 'FEDERAL' && (
+                        <div className="col-span-1 hidden sm:block" />
                     )}
+
+                    {watch('natureza') === 'NÃO TRIBUTÁRIA' &&
+                        regimeEspecialExceptions.includes(watch('ente_devedor') || '') && (
+                            <div className={`col-span-2 flex max-h-6 items-center gap-2`}>
+                                <CustomCheckbox
+                                    check={watch('incide_contribuicao_previdenciaria')}
+                                    id={'incide_contribuicao_previdenciaria'}
+                                    register={register('incide_contribuicao_previdenciaria')}
+                                />
+
+                                <label
+                                    htmlFor="incide_contribuicao_previdenciaria"
+                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                >
+                                    Incide Contribuição Previdenciária?
+                                </label>
+                            </div>
+                        )}
 
                     <div className={`col-span-2 flex max-h-6 items-center gap-2 md:col-span-1`}>
                         <CustomCheckbox
@@ -854,8 +861,8 @@ const CalcForm = ({
                     )}
 
                     {watch('ir_incidente_rra') &&
-                        watch('incidencia_rra_ir') === true &&
-                        watch('natureza') !== 'TRIBUTÁRIA' ? (
+                    watch('incidencia_rra_ir') === true &&
+                    watch('natureza') !== 'TRIBUTÁRIA' ? (
                         <div className="mt-1 flex flex-col gap-2 overflow-hidden 2xsm:col-span-2 sm:col-span-1">
                             <label
                                 htmlFor="numero_de_meses"
@@ -879,13 +886,14 @@ const CalcForm = ({
                     ) : (
                         <>
                             {!watch('ir_incidente_rra') &&
-                                watch('incidencia_rra_ir') &&
-                                watch('natureza') === 'NÃO TRIBUTÁRIA' ? (
+                            watch('incidencia_rra_ir') &&
+                            watch('natureza') === 'NÃO TRIBUTÁRIA' ? (
                                 <div className="col-span-1 hidden md:block"></div>
                             ) : null}
                         </>
                     )}
-                    {watch('natureza') === 'NÃO TRIBUTÁRIA' && !watch("incide_contribuicao_previdenciaria") ? (
+                    {watch('natureza') === 'NÃO TRIBUTÁRIA' &&
+                    !watch('incide_contribuicao_previdenciaria') ? (
                         <div
                             className={`flex gap-2 ${watch('incidencia_pss') ? 'items-start' : 'items-center'} 2xsm:col-span-2 sm:col-span-1`}
                         >
@@ -934,7 +942,8 @@ const CalcForm = ({
                         </div>
                     ) : (
                         <>
-                            {watch('natureza') === 'TRIBUTÁRIA' || watch("incide_contribuicao_previdenciaria") ? null : (
+                            {watch('natureza') === 'TRIBUTÁRIA' ||
+                            watch('incide_contribuicao_previdenciaria') ? null : (
                                 <div className="hidden items-center md:flex">&nbsp;</div>
                             )}
                         </>
@@ -1006,7 +1015,7 @@ const CalcForm = ({
                         )}
                         <div className="mt-8 flex flex-col gap-2">
                             {(watch('gerar_cvld') && formMode === 'create') ||
-                                formMode === 'update' ? (
+                            formMode === 'update' ? (
                                 <>
                                     <div className="mb-4 w-full">
                                         <span className="text-md w-full self-center font-semibold">
@@ -1038,7 +1047,7 @@ const CalcForm = ({
                                                 CPF/CNPJ
                                             </label>
                                             <CPFAndCNPJInput
-                                                value={watch("cpf_cnpj") || ""}
+                                                value={watch('cpf_cnpj') || ''}
                                                 setValue={setValue}
                                                 className={`h-9.5 w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
                                             />
@@ -1178,12 +1187,11 @@ const CalcForm = ({
                             ) : null}
                         </div>
                         {(userData.role === 'ativos' || userData.role === 'judit') &&
-                            watch('gerar_cvld') &&
-                            formMode === 'create' ? (
+                        watch('gerar_cvld') &&
+                        formMode === 'create' ? (
                             <>
                                 <hr className="col-span-2 my-8 border border-stroke dark:border-strokedark" />
                                 <div className="flex flex-col gap-2">
-
                                     <div className="flex justify-between">
                                         <div className="flex items-center gap-2">
                                             <input
@@ -1208,20 +1216,23 @@ const CalcForm = ({
                                                 watch('novo_usuario') === undefined) &&
                                                 watch('vincular_usuario') === true && (
                                                     <CelerAppCombobox
-                                                        list={usersList.filter(user => user !== userData.user)}
+                                                        list={usersList.filter(
+                                                            (user) => user !== userData.user,
+                                                        )}
                                                         onChangeValue={(value) => {
-                                                            setValue('username', value)
+                                                            setValue('username', value);
                                                         }}
                                                         value={
                                                             usersList.filter(
-                                                                (user) => user !== watch('username'),
+                                                                (user) =>
+                                                                    user !== watch('username'),
                                                             )[0] || ''
                                                         }
                                                         register={register('username')}
                                                         name="username"
                                                         placeholder="BUSQUE POR USUÁRIO"
-                                                        className='uppercase text-sm'
-                                                        size={"400px"}
+                                                        className="text-sm uppercase"
+                                                        size={'400px'}
                                                     />
                                                     // <select
                                                     //     id="username"
@@ -1255,13 +1266,11 @@ const CalcForm = ({
                                                         <CustomCheckbox
                                                             check={watch('novo_usuario')}
                                                             id={'novo_usuario'}
-                                                            register={register(
-                                                                'novo_usuario',
-                                                            )}
+                                                            register={register('novo_usuario')}
                                                         />
                                                         <span>
-                                                            O nome não está na lista? Crie
-                                                            um novo usuário!
+                                                            O nome não está na lista? Crie um novo
+                                                            usuário!
                                                         </span>
                                                     </label>
                                                 </div>

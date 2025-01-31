@@ -351,7 +351,7 @@ const SignUp: React.FC = () => {
                                         setValue={
                                             setValue as UseFormSetValue<Partial<SignUpInputs>>
                                         }
-                                        className={`${CPFOrCNPJValue.length > 0 && !isCPFOrCNPJValid(watch('cpf_cnpj') || '') && 'border-2 !border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black`}
+                                        className={`${getValues('cpf_cnpj') && !isCPFOrCNPJValid(watch('cpf_cnpj')) && 'border-2 !border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black`}
                                     />
 
                                     <span className="absolute right-4 top-2.5">
