@@ -4,52 +4,37 @@ import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { RiSidebarUnfoldLine } from 'react-icons/ri';
 import { ComercialContext } from '@/context/ComercialContext';
 import { IDocTable } from '@/interfaces/IPendingDocResponse';
-import { LuAppWindow } from 'react-icons/lu';
-import { BrokersContext } from '@/context/BrokersContext';
-import api from '@/utils/api';
 
 const CellComponent = (row: { original: any }) => {
-
-    const { setDocModalInfo, docModalInfo } = React.useContext(BrokersContext);
+    const { setSheetOpen, sheetOpen, setSheetOpenId } = React.useContext(ComercialContext);
     const resumo = row.original;
 
-    async function handleOpenSheet() {
-        const response = await api.get(`/api/notion-api/list/page/${resumo.id}/`);
-        if (response.status === 200) {
-
-            const relationId = response.data.properties["CENTRAL DE PRECATÓRIOS"]?.relation[0]?.id;
-            const request = await api.get(`/api/notion-api/list/page/${relationId}/`);
-
-            if (request.status === 200) {
-                setDocModalInfo(request.data);
-            } else {
-                throw new Error("Erro ao obter dados do Notion");
-            }
-        } else {
-            throw new Error("Erro ao obter dados do Notion");
-        }
+    function handleOpenSheet() {
+        setSheetOpen(!sheetOpen);
+        setSheetOpenId(resumo.id);
     }
 
     return (
         <div className="absolute top-1/2 -translate-y-1/2 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center gap-2">
             <Button variant="ghost" className="flex items-center gap-2 px-2 py-1 bg-slate-100 dark:bg-slate-700 h-fit" onClick={handleOpenSheet}>
-                <LuAppWindow size={20} />
-                <p className='text-sm'>GERENCIAR DOCS</p>
+                <RiSidebarUnfoldLine size={20} />
+                <p className='text-sm'>ABRIR</p>
             </Button>
         </div>
     );
 };
 
-export const columnsPendingDoc: ColumnDef<IDocTable>[] = [
+export const columnsDueDocs: ColumnDef<IDocTable>[] = [
     {
         accessorKey: 'usuario',
         header: ({ column }) => {
             return (
                 <Button
                     variant={'ghost'}
-                    className="flex items-center gap-2"
+                    className="flex items-center justify-normal gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
                     Usuário
@@ -69,7 +54,7 @@ export const columnsPendingDoc: ColumnDef<IDocTable>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="min-w-100 flex justify-normal gap-2"
+                    className="flex items-center justify-normal gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
                     Nome
@@ -78,9 +63,8 @@ export const columnsPendingDoc: ColumnDef<IDocTable>[] = [
             );
         },
         cell: ({ row }) => (
-            <div className="relative min-w-90 gap-2">
+            <div className="min-w-100 gap-2">
                 <p className="truncate">{row.getValue('nome')}</p>
-                <CellComponent original={row.original} />
             </div>
         ),
     },
@@ -90,7 +74,7 @@ export const columnsPendingDoc: ColumnDef<IDocTable>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="min-w-50 flex justify-normal gap-2"
+                    className="flex items-center justify-normal gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
                     Status Diligência
@@ -99,7 +83,7 @@ export const columnsPendingDoc: ColumnDef<IDocTable>[] = [
             );
         },
         cell: ({ row }) => (
-            <div className="w-full gap-2">
+            <div className="min-w-50 gap-2">
                 <p className="truncate">{row.getValue('status_diligencia') || "Sem status de diligência"}</p>
             </div>
         ),
@@ -110,7 +94,7 @@ export const columnsPendingDoc: ColumnDef<IDocTable>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="min-w-55 flex justify-normal gap-2"
+                    className="flex items-center justify-normal gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
                     Status
@@ -119,7 +103,7 @@ export const columnsPendingDoc: ColumnDef<IDocTable>[] = [
             );
         },
         cell: ({ row }) => (
-            <div className="w-full gap-2">
+            <div className="min-w-50 gap-2">
                 <p className="truncate">{row.getValue('status')}</p>
             </div>
         ),
@@ -130,7 +114,7 @@ export const columnsPendingDoc: ColumnDef<IDocTable>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="min-w-55 flex justify-normal gap-2"
+                    className="flex items-center justify-normal gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
                     CPF
@@ -139,7 +123,7 @@ export const columnsPendingDoc: ColumnDef<IDocTable>[] = [
             );
         },
         cell: ({ row }) => (
-            <div className="w-full gap-2">
+            <div className="min-w-50 gap-2">
                 <p className="truncate">{row.getValue('cpf')}</p>
             </div>
         ),
@@ -170,17 +154,17 @@ export const columnsPendingDoc: ColumnDef<IDocTable>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="min-w-55 flex justify-normal gap-2"
+                    className="flex items-center justify-normal gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
-                    <p className="truncate">Status RG</p>
+                    Status RG
                     <ArrowUpDown size={16} />
                 </Button>
             );
         },
         cell: ({ row }) => (
-            <div className="w-full gap-2">
-                <p className="truncate">{row.getValue('status_rg') || "Sem documento cadastrado"}</p>
+            <div className="min-w-50 gap-2">
+                <p className="truncate">{row.getValue('status_rg')  || "Sem documento cadastrado"}</p>
             </div>
         ),
     },
@@ -210,16 +194,16 @@ export const columnsPendingDoc: ColumnDef<IDocTable>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="min-w-55 flex justify-normal gap-2"
+                    className="flex items-center justify-normal gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
-                    <p className="truncate">Status Certidão de Nascimento/Casamento</p>
+                    Status Certidão de Nascimento/Casamento
                     <ArrowUpDown size={16} />
                 </Button>
             );
         },
         cell: ({ row }) => (
-            <div className="w-full gap-2">
+            <div className="min-w-50 gap-2">
                 <p className="truncate">{row.getValue('status_certidao_nasc_cas')  || "Sem documento cadastrado"}</p>
             </div>
         ),
@@ -250,16 +234,16 @@ export const columnsPendingDoc: ColumnDef<IDocTable>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="min-w-55 flex justify-normal gap-2"
+                    className="flex items-center justify-normal gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
-                    <p className="truncate">Status Comprovante de Residência</p>
+                    Status Comprovante de Residência
                     <ArrowUpDown size={16} />
                 </Button>
             );
         },
         cell: ({ row }) => (
-            <div className="w-full gap-2">
+            <div className="min-w-50 gap-2">
                 <p className="truncate">{row.getValue('status_comprovante_residencia')  || "Sem documento cadastrado"}</p>
             </div>
         ),
@@ -290,18 +274,27 @@ export const columnsPendingDoc: ColumnDef<IDocTable>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="min-w-55 flex justify-normal gap-2"
+                    className="flex items-center justify-normal gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
-                    <p className='truncate'>Status Ofício Requisitório</p>
+                    Status Ofício Requisitório
                     <ArrowUpDown size={16} />
                 </Button>
             );
         },
         cell: ({ row }) => (
-            <div className="w-full gap-2">
+            <div className="min-w-50 gap-2">
                 <p className="truncate">{row.getValue('status_oficio_requisitorio')  || "Sem documento cadastrado"}</p>
             </div>
         ),
     },
+    // {
+    //   id: "actions",
+    //   enableHiding: false,
+    //   cell: ({ row }) => {
+    //     return (
+    //       <CellComponent row={row} />
+    //     )
+    //   },
+    // },
 ];
