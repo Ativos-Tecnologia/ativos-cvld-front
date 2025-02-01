@@ -27,13 +27,16 @@ import {
 import { Spotlight } from '@/components/ui/spotlight-new';
 import { PendingDocTable } from '@/app/comercial/espaco/pending-docs-table/pending-doc-table';
 import { columnsPendingDoc } from '@/app/comercial/espaco/pending-docs-table/columns';
-import { DueTable } from '@/app/comercial/espaco/pending-due-table copy/due-data-table';
-import { columnsDueDocs } from '@/app/comercial/espaco/pending-due-table copy/columns';
+import { DueTable } from '@/app/comercial/espaco/pending-due-table/due-data-table';
+import { columnsDueDocs } from '@/app/comercial/espaco/pending-due-table/columns';
+import { BrokersContext } from '@/context/BrokersContext';
+import DocForm from '@/components/Modals/BrokersDocs';
 
 
 
 function EspacoGerencial() {
     const { sheetOpen, setSheetOpen, sheetOpenId } = useContext(ComercialContext);
+    const { docModalInfo } = React.useContext(BrokersContext);
     const {
         data: { product, first_name, user },
     } = useContext(UserInfoAPIContext);
@@ -53,9 +56,8 @@ function EspacoGerencial() {
         queryKey: ['pending-docs'],
         queryFn: () => fetchPendingDocData(),
         placeholderData: keepPreviousData,
+        refetchInterval: 15000 // 15 segundos
     });
-    //APAGAR
-    console.log("Dados do Pending Doc: ",docPendingData);
     
     async function fetchDueDocData() {
         const response = await api.get(`api/comercial/coordenador/${selectedCoordinator}/pending-due`);
@@ -67,8 +69,6 @@ function EspacoGerencial() {
         queryFn: () => fetchDueDocData(),
         placeholderData: keepPreviousData,
     });
-    // APAGAR
-    console.log("Dados do Due Doc: ",docDueData);
 
     async function fetchChartData() {
         const response = await api.get(`/api/comercial/coordenador/${selectedCoordinator}/targets`);
@@ -77,7 +77,7 @@ function EspacoGerencial() {
     const { data, isFetching, refetch } = useQuery({
         queryKey: ['espaco-gerencial'],
         queryFn: () => fetchData(),
-        placeholderData: keepPreviousData,
+        placeholderData: keepPreviousData
     });
 
     const {
@@ -190,6 +190,7 @@ function EspacoGerencial() {
                         <SheetViewComercial id={sheetOpenId} />
                     </SheetContent>
                 </Sheet>
+                {docModalInfo !== null && <DocForm />}
             </section>
         </>
     );
