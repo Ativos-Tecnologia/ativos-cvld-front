@@ -5,6 +5,7 @@ import { Metadata } from 'next';
 import DefaultLayout from '@/components/Layouts/DefaultLayout';
 import EspacoGerencial from '@/components/Features/Comercial/EspacoGerencial';
 import { ComercialProvider } from '@/context/ComercialContext';
+import { BrokersProvider } from '@/context/BrokersContext';
 
 // export const metadata: Metadata = {
 //   title: "CelerApp | Espaço Gerencial",
@@ -23,9 +24,11 @@ import { ComercialProvider } from '@/context/ComercialContext';
 const EspacoGerencialWrapperPage = () => {
     return (
         <DefaultLayout>
-            <ComercialProvider>
-                <EspacoGerencial />
-            </ComercialProvider>
+            <BrokersProvider>
+                <ComercialProvider>
+                    <EspacoGerencial />
+                </ComercialProvider>
+            </BrokersProvider>
         </DefaultLayout>
     );
 };
