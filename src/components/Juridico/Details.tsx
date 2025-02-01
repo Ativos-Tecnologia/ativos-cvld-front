@@ -53,9 +53,7 @@ import JuridicoDetailsSkeleton from "../Skeletons/JuridicoDetailsSkeleton";
 import { SelectItem } from "../ui/select";
 import verifyRequiredInputsToDue from "@/functions/juridico/verifyRequiredInputsToDue";
 import { AxiosError } from "axios";
-import ChartFive from "../Charts/ChartFive";
 import { TiArrowBack, TiArrowForward } from "react-icons/ti";
-import DetalhesActionButtons from "./ActionButtons";
 
 type JuridicoDetailsProps = {
   id: string;
@@ -172,16 +170,18 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
       formData.observacao = `
 💭 Comentários: ${formData.observacao}
 `
-    }
+    };
 
     if (formData.valor_aquisicao_total) {
       formData.percentual_a_ser_adquirido = 1;
     } else {
-      formData.percentual_a_ser_adquirido = formData.percentual_a_ser_adquirido / 100;
+      formData.percentual_a_ser_adquirido = Number(formData.percentual_a_ser_adquirido.replace(",", ".")) / 100;
     }
 
     if (!formData.ja_possui_destacamento) {
-      formData.percentual_de_honorarios = formData.percentual_de_honorarios / 100
+      formData.percentual_de_honorarios = Number(formData.percentual_de_honorarios.replace(",", ".")) / 100
+    } else {
+      formData.percentual_de_honorarios = 0
     }
 
     if (typeof formData.valor_principal === "string") {
@@ -227,7 +227,6 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
 
     formData.upload_notion = true;
     formData.need_to_recalculate_proposal = true;
-
 
     swal.fire({
       title: 'Confirmação',
@@ -2760,8 +2759,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
           </>
         )}
 
-        {statusDiligence === "Repactuação"
-          || statusDiligence === "Pendência a Sanar" && (
+        {(statusDiligence === "Repactuação"
+          || statusDiligence === "Pendência a Sanar") && (
             <Button
               variant="info"
               className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
@@ -2772,7 +2771,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             </Button>
           )}
 
-        {statusDiligence === "Due Diligence" || statusDiligence === "Due em Andamento" && (
+        {(statusDiligence === "Due Diligence" || statusDiligence === "Due em Andamento") && (
           <Button
             variant="warning"
             className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
@@ -2780,6 +2779,17 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
           >
             <CgSearchLoading className="h-4 w-4" />
             <span>Revisão de Due Diligence</span>
+          </Button>
+        )}
+
+        {statusDiligence === "Due Diligence" && (
+          <Button
+            variant="success"
+            className="py-2 px-4 rounded-md 2xsm:w-full md:w-fit flex items-center gap-3 uppercase text-sm font-medium"
+            onClick={() => handleUpdateDuePhase("Due em Andamento")}
+          >
+            <TiArrowForward className="h-4 w-4" />
+            <span>Enviar para Due em Andamento</span>
           </Button>
         )}
 

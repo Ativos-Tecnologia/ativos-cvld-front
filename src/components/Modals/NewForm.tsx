@@ -242,11 +242,7 @@ const NewForm = () => {
         if (data.valor_aquisicao_total) {
             data.percentual_a_ser_adquirido = 1;
         } else {
-            data.percentual_a_ser_adquirido = data.percentual_a_ser_adquirido = Number(
-                (
-                    data.percentual_a_ser_adquirido.replace(/[^0-9,]/g, '').replace(',', '.') / 100
-                ).toFixed(4),
-            );
+            data.percentual_a_ser_adquirido = Number(data.percentual_a_ser_adquirido.replace("%", "").replace(",", ".")) / 100;
         }
 
         if (data.tribunal === 'TRF1' || data.tribunal === 'TRF6') {
@@ -264,7 +260,7 @@ const NewForm = () => {
         if (data.ja_possui_destacamento) {
             data.percentual_de_honorarios = 0;
         } else {
-            data.percentual_de_honorarios /= 100;
+            data.percentual_de_honorarios = Number(data.percentual_de_honorarios.replace("%", "").replace(",", ".")) / 100;
         }
 
         if (data.gerar_cvld) {

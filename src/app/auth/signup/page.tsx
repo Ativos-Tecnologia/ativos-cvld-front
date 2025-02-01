@@ -6,7 +6,7 @@ import api from '@/utils/api';
 import { Popover } from 'flowbite-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { Controller, SubmitHandler, useForm, UseFormSetValue } from 'react-hook-form';
 import {
@@ -33,6 +33,7 @@ import { BsEye, BsEyeSlash } from 'react-icons/bs';
 import { HiOutlineArrowRight } from 'react-icons/hi';
 import { CPFAndCNPJInput } from '@/components/CrmUi/CPFAndCNPFInput';
 import { isCPFOrCNPJValid } from '@/functions/verifiers/isCPFOrCNPJValid';
+import { AxiosError } from 'axios';
 
 export type SignUpInputs = {
     username: string;
@@ -77,7 +78,9 @@ const SignUp: React.FC = () => {
     } = usePassword(passwordInput, confirmPasswordInput);
 
     const MySwal = UseMySwal();
-    const selectOption = watch('select');
+    const searchParams = useSearchParams();
+
+    console.log(searchParams.get('coordenador'))
 
     const onSubmit: SubmitHandler<SignUpInputs> = async (data) => {
         setLoading(true);
@@ -106,32 +109,48 @@ const SignUp: React.FC = () => {
             };
 
             try {
-                const response = await api.post('api/user/register/', formData).then((res) => {
-                    if (res.status === 201) {
-                        localStorage.setItem(`ATIVOS_${ACCESS_TOKEN}`, res.data.accessToken);
-                        localStorage.setItem(`ATIVOS_${REFRESH_TOKEN}`, res.data.refreshToken);
+
+                const coordenador = searchParams.get('coordenador');
+
+                const response = coordenador
+                    ? await api.post(`api/user/register/?coordenador=${coordenador}`, formData)
+                    : await api.post('api/user/register/', formData);
+
+                if (response.status === 201) {
+                    localStorage.setItem(`ATIVOS_${ACCESS_TOKEN}`, response.data.accessToken);
+                    localStorage.setItem(`ATIVOS_${REFRESH_TOKEN}`, response.data.refreshToken);
+                    MySwal.fire({
+                        title: 'Sucesso!',
+                        text: 'Cadastro realizado com sucesso! Em até 5 minutos, um e-mail de confirmação será enviado para o e-mail cadastrado.',
+                        icon: 'success',
+                        showConfirmButton: true,
+                        confirmButtonColor: '#1A56DB',
+                        confirmButtonText: 'Voltar para Login',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            router.push(APP_ROUTES.public.login.name);
+                        }
+                    });
+                }
+            } catch (error) {
+                if (error instanceof AxiosError) {
+                    if (error.response?.data.error === "Coordenador não encontrado") {
                         MySwal.fire({
-                            title: 'Sucesso!',
-                            text: 'Cadastro realizado com sucesso! Em até 5 minutos, um e-mail de confirmação será enviado para o e-mail cadastrado.',
-                            icon: 'success',
+                            title: 'Ok, Houston...Temos um problema!',
+                            text: 'O nome do coordenador inserido é inválido. Por favor, tente novamente.',
+                            icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#1A56DB',
-                            confirmButtonText: 'Voltar para Login',
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                router.push(APP_ROUTES.public.login.name);
-                            }
+                        });
+                    } else  {
+                        MySwal.fire({
+                            title: 'Ok, Houston...Temos um problema!',
+                            text: 'Email ou usuário já cadastrado. Por favor, tente novamente com outras credenciais.',
+                            icon: 'error',
+                            showConfirmButton: true,
                         });
                     }
-                });
-            } catch (error) {
-                MySwal.fire({
-                    title: 'Ok, Houston...Temos um problema!',
-                    text: 'Email ou usuário já cadastrado. Por favor, tente novamente com outras credenciais.',
-                    icon: 'error',
-                    showConfirmButton: true,
-                });
-                console.error(error);
+                    console.error(error);
+                }
             }
         } else if (data.password !== data.confirm_password) {
             MySwal.fire({
@@ -351,7 +370,7 @@ const SignUp: React.FC = () => {
                                         setValue={
                                             setValue as UseFormSetValue<Partial<SignUpInputs>>
                                         }
-                                        className={`${CPFOrCNPJValue.length > 0 && !isCPFOrCNPJValid(watch('cpf_cnpj') || '') && 'border-2 !border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black`}
+                                        className={`${getValues('cpf_cnpj') && !isCPFOrCNPJValid(watch('cpf_cnpj')) && 'border-2 !border-rose-400 !ring-0'} w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black`}
                                     />
 
                                     <span className="absolute right-4 top-2.5">

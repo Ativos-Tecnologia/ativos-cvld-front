@@ -901,7 +901,7 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
         <div className="relative col-span-1 gap-5 rounded-md border border-stroke bg-white p-5 dark:border-strokedark dark:bg-boxdark">
             {/* ----> info <----- */}
             <div className="mb-2 flex items-center justify-between">
-                <div className="flex w-fit items-center justify-center gap-2">
+                <div className={`flex w-fit items-center justify-center gap-2 opacity-50 pointer-events-none ${(checks.are_docs_complete || checks.is_cedente_complete || checks.is_precatorio_complete) && "!opacity-100 !pointer-events-auto"}`}>
                     {isProposalChanging ? (
                         <AiOutlineLoading className="animate-spin" />
                     ) : (
