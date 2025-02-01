@@ -32,13 +32,11 @@ import { columnsDueDocs } from '@/app/comercial/espaco/pending-due-table/columns
 import { BrokersContext } from '@/context/BrokersContext';
 import DocForm from '@/components/Modals/BrokersDocs';
 
-
-
 function EspacoGerencial() {
     const { sheetOpen, setSheetOpen, sheetOpenId } = useContext(ComercialContext);
     const { docModalInfo } = React.useContext(BrokersContext);
     const {
-        data: { product, first_name, user },
+        data: { product, first_name, user, sub_role },
     } = useContext(UserInfoAPIContext);
     const [selectedCoordinator, setSelectedCoordinator] = useState<string>(user);
 
@@ -48,23 +46,35 @@ function EspacoGerencial() {
     }
 
     async function fetchPendingDocData() {
-        const response = await api.get(`api/comercial/coordenador/${selectedCoordinator}/pending-docs`);
-        return response.data;
-    }
-    
-    const { data:docPendingData, isFetching:isFetchingPendingDocs, refetch:refetchPendingData } = useQuery({
-        queryKey: ['pending-docs'],
-        queryFn: () => fetchPendingDocData(),
-        placeholderData: keepPreviousData,
-        refetchInterval: 15000 // 15 segundos
-    });
-    
-    async function fetchDueDocData() {
-        const response = await api.get(`api/comercial/coordenador/${selectedCoordinator}/pending-due`);
+        const response = await api.get(
+            `api/comercial/coordenador/${selectedCoordinator}/pending-docs`,
+        );
         return response.data;
     }
 
-    const { data:docDueData, isFetching:isFetchingDueData, refetch:refetchDueData } = useQuery({
+    const {
+        data: docPendingData,
+        isFetching: isFetchingPendingDocs,
+        refetch: refetchPendingData,
+    } = useQuery({
+        queryKey: ['pending-docs'],
+        queryFn: () => fetchPendingDocData(),
+        placeholderData: keepPreviousData,
+        refetchInterval: 15000, // 15 segundos
+    });
+
+    async function fetchDueDocData() {
+        const response = await api.get(
+            `api/comercial/coordenador/${selectedCoordinator}/pending-due`,
+        );
+        return response.data;
+    }
+
+    const {
+        data: docDueData,
+        isFetching: isFetchingDueData,
+        refetch: refetchDueData,
+    } = useQuery({
         queryKey: ['due-docs'],
         queryFn: () => fetchDueDocData(),
         placeholderData: keepPreviousData,
@@ -77,7 +87,7 @@ function EspacoGerencial() {
     const { data, isFetching, refetch } = useQuery({
         queryKey: ['espaco-gerencial'],
         queryFn: () => fetchData(),
-        placeholderData: keepPreviousData
+        placeholderData: keepPreviousData,
     });
 
     const {
@@ -102,7 +112,6 @@ function EspacoGerencial() {
         refetchPendingData();
         refetchDueData();
     }, [selectedCoordinator]);
-    
 
     return (
         <>
@@ -115,12 +124,18 @@ function EspacoGerencial() {
                 </div>
             </div>
             {/* Seção dos Filtros Administrativos */}
-            <Show when={product === 'global'}>
+            <Show
+                when={
+                    product === 'global' &&
+                    sub_role !== 'coordenador' &&
+                    sub_role !== 'coordenadoor_externo'
+                }
+            >
                 <section className="mt-6 flex min-h-fit flex-col rounded-md bg-white dark:bg-boxdark">
                     <span className="pl-4 pt-2">
                         Filtros Administr<b>ativos</b>
                     </span>
-                    <div className="flex 2xsm:w-full lg:max-w-[200px] flex-col gap-4 p-4">
+                    <div className="flex flex-col gap-4 p-4 2xsm:w-full lg:max-w-[200px]">
                         <label className="flex items-center gap-2">
                             <BiUser className="text-xl" />
                             Coordenador
@@ -138,13 +153,21 @@ function EspacoGerencial() {
             {/* Fim da Seção dos Filtros Administrativos */}
 
             {/* Tabelas de Documentos */}
-            <section className="mt-6 flex 2xsm:max-w-screen-2xl md:max-w-[750px] lg:max-w-[1050px] xl:max-w-screen-2xl flex-col overflow-auto rounded-md bg-white dark:bg-boxdark">
-                <PendingDocTable columns={columnsPendingDoc} data={docPendingData?.results || []} loading={isFetchingPendingDocs } />
+            <section className="mt-6 flex flex-col overflow-auto rounded-md bg-white dark:bg-boxdark 2xsm:max-w-screen-2xl md:max-w-[750px] lg:max-w-[1050px] xl:max-w-screen-2xl">
+                <PendingDocTable
+                    columns={columnsPendingDoc}
+                    data={docPendingData?.results || []}
+                    loading={isFetchingPendingDocs}
+                />
             </section>
 
             {/* Tabelas de Documentos */}
-            <section className="mt-6 flex 2xsm:max-w-screen-2xl md:max-w-[750px] lg:max-w-[1050px] xl:max-w-screen-2xl flex-col overflow-auto rounded-md bg-white dark:bg-boxdark">
-                <DueTable columns={columnsDueDocs} data={docDueData?.results || []} loading={isFetchingDueData} />
+            <section className="mt-6 flex flex-col overflow-auto rounded-md bg-white dark:bg-boxdark 2xsm:max-w-screen-2xl md:max-w-[750px] lg:max-w-[1050px] xl:max-w-screen-2xl">
+                <DueTable
+                    columns={columnsDueDocs}
+                    data={docDueData?.results || []}
+                    loading={isFetchingDueData}
+                />
             </section>
 
             {/* Final das tabelas de documentos */}
@@ -160,7 +183,7 @@ function EspacoGerencial() {
                 />
             </section>
 
-            <section className="mt-6 flex 2xsm:max-w-screen-2xl md:max-w-[750px] lg:max-w-[1050px] xl:max-w-screen-2xl flex-col overflow-auto rounded-md bg-white dark:bg-boxdark">
+            <section className="mt-6 flex flex-col overflow-auto rounded-md bg-white dark:bg-boxdark 2xsm:max-w-screen-2xl md:max-w-[750px] lg:max-w-[1050px] xl:max-w-screen-2xl">
                 {/* <PendingDocTable  /> */}
             </section>
 
@@ -172,7 +195,7 @@ function EspacoGerencial() {
                 />
             </section>
             {/* Seção da Tabela de Dados */}
-            <section className="mt-6 flex 2xsm:max-w-screen-2xl md:max-w-[750px] lg:max-w-[1050px] xl:max-w-screen-2xl flex-col overflow-auto rounded-md bg-white dark:bg-boxdark">
+            <section className="mt-6 flex flex-col overflow-auto rounded-md bg-white dark:bg-boxdark 2xsm:max-w-screen-2xl md:max-w-[750px] lg:max-w-[1050px] xl:max-w-screen-2xl">
                 <DataTable columns={columns} data={data?.results || []} loading={isFetching} />
                 <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                     <SheetContent
