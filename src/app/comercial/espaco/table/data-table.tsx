@@ -463,9 +463,8 @@ export const AwesomeFilter: React.FC<AwesomeFilterProps> = ({
                         <button
                             type="button"
                             onClick={resetFilters}
-                            className={`ml-2 text-sm text-indigo-600 transition-all duration-200 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 ${
-                                filters.length === 0 ? 'cursor-not-allowed opacity-50 ' : ''
-                            }`}
+                            className={`ml-2 text-sm text-indigo-600 transition-all duration-200 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 ${filters.length === 0 ? 'cursor-not-allowed opacity-50 ' : ''
+                                }`}
                         >
                             Limpar filtros
                         </button>
@@ -517,6 +516,7 @@ export function DataTable<TData, TValue>({
     const [showFilters, setShowFilters] = React.useState(false);
 
     const filterRef = useRef<HTMLDivElement>(null);
+    const tableRef = useRef<any>(null)
 
     useClickOutside(filterRef, () => setShowFilters(false));
 
@@ -651,6 +651,24 @@ export function DataTable<TData, TValue>({
     const usuarioOptions = Array.from(new Set(getColumnValues('usuario'))) as string[];
     const statusDiligencia = Array.from(new Set(getColumnValues('status_diligencia'))) as string[];
 
+    React.useEffect(() => {
+        console.log("useEffect is running")
+        const tableElement = tableRef.current
+        if (tableElement) {
+          console.log("tableElement found:", tableElement)
+          const handleTableScroll = () => {
+            console.log("Scroll event triggered:", tableElement.scrollLeft)
+          }
+          tableElement.addEventListener("scroll", handleTableScroll)
+          console.log("Initial scroll position:", tableElement.scrollLeft)
+          return () => {
+            tableElement.removeEventListener("scroll", handleTableScroll)
+          }
+        } else {
+          console.log("tableElement not found")
+        }
+      }, [])
+
     return (
         <div className="container pb-10 pt-4">
             <AwesomeFilter
@@ -674,8 +692,8 @@ export function DataTable<TData, TValue>({
                     auxFn: filterByCredorName,
                 }}
             />
-            <div className="rounded-md border">
-                <Table className="rounded-md" data-state={loading && 'loading'}>
+            <div className="rounded-md border ">
+                <Table ref={tableRef} className="rounded-md" data-state={loading && 'loading'}>
                     <TableHeader className="rounded-t-md bg-snow dark:border-strokedark dark:bg-boxdark-2">
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
@@ -685,9 +703,9 @@ export function DataTable<TData, TValue>({
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
-                                                      header.column.columnDef.header,
-                                                      header.getContext(),
-                                                  )}
+                                                    header.column.columnDef.header,
+                                                    header.getContext(),
+                                                )}
                                         </TableHead>
                                     );
                                 })}

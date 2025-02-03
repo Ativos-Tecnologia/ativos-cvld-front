@@ -63,7 +63,7 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="flex items-center gap-2"
+                    className="min-w-50 flex items-center justify-normal gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
                     Usuário
@@ -72,7 +72,7 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
             );
         },
         cell: ({ row }) => (
-            <div className="w-33 gap-2">
+            <div className="w-45 gap-2">
                 <p className="truncate">{row.getValue('usuario')}</p>
             </div>
         ),
@@ -80,17 +80,17 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
     {
         accessorKey: 'credor',
         header: () => {
-            return <span className="flex min-w-2 max-w-36 items-center gap-4">Nome do Credor</span>;
+            return <span className="flex min-w-100 max-w-36 items-center gap-4">Nome do Credor</span>;
         },
         cell: ({ row }) => (
             <div
-                className="flex max-w-90 items-center overflow-auto text-nowrap"
+                className="flex min-w-100 items-center justify-normal overflow-auto text-nowrap"
                 style={{
                     scrollbarWidth: 'thin',
                     scrollbarColor: 'rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.1)',
                 }}
             >
-                <span className="">{row.getValue('credor')}</span>
+                <p className="truncate max-w-90">{row.getValue('credor')}</p>
                 <CellComponent original={row.original} />
             </div>
         ),
@@ -142,10 +142,14 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
     // },
     {
         accessorKey: 'valor_liquido_disponivel',
-        header: 'Valor Líquido',
+        header: () => {
+            return (
+                <p className='min-w-55'>Valor Liquido Disponível</p>
+            )
+        },
         cell: ({ row }) => (
-            <div className="flex items-center">
-                <span>{numberFormat(row.getValue('valor_liquido_disponivel'))}</span>
+            <div className="min-w-55 truncate flex items-center justify-normal">
+                <p>{numberFormat(row.getValue('valor_liquido_disponivel'))}</p>
             </div>
         ),
     },
@@ -155,7 +159,7 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
             return (
                 <Button
                     variant="ghost"
-                    className="flex max-w-18 items-center gap-2"
+                    className="min-w-55 flex items-center justify-normal gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
                     Custo do Precatório
@@ -164,7 +168,7 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
             );
         },
         cell: ({ row }) => (
-            <div className="flex items-center">
+            <div className="w-full flex items-center">
                 <span>{percentageFormater(row.getValue('custo_do_precatorio'))}</span>
             </div>
         ),
@@ -193,22 +197,22 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
     {
         accessorKey: 'status',
         header: ({ column }) => {
-            return <p className="max-w-30 items-center gap-2 truncate">Status</p>;
+            return <p className="min-w-40 items-center gap-2 truncate">Status</p>;
         },
         cell: ({ row }) => (
             <div className="flex items-center">
-                <p className="max-w-30 truncate">{row.getValue('status')}</p>
+                <p className="w-full truncate">{row.getValue('status')}</p>
             </div>
         ),
     },
     {
         accessorKey: 'status_diligencia',
         header: ({ column }) => {
-            return <p className="max-w-30 items-center gap-2 truncate">Status Diligência</p>;
+            return <p className="min-w-55 items-center gap-2 truncate">Status Diligência</p>;
         },
         cell: ({ row }) => (
             <div className="flex items-center">
-                <p className="max-w-30 truncate">{row.getValue('status_diligencia')}</p>
+                <p className="w-full truncate">{row.getValue('status_diligencia')}</p>
             </div>
         ),
     },
