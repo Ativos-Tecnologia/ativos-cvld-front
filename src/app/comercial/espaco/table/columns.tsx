@@ -47,7 +47,7 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="flex max-w-20 items-center gap-2"
+                    className="flex items-center justify-normal gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
                     Criado em
@@ -55,7 +55,7 @@ export const columns: ColumnDef<ITabelaGerencial>[] = [
                 </Button>
             );
         },
-        cell: ({ row }) => <div className="max-w-20 lowercase">{row.getValue('criado_em')}</div>,
+        cell: ({ row }) => <div className="w-33 lowercase">{row.getValue('criado_em')}</div>,
     },
     {
         accessorKey: 'usuario',

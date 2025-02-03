@@ -160,8 +160,8 @@ export const AwesomeFilter: React.FC<AwesomeFilterProps> = ({
                     ref={filterRef}
                     className={cn(
                         'absolute left-[25rem] top-0 w-full max-w-sm p-4',
-                        'bg-white dark:bg-zinc-900',
-                        'border border-zinc-200 dark:border-zinc-800',
+                        'bg-white dark:bg-boxdark-2',
+                        'border border-zinc-200 dark:border-strokedark',
                         'rounded-lg shadow-lg',
                         'z-50',
                     )}
