@@ -116,13 +116,17 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
         if (data.valor_aquisicao_total) {
             data.percentual_a_ser_adquirido = 1;
         } else {
-            data.percentual_a_ser_adquirido = Number(data.percentual_a_ser_adquirido.replace("%", "").replace(",", ".")) / 100;
+            data.percentual_a_ser_adquirido = typeof data.percentual_a_ser_adquirido === 'string'
+                ? Number(data.percentual_a_ser_adquirido.replace("%", "").replace(",", ".")) / 100
+                : data.percentual_a_ser_adquirido / 100;
         }
 
         if (data.ja_possui_destacamento) {
             data.percentual_de_honorarios = 0;
         } else {
-            data.percentual_de_honorarios = Number(data.percentual_de_honorarios.replace("%", "").replace(",", ".")) / 100;
+            data.percentual_de_honorarios = typeof data.percentual_de_honorarios === 'string'
+                ? Number(data.percentual_de_honorarios.replace("%", "").replace(",", ".")) / 100
+                : data.percentual_de_honorarios / 100;
         }
 
         if (typeof data.valor_principal === 'string') {
