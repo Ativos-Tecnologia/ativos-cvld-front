@@ -3251,6 +3251,7 @@ export const estadoRegimeEnteDevedor: IEstadoRegimeEnteDevedor = {
     },
     PE: {
         GERAL: [
+            'PERNAMBUCO PARTICIPAÇÕES E INVESTIMENTOS S/A - PERPART',
             'AEB - Autarquia Educacional do Município do Belo Jardim',
             'AEDA - Autarquia Educacional do Araripe',
             'AEDS Autarquia Educacional de Salgueiro',
