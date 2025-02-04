@@ -380,6 +380,7 @@ const PJform = ({
 
     const updateCedente = useMutation({
         mutationFn: async (data: FormValuesForPJ) => {
+            
             const req = await api.patch(`/api/cedente/update/pj/${cedenteId}/`, data);
             return req.data;
         },
@@ -464,7 +465,6 @@ const PJform = ({
                 });
                 setIsFetchAllowed(true);
                 await fetchDetailCardData(id);
-                setCedenteModal(null);
             }
         } catch (error) {
             toast.error('Erro ao desvincular cedente', {
@@ -544,8 +544,11 @@ const PJform = ({
             data.celular = data.celular.replace(/\D/g, ''); // remove tudo que não for dígito
         }
 
-        data.socio_representante = registeredCedentesList.listPf?.find(
-            (cedente) => cedente.name === data.socio_representante)?.id
+        if (data.socio_representante.includes(" ")) {
+            data.socio_representante = registeredCedentesList.listPf?.find(
+                (cedente) => cedente.name === data.socio_representante)?.id
+        }
+
 
         if (mode === 'edit') {
             await updateCedente.mutateAsync(data);

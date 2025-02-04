@@ -231,10 +231,6 @@ const CalcForm = ({
         }
     }, [oficioForm]);
 
-    if (data) {
-        console.log(data.properties["Credor"].title[0]?.text.content === "LUIZ INALDO - TESTE PERCENTUAIS" ? data : null);
-    }
-
     return (
         <React.Fragment>
             {hasDropzone && (
