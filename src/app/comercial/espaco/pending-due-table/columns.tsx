@@ -54,7 +54,7 @@ export const columnsDueDocs: ColumnDef<IDocTable>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="flex items-center justify-normal gap-2"
+                    className="min-w-100 flex items-center justify-normal gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
                     Nome
@@ -63,7 +63,7 @@ export const columnsDueDocs: ColumnDef<IDocTable>[] = [
             );
         },
         cell: ({ row }) => (
-            <div className="min-w-100 gap-2">
+            <div className="max-w-90 gap-2">
                 <p className="truncate">{row.getValue('nome')}</p>
             </div>
         ),
@@ -74,7 +74,7 @@ export const columnsDueDocs: ColumnDef<IDocTable>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="flex items-center justify-normal gap-2"
+                    className="min-w-50 flex items-center justify-normal gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
                     Status Diligência
@@ -83,7 +83,7 @@ export const columnsDueDocs: ColumnDef<IDocTable>[] = [
             );
         },
         cell: ({ row }) => (
-            <div className="min-w-50 gap-2">
+            <div className="max-w-45 gap-2">
                 <p className="truncate">{row.getValue('status_diligencia') || "Sem status de diligência"}</p>
             </div>
         ),
@@ -94,7 +94,7 @@ export const columnsDueDocs: ColumnDef<IDocTable>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="flex items-center justify-normal gap-2"
+                    className="min-w-50 flex items-center justify-normal gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
                     Status
@@ -103,7 +103,7 @@ export const columnsDueDocs: ColumnDef<IDocTable>[] = [
             );
         },
         cell: ({ row }) => (
-            <div className="min-w-50 gap-2">
+            <div className="max-w-45 gap-2">
                 <p className="truncate">{row.getValue('status')}</p>
             </div>
         ),
@@ -114,7 +114,7 @@ export const columnsDueDocs: ColumnDef<IDocTable>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="flex items-center justify-normal gap-2"
+                    className="min-w-50 flex items-center justify-normal gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
                     CPF
@@ -123,7 +123,7 @@ export const columnsDueDocs: ColumnDef<IDocTable>[] = [
             );
         },
         cell: ({ row }) => (
-            <div className="min-w-50 gap-2">
+            <div className="max-w-45 gap-2">
                 <p className="truncate">{row.getValue('cpf')}</p>
             </div>
         ),
@@ -154,7 +154,7 @@ export const columnsDueDocs: ColumnDef<IDocTable>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="flex items-center justify-normal gap-2"
+                    className="min-w-50 flex items-center justify-normal gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
                     Status RG
@@ -163,7 +163,7 @@ export const columnsDueDocs: ColumnDef<IDocTable>[] = [
             );
         },
         cell: ({ row }) => (
-            <div className="min-w-50 gap-2">
+            <div className="max-w-45 gap-2">
                 <p className="truncate">{row.getValue('status_rg')  || "Sem documento cadastrado"}</p>
             </div>
         ),
@@ -194,7 +194,7 @@ export const columnsDueDocs: ColumnDef<IDocTable>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="flex items-center justify-normal gap-2"
+                    className="min-w-50 flex items-center justify-normal gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
                     Status Certidão de Nascimento/Casamento
@@ -203,7 +203,7 @@ export const columnsDueDocs: ColumnDef<IDocTable>[] = [
             );
         },
         cell: ({ row }) => (
-            <div className="min-w-50 gap-2">
+            <div className="max-w-45 gap-2">
                 <p className="truncate">{row.getValue('status_certidao_nasc_cas')  || "Sem documento cadastrado"}</p>
             </div>
         ),
@@ -234,7 +234,7 @@ export const columnsDueDocs: ColumnDef<IDocTable>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="flex items-center justify-normal gap-2"
+                    className="min-w-50 flex items-center justify-normal gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
                     Status Comprovante de Residência
@@ -243,7 +243,7 @@ export const columnsDueDocs: ColumnDef<IDocTable>[] = [
             );
         },
         cell: ({ row }) => (
-            <div className="min-w-50 gap-2">
+            <div className="max-w-45 gap-2">
                 <p className="truncate">{row.getValue('status_comprovante_residencia')  || "Sem documento cadastrado"}</p>
             </div>
         ),
@@ -274,7 +274,7 @@ export const columnsDueDocs: ColumnDef<IDocTable>[] = [
             return (
                 <Button
                     variant={'ghost'}
-                    className="flex items-center justify-normal gap-2"
+                    className="min-w-50 flex items-center justify-normal gap-2"
                     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
                 >
                     Status Ofício Requisitório
@@ -283,7 +283,7 @@ export const columnsDueDocs: ColumnDef<IDocTable>[] = [
             );
         },
         cell: ({ row }) => (
-            <div className="min-w-50 gap-2">
+            <div className="max-w-45 gap-2">
                 <p className="truncate">{row.getValue('status_oficio_requisitorio')  || "Sem documento cadastrado"}</p>
             </div>
         ),
