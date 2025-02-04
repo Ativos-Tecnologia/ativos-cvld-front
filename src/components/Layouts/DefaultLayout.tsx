@@ -36,13 +36,13 @@ export default function DefaultLayout({ children }: { children: React.ReactNode 
             {/* <!-- ===== Page Wrapper Start ===== --> */}
             <DefaultLayoutProvider>
                 <GeneralUIProvider>
-                    <div className="flex h-screen ">
+                    <div className="flex h-screen overflow-hidden">
                         <SidebarProvider
                             defaultOpen={document.cookie.includes('sidebar:state=true')}
                         >
                             <AppSidebar />
                             <SidebarInset>
-                                <div className="relative flex flex-1 flex-col ">
+                                <div className="relative flex flex-1 flex-col overflow-hidden">
                                     <header className="position-sticky dark:shadow-dark sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 bg-white shadow-sm transition-[width,height] duration-300 ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 dark:bg-boxdark">
                                         <div className="flex items-center gap-2 px-4">
                                             <SidebarTrigger className="-ml-1" />
@@ -99,7 +99,7 @@ export default function DefaultLayout({ children }: { children: React.ReactNode 
                                             <ThemeSwitcher />
                                         </div>
                                     </header>
-                                    <main className="w-full flex-1 bg-[#f4f4f4] dark:bg-boxdark-2">
+                                    <main className="w-full flex-1 overflow-y-auto bg-[#f4f4f4] dark:bg-boxdark-2">
                                         <div className="mx-auto max-w-screen-2xl p-4 md:px-2 md:py-6 xl:p-6 2xl:p-10">
                                             <RouteGuard>{children}</RouteGuard>
                                         </div>
