@@ -18,6 +18,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '..
 import Show from '../Show';
 import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import { bancos } from '@/constants/bancos';
+import { BubbleChart } from '../Charts/BubbleChart';
 
 /**
  * Componente que renderiza a lista de brokers
@@ -120,9 +121,13 @@ const Broker: React.FC = (): JSX.Element => {
                     </AccordionItem>
                 </Accordion>
             </div>
-            <div className="grid grid-cols-1  items-center gap-5  xl:grid-cols-12">
+            <div className="mb-5 grid grid-cols-1 items-center gap-5 xl:grid-cols-12">
                 <BrokerQuantityDistributedChart title="Distribuição" response={cardsData} />
                 <BrokerComissionDistribution title="Previsão de Comissão" response={cardsData} />
+            </div>
+
+            <div className="flex flex-col gap-5">
+                <BubbleChart />
             </div>
 
             <GridCardsWrapper>
