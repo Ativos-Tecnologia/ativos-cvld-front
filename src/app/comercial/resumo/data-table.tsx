@@ -274,7 +274,7 @@ export function DataTable<TData, TValue>({
         </Popover>
       </div> */}
       <div className="rounded-md border">
-        <Table className="rounded-md" data-state={loading && "loading"}>
+        <Table className="rounded-md lg:w-[938px] xl:w-[1066px] 2xl:w-[1130px] 3xl:w-full shadow-[inset_-9px_0_5px_-5px_rgba(0,0,0,0.1),inset_9px_0_5px_-5px_rgba(0,0,0,0.1)] overflow-x-scroll overflow-y-hidden" data-state={loading && "loading"}>
           <TableHeader className="rounded-t-md bg-snow dark:border-strokedark dark:bg-boxdark-2">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>

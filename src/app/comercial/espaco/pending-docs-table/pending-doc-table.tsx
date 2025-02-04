@@ -457,7 +457,7 @@ export function PendingDocTable<TData, TValue>({
     return (
         <div className="container pb-10 pt-4">
                 <h2 className='tracking-wider font-semibold mb-8'>Documentação a aprovar</h2>
-            <div className="rounded-md border">
+            <div className="rounded-md border lg:w-[938px] xl:w-[1066px] 2xl:w-[1130px] 3xl:w-full shadow-[inset_-9px_0_5px_-5px_rgba(0,0,0,0.1),inset_9px_0_5px_-5px_rgba(0,0,0,0.1)] overflow-x-scroll overflow-y-hidden">
                 <Table className="rounded-md" data-state={loading && 'loading'}>
                     <TableHeader className="rounded-t-md bg-snow dark:border-strokedark dark:bg-boxdark-2">
                         {table.getHeaderGroups().map((headerGroup) => (

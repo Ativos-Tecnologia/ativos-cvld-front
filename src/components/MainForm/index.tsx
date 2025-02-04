@@ -15,6 +15,7 @@ import backendNumberFormat from '@/functions/formaters/backendNumberFormat';
 import { CvldFormInputsProps } from '@/types/cvldform';
 import CalcForm from '../Forms/CalcForm';
 import { isCPFOrCNPJValid } from '@/functions/verifiers/isCPFOrCNPJValid';
+import { getCurrentFormattedDate } from '@/functions/getCurrentFormattedDate';
 
 interface ChartTwoState {
     series: {
@@ -87,16 +88,15 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
         data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
         
 
-        //#TODO colocar essa condicional dentro de uma função utilitária
-        if (!data.data_limite_de_atualizacao_check) {
-            const dateInSaoPaulo = new Date().toLocaleDateString('pt-BR', {
-                timeZone: 'America/Sao_Paulo',
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-            });
+        if (data.tipo_do_oficio === 'CREDITÓRIO') {
 
-            const formattedDate = dateInSaoPaulo.split('/').reverse().join('-');
+            const formattedDate = getCurrentFormattedDate().split('/').reverse().join('-');
+            data.data_requisicao = formattedDate;
+        }
+
+        if (!data.data_limite_de_atualizacao_check) {
+
+            const formattedDate = getCurrentFormattedDate().split('/').reverse().join('-');
             data.data_limite_de_atualizacao = formattedDate;
         }
 
