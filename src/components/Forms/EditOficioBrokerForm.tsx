@@ -13,6 +13,7 @@ import { verifyUpdateFields } from '@/functions/verifiers/verifyValues';
 import CalcForm from './CalcForm';
 import { isCPFOrCNPJValid } from '@/functions/verifiers/isCPFOrCNPJValid';
 import UseMySwal from '@/hooks/useMySwal';
+import { getCurrentFormattedDate } from '@/functions/getCurrentFormattedDate';
 
 interface IFormBroker {
     mainData: NotionPage | null;
@@ -93,10 +94,17 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
 
     // função para alterar os dados do oficio (submit)
     async function onSubmit(data: any) {
+
         if (verifyUpdateFields(defaultFormValues, data)) {
             data.need_to_recalculate_proposal = true;
         } else {
             data.need_to_recalculate_proposal = false;
+        }
+
+        if (data.tipo_do_oficio === 'CREDITÓRIO') {
+
+            const formattedDate = getCurrentFormattedDate().split('/').reverse().join('-');
+            data.data_requisicao = formattedDate;
         }
 
         if (data.gerar_cvld) {
@@ -157,8 +165,10 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
             data.valor_pss = 0;
         }
 
-        if (!data.data_limite_de_atualizacao_check && data.data_limite_de_atualizacao) {
-            delete data.data_limite_de_atualizacao;
+        if (!data.data_limite_de_atualizacao_check) {
+
+            const formattedDate = getCurrentFormattedDate().split('/').reverse().join('-');
+            data.data_limite_de_atualizacao = formattedDate;
         }
 
         await updateOficio.mutateAsync(data);
