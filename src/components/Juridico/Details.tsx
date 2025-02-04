@@ -1421,136 +1421,131 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
             </div>
           </section>
 
-          {(statusDiligence !== "Revisão Valor/LOA"
-            && statusDiligence !== "Pré-Due Ativo"
-            && statusDiligence !== "Pré-Due Cedente"
-          ) && (
-              <section id="cedentes" className="form-inputs-container">
-                <div className="col-span-4 w-full">
-                  <h3 className="text-bodydark2 font-medium">
-                    Informações sobre o cedente
-                  </h3>
+          <section id="cedentes" className="form-inputs-container">
+            <div className="col-span-4 w-full">
+              <h3 className="text-bodydark2 font-medium">
+                Informações sobre o cedente
+              </h3>
 
+            </div>
+            <div className="col-span-4 gap-4">
+              <div className="grid grid-cols-6 gap-6">
+                <div className="grid min-w-40 md:col-span-3 lg:col-span-2 xl:col-span-1">
+                  <CelerInputField
+                    name="emissao_certidao_check"
+                    fieldType={InputFieldVariant.SELECT}
+                    label={`Certidões Emitidas ?`}
+                    defaultValue={data?.properties["Certidões emitidas"]?.checkbox ? "SIM" : "NÃO"}
+                    onValueChange={(_, value) => handleUpdateEmissaoProcesso(value, id, "Certidões emitidas")}
+                    isLoading={loadingUpdateState === "Certidões emitidas"}
+                    disabled={editLock}
+                    className="w-full"
+                  >
+                    <SelectItem value="SIM">Sim</SelectItem>
+                    <SelectItem value="NÃO">Não</SelectItem>
+                  </CelerInputField>
+
+                  {(!data?.properties["Certidões emitidas"]?.checkbox && requiredInputsErrorType === "Revisão de Due Diligence") && (
+                    <p className="text-red-500 dark:text-red-400 text-xs mt-2">Preenchimento obrigatório</p>
+                  )}
                 </div>
-                <div className="col-span-4 gap-4">
-                  <div className="grid grid-cols-6 gap-6">
-                    <div className="grid min-w-40 md:col-span-3 lg:col-span-2 xl:col-span-1">
-                      <CelerInputField
-                        name="emissao_certidao_check"
-                        fieldType={InputFieldVariant.SELECT}
-                        label={`Certidões Emitidas ?`}
-                        defaultValue={data?.properties["Certidões emitidas"]?.checkbox ? "SIM" : "NÃO"}
-                        onValueChange={(_, value) => handleUpdateEmissaoProcesso(value, id, "Certidões emitidas")}
-                        isLoading={loadingUpdateState === "Certidões emitidas"}
-                        disabled={editLock}
-                        className="w-full"
-                      >
-                        <SelectItem value="SIM">Sim</SelectItem>
-                        <SelectItem value="NÃO">Não</SelectItem>
-                      </CelerInputField>
 
-                      {(!data?.properties["Certidões emitidas"]?.checkbox && requiredInputsErrorType === "Revisão de Due Diligence") && (
-                        <p className="text-red-500 dark:text-red-400 text-xs mt-2">Preenchimento obrigatório</p>
-                      )}
-                    </div>
+                <div className="grid min-w-40 md:col-span-3 lg:col-span-2 xl:col-span-1">
+                  <CelerInputField
+                    name="possui_processos_check"
+                    fieldType={InputFieldVariant.SELECT}
+                    label={`Possui Processos ?`}
+                    defaultValue={data?.properties["Possui processos?"]?.checkbox ? "SIM" : "NÃO"}
+                    onValueChange={(_, value) => handleUpdateEmissaoProcesso(value, id, "Possui processos?")}
+                    isLoading={loadingUpdateState === "Possui processos?"}
+                    disabled={editLock}
+                    className="w-full"
+                  >
+                    <SelectItem value="SIM">Sim</SelectItem>
+                    <SelectItem value="NÃO">Não</SelectItem>
+                  </CelerInputField>
 
-                    <div className="grid min-w-40 md:col-span-3 lg:col-span-2 xl:col-span-1">
-                      <CelerInputField
-                        name="possui_processos_check"
-                        fieldType={InputFieldVariant.SELECT}
-                        label={`Possui Processos ?`}
-                        defaultValue={data?.properties["Possui processos?"]?.checkbox ? "SIM" : "NÃO"}
-                        onValueChange={(_, value) => handleUpdateEmissaoProcesso(value, id, "Possui processos?")}
-                        isLoading={loadingUpdateState === "Possui processos?"}
-                        disabled={editLock}
-                        className="w-full"
-                      >
-                        <SelectItem value="SIM">Sim</SelectItem>
-                        <SelectItem value="NÃO">Não</SelectItem>
-                      </CelerInputField>
+                  {(!data?.properties["Possui processos?"]?.checkbox && requiredInputsErrorType === "Revisão de Due Diligence") && (
+                    <p className="text-red-500 dark:text-red-400 text-xs mt-2">Preenchimento obrigatório</p>
+                  )}
+                </div>
 
-                      {(!data?.properties["Possui processos?"]?.checkbox && requiredInputsErrorType === "Revisão de Due Diligence") && (
-                        <p className="text-red-500 dark:text-red-400 text-xs mt-2">Preenchimento obrigatório</p>
-                      )}
-                    </div>
-
-                    <div className="grid 2xsm:w-full md:w-115 md:col-span-6 xl:col-span-2">
-                      <CelerInputField
-                        className="w-full gap-2"
-                        fieldType={InputFieldVariant.SELECT}
-                        name="regime_casamento"
-                        label="Estado Civil"
-                        iconSrc={<BsCalendar2HeartFill />}
-                        defaultValue={
+                <div className="grid 2xsm:w-full md:w-115 md:col-span-6 xl:col-span-2">
+                  <CelerInputField
+                    className="w-full gap-2"
+                    fieldType={InputFieldVariant.SELECT}
+                    name="regime_casamento"
+                    label="Estado Civil"
+                    iconSrc={<BsCalendar2HeartFill />}
+                    defaultValue={
+                      credorIdentificationType === "CPF"
+                        ? cedenteDataPF?.properties["Estado Civil"]?.select?.name || ''
+                        : socioData?.properties["Estado Civil"]?.select?.name || ''
+                    }
+                    onValueChange={(_, value) => handleUpdateDataSelect(value,
+                      credorIdentificationType === "CPF"
+                        ? cedenteDataPF?.id!
+                        : socioData?.id!
+                      , "Estado Civil")}
+                    isLoading={loadingUpdateState === "Estado Civil"}
+                    required
+                    disabled={editLock}
+                  >
+                    {estadoCivil.map((item, index) => (
+                      <SelectItem
+                        defaultChecked={
                           credorIdentificationType === "CPF"
-                            ? cedenteDataPF?.properties["Estado Civil"]?.select?.name || ''
-                            : socioData?.properties["Estado Civil"]?.select?.name || ''
+                            ? cedenteDataPF?.properties["Estado Civil"]?.select?.name === item
+                            : socioData?.properties["Estado Civil"]?.select?.name === item
                         }
-                        onValueChange={(_, value) => handleUpdateDataSelect(value,
-                          credorIdentificationType === "CPF"
-                            ? cedenteDataPF?.id!
-                            : socioData?.id!
-                          , "Estado Civil")}
-                        isLoading={loadingUpdateState === "Estado Civil"}
-                        required
-                        disabled={editLock}
+                        key={index}
+                        value={item}
                       >
-                        {estadoCivil.map((item, index) => (
-                          <SelectItem
-                            defaultChecked={
-                              credorIdentificationType === "CPF"
-                                ? cedenteDataPF?.properties["Estado Civil"]?.select?.name === item
-                                : socioData?.properties["Estado Civil"]?.select?.name === item
-                            }
-                            key={index}
-                            value={item}
-                          >
-                            {item}
-                          </SelectItem>
-                        ))}
-                      </CelerInputField>
+                        {item}
+                      </SelectItem>
+                    ))}
+                  </CelerInputField>
 
-                      {credorIdentificationType === "CPF" && !cedenteDataPF?.properties["Estado Civil"]?.select?.name && requiredInputsErrorType === "Revisão de Due Diligence" && (
-                        <p className="text-red-500 dark:text-red-400 text-xs mt-2">Preenchimento obrigatório</p>
-                      )}
+                  {credorIdentificationType === "CPF" && !cedenteDataPF?.properties["Estado Civil"]?.select?.name && requiredInputsErrorType === "Revisão de Due Diligence" && (
+                    <p className="text-red-500 dark:text-red-400 text-xs mt-2">Preenchimento obrigatório</p>
+                  )}
 
-                      {credorIdentificationType === "CNPJ" && !socioData?.properties["Estado Civil"]?.select?.name && requiredInputsErrorType === "Revisão de Due Diligence" && (
-                        <p className="text-red-500 dark:text-red-400 text-xs mt-2">Preenchimento obrigatório</p>
-                      )}
-                    </div>
-                  </div>
+                  {credorIdentificationType === "CNPJ" && !socioData?.properties["Estado Civil"]?.select?.name && requiredInputsErrorType === "Revisão de Due Diligence" && (
+                    <p className="text-red-500 dark:text-red-400 text-xs mt-2">Preenchimento obrigatório</p>
+                  )}
                 </div>
-                <div className="col-span-4 gap-4">
+              </div>
+            </div>
+            <div className="col-span-4 gap-4">
 
-                  <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4">
 
-                    <button
-                      onClick={() => data && setCedenteModal(data)}
-                      className="border border-strokedark/20 dark:border-stroke/20 dark:text-white text-slate-600 py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium hover:bg-strokedark/20 dark:hover:bg-stroke/20 transition-colors duration-200"
-                    >
-                      {(data?.properties["Cedente PF"].relation?.[0] || data?.properties["Cedente PJ"].relation?.[0]) ? (
-                        <>
-                          <BsPencilSquare />
-                          Editar Cedente
-                        </>
-                      ) : (
-                        <>
-                          <GrDocumentUser />
-                          Cadastrar Cedente
-                        </>
-                      )}
-                    </button>
-                    <button
-                      onClick={() => data && setDocModalInfo(data)}
-                      className="border border-strokedark/20 dark:border-stroke/20 dark:text-white text-slate-600 py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium hover:bg-strokedark/20 dark:hover:bg-stroke/20 transition-colors duration-200"
-                    >
-                      <FaRegFilePdf />
-                      Gerir Documentos
-                    </button>
-                  </div>
-                </div>
-              </section>
-            )}
+                <button
+                  onClick={() => data && setCedenteModal(data)}
+                  className="border border-strokedark/20 dark:border-stroke/20 dark:text-white text-slate-600 py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium hover:bg-strokedark/20 dark:hover:bg-stroke/20 transition-colors duration-200"
+                >
+                  {(data?.properties["Cedente PF"].relation?.[0] || data?.properties["Cedente PJ"].relation?.[0]) ? (
+                    <>
+                      <BsPencilSquare />
+                      Editar Cedente
+                    </>
+                  ) : (
+                    <>
+                      <GrDocumentUser />
+                      Cadastrar Cedente
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={() => data && setDocModalInfo(data)}
+                  className="border border-strokedark/20 dark:border-stroke/20 dark:text-white text-slate-600 py-2 px-4 rounded-md flex items-center gap-3 uppercase text-sm font-medium hover:bg-strokedark/20 dark:hover:bg-stroke/20 transition-colors duration-200"
+                >
+                  <FaRegFilePdf />
+                  Gerir Documentos
+                </button>
+              </div>
+            </div>
+          </section>
 
           <section className="form-inputs-container" id="info_processo">
             <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
