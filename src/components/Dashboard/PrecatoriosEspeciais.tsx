@@ -81,7 +81,9 @@ const PrecatoriosEspeciais = () => {
                 />
             </section>
             <div className="container mx-auto my-6 rounded-md bg-white pb-10 pt-4 dark:bg-boxdark">
-                <LOASynthesisChart data={synthesisData?.results} />
+                <div className="grid grid-cols-12 rounded-md bg-white dark:bg-boxdark">
+                    <LOASynthesisChart data={synthesisData?.results} />
+                </div>
             </div>
         </>
     );
