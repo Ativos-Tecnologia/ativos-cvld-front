@@ -1,15 +1,16 @@
-"use client"
-import React from 'react'
-import ReactApexChart from "react-apexcharts";
+'use client';
+import React from 'react';
+import ReactApexChart from 'react-apexcharts';
 import CustomSkeleton from '../CrmUi/CustomSkeleton';
 
 interface ISysthesisChartProps {
-    data?: Array<Record<string | number, string | number>>
+    data?: Array<Record<string | number, string | number>>;
 }
 
 const LOASynthesisChart = ({ data }: ISysthesisChartProps) => {
-
-    const [series, setSeries] = React.useState<{ data: { x: string, y: number }[] }[] | undefined>([])
+    const [series, setSeries] = React.useState<{ data: { x: string; y: number }[] }[] | undefined>(
+        [],
+    );
 
     const options: ApexCharts.ApexOptions = {
         chart: {
@@ -23,9 +24,9 @@ const LOASynthesisChart = ({ data }: ISysthesisChartProps) => {
                     zoomin: true,
                     zoomout: true,
                     pan: true,
-                    reset: true
+                    reset: true,
                 },
-                offsetY: -10
+                offsetY: -10,
             },
         },
         plotOptions: {
@@ -38,7 +39,7 @@ const LOASynthesisChart = ({ data }: ISysthesisChartProps) => {
         tooltip: {
             custom: ({ seriesIndex, dataPointIndex, w }) => {
                 const data = w.config.series[seriesIndex].data[dataPointIndex];
-                const dataColor = w.globals.colors[dataPointIndex]
+                const dataColor = w.globals.colors[dataPointIndex];
                 return `
                 <div class="treemap-tooltip" >
                     <div class="tooltip-title">
@@ -57,23 +58,20 @@ const LOASynthesisChart = ({ data }: ISysthesisChartProps) => {
             labels: {
                 style: {
                     colors: 'lightgray',
-                    fontSize: '12px'
-                }
-            }
-        }
+                    fontSize: '12px',
+                },
+            },
+        },
     };
 
     function formatData({ data }: ISysthesisChartProps) {
-
         return [
             {
-                data: data!.map((item) => (
-                    {
-                        x: String(item["LOA - Acumulado"]),
-                        y: Number(item["TOTAL"])
-                    }
-                ))
-            }
+                data: data!.map((item) => ({
+                    x: String(item['LOA - Acumulado']),
+                    y: Number(item['TOTAL']),
+                })),
+            },
         ];
     }
 
@@ -82,26 +80,26 @@ const LOASynthesisChart = ({ data }: ISysthesisChartProps) => {
             const dataToAppend = formatData({ data });
             setSeries(dataToAppend);
         }
-    }, [data])
+    }, [data]);
 
     if (!data) {
         return (
             <>
-                <div className='flex items-center justify-between mb-3'>
-                    <CustomSkeleton type='title' className='h-8 w-[250px]' />
-                    <CustomSkeleton type='content' className='h-8 w-8' />
+                <div className="mb-3 flex items-center justify-between">
+                    <CustomSkeleton type="title" className="h-8 w-[250px]" />
+                    <CustomSkeleton type="content" className="h-8 w-8" />
                 </div>
-                <CustomSkeleton type='content' className='h-80 w-full' />
+                <CustomSkeleton type="content" className="h-80 w-full" />
             </>
-        )
+        );
     }
 
     return (
         <>
-            <h2 className='md:text-2xl 2xsm:text-[18px] font-medium'>Síntese das LOA'S</h2>
+            <h2 className="font-medium 2xsm:text-[18px] md:text-2xl">Síntese das LOA'S</h2>
             <ReactApexChart options={options} series={series} type="treemap" />
         </>
-    )
-}
+    );
+};
 
 export default LOASynthesisChart;
