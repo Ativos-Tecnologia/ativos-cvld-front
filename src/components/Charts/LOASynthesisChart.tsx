@@ -1,14 +1,15 @@
 "use client"
 import React from 'react'
 import ReactApexChart from "react-apexcharts";
+import CustomSkeleton from '../CrmUi/CustomSkeleton';
 
 interface ISysthesisChartProps {
-    data: Array<Record<string | number, string | number>>
+    data?: Array<Record<string | number, string | number>>
 }
 
-const LOASynthesis = ({ data }: ISysthesisChartProps) => {
+const LOASynthesisChart = ({ data }: ISysthesisChartProps) => {
 
-    const [series, setSeries] = React.useState<Array<{ data: { x: string, y: number }[] }>>([])
+    const [series, setSeries] = React.useState<{ data: { x: string, y: number }[] }[] | undefined>([])
 
     const options: ApexCharts.ApexOptions = {
         chart: {
@@ -32,7 +33,6 @@ const LOASynthesis = ({ data }: ISysthesisChartProps) => {
                 distributed: true, // Cada bloco terá uma cor diferente
                 enableShades: false,
                 borderRadius: 0,
-
             },
         },
         tooltip: {
@@ -67,7 +67,7 @@ const LOASynthesis = ({ data }: ISysthesisChartProps) => {
 
         return [
             {
-                data: data.map((item) => (
+                data: data!.map((item) => (
                     {
                         x: String(item["LOA - Acumulado"]),
                         y: Number(item["TOTAL"])
@@ -85,7 +85,15 @@ const LOASynthesis = ({ data }: ISysthesisChartProps) => {
     }, [data])
 
     if (!data) {
-        return null;
+        return (
+            <>
+                <div className='flex items-center justify-between mb-3'>
+                    <CustomSkeleton type='title' className='h-8 w-[250px]' />
+                    <CustomSkeleton type='content' className='h-8 w-8' />
+                </div>
+                <CustomSkeleton type='content' className='h-80 w-full' />
+            </>
+        )
     }
 
     return (
@@ -96,4 +104,4 @@ const LOASynthesis = ({ data }: ISysthesisChartProps) => {
     )
 }
 
-export default LOASynthesis;
+export default LOASynthesisChart;
