@@ -1,37 +1,36 @@
 import numberFormat from '@/functions/formaters/numberFormat';
+import { ILOADistribuitionResult } from '@/interfaces/ILOADistribuitionResults';
 import { ApexOptions } from 'apexcharts';
 import Chart from 'react-apexcharts';
+import { AiOutlineLoading } from 'react-icons/ai';
 
-const getRandomColor = () =>
-    `#${Math.floor(Math.random() * 16777215)
-        .toString(16)
-        .padStart(6, '0')}`;
+const getRandomColor = () => {
+    const r = Math.floor(Math.random() * 256);
+    const g = Math.floor(Math.random() * 256);
+    const b = Math.floor(Math.random() * 256);
+    return `rgba(${r}, ${g}, ${b}, 0.8)`;
+};
 
-const rawData = [
-    { x: 2006, y: 767775.65, natureza: 'teste' },
-    { x: 2011, y: 8145025.59, natureza: 'teste' },
-    { x: 2015, y: 442717.89, natureza: 'novo' },
-    { x: 2016, y: 275580.63, natureza: 'novo' },
-    { x: 2017, y: 1934918.39, natureza: 'teste' },
-    { x: 2019, y: 2410012.44, natureza: 'teste' },
-    { x: 2021, y: 107.45, natureza: 'teste' },
-    { x: 2022, y: 306747.84, natureza: 'novo' },
-    { x: 2023, y: 55550349.3, natureza: 'novo' },
-    { x: 2024, y: 195756935.65, natureza: 'teste' },
-    { x: 2025, y: 184417001.3, natureza: 'teste' },
-    { x: 2026, y: 99541332.08, natureza: 'teste' },
-];
+interface LOADistribuitionBubbleChartProps {
+    results: ILOADistribuitionResult[];
+    isLoading: boolean;
+}
 
-const calculateZ = (y: number) => Math.max(Math.sqrt(y) / 1000, 6);
-
-const data = rawData.map((item) => ({
-    ...item,
-    z: calculateZ(item.y),
-    color: getRandomColor(),
-}));
-
-export function BubbleChart() {
+export function LOADistribuitionBubbleChart({
+    results,
+    isLoading,
+}: LOADistribuitionBubbleChartProps) {
     const isDarkMode = localStorage.getItem('color-theme') === '"dark"';
+
+    const calculateZ = (y: number) => Math.max(Math.sqrt(y) / 150, 15);
+
+    const data = results.map((item) => ({
+        ...item,
+        x: item.LOA,
+        y: item['Valor do Precatório Atualizado'],
+        z: calculateZ(item['Valor do Precatório Atualizado']),
+        fillColor: getRandomColor(),
+    }));
 
     const options: ApexOptions = {
         chart: {
@@ -59,6 +58,9 @@ export function BubbleChart() {
                 zScaling: true,
             },
         },
+        fill: {
+            opacity: 0.7,
+        },
         tooltip: {
             custom: ({ dataPointIndex }) => {
                 const item = data[dataPointIndex];
@@ -77,13 +79,13 @@ export function BubbleChart() {
                         <div style="
                             width: 12px; 
                             height: 12px; 
-                            background: ${item.color}; 
+                            background: ${item.fillColor}; 
                             border-radius: 6px;
                         "></div>
                         <strong style="font-size: 16px">Ano: ${item.x}</strong>
                     </div>
                     <span style="display: block;"><span style="font-weight: bold">Valor:</span> ${numberFormat(item.y)}<span/>
-                    <span style="display: block;"><span style="font-weight: bold">Natureza:</span> ${item.natureza}<span/>
+                    <span style="display: block;"><span style="font-weight: bold">Natureza:</span> ${item.Natureza}<span/>
                 </div>
               `;
             },
@@ -93,11 +95,11 @@ export function BubbleChart() {
     const series = [
         {
             name: 'Valores',
-            data: data.map((item) => ({
-                x: item.x,
-                y: item.y,
-                z: item.z,
-                fillColor: item.color,
+            data: data.map(({ x, y, z, fillColor }) => ({
+                x,
+                y,
+                z,
+                fillColor,
             })),
         },
     ];
@@ -106,10 +108,16 @@ export function BubbleChart() {
         <div className="rounded-sm border border-stroke bg-white py-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-4">
             <div className="mb-3 ml-2 justify-between gap-4 sm:flex">
                 <h5 className="mt-4 font-rooftop text-xl tracking-wider text-black dark:text-white">
-                    Distribuição do valor por LOA's
+                    Distribuição do valor por LOAs
                 </h5>
             </div>
-            <Chart options={options} series={series} type="bubble" height="400" />
+            {isLoading ? (
+                <div className="flex h-15 w-full items-center justify-center">
+                    <AiOutlineLoading className="animate-spin" />
+                </div>
+            ) : (
+                <Chart options={options} series={series} type="bubble" height="400" />
+            )}
         </div>
     );
 }
