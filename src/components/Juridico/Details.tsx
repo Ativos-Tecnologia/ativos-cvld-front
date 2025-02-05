@@ -1360,6 +1360,8 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
 
   }, [data]);
 
+  console.log(data)
+
   if (!data) {
     return (
       <JuridicoDetailsSkeleton />
@@ -1604,7 +1606,7 @@ ${(data?.properties["Observação"]?.rich_text?.[0]?.text?.content ?? "")}
                 disabled={editLock}
               />
             </div>
-            <div className="2xsm:col-span-4 md:col-span-2 xl:col-span-1">
+            <div className={`2xsm:col-span-4 md:col-span-2 xl:col-span-1 ${data?.properties["Esfera"].select?.name === "FEDERAL" && "hidden"}`}>
               <CelerInputField
                 name="estado_ente_devedor"
                 fieldType={InputFieldVariant.SELECT}
