@@ -26,7 +26,7 @@ const LOASynthesisChart = ({ data }: ISysthesisChartProps) => {
                     reset: true
                 },
                 offsetY: -10
-            },
+            }
         },
         plotOptions: {
             treemap: {
@@ -60,7 +60,25 @@ const LOASynthesisChart = ({ data }: ISysthesisChartProps) => {
                     fontSize: '12px'
                 }
             }
-        }
+        },
+        responsive: [
+            {
+                breakpoint: 430,
+                options: {
+                    chart: {
+                        height: 400
+                    }
+                }
+            },
+            {
+                breakpoint: 768,
+                options: {
+                    chart: {
+                        height: 500
+                    }
+                }
+            }
+        ]
     };
 
     function formatData({ data }: ISysthesisChartProps) {
@@ -97,10 +115,10 @@ const LOASynthesisChart = ({ data }: ISysthesisChartProps) => {
     }
 
     return (
-        <>
+        <div className='col-span-12 px-5 pb-6 pt-7.5'>
             <h2 className='md:text-2xl 2xsm:text-[18px] font-medium'>Síntese das LOA'S</h2>
-            <ReactApexChart options={options} series={series} type="treemap" />
-        </>
+            <ReactApexChart options={options} series={series} height={600} type="treemap" />
+        </div>
     )
 }
 

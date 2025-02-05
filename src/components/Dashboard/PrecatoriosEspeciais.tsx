@@ -18,7 +18,7 @@ const PrecatoriosEspeciais = () => {
 
     return (
         <>
-            <div className="container mx-auto pb-10 pt-4 bg-white dark:bg-boxdark rounded-md">
+            <div className="grid grid-cols-12 bg-white rounded-md dark:bg-boxdark">
                 <LOASynthesisChart data={synthesisData?.results} />
             </div>
         </>
