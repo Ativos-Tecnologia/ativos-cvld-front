@@ -6,9 +6,15 @@ import api from '@/utils/api';
 import { Boxes } from '../BackgroundBoxes';
 import { cn } from '@/lib/utils';
 import { estados } from '@/constants/estados';
+import { CelerInputField } from '../CrmUi/InputFactory';
+import { InputFieldVariant } from '@/enums/inputFieldVariants.enum';
+import { SelectItem } from '../ui/select';
+import CelerAppCombobox from '../CrmUi/Combobox';
+import CRMTooltip from '../CrmUi/Tooltip';
 import { CardResumoPrecatorioEspecial } from '../Cards/CardResumoPrecatorioEspecial';
 import { Card, CardHeader, CardTitle } from '../ui/card';
-import { BadgeInfoIcon } from 'lucide-react';
+import { BadgeDollarSign, BadgeInfoIcon } from 'lucide-react';
+import { LOADistribuitionBubbleChart } from '../Charts/LOADistribuitionBubbleChart';
 
 const PrecatoriosEspeciais = () => {
     const {
@@ -105,6 +111,22 @@ const PrecatoriosEspeciais = () => {
                 <div className="grid grid-cols-12 rounded-md bg-white dark:bg-boxdark">
                     <LOASynthesisChart data={synthesisData?.results} />
                 </div>
+            </Card>
+            <Card
+                className={`mx-auto my-6 w-full translate-y-0 transform overflow-hidden opacity-100 transition-all duration-300 ease-out`}
+            >
+                <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-400 text-white">
+                    <CardTitle className="flex items-center gap-2 text-2xl font-bold">
+                        <BadgeDollarSign size={28} />
+                        Estoque de Precatórios
+                    </CardTitle>
+                </CardHeader>
+                {/* <div className="mx-auto my-6 rounded-md bg-white dark:bg-boxdark">
+                    <LOADistribuitionBubbleChart
+                        results={precatoryData?.results}
+                        isLoading={precatoryLoading}
+                    />
+                </div> */}
             </Card>
         </>
     );

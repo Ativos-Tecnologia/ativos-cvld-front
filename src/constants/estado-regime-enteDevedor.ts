@@ -193,6 +193,7 @@ export const estadoRegimeEnteDevedor: IEstadoRegimeEnteDevedor = {
     },
     AM: {
         GERAL: [
+            'Município de São Pedro da Água Branca',
             'Estado do Amazonas',
             'Município de Alvarães',
             'Município de Amaturá',
