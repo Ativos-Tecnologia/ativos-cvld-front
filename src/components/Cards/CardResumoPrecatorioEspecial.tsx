@@ -64,7 +64,7 @@ export function CardResumoPrecatorioEspecial({
 
     return (
         <Card
-            className={`mx-auto w-full overflow-hidden transition-all duration-300 ease-out ${animate ? 'translate-y-0 transform opacity-100' : 'translate-y-10 transform opacity-0'}`}
+            className={`mx-auto w-full overflow-hidden rounded-md transition-all duration-300 ease-out ${animate ? 'translate-y-0 transform opacity-100' : 'translate-y-10 transform opacity-0'}`}
         >
             <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-400 text-white">
                 <CardTitle className="flex items-center gap-2 text-2xl font-bold">
