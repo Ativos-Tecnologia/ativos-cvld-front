@@ -28,8 +28,8 @@ export function LOADistribuitionBubbleChart({
     const processedData = React.useMemo(() => {
         return results.map((item) => ({
             ...item,
-            x: item.LOA,
-            y: item['Valor do Precatório Atualizado'],
+            x: Date.parse(item.Recebimento),
+            y: item['MÊS E ANO DO PAGAMENTO'],
             z: calculateZ(item['Valor do Precatório Atualizado']),
             fillColor: getRandomColor(),
         }));
@@ -38,12 +38,7 @@ export function LOADistribuitionBubbleChart({
     const series = React.useMemo(() => {
         return [
             {
-                data: processedData.map(({ x, y, z, fillColor }) => ({
-                    x,
-                    y,
-                    z,
-                    fillColor,
-                })),
+                data: processedData.map(({ x, y, z, fillColor }) => ({ x, y, z, fillColor })),
             },
         ];
     }, [processedData]);
@@ -55,34 +50,22 @@ export function LOADistribuitionBubbleChart({
                 // toolbar: { show: true },
                 animations: { enabled: false },
                 zoom: {
-                    enabled: true,
+                    enabled: false,
                     type: 'x',
                     autoScaleYaxis: false,
                 },
             },
             xaxis: {
-                title: { text: 'Ano' },
-                min: processedData.length
-                    ? Math.min(...processedData.map((item) => item.x)) - 3
-                    : 0,
-                max: processedData.length
-                    ? Math.max(...processedData.map((item) => item.x)) + 2
-                    : 0,
+                title: {
+                    text: 'Data do Recebimento',
+                },
             },
             yaxis: {
-                title: { text: 'Valor Liquido (R$)' },
-                min: processedData.length
-                    ? Math.max(...processedData.map((item) => item.y)) * -0.2
-                    : 0,
-                max: processedData.length
-                    ? Math.max(...processedData.map((item) => item.y)) * 1.2
-                    : 0,
-                labels: { formatter: (value) => numberFormat(value) },
+                title: { text: 'Data do Pagamento' },
+                labels: { formatter: (value) => '' },
             },
             dataLabels: {
-                enabled: true,
-                formatter: (_, opts) => processedData[opts.dataPointIndex].x,
-                style: { colors: [isDarkMode ? '#fff' : '#000'] },
+                enabled: false,
             },
             plotOptions: {
                 bubble: {
@@ -113,10 +96,10 @@ export function LOADistribuitionBubbleChart({
                           background: ${item.fillColor}; 
                           border-radius: 6px;
                         "></div>
-                        <strong style="font-size: 16px">Ano: ${item.x}</strong>
+                        <strong style="font-size: 16px">LOA: ${item.LOA}</strong>
                       </div>
-                      <span style="display: block;"><span style="font-weight: bold">Valor:</span> ${numberFormat(item.y)}</span>
-                      <span style="display: block;"><span style="font-weight: bold">Natureza:</span> ${item.Natureza}</span>
+                      <span style="display: block;"><span style="font-weight: bold">Valor:</span> ${numberFormat(item['Valor do Precatório Atualizado'])}</span>
+                      <span style="display: block;"><span style="font-weight: bold">Data do pagamento:</span> ${item['MÊS E ANO DO PAGAMENTO']}</span>
                     </div>
                     `;
                 },
@@ -125,7 +108,7 @@ export function LOADistribuitionBubbleChart({
     }, [processedData, isDarkMode]);
 
     return (
-        <div className="rounded-sm border border-stroke bg-white py-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-4">
+        <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark sm:px-4">
             <div className="mb-3 ml-2 justify-between gap-4 sm:flex">
                 <h5 className="mt-4 font-rooftop text-xl tracking-wider text-black dark:text-white">
                     Distribuição do valor por LOAs

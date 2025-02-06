@@ -14,7 +14,17 @@ import CRMTooltip from '../CrmUi/Tooltip';
 import { CardResumoPrecatorioEspecial } from '../Cards/CardResumoPrecatorioEspecial';
 import { Card, CardHeader, CardTitle } from '../ui/card';
 import { BadgeDollarSign, BadgeInfoIcon } from 'lucide-react';
+import ColumnChart from '../Charts/ColumnChart';
 import { LOADistribuitionBubbleChart } from '../Charts/LOADistribuitionBubbleChart';
+
+const chartProps = {
+    COMUM: [
+        'MONTANTE TOTAL ATÉ ANO ANTERIOR AO DE REFERÊNCIA',
+        'SALDO DEVEDOR TOTAL  APÓS PAGAMENTO',
+    ],
+    HISTORICO: ['MONTANTE TOTAL PAGO NO ANO DE REFERÊNCIA '],
+    PROJEÇÃO: ['MONTANTE TOTAL A SER PAGO NO ANO DE REFERÊNCIA'],
+};
 
 const PrecatoriosEspeciais = () => {
     const {
@@ -39,6 +49,34 @@ const PrecatoriosEspeciais = () => {
         queryKey: ['overviewData'],
         queryFn: async () => {
             const response = await api.post(`api/precatorios-especiais/extrair-resumo/`);
+
+            return response.data;
+        },
+        refetchOnWindowFocus: false,
+    });
+
+    const {
+        data: paymentHistoricData,
+        isLoading: paymentHistoricLoading,
+        refetch: refetchPaymentHistoricData,
+    } = useQuery({
+        queryKey: ['paymentHistoricData'],
+        queryFn: async () => {
+            const response = await api.post('/api/precatorios-especiais/extrair-historico/');
+
+            return response.data;
+        },
+        refetchOnWindowFocus: false,
+    });
+
+    const {
+        data: paymentProjectionData,
+        isLoading: paymentProjectionLoading,
+        refetch: refetchPaymentProjectionData,
+    } = useQuery({
+        queryKey: ['paymentProjectionData'],
+        queryFn: async () => {
+            const response = await api.post('/api/precatorios-especiais/extrair-projecao/');
 
             return response.data;
         },
@@ -78,8 +116,8 @@ const PrecatoriosEspeciais = () => {
     }
 
     return (
-        <>
-            <div className="relative flex h-[85vh] w-full flex-col items-center justify-center overflow-hidden rounded-lg bg-slate-900">
+        <div className="grid grid-cols-12 gap-6">
+            <div className="relative col-span-12 flex h-[85vh] w-full flex-col items-center justify-center overflow-hidden rounded-lg bg-slate-900">
                 <div className="pointer-events-none absolute inset-0 z-20 h-full w-full bg-slate-900 [mask-image:radial-gradient(transparent,white)]" />
 
                 <Boxes />
@@ -90,7 +128,7 @@ const PrecatoriosEspeciais = () => {
                     Nosso motor de análise de dados e inteligência artificial
                 </p>
             </div>
-            <section className="mx-auto my-6 rounded-md bg-white dark:bg-boxdark">
+            <section className="col-span-12 mx-auto w-full rounded-md bg-white dark:bg-boxdark">
                 <CardResumoPrecatorioEspecial
                     data={overviewData?.results}
                     estados={estados.map((item) => item.nome)}
@@ -100,7 +138,7 @@ const PrecatoriosEspeciais = () => {
                 />
             </section>
             <Card
-                className={`mx-auto w-full translate-y-0 transform overflow-hidden opacity-100 transition-all duration-300 ease-out`}
+                className={`col-span-12 mx-auto w-full translate-y-0 transform overflow-hidden opacity-100 transition-all duration-300 ease-out`}
             >
                 <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-400 text-white">
                     <CardTitle className="flex items-center gap-2 text-2xl font-bold">
@@ -108,12 +146,46 @@ const PrecatoriosEspeciais = () => {
                         Síntese de LOAs
                     </CardTitle>
                 </CardHeader>
-                <div className="grid grid-cols-12 rounded-md bg-white dark:bg-boxdark">
+                <div className="grid grid-cols-12 rounded-bl-md rounded-br-md bg-white dark:bg-boxdark">
                     <LOASynthesisChart data={synthesisData?.results} />
                 </div>
             </Card>
+
             <Card
-                className={`mx-auto my-6 w-full translate-y-0 transform overflow-hidden opacity-100 transition-all duration-300 ease-out`}
+                className={`col-span-6 mx-auto w-full translate-y-0 transform overflow-hidden opacity-100 transition-all duration-300 ease-out`}
+            >
+                <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-400 text-white">
+                    <CardTitle className="flex items-center gap-2 text-2xl font-bold">
+                        <BadgeInfoIcon size={28} />
+                        Histórico de Pagamentos
+                    </CardTitle>
+                </CardHeader>
+                <div className="grid grid-cols-12 rounded-bl-md rounded-br-md bg-white dark:bg-boxdark">
+                    <ColumnChart
+                        data={paymentHistoricData?.results}
+                        propsArray={[...chartProps['HISTORICO'], ...chartProps['COMUM']]}
+                    />
+                </div>
+            </Card>
+
+            <Card
+                className={`col-span-6 mx-auto w-full translate-y-0 transform overflow-hidden opacity-100 transition-all duration-300 ease-out`}
+            >
+                <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-400 text-white">
+                    <CardTitle className="flex items-center gap-2 text-2xl font-bold">
+                        <BadgeInfoIcon size={28} />
+                        Projeção de Pagamentos
+                    </CardTitle>
+                </CardHeader>
+                <div className="grid grid-cols-12 rounded-bl-md rounded-br-md bg-white dark:bg-boxdark">
+                    <ColumnChart
+                        data={paymentProjectionData?.results}
+                        propsArray={[...chartProps['PROJEÇÃO'], ...chartProps['COMUM']]}
+                    />
+                </div>
+            </Card>
+            <Card
+                className={`col-span-12 mx-auto my-6 w-full translate-y-0 transform overflow-hidden opacity-100 transition-all duration-300 ease-out`}
             >
                 <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-400 text-white">
                     <CardTitle className="flex items-center gap-2 text-2xl font-bold">
@@ -121,14 +193,14 @@ const PrecatoriosEspeciais = () => {
                         Estoque de Precatórios
                     </CardTitle>
                 </CardHeader>
-                {/* <div className="mx-auto my-6 rounded-md bg-white dark:bg-boxdark">
+                <div className="mx-auto rounded-md bg-white dark:bg-boxdark">
                     <LOADistribuitionBubbleChart
-                        results={precatoryData?.results}
+                        results={precatoryData?.results.slice(0, 50)}
                         isLoading={precatoryLoading}
                     />
-                </div> */}
+                </div>
             </Card>
-        </>
+        </div>
     );
 };
 

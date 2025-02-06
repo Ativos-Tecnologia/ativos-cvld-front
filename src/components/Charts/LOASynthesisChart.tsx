@@ -103,14 +103,14 @@ const LOASynthesisChart = ({ data }: ISysthesisChartProps) => {
 
     if (!data) {
         return (
-            <>
-                <div className="mb-3 flex items-center justify-between">
-                    <CustomSkeleton type="title" className="h-8 w-[250px]" />
-                    <CustomSkeleton type="content" className="h-8 w-8" />
+            <div className='col-span-12 px-5 pb-6 pt-7.5'>
+                <div className='flex items-center justify-between mb-3'>
+                    <CustomSkeleton type='title' className='h-8 w-[250px]' />
+                    <CustomSkeleton type='content' className='h-8 w-8' />
                 </div>
-                <CustomSkeleton type="content" className="h-80 w-full" />
-            </>
-        );
+                <CustomSkeleton type='content' className='h-80 w-full' />
+            </div>
+        )
     }
 
     return (
