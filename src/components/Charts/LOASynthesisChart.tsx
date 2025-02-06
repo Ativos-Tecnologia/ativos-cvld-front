@@ -1,15 +1,16 @@
-"use client"
-import React from 'react'
-import ReactApexChart from "react-apexcharts";
+'use client';
+import React from 'react';
+import ReactApexChart from 'react-apexcharts';
 import CustomSkeleton from '../CrmUi/CustomSkeleton';
 
 interface ISysthesisChartProps {
-    data?: Array<Record<string | number, string | number>>
+    data?: Array<Record<string | number, string | number>>;
 }
 
 const LOASynthesisChart = ({ data }: ISysthesisChartProps) => {
-
-    const [series, setSeries] = React.useState<{ data: { x: string, y: number }[] }[] | undefined>([])
+    const [series, setSeries] = React.useState<{ data: { x: string; y: number }[] }[] | undefined>(
+        [],
+    );
 
     const options: ApexCharts.ApexOptions = {
         chart: {
@@ -23,24 +24,25 @@ const LOASynthesisChart = ({ data }: ISysthesisChartProps) => {
                     zoomin: true,
                     zoomout: true,
                     pan: true,
-                    reset: true
+                    reset: true,
                 },
-                offsetY: -10
-            }
+                offsetY: -10,
+            },
         },
         plotOptions: {
             treemap: {
-                distributed: true, // Cada bloco terá uma cor diferente
-                enableShades: false,
+                distributed: true,
+                enableShades: true,
                 borderRadius: 0,
+                shadeIntensity: 0.2,
             },
         },
         tooltip: {
             custom: ({ seriesIndex, dataPointIndex, w }) => {
                 const data = w.config.series[seriesIndex].data[dataPointIndex];
-                const dataColor = w.globals.colors[dataPointIndex]
+                const dataColor = w.globals.colors[dataPointIndex];
                 return `
-                <div class="treemap-tooltip" >
+                <div class="treemap-tooltip text-white bg-boxdark p-3 rounded-lg">
                     <div class="tooltip-title">
                         <span style="background-color: ${dataColor};" class="tooltip-title-dot"></span>
                         <p>${data.x}</p>
@@ -57,41 +59,38 @@ const LOASynthesisChart = ({ data }: ISysthesisChartProps) => {
             labels: {
                 style: {
                     colors: 'lightgray',
-                    fontSize: '12px'
-                }
-            }
+                    fontSize: '12px',
+                },
+            },
         },
         responsive: [
             {
                 breakpoint: 430,
                 options: {
                     chart: {
-                        height: 400
-                    }
-                }
+                        height: 400,
+                    },
+                },
             },
             {
                 breakpoint: 768,
                 options: {
                     chart: {
-                        height: 500
-                    }
-                }
-            }
-        ]
+                        height: 500,
+                    },
+                },
+            },
+        ],
     };
 
     function formatData({ data }: ISysthesisChartProps) {
-
         return [
             {
-                data: data!.map((item) => (
-                    {
-                        x: String(item["LOA - Acumulado"]),
-                        y: Number(item["TOTAL"])
-                    }
-                ))
-            }
+                data: data!.map((item) => ({
+                    x: String(item['LOA - Acumulado']),
+                    y: Number(item['TOTAL']),
+                })),
+            },
         ];
     }
 
@@ -100,26 +99,28 @@ const LOASynthesisChart = ({ data }: ISysthesisChartProps) => {
             const dataToAppend = formatData({ data });
             setSeries(dataToAppend);
         }
-    }, [data])
+    }, [data]);
 
     if (!data) {
         return (
             <>
-                <div className='flex items-center justify-between mb-3'>
-                    <CustomSkeleton type='title' className='h-8 w-[250px]' />
-                    <CustomSkeleton type='content' className='h-8 w-8' />
+                <div className="mb-3 flex items-center justify-between">
+                    <CustomSkeleton type="title" className="h-8 w-[250px]" />
+                    <CustomSkeleton type="content" className="h-8 w-8" />
                 </div>
-                <CustomSkeleton type='content' className='h-80 w-full' />
+                <CustomSkeleton type="content" className="h-80 w-full" />
             </>
-        )
+        );
     }
 
     return (
-        <div className='col-span-12 px-5 pb-6 pt-7.5'>
-            <h2 className='md:text-2xl 2xsm:text-[18px] font-medium'>Síntese das LOA'S</h2>
+        <div className="col-span-12 px-5 pb-6 pt-7.5">
+            <h3 className="text-lg font-semibold text-neutral-700 dark:text-neutral-300">
+                A maneira como os recursos estão distribuídos em relação à Lei Orçamentária Anual
+            </h3>
             <ReactApexChart options={options} series={series} height={600} type="treemap" />
         </div>
-    )
-}
+    );
+};
 
 export default LOASynthesisChart;

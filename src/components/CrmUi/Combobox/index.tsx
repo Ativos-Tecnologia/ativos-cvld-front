@@ -24,6 +24,7 @@ type CelerComboboxProps<T extends FieldValues> = {
     placeholder?: string;
     register?: ReturnType<UseFormRegister<T>>;
     name?: keyof T;
+    disabled?: boolean;
 };
 
 const CelerAppCombobox = <T extends FieldValues>({
@@ -35,18 +36,19 @@ const CelerAppCombobox = <T extends FieldValues>({
     placeholder,
     register,
     name,
+    disabled = false,
 }: CelerComboboxProps<T>) => {
     const [open, setOpen] = useState<boolean>(false);
 
     return (
         <>
             <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
+                <PopoverTrigger asChild disabled={disabled}>
                     <Button
                         variant="outline"
                         role="combobox"
                         aria-expanded={open}
-                        className={`min-w-[${size}] ${className} justify-between border-stroke dark:border-strokedark`}
+                        className={`min-w-[${size}] ${className} justify-between border-stroke dark:border-strokedark dark:bg-boxdark dark:text-bodydark2`}
                     >
                         <p className="truncate">{value || 'Selecione...'}</p>
                         <LuChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -71,7 +73,6 @@ const CelerAppCombobox = <T extends FieldValues>({
                                                 : String(item[Object.keys(item)[1]])
                                         }
                                         onSelect={(currentValue) => {
-
                                             onChangeValue!(
                                                 currentValue === value ? '' : currentValue,
                                             );
