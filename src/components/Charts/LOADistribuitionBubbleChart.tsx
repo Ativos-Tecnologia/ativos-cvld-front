@@ -25,98 +25,104 @@ export function LOADistribuitionBubbleChart({
 
     const calculateZ = (y: number) => Math.max(Math.sqrt(y) / 150, 15);
 
-    // Função auxiliar para processar os dados
-    const processData = (dataArray: ILOADistribuitionResult[]) =>
-        dataArray.map((item) => ({
+    const processedData = React.useMemo(() => {
+        return results.map((item) => ({
             ...item,
             x: item.LOA,
             y: item['Valor do Precatório Atualizado'],
             z: calculateZ(item['Valor do Precatório Atualizado']),
             fillColor: getRandomColor(),
         }));
+    }, [results]);
 
-    const processedData = processData(results);
-
-    const [series, setSeries] = React.useState<
-        {
-            data: { x: number; y: number; z: number; fillColor: string }[];
-        }[]
-    >([]);
-
-    React.useEffect(() => {
-        if (processedData.length) {
-            setSeries([
-                {
-                    data: processedData.map(({ x, y, z, fillColor }) => ({
-                        x,
-                        y,
-                        z,
-                        fillColor,
-                    })),
-                },
-            ]);
-        }
-    }, [results]); // Dependendo de results
-
-    const options: ApexOptions = {
-        chart: {
-            id: 'bubble-chart',
-            toolbar: { show: true },
-        },
-        xaxis: {
-            title: { text: 'Ano' },
-            min: Math.min(...processedData.map((item) => item.x)) - 3,
-            max: Math.max(...processedData.map((item) => item.x)) + 2,
-        },
-        yaxis: {
-            title: { text: 'Valor Liquido (R$)' },
-            min: Math.max(...processedData.map((item) => item.y)) * -0.2,
-            max: Math.max(...processedData.map((item) => item.y)) * 1.2,
-            labels: { formatter: (value) => numberFormat(value) },
-        },
-        dataLabels: {
-            enabled: true,
-            formatter: (_, opts) => processedData[opts.dataPointIndex].x,
-            style: { colors: [isDarkMode ? '#fff' : '#000'] },
-        },
-        plotOptions: {
-            bubble: {
-                zScaling: true,
+    const series = React.useMemo(() => {
+        return [
+            {
+                data: processedData.map(({ x, y, z, fillColor }) => ({
+                    x,
+                    y,
+                    z,
+                    fillColor,
+                })),
             },
-        },
-        fill: {
-            opacity: 0.7,
-        },
-        tooltip: {
-            custom: ({ dataPointIndex }) => {
-                const item = processedData[dataPointIndex];
-                return `
-                  <div style="
-                    padding: 12px; 
-                    background: rgba(0, 0, 0, 0.85); 
-                    color: #fff; 
-                    border-radius: 8px; 
-                    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-                    font-size: 14px;
-                    text-align: left;
-                    line-height: 1.6;
-                ">
-                    <div style="display: flex; align-items: center; gap: 8px;">
+        ];
+    }, [processedData]);
+
+    const options: ApexOptions = React.useMemo(() => {
+        return {
+            chart: {
+                id: 'bubble-chart',
+                // toolbar: { show: true },
+                animations: { enabled: false },
+                zoom: {
+                    enabled: true,
+                    type: 'x',
+                    autoScaleYaxis: false,
+                },
+            },
+            xaxis: {
+                title: { text: 'Ano' },
+                min: processedData.length
+                    ? Math.min(...processedData.map((item) => item.x)) - 3
+                    : 0,
+                max: processedData.length
+                    ? Math.max(...processedData.map((item) => item.x)) + 2
+                    : 0,
+            },
+            yaxis: {
+                title: { text: 'Valor Liquido (R$)' },
+                min: processedData.length
+                    ? Math.max(...processedData.map((item) => item.y)) * -0.2
+                    : 0,
+                max: processedData.length
+                    ? Math.max(...processedData.map((item) => item.y)) * 1.2
+                    : 0,
+                labels: { formatter: (value) => numberFormat(value) },
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: (_, opts) => processedData[opts.dataPointIndex].x,
+                style: { colors: [isDarkMode ? '#fff' : '#000'] },
+            },
+            plotOptions: {
+                bubble: {
+                    zScaling: true,
+                },
+            },
+            fill: {
+                opacity: 0.7,
+            },
+            tooltip: {
+                custom: ({ dataPointIndex }) => {
+                    const item = processedData[dataPointIndex];
+                    return `
+                      <div style="
+                        padding: 12px; 
+                        background: rgba(0, 0, 0, 0.85); 
+                        color: #fff; 
+                        border-radius: 8px; 
+                        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+                        font-size: 14px;
+                        text-align: left;
+                        line-height: 1.6;
+                    ">
+                      <div style="display: flex; align-items: center; gap: 8px;">
                         <div style="
-                            width: 12px; 
-                            height: 12px; 
-                            background: ${item.fillColor}; 
-                            border-radius: 6px;
+                          width: 12px; 
+                          height: 12px; 
+                          background: ${item.fillColor}; 
+                          border-radius: 6px;
                         "></div>
                         <strong style="font-size: 16px">Ano: ${item.x}</strong>
+                      </div>
+                      <span style="display: block;"><span style="font-weight: bold">Valor:</span> ${numberFormat(item.y)}</span>
+                      <span style="display: block;"><span style="font-weight: bold">Natureza:</span> ${item.Natureza}</span>
                     </div>
-                    <span style="display: block;"><span style="font-weight: bold">Valor:</span> ${numberFormat(item.y)}<span/>
-                    <span style="display: block;"><span style="font-weight: bold">Natureza:</span> ${item.Natureza}<span/>
-                </div>
-              `;
+                    `;
+                },
             },
-        },
-    };
+        };
+    }, [processedData, isDarkMode]);
 
     return (
         <div className="rounded-sm border border-stroke bg-white py-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-4">
