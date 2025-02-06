@@ -195,7 +195,7 @@ const PrecatoriosEspeciais = () => {
                 </CardHeader>
                 <div className="mx-auto rounded-md bg-white dark:bg-boxdark">
                     <LOADistribuitionBubbleChart
-                        results={precatoryData?.results.slice(0, 50)}
+                        results={precatoryData?.results}
                         isLoading={precatoryLoading}
                     />
                 </div>

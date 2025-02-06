@@ -5,6 +5,18 @@ import React from 'react';
 import Chart from 'react-apexcharts';
 import { AiOutlineLoading } from 'react-icons/ai';
 
+// Função auxiliar para converter "DD/MM/YYYY" para timestamp
+const parseDate = (dateStr: string): number => {
+    const [day, month, year] = dateStr.split('/').map(Number);
+    return new Date(year, month - 1, day).getTime();
+};
+
+// Função auxiliar para converter "MM/YYYY" para timestamp (assumindo o primeiro dia do mês)
+const parseMonthYear = (monthYearStr: string): number => {
+    const [month, year] = monthYearStr.split('/').map(Number);
+    return new Date(year, month - 1, 1).getTime();
+};
+
 const getRandomColor = () => {
     const r = Math.floor(Math.random() * 256);
     const g = Math.floor(Math.random() * 256);
@@ -25,13 +37,19 @@ export function LOADistribuitionBubbleChart({
 
     const calculateZ = (y: number) => Math.max(Math.sqrt(y) / 150, 15);
 
+    // Mapeia os dados, trocando os eixos:
+    // x: MÊS E ANO DO PAGAMENTO (convertido com parseMonthYear)
+    // y: Recebimento (convertido com parseDate)
     const processedData = React.useMemo(() => {
         return results.map((item) => ({
             ...item,
-            x: Date.parse(item.Recebimento),
-            y: item['MÊS E ANO DO PAGAMENTO'],
+            x: parseMonthYear(item['MÊS E ANO DO PAGAMENTO']),
+            y: parseDate(item.Recebimento),
             z: calculateZ(item['Valor do Precatório Atualizado']),
             fillColor: getRandomColor(),
+            // Mantém os valores originais para uso no tooltip
+            pagamentoLabel: item['MÊS E ANO DO PAGAMENTO'],
+            recebimentoLabel: item.Recebimento,
         }));
     }, [results]);
 
@@ -47,7 +65,6 @@ export function LOADistribuitionBubbleChart({
         return {
             chart: {
                 id: 'bubble-chart',
-                // toolbar: { show: true },
                 animations: { enabled: false },
                 zoom: {
                     enabled: false,
@@ -57,12 +74,30 @@ export function LOADistribuitionBubbleChart({
             },
             xaxis: {
                 title: {
-                    text: 'Data do Recebimento',
+                    text: 'Mês e Ano do Pagamento',
+                },
+                type: 'datetime',
+                labels: {
+                    // Formata a data para exibir MM/YYYY
+                    formatter: (value) =>
+                        new Date(value).toLocaleDateString('pt-BR', {
+                            month: '2-digit',
+                            year: 'numeric',
+                        }),
                 },
             },
             yaxis: {
-                title: { text: 'Data do Pagamento' },
-                labels: { formatter: (value) => '' },
+                title: { text: 'Data do Recebimento' },
+                type: 'datetime',
+                labels: {
+                    // Formata a data para exibir DD/MM/YYYY
+                    formatter: (value) =>
+                        new Date(value).toLocaleDateString('pt-BR', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                        }),
+                },
             },
             dataLabels: {
                 enabled: false,
@@ -88,19 +123,21 @@ export function LOADistribuitionBubbleChart({
                         font-size: 14px;
                         text-align: left;
                         line-height: 1.6;
-                    ">
-                      <div style="display: flex; align-items: center; gap: 8px;">
-                        <div style="
-                          width: 12px; 
-                          height: 12px; 
-                          background: ${item.fillColor}; 
-                          border-radius: 6px;
-                        "></div>
-                        <strong style="font-size: 16px">LOA: ${item.LOA}</strong>
+                      ">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <div style="
+                            width: 12px; 
+                            height: 12px; 
+                            background: ${item.fillColor}; 
+                            border-radius: 6px;
+                          "></div>
+                          <strong style="font-size: 16px">LOA: ${item.LOA}</strong>
+                        </div>
+                        <span style="display: block;"><span style="font-weight: bold">Valor:</span> ${numberFormat(item['Valor do Precatório Atualizado'])}</span>
+                        <span style="display: block;"><span style="font-weight: bold">Mês/Ano do Pagamento:</span> ${item.pagamentoLabel}</span>
+                        <span style="display: block;"><span style="font-weight: bold">Data do Recebimento:</span> ${item.recebimentoLabel}</span>
+                        <span style="display: block;"><span style="font-weight: bold">Natureza:</span> ${item['Natureza']}</span>
                       </div>
-                      <span style="display: block;"><span style="font-weight: bold">Valor:</span> ${numberFormat(item['Valor do Precatório Atualizado'])}</span>
-                      <span style="display: block;"><span style="font-weight: bold">Data do pagamento:</span> ${item['MÊS E ANO DO PAGAMENTO']}</span>
-                    </div>
                     `;
                 },
             },
