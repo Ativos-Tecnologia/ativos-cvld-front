@@ -11,7 +11,6 @@ import {
     Loader2,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import CRMTooltip from '../CrmUi/Tooltip';
 import CelerAppCombobox from '../CrmUi/Combobox';
 
 interface PrecatorioData {
@@ -57,7 +56,7 @@ export function CardResumoPrecatorioEspecial({
 
     if (isLoading || !data) {
         return (
-            <Card className="mx-auto flex h-64 w-full max-w-4xl items-center justify-center">
+            <Card className="mx-auto flex h-64 w-full items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
             </Card>
         );

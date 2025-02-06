@@ -1,6 +1,7 @@
 import numberFormat from '@/functions/formaters/numberFormat';
 import { ILOADistribuitionResult } from '@/interfaces/ILOADistribuitionResults';
 import { ApexOptions } from 'apexcharts';
+import React from 'react';
 import Chart from 'react-apexcharts';
 import { AiOutlineLoading } from 'react-icons/ai';
 
@@ -12,25 +13,50 @@ const getRandomColor = () => {
 };
 
 interface LOADistribuitionBubbleChartProps {
-    results: ILOADistribuitionResult[];
+    results?: ILOADistribuitionResult[];
     isLoading: boolean;
 }
 
 export function LOADistribuitionBubbleChart({
-    results,
+    results = [],
     isLoading,
 }: LOADistribuitionBubbleChartProps) {
     const isDarkMode = localStorage.getItem('color-theme') === '"dark"';
 
     const calculateZ = (y: number) => Math.max(Math.sqrt(y) / 150, 15);
 
-    const data = results.map((item) => ({
-        ...item,
-        x: item.LOA,
-        y: item['Valor do Precatório Atualizado'],
-        z: calculateZ(item['Valor do Precatório Atualizado']),
-        fillColor: getRandomColor(),
-    }));
+    // Função auxiliar para processar os dados
+    const processData = (dataArray: ILOADistribuitionResult[]) =>
+        dataArray.map((item) => ({
+            ...item,
+            x: item.LOA,
+            y: item['Valor do Precatório Atualizado'],
+            z: calculateZ(item['Valor do Precatório Atualizado']),
+            fillColor: getRandomColor(),
+        }));
+
+    const processedData = processData(results);
+
+    const [series, setSeries] = React.useState<
+        {
+            data: { x: number; y: number; z: number; fillColor: string }[];
+        }[]
+    >([]);
+
+    React.useEffect(() => {
+        if (processedData.length) {
+            setSeries([
+                {
+                    data: processedData.map(({ x, y, z, fillColor }) => ({
+                        x,
+                        y,
+                        z,
+                        fillColor,
+                    })),
+                },
+            ]);
+        }
+    }, [results]); // Dependendo de results
 
     const options: ApexOptions = {
         chart: {
@@ -39,18 +65,18 @@ export function LOADistribuitionBubbleChart({
         },
         xaxis: {
             title: { text: 'Ano' },
-            min: Math.min(...data.map((item) => item.x)) - 3,
-            max: Math.max(...data.map((item) => item.x)) + 2,
+            min: Math.min(...processedData.map((item) => item.x)) - 3,
+            max: Math.max(...processedData.map((item) => item.x)) + 2,
         },
         yaxis: {
             title: { text: 'Valor Liquido (R$)' },
-            min: Math.max(...data.map((item) => item.y)) * -0.2,
-            max: Math.max(...data.map((item) => item.y)) * 1.2,
+            min: Math.max(...processedData.map((item) => item.y)) * -0.2,
+            max: Math.max(...processedData.map((item) => item.y)) * 1.2,
             labels: { formatter: (value) => numberFormat(value) },
         },
         dataLabels: {
             enabled: true,
-            formatter: (_, opts) => data[opts.dataPointIndex].x,
+            formatter: (_, opts) => processedData[opts.dataPointIndex].x,
             style: { colors: [isDarkMode ? '#fff' : '#000'] },
         },
         plotOptions: {
@@ -63,7 +89,7 @@ export function LOADistribuitionBubbleChart({
         },
         tooltip: {
             custom: ({ dataPointIndex }) => {
-                const item = data[dataPointIndex];
+                const item = processedData[dataPointIndex];
                 return `
                   <div style="
                     padding: 12px; 
@@ -91,18 +117,6 @@ export function LOADistribuitionBubbleChart({
             },
         },
     };
-
-    const series = [
-        {
-            name: 'Valores',
-            data: data.map(({ x, y, z, fillColor }) => ({
-                x,
-                y,
-                z,
-                fillColor,
-            })),
-        },
-    ];
 
     return (
         <div className="rounded-sm border border-stroke bg-white py-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-4">

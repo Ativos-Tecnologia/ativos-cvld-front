@@ -6,12 +6,9 @@ import api from '@/utils/api';
 import { Boxes } from '../BackgroundBoxes';
 import { cn } from '@/lib/utils';
 import { estados } from '@/constants/estados';
-import { CelerInputField } from '../CrmUi/InputFactory';
-import { InputFieldVariant } from '@/enums/inputFieldVariants.enum';
-import { SelectItem } from '../ui/select';
-import CelerAppCombobox from '../CrmUi/Combobox';
-import CRMTooltip from '../CrmUi/Tooltip';
 import { CardResumoPrecatorioEspecial } from '../Cards/CardResumoPrecatorioEspecial';
+import { Card, CardHeader, CardTitle } from '../ui/card';
+import { BadgeInfoIcon } from 'lucide-react';
 
 const PrecatoriosEspeciais = () => {
     const {
@@ -36,6 +33,22 @@ const PrecatoriosEspeciais = () => {
         queryKey: ['overviewData'],
         queryFn: async () => {
             const response = await api.post(`api/precatorios-especiais/extrair-resumo/`);
+
+            return response.data;
+        },
+        refetchOnWindowFocus: false,
+    });
+
+    const {
+        data: precatoryData,
+        isLoading: precatoryLoading,
+        refetch: refetchPrecatoryData,
+    } = useQuery({
+        queryKey: ['precatoryData'],
+        queryFn: async () => {
+            const response = await api.post(
+                '/api/precatorios-especiais/extrair-amostragem-do-estoque/',
+            );
 
             return response.data;
         },
@@ -80,11 +93,19 @@ const PrecatoriosEspeciais = () => {
                     isLoading={overviewLoading}
                 />
             </section>
-            <div className="container mx-auto my-6 rounded-md bg-white pb-10 pt-4 dark:bg-boxdark">
+            <Card
+                className={`mx-auto w-full translate-y-0 transform overflow-hidden opacity-100 transition-all duration-300 ease-out`}
+            >
+                <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-400 text-white">
+                    <CardTitle className="flex items-center gap-2 text-2xl font-bold">
+                        <BadgeInfoIcon size={28} />
+                        Síntese de LOAs
+                    </CardTitle>
+                </CardHeader>
                 <div className="grid grid-cols-12 rounded-md bg-white dark:bg-boxdark">
                     <LOASynthesisChart data={synthesisData?.results} />
                 </div>
-            </div>
+            </Card>
         </>
     );
 };

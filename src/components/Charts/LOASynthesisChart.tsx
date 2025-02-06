@@ -31,9 +31,10 @@ const LOASynthesisChart = ({ data }: ISysthesisChartProps) => {
         },
         plotOptions: {
             treemap: {
-                distributed: true, // Cada bloco terá uma cor diferente
-                enableShades: false,
+                distributed: true,
+                enableShades: true,
                 borderRadius: 0,
+                shadeIntensity: 0.2,
             },
         },
         tooltip: {
@@ -41,7 +42,7 @@ const LOASynthesisChart = ({ data }: ISysthesisChartProps) => {
                 const data = w.config.series[seriesIndex].data[dataPointIndex];
                 const dataColor = w.globals.colors[dataPointIndex];
                 return `
-                <div class="treemap-tooltip" >
+                <div class="treemap-tooltip text-white bg-boxdark p-3 rounded-lg">
                     <div class="tooltip-title">
                         <span style="background-color: ${dataColor};" class="tooltip-title-dot"></span>
                         <p>${data.x}</p>
@@ -114,7 +115,9 @@ const LOASynthesisChart = ({ data }: ISysthesisChartProps) => {
 
     return (
         <div className="col-span-12 px-5 pb-6 pt-7.5">
-            <h2 className="font-medium 2xsm:text-[18px] md:text-2xl">Síntese das LOA'S</h2>
+            <h3 className="text-lg font-semibold text-neutral-700 dark:text-neutral-300">
+                A maneira como os recursos estão distribuídos em relação à Lei Orçamentária Anual
+            </h3>
             <ReactApexChart options={options} series={series} height={600} type="treemap" />
         </div>
     );
