@@ -28,7 +28,7 @@ export function LOADistribuitionBubbleChart({
     const processedData = React.useMemo(() => {
         return results.map((item) => ({
             ...item,
-            x: item.Recebimento,
+            x: Date.parse(item.Recebimento),
             y: item['MÊS E ANO DO PAGAMENTO'],
             z: calculateZ(item['Valor do Precatório Atualizado']),
             fillColor: getRandomColor(),
@@ -50,13 +50,15 @@ export function LOADistribuitionBubbleChart({
                 // toolbar: { show: true },
                 animations: { enabled: false },
                 zoom: {
-                    enabled: true,
+                    enabled: false,
                     type: 'x',
                     autoScaleYaxis: false,
                 },
             },
             xaxis: {
-                title: { text: 'Data do Recebimento' },
+                title: {
+                    text: 'Data do Recebimento',
+                },
             },
             yaxis: {
                 title: { text: 'Data do Pagamento' },
@@ -106,7 +108,7 @@ export function LOADistribuitionBubbleChart({
     }, [processedData, isDarkMode]);
 
     return (
-        <div className="rounded-sm border border-stroke bg-white py-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-4">
+        <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark sm:px-4">
             <div className="mb-3 ml-2 justify-between gap-4 sm:flex">
                 <h5 className="mt-4 font-rooftop text-xl tracking-wider text-black dark:text-white">
                     Distribuição do valor por LOAs
