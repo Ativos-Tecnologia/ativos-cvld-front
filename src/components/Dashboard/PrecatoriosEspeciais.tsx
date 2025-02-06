@@ -119,55 +119,6 @@ const PrecatoriosEspeciais = () => {
         return estados.find((item: IEstado) => item.id === estado)?.nome;
     }
 
-    const plotData = {
-        "results": [
-            {
-                "ANO": 2020,
-                "RECEITA CORRENTE LÍQUIDA (R$)": 39600184522,
-                "% DA RECEITA CORRENTE LÍQUIDA REPASSADA": 0.00423666276824527,
-                "MONTANTE TOTAL PAGO NO ANO DE REFERÊNCIA ": 167772627.38,
-                "MONTANTE TOTAL ATÉ ANO ANTERIOR AO DE REFERÊNCIA": 472141925.86,
-                "SALDO DEVEDOR TOTAL  APÓS PAGAMENTO": 420432545.11,
-                "MUTAÇÃO SALDO DEVEDOR TOTAL": -51709380.75
-            },
-            {
-                "ANO": 2021,
-                "RECEITA CORRENTE LÍQUIDA (R$)": 44248574081,
-                "% DA RECEITA CORRENTE LÍQUIDA REPASSADA": 0.00589252222597514,
-                "MONTANTE TOTAL PAGO NO ANO DE REFERÊNCIA ": 260735706.24,
-                "MONTANTE TOTAL ATÉ ANO ANTERIOR AO DE REFERÊNCIA": 420571567.88,
-                "SALDO DEVEDOR TOTAL  APÓS PAGAMENTO": 381510341.70000005,
-                "MUTAÇÃO SALDO DEVEDOR TOTAL": -39061226.17999995
-            },
-            {
-                "ANO": 2022,
-                "RECEITA CORRENTE LÍQUIDA (R$)": 51402332982.04,
-                "% DA RECEITA CORRENTE LÍQUIDA REPASSADA": 0.0032964316030014416,
-                "MONTANTE TOTAL PAGO NO ANO DE REFERÊNCIA ": 169444274.91,
-                "MONTANTE TOTAL ATÉ ANO ANTERIOR AO DE REFERÊNCIA": 383975801.42,
-                "SALDO DEVEDOR TOTAL  APÓS PAGAMENTO": 321886284.73,
-                "MUTAÇÃO SALDO DEVEDOR TOTAL": -62089516.69
-            },
-            {
-                "ANO": 2023,
-                "RECEITA CORRENTE LÍQUIDA (R$)": 49894515999.66,
-                "% DA RECEITA CORRENTE LÍQUIDA REPASSADA": 0.003891036197271118,
-                "MONTANTE TOTAL PAGO NO ANO DE REFERÊNCIA ": 194141367.8,
-                "MONTANTE TOTAL ATÉ ANO ANTERIOR AO DE REFERÊNCIA": 321834027.26,
-                "SALDO DEVEDOR TOTAL  APÓS PAGAMENTO": 479602912.82000005,
-                "MUTAÇÃO SALDO DEVEDOR TOTAL": 157768885.56000006
-            },
-            {
-                "ANO": 2024,
-                "RECEITA CORRENTE LÍQUIDA (R$)": 46526699402.61,
-                "% DA RECEITA CORRENTE LÍQUIDA REPASSADA": 0.0058480844193460335,
-                "MONTANTE TOTAL PAGO NO ANO DE REFERÊNCIA ": 272092065.85999995,
-                "MONTANTE TOTAL ATÉ ANO ANTERIOR AO DE REFERÊNCIA": 479602912.82,
-                "SALDO DEVEDOR TOTAL  APÓS PAGAMENTO": 561072317.48,
-                "MUTAÇÃO SALDO DEVEDOR TOTAL": 81469404.66000003
-            }
-        ]
-    }
 
     return (
         <div className='grid gap-6 grid-cols-12'>
