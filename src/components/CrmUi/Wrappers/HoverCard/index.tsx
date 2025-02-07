@@ -63,7 +63,7 @@ const HoverCardContainer = ({ children, disabled, backgroundImg, className, back
                     alt="Card Image"
                     width={380}
                     height={220}
-                    className="transition-all duration-500 group-hover:scale-105 h-65"
+                    className="transition-all duration-500 group-hover:scale-105 h-65 w-full"
                 />
                 {backgroundColorFill === "strong"
                     ? <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.9)_40%,rgba(0,0,0,0.5)_90%)]"></div>

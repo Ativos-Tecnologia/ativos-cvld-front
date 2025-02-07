@@ -15,9 +15,10 @@ const gridCardsSize = {
 
 const GridCardsWrapper = ({
     children,
-}: { children: React.ReactNode }): JSX.Element => {
+    className,
+}: { children: React.ReactNode, className?: string }): JSX.Element => {
     return (
-        <div className='relative'>
+        <div className={cn('relative', className)}>
             {children}
         </div>
     )

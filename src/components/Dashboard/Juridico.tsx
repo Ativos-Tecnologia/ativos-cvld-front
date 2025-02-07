@@ -98,8 +98,8 @@ const Juridico = () => {
     }, [activeTab, fetchAllPrecatoryWithSimpleData]);
 
     return (
-        <div className="w-full">
-            <div className="mb-4 flex w-full items-end justify-end gap-5 rounded-md">
+        <div className="grid grid-cols-12 gap-6">
+            <div className="col-span-12 flex w-full items-end justify-end gap-5 rounded-md">
                 <Breadcrumb
                     customIcon={<FaBalanceScale className="h-[32px] w-[32px]" />}
                     altIcon="Espaço de trabalho do time jurídico"
@@ -107,12 +107,12 @@ const Juridico = () => {
                     title={`Olá, ${first_name}`}
                 />
             </div>
-            <div className="mt-2 grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+            <div className="col-span-12 grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                 <DataStats data={simpleData.results} isLoading={loading} />
             </div>
-            <div className="my-4">
+            <div className="col-span-12">
                 <Tabs defaultValue={navItems.TODOS} className="w-full">
-                    <TabsList className="tabs-scrollbar justify-normal overflow-x-auto overflow-y-hidden xl:w-fit">
+                    <TabsList className="tabs-scrollbar justify-normal overflow-x-auto overflow-y-hidden md:max-w-[calc(100vw-1rem)] xl:max-w-[1130px] 2xl:w-full">
                         {Object.values(navItems).map((item, index) => (
                             <TabsTrigger
                                 key={index}
@@ -178,8 +178,8 @@ const Juridico = () => {
                                             {deadlineSituation === 'danger' &&
                                                 item.prazo_final_due && (
                                                     <>
-                                                        <div className="absolute inset-0 z-0 animate-celer-ping rounded-md bg-red-500 opacity-60 xsm:left-2 xsm:max-w-[370px] md:left-3 md:max-w-[340px] lg:left-[15px] 2xl:max-w-90 3xl:max-w-80" />
-                                                        <div className="absolute inset-0 z-0 animate-celer-ping rounded-md bg-red-500 opacity-60 delay-300 xsm:left-2 xsm:max-w-[370px] md:left-3 md:max-w-[340px] lg:left-[15px] 2xl:max-w-90 3xl:max-w-80" />
+                                                        <div className="absolute inset-0 z-0 animate-celer-ping rounded-md bg-red-500 opacity-60 xsm:left-2 xsm:max-w-[370px] md:left-3 md:max-w-[340px] lg:left-[15px] lg:max-w-115 xl:max-w-[334px] 3xl:max-w-80" />
+                                                        <div className="absolute inset-0 z-0 animate-celer-ping rounded-md bg-red-500 opacity-60 delay-300 xsm:left-2 xsm:max-w-[370px] md:left-3 md:max-w-[340px] lg:left-[15px] lg:max-w-115 xl:max-w-[334px] 3xl:max-w-80" />
                                                     </>
                                                 )}
 

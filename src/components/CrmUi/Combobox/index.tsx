@@ -48,7 +48,7 @@ const CelerAppCombobox = <T extends FieldValues>({
                         variant="outline"
                         role="combobox"
                         aria-expanded={open}
-                        className={`min-w-[${size}] ${className} justify-between border-stroke dark:border-strokedark dark:bg-boxdark dark:text-bodydark2`}
+                        className={`min-w-[${size}] ${className} justify-between border-stroke dark:border-strokedark dark:bg-boxdark-2 dark:text-bodydark2`}
                     >
                         <p className="truncate">{value || 'Selecione...'}</p>
                         <LuChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

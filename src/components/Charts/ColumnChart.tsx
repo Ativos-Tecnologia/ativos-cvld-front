@@ -2,6 +2,7 @@
 import React from 'react'
 import ReactApexChart from 'react-apexcharts'
 import CustomSkeleton from '../CrmUi/CustomSkeleton'
+import { YAxis } from 'recharts'
 
 type ColumnChartProps = {
     data: {
@@ -61,13 +62,25 @@ const ColumnChart = ({ data, propsArray }: ColumnChartProps) => {
             }
         },
         tooltip: {
-            
+
             y: {
                 formatter: (value) => {
                     return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
                 }
             }
-        }
+        },
+        responsive: [
+            {
+                breakpoint: 430,
+                options: {
+                    yaxis: {
+                        labels: {
+                            show: false
+                        }
+                    }
+                }
+            }
+        ]
     }
 
     function fillChartData() {
