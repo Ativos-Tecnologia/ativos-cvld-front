@@ -16,6 +16,7 @@ import { Card, CardHeader, CardTitle } from '../ui/card';
 import { BadgeDollarSign, BadgeInfoIcon } from 'lucide-react';
 import ColumnChart from '../Charts/ColumnChart';
 import { LOADistribuitionBubbleChart } from '../Charts/LOADistribuitionBubbleChart';
+import Image from 'next/image';
 
 const chartProps = {
     COMUM: [
@@ -27,11 +28,7 @@ const chartProps = {
 };
 
 const PrecatoriosEspeciais = () => {
-    const {
-        data: synthesisData,
-        isLoading,
-        refetch: refetchSysthesisData,
-    } = useQuery({
+    const { data: synthesisData, refetch: refetchSysthesisData } = useQuery({
         queryKey: ['treeMapData'],
         queryFn: async () => {
             const response = await api.post(`api/precatorios-especiais/extrair-sintese-loas/`);
@@ -121,12 +118,15 @@ const PrecatoriosEspeciais = () => {
                 <div className="pointer-events-none absolute inset-0 z-20 h-full w-full bg-slate-900 [mask-image:radial-gradient(transparent,white)]" />
 
                 <Boxes />
-                <h1 className={cn('relative z-20 font-satoshi text-xl text-white md:text-6xl')}>
-                    Análise de Precatórios Especiais
-                </h1>
-                <p className="relative z-20 mt-2 text-center text-neutral-300">
+                <Image
+                    src="/images/logo/radar_logo_light_mode.svg"
+                    width={400}
+                    height={400}
+                    alt="Logo do Radar"
+                />
+                <h1 className="relative z-20 mt-2 text-center text-neutral-300">
                     Nosso motor de análise de dados e inteligência artificial
-                </p>
+                </h1>
             </div>
             <section className="col-span-12 mx-auto w-full rounded-md bg-white dark:bg-boxdark">
                 <CardResumoPrecatorioEspecial

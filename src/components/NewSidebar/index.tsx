@@ -92,11 +92,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         when: product === 'wallet' || product === 'global',
                     },
                     {
-                        title: "Precatórios Especiais",
-                        url: '/dashboard/precatorios-especiais',
-                        when: window.location.href.includes('localhost')
-                            || window.location.href.includes('dev'),
-                    }
+                        title: 'Radar',
+                        url: '/dashboard/radar',
+                        when:
+                            window.location.href.includes('localhost') ||
+                            window.location.href.includes('dev'),
+                    },
                 ],
             },
             {
