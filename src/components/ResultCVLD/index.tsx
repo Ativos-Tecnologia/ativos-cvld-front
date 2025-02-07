@@ -478,8 +478,8 @@ const CVLDResult: React.FC<ApiResponse> = (result, { setData }) => {
                 Ainda sem resultados
               </h4>
               <Image
-                src="/images/search-results.svg"
-                alt="mulher procurando resultados"
+                src="/images/no_content_yet.svg"
+                alt="um casal procurando arquivos"
                 width={200}
                 height={450}
                 aria-selected={false}
