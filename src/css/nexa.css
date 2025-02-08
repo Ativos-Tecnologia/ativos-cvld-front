@@ -7,7 +7,7 @@
 
 @font-face {
     font-family: 'Nexa';
-    src: url('../fonts/Nexa-Heavy.ttf') format('truetype');
+    src: url('/fonts/Nexa-Heavy.ttf') format('truetype');
     font-weight: 900;
     font-style: normal;
     display: swap;
@@ -15,7 +15,7 @@
 
 @font-face {
     font-family: 'Nexa';
-    src: url('../fonts/Nexa-ExtraLight.ttf') format('truetype');
+    src: url('/fonts/Nexa-ExtraLight.ttf') format('truetype');
     font-weight: 300;
     font-style: normal;
     display: swap;
@@ -23,7 +23,7 @@
 
 @font-face {
     font-family: 'Nexa';
-    src: url('../fonts/Nexa-Regular.otf') format('opentype');
+    src: url('/fonts/Nexa-Regular.otf') format('opentype');
     font-weight: 500;
     font-style: normal;
     display: swap;
