@@ -267,17 +267,20 @@ const TableLiquidation = forwardRef<HTMLDivElement | null, ITableWalletProps>(({
     return (
         <>
             {/* Filtros estilo select */}
-            <div className={`flex items-center justify-between my-3 ${isPending && 'pointer-events-none'}`}>
-                <div className='flex items-center gap-2'>
+            <div className={`flex justify-between mt-5 mb-3 ${isPending && 'pointer-events-none'} 2xsm:flex-col 2xsm:my-3 md:flex-row md:items-center`}>
+                <div className='flex gap-2 2xsm:flex-col md:flex-row md:items-center'>
 
                     <div className="flex">
-                        <input
-                            type="text"
-                            placeholder="Filtrar por nome"
-                            value={filters.credor}
-                            onChange={(e) => handleFilterChange('credor', e.target.value)}
-                            className="max-w-md rounded-md text-sm border border-stroke bg-white px-3 py-2 font-medium dark:border-strokedark dark:bg-boxdark-2"
-                        />
+                        <div>
+                            <p className='text-sm'>Filtro por Credor</p>
+                            <input
+                                type="text"
+                                placeholder="Filtrar por nome"
+                                value={filters.credor}
+                                onChange={(e) => handleFilterChange('credor', e.target.value)}
+                                className="max-w-md rounded-md text-sm border border-stroke bg-white px-3 py-2 font-medium dark:border-strokedark dark:bg-boxdark-2"
+                            />
+                        </div>
                         {isFetchingByName && (
                             <div className="flex flex-row text-center text-gray-500 dark:text-gray-400 ml-2 py-2">
                                 <AiOutlineLoading className="animate-spin w-5 h-5" />
@@ -289,21 +292,22 @@ const TableLiquidation = forwardRef<HTMLDivElement | null, ITableWalletProps>(({
                     {role === 'ativos' && (
                         <React.Fragment>
                             {/* separator */}
-                            <div className="w-px mx-1 h-5 bg-zinc-300 dark:bg-form-strokedark"></div>
+                            <div className="bg-zinc-300 dark:bg-form-strokedark 2xsm:h-px 2xsm:w-full md:w-px md:h-5 md:mx-1"></div>
                             {/* separator */}
 
                             {/* ====== select de user ====== */}
-                            <div className='flex items-center justify-center gap-1'>
+                            <div className='flex gap-1 md:items-center md:justify-center'>
                                 <div className='relative'>
-                                    <div className='flex items-center justify-center'>
-                                        <div
+                                    <div className=''>
+                                        <label className='text-sm'>Filtro por Usuário</label>
+                                        <button
                                             onClick={() => setOpenUsersPopover(!openUsersPopover)}
                                             className={`min-w-48 flex items-center justify-between gap-1 border border-stroke text-sm dark:border-strokedark font-semibold py-2 px-3 hover:bg-slate-100 uppercase dark:hover:bg-slate-700 dark:bg-boxdark-2 ${openUsersPopover && 'bg-slate-100 dark:bg-slate-700'} rounded-md transition-colors duration-200 cursor-pointer`}>
                                             <span>
                                                 {selectedUser || user}
                                             </span>
                                             <LucideChevronsUpDown className='w-4 h-4' />
-                                        </div>
+                                        </button>
                                     </div>
                                     {/* ==== popover ==== */}
 
@@ -502,7 +506,7 @@ const TableLiquidation = forwardRef<HTMLDivElement | null, ITableWalletProps>(({
                                                                 onClick={() => fetchUpdatedVL(item)}
                                                                 className='w-6 h-6 rounded-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-colos duration-300 grid place-items-center'
                                                             >
-                                                                {fetchingVL === item.id ? <AiOutlineLoading className='animate-spin' /> : <LucideBarChart /> }
+                                                                {fetchingVL === item.id ? <AiOutlineLoading className='animate-spin' /> : <LucideBarChart />}
                                                             </button>
                                                         </TableCell>
 

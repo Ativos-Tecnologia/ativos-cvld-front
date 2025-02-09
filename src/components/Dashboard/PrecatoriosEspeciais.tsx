@@ -114,10 +114,13 @@ const PrecatoriosEspeciais = () => {
 
     return (
         <div className="grid grid-cols-12 gap-6">
-            <div className="relative col-span-12 flex h-[85vh] w-full flex-col items-center justify-center overflow-hidden rounded-lg bg-slate-900">
+            <div className="relative col-span-12 p-5 flex 2xsm:h-[50vh] md:h-[85vh] w-full flex-col items-center justify-center overflow-hidden rounded-lg bg-slate-900">
                 <div className="pointer-events-none absolute inset-0 z-20 h-full w-full bg-slate-900 [mask-image:radial-gradient(transparent,white)]" />
 
                 <Boxes />
+                <h1 className='relative z-20 font-satoshi font-medium text-3xl text-center text-white lg:text-6xl'>
+                    Análise de Precatórios Especiais
+                </h1>
                 <Image
                     src="/images/logo/radar_logo_light_mode.svg"
                     width={400}
@@ -152,7 +155,7 @@ const PrecatoriosEspeciais = () => {
             </Card>
 
             <Card
-                className={`col-span-6 mx-auto w-full translate-y-0 transform overflow-hidden opacity-100 transition-all duration-300 ease-out`}
+                className={`col-span-12 lg:col-span-6 mx-auto w-full translate-y-0 transform overflow-hidden opacity-100 transition-all duration-300 ease-out`}
             >
                 <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-400 text-white">
                     <CardTitle className="flex items-center gap-2 text-2xl font-bold">
@@ -169,7 +172,7 @@ const PrecatoriosEspeciais = () => {
             </Card>
 
             <Card
-                className={`col-span-6 mx-auto w-full translate-y-0 transform overflow-hidden opacity-100 transition-all duration-300 ease-out`}
+                className={`col-span-12 lg:col-span-6 mx-auto w-full translate-y-0 transform overflow-hidden opacity-100 transition-all duration-300 ease-out`}
             >
                 <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-400 text-white">
                     <CardTitle className="flex items-center gap-2 text-2xl font-bold">
@@ -184,7 +187,7 @@ const PrecatoriosEspeciais = () => {
                     />
                 </div>
             </Card>
-            <Card
+            {/* <Card
                 className={`col-span-12 mx-auto my-6 w-full translate-y-0 transform overflow-hidden opacity-100 transition-all duration-300 ease-out`}
             >
                 <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-400 text-white">
@@ -199,7 +202,7 @@ const PrecatoriosEspeciais = () => {
                         isLoading={precatoryLoading}
                     />
                 </div>
-            </Card>
+            </Card> */}
         </div>
     );
 };
