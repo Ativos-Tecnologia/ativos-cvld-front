@@ -3,145 +3,131 @@ import api from '@/utils/api';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { AiOutlineCloudUpload } from 'react-icons/ai';
+import { GlowingEffect } from '../Effects/Glowing';
+import { convertToBase64 } from '@/utils/pdf';
 
 interface SubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children?: React.ReactNode,
-  setStateFunction: React.Dispatch<React.SetStateAction<any>>,
+    children?: React.ReactNode;
+    setStateFunction: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
-  setStateFunction,
-  children,
-  ...props
+    setStateFunction,
+    children,
+    ...props
 }) => {
-  const {
-    register,
-    control,
-    handleSubmit,
-    watch,
-    getFieldState,
-    setValue,
-    formState: { errors },
-  } = useForm();
+    const {
+        register,
+        formState: { errors },
+    } = useForm();
 
-  const [oficio, setOficio] = React.useState<any>(null);
+    const [oficio, setOficio] = React.useState<any>(null);
+    const [loading, setLoading] = React.useState(false);
 
-  const loadOficio = async (data: FormData) => {
+    const loadOficio = async (data: Base64URLString) => {
+        try {
+            setLoading(true);
+            const response = await fetch('/api/extract', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ pdfBase64: data }),
+            });
 
-    try {
-      const response = await api.post("api/oficio/upload/extraction/", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      if (response.status === 200) {
-        swal.fire({
-          title: "Ofício carregado com sucesso",
-          icon: "success",
-          toast: true,
-          timer: 3000,
-          timerProgressBar: true,
-          position: "bottom-right",
-          confirmButtonText: "Ok",
-        });
-        setOficio(response.data);
-      }
-    } catch (error: any) {
-      swal.fire({
-        title: "Erro ao carregar ofício",
-        text: error.message,
-        icon: "error",
-        toast: true,
-        timer: 3000,
-        timerProgressBar: true,
-        position: "bottom-right",
-        confirmButtonText: "Ok",
-      });
-    }
-  }
+            if (response.status === 200) {
+                swal.fire({
+                    title: 'Ofício carregado com sucesso',
+                    icon: 'success',
+                    toast: true,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    position: 'bottom-right',
+                    confirmButtonText: 'Ok',
+                });
+                setOficio(response);
+            }
+        } catch (error: any) {
+            swal.fire({
+                title: 'Erro ao carregar ofício',
+                text: error.message,
+                icon: 'error',
+                toast: true,
+                timer: 3000,
+                timerProgressBar: true,
+                position: 'bottom-right',
+                confirmButtonText: 'Ok',
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  useEffect(() => {
-    if (oficio) {
-      setStateFunction(oficio);
-    }
-  }, [oficio]);
+    useEffect(() => {
+        if (oficio) {
+            setStateFunction(oficio);
+        }
+    }, [oficio]);
 
-  const swal = UseMySwal();
+    const swal = UseMySwal();
 
-  return (
-    <div className="flex w-full justify-end">
-      <div className="relative flex flex-col w-full py-4 items-center cursor-pointer">
-        <label htmlFor="dropzone-file" className='relative flex h-20 flex-col items-center justify-center w-full bg-slate-50 dark:bg-boxdark-2 border-2 border-stroke dark:border-strokedark border-dashed rounded-lg hover:border-strokedark hover:text-strokedark dark:hover:border-white dark:hover:text-white'>
-          <AiOutlineCloudUpload className='w-full h-8' />
-          <div className='text-center text-sm'>
-            <p className='p-1'><b>Clique</b>, ou arraste um ofício em PDF</p>
-            {/* <p>PDF</p> */}
-          </div>
-          <input
-            type='file'
-            id="dropzone-file"
-            className='absolute opacity-0 w-full h-full inset-0 cursor-pointer'
-            {...register("pdf_file")}
-            accept='.pdf'
-            onChange={(e) => {
-              if (e.target.files) {
-                const formData = new FormData();
-                formData.append("pdf_file", e.target.files[0]);
-                loadOficio(formData);
-              }
-            }}
-            onDrop={e => {
-              e.preventDefault();
-              if (e.dataTransfer.files) {
-                const formData = new FormData();
-                formData.append("pdf_file", e.dataTransfer.files[0]);
-                loadOficio(formData);
-              }
-            }}
-          />
-        </label>
-        {/* <Label
-        htmlFor="dropzone-file"
-        className="flex h-24 w-full cursor-pointer flex-col items-center text-slate-500/90 justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-      >
-        <div className="flex flex-col items-center justify-center pb-2 pt-2">
-          <svg
-            className="mb-0 h-8 w-8 text-gray-500 dark:text-gray-400"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 20 16"
-          >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-            />
-          </svg>
-          <p className="text-sm text-gray-500 dark:text-gray-400 px-2" style={{ textAlign: "center" }}>
-            <span className="font-semibold">Clique</span>, arraste ou solte um ofício
-          </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">PDF</p>
+    return (
+        <div className="flex w-full justify-end">
+            <div className="relative flex w-full cursor-pointer flex-col items-center py-4">
+                <label
+                    htmlFor="dropzone-file"
+                    className="glow-effect relative flex h-20 w-full flex-col items-center justify-center rounded-lg border bg-slate-50  hover:text-strokedark  dark:bg-boxdark-2  dark:hover:text-white"
+                >
+                    {
+                        <AiOutlineCloudUpload
+                            className={`text-4xl text-slate-300 dark:text-gray-400 ${
+                                loading ? 'animate-spin' : ''
+                            }`}
+                        />
+                    }
+                    <div className="text-center text-sm">
+                        <p className="p-1">
+                            <b>Clique</b>, ou arraste um ofício em PDF
+                        </p>
+                    </div>
+                    <GlowingEffect
+                        spread={40}
+                        glow={true}
+                        disabled={false}
+                        proximity={64}
+                        inactiveZone={0.01}
+                        borderWidth={2}
+                    />
+                    <input
+                        type="file"
+                        id="dropzone-file"
+                        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                        {...register('pdfBase64')}
+                        accept=".pdf"
+                        onChange={async (e) => {
+                            if (e.target.files) {
+                                const file = e.target.files[0];
+                                const base64 = await convertToBase64(file);
+                                loadOficio(base64);
+                            }
+                        }}
+                        onDrop={async (e) => {
+                            e.preventDefault();
+                            if (e.dataTransfer.files) {
+                                const file = e.dataTransfer.files[0];
+                                const base64 = await convertToBase64(file);
+                                loadOficio(base64);
+                            }
+                        }}
+                    />
+                </label>
+                <span
+                    className="apexcharts-legend-text mt-2 w-full text-center text-gray-400"
+                    style={{ fontSize: '10px', fontWeight: '400', fontFamily: 'Satoshi' }}
+                >
+                    TRF1 ao TRF4 (beta)
+                </span>
+            </div>
         </div>
-        <FileInput id="dropzone-file" className='absolute w-full h-full inset-0' {...register("pdf_file")} accept='.pdf' onChange={(e) => {
-          if (e.target.files) {
-            loadOficio(e);
-          }
-        }}
-          onDragEnter={e => {
-            e.preventDefault()
-            console.log('drag enter')
-          }}
-          onDrop={e => {
-            e.preventDefault();
-            console.log(e.dataTransfer.files);
-          }}
-        />
-        </Label> */}
-        <span className="apexcharts-legend-text mt-2 w-full text-center text-gray-400" style={{ "fontSize": "10px", "fontWeight": "400", "fontFamily": "Satoshi" }}>TRF1 ao TRF4 (beta)</span>
-      </div>
-    </div>
-  )
-}
+    );
+};
