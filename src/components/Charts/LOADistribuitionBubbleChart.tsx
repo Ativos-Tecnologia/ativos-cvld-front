@@ -12,6 +12,7 @@ import {
     Tooltip,
     ResponsiveContainer,
     Cell,
+    CartesianGrid,
 } from 'recharts';
 
 interface ILOADistribuitionResult {
@@ -59,7 +60,7 @@ export function LOADistribuitionBubbleChart({
     const defaultEnd =
         results.length > 0
             ? parseMonthYear(results[results.length - 1]['MÊS E ANO DO PAGAMENTO'])
-            : new Date('2026-03-31').getTime();
+            : new Date('2026-03-30').getTime();
 
     const [dateRange, setDateRange] = useState({ start: defaultStart, end: defaultEnd });
 
@@ -82,7 +83,7 @@ export function LOADistribuitionBubbleChart({
         setDateRange((prev) => ({ ...prev, end: newEnd }));
     };
 
-    const calculateZ = (value: number) => Math.sqrt(value) / 500;
+    const calculateZ = (value: number) => Math.sqrt(value) / 150;
 
     const filteredResults = useMemo(() => {
         return results.filter((item) => {
@@ -108,9 +109,7 @@ export function LOADistribuitionBubbleChart({
         if (active && payload && payload.length) {
             const item = payload[0].payload;
             return (
-                <div
-                    style={{ backgroundColor: 'white', padding: '10px', border: '1px solid #ccc' }}
-                >
+                <div className="border border-gray-300 bg-white p-2 dark:bg-boxdark-2">
                     <p style={{ fontWeight: 'bold' }}>LOA: {item.LOA}</p>
                     <p>Tribunal: {item.tribunalLabel}</p>
                     <p>Valor: {numberFormat(item['Valor do Precatório Atualizado'])}</p>
@@ -124,7 +123,7 @@ export function LOADistribuitionBubbleChart({
     };
 
     return (
-        <div style={{ width: '100%', height: 'auto', padding: '20px' }}>
+        <div style={{ width: '100%', minHeight: '500px', padding: '20px' }}>
             <h2>Distribuição do valor por LOAs</h2>
             <div style={{ marginBottom: '20px' }}>
                 <label htmlFor="start">Início: </label>
@@ -142,6 +141,7 @@ export function LOADistribuitionBubbleChart({
                     id="end"
                     value={formatDatePicker(dateRange.end)}
                     onChange={handleEndChange}
+                    className="rounded-md bg-gray-100 py-0 dark:bg-boxdark-2"
                 />
             </div>
             <div style={{ marginBottom: '20px' }}>
@@ -163,8 +163,12 @@ export function LOADistribuitionBubbleChart({
             {isLoading ? (
                 <div>Carregando...</div>
             ) : (
-                <ResponsiveContainer width="100%" height="100%">
-                    <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                <ResponsiveContainer width="100%" minHeight={500}>
+                    <ScatterChart
+                        margin={{ top: 20, right: 20, bottom: 20, left: 50 }}
+                        title="Distribuição do valor por LOAs"
+                    >
+                        <CartesianGrid />
                         <XAxis
                             dataKey="x"
                             type="number"
@@ -190,13 +194,14 @@ export function LOADistribuitionBubbleChart({
                             }
                             name="Data do Recebimento"
                         />
-                        <ZAxis dataKey="z" range={[10, 1000]} name="Valor" />
+                        <ZAxis dataKey="z" range={[10, 1500]} name="Valor" />
                         <Tooltip content={<CustomTooltip />} />
                         <Scatter
                             data={processedData}
                             fill="#8884d8"
                             shape="circle"
                             fillOpacity={0.7}
+                            legendType="circle"
                         >
                             {processedData.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={entry.fillColor} />

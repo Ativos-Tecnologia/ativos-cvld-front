@@ -194,9 +194,9 @@
         @apply h-11 border-stroke bg-white placeholder:text-bodydark2 focus-visible:ring-0 focus-visible:ring-offset-0 dark:border-boxdark-2/70 dark:bg-boxdark-2 !important;
     }
 
-    .shad-input-icon {
+    /* .shad-input-icon {
         @apply h-11 border-boxdark-2 bg-boxdark placeholder:text-bodydark2 focus-visible:ring-0 focus-visible:ring-offset-0 !important;
-    }
+    } */
 
     .shad-textArea {
         @apply border-stroke bg-white placeholder:text-bodydark2 focus-visible:ring-0 focus-visible:ring-offset-0 dark:border-boxdark-2/70 dark:bg-boxdark-2 !important;
