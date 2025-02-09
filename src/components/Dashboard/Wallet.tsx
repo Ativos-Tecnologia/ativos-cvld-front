@@ -172,10 +172,10 @@ const Wallet: React.FC = () => {
   }, [user]);
 
   return (
-    <>
+    <div className="grid grid-cols-12 gap-6">
       <QueryClientProvider client={queryClient}>
         <div
-          className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
+          className="col-span-12 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
           {data ? <CardDataStats title="Total Investido" total={
             data && <AnimatedNumber value={data && handleTotalInvested(data?.response[0])} />
           } >
@@ -207,7 +207,7 @@ const Wallet: React.FC = () => {
             }
         </div>
 
-        <div className=" grid grid-cols-12 mt-4 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5"
+        <div className="col-span-12 grid grid-cols-12 gap-4 md:gap-6 2xl:gap-7.5"
         >
           <ProfitChart title={"Performance de Lucro"} response={data?.response} />
           <DistributionChart title={"Distribuição da Carteira"} response={data?.response} />
@@ -216,7 +216,7 @@ const Wallet: React.FC = () => {
           {/* <MapOne /> */}
           {/* <DataStatsFour /> */}
         </div>
-        <div className="mt-4 grid grid-cols-12 md:mt-6 2xl:mt-7.5">
+        <div className="col-span-12 grid grid-cols-12 ">
           <div className='col-span-12 bg-white dark:bg-boxdark border-stroke dark:border-strokedark p-[30px] rounded-sm shadow-default'>
 
             <div className='mb-3 col-span-12 flex gap-3 border-b border-zinc-300 dark:border-form-strokedark text-xs font-semibold'>
@@ -224,7 +224,7 @@ const Wallet: React.FC = () => {
               <button
                 disabled={isFetching}
                 onClick={() => handleChangeView("wallet")}
-                className={`uppercase cursor-pointer disabled:cursor-default py-1 px-2 min-w-48 flex items-center justify-start gap-2 border-b-2 ${activeView === "wallet" && "text-blue-700 dark:text-blue-500 border-blue-700 dark:border-blue-500"}`}
+                className={`uppercase cursor-pointer disabled:cursor-default py-1 px-2 flex items-center justify-start gap-2 border-b-2 ${activeView === "wallet" && "text-blue-700 dark:text-blue-500 border-blue-700 dark:border-blue-500"} 2xsm:min-w-40 md:min-w-48`}
               >
                 <BiSolidWallet className='text-sm' />
                 <span>ativos adquiridos</span>
@@ -233,7 +233,7 @@ const Wallet: React.FC = () => {
               <button
                 disabled={isFetching}
                 onClick={() => handleChangeView("liquidation")}
-                className={`uppercase cursor-pointer disabled:cursor-default py-1 px-2 min-w-48 flex items-center justify-start gap-2 border-b-2 ${activeView === "liquidation" && "text-blue-700 dark:text-blue-500 border-blue-700 dark:border-blue-500"}`}
+                className={`uppercase cursor-pointer disabled:cursor-default py-1 px-2 flex items-center justify-start gap-2 border-b-2 ${activeView === "liquidation" && "text-blue-700 dark:text-blue-500 border-blue-700 dark:border-blue-500"} 2xsm:min-w-40 md:min-w-48`}
               >
                 <BiSolidHourglass className="text-sm" />
                 <span>em liquidação</span>
@@ -263,7 +263,7 @@ const Wallet: React.FC = () => {
 
         </div>
       </QueryClientProvider>
-    </>
+    </div>
   );
 };
 
