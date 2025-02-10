@@ -1,8 +1,7 @@
 import UseMySwal from '@/hooks/useMySwal';
-import api from '@/utils/api';
 import React, { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
-import { AiOutlineCloudUpload } from 'react-icons/ai';
+import { AiOutlineCheckCircle, AiOutlineCloseCircle, AiOutlineCloudUpload } from 'react-icons/ai';
 import { GlowingEffect } from '../Effects/Glowing';
 import { convertToBase64 } from '@/utils/pdf';
 import '/src/css/animations/glow-effect.css';
@@ -10,6 +9,46 @@ import '/src/css/animations/glow-effect.css';
 interface SubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     children?: React.ReactNode;
     setStateFunction: React.Dispatch<React.SetStateAction<any>>;
+}
+
+type RequestOficioProps = "requestPassed" | "requestFailed" | null;
+
+
+const DropzoneContent = ({ requestOficioState }: { requestOficioState: RequestOficioProps }) => {
+    return (
+        <div className="relative z-2 text-center text-sm">
+            {requestOficioState === "requestPassed" && (
+                <>
+                    <AiOutlineCheckCircle
+                        className={`text-4xl mx-auto text-strokedark dark:text-white`}
+                    />
+                    <p className="p-1 text-strokedark dark:text-white">
+                        Ofício carregado com sucesso.
+                    </p>
+                </>
+            )}
+            {requestOficioState === "requestFailed" && (
+                <>
+                    <AiOutlineCloseCircle
+                        className={`text-4xl mx-auto text-strokedark dark:text-white`}
+                    />
+                    <p className="p-1 text-strokedark dark:text-white">
+                        Houve um erro ao carregar o ofício.
+                    </p>
+                </>
+            )}
+            {requestOficioState === null && (
+                <>
+                    <AiOutlineCloudUpload
+                        className={`text-4xl mx-auto text-strokedark dark:text-white`}
+                    />
+                    <p className="p-1 text-strokedark dark:text-white">
+                        <b>Clique</b>, ou arraste um ofício em PDF
+                    </p>
+                </>
+            )}
+        </div>
+    )
 }
 
 export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
@@ -24,21 +63,32 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
 
     const [oficio, setOficio] = React.useState<any>(null);
     const [loading, setLoading] = React.useState(false);
+    const [requestOficioState, setRequestOficioState] = React.useState<RequestOficioProps>(null);
 
-    const progressBarRef = useRef<HTMLDivElement>(null)
+    const progressBarRef = useRef<HTMLDivElement>(null);
+    const progressRef = useRef(0);
+    const rafRef = useRef<number | null>(null);
+
+    const updateProgress = () => {
+        if (progressBarRef.current) {
+            progressRef.current += 0.1 // Incremento menor para animação mais suave
+            if (progressRef.current > 100) {
+                progressRef.current = 100
+                cancelAnimationFrame(rafRef.current!)
+                return
+            }
+
+            progressBarRef.current.style.width = `${progressRef.current}%`
+            console.log(`Progress: ${progressRef.current.toFixed(1)}%`)
+
+            rafRef.current = requestAnimationFrame(updateProgress)
+        }
+    }
 
     const loadOficio = async (pdf: any) => {
         setLoading(true);
 
-        const interval = setInterval(() => {
-            if (progressBarRef.current) {
-                const currentWidthInPixels = progressBarRef.current.offsetWidth;
-                const parentWidthInPixels = progressBarRef.current.parentElement!.offsetWidth;
-                const currentPercentage = (currentWidthInPixels / parentWidthInPixels) * 100;
-                const newPercentage = currentPercentage + 1;
-                progressBarRef.current.style.width = `${newPercentage}%`;
-            }
-        }, 300);
+        rafRef.current = requestAnimationFrame(updateProgress);
 
         try {
             const response = await fetch('/api/extract', {
@@ -59,10 +109,12 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
                     position: 'bottom-right',
                     confirmButtonText: 'Ok',
                 });
+                
                 progressBarRef.current!.style.backgroundColor = "#0e9f6e";
                 progressBarRef.current!.style.width = "100%";
+                // progressRef.current = 0;
+                setRequestOficioState("requestPassed");
                 setOficio(await response.json().then((data) => data));
-                clearInterval(interval)
             }
         } catch (error: any) {
             swal.fire({
@@ -75,15 +127,21 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
                 position: 'bottom-right',
                 confirmButtonText: 'Ok',
             });
+            
             progressBarRef.current!.style.backgroundColor = "#cc4b4c";
+            progressBarRef.current!.style.width = "100%";
+            // progressRef.current = 0;
+            setRequestOficioState("requestFailed");
         } finally {
+            cancelAnimationFrame(rafRef.current!)
             setLoading(false);
             setInterval(() => {
                 if (progressBarRef.current) {
+                    setRequestOficioState(null)
                     progressBarRef.current.style.backgroundColor = "#212c39";
                     progressBarRef.current.style.width = "0%";
                 }
-            }, 1000)
+            }, 2500)
         }
     };
 
@@ -102,14 +160,8 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
                     htmlFor="dropzone-file"
                     className={`${loading && "glow-effect"} relative flex h-20 w-full flex-col items-center justify-center rounded-lg border bg-slate-50 cursor-pointer hover:text-strokedark dark:bg-boxdark-2  dark:hover:text-white`}
                 >
-                    <div className="relative z-2 text-center text-sm">
-                        <AiOutlineCloudUpload
-                            className={`text-4xl mx-auto`}
-                        />
-                        <p className="p-1">
-                            <b>Clique</b>, ou arraste um ofício em PDF
-                        </p>
-                    </div>
+                    <DropzoneContent requestOficioState={requestOficioState} />
+
                     <GlowingEffect
                         spread={40}
                         glow={true}
