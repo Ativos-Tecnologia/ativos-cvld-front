@@ -1,10 +1,11 @@
 import UseMySwal from '@/hooks/useMySwal';
 import api from '@/utils/api';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { AiOutlineCloudUpload } from 'react-icons/ai';
 import { GlowingEffect } from '../Effects/Glowing';
 import { convertToBase64 } from '@/utils/pdf';
+import '/src/css/animations/glow-effect.css';
 
 interface SubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     children?: React.ReactNode;
@@ -24,9 +25,22 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
     const [oficio, setOficio] = React.useState<any>(null);
     const [loading, setLoading] = React.useState(false);
 
+    const progressBarRef = useRef<HTMLDivElement>(null)
+
     const loadOficio = async (pdf: any) => {
+        setLoading(true);
+
+        const interval = setInterval(() => {
+            if (progressBarRef.current) {
+                const currentWidthInPixels = progressBarRef.current.offsetWidth;
+                const parentWidthInPixels = progressBarRef.current.parentElement!.offsetWidth;
+                const currentPercentage = (currentWidthInPixels / parentWidthInPixels) * 100;
+                const newPercentage = currentPercentage + 1;
+                progressBarRef.current.style.width = `${newPercentage}%`;
+            }
+        }, 300);
+
         try {
-            setLoading(true);
             const response = await fetch('/api/extract', {
                 method: 'POST',
                 headers: {
@@ -45,7 +59,10 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
                     position: 'bottom-right',
                     confirmButtonText: 'Ok',
                 });
+                progressBarRef.current!.style.backgroundColor = "#0e9f6e";
+                progressBarRef.current!.style.width = "100%";
                 setOficio(await response.json().then((data) => data));
+                clearInterval(interval)
             }
         } catch (error: any) {
             swal.fire({
@@ -58,8 +75,15 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
                 position: 'bottom-right',
                 confirmButtonText: 'Ok',
             });
+            progressBarRef.current!.style.backgroundColor = "#cc4b4c";
         } finally {
             setLoading(false);
+            setInterval(() => {
+                if (progressBarRef.current) {
+                    progressBarRef.current.style.backgroundColor = "#212c39";
+                    progressBarRef.current.style.width = "0%";
+                }
+            }, 1000)
         }
     };
 
@@ -76,16 +100,12 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
             <div className="relative flex w-full cursor-pointer flex-col items-center py-4">
                 <label
                     htmlFor="dropzone-file"
-                    className="glow-effect relative flex h-20 w-full flex-col items-center justify-center rounded-lg border bg-slate-50  hover:text-strokedark  dark:bg-boxdark-2  dark:hover:text-white"
+                    className={`${loading && "glow-effect"} relative flex h-20 w-full flex-col items-center justify-center rounded-lg border bg-slate-50 cursor-pointer hover:text-strokedark dark:bg-boxdark-2  dark:hover:text-white`}
                 >
-                    {
+                    <div className="relative z-2 text-center text-sm">
                         <AiOutlineCloudUpload
-                            className={`text-4xl text-slate-300 dark:text-gray-400 ${
-                                loading ? 'animate-spin' : ''
-                            }`}
+                            className={`text-4xl mx-auto`}
                         />
-                    }
-                    <div className="text-center text-sm">
                         <p className="p-1">
                             <b>Clique</b>, ou arraste um ofício em PDF
                         </p>
@@ -120,12 +140,26 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
                             }
                         }}
                     />
+                    <div
+                        ref={progressBarRef}
+                        style={{ width: `0%`, maxWidth: "100%" }}
+                        className='absolute inset-0 z-1 bg-slate-200 dark:bg-slate-700/30 rounded-md transition-width ease-in-out duration-300'>
+
+                    </div>
                 </label>
                 <span
                     className="apexcharts-legend-text mt-2 w-full text-center text-gray-400"
                     style={{ fontSize: '10px', fontWeight: '400', fontFamily: 'Satoshi' }}
                 >
-                    TRF1 ao TRF4 (beta)
+                    {loading ? (
+                        <>
+                            <strong>CelerAI</strong> está pensando...
+                        </>
+                    ) : (
+                        <>
+                            TRF1 ao TRF4 (beta)
+                        </>
+                    )}
                 </span>
             </div>
         </div>
