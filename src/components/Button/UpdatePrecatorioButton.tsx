@@ -24,7 +24,7 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
     const [oficio, setOficio] = React.useState<any>(null);
     const [loading, setLoading] = React.useState(false);
 
-    const loadOficio = async (pdf: Base64URLString) => {
+    const loadOficio = async (pdf: any) => {
         try {
             setLoading(true);
             const response = await fetch('/api/extract', {
