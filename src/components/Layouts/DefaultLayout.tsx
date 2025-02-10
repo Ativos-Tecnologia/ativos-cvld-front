@@ -1,7 +1,5 @@
 'use client';
 import React, { useState } from 'react';
-import Sidebar from '@/components/Sidebar';
-import Header from '@/components/Header';
 import { Alert } from 'flowbite-react';
 import { HiInformationCircle } from 'react-icons/hi';
 import RouteGuard from '../RouteGuard';
@@ -22,9 +20,9 @@ import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '../NewSidebar';
 import { usePathname, useRouter } from 'next/navigation';
-import DarkModeSwitcher from '../Header/DarkModeSwitcher';
 import ThemeSwitcher from '../CrmUi/ThemeSwitcher';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/react';
 
 export default function DefaultLayout({ children }: { children: React.ReactNode }) {
     const [showAlert, setShowAlert] = useState(true);
@@ -36,6 +34,7 @@ export default function DefaultLayout({ children }: { children: React.ReactNode 
         <>
             {/* <!-- ===== Page Wrapper Start ===== --> */}
             <DefaultLayoutProvider>
+                <Analytics />
                 <SpeedInsights />
                 <GeneralUIProvider>
                     <div className="flex h-screen overflow-hidden">
