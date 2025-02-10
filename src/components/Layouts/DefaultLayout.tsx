@@ -24,6 +24,7 @@ import { AppSidebar } from '../NewSidebar';
 import { usePathname, useRouter } from 'next/navigation';
 import DarkModeSwitcher from '../Header/DarkModeSwitcher';
 import ThemeSwitcher from '../CrmUi/ThemeSwitcher';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export default function DefaultLayout({ children }: { children: React.ReactNode }) {
     const [showAlert, setShowAlert] = useState(true);
@@ -35,6 +36,7 @@ export default function DefaultLayout({ children }: { children: React.ReactNode 
         <>
             {/* <!-- ===== Page Wrapper Start ===== --> */}
             <DefaultLayoutProvider>
+                <SpeedInsights />
                 <GeneralUIProvider>
                     <div className="flex h-screen overflow-hidden">
                         <SidebarProvider
