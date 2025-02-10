@@ -162,26 +162,58 @@ const CalcForm = ({
 
     React.useEffect(() => {
         if (oficioForm) {
-            // setValue('natureza', oficioForm.result[0].natureza);
-            // setValue(
-            //     'valor_principal',
-            //     numberFormat(oficioForm.result[0].valor_principal).replace('R$', ''),
-            // );
-            // setValue(
-            //     'valor_juros',
-            //     numberFormat(oficioForm.result[0].valor_juros).replace('R$', ''),
-            // );
-            // // setValue('incide_contribuicao_previdenciaria', oficioForm.result[0].properties['Incide Contribuição Previdenciária'].checkbox);
-            // setValue('data_base', oficioForm.result[0].data_base.split('/').reverse().join('-'));
-
-            // if (oficioForm.result[0].data_base < '2021-12-01') {
-            //     setValue('incidencia_juros_moratorios', true);
+            //     "court_info": {
+            //         "sphere": "FEDERAL" | "ESTADUAL",
+            //         "trf_region": string | null,     // "TRF1", "TRF2", "TRF3", "TRF4" or null for state courts
+            //         "court_division": string,        // e.g., "7ª VARA FEDERAL" or "2ª VARA CÍVEL"
+            //         "tribunal": string | null,       // Full state court name, null for federal courts
+            //         "ente_devedor": string | null    // Debtor entity, null for federal courts
+            //     },
+            //     "financial_data": {
+            //         "principal_value": number,
+            //         "interest_value": number,
+            //         "pss_value": number | null,
+            //         "total_value": number
+            //     },
+            //     "dates": {
+            //         "base_date": string,            // ISO format
+            //         "request_date": string          // ISO format
+            //     },
+            //     "beneficiary": {
+            //         "name": string,
+            //         "document_number": string       // CPF/CNPJ
+            //     },
+            //     "process": {
+            //         "lawsuit_number": string
+            //     },
+            //     "rra_data": {
+            //         "present": boolean,
+            //         "number_of_months": number | null
+            //     }
             // }
 
-            // setValue(
-            //     'data_requisicao',
-            //     oficioForm.result[0].data_requisicao.split('/').reverse().join('-'),
-            // );
+            setValue('natureza', oficioForm.data.process.nature);
+            setValue(
+                'valor_principal',
+                numberFormat(oficioForm.data.financial_data.principal_value).replace('R$', ''),
+            );
+            setValue(
+                'valor_juros',
+                numberFormat(oficioForm.data.financial_data.interest_value).replace('R$', ''),
+            );
+            // setValue('incide_contribuicao_previdenciaria', oficioForm.result[0].properties['Incide Contribuição Previdenciária'].checkbox);
+            setValue('data_base', oficioForm.data.dates.base_date.split('T')[0]);
+
+            if (oficioForm.data.dates.base_date.split('T')[0] < '2021-12-01') {
+                setValue('incidencia_juros_moratorios', true);
+            }
+
+            setValue(
+                'data_requisicao',
+                oficioForm.data.dates.request_date
+                    ? oficioForm.data.dates.request_date.split('T')[0]
+                    : '',
+            );
             // setValue('ir_incidente_rra', oficioForm.result[0].incidencia_rra_ir);
 
             // if (oficioForm.result[0].incidencia_juros_moratorios) {
@@ -189,25 +221,28 @@ const CalcForm = ({
             // } else {
             //     setValue('incidencia_juros_moratorios', false);
             // }
-            // setValue('numero_de_meses', oficioForm.result[0].numero_de_meses);
-            // setValue('incidencia_pss', oficioForm.result[0].valor_pss > 0 ? true : false);
-            // setValue('valor_pss', numberFormat(oficioForm.result[0].valor_pss).replace('R$', ''));
-            setValue('tribunal', oficioForm.court_info.tribunal);
-            // setValue('juizo_vara', oficioForm.result[0].juizo_vara);
-            // setValue('cpf_cnpj', oficioForm.result[0].cpf_cnpj);
-            // setValue('credor', oficioForm.result[0].credor);
+            setValue('numero_de_meses', oficioForm.data.rra_data.number_of_months || 0);
+            setValue('incidencia_pss', oficioForm.data.financial_data.pss_value > 0);
+            setValue(
+                'valor_pss',
+                numberFormat(oficioForm.data.financial_data.pss_value).replace('R$', ''),
+            );
+            setValue('tribunal', oficioForm.data.court_info.tribunal);
+            setValue('juizo_vara', oficioForm.data.court_info.court_division);
+            setValue('cpf_cnpj', oficioForm.data.beneficiary.document_number);
+            setValue('credor', oficioForm.data.beneficiary.name);
             // setValue('estado_ente_devedor', oficioForm.result[0].estado_ente_devedor);
             // setValue('npu', oficioForm.result[0].npu);
             // setValue('npu_originario', oficioForm.result[0].npu_originario);
             // setValue('status', oficioForm.result[0].status);
             // setValue('percentual_de_honorarios', oficioForm.result[0].percentual_de_honorarios);
 
-            // if (oficioForm.result[0].incidencia_rra_ir) {
-            //     setValue('ir_incidente_rra', true);
-            //     setValue('numero_de_meses', oficioForm.result[0].numero_de_meses);
-            // } else {
-            //     setValue('ir_incidente_rra', false);
-            // }
+            if (oficioForm.data.rra_data.present) {
+                setValue('ir_incidente_rra', true);
+                setValue('numero_de_meses', oficioForm.data.rra_data.number_of_months);
+            } else {
+                setValue('ir_incidente_rra', false);
+            }
 
             // if (oficioForm.result[0].incidencia_pss) {
             //     setValue('incidencia_pss', true);
@@ -216,16 +251,16 @@ const CalcForm = ({
             //         numberFormat(oficioForm.result[0].valor_pss).replace('R$', ''),
             //     );
             // }
-            // setValue('especie', oficioForm.result[0].especie);
-            // setValue('tipo_do_oficio', oficioForm.result[0].tipo_do_oficio);
+            setValue('especie', oficioForm.data.process.type_of_requester);
+            setValue('tipo_do_oficio', oficioForm.data.process.proceding_type);
             // if (oficioForm.result[0].ja_possui_destacamento) {
             //     setValue('ja_possui_destacamento', true);
             //     setValue('percentual_de_honorarios', oficioForm.result[0].percentual_de_honorarios);
             // }
-            // setValue('esfera', oficioForm.result[0].esfera);
-            // setValue('ente_devedor', oficioForm.result[0].ente_devedor);
+            setValue('esfera', oficioForm.data.court_info.sphere);
+            setValue('ente_devedor', oficioForm.data.court_info.ente_devedor);
 
-            // setValue('regime', oficioForm.result[0].regime);
+            setValue('regime', oficioForm.data.court_info.regime);
         }
     }, [oficioForm]);
 

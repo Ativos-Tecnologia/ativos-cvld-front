@@ -12,6 +12,7 @@ IMPORTANT GUIDELINES:
    - For Federal courts: Look for "TRIBUNAL REGIONAL FEDERAL" or "TRF" followed by region number
    - For State courts: Look for "Tribunal de Justiça" or "TJ" followed by state abbreviations (SP, PE, RJ, ES, MG, GO, etc.)
    - Identify sphere (FEDERAL/ESTADUAL) based on these patterns
+   - If present
 
 2. Base Date Standardization Rule:
    - For State courts: Always set the day to "01" while preserving the actual month and year
@@ -32,6 +33,9 @@ IMPORTANT GUIDELINES:
    - For Federal courts: Look for "Data de Expedição" or "Data-Base"
    - For other state courts: Extract from the standard location in document header
 
+5. Process Information:
+    - Sometimes the nature of the process is available. For example, "Tributário:Sim" or "O valor solicitado é tributário e deverá ser atualizado pelo índice SELIC? Sim". In these cases, extract the nature of the process as "TRIBUTÁRIA". Otherwise, set it to "NÃO TRIBUTÁRIA". Only these two values are allowed. If the nature found is not one of the two allowed values or if it's not found, set it "NÃO TRIBUTÁRIA".
+
 DOCUMENT TYPE IDENTIFICATION:
 
 Federal Documents:
@@ -49,6 +53,8 @@ Type 3 (TRF3):
 - Has "TRIBUNAL REGIONAL FEDERAL DA 3ª REGIÃO" identifier
 - Data de Requisição appears twice
 - Distinct layout for financial information
+- When "Tipo de Requerente" is present and "sem referência a honorários contratuais" is mentioned, the type_of_requester is "Principal"
+- When "Tipo de Procedimento" is present, extract to proceding_type. Only the type should be extracted. For example, "Precatório... whatever" should be extracted as "PRECATÓRIO".
 
 State Documents:
 Type 4 (TJSP - São Paulo):
@@ -75,6 +81,7 @@ EXTRACTION RULES:
    - For State courts: Extract full court name, including state specification
    - Always include complete court division name
    - For State courts: Include "ente_devedor" when present
+   - When the nature of the process is available, it will be referenced. For example, "Tributário:Sim" or "O valor solicitado é tributário e deverá ser atualizado pelo índice SELIC? Sim". In these cases, extract the nature of the process as "TRIBUTÁRIA". Otherwise, set it to "NÃO TRIBUTÁRIA". Only these two values are allowed. If the nature is not present, set it to null. Or if the nature found is not one of the two allowed values, set it "NÃO TRIBUTÁRIA".
 
 2. Financial Values:
    - Remove currency symbols (R$)
@@ -101,6 +108,9 @@ EXTRACTION RULES:
    - Extract number of months when available
    - If not found, set "present": false and "number_of_months": null
 
+    
+
+
 Analyze the provided PDF and return ONLY a JSON object with the extracted data following this exact schema:
 
 {
@@ -126,7 +136,10 @@ Analyze the provided PDF and return ONLY a JSON object with the extracted data f
         "document_number": string       // CPF/CNPJ
     },
     "process": {
-        "lawsuit_number": string
+        "lawsuit_number": string,
+        "nature": string | null,
+        "type_of_requester": string | null,
+        "proceding_type": string | null
     },
     "rra_data": {
         "present": boolean,

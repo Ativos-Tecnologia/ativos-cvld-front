@@ -24,7 +24,7 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
     const [oficio, setOficio] = React.useState<any>(null);
     const [loading, setLoading] = React.useState(false);
 
-    const loadOficio = async (data: Base64URLString) => {
+    const loadOficio = async (pdf: Base64URLString) => {
         try {
             setLoading(true);
             const response = await fetch('/api/extract', {
@@ -32,7 +32,7 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ pdfBase64: data }),
+                body: JSON.stringify({ pdfBase64: pdf }),
             });
 
             if (response.status === 200) {
@@ -45,7 +45,7 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
                     position: 'bottom-right',
                     confirmButtonText: 'Ok',
                 });
-                setOficio(response);
+                setOficio(await response.json().then((data) => data));
             }
         } catch (error: any) {
             swal.fire({
