@@ -235,6 +235,7 @@ export const LegalDetails = ({ id }: JuridicoDetailsProps) => {
 
         formData.upload_notion = true;
         formData.need_to_recalculate_proposal = true;
+        formData.from_juridico = true;
 
         swal.fire({
             title: 'Confirmação',
