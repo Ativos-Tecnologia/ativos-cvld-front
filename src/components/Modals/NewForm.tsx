@@ -427,7 +427,7 @@ const NewForm = () => {
                                 <CalcForm
                                     onSubmitForm={onSubmit}
                                     formConfigs={form}
-                                    hasDropzone={false}
+                                    hasDropzone={true}
                                 />
                             </div>
 
