@@ -112,7 +112,7 @@ const Juridico = () => {
             </div>
             <div className="col-span-12">
                 <Tabs defaultValue={navItems.TODOS} className="w-full">
-                    <TabsList className="tabs-scrollbar justify-normal overflow-x-auto overflow-y-hidden md:max-w-[calc(100vw-1rem)] xl:max-w-[1130px] 2xl:w-full">
+                    <TabsList className="tabs-scrollbar justify-normal overflow-x-auto overflow-y-hidden md:max-w-[calc(100vw-1rem)] xl:max-w-[1130px] 2xl:w-fit 2xl:max-w-full">
                         {Object.values(navItems).map((item, index) => (
                             <TabsTrigger
                                 key={index}
