@@ -103,7 +103,7 @@ export function LOADistribuitionBubbleChart({
             recebimentoLabel: item.Recebimento,
             tribunalLabel: item.Tribunal,
         }));
-    }, [filteredResults, calculateZ]); // Added calculateZ to dependencies
+    }, [filteredResults, calculateZ]);
 
     const CustomTooltip = ({ active, payload }: any) => {
         if (active && payload && payload.length) {

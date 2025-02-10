@@ -2148,9 +2148,8 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                     <span className="font-medium">
                                         {numberFormat(
                                             happenedRecalculation === false
-                                                ? data?.properties[
-                                                      'Valor Líquido (Com Reserva dos Honorários)'
-                                                  ]?.formula?.number || 0
+                                                ? data?.properties['Valor Líquido a ser cedido']
+                                                      ?.formula?.number || 0
                                                 : recalculationData.result.net_mount_to_be_assigned,
                                         )}
                                     </span>
