@@ -78,8 +78,7 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
                 return
             }
 
-            progressBarRef.current.style.width = `${progressRef.current}%`
-            console.log(`Progress: ${progressRef.current.toFixed(1)}%`)
+            progressBarRef.current.style.width = `${progressRef.current}%`;
 
             rafRef.current = requestAnimationFrame(updateProgress)
         }
@@ -100,48 +99,33 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
             });
 
             if (response.status === 200) {
-                swal.fire({
-                    title: 'Ofício carregado com sucesso',
-                    icon: 'success',
-                    toast: true,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    position: 'bottom-right',
-                    confirmButtonText: 'Ok',
-                });
-                
+
                 progressBarRef.current!.style.backgroundColor = "#0e9f6e";
-                progressBarRef.current!.style.width = "100%";
-                // progressRef.current = 0;
+                progressRef.current = 99;
                 setRequestOficioState("requestPassed");
                 setOficio(await response.json().then((data) => data));
+                
             }
         } catch (error: any) {
-            swal.fire({
-                title: 'Erro ao carregar ofício',
-                text: error.message,
-                icon: 'error',
-                toast: true,
-                timer: 3000,
-                timerProgressBar: true,
-                position: 'bottom-right',
-                confirmButtonText: 'Ok',
-            });
-            
+
             progressBarRef.current!.style.backgroundColor = "#cc4b4c";
-            progressBarRef.current!.style.width = "100%";
-            // progressRef.current = 0;
+            progressRef.current = 99;
             setRequestOficioState("requestFailed");
+
         } finally {
+            // Aguarda antes de cancelar a animação
+            await new Promise(resolve => setTimeout(resolve, 500))
             cancelAnimationFrame(rafRef.current!)
             setLoading(false);
-            setInterval(() => {
-                if (progressBarRef.current) {
-                    setRequestOficioState(null)
-                    progressBarRef.current.style.backgroundColor = "#212c39";
-                    progressBarRef.current.style.width = "0%";
-                }
-            }, 2500)
+
+            // Aguarda 2 segundos antes de resetar o progresso
+            await new Promise(resolve => setTimeout(resolve, 2000))
+            if (progressBarRef.current) {
+                setRequestOficioState(null)
+                progressBarRef.current.style.backgroundColor = "#212c39";
+                progressBarRef.current.style.width = "0%";
+                progressRef.current = 0;
+            }
         }
     };
 
