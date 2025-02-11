@@ -16,7 +16,10 @@ import numberFormat from '@/functions/formaters/numberFormat';
 import CelerAppCombobox from '../CrmUi/Combobox';
 import { estadoRegimeEnteDevedor } from '@/constants/estado-regime-enteDevedor';
 import { CPFAndCNPJInput } from '../CrmUi/CPFAndCNPFInput';
-import { regimeEspecialExceptions } from '@/constants/excecoes-regime-especial';
+import {
+    entesComTaxaPrevidenciaPredefinida,
+    regimeEspecialExceptions,
+} from '@/constants/excecoes-regime-especial';
 
 // interface
 interface ICalcFormProps {
@@ -110,6 +113,13 @@ const CalcForm = ({
                 data.properties['Incide Contribuição Previdenciária'].checkbox,
             );
             setValue(
+                'percentual_de_contribuicao_previdenciaria',
+                (data.properties['Percentual de Contribuição Previdenciária'].number! * 100)
+                    .toFixed(2)
+                    .replace('.', ','),
+            );
+
+            setValue(
                 'valor_aquisicao_total',
                 data.properties['Percentual a ser adquirido'].number! === 1,
             );
@@ -162,36 +172,6 @@ const CalcForm = ({
 
     React.useEffect(() => {
         if (oficioForm) {
-            //     "court_info": {
-            //         "sphere": "FEDERAL" | "ESTADUAL",
-            //         "trf_region": string | null,     // "TRF1", "TRF2", "TRF3", "TRF4" or null for state courts
-            //         "court_division": string,        // e.g., "7ª VARA FEDERAL" or "2ª VARA CÍVEL"
-            //         "tribunal": string | null,       // Full state court name, null for federal courts
-            //         "ente_devedor": string | null    // Debtor entity, null for federal courts
-            //     },
-            //     "financial_data": {
-            //         "principal_value": number,
-            //         "interest_value": number,
-            //         "pss_value": number | null,
-            //         "total_value": number
-            //     },
-            //     "dates": {
-            //         "base_date": string,            // ISO format
-            //         "request_date": string          // ISO format
-            //     },
-            //     "beneficiary": {
-            //         "name": string,
-            //         "document_number": string       // CPF/CNPJ
-            //     },
-            //     "process": {
-            //         "lawsuit_number": string
-            //     },
-            //     "rra_data": {
-            //         "present": boolean,
-            //         "number_of_months": number | null
-            //     }
-            // }
-
             setValue('natureza', oficioForm.data.process.nature);
             setValue(
                 'valor_principal',
@@ -612,13 +592,6 @@ const CalcForm = ({
                         >
                             Ente Devedor
                         </label>
-                        {/* <input
-                                                type="text"
-                                                id="ente_devedor"
-                                                className="h-[37px] w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
-                                                {...register('ente_devedor', {})}
-                                            /> */}
-
                         <CelerAppCombobox
                             list={opcoesEntesDevedores}
                             onChangeValue={(value) => setValue('ente_devedor', value)}
@@ -649,7 +622,9 @@ const CalcForm = ({
                     )}
 
                     {watch('natureza') === 'NÃO TRIBUTÁRIA' &&
-                        regimeEspecialExceptions.includes(watch('ente_devedor') || '') && (
+                        !entesComTaxaPrevidenciaPredefinida.includes(
+                            watch('ente_devedor') || '',
+                        ) && (
                             <div className={`col-span-2 flex max-h-6 items-center gap-2`}>
                                 <CustomCheckbox
                                     check={watch('incide_contribuicao_previdenciaria')}
@@ -938,6 +913,51 @@ const CalcForm = ({
                             >
                                 Incide PSS?
                             </label>
+                        </div>
+                    ) : null}
+                    {(watch('natureza') === 'NÃO TRIBUTÁRIA' || watch('natureza') === undefined) &&
+                    watch('incide_contribuicao_previdenciaria') ? (
+                        <div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
+                            <div className="flex w-full flex-col gap-2 sm:col-span-1">
+                                <label
+                                    htmlFor="percentual_de_contribuicao_previdenciaria"
+                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                >
+                                    Percentual de Contribuição Previdenciária (%)
+                                </label>
+                                <Controller
+                                    name="percentual_de_contribuicao_previdenciaria"
+                                    control={control}
+                                    defaultValue={0}
+                                    rules={{
+                                        min: {
+                                            value: 1,
+                                            message: 'O valor deve ser maior que 0',
+                                        },
+                                    }}
+                                    render={({ field, fieldState: { error } }) => (
+                                        <>
+                                            <Cleave
+                                                {...field}
+                                                className={`w-full rounded-md border-stroke ${error ? 'border-red' : 'dark:border-strokedark'} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
+                                                options={{
+                                                    numeral: true,
+                                                    numeralThousandsGroupStyle: 'none',
+                                                    numeralDecimalMark: ',',
+                                                    prefix: '%',
+                                                    tailPrefix: true,
+                                                    rawValueTrimPrefix: true,
+                                                }}
+                                            />
+                                            {error && (
+                                                <span className="absolute right-2 top-8.5 text-xs font-medium text-red">
+                                                    {error.message}
+                                                </span>
+                                            )}
+                                        </>
+                                    )}
+                                />
+                            </div>
                         </div>
                     ) : null}
                     {watch('incidencia_pss') && watch('natureza') !== 'TRIBUTÁRIA' ? (
