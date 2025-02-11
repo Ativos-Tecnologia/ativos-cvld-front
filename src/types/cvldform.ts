@@ -14,8 +14,7 @@ export type CvldFormInputsProps = {
     percentual_a_ser_adquirido: number | string;
     ja_possui_destacamento: boolean;
     percentual_de_honorarios: number | string;
-    incidencia_juros_moratorios:
-    boolean;
+    incidencia_juros_moratorios: boolean;
     nao_incide_selic_no_periodo_db_ate_abril: boolean;
     incidencia_rra_ir: boolean;
     ir_incidente_rra: boolean;
@@ -44,4 +43,5 @@ export type CvldFormInputsProps = {
     conta?: string;
     test_mode: boolean;
     upload_notion: boolean;
-}
+    percentual_de_contribuicao_previdenciaria: number | string;
+};
