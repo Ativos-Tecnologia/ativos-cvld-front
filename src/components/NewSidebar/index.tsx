@@ -94,9 +94,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     {
                         title: 'Radar',
                         url: '/dashboard/radar',
-                        when:
-                            window.location.href.includes('localhost') ||
-                            window.location.href.includes('dev'),
+                        when: product === 'global',
                     },
                 ],
             },
