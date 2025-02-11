@@ -17,7 +17,7 @@ import CelerAppCombobox from '../CrmUi/Combobox';
 import { estadoRegimeEnteDevedor } from '@/constants/estado-regime-enteDevedor';
 import { CPFAndCNPJInput } from '../CrmUi/CPFAndCNPFInput';
 import {
-    entesComTaxaPrevidenciaPredefinida,
+    entesComTaxaPrevidenciariaPredefinida,
     regimeEspecialExceptions,
 } from '@/constants/excecoes-regime-especial';
 
@@ -70,15 +70,15 @@ const CalcForm = ({
 
     const opcoesEntesDevedores = estadoSelecionado
         ? [
-              ...(estadoRegimeEnteDevedor[estadoSelecionado]?.GERAL || []),
-              ...(estadoRegimeEnteDevedor[estadoSelecionado]?.ESPECIAL || []),
-          ]
+            ...(estadoRegimeEnteDevedor[estadoSelecionado]?.GERAL || []),
+            ...(estadoRegimeEnteDevedor[estadoSelecionado]?.ESPECIAL || []),
+        ]
         : [];
 
     const regime_por_ente =
         estadoSelecionado &&
-        enteDevedorSelecionado &&
-        estadoRegimeEnteDevedor[estadoSelecionado]?.GERAL?.includes(enteDevedorSelecionado)
+            enteDevedorSelecionado &&
+            estadoRegimeEnteDevedor[estadoSelecionado]?.GERAL?.includes(enteDevedorSelecionado)
             ? 'GERAL'
             : 'ESPECIAL';
 
@@ -621,25 +621,73 @@ const CalcForm = ({
                         <div className="col-span-1 hidden sm:block" />
                     )}
 
-                    {watch('natureza') === 'NÃO TRIBUTÁRIA' &&
-                        !entesComTaxaPrevidenciaPredefinida.includes(
-                            watch('ente_devedor') || '',
-                        ) && (
-                            <div className={`col-span-2 flex max-h-6 items-center gap-2`}>
-                                <CustomCheckbox
-                                    check={watch('incide_contribuicao_previdenciaria')}
-                                    id={'incide_contribuicao_previdenciaria'}
-                                    register={register('incide_contribuicao_previdenciaria')}
-                                />
+                    {watch('natureza') === 'NÃO TRIBUTÁRIA' && watch("ente_devedor") && (
+                        <div className={`col-span-2 flex max-h-6 items-center gap-2 md:col-span-1`}>
+                            <CustomCheckbox
+                                check={watch('incide_contribuicao_previdenciaria')}
+                                id={'incide_contribuicao_previdenciaria'}
+                                register={register('incide_contribuicao_previdenciaria')}
+                            />
 
-                                <label
-                                    htmlFor="incide_contribuicao_previdenciaria"
-                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                                >
-                                    Incide Contribuição Previdenciária?
-                                </label>
-                            </div>
-                        )}
+                            <label
+                                htmlFor="incide_contribuicao_previdenciaria"
+                                className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                            >
+                                Incide Contribuição Previdenciária?
+                            </label>
+                        </div>
+                    )}
+
+                    {((watch('natureza') === 'NÃO TRIBUTÁRIA' || watch('natureza') === undefined) &&
+                        watch('incide_contribuicao_previdenciaria') && !entesComTaxaPrevidenciariaPredefinida.includes(watch("ente_devedor") || "")) && (
+                        <div className="flex w-full flex-col gap-2 col-span-2 sm:col-span-1">
+                            <label
+                                title='Percentual de Contribuição Previdenciária (%)'
+                                htmlFor="percentual_de_contribuicao_previdenciaria"
+                                className="truncate font-nexa text-xs font-semibold uppercase text-meta-5"
+                            >
+                                Percentual de Contribuição Previdenciária (%)
+                            </label>
+                            <Controller
+                                name="percentual_de_contribuicao_previdenciaria"
+                                control={control}
+                                defaultValue={0}
+                                rules={{
+                                    min: {
+                                        value: 1,
+                                        message: 'O valor deve ser maior que 0',
+                                    },
+                                }}
+                                render={({ field, fieldState: { error } }) => (
+                                    <>
+                                        <Cleave
+                                            {...field}
+                                            className={`w-full rounded-md border-stroke ${error ? 'border-red' : 'dark:border-strokedark'} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
+                                            options={{
+                                                numeral: true,
+                                                numeralThousandsGroupStyle: 'none',
+                                                numeralDecimalMark: ',',
+                                                prefix: '%',
+                                                tailPrefix: true,
+                                                rawValueTrimPrefix: true,
+                                            }}
+                                        />
+                                        {error && (
+                                            <span className="absolute right-2 top-8.5 text-xs font-medium text-red">
+                                                {error.message}
+                                            </span>
+                                        )}
+                                    </>
+                                )}
+                            />
+                        </div>
+                    )}
+
+                    {watch("ente_devedor") && ((!watch("incide_contribuicao_previdenciaria") && watch("ente_devedor")) ||
+                        (!watch("incide_contribuicao_previdenciaria") && !entesComTaxaPrevidenciariaPredefinida.includes(watch("ente_devedor") || "")) || entesComTaxaPrevidenciariaPredefinida.includes(watch("ente_devedor") || "")) && (
+                            <div className="col-span-1 hidden sm:block"></div>
+                        )
+                    }
 
                     <div className={`col-span-2 flex max-h-6 items-center gap-2 md:col-span-1`}>
                         <CustomCheckbox
@@ -865,8 +913,8 @@ const CalcForm = ({
                     )}
 
                     {watch('ir_incidente_rra') &&
-                    watch('incidencia_rra_ir') === true &&
-                    watch('natureza') !== 'TRIBUTÁRIA' ? (
+                        watch('incidencia_rra_ir') === true &&
+                        watch('natureza') !== 'TRIBUTÁRIA' ? (
                         <div className="mt-1 flex flex-col gap-2 overflow-hidden 2xsm:col-span-2 sm:col-span-1">
                             <label
                                 htmlFor="numero_de_meses"
@@ -890,14 +938,14 @@ const CalcForm = ({
                     ) : (
                         <>
                             {!watch('ir_incidente_rra') &&
-                            watch('incidencia_rra_ir') &&
-                            watch('natureza') === 'NÃO TRIBUTÁRIA' ? (
+                                watch('incidencia_rra_ir') &&
+                                watch('natureza') === 'NÃO TRIBUTÁRIA' ? (
                                 <div className="col-span-1 hidden md:block"></div>
                             ) : null}
                         </>
                     )}
                     {watch('natureza') === 'NÃO TRIBUTÁRIA' &&
-                    !watch('incide_contribuicao_previdenciaria') ? (
+                        !watch('incide_contribuicao_previdenciaria') ? (
                         <div
                             className={`flex gap-2 ${watch('incidencia_pss') ? 'items-start' : 'items-center'} 2xsm:col-span-2 sm:col-span-1`}
                         >
@@ -915,51 +963,7 @@ const CalcForm = ({
                             </label>
                         </div>
                     ) : null}
-                    {(watch('natureza') === 'NÃO TRIBUTÁRIA' || watch('natureza') === undefined) &&
-                    watch('incide_contribuicao_previdenciaria') ? (
-                        <div className=" flex w-full flex-row justify-between gap-4 sm:col-span-2">
-                            <div className="flex w-full flex-col gap-2 sm:col-span-1">
-                                <label
-                                    htmlFor="percentual_de_contribuicao_previdenciaria"
-                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
-                                >
-                                    Percentual de Contribuição Previdenciária (%)
-                                </label>
-                                <Controller
-                                    name="percentual_de_contribuicao_previdenciaria"
-                                    control={control}
-                                    defaultValue={0}
-                                    rules={{
-                                        min: {
-                                            value: 1,
-                                            message: 'O valor deve ser maior que 0',
-                                        },
-                                    }}
-                                    render={({ field, fieldState: { error } }) => (
-                                        <>
-                                            <Cleave
-                                                {...field}
-                                                className={`w-full rounded-md border-stroke ${error ? 'border-red' : 'dark:border-strokedark'} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
-                                                options={{
-                                                    numeral: true,
-                                                    numeralThousandsGroupStyle: 'none',
-                                                    numeralDecimalMark: ',',
-                                                    prefix: '%',
-                                                    tailPrefix: true,
-                                                    rawValueTrimPrefix: true,
-                                                }}
-                                            />
-                                            {error && (
-                                                <span className="absolute right-2 top-8.5 text-xs font-medium text-red">
-                                                    {error.message}
-                                                </span>
-                                            )}
-                                        </>
-                                    )}
-                                />
-                            </div>
-                        </div>
-                    ) : null}
+
                     {watch('incidencia_pss') && watch('natureza') !== 'TRIBUTÁRIA' ? (
                         <div className="mt-1 flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                             <label
@@ -992,7 +996,7 @@ const CalcForm = ({
                     ) : (
                         <>
                             {watch('natureza') === 'TRIBUTÁRIA' ||
-                            watch('incide_contribuicao_previdenciaria') ? null : (
+                                watch('incide_contribuicao_previdenciaria') ? null : (
                                 <div className="hidden items-center md:flex">&nbsp;</div>
                             )}
                         </>
@@ -1064,7 +1068,7 @@ const CalcForm = ({
                         )}
                         <div className="mt-8 flex flex-col gap-2">
                             {(watch('gerar_cvld') && formMode === 'create') ||
-                            formMode === 'update' ? (
+                                formMode === 'update' ? (
                                 <>
                                     <div className="mb-4 w-full">
                                         <span className="text-md w-full self-center font-semibold">
@@ -1236,8 +1240,8 @@ const CalcForm = ({
                             ) : null}
                         </div>
                         {(userData.role === 'ativos' || userData.role === 'judit') &&
-                        watch('gerar_cvld') &&
-                        formMode === 'create' ? (
+                            watch('gerar_cvld') &&
+                            formMode === 'create' ? (
                             <>
                                 <hr className="col-span-2 my-8 border border-stroke dark:border-strokedark" />
                                 <div className="flex flex-col gap-2">

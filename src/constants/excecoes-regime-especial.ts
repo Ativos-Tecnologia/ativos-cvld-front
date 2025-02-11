@@ -5,4 +5,4 @@ export const regimeEspecialExceptions = [
     'INSTITUTO DE RECURSOS HUMANOS DE PERNAMBUCO IRH PE',
 ];
 
-export const entesComTaxaPrevidenciaPredefinida = ['ESTADO DE GOIÁS', ...regimeEspecialExceptions];
+export const entesComTaxaPrevidenciariaPredefinida = ['ESTADO DE GOIÁS', ...regimeEspecialExceptions];
