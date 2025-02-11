@@ -17,6 +17,7 @@ import { BadgeDollarSign, BadgeInfoIcon } from 'lucide-react';
 import ColumnChart from '../Charts/ColumnChart';
 import { LOADistribuitionBubbleChart } from '../Charts/LOADistribuitionBubbleChart';
 import Image from 'next/image';
+import dateFormater from '@/functions/formaters/dateFormater';
 
 const chartProps = {
     COMUM: [
@@ -27,7 +28,21 @@ const chartProps = {
     PROJEÇÃO: ['MONTANTE TOTAL A SER PAGO NO ANO DE REFERÊNCIA'],
 };
 
+const formatDatePicker = (timestamp: number): string => {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, '0');
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
 const PrecatoriosEspeciais = () => {
+
+    const [dateRange, setDateRange] = React.useState({
+        start: new Date().getTime(),
+        end: new Date('2026-03-30').getTime()
+    });
+
     const { data: synthesisData, refetch: refetchSysthesisData } = useQuery({
         queryKey: ['treeMapData'],
         queryFn: async () => {
@@ -88,7 +103,7 @@ const PrecatoriosEspeciais = () => {
         queryKey: ['precatoryData'],
         queryFn: async () => {
             const response = await api.post(
-                '/api/precatorios-especiais/extrair-amostragem-do-estoque/',
+                `/api/precatorios-especiais/extrair-amostragem-do-estoque/?initial_date=${formatDatePicker(dateRange.start)}&final_date=${formatDatePicker(dateRange.end)}`,
             );
 
             return response.data;
@@ -111,6 +126,10 @@ const PrecatoriosEspeciais = () => {
     function solveEstadoName(estado: string) {
         return estados.find((item: IEstado) => item.id === estado)?.nome;
     }
+
+    React.useEffect(() => {
+        refetchPrecatoryData();
+    }, [dateRange.start, dateRange.end])
 
     return (
         <div className="grid grid-cols-12 gap-6">
@@ -192,10 +211,12 @@ const PrecatoriosEspeciais = () => {
                         Estoque de Precatórios
                     </CardTitle>
                 </CardHeader>
-                <div className="mx-auto rounded-md bg-white dark:bg-boxdark">
+                <div className="mx-auto rounded-br-md rounded-bl-md bg-white dark:bg-boxdark">
                     <LOADistribuitionBubbleChart
                         results={precatoryData?.results}
                         isLoading={precatoryLoading}
+                        dateRange={dateRange}
+                        setDateRange={setDateRange}
                     />
                 </div>
             </Card>

@@ -47,22 +47,16 @@ const getColorByTribunal = (tribunal: string): string => {
 interface LOADistribuitionBubbleChartProps {
     results: ILOADistribuitionResult[];
     isLoading: boolean;
+    dateRange: { start: number; end: number };
+    setDateRange: React.Dispatch<React.SetStateAction<{ start: number; end: number }>>;
 }
 
 export function LOADistribuitionBubbleChart({
     results = [],
     isLoading = false,
+    dateRange,
+    setDateRange
 }: LOADistribuitionBubbleChartProps) {
-    const defaultStart =
-        results.length > 0
-            ? parseMonthYear(results[0]['MÊS E ANO DO PAGAMENTO'])
-            : new Date().getTime();
-    const defaultEnd =
-        results.length > 0
-            ? parseMonthYear(results[results.length - 1]['MÊS E ANO DO PAGAMENTO'])
-            : new Date('2026-03-30').getTime();
-
-    const [dateRange, setDateRange] = useState({ start: defaultStart, end: defaultEnd });
 
     const formatDatePicker = (timestamp: number): string => {
         const date = new Date(timestamp);
@@ -85,15 +79,8 @@ export function LOADistribuitionBubbleChart({
 
     const calculateZ = (value: number) => Math.sqrt(value) / 150;
 
-    const filteredResults = useMemo(() => {
-        return results.filter((item) => {
-            const itemTimestamp = parseMonthYear(item['MÊS E ANO DO PAGAMENTO']);
-            return itemTimestamp >= dateRange.start && itemTimestamp <= dateRange.end;
-        });
-    }, [results, dateRange]);
-
     const processedData = useMemo(() => {
-        return filteredResults.map((item) => ({
+        return results.map((item) => ({
             ...item,
             x: parseMonthYear(item['MÊS E ANO DO PAGAMENTO']),
             y: parseDate(item.Recebimento),
@@ -103,7 +90,7 @@ export function LOADistribuitionBubbleChart({
             recebimentoLabel: item.Recebimento,
             tribunalLabel: item.Tribunal,
         }));
-    }, [filteredResults, calculateZ]);
+    }, [results, calculateZ]);
 
     const CustomTooltip = ({ active, payload }: any) => {
         if (active && payload && payload.length) {
@@ -165,7 +152,7 @@ export function LOADistribuitionBubbleChart({
             ) : (
                 <ResponsiveContainer width="100%" minHeight={500}>
                     <ScatterChart
-                        margin={{ top: 20, right: 20, bottom: 20, left: 50 }}
+                        margin={{ top: 20, right: 20, bottom: 30, left: 50 }}
                         title="Distribuição do valor por LOAs"
                     >
                         <CartesianGrid />
@@ -173,18 +160,35 @@ export function LOADistribuitionBubbleChart({
                             dataKey="x"
                             type="number"
                             domain={[dateRange.start, dateRange.end]}
+                            tick={{
+                                fill: "#8a99af",
+                                fontSize: 12,
+                                fontWeight: 700,
+                                dy: 30
+                            }}
                             tickFormatter={(unixTime) =>
                                 new Date(unixTime).toLocaleDateString('pt-BR', {
                                     month: '2-digit',
                                     year: 'numeric',
                                 })
                             }
-                            name="Mês e Ano do Pagamento"
+                            label={{
+                                value: 'Mês/Ano do Pagamento',
+                                position: 'insideBottom',
+                                fill: "#8a99af",
+                                fontSize: 14
+                            }}
                         />
                         <YAxis
                             dataKey="y"
                             type="number"
                             domain={['auto', 'auto']}
+                            tick={{
+                                fill: "#8a99af",
+                                fontSize: 12,
+                                fontWeight: 700,
+                                dx: -20
+                            }}
                             tickFormatter={(unixTime) =>
                                 new Date(unixTime).toLocaleDateString('pt-BR', {
                                     day: '2-digit',
@@ -192,7 +196,15 @@ export function LOADistribuitionBubbleChart({
                                     year: 'numeric',
                                 })
                             }
-                            name="Data do Recebimento"
+                            label={{
+                                angle: -90,
+                                position: 'insideLeft',
+                                dx: 40,
+                                dy: 65,
+                                value: 'Data do Recebimento',
+                                fill: "#8a99af",
+                                fontSize: 14
+                            }}
                         />
                         <ZAxis dataKey="z" range={[10, 1500]} name="Valor" />
                         <Tooltip content={<CustomTooltip />} />
