@@ -1,8 +1,14 @@
 "use client"
 import React from 'react'
-import ReactApexChart from 'react-apexcharts'
 import CustomSkeleton from '../CrmUi/CustomSkeleton'
-import { YAxis } from 'recharts'
+import { Legend, YAxis } from 'recharts'
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import {
+    ChartContainer,
+    ChartLegend,
+    ChartTooltip,
+    ChartTooltipContent,
+} from "@/components/ui/chart"
 
 type ColumnChartProps = {
     data: {
@@ -12,88 +18,51 @@ type ColumnChartProps = {
 }
 
 type ChartSeries = {
-    name: string,
-    data: number[]
+    [key: string]: string | number
 }[]
+
+type ConfigChartProps = {
+    [key: string]: {
+        label: string,
+        color: string
+    }
+}
 
 const ColumnChart = ({ data, propsArray }: ColumnChartProps) => {
 
-    const [series, setSeries] = React.useState<ChartSeries | undefined>([]);
-
-    const options: ApexCharts.ApexOptions = {
-        chart: {
-            type: 'bar',
-            toolbar: {
-                show: true,
-                tools: {
-                    download: true,
-                    selection: true,
-                    zoom: true,
-                    zoomin: true,
-                    zoomout: true,
-                },
-                offsetY: -10
-            }
-        },
-        dataLabels: {
-            enabled: false
-        },
-        plotOptions: {
-            bar: {
-                horizontal: false,
-                borderRadius: 4,
-                columnWidth: "50%",
-                borderRadiusApplication: "end",
-            }
-        },
-        stroke: {
-            width: 3,
-            show: true,
-            colors: ['transparent']
-        },
-        xaxis: {
-            categories: data?.map((item) => String(item["ANO"]))
-        },
-        yaxis: {
-            labels: {
-                formatter: (value) => {
-                    return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
-                }
-            }
-        },
-        tooltip: {
-
-            y: {
-                formatter: (value) => {
-                    return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
-                }
-            }
-        },
-        responsive: [
-            {
-                breakpoint: 430,
-                options: {
-                    yaxis: {
-                        labels: {
-                            show: false
-                        }
-                    }
-                }
-            }
-        ]
-    }
+    const [chartData, setChartData] = React.useState<ChartSeries | undefined>([]);
+    const [chartConfig, setChartConfig] = React.useState<ConfigChartProps>({});
 
     function fillChartData() {
-        return propsArray.map(prop => ({
-            name: prop.trim(),
-            data: data?.map(item => item[prop] ?? 0)
-        }));
+        let result: any = [];
+        data.forEach(item => {
+            let newItem: any = {};
+            newItem["year"] = item['ANO'];
+            propsArray.forEach(prop => {
+                newItem[prop] = item[prop];
+            });
+            result.push(newItem);
+        });
+        return result;
+    }
+
+    function fillChartConfigs() {
+        let configs: any = {};
+        propsArray.forEach((prop, index) => {
+            configs[prop] = {
+                label: prop,
+                color: `hsl(var(--chart-${index + 1}))`
+            }
+        });
+        return configs;
     }
 
     React.useEffect(() => {
         if (data) {
             const dataToAppend = fillChartData();
-            setSeries(dataToAppend);
+            const configs = fillChartConfigs();
+            setChartData(dataToAppend as ChartSeries);
+            setChartConfig(configs);
         }
     }, [data])
 
@@ -111,7 +80,43 @@ const ColumnChart = ({ data, propsArray }: ColumnChartProps) => {
 
     return (
         <div className='col-span-12 px-5 pb-6 pt-7.5'>
-            <ReactApexChart options={options} series={series} type='bar' height={600} />
+            {/* <ReactApexChart options={options} series={series} type='bar' height={600} /> */}
+            <ChartContainer config={chartConfig}>
+                <BarChart accessibilityLayer data={chartData}>
+                    <CartesianGrid vertical={false} />
+                    <XAxis
+                        dataKey="year"
+                        tickLine={true}
+                        tickMargin={10}
+                        axisLine={true}
+                    />
+                    <YAxis
+
+                        tickLine={true}
+                        tickMargin={10}
+                        axisLine={true}
+                        domain={["auto", "auto"]}
+                        tickFormatter={(value: any) => {
+                            return `${(value / 1000000).toFixed(0)}M`;
+                        }}
+                    />
+                    <ChartTooltip
+                        cursor={false}
+                        content={<ChartTooltipContent indicator="dot" />}
+                    />
+
+                    <Legend verticalAlign="bottom" height={36} margin={{ top: 20}} />
+
+                    {propsArray.map((prop, index) => (
+                        <Bar
+                            key={index}
+                            dataKey={prop}
+                            fill={chartConfig[prop]?.color}
+                            radius={4}
+                        />
+                    ))}
+                </BarChart>
+            </ChartContainer>
         </div>
     )
 }

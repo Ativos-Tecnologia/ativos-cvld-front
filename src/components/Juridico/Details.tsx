@@ -1477,12 +1477,12 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                 fieldType={InputFieldVariant.INPUT}
                                 label={
                                     data?.properties['CPF/CNPJ']?.rich_text?.[0]?.plain_text &&
-                                    data.properties['CPF/CNPJ'].rich_text[0].plain_text.length > 11
+                                    data.properties['CPF/CNPJ'].rich_text[0]?.plain_text.length > 11
                                         ? 'CNPJ'
                                         : 'CPF'
                                 }
                                 defaultValue={
-                                    data?.properties['CPF/CNPJ']?.rich_text?.[0].plain_text || ''
+                                    data?.properties['CPF/CNPJ']?.rich_text?.[0]?.plain_text || ''
                                 }
                                 iconSrc={<FaIdCard className="self-center" />}
                                 iconAlt="document"
@@ -1669,7 +1669,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                 fieldType={InputFieldVariant.INPUT}
                                 label="NPU (Originário)"
                                 defaultValue={
-                                    data?.properties['NPU (Originário)']?.rich_text?.[0].plain_text
+                                    data?.properties['NPU (Originário)']?.rich_text?.[0]?.plain_text || ""
                                 }
                                 iconSrc={<IoDocumentTextSharp className="self-center" />}
                                 iconAlt="law"
@@ -1687,8 +1687,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                 fieldType={InputFieldVariant.INPUT}
                                 label="NPU (Precatório)"
                                 defaultValue={
-                                    data?.properties['NPU (Precatório)']?.rich_text?.[0]
-                                        .plain_text || ''
+                                    data?.properties['NPU (Precatório)']?.rich_text?.[0]?.plain_text || ''
                                 }
                                 iconSrc={<IoDocumentTextSharp className="self-center" />}
                                 iconAlt="law"
@@ -1706,7 +1705,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                 fieldType={InputFieldVariant.INPUT}
                                 label="Vara"
                                 defaultValue={
-                                    data?.properties['Juízo']?.rich_text?.[0].plain_text || ''
+                                    data?.properties['Juízo']?.rich_text?.[0]?.plain_text || ''
                                 }
                                 iconSrc={<FaBuildingColumns className="self-center" />}
                                 iconAlt="law"
@@ -1757,8 +1756,7 @@ ${data?.properties['Observação']?.rich_text?.[0]?.text?.content ?? ''}
                                     <SelectItem
                                         className="shad-select-item"
                                         defaultChecked={
-                                            data?.properties['Estado do Ente Devedor'].select
-                                                ?.name === estado.id
+                                            data?.properties['Estado do Ente Devedor'].select?.name === estado.id
                                         }
                                         key={estado.id}
                                         value={estado.id}
