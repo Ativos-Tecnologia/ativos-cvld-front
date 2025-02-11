@@ -23,7 +23,7 @@ import { GiResize } from 'react-icons/gi';
 import CalcForm from '../Forms/CalcForm';
 import { isCPFOrCNPJValid } from '@/functions/verifiers/isCPFOrCNPJValid';
 import UseMySwal from '@/hooks/useMySwal';
-import { regimeEspecialExceptions } from '@/constants/excecoes-regime-especial';
+import { entesComTaxaPrevidenciariaPredefinida } from '@/constants/excecoes-regime-especial';
 import { getCurrentFormattedDate } from '@/functions/getCurrentFormattedDate';
 
 const NewForm = () => {
@@ -442,9 +442,9 @@ const NewForm = () => {
                                     <>
                                         {showResults ? (
                                             <div
-                                                className={`relative flex flex-col ${form.watch('regime') === 'ESPECIAL' && !regimeEspecialExceptions.includes(form.watch("ente_devedor")!) ? 'pointer-events-none' : ''}`}
+                                                className={`relative flex flex-col ${form.watch('regime') === 'ESPECIAL' && !entesComTaxaPrevidenciariaPredefinida.includes(form.watch("ente_devedor")!) ? 'pointer-events-none' : ''}`}
                                             >
-                                                {form.watch("regime") === "ESPECIAL" && !regimeEspecialExceptions.includes(form.watch("ente_devedor")!) && (
+                                                {form.watch("regime") === "ESPECIAL" && !entesComTaxaPrevidenciariaPredefinida.includes(form.watch("ente_devedor")!) && (
                                                         <div className="absolute flex min-h-full w-full flex-col items-center justify-center bg-slate-700/90">
                                                             <h2 className="text-md w-full p-4 text-center font-satoshi font-medium uppercase">
                                                                 Para ativos de regime{' '}
@@ -600,7 +600,7 @@ const NewForm = () => {
                                                         <Button
                                                             disabled={isProposalButtonDisabled}
                                                             onClick={saveProposalAndComission}
-                                                            className={`mx-auto mt-4 flex items-center justify-center gap-2 font-medium disabled:cursor-not-allowed disabled:opacity-50 ${(form.watch("regime") === "ESPECIAL" && !regimeEspecialExceptions.includes(form.watch("ente_devedor")!)) && "!opacity-0"}`}
+                                                            className={`mx-auto mt-4 flex items-center justify-center gap-2 font-medium disabled:cursor-not-allowed disabled:opacity-50 ${(form.watch("regime") === "ESPECIAL" && !entesComTaxaPrevidenciariaPredefinida.includes(form.watch("ente_devedor")!)) && "!opacity-0"}`}
                                                         >
                                                             {savingProposalAndComission ? (
                                                                 <>
