@@ -137,6 +137,14 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
                 : data.percentual_de_honorarios / 100;
         }
 
+        if (data.incide_contribuicao_previdenciaria) {
+            data.percentual_de_contribuicao_previdenciaria = 0;
+        } else {
+            data.percentual_de_contribuicao_previdenciaria = typeof data.percentual_de_contribuicao_previdenciaria === 'string'
+            ? Number(data.percentual_de_contribuicao_previdenciaria.replace("%", "").replace(",", ".")) / 100
+            : data.percentual_de_contribuicao_previdenciaria / 100;
+        }
+
         if (typeof data.valor_principal === 'string') {
             data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
             data.valor_principal = parseFloat(data.valor_principal);
