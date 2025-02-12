@@ -20,9 +20,9 @@ export interface RentabilityChartProps {
 
 const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
 
-
+  console.log(data)
   function atualizacaoProjetadaAM(data: IWalletResponse) {
-    const ultimoValor = data.result[data.result.length - 1].valor_liquido_disponivel;
+    const ultimoValor = data?.valor_liquido_a_ser_cedido;
     // const dataDeAtualizacao = new Date(data.result[0].data_atualizacao);
     // const projetado_12_meses = ultimoValor * (1 + data.ipca_ultimos_12_meses)
     // const diff = projetado_12_meses - ultimoValor;
@@ -59,7 +59,7 @@ const RentabilityChart: React.FC<RentabilityChartProps> = ({ data }) => {
 
     return {
       data: datas_de_referencia.map((item) => dateFormater(item).slice(3, 10)),
-      valor: valores_de_referencia.map((item) => Number(item.toFixed(2)))
+      valor: valores_de_referencia.map((item) => Number(item?.toFixed(2)))
     }
   }
 

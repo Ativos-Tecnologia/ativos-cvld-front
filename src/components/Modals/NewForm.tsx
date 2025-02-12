@@ -242,6 +242,22 @@ const NewForm = () => {
                 : data.percentual_a_ser_adquirido / 100;
         }
 
+        if (data.incide_contribuicao_previdenciaria && entesComTaxaPrevidenciariaPredefinida.includes(data.ente_devedor)) {
+            data.percentual_de_contribuicao_previdenciaria = 0;
+        } else {
+            data.percentual_de_contribuicao_previdenciaria = typeof data.percentual_de_contribuicao_previdenciaria === 'string'
+            ? Number(data.percentual_de_contribuicao_previdenciaria.replace("%", "").replace(",", ".")) / 100
+            : data.percentual_de_contribuicao_previdenciaria / 100;
+        }
+
+        if (data.ja_possui_destacamento) {
+            data.percentual_de_honorarios = 0;
+        } else {
+            data.percentual_de_honorarios = typeof data.percentual_de_honorarios === 'string'
+                ? Number(data.percentual_de_honorarios.replace("%", "").replace(",", ".")) / 100
+                : data.percentual_de_honorarios / 100;
+        }
+
         if (data.tribunal === 'TRF1' || data.tribunal === 'TRF6') {
             data.nao_incide_selic_no_periodo_db_ate_abril = true;
         }
@@ -254,19 +270,11 @@ const NewForm = () => {
             data.incidencia_juros_moratorios = false;
         }
 
-        if (data.ja_possui_destacamento) {
-            data.percentual_de_honorarios = 0;
-        } else {
-            data.percentual_de_honorarios = typeof data.percentual_de_honorarios === 'string'
-                ? Number(data.percentual_de_honorarios.replace("%", "").replace(",", ".")) / 100
-                : data.percentual_de_honorarios / 100;
-        }
-
         if (data.gerar_cvld) {
             data.upload_notion = true;
         }
 
-        if (!data.estado_ente_devedor) {
+        if (!data.estado_ente_devedor || data.esfera === "FEDERAL") {
             data.estado_ente_devedor = null;
         }
 

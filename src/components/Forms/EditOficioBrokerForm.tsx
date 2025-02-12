@@ -14,6 +14,7 @@ import CalcForm from './CalcForm';
 import { isCPFOrCNPJValid } from '@/functions/verifiers/isCPFOrCNPJValid';
 import UseMySwal from '@/hooks/useMySwal';
 import { getCurrentFormattedDate } from '@/functions/getCurrentFormattedDate';
+import { entesComTaxaPrevidenciariaPredefinida } from '@/constants/excecoes-regime-especial';
 
 interface IFormBroker {
     mainData: NotionPage | null;
@@ -137,7 +138,7 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
                 : data.percentual_de_honorarios / 100;
         }
 
-        if (data.incide_contribuicao_previdenciaria) {
+        if (data.incide_contribuicao_previdenciaria && entesComTaxaPrevidenciariaPredefinida.includes(data.ente_devedor)) {
             data.percentual_de_contribuicao_previdenciaria = 0;
         } else {
             data.percentual_de_contribuicao_previdenciaria = typeof data.percentual_de_contribuicao_previdenciaria === 'string'
@@ -171,6 +172,10 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
 
         if (!data.incidencia_pss) {
             data.valor_pss = 0;
+        }
+
+        if (!data.estado_ente_devedor || data.esfera === "FEDERAL") {
+            data.estado_ente_devedor = null;
         }
 
         if (!data.data_limite_de_atualizacao_check) {

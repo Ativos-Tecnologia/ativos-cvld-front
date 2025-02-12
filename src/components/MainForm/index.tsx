@@ -16,6 +16,7 @@ import { CvldFormInputsProps } from '@/types/cvldform';
 import CalcForm from '../Forms/CalcForm';
 import { isCPFOrCNPJValid } from '@/functions/verifiers/isCPFOrCNPJValid';
 import { getCurrentFormattedDate } from '@/functions/getCurrentFormattedDate';
+import { entesComTaxaPrevidenciariaPredefinida } from '@/constants/excecoes-regime-especial';
 
 interface ChartTwoState {
     series: {
@@ -174,7 +175,15 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
                 : data.percentual_a_ser_adquirido / 100;
         }
 
-        if (!data.estado_ente_devedor) {
+        if ((data.incide_contribuicao_previdenciaria && entesComTaxaPrevidenciariaPredefinida.includes(data.ente_devedor)) || !data.incide_contribuicao_previdenciaria) {
+            data.percentual_de_contribuicao_previdenciaria = 0;
+        } else {
+            data.percentual_de_contribuicao_previdenciaria = typeof data.percentual_de_contribuicao_previdenciaria === 'string'
+            ? Number(data.percentual_de_contribuicao_previdenciaria.replace("%", "").replace(",", ".")) / 100
+            : data.percentual_de_contribuicao_previdenciaria / 100;
+        }
+
+        if (!data.estado_ente_devedor || data.esfera === "FEDERAL") {
             data.estado_ente_devedor = null;
         }
 
