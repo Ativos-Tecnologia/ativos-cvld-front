@@ -116,7 +116,7 @@ export function UpdateUserDataModal() {
             </DialogTrigger>
             <DialogContent className="max-w-[90%] sm:max-w-[425px]">
                 <DialogHeader className="text-left">
-                    <DialogTitle>Edite suas informações pessoais</DialogTitle>
+                    <DialogTitle>Edite suas informações de usuário</DialogTitle>
                     <DialogDescription>
                         Faça as alterações para manter seu perfil atualizado.
                     </DialogDescription>
