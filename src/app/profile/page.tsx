@@ -107,8 +107,6 @@ const Profile = () => {
         accept,
     });
 
-    console.log(data);
-
     useEffect(() => {
         if (firstLogin) {
             UseMySwal().fire({
