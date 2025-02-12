@@ -964,7 +964,7 @@ const CalcForm = ({
                         </div>
                     ) : null}
 
-                    {watch('incidencia_pss') && watch('natureza') !== 'TRIBUTÁRIA' ? (
+                    {(watch('incidencia_pss') && watch('natureza') !== 'TRIBUTÁRIA' && !watch("incide_contribuicao_previdenciaria")) ? (
                         <div className="mt-1 flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                             <label
                                 htmlFor="valor_pss"
