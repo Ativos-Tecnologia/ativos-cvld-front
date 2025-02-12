@@ -15,5 +15,6 @@ export interface IWalletResponse {
     rentabilidade_anual: number;
     data_de_aquisicao: string;
     result: IWalletResults[];
+    valor_liquido_a_ser_cedido?: number;
   }
 
