@@ -48,6 +48,7 @@ const CalcForm = ({
         watch,
         control,
         setValue,
+        clearErrors,
         formState: { errors },
     } = formConfigs;
 
@@ -322,7 +323,7 @@ const CalcForm = ({
                         }}
                     />
 
-                    <div className="flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                    <div className="relative flex w-full flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
                         <label
                             htmlFor="tribunal"
                             className="font-nexa text-xs font-semibold uppercase text-meta-5"
@@ -337,16 +338,28 @@ const CalcForm = ({
                                     (tribunal) => tribunal.nome === value,
                                 )[0];
                                 setValue('tribunal', tribunal.id);
+                                clearErrors('tribunal');
                             }}
                             value={
                                 tribunais.filter((estado) => estado.id === watch('tribunal'))[0]
                                     ?.nome || ''
                             }
-                            register={register('tribunal')}
+                            register={register('tribunal', {
+                                required: {
+                                    value: true,
+                                    message: "Campo obrigatório"
+                                }
+                            })}
                             name="tribunal"
                             placeholder="BUSQUE POR TRIBUNAL"
-                            className="h-[37px] text-sm uppercase"
+                            className={`${errors.tribunal ? '!border-red !ring-0' : 'border-stroke dark:border-strokedark'} h-[37px] text-sm uppercase`}
                         />
+
+                        {errors.tribunal && (
+                            <span className="absolute right-8.5 top-8.5 text-xs font-medium text-red">
+                                {errors.tribunal.message}
+                            </span>
+                        )}
 
                         {/* <select
                             defaultValue={''}
@@ -382,7 +395,7 @@ const CalcForm = ({
                                 <>
                                     <Cleave
                                         {...field}
-                                        className={`w-full rounded-md border-stroke ${error ? 'border-red' : 'dark:border-strokedark'} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
+                                        className={`w-full rounded-md border-stroke ${error ? '!border-red' : 'dark:border-strokedark'} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
                                         options={{
                                             numeral: true,
                                             numeralThousandsGroupStyle: 'thousand',
@@ -594,7 +607,10 @@ const CalcForm = ({
                         </label>
                         <CelerAppCombobox
                             list={opcoesEntesDevedores}
-                            onChangeValue={(value) => setValue('ente_devedor', value)}
+                            onChangeValue={(value) => {
+                                setValue('ente_devedor', value);
+                                clearErrors('ente_devedor')
+                            }}
                             value={
                                 opcoesEntesDevedores.filter(
                                     (estado) => estado === watch('ente_devedor'),
@@ -608,7 +624,7 @@ const CalcForm = ({
                             })}
                             name="ente_devedor"
                             placeholder="BUSQUE PELO ENTE DEVEDOR"
-                            className={`${errors.ente_devedor && '!border-red'} text-sm uppercase`}
+                            className={`${errors.ente_devedor ? '!border-red' : 'border-stroke dark:border-strokedark'} text-sm uppercase`}
                         />
                         {errors.ente_devedor && (
                             <span className="absolute right-8.5 top-8.5 text-xs font-medium text-red">
@@ -640,48 +656,48 @@ const CalcForm = ({
 
                     {((watch('natureza') === 'NÃO TRIBUTÁRIA' || watch('natureza') === undefined) &&
                         watch('incide_contribuicao_previdenciaria') && !entesComTaxaPrevidenciariaPredefinida.includes(watch("ente_devedor") || "")) && (
-                        <div className="flex w-full flex-col gap-2 col-span-2 sm:col-span-1">
-                            <label
-                                title='Percentual de Contribuição Previdenciária (%)'
-                                htmlFor="percentual_de_contribuicao_previdenciaria"
-                                className="truncate font-nexa text-xs font-semibold uppercase text-meta-5"
-                            >
-                                Percentual de Contribuição Previdenciária (%)
-                            </label>
-                            <Controller
-                                name="percentual_de_contribuicao_previdenciaria"
-                                control={control}
-                                defaultValue={0}
-                                rules={{
-                                    min: {
-                                        value: 1,
-                                        message: 'O valor deve ser maior que 0',
-                                    },
-                                }}
-                                render={({ field, fieldState: { error } }) => (
-                                    <>
-                                        <Cleave
-                                            {...field}
-                                            className={`w-full rounded-md border-stroke ${error ? 'border-red' : 'dark:border-strokedark'} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
-                                            options={{
-                                                numeral: true,
-                                                numeralThousandsGroupStyle: 'none',
-                                                numeralDecimalMark: ',',
-                                                prefix: '%',
-                                                tailPrefix: true,
-                                                rawValueTrimPrefix: true,
-                                            }}
-                                        />
-                                        {error && (
-                                            <span className="absolute right-2 top-8.5 text-xs font-medium text-red">
-                                                {error.message}
-                                            </span>
-                                        )}
-                                    </>
-                                )}
-                            />
-                        </div>
-                    )}
+                            <div className="flex w-full flex-col gap-2 col-span-2 sm:col-span-1">
+                                <label
+                                    title='Percentual de Contribuição Previdenciária (%)'
+                                    htmlFor="percentual_de_contribuicao_previdenciaria"
+                                    className="truncate font-nexa text-xs font-semibold uppercase text-meta-5"
+                                >
+                                    Percentual de Contribuição Previdenciária (%)
+                                </label>
+                                <Controller
+                                    name="percentual_de_contribuicao_previdenciaria"
+                                    control={control}
+                                    defaultValue={0}
+                                    rules={{
+                                        min: {
+                                            value: 1,
+                                            message: 'O valor deve ser maior que 0',
+                                        },
+                                    }}
+                                    render={({ field, fieldState: { error } }) => (
+                                        <>
+                                            <Cleave
+                                                {...field}
+                                                className={`w-full rounded-md border-stroke ${error ? 'border-red' : 'dark:border-strokedark'} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
+                                                options={{
+                                                    numeral: true,
+                                                    numeralThousandsGroupStyle: 'none',
+                                                    numeralDecimalMark: ',',
+                                                    prefix: '%',
+                                                    tailPrefix: true,
+                                                    rawValueTrimPrefix: true,
+                                                }}
+                                            />
+                                            {error && (
+                                                <span className="absolute right-2 top-8.5 text-xs font-medium text-red">
+                                                    {error.message}
+                                                </span>
+                                            )}
+                                        </>
+                                    )}
+                                />
+                            </div>
+                        )}
 
                     {watch("ente_devedor") && ((!watch("incide_contribuicao_previdenciaria") && watch("ente_devedor")) ||
                         (!watch("incide_contribuicao_previdenciaria") && !entesComTaxaPrevidenciariaPredefinida.includes(watch("ente_devedor") || "")) || entesComTaxaPrevidenciariaPredefinida.includes(watch("ente_devedor") || "")) && (

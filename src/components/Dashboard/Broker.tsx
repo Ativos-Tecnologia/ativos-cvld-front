@@ -120,7 +120,7 @@ const Broker: React.FC = (): JSX.Element => {
                     </AccordionItem>
                 </Accordion>
             </div>
-            <div className="col-span-12 mb-5 grid grid-cols-1 items-center gap-5 lg:grid-cols-12">
+            <div className="col-span-12 grid grid-cols-1 items-center gap-5 lg:grid-cols-12">
                 <BrokerQuantityDistributedChart title="Distribuição" response={cardsData} />
                 <BrokerComissionDistribution title="Previsão de Comissão" response={cardsData} />
             </div>
