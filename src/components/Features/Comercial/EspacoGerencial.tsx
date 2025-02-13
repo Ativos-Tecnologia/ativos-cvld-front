@@ -115,7 +115,7 @@ function EspacoGerencial() {
 
     return (
         <>
-            <div className="bg-grid-white/[0.02] relative flex h-[15rem] max-w-screen-xsm overflow-hidden rounded-md bg-white/[0.96] antialiased dark:bg-boxdark dark:bg-opacity-50 md:mx-auto md:h-[40rem] md:max-w-screen-2xl md:flex-col md:items-center md:justify-center md:overflow-hidden md:bg-opacity-50 md:antialiased md:shadow-md md:dark:rounded-md md:dark:bg-boxdark md:dark:bg-opacity-50">
+            <div className="bg-grid-white/[0.02] relative flex h-[30vh] max-w-screen-xsm overflow-hidden rounded-md bg-white/[0.96] antialiased dark:bg-boxdark dark:bg-opacity-50 md:mx-auto md:max-w-screen-2xl md:flex-col md:items-center md:justify-center md:overflow-hidden md:bg-opacity-50 md:antialiased md:shadow-md md:dark:rounded-md md:dark:bg-boxdark md:dark:bg-opacity-50">
                 <Spotlight />
                 <div className="relative z-10 w-full pt-20 md:w-3/4 md:pt-0">
                     <h1 className="bg-opacity-50 bg-gradient-to-b from-slate-500 to-neutral-600 bg-clip-text text-center text-4xl font-bold text-transparent dark:from-neutral-50 dark:to-neutral-400 md:w-full md:max-w-[1000px] md:text-7xl">
