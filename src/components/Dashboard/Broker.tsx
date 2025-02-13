@@ -18,6 +18,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '..
 import Show from '../Show';
 import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import { bancos } from '@/constants/bancos';
+import { BrokerQuantityDistribuitionChart } from '../Charts/BrokerQuantityDistribuitionChart';
+import { BrokerComissionPreviewChart } from '../Charts/BrokerComissionPreviewChart';
 
 /**
  * Componente que renderiza a lista de brokers
@@ -94,9 +96,9 @@ const Broker: React.FC = (): JSX.Element => {
     }, [isFirstLoad.current, cardsData]);
 
     return (
-        <div className='grid grid-cols-12'>
+        <div className="grid grid-cols-12">
             {/* tablet em diante */}
-            <div className="col-span-12 item-center mb-5 flex flex-col gap-5 rounded-md bg-white p-5 dark:bg-boxdark 2xsm:hidden md:flex md:flex-row md:justify-between xl:justify-normal">
+            <div className="item-center col-span-12 mb-5 flex flex-col gap-5 rounded-md bg-white p-5 dark:bg-boxdark 2xsm:hidden md:flex md:flex-row md:justify-between xl:justify-normal">
                 {/* <UserFilterComponent /> */}
                 <Show when={role === 'ativos' || sub_role === 'coordenador'}>
                     <UserShadFilter />
@@ -120,12 +122,15 @@ const Broker: React.FC = (): JSX.Element => {
                     </AccordionItem>
                 </Accordion>
             </div>
+
             <div className="col-span-12 mb-5 grid grid-cols-1 items-center gap-5 lg:grid-cols-12">
-                <BrokerQuantityDistributedChart title="Distribuição" response={cardsData} />
-                <BrokerComissionDistribution title="Previsão de Comissão" response={cardsData} />
+                <BrokerQuantityDistribuitionChart data={cardsData} />
+                <BrokerComissionPreviewChart data={cardsData} />
+                {/* <BrokerQuantityDistributedChart title="Distribuição" response={cardsData} /> */}
+                {/* <BrokerComissionDistribution title="Previsão de Comissão" response={cardsData} /> */}
             </div>
 
-            <GridCardsWrapper className='col-span-12'>
+            <GridCardsWrapper className="col-span-12">
                 <GridCardsWrapper.List cardsSize="lg" className="my-0 mt-4 items-center gap-5">
                     {isFirstLoad.current ? (
                         <Fade cascade damping={0.1} triggerOnce>
@@ -159,7 +164,7 @@ const Broker: React.FC = (): JSX.Element => {
                 </GridCardsWrapper.List>
             </GridCardsWrapper>
 
-            <div ref={observerRef} className="h-5 col-span-12" />
+            <div ref={observerRef} className="col-span-12 h-5" />
             {cedenteModal !== null && <BrokerModal />}
             {docModalInfo !== null && <DocForm />}
         </div>
