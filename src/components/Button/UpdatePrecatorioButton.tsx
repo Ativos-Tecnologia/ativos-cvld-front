@@ -187,13 +187,9 @@ export const UpdatePrecatorioButton: React.FC<SubmitButtonProps> = ({
                     className="apexcharts-legend-text mt-2 w-full text-center text-gray-400"
                     style={{ fontSize: '10px', fontWeight: '400', fontFamily: 'Satoshi' }}
                 >
-                    {loading ? (
+                    {loading && (
                         <>
                             <strong>CelerAI</strong> está pensando...
-                        </>
-                    ) : (
-                        <>
-                            TRF1 ao TRF4 (beta)
                         </>
                     )}
                 </span>
