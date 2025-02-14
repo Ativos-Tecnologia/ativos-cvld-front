@@ -39,7 +39,7 @@ import { CelerInputField } from '@/components/CrmUi/InputFactory';
 import { SelectItem } from '@/components/ui/select';
 import CelerInputFormField from '@/components/Forms/CustomFormField';
 import { Button } from '@/components/Button';
-import { ChecksProps } from '@/components/Cards/DashbrokersCard';
+import { IChecksProps } from '@/components/Cards/DashbrokersCard';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/functions/formaters/formatCurrency';
 import { ComercialContext } from '@/context/ComercialContext';
@@ -142,7 +142,7 @@ export const SheetViewComercial = ({ id }: SheetViewComercialProps) => {
     const [loading, setLoading] = useState<boolean>(false);
     const documentRef = useRef<HTMLDivElement>(null);
 
-    const [checks, setChecks] = useState<ChecksProps>({
+    const [checks, setChecks] = useState<IChecksProps>({
         is_precatorio_complete: false,
         is_cedente_complete: false,
         are_docs_complete: false,

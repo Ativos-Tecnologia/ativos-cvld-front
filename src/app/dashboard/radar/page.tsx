@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     robots: "noindex",
 };
 
-const JuridicoWrapperPage = () => {
+const RadarWrapperPage = () => {
   return (
     <DefaultLayout>
         <PrecatoriosEspeciais />
@@ -24,4 +24,4 @@ const JuridicoWrapperPage = () => {
   );
 };
 
-export default JuridicoWrapperPage;
+export default RadarWrapperPage;
