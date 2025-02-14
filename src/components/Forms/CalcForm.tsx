@@ -640,54 +640,117 @@ const CalcForm = ({
 
                     {((watch('natureza') === 'NÃO TRIBUTÁRIA' || watch('natureza') === undefined) &&
                         watch('incide_contribuicao_previdenciaria') && !entesComTaxaPrevidenciariaPredefinida.includes(watch("ente_devedor") || "")) && (
-                        <div className="flex w-full flex-col gap-2 col-span-2 sm:col-span-1">
-                            <label
-                                title='Percentual de Contribuição Previdenciária (%)'
-                                htmlFor="percentual_de_contribuicao_previdenciaria"
-                                className="truncate font-nexa text-xs font-semibold uppercase text-meta-5"
-                            >
-                                Percentual de Contribuição Previdenciária (%)
-                            </label>
-                            <Controller
-                                name="percentual_de_contribuicao_previdenciaria"
-                                control={control}
-                                defaultValue={0}
-                                rules={{
-                                    min: {
-                                        value: 1,
-                                        message: 'O valor deve ser maior que 0',
-                                    },
-                                }}
-                                render={({ field, fieldState: { error } }) => (
-                                    <>
-                                        <Cleave
-                                            {...field}
-                                            className={`w-full rounded-md border-stroke ${error ? 'border-red' : 'dark:border-strokedark'} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
-                                            options={{
-                                                numeral: true,
-                                                numeralThousandsGroupStyle: 'none',
-                                                numeralDecimalMark: ',',
-                                                prefix: '%',
-                                                tailPrefix: true,
-                                                rawValueTrimPrefix: true,
-                                            }}
-                                        />
-                                        {error && (
-                                            <span className="absolute right-2 top-8.5 text-xs font-medium text-red">
-                                                {error.message}
-                                            </span>
-                                        )}
-                                    </>
-                                )}
-                            />
-                        </div>
-                    )}
+                            <div className="flex w-full flex-col gap-2 col-span-2 sm:col-span-1">
+                                <label
+                                    title='Percentual de Contribuição Previdenciária (%)'
+                                    htmlFor="percentual_de_contribuicao_previdenciaria"
+                                    className="truncate font-nexa text-xs font-semibold uppercase text-meta-5"
+                                >
+                                    Percentual de Contribuição Previdenciária (%)
+                                </label>
+                                <Controller
+                                    name="percentual_de_contribuicao_previdenciaria"
+                                    control={control}
+                                    defaultValue={0}
+                                    rules={{
+                                        min: {
+                                            value: 1,
+                                            message: 'O valor deve ser maior que 0',
+                                        },
+                                    }}
+                                    render={({ field, fieldState: { error } }) => (
+                                        <>
+                                            <Cleave
+                                                {...field}
+                                                className={`w-full rounded-md border-stroke ${error ? 'border-red' : 'dark:border-strokedark'} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
+                                                options={{
+                                                    numeral: true,
+                                                    numeralThousandsGroupStyle: 'none',
+                                                    numeralDecimalMark: ',',
+                                                    prefix: '%',
+                                                    tailPrefix: true,
+                                                    rawValueTrimPrefix: true,
+                                                }}
+                                            />
+                                            {error && (
+                                                <span className="absolute right-2 top-8.5 text-xs font-medium text-red">
+                                                    {error.message}
+                                                </span>
+                                            )}
+                                        </>
+                                    )}
+                                />
+                            </div>
+                        )}
 
                     {watch("ente_devedor") && ((!watch("incide_contribuicao_previdenciaria") && watch("ente_devedor")) ||
-                        (!watch("incide_contribuicao_previdenciaria") && !entesComTaxaPrevidenciariaPredefinida.includes(watch("ente_devedor") || "")) || entesComTaxaPrevidenciariaPredefinida.includes(watch("ente_devedor") || "")) && (
+                        (!watch("incide_contribuicao_previdenciaria") && !entesComTaxaPrevidenciariaPredefinida.includes(watch("ente_devedor") || "")) || entesComTaxaPrevidenciariaPredefinida.includes(watch("ente_devedor") || "")) && watch('natureza') === "NÃO TRIBUTÁRIA" && (
                             <div className="col-span-1 hidden sm:block"></div>
                         )
                     }
+
+                    {watch("estado_ente_devedor") === "PE" &&
+                    ((watch("data_base")! < "2021-12-01" && watch("data_requisicao")! >= "2022-04-01") || 
+                    (watch("data_base")! > "2021-12-31"))
+                    &&
+                    (
+                        <>
+                            <div className={`col-span-2 flex max-h-6 items-center gap-2`}>
+                                <CustomCheckbox
+                                    check={watch('parcela_preferencial_inclusa')}
+                                    id={'parcela_preferencial_inclusa'}
+                                    register={register('parcela_preferencial_inclusa')}
+                                />
+
+                                <label
+                                    htmlFor="parcela_preferencial_inclusa"
+                                    className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                >
+                                    Há parcela Preferencial?
+                                </label>
+                            </div>
+
+                            {watch("parcela_preferencial_inclusa") && (
+                                <>
+                                    <div className={`col-span-2 flex max-h-6 items-center gap-2 md:col-span-1`}>
+                                        <CustomCheckbox
+                                            check={watch('parcela_preferencial_paga')}
+                                            id={'parcela_preferencial_paga'}
+                                            register={register('parcela_preferencial_paga')}
+                                        />
+
+                                        <label
+                                            htmlFor="parcela_preferencial_paga"
+                                            className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                        >
+                                            A parcela preferencial foi paga?
+                                        </label>
+                                    </div>
+
+                                    {watch("parcela_preferencial_paga") ? (
+                                        <div className="flex flex-col gap-2 2xsm:col-span-2 sm:col-span-1">
+                                            <div className="relative flex flex-col justify-between">
+                                                <label
+                                                    htmlFor="parcela_preferencial_paga_em"
+                                                    className="mb-1 font-nexa text-xs font-semibold uppercase text-meta-5"
+                                                >
+                                                    Data de pagamento da parcela
+                                                </label>
+                                                <input
+                                                    type="date"
+                                                    id="parcela_preferencial_paga_em"
+                                                    className={`w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2`}
+                                                    {...register('parcela_preferencial_paga_em')}
+                                                />
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="col-span-1 hidden sm:block"></div>
+                                    )}
+                                </>
+                            )}
+                        </>
+                    )}
 
                     <div className={`col-span-2 flex max-h-6 items-center gap-2 md:col-span-1`}>
                         <CustomCheckbox
