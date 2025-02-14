@@ -2,7 +2,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
 import { groupResultsByUsuario } from '@/functions/charts/groupResultsByUsuario';
 import numberFormat from '@/functions/formaters/numberFormat';
-import { generateColor } from '@/functions/charts/generateColor';
+import { generateColorByBaseHue } from '@/functions/charts/generateColorByBaseHue';
 import { TotalLiquidAvailableChartSkeleton } from '../Skeletons/TotalLiquidAvailableChartSkeleton';
 
 type Result = {
@@ -40,7 +40,7 @@ export function TotalLiquidAvailableChart({ results, isLoading }: TotalLiquidAva
                 (acc, item) => acc + item.valor_liquido_disponivel,
                 0,
             ),
-            fill: generateColor('lightgreen', index, Object.entries(groupedData).length),
+            fill: generateColorByBaseHue('lightgreen', index, Object.entries(groupedData).length),
         }));
 
         const total = chartData.reduce((acc, item) => acc + item.valor_liquido_disponivel, 0);
@@ -51,7 +51,7 @@ export function TotalLiquidAvailableChart({ results, isLoading }: TotalLiquidAva
 
         const coloredChartData = orderedData.map((data, index) => ({
             ...data,
-            fill: generateColor('lightgreen', index, orderedData.length),
+            fill: generateColorByBaseHue('lightgreen', index, orderedData.length),
         }));
 
         return { coloredChartData, total };
@@ -67,7 +67,9 @@ export function TotalLiquidAvailableChart({ results, isLoading }: TotalLiquidAva
             className="grid w-full gap-5 p-4"
         >
             <div className="flex w-full flex-wrap justify-between pb-2">
-                <h2 className="md:text-2xl 2xsm:text-[18px] font-medium">Valor Liquido a Ser Cedido</h2>
+                <h2 className="font-medium 2xsm:text-[18px] md:text-2xl">
+                    Valor Liquido a Ser Cedido
+                </h2>
                 <p className="2xsm:text-sm md:text-xl">
                     Total: <span className="font-bold">{numberFormat(total)}</span>
                 </p>

@@ -16,12 +16,12 @@ import {
     ChartTooltipContent,
 } from '@/components/ui/chart';
 import { NotionPage } from '@/interfaces/INotion';
-import { generateColor } from '@/functions/charts/generateColor';
+import { generateColorByBaseHue } from '@/functions/charts/generateColorByBaseHue';
 
 const COLORS = {
-    red: generateColor('red', 0, 1),
-    yellow: generateColor('yellow', 0, 1),
-    green: generateColor('green', 0, 1),
+    red: generateColorByBaseHue('red', 0, 1),
+    yellow: generateColorByBaseHue('yellow', 0, 1),
+    green: generateColorByBaseHue('green', 0, 1),
 };
 
 const chartConfig = {
