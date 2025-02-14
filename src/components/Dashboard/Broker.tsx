@@ -6,8 +6,6 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Fade } from 'react-awesome-reveal';
 import { IoIosArrowDown } from 'react-icons/io';
 import DashbrokersCard from '../Cards/DashbrokersCard';
-import BrokerComissionDistribution from '../Charts/BrokerComissionDistributionChart';
-import BrokerQuantityDistributedChart from '../Charts/BrokerQuantityDistributedChart';
 import GridCardsWrapper from '../CrmUi/Wrappers/GridCardsWrapper';
 import CredorFilter from '../Filters/CredorFilter';
 import { UserShadFilter } from '../Filters/userShadFilter';
@@ -17,7 +15,6 @@ import BrokerCardSkeleton from '../Skeletons/BrokerCardSkeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import Show from '../Show';
 import { UserInfoAPIContext } from '@/context/UserInfoContext';
-import { bancos } from '@/constants/bancos';
 import { BrokerQuantityDistribuitionChart } from '../Charts/BrokerQuantityDistribuitionChart';
 import { BrokerComissionPreviewChart } from '../Charts/BrokerComissionPreviewChart';
 
@@ -123,11 +120,9 @@ const Broker: React.FC = (): JSX.Element => {
                 </Accordion>
             </div>
 
-            <div className="col-span-12 mb-5 grid grid-cols-1 items-center gap-5 lg:grid-cols-12">
+            <div className="col-span-12 mb-5 grid h-fit grid-cols-1 items-center gap-5 lg:grid-cols-12">
                 <BrokerQuantityDistribuitionChart data={cardsData} />
                 <BrokerComissionPreviewChart data={cardsData} />
-                {/* <BrokerQuantityDistributedChart title="Distribuição" response={cardsData} /> */}
-                {/* <BrokerComissionDistribution title="Previsão de Comissão" response={cardsData} /> */}
             </div>
 
             <GridCardsWrapper className="col-span-12">

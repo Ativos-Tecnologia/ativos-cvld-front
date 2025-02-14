@@ -6,8 +6,6 @@ import { CardContent } from '@/components/ui/card';
 import {
     ChartConfig,
     ChartContainer,
-    ChartLegend,
-    ChartLegendContent,
     ChartStyle,
     ChartTooltip,
     ChartTooltipContent,
@@ -19,8 +17,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { NotionResponse } from '@/interfaces/INotion';
+import { BrokersContext } from '@/context/BrokersContext';
 
 interface StatusCount {
     [key: string]: number;
@@ -32,11 +31,12 @@ interface BrokerQuantityDistribuitionChartProps {
 
 export function BrokerQuantityDistribuitionChart({ data }: BrokerQuantityDistribuitionChartProps) {
     const id = 'pie-interactive';
+    const { selectedUser } = useContext(BrokersContext);
     const [chartData, setChartData] = useState<{ label: string; count: number; fill: string }[]>(
         [],
     );
     const [chartConfig, setChartConfig] = useState<ChartConfig>({});
-    const [activeItem, setActiveItem] = useState<string | undefined>(undefined);
+    const [activeItem, setActiveItem] = useState<string>('all');
     const activeIndex = useMemo(
         () => chartData.findIndex((item) => item.label === activeItem),
         [activeItem, chartData],
@@ -70,14 +70,10 @@ export function BrokerQuantityDistribuitionChart({ data }: BrokerQuantityDistrib
             fill: generateColor(index, entries.length),
         }));
 
-        console.log('formattedData', results);
-
         const newChartConfig: ChartConfig = results.reduce((acc, { label, fill }) => {
             acc[label] = { label, color: fill };
             return acc;
         }, {} as ChartConfig);
-
-        console.log('ChartConfig', newChartConfig);
 
         setChartData(results);
         setChartConfig(newChartConfig);
@@ -91,23 +87,24 @@ export function BrokerQuantityDistribuitionChart({ data }: BrokerQuantityDistrib
 
     const labels = useMemo(() => chartData.map((item) => item.label), [chartData]);
 
+    useEffect(() => {
+        setActiveItem('all');
+    }, [selectedUser]);
+
     return (
         <div
             data-chart={id}
-            className="col-span-6 rounded-sm border border-stroke bg-white p-6 py-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-4 xl:col-span-6"
+            className="col-span-6 h-full rounded-sm border border-stroke bg-white p-6 py-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-4 xl:col-span-6"
         >
             <ChartStyle id={id} config={chartConfig} />
-            <div className="flex w-full flex-col justify-between gap-4 sm:flex-row">
+            <div className="flex w-full flex-col justify-between gap-2 sm:flex-row">
                 <div>
                     <h5 className="font-rooftop text-xl tracking-wider text-black dark:text-white">
                         Distribuição
                     </h5>
                 </div>
                 <Select value={activeItem} onValueChange={setActiveItem}>
-                    <SelectTrigger
-                        className="h-7 w-fit rounded-lg"
-                        aria-label="Selecione um status"
-                    >
+                    <SelectTrigger className="size-fit rounded-lg" aria-label="Selecione um status">
                         <SelectValue placeholder="Todos os ofícios" />
                     </SelectTrigger>
                     <SelectContent align="end" className="rounded-xl">
@@ -138,11 +135,11 @@ export function BrokerQuantityDistribuitionChart({ data }: BrokerQuantityDistrib
                     </SelectContent>
                 </Select>
             </div>
-            <CardContent className="flex flex-1 justify-center pb-0">
+            <CardContent className="mt-3 flex flex-1 justify-center p-0 sm:justify-between">
                 <ChartContainer
                     id={id}
                     config={chartConfig}
-                    className="mt-3 flex aspect-square w-full max-w-[300px] justify-between"
+                    className="flex aspect-square w-[232px] justify-between"
                 >
                     <PieChart className="flex justify-between">
                         <ChartTooltip
@@ -221,16 +218,25 @@ export function BrokerQuantityDistribuitionChart({ data }: BrokerQuantityDistrib
                                 }}
                             />
                         </Pie>
-                        <ChartLegend
-                            content={<ChartLegendContent />}
-                            className="hidden flex-wrap sm:flex"
-                            wrapperStyle={{
-                                marginTop: '6px',
-                                width: '100%',
-                            }}
-                        />
                     </PieChart>
                 </ChartContainer>
+                <div className="hidden max-h-[220px] flex-col gap-1 overflow-y-scroll md:flex">
+                    {chartData &&
+                        chartData.map((data) => (
+                            <div
+                                className="flex cursor-pointer items-center gap-1.5 rounded-lg px-1.5 py-0.5 transition-all hover:bg-accent"
+                                onClick={() => setActiveItem(data.label)}
+                            >
+                                <div
+                                    className="size-3 rounded-full"
+                                    style={{
+                                        backgroundColor: data.fill,
+                                    }}
+                                />
+                                <p className="text-sm">{data.label}</p>
+                            </div>
+                        ))}
+                </div>
             </CardContent>
         </div>
     );

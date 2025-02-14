@@ -6,8 +6,6 @@ import { CardContent } from '@/components/ui/card';
 import {
     ChartConfig,
     ChartContainer,
-    ChartLegend,
-    ChartLegendContent,
     ChartStyle,
     ChartTooltip,
     ChartTooltipContent,
@@ -19,9 +17,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { NotionResponse } from '@/interfaces/INotion';
 import numberFormat from '@/functions/formaters/numberFormat';
+import { BrokersContext } from '@/context/BrokersContext';
 
 interface Result {
     [key: string]: number;
@@ -33,6 +32,7 @@ interface BrokerComissionPreviewChartProps {
 
 export function BrokerComissionPreviewChart({ data }: BrokerComissionPreviewChartProps) {
     const id = 'pie-interactive-comission';
+    const { selectedUser } = useContext(BrokersContext);
     const [chartData, setChartData] = useState<
         { label: string; comission: number; fill: string }[]
     >([]);
@@ -69,7 +69,7 @@ export function BrokerComissionPreviewChart({ data }: BrokerComissionPreviewChar
 
         const entries = Object.entries(result);
         const formattedData = entries.map(([name, comission], index) => ({
-            label: name,
+            label: name.length > 30 ? name.slice(0, 30).concat('...') : name,
             comission,
             fill: generateColor(index, entries.length),
         }));
@@ -96,23 +96,24 @@ export function BrokerComissionPreviewChart({ data }: BrokerComissionPreviewChar
             ? totalComission
             : chartData.find((item) => item.label === activeItem)?.comission || 0;
 
+    useEffect(() => {
+        setActiveItem('all');
+    }, [selectedUser]);
+
     return (
         <div
             data-chart={id}
-            className="col-span-6 rounded-sm border border-stroke bg-white p-6 py-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-4 xl:col-span-6"
+            className="col-span-6 h-full rounded-sm border border-stroke bg-white p-6 py-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-4 xl:col-span-6"
         >
             <ChartStyle id={id} config={chartConfig} />
-            <div className="flex w-full flex-col justify-between gap-4 sm:flex-row">
+            <div className="flex w-full flex-col justify-between gap-2 sm:flex-row">
                 <div>
                     <h5 className="font-rooftop text-xl tracking-wider text-black dark:text-white">
                         Previsão de Comissão
                     </h5>
                 </div>
                 <Select value={activeItem} onValueChange={setActiveItem}>
-                    <SelectTrigger
-                        className="h-7 w-fit rounded-lg"
-                        aria-label="Selecione um status"
-                    >
+                    <SelectTrigger className="size-fit rounded-lg" aria-label="Selecione um status">
                         <SelectValue placeholder="Total" />
                     </SelectTrigger>
                     <SelectContent align="end" className="rounded-xl">
@@ -143,11 +144,11 @@ export function BrokerComissionPreviewChart({ data }: BrokerComissionPreviewChar
                     </SelectContent>
                 </Select>
             </div>
-            <CardContent className="flex flex-1 justify-center pb-0">
+            <CardContent className="mt-3 flex flex-1 justify-center p-0 sm:justify-between">
                 <ChartContainer
                     id={id}
                     config={chartConfig}
-                    className="mt-3 flex aspect-square w-full max-w-[300px] justify-between"
+                    className="flex aspect-square w-[232px] justify-between"
                 >
                     <PieChart className="flex justify-between">
                         <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
@@ -182,7 +183,7 @@ export function BrokerComissionPreviewChart({ data }: BrokerComissionPreviewChar
                                                 <tspan
                                                     x={viewBox.cx}
                                                     y={viewBox.cy}
-                                                    className="fill-foreground text-xl font-semibold"
+                                                    className="fill-foreground text-lg font-semibold"
                                                 >
                                                     {numberFormat(selectedComission)}
                                                 </tspan>
@@ -192,16 +193,25 @@ export function BrokerComissionPreviewChart({ data }: BrokerComissionPreviewChar
                                 }}
                             />
                         </Pie>
-                        <ChartLegend
-                            content={<ChartLegendContent />}
-                            className="hidden sm:flex"
-                            wrapperStyle={{
-                                marginTop: '6px',
-                                width: '100%',
-                            }}
-                        />
                     </PieChart>
                 </ChartContainer>
+                <div className="hidden max-h-[220px] flex-col gap-1 overflow-y-scroll md:flex">
+                    {chartData &&
+                        chartData.map((data) => (
+                            <div
+                                className="flex cursor-pointer items-center gap-1.5 rounded-lg px-1.5 py-0.5 transition-all hover:bg-accent"
+                                onClick={() => setActiveItem(data.label)}
+                            >
+                                <div
+                                    className="size-3 rounded-full"
+                                    style={{
+                                        backgroundColor: data.fill,
+                                    }}
+                                />
+                                <p className="text-sm">{data.label}</p>
+                            </div>
+                        ))}
+                </div>
             </CardContent>
         </div>
     );
