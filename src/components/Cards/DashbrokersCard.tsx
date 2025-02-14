@@ -972,9 +972,6 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
                             />
                         )}
                         <span className="text-sm font-medium">Proposta Aceita</span>
-                        <Button onClick={handleMultiLoader} variant={"ghost"}>
-                            multi loader
-                        </Button>
                     </div>
 
                     <div className="flex items-center gap-3">
