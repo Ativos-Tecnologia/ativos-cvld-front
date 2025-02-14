@@ -133,16 +133,17 @@ const PrecatoriosEspeciais = () => {
 
     return (
         <div className="grid grid-cols-12 gap-6">
-            <div className="relative col-span-12 flex w-full flex-col items-center justify-center overflow-hidden rounded-lg bg-slate-900 p-5 2xsm:h-[50vh] md:h-[85vh]">
+            <div className="relative col-span-12 flex w-full flex-col items-center justify-center overflow-hidden rounded-lg bg-slate-900 p-5 h-[30vh]">
                 <div className="pointer-events-none absolute inset-0 z-20 h-full w-full bg-slate-900 [mask-image:radial-gradient(transparent,white)]" />
+                <Boxes />
                 <Image
                     src="/images/logo/radar_logo_light_mode.svg"
                     width={400}
                     height={400}
                     alt="Logo do Radar"
+                    className='relative z-5'
                 />
-                <Boxes />
-                <h1 className="relative z-20 mt-2 text-center text-neutral-300">
+                <h1 className="relative z-5 mt-2 text-center text-neutral-300">
                     Nosso motor de análise de dados e inteligência artificial
                 </h1>
             </div>

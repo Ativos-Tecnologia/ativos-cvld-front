@@ -1,6 +1,6 @@
 import { GoalChart } from '@/components/Charts/GoalChart';
 import GoalChartSkeleton from '@/components/Skeletons/GoalChartSkeleton';
-import { generateColor } from '@/functions/charts/generateColor';
+import { generateColorByBaseHue } from '@/functions/charts/generateColorByBaseHue';
 import { GroupedResults, groupResultsByUsuario } from '@/functions/charts/groupResultsByUsuario';
 
 export type Result = {
@@ -46,7 +46,7 @@ export function GoalChartCard({ results, isLoading }: GoalChartCardProps) {
 
         return chartData.map((data, index) => ({
             ...data,
-            fill: generateColor(color, index, chartData.length),
+            fill: generateColorByBaseHue(color, index, chartData.length),
         }));
     }
 

@@ -30,13 +30,35 @@ import Badge from '../CrmUi/ui/Badge/Badge';
 import EditOficioBrokerForm from '../Forms/EditOficioBrokerForm';
 import { IdentificationType } from '../Modals/BrokersCedente';
 import { PrintPDF } from '../PrintPDF';
+import { MultiStepLoader } from '../ui/multi-step-loader';
+import { sleep } from '@/functions/timer/sleep';
 
-export type ChecksProps = {
+export interface IChecksProps {
     is_precatorio_complete: boolean | null;
     is_cedente_complete: boolean | null;
     are_docs_complete: boolean | null;
     isFetching: boolean;
 };
+
+const loadingSteps = {
+    "accept": [
+        "Reunindo Informações" ,
+        "Verificando os Dados",
+        "Enviando Proposta",
+        "Configurando Prazos",
+        "Repassando para o Jurídico",
+        "Validando Proposta",
+        "Proposta Aceita"
+    ],
+    "decline": [
+        "Conectando com o banco de dados",
+        "Verificando os Dados",
+        "Alterando Status de Proposta",
+        "Removendo prazos",
+        "Retirando ofício do Jurídico",
+        "Retornado para Negociação",
+    ]
+}
 
 /**
  * @param {NotionPage} oficio - O ativo que vai ser carregado no componente
@@ -63,6 +85,9 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
         data: { profile_picture, first_name, last_name, phone },
     } = useContext(UserInfoAPIContext);
 
+    /** teste */
+    const [showMultiLoader, setShowMultiLoader] = useState<boolean>(false)
+
     /* ====> value states <==== */
     const [auxValues, setAuxValues] = useState<{ proposal: number; commission: number }>({
         proposal: 0,
@@ -79,11 +104,13 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
     const [savingObservation, setSavingObservation] = useState<boolean>(false);
     const [isProposalButtonDisabled, setIsProposalButtonDisabled] = useState<boolean>(true);
     const [isProposalChanging, setIsProposalChanging] = useState<boolean>(false);
+    const [proposalReqStatus, setProposalReqStatus] = useState<"success" | "failure" | null>(null);
+    const [proposalReqType, setProposalReqType] = useState<"accept" | "decline" | null>(null);
     const [errorMessage, setErrorMessage] = useState<boolean>(false);
     const [credorIdentificationType, setCredorIdentificationType] =
         useState<IdentificationType>(null);
     const [confirmModal, setOpenConfirmModal] = useState<boolean>(false);
-    const [checks, setChecks] = useState<ChecksProps>({
+    const [checks, setChecks] = useState<IChecksProps>({
         is_precatorio_complete: false,
         is_cedente_complete: false,
         are_docs_complete: false,
@@ -97,8 +124,8 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
     const proposalRef = useRef<HTMLInputElement | null>(null);
     const comissionRef = useRef<HTMLInputElement | null>(null);
     const observationRef = useRef<HTMLTextAreaElement | null>(null);
-    const proposalRangeRef = useRef<HTMLInputElement | null>(null);
     const isFirstLoad = useRef(true); // referência: 'isFirstLoad' sempre apontará para o mesmo objeto retornado por useRef
+    const multiLoaderSteps = useRef<any>([...loadingSteps.accept]);
     const [loading, setLoading] = useState<boolean>(false);
     const documentRef = useRef<HTMLDivElement>(null);
 
@@ -126,11 +153,11 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
             const req =
                 credorIdentificationType === 'CPF'
                     ? await api.get(
-                          `/api/checker/pf/complete/precatorio/${mainData?.id}/cedente/${idCedente}/`,
-                      )
+                        `/api/checker/pf/complete/precatorio/${mainData?.id}/cedente/${idCedente}/`,
+                    )
                     : await api.get(
-                          `/api/checker/pj/complete/precatorio/${mainData?.id}/cedente/${idCedente}/`,
-                      );
+                        `/api/checker/pj/complete/precatorio/${mainData?.id}/cedente/${idCedente}/`,
+                    );
 
             if (req.status === 200) {
                 setChecks((old) => ({
@@ -165,6 +192,14 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
     };
 
     /**
+     * Fecha o loader de proposta e limpa o status da requisição de proposta
+     */
+    function handleCloseLoader() {
+        setShowMultiLoader(false);
+        setProposalReqStatus(null);
+    }
+
+    /**
      * Função para atualizar a proposta e ajustar a comissão proporcionalmente
      * @param {string} value - valor da proposta
      * @param {boolean} sliderChange - indica se a mudança vem de um slider
@@ -197,8 +232,8 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
             const newComissionSliderValue =
                 (mainData?.properties['(R$) Comissão Máxima - Celer'].number || 0) -
                 proportion *
-                    ((mainData?.properties['(R$) Comissão Máxima - Celer'].number || 0) -
-                        (mainData?.properties['(R$) Comissão Mínima - Celer'].number || 0));
+                ((mainData?.properties['(R$) Comissão Máxima - Celer'].number || 0) -
+                    (mainData?.properties['(R$) Comissão Mínima - Celer'].number || 0));
 
             setSliderValues((oldValues) => {
                 return { ...oldValues, comission: newComissionSliderValue };
@@ -238,8 +273,8 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
             const newProposalSliderValue =
                 (mainData.properties['(R$) Proposta Máxima - Celer'].number || 0) -
                 proportion *
-                    ((mainData.properties['(R$) Proposta Máxima - Celer'].number || 0) -
-                        (mainData.properties['(R$) Proposta Mínima - Celer'].number || 0));
+                ((mainData.properties['(R$) Proposta Máxima - Celer'].number || 0) -
+                    (mainData.properties['(R$) Proposta Mínima - Celer'].number || 0));
 
             if (newProposalSliderValue !== auxValues.commission) {
                 setIsProposalButtonDisabled(false);
@@ -279,9 +314,9 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
             case 'proposal':
                 if (
                     numericalValue >=
-                        (oficio.properties['(R$) Proposta Mínima - Celer'].number || 0) &&
+                    (oficio.properties['(R$) Proposta Mínima - Celer'].number || 0) &&
                     numericalValue <=
-                        (oficio.properties['(R$) Proposta Máxima - Celer'].number || 0) &&
+                    (oficio.properties['(R$) Proposta Máxima - Celer'].number || 0) &&
                     !isNaN(numericalValue) &&
                     numericalValue !== auxValues.proposal
                 ) {
@@ -292,9 +327,9 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
 
                 if (
                     numericalValue <
-                        (oficio.properties['(R$) Proposta Mínima - Celer'].number || 0) ||
+                    (oficio.properties['(R$) Proposta Mínima - Celer'].number || 0) ||
                     numericalValue >
-                        (oficio.properties['(R$) Proposta Máxima - Celer'].number || 0) ||
+                    (oficio.properties['(R$) Proposta Máxima - Celer'].number || 0) ||
                     isNaN(numericalValue)
                 ) {
                     setErrorMessage(true);
@@ -314,9 +349,9 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
             case 'comission':
                 if (
                     numericalValue >=
-                        (oficio.properties['(R$) Comissão Mínima - Celer'].number || 0) &&
+                    (oficio.properties['(R$) Comissão Mínima - Celer'].number || 0) &&
                     numericalValue <=
-                        (oficio.properties['(R$) Comissão Máxima - Celer'].number || 0) &&
+                    (oficio.properties['(R$) Comissão Máxima - Celer'].number || 0) &&
                     !isNaN(numericalValue) &&
                     numericalValue !== auxValues.commission
                 ) {
@@ -327,9 +362,9 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
 
                 if (
                     numericalValue <
-                        (oficio.properties['(R$) Comissão Mínima - Celer'].number || 0) ||
+                    (oficio.properties['(R$) Comissão Mínima - Celer'].number || 0) ||
                     numericalValue >
-                        (oficio.properties['(R$) Comissão Máxima - Celer'].number || 0) ||
+                    (oficio.properties['(R$) Comissão Máxima - Celer'].number || 0) ||
                     isNaN(numericalValue)
                 ) {
                     setErrorMessage(true);
@@ -456,101 +491,105 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
         },
         onMutate: async () => {
             setIsFetchAllowed(false);
+            setShowMultiLoader(true);
             setIsProposalChanging(true);
         },
         onError: async () => {
             setIsFetchAllowed(true);
-            toast.error('Erro ao modificar proposta! Contate a Ativos para verificar o motivo.', {
-                icon: <BiX className="fill-red-500 text-lg" />,
-            });
+            setProposalReqStatus("failure");
+            // toast.error('Erro ao modificar proposta! Contate a Ativos para verificar o motivo.', {
+            //     icon: <BiX className="fill-red-500 text-lg" />,
+            // });
         },
         onSuccess: async () => {
             setIsFetchAllowed(true);
+            setProposalReqStatus("success");
             await fetchDetailCardData(mainData!.id);
-            if (
-                mainData?.properties['Status'].status?.name !== 'Proposta aceita' &&
-                checks.are_docs_complete &&
-                checks.is_cedente_complete &&
-                checks.is_precatorio_complete
-            ) {
-                confetti({
-                    spread: 180,
-                    particleCount: 300,
-                    origin: {
-                        y: 0.5,
-                    },
-                });
-                swal.fire({
-                    icon: 'success',
-                    iconColor: '#00b809',
-                    title: 'Agora é com a gente!',
-                    text: 'Nosso setor jurídico dará inicio ao processo de Due Diligence.',
-                    color: `${theme === 'light' ? '#64748B' : '#AEB7C0'}`,
-                    showConfirmButton: true,
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#1a56db',
-                    backdrop: false,
-                    background: `${theme === 'light' ? '#FFF' : '#24303F'}`,
-                    showCloseButton: true,
-                    timer: 5000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.onmouseenter = swal.stopTimer;
-                        toast.onmouseleave = swal.resumeTimer;
-                    },
-                });
-            } else if (
-                mainData?.properties['Status'].status?.name !== 'Proposta aceita' &&
-                (!checks.are_docs_complete ||
-                    !checks.is_cedente_complete ||
-                    !checks.is_precatorio_complete)
-            ) {
-                swal.fire({
-                    icon: 'info',
-                    // iconColor: "#00b809",
-                    title: 'Proposta aceita!',
-                    text: 'Porém ainda há pontos pendentes para a conclusão da diligência.',
-                    color: `${theme === 'light' ? '#64748B' : '#AEB7C0'}`,
-                    showConfirmButton: true,
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#1a56db',
-                    backdrop: false,
-                    background: `${theme === 'light' ? '#FFF' : '#24303F'}`,
-                    showCloseButton: true,
-                    timer: 5000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.onmouseenter = swal.stopTimer;
-                        toast.onmouseleave = swal.resumeTimer;
-                    },
-                });
-            } else if (mainData?.properties['Status'].status?.name === 'Proposta aceita') {
-                swal.fire({
-                    icon: 'warning',
-                    // iconColor: "#e63f66",
-                    title: 'Proposta cancelada!',
-                    text: 'Você pode registrar o motivo no campo de observação.',
-                    color: `${theme === 'light' ? '#64748B' : '#AEB7C0'}`,
-                    showConfirmButton: true,
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#1a56db',
-                    backdrop: false,
-                    background: `${theme === 'light' ? '#FFF' : '#24303F'}`,
-                    showCloseButton: true,
-                    timer: 5000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.onmouseenter = swal.stopTimer;
-                        toast.onmouseleave = swal.resumeTimer;
-                    },
-                });
-            }
+            // if (
+            //     mainData?.properties['Status'].status?.name !== 'Proposta aceita' &&
+            //     checks.are_docs_complete &&
+            //     checks.is_cedente_complete &&
+            //     checks.is_precatorio_complete
+            // ) {
+            //     confetti({
+            //         spread: 180,
+            //         particleCount: 300,
+            //         origin: {
+            //             y: 0.5,
+            //         },
+            //     });
+            //     swal.fire({
+            //         icon: 'success',
+            //         iconColor: '#00b809',
+            //         title: 'Agora é com a gente!',
+            //         text: 'Nosso setor jurídico dará inicio ao processo de Due Diligence.',
+            //         color: `${theme === 'light' ? '#64748B' : '#AEB7C0'}`,
+            //         showConfirmButton: true,
+            //         confirmButtonText: 'OK',
+            //         confirmButtonColor: '#1a56db',
+            //         backdrop: false,
+            //         background: `${theme === 'light' ? '#FFF' : '#24303F'}`,
+            //         showCloseButton: true,
+            //         timer: 5000,
+            //         timerProgressBar: true,
+            //         didOpen: (toast) => {
+            //             toast.onmouseenter = swal.stopTimer;
+            //             toast.onmouseleave = swal.resumeTimer;
+            //         },
+            //     });
+            // } else if (
+            //     mainData?.properties['Status'].status?.name !== 'Proposta aceita' &&
+            //     (!checks.are_docs_complete ||
+            //         !checks.is_cedente_complete ||
+            //         !checks.is_precatorio_complete)
+            // ) {
+            //     swal.fire({
+            //         icon: 'info',
+            //         // iconColor: "#00b809",
+            //         title: 'Proposta aceita!',
+            //         text: 'Porém ainda há pontos pendentes para a conclusão da diligência.',
+            //         color: `${theme === 'light' ? '#64748B' : '#AEB7C0'}`,
+            //         showConfirmButton: true,
+            //         confirmButtonText: 'OK',
+            //         confirmButtonColor: '#1a56db',
+            //         backdrop: false,
+            //         background: `${theme === 'light' ? '#FFF' : '#24303F'}`,
+            //         showCloseButton: true,
+            //         timer: 5000,
+            //         timerProgressBar: true,
+            //         didOpen: (toast) => {
+            //             toast.onmouseenter = swal.stopTimer;
+            //             toast.onmouseleave = swal.resumeTimer;
+            //         },
+            //     });
+            // } else if (mainData?.properties['Status'].status?.name === 'Proposta aceita') {
+            //     swal.fire({
+            //         icon: 'warning',
+            //         // iconColor: "#e63f66",
+            //         title: 'Proposta cancelada!',
+            //         text: 'Você pode registrar o motivo no campo de observação.',
+            //         color: `${theme === 'light' ? '#64748B' : '#AEB7C0'}`,
+            //         showConfirmButton: true,
+            //         confirmButtonText: 'OK',
+            //         confirmButtonColor: '#1a56db',
+            //         backdrop: false,
+            //         background: `${theme === 'light' ? '#FFF' : '#24303F'}`,
+            //         showCloseButton: true,
+            //         timer: 5000,
+            //         timerProgressBar: true,
+            //         didOpen: (toast) => {
+            //             toast.onmouseenter = swal.stopTimer;
+            //             toast.onmouseleave = swal.resumeTimer;
+            //         },
+            //     });
+            // }
         },
-        onSettled: () => {
+        onSettled: async () => {
             setIsProposalChanging(false);
+            await sleep(2);
         },
     });
-
+    
     const deleteOficio = useMutation({
         mutationFn: async (id: string) => {
             const response = await api.patch('api/notion-api/page/bulk-action/visibility/', {
@@ -630,6 +669,15 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
             mainData?.properties['Status'].status?.name === 'Proposta aceita'
                 ? 'Negociação em Andamento'
                 : 'Proposta aceita';
+        
+        if (status === 'Proposta aceita') {
+            multiLoaderSteps.current = loadingSteps.accept
+            setProposalReqType("accept");
+        } else {
+            multiLoaderSteps.current = loadingSteps.decline
+            setProposalReqType("decline");
+        }
+        
         await proposalTrigger.mutateAsync(status);
     };
 
@@ -820,14 +868,14 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
             if (proposalRef.current && comissionRef.current && observationRef.current) {
                 proposalRef.current.value = numberFormat(
                     mainData.properties['Proposta Escolhida - Celer'].number ||
-                        mainData.properties['(R$) Proposta Mínima - Celer'].number ||
-                        0,
+                    mainData.properties['(R$) Proposta Mínima - Celer'].number ||
+                    0,
                 );
 
                 comissionRef.current.value = numberFormat(
                     mainData.properties['Comissão - Celer'].number ||
-                        mainData.properties['(R$) Comissão Máxima - Celer'].number ||
-                        0,
+                    mainData.properties['(R$) Comissão Máxima - Celer'].number ||
+                    0,
                 );
 
                 observationRef.current.value =
@@ -868,7 +916,7 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
     };
 
     /**
-     * Função para gerar PDF da Proposta
+     * Gera PDF da Proposta
      */
 
     const handleGeneratePDF = useReactToPrint({
@@ -897,522 +945,549 @@ const DashbrokersCard = ({ oficio }: { oficio: NotionPage }): JSX.Element => {
         mainData?.properties['Status Diligência'].select?.name !== 'Em liquidação' &&
         mainData?.properties['Status Diligência'].select?.name !== 'Revisão Valor/LOA';
 
-    return (
-        <div className="relative col-span-1 gap-5 rounded-md border border-stroke bg-white p-5 dark:border-strokedark dark:bg-boxdark">
-            {/* ----> info <----- */}
-            <div className="mb-2 flex items-center justify-between">
-                <div className={`flex w-fit items-center justify-center gap-2 opacity-50 pointer-events-none ${(checks.are_docs_complete || checks.is_cedente_complete || checks.is_precatorio_complete) && "!opacity-100 !pointer-events-auto"}`}>
-                    {isProposalChanging ? (
-                        <AiOutlineLoading className="animate-spin" />
-                    ) : (
-                        <CustomCheckbox
-                            check={
-                                mainData?.properties['Status'].status?.name === 'Proposta aceita'
-                            }
-                            callbackFunction={handleUpdateStatus}
-                        />
-                    )}
-                    <span className="text-sm font-medium">Proposta Aceita</span>
-                </div>
+    /** teste */
 
-                <div className="flex items-center gap-3">
-                    <button
-                        disabled={deleteModalLock}
-                        className="group flex h-[28px] w-[28px] cursor-pointer items-center justify-center overflow-hidden rounded-full border-transparent bg-slate-100 px-0 py-0 opacity-100 transition-all duration-300 ease-in-out hover:w-[100px] hover:bg-slate-200 disabled:pointer-events-none disabled:opacity-0 dark:bg-slate-700 dark:hover:bg-slate-700"
-                        onClick={() => {
-                            setOpenConfirmModal(true);
-                            setDeleteModalLock(true);
-                        }}
-                    >
-                        {isDeleting ? (
+    const handleMultiLoader = () => {
+        setShowMultiLoader(true);
+        setTimeout(() => {
+            console.log("a")
+            // setShowMultiLoader(false)
+        }, 10000)
+    }
+
+    return (
+        <>
+            <div className="relative col-span-1 gap-5 rounded-md border border-stroke bg-white p-5 dark:border-strokedark dark:bg-boxdark">
+                {/* ----> info <----- */}
+                <div className="mb-2 flex items-center justify-between">
+                    <div className={`flex w-fit items-center justify-center gap-2 opacity-50 pointer-events-none ${(checks.are_docs_complete || checks.is_cedente_complete || checks.is_precatorio_complete) && "!opacity-100 !pointer-events-auto"}`}>
+                        {isProposalChanging ? (
                             <AiOutlineLoading className="animate-spin" />
                         ) : (
-                            <>
-                                <BiTrash className=" max-w-4 overflow-hidden opacity-100 transition-width duration-300 group-hover:max-w-0 group-hover:opacity-0" />
-
-                                <div className=" max-w-0 overflow-hidden whitespace-nowrap text-sm opacity-0 transition-opacity duration-500 ease-in-out group-hover:max-w-[76px] group-hover:opacity-100">
-                                    Excluir Ativo
-                                </div>
-                            </>
+                            <CustomCheckbox
+                                check={
+                                    mainData?.properties['Status'].status?.name === 'Proposta aceita'
+                                }
+                                callbackFunction={handleUpdateStatus}
+                            />
                         )}
-                    </button>
+                        <span className="text-sm font-medium">Proposta Aceita</span>
+                    </div>
 
-                    <Button
-                        title="Atualizar informações do ativo"
-                        variant="ghost"
-                        className="group flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 px-0 py-0 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600"
-                        onClick={handleRefreshCard}
-                    >
-                        <BiRefresh className={`${isFetchingData && 'animate-spin'}`} />
-                    </Button>
-                </div>
-            </div>
-            <hr className="mb-4 border border-stroke dark:border-strokedark" />
-            <div className="grid 2xsm:grid-cols-12 md:grid-cols-8 xl:grid-cols-12">
-                <div className="col-span-12 grid min-w-[248px] gap-3 md:col-span-8 md:min-w-fit xl:col-span-6">
-                    <div className="text-xs">
-                        <p className="font-medium uppercase text-black dark:text-snow">
-                            Nome do Credor:
-                        </p>
-                        <CRMTooltip
-                            text={
-                                mainData?.properties['Credor'].title[0]?.text.content ||
-                                'Não informado'
-                            }
-                            arrow={false}
+                    <div className="flex items-center gap-3">
+                        <button
+                            disabled={deleteModalLock}
+                            className="group flex h-[28px] w-[28px] cursor-pointer items-center justify-center overflow-hidden rounded-full border-transparent bg-slate-100 px-0 py-0 opacity-100 transition-all duration-300 ease-in-out hover:w-[100px] hover:bg-slate-200 disabled:pointer-events-none disabled:opacity-0 dark:bg-slate-700 dark:hover:bg-slate-700"
+                            onClick={() => {
+                                setOpenConfirmModal(true);
+                                setDeleteModalLock(true);
+                            }}
                         >
-                            <p className="overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold uppercase md:max-w-[220px]">
-                                {mainData?.properties['Credor'].title[0]?.text.content ||
+                            {isDeleting ? (
+                                <AiOutlineLoading className="animate-spin" />
+                            ) : (
+                                <>
+                                    <BiTrash className=" max-w-4 overflow-hidden opacity-100 transition-width duration-300 group-hover:max-w-0 group-hover:opacity-0" />
+
+                                    <div className=" max-w-0 overflow-hidden whitespace-nowrap text-sm opacity-0 transition-opacity duration-500 ease-in-out group-hover:max-w-[76px] group-hover:opacity-100">
+                                        Excluir Ativo
+                                    </div>
+                                </>
+                            )}
+                        </button>
+
+                        <Button
+                            title="Atualizar informações do ativo"
+                            variant="ghost"
+                            className="group flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 px-0 py-0 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600"
+                            onClick={handleRefreshCard}
+                        >
+                            <BiRefresh className={`${isFetchingData && 'animate-spin'}`} />
+                        </Button>
+                    </div>
+                </div>
+                <hr className="mb-4 border border-stroke dark:border-strokedark" />
+                <div className="grid 2xsm:grid-cols-12 md:grid-cols-8 xl:grid-cols-12">
+                    <div className="col-span-12 grid min-w-[248px] gap-3 md:col-span-8 md:min-w-fit xl:col-span-6">
+                        <div className="text-xs">
+                            <p className="font-medium uppercase text-black dark:text-snow">
+                                Nome do Credor:
+                            </p>
+                            <CRMTooltip
+                                text={
+                                    mainData?.properties['Credor'].title[0]?.text.content ||
+                                    'Não informado'
+                                }
+                                arrow={false}
+                            >
+                                <p className="overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold uppercase md:max-w-[220px]">
+                                    {mainData?.properties['Credor'].title[0]?.text.content ||
+                                        'Não informado'}
+                                </p>
+                            </CRMTooltip>
+                        </div>
+
+                        <div className="text-xs">
+                            <p className="font-medium uppercase text-black dark:text-snow">CPF/CNPJ:</p>
+                            <p className="text-sm font-semibold uppercase">
+                                {applyMaskCpfCnpj(
+                                    mainData?.properties['CPF/CNPJ'].rich_text?.[0]?.text?.content ||
+                                    '',
+                                ) || 'Não informado'}
+                            </p>
+                        </div>
+
+                        <div className="text-xs">
+                            <p className="font-medium uppercase text-black dark:text-snow">TRIBUNAL</p>
+                            <p className="max-w-[220px] overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold uppercase">
+                                {mainData?.properties['Tribunal'].select?.name || 'Não informado'}
+                            </p>
+                        </div>
+
+                        <div className="text-xs">
+                            <p className="font-medium uppercase text-black dark:text-snow">status:</p>
+                            <p className="text-sm font-semibold uppercase">
+                                {mainData?.properties['Status'].status?.name || 'Não informado'}
+                            </p>
+                        </div>
+                        <div className="text-xs">
+                            <p className="font-medium uppercase text-black dark:text-snow">
+                                status diligência:
+                            </p>
+                            <p className="text-sm font-semibold uppercase">
+                                {mainData?.properties['Status Diligência'].select?.name ||
                                     'Não informado'}
                             </p>
-                        </CRMTooltip>
-                    </div>
+                        </div>
 
-                    <div className="text-xs">
-                        <p className="font-medium uppercase text-black dark:text-snow">CPF/CNPJ:</p>
-                        <p className="text-sm font-semibold uppercase">
-                            {applyMaskCpfCnpj(
-                                mainData?.properties['CPF/CNPJ'].rich_text?.[0]?.text?.content ||
-                                    '',
-                            ) || 'Não informado'}
-                        </p>
-                    </div>
-
-                    <div className="text-xs">
-                        <p className="font-medium uppercase text-black dark:text-snow">TRIBUNAL</p>
-                        <p className="max-w-[220px] overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold uppercase">
-                            {mainData?.properties['Tribunal'].select?.name || 'Não informado'}
-                        </p>
-                    </div>
-
-                    <div className="text-xs">
-                        <p className="font-medium uppercase text-black dark:text-snow">status:</p>
-                        <p className="text-sm font-semibold uppercase">
-                            {mainData?.properties['Status'].status?.name || 'Não informado'}
-                        </p>
-                    </div>
-                    <div className="text-xs">
-                        <p className="font-medium uppercase text-black dark:text-snow">
-                            status diligência:
-                        </p>
-                        <p className="text-sm font-semibold uppercase">
-                            {mainData?.properties['Status Diligência'].select?.name ||
-                                'Não informado'}
-                        </p>
-                    </div>
-
-                    <div className="flex min-w-fit flex-col">
-                        <div className="relative w-full">
-                            {mainData?.properties['Status Diligência'].select?.name !==
-                                'Due Diligence' &&
-                                mainData?.properties['Status Diligência'].select?.name !==
+                        <div className="flex min-w-fit flex-col">
+                            <div className="relative w-full">
+                                {mainData?.properties['Status Diligência'].select?.name !==
+                                    'Due Diligence' &&
+                                    mainData?.properties['Status Diligência'].select?.name !==
                                     'Em liquidação' &&
-                                mainData?.properties['Status Diligência'].select?.name !==
+                                    mainData?.properties['Status Diligência'].select?.name !==
                                     'Revisão Valor/LOA' &&
-                                mainData?.properties['Status'].status?.name === 'Proposta aceita' &&
-                                checks.is_cedente_complete === true &&
-                                checks.is_precatorio_complete === true &&
-                                checks.are_docs_complete === true && (
-                                    <span className="span-pulse absolute z-1 h-full w-full rounded-md bg-green-300"></span>
-                                )}
+                                    mainData?.properties['Status'].status?.name === 'Proposta aceita' &&
+                                    checks.is_cedente_complete === true &&
+                                    checks.is_precatorio_complete === true &&
+                                    checks.are_docs_complete === true && (
+                                        <span className="span-pulse absolute z-1 h-full w-full rounded-md bg-green-300"></span>
+                                    )}
+
+                                <button
+                                    onClick={handleLiquidateCard}
+                                    className={`${mainData?.properties['Status Diligência'].select?.name.valueOf() !== 'Due Diligence' && mainData?.properties['Status Diligência'].select?.name !== 'Em liquidação' && mainData?.properties['Status Diligência'].select?.name !== 'Revisão Valor/LOA' && mainData?.properties['Status'].status?.name === 'Proposta aceita' && checks.is_cedente_complete === true && checks.is_precatorio_complete === true && checks.are_docs_complete === true ? 'bg-green-400 text-black-2 hover:bg-green-500 hover:text-snow' : 'pointer-events-none cursor-not-allowed bg-slate-100 opacity-50 dark:bg-boxdark-2/50'} relative z-2 my-1 flex w-full items-center justify-center gap-2 rounded-md px-4 py-1 text-sm transition-colors duration-200`}
+                                >
+                                    {isUpdatingDiligence ? (
+                                        <>
+                                            <AiOutlineLoading className="h-4 w-4 animate-spin" />
+                                            {validateIfItsLockedWhenStatusDiligenceBeDifferent &&
+                                                mainData?.properties['Status'].status?.name ===
+                                                'Proposta aceita'
+                                                ? 'Liquidando...'
+                                                : 'Repactuando...'}
+                                        </>
+                                    ) : (
+                                        <>
+                                            {validateStatusLocked &&
+                                                mainData?.properties['Status'].status?.name ===
+                                                'Proposta aceita' ? (
+                                                <>
+                                                    <HiCheck className="h-4 w-4" />
+                                                    Liquidado
+                                                </>
+                                            ) : (
+                                                <>
+                                                    {mainData?.properties['Status Diligência'].select
+                                                        ?.name === 'Repactuação' ? (
+                                                        <>
+                                                            <HiCheck className="h-4 w-4" />
+                                                            Repactuar
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <HiCheck className="h-4 w-4" />
+                                                            Liquidar
+                                                        </>
+                                                    )}
+                                                </>
+                                            )}
+                                        </>
+                                    )}
+                                </button>
+                            </div>
 
                             <button
-                                onClick={handleLiquidateCard}
-                                className={`${mainData?.properties['Status Diligência'].select?.name.valueOf() !== 'Due Diligence' && mainData?.properties['Status Diligência'].select?.name !== 'Em liquidação' && mainData?.properties['Status Diligência'].select?.name !== 'Revisão Valor/LOA' && mainData?.properties['Status'].status?.name === 'Proposta aceita' && checks.is_cedente_complete === true && checks.is_precatorio_complete === true && checks.are_docs_complete === true ? 'bg-green-400 text-black-2 hover:bg-green-500 hover:text-snow' : 'pointer-events-none cursor-not-allowed bg-slate-100 opacity-50 dark:bg-boxdark-2/50'} relative z-2 my-1 flex w-full items-center justify-center gap-2 rounded-md px-4 py-1 text-sm transition-colors duration-200`}
+                                onClick={() => setEditModalId(mainData!.id)}
+                                disabled={
+                                    checks.isFetching ||
+                                    (mainData?.properties['Status'].status?.name ===
+                                        'Proposta aceita' &&
+                                        validateIfItsLockedWhenStatusDiligenceBeEqual) ||
+                                    mainData?.properties['Status Diligência'].select?.name ===
+                                    'Em liquidação' ||
+                                    (mainData?.properties['Status'].status?.name ===
+                                        'Proposta aceita' &&
+                                        mainData?.properties['Status Diligência'].select?.name ===
+                                        'Juntar Documentos')
+                                }
+                                className="my-1 flex items-center justify-center gap-2 rounded-md bg-slate-100 px-4 py-1 text-sm transition-colors duration-300 hover:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70"
                             >
-                                {isUpdatingDiligence ? (
+                                <BsPencilSquare />
+                                Editar Precatório
+                            </button>
+
+                            <button
+                                onClick={() => setDocModalInfo(mainData)}
+                                className={`${checks.is_cedente_complete !== false ? 'opacity-100' : 'pointer-events-none cursor-not-allowed opacity-50'} my-1 flex items-center justify-center gap-2 rounded-md bg-slate-100 px-4 py-1 text-sm transition-colors duration-300 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70`}
+                            >
+                                <FaRegFilePdf />
+                                Juntar Documentos
+                            </button>
+
+                            <button
+                                onClick={() => setCedenteModal(mainData)}
+                                disabled={
+                                    (mainData &&
+                                        mainData?.properties['CPF/CNPJ']?.rich_text?.length === 0) ||
+                                    undefined
+                                }
+                                className="my-1 flex items-center justify-center gap-2 rounded-md bg-slate-100 px-4 py-1 text-sm transition-colors duration-300 hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70"
+                            >
+                                {mainData?.properties['Cedente PF'].relation?.[0] ||
+                                    mainData?.properties['Cedente PJ'].relation?.[0] ? (
                                     <>
-                                        <AiOutlineLoading className="h-4 w-4 animate-spin" />
-                                        {validateIfItsLockedWhenStatusDiligenceBeDifferent &&
-                                        mainData?.properties['Status'].status?.name ===
-                                            'Proposta aceita'
-                                            ? 'Liquidando...'
-                                            : 'Repactuando...'}
+                                        <BsPencilSquare />
+                                        Editar Cedente
                                     </>
                                 ) : (
                                     <>
-                                        {validateStatusLocked &&
-                                        mainData?.properties['Status'].status?.name ===
-                                            'Proposta aceita' ? (
-                                            <>
-                                                <HiCheck className="h-4 w-4" />
-                                                Liquidado
-                                            </>
-                                        ) : (
-                                            <>
-                                                {mainData?.properties['Status Diligência'].select
-                                                    ?.name === 'Repactuação' ? (
-                                                    <>
-                                                        <HiCheck className="h-4 w-4" />
-                                                        Repactuar
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <HiCheck className="h-4 w-4" />
-                                                        Liquidar
-                                                    </>
-                                                )}
-                                            </>
-                                        )}
+                                        <GrDocumentUser />
+                                        Cadastrar Cedente
                                     </>
                                 )}
                             </button>
                         </div>
 
-                        <button
-                            onClick={() => setEditModalId(mainData!.id)}
-                            disabled={
-                                checks.isFetching ||
-                                (mainData?.properties['Status'].status?.name ===
-                                    'Proposta aceita' &&
-                                    validateIfItsLockedWhenStatusDiligenceBeEqual) ||
-                                mainData?.properties['Status Diligência'].select?.name ===
-                                    'Em liquidação' ||
-                                (mainData?.properties['Status'].status?.name ===
-                                    'Proposta aceita' &&
-                                    mainData?.properties['Status Diligência'].select?.name ===
-                                        'Juntar Documentos')
-                            }
-                            className="my-1 flex items-center justify-center gap-2 rounded-md bg-slate-100 px-4 py-1 text-sm transition-colors duration-300 hover:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70"
-                        >
-                            <BsPencilSquare />
-                            Editar Precatório
-                        </button>
-
-                        <button
-                            onClick={() => setDocModalInfo(mainData)}
-                            className={`${checks.is_cedente_complete !== false ? 'opacity-100' : 'pointer-events-none cursor-not-allowed opacity-50'} my-1 flex items-center justify-center gap-2 rounded-md bg-slate-100 px-4 py-1 text-sm transition-colors duration-300 hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70`}
-                        >
-                            <FaRegFilePdf />
-                            Juntar Documentos
-                        </button>
-
-                        <button
-                            onClick={() => setCedenteModal(mainData)}
-                            disabled={
-                                (mainData &&
-                                    mainData?.properties['CPF/CNPJ']?.rich_text?.length === 0) ||
-                                undefined
-                            }
-                            className="my-1 flex items-center justify-center gap-2 rounded-md bg-slate-100 px-4 py-1 text-sm transition-colors duration-300 hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70"
-                        >
-                            {mainData?.properties['Cedente PF'].relation?.[0] ||
-                            mainData?.properties['Cedente PJ'].relation?.[0] ? (
-                                <>
-                                    <BsPencilSquare />
-                                    Editar Cedente
-                                </>
-                            ) : (
-                                <>
-                                    <GrDocumentUser />
-                                    Cadastrar Cedente
-                                </>
-                            )}
-                        </button>
-                    </div>
-
-                    <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                            {checks.isFetching && isFirstLoad.current ? (
-                                <AiOutlineLoading className="h-4 w-4 animate-spin" />
-                            ) : (
-                                <>
-                                    {checks.is_precatorio_complete ? (
-                                        <CRMTooltip text="Precatório completo">
-                                            <BsCheckCircleFill className="text-green-400" />
-                                        </CRMTooltip>
-                                    ) : (
-                                        <CRMTooltip text="Precatório incompleto">
-                                            <IoCloseCircle className="h-5 w-5 text-red" />
-                                        </CRMTooltip>
-                                    )}
-                                </>
-                            )}
-
-                            {checks.isFetching && isFirstLoad.current ? (
-                                <AiOutlineLoading className="h-4 w-4 animate-spin" />
-                            ) : (
-                                <>
-                                    {checks.is_cedente_complete === true && (
-                                        <CRMTooltip text="Cedente preenchido">
-                                            <BsCheckCircleFill className="text-green-400" />
-                                        </CRMTooltip>
-                                    )}
-                                    {checks.is_cedente_complete === null && (
-                                        <CRMTooltip text="Cedente incompleto">
-                                            <RiErrorWarningFill className="h-5 w-5 text-amber-300" />
-                                        </CRMTooltip>
-                                    )}
-                                    {checks.is_cedente_complete === false && (
-                                        <CRMTooltip text="Cedente não vinculado">
-                                            <IoCloseCircle className="h-5 w-5 text-red" />
-                                        </CRMTooltip>
-                                    )}
-                                </>
-                            )}
-
-                            {checks.isFetching && isFirstLoad.current ? (
-                                <AiOutlineLoading className="h-4 w-4 animate-spin" />
-                            ) : (
-                                <>
-                                    {checks.are_docs_complete === true && (
-                                        <CRMTooltip text="Documentos preenchidos">
-                                            <BsCheckCircleFill className="text-green-400" />
-                                        </CRMTooltip>
-                                    )}
-                                    {checks.are_docs_complete === null && (
-                                        <CRMTooltip text="Documentos em análise">
-                                            <RiErrorWarningFill className="h-5 w-5 text-amber-300" />
-                                        </CRMTooltip>
-                                    )}
-                                    {checks.are_docs_complete === false && (
-                                        <CRMTooltip text="Documentos não vinculados">
-                                            <IoCloseCircle className="h-5 w-5 text-red" />
-                                        </CRMTooltip>
-                                    )}
-                                </>
-                            )}
-                            {/* TODO: Esse aqui será o check para verificação do anuente quando a implementação for desenvolvida */}
-                            {/* <MdOutlineCircle className='w-4 h-4' /> */}
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Badge isANotionPage color={mainData?.properties['Tipo'].select?.color}>
-                                <Badge.Label
-                                    label={
-                                        mainData?.properties['Tipo'].select?.name ?? 'Não informado'
-                                    }
-                                />
-                            </Badge>
-                            <Badge
-                                isANotionPage
-                                color={mainData?.properties['Esfera'].select?.color}
-                            >
-                                <Badge.Label
-                                    label={
-                                        mainData?.properties['Esfera'].select?.name ??
-                                        'Não informado'
-                                    }
-                                />
-                            </Badge>
-                        </div>
-                    </div>
-                </div>
-
-                <ConfirmModal
-                    size="lg"
-                    isOpen={confirmModal}
-                    onClose={() => {
-                        setOpenConfirmModal(false);
-                        setDeleteModalLock(false);
-                    }}
-                    onConfirm={() => handleDeleteOficio(mainData!.id)}
-                    isLoading={isDeleting}
-                />
-
-                <div className="col-span-12 mx-2 mt-5 grid gap-5 border-l-0 border-t-2 border-stroke pl-0 pt-5 dark:border-strokedark md:col-span-8 md:mt-0 md:border-l-2 md:border-t-0 md:pl-3 md:pt-5 xl:col-span-6">
-                    <div className="relative flex max-h-fit flex-col gap-5 pb-8 sm:pb-0">
-                        <div className="flex items-center justify-between gap-6 2xsm:flex-col md:flex-row">
-                            <div className="flex w-full flex-1 flex-col items-center gap-4 pb-2 2xsm:pb-0 md:pb-2">
-                                <div className="flex items-center text-sm font-medium">
-                                    <p className="w-full text-sm">Proposta:</p>
-                                    <input
-                                        ref={proposalRef}
-                                        type="text"
-                                        disabled={
-                                            (mainData?.properties['Status'].status?.name ===
-                                                'Proposta aceita' &&
-                                                validateIfItsLockedWhenStatusDiligenceBeEqual) ||
-                                            (mainData?.properties['Status'].status?.name ===
-                                                'Proposta aceita' &&
-                                                mainData?.properties['Status Diligência'].select
-                                                    ?.name === 'Juntar Documentos') ||
-                                            (mainData?.properties['Status'].status?.name ===
-                                                'Proposta aceita' &&
-                                                mainData?.properties['Status Diligência'].select
-                                                    ?.name === 'Pendência a Sanar')
-                                        }
-                                        onBlur={(e) => {
-                                            e.target.value = formatCurrency(e.target.value);
-                                        }}
-                                        onChange={(e) =>
-                                            changeInputValues('proposal', e.target.value)
-                                        }
-                                        className="ml-2 max-w-35 rounded-md border-none bg-gray-100 py-2 pl-1 pr-2 text-center text-sm font-medium text-body focus-visible:ring-body disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:bg-boxdark-2/50 dark:text-bodydark dark:focus-visible:ring-snow"
-                                    />
-                                </div>
-                                <input
-                                    // ref={proposalRangeRef}
-                                    type="range"
-                                    step="0.01"
-                                    disabled={
-                                        (mainData?.properties['Status'].status?.name ===
-                                            'Proposta aceita' &&
-                                            validateIfItsLockedWhenStatusDiligenceBeEqual) ||
-                                        (mainData?.properties['Status'].status?.name ===
-                                            'Proposta aceita' &&
-                                            mainData?.properties['Status Diligência'].select
-                                                ?.name === 'Juntar Documentos') ||
-                                        (mainData?.properties['Status'].status?.name ===
-                                            'Proposta aceita' &&
-                                            mainData?.properties['Status Diligência'].select
-                                                ?.name === 'Pendência a Sanar')
-                                    }
-                                    min={
-                                        mainData?.properties['(R$) Proposta Mínima - Celer']
-                                            .number || 0
-                                    }
-                                    max={
-                                        mainData?.properties['(R$) Proposta Máxima - Celer']
-                                            .number || 0
-                                    }
-                                    value={sliderValues.proposal}
-                                    onChange={(e) =>
-                                        handleProposalSliderChange(e.target.value, true)
-                                    }
-                                    className="range-slider w-full disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="relative flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
-                            <div className="flex w-full flex-1 flex-col items-center gap-4">
-                                <div className="flex items-center text-sm font-medium ">
-                                    <p className="text-sm">Comissão:</p>
-                                    <input
-                                        ref={comissionRef}
-                                        type="text"
-                                        disabled={
-                                            (mainData?.properties['Status'].status?.name ===
-                                                'Proposta aceita' &&
-                                                validateIfItsLockedWhenStatusDiligenceBeEqual) ||
-                                            (mainData?.properties['Status'].status?.name ===
-                                                'Proposta aceita' &&
-                                                mainData?.properties['Status Diligência'].select
-                                                    ?.name === 'Juntar Documentos') ||
-                                            (mainData?.properties['Status'].status?.name ===
-                                                'Proposta aceita' &&
-                                                mainData?.properties['Status Diligência'].select
-                                                    ?.name === 'Pendência a Sanar')
-                                        }
-                                        onBlur={(e) => {
-                                            e.target.value = formatCurrency(e.target.value);
-                                        }}
-                                        onChange={(e) =>
-                                            changeInputValues('comission', e.target.value)
-                                        }
-                                        className="ml-2 max-w-35 rounded-md border-none bg-gray-100 py-2 pl-1 pr-2 text-center text-sm font-medium text-body focus-visible:ring-body disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:bg-boxdark-2/50 dark:text-bodydark dark:focus-visible:ring-snow"
-                                    />
-                                </div>
-                                <input
-                                    type="range"
-                                    step="0.01"
-                                    disabled={
-                                        (mainData?.properties['Status'].status?.name ===
-                                            'Proposta aceita' &&
-                                            validateIfItsLockedWhenStatusDiligenceBeEqual) ||
-                                        (mainData?.properties['Status'].status?.name ===
-                                            'Proposta aceita' &&
-                                            mainData?.properties['Status Diligência'].select
-                                                ?.name === 'Juntar Documentos') ||
-                                        (mainData?.properties['Status'].status?.name ===
-                                            'Proposta aceita' &&
-                                            mainData?.properties['Status Diligência'].select
-                                                ?.name === 'Pendência a Sanar')
-                                    }
-                                    min={
-                                        mainData?.properties['(R$) Comissão Mínima - Celer']
-                                            .number || 0
-                                    }
-                                    max={
-                                        mainData?.properties['(R$) Comissão Máxima - Celer']
-                                            .number || 0
-                                    }
-                                    value={sliderValues.comission}
-                                    onChange={(e) =>
-                                        handleComissionSliderChange(e.target.value, true)
-                                    }
-                                    className="range-slider-reverse [::-webkit-slider-thumb]::-webkit-slider-thumb {background-color: #FFF;} w-full disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50"
-                                />
-                            </div>
-                        </div>
-
-                        {errorMessage && (
-                            <div className="absolute -bottom-4 w-full text-center text-xs text-red">
-                                Valor&#40;res&#41; fora do escopo definido
-                            </div>
-                        )}
-                    </div>
-                    <div className="flex gap-2">
-                        <Button
-                            disabled={isProposalButtonDisabled}
-                            onClick={saveProposalAndComission}
-                            className="h-8 w-full px-2 py-1 text-sm font-medium transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                            {savingProposalAndComission ? 'Salvando...' : 'Salvar Oferta'}
-                        </Button>
-                        <Button
-                            isLoading={loading}
-                            onClick={() => handleGeneratePDF()}
-                            className="h-8 w-full px-2 text-sm font-medium transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                            Gerar Proposta
-                        </Button>
-                    </div>
-                    {/* Esse componente tem a função apenas de gerar um PDF, por isso hidden */}
-                    <div className="hidden">
-                        <div ref={documentRef} className="bg-[#F4F4F4]">
-                            <PrintPDF
-                                nomeDoCredor={mainData?.properties['Credor'].title[0]?.text.content}
-                                valorDaProposta={
-                                    mainData?.properties['Proposta Escolhida - Celer'].number ||
-                                    mainData?.properties['(R$) Proposta Mínima - Celer'].number ||
-                                    0
-                                }
-                                nomeDoBroker={first_name + ' ' + last_name}
-                                fotoDoBroker={profile_picture}
-                                phone={phone ? phone : null}
-                            />
-                        </div>
-                    </div>
-
-                    {/* separator */}
-
-                    {/* end separator */}
-
-                    {/* ----> observations field <----- */}
-                    <div className="h-full w-full">
-                        <p className="mb-2">Observações:</p>
-                        <div className="relative">
-                            <textarea
-                                ref={observationRef}
-                                className="w-full resize-none rounded-md border-stroke placeholder:text-sm dark:border-strokedark dark:bg-boxdark-2/50"
-                                rows={4}
-                                placeholder="Insira uma observação"
-                            />
-                            <Button
-                                variant="ghost"
-                                onClick={() =>
-                                    handleUpdateObservation(observationRef.current?.value || '')
-                                }
-                                className="absolute bottom-3 right-2 z-2 bg-slate-100 px-1 py-1 text-sm hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70"
-                            >
-                                {savingObservation ? (
-                                    <AiOutlineLoading className="animate-spin text-lg" />
+                        <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                                {checks.isFetching && isFirstLoad.current ? (
+                                    <AiOutlineLoading className="h-4 w-4 animate-spin" />
                                 ) : (
-                                    <BiSave className="text-lg" />
+                                    <>
+                                        {checks.is_precatorio_complete ? (
+                                            <CRMTooltip text="Precatório completo">
+                                                <BsCheckCircleFill className="text-green-400" />
+                                            </CRMTooltip>
+                                        ) : (
+                                            <CRMTooltip text="Precatório incompleto">
+                                                <IoCloseCircle className="h-5 w-5 text-red" />
+                                            </CRMTooltip>
+                                        )}
+                                    </>
                                 )}
+
+                                {checks.isFetching && isFirstLoad.current ? (
+                                    <AiOutlineLoading className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <>
+                                        {checks.is_cedente_complete === true && (
+                                            <CRMTooltip text="Cedente preenchido">
+                                                <BsCheckCircleFill className="text-green-400" />
+                                            </CRMTooltip>
+                                        )}
+                                        {checks.is_cedente_complete === null && (
+                                            <CRMTooltip text="Cedente incompleto">
+                                                <RiErrorWarningFill className="h-5 w-5 text-amber-300" />
+                                            </CRMTooltip>
+                                        )}
+                                        {checks.is_cedente_complete === false && (
+                                            <CRMTooltip text="Cedente não vinculado">
+                                                <IoCloseCircle className="h-5 w-5 text-red" />
+                                            </CRMTooltip>
+                                        )}
+                                    </>
+                                )}
+
+                                {checks.isFetching && isFirstLoad.current ? (
+                                    <AiOutlineLoading className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <>
+                                        {checks.are_docs_complete === true && (
+                                            <CRMTooltip text="Documentos preenchidos">
+                                                <BsCheckCircleFill className="text-green-400" />
+                                            </CRMTooltip>
+                                        )}
+                                        {checks.are_docs_complete === null && (
+                                            <CRMTooltip text="Documentos em análise">
+                                                <RiErrorWarningFill className="h-5 w-5 text-amber-300" />
+                                            </CRMTooltip>
+                                        )}
+                                        {checks.are_docs_complete === false && (
+                                            <CRMTooltip text="Documentos não vinculados">
+                                                <IoCloseCircle className="h-5 w-5 text-red" />
+                                            </CRMTooltip>
+                                        )}
+                                    </>
+                                )}
+                                {/* TODO: Esse aqui será o check para verificação do anuente quando a implementação for desenvolvida */}
+                                {/* <MdOutlineCircle className='w-4 h-4' /> */}
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Badge isANotionPage color={mainData?.properties['Tipo'].select?.color}>
+                                    <Badge.Label
+                                        label={
+                                            mainData?.properties['Tipo'].select?.name ?? 'Não informado'
+                                        }
+                                    />
+                                </Badge>
+                                <Badge
+                                    isANotionPage
+                                    color={mainData?.properties['Esfera'].select?.color}
+                                >
+                                    <Badge.Label
+                                        label={
+                                            mainData?.properties['Esfera'].select?.name ??
+                                            'Não informado'
+                                        }
+                                    />
+                                </Badge>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ConfirmModal
+                        size="lg"
+                        isOpen={confirmModal}
+                        onClose={() => {
+                            setOpenConfirmModal(false);
+                            setDeleteModalLock(false);
+                        }}
+                        onConfirm={() => handleDeleteOficio(mainData!.id)}
+                        isLoading={isDeleting}
+                    />
+
+                    <div className="col-span-12 mx-2 mt-5 grid gap-5 border-l-0 border-t-2 border-stroke pl-0 pt-5 dark:border-strokedark md:col-span-8 md:mt-0 md:border-l-2 md:border-t-0 md:pl-3 md:pt-5 xl:col-span-6">
+                        <div className="relative flex max-h-fit flex-col gap-5 pb-8 sm:pb-0">
+                            <div className="flex items-center justify-between gap-6 2xsm:flex-col md:flex-row">
+                                <div className="flex w-full flex-1 flex-col items-center gap-4 pb-2 2xsm:pb-0 md:pb-2">
+                                    <div className="flex items-center text-sm font-medium">
+                                        <p className="w-full text-sm">Proposta:</p>
+                                        <input
+                                            ref={proposalRef}
+                                            type="text"
+                                            disabled={
+                                                (mainData?.properties['Status'].status?.name ===
+                                                    'Proposta aceita' &&
+                                                    validateIfItsLockedWhenStatusDiligenceBeEqual) ||
+                                                (mainData?.properties['Status'].status?.name ===
+                                                    'Proposta aceita' &&
+                                                    mainData?.properties['Status Diligência'].select
+                                                        ?.name === 'Juntar Documentos') ||
+                                                (mainData?.properties['Status'].status?.name ===
+                                                    'Proposta aceita' &&
+                                                    mainData?.properties['Status Diligência'].select
+                                                        ?.name === 'Pendência a Sanar')
+                                            }
+                                            onBlur={(e) => {
+                                                e.target.value = formatCurrency(e.target.value);
+                                            }}
+                                            onChange={(e) =>
+                                                changeInputValues('proposal', e.target.value)
+                                            }
+                                            className="ml-2 max-w-35 rounded-md border-none bg-gray-100 py-2 pl-1 pr-2 text-center text-sm font-medium text-body focus-visible:ring-body disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:bg-boxdark-2/50 dark:text-bodydark dark:focus-visible:ring-snow"
+                                        />
+                                    </div>
+                                    <input
+                                        // ref={proposalRangeRef}
+                                        type="range"
+                                        step="0.01"
+                                        disabled={
+                                            (mainData?.properties['Status'].status?.name ===
+                                                'Proposta aceita' &&
+                                                validateIfItsLockedWhenStatusDiligenceBeEqual) ||
+                                            (mainData?.properties['Status'].status?.name ===
+                                                'Proposta aceita' &&
+                                                mainData?.properties['Status Diligência'].select
+                                                    ?.name === 'Juntar Documentos') ||
+                                            (mainData?.properties['Status'].status?.name ===
+                                                'Proposta aceita' &&
+                                                mainData?.properties['Status Diligência'].select
+                                                    ?.name === 'Pendência a Sanar')
+                                        }
+                                        min={
+                                            mainData?.properties['(R$) Proposta Mínima - Celer']
+                                                .number || 0
+                                        }
+                                        max={
+                                            mainData?.properties['(R$) Proposta Máxima - Celer']
+                                                .number || 0
+                                        }
+                                        value={sliderValues.proposal}
+                                        onChange={(e) =>
+                                            handleProposalSliderChange(e.target.value, true)
+                                        }
+                                        className="range-slider w-full disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="relative flex items-center justify-between gap-5 2xsm:flex-col md:flex-row">
+                                <div className="flex w-full flex-1 flex-col items-center gap-4">
+                                    <div className="flex items-center text-sm font-medium ">
+                                        <p className="text-sm">Comissão:</p>
+                                        <input
+                                            ref={comissionRef}
+                                            type="text"
+                                            disabled={
+                                                (mainData?.properties['Status'].status?.name ===
+                                                    'Proposta aceita' &&
+                                                    validateIfItsLockedWhenStatusDiligenceBeEqual) ||
+                                                (mainData?.properties['Status'].status?.name ===
+                                                    'Proposta aceita' &&
+                                                    mainData?.properties['Status Diligência'].select
+                                                        ?.name === 'Juntar Documentos') ||
+                                                (mainData?.properties['Status'].status?.name ===
+                                                    'Proposta aceita' &&
+                                                    mainData?.properties['Status Diligência'].select
+                                                        ?.name === 'Pendência a Sanar')
+                                            }
+                                            onBlur={(e) => {
+                                                e.target.value = formatCurrency(e.target.value);
+                                            }}
+                                            onChange={(e) =>
+                                                changeInputValues('comission', e.target.value)
+                                            }
+                                            className="ml-2 max-w-35 rounded-md border-none bg-gray-100 py-2 pl-1 pr-2 text-center text-sm font-medium text-body focus-visible:ring-body disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:bg-boxdark-2/50 dark:text-bodydark dark:focus-visible:ring-snow"
+                                        />
+                                    </div>
+                                    <input
+                                        type="range"
+                                        step="0.01"
+                                        disabled={
+                                            (mainData?.properties['Status'].status?.name ===
+                                                'Proposta aceita' &&
+                                                validateIfItsLockedWhenStatusDiligenceBeEqual) ||
+                                            (mainData?.properties['Status'].status?.name ===
+                                                'Proposta aceita' &&
+                                                mainData?.properties['Status Diligência'].select
+                                                    ?.name === 'Juntar Documentos') ||
+                                            (mainData?.properties['Status'].status?.name ===
+                                                'Proposta aceita' &&
+                                                mainData?.properties['Status Diligência'].select
+                                                    ?.name === 'Pendência a Sanar')
+                                        }
+                                        min={
+                                            mainData?.properties['(R$) Comissão Mínima - Celer']
+                                                .number || 0
+                                        }
+                                        max={
+                                            mainData?.properties['(R$) Comissão Máxima - Celer']
+                                                .number || 0
+                                        }
+                                        value={sliderValues.comission}
+                                        onChange={(e) =>
+                                            handleComissionSliderChange(e.target.value, true)
+                                        }
+                                        className="range-slider-reverse [::-webkit-slider-thumb]::-webkit-slider-thumb {background-color: #FFF;} w-full disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50"
+                                    />
+                                </div>
+                            </div>
+
+                            {errorMessage && (
+                                <div className="absolute -bottom-4 w-full text-center text-xs text-red">
+                                    Valor&#40;res&#41; fora do escopo definido
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex gap-2">
+                            <Button
+                                disabled={isProposalButtonDisabled}
+                                onClick={saveProposalAndComission}
+                                className="h-8 w-full px-2 py-1 text-sm font-medium transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                {savingProposalAndComission ? 'Salvando...' : 'Salvar Oferta'}
+                            </Button>
+                            <Button
+                                isLoading={loading}
+                                onClick={() => handleGeneratePDF()}
+                                className="h-8 w-full px-2 text-sm font-medium transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                Gerar Proposta
                             </Button>
                         </div>
-                    </div>
-                    {/* ----> end observations field <----- */}
-                </div>
-            </div>
-            {/* ----> end info <----- */}
+                        {/* Esse componente tem a função apenas de gerar um PDF, por isso hidden */}
+                        <div className="hidden">
+                            <div ref={documentRef} className="bg-[#F4F4F4]">
+                                <PrintPDF
+                                    nomeDoCredor={mainData?.properties['Credor'].title[0]?.text.content}
+                                    valorDaProposta={
+                                        mainData?.properties['Proposta Escolhida - Celer'].number ||
+                                        mainData?.properties['(R$) Proposta Mínima - Celer'].number ||
+                                        0
+                                    }
+                                    nomeDoBroker={first_name + ' ' + last_name}
+                                    fotoDoBroker={profile_picture}
+                                    phone={phone ? phone : null}
+                                />
+                            </div>
+                        </div>
 
-            {/* ----> edit info modal <---- */}
-            <EditOficioBrokerForm mainData={mainData} />
-            {/* ----> end edit info modal <----- */}
-        </div>
+                        {/* separator */}
+
+                        {/* end separator */}
+
+                        {/* ----> observations field <----- */}
+                        <div className="h-full w-full">
+                            <p className="mb-2">Observações:</p>
+                            <div className="relative">
+                                <textarea
+                                    ref={observationRef}
+                                    className="w-full resize-none rounded-md border-stroke placeholder:text-sm dark:border-strokedark dark:bg-boxdark-2/50"
+                                    rows={4}
+                                    placeholder="Insira uma observação"
+                                />
+                                <Button
+                                    variant="ghost"
+                                    onClick={() =>
+                                        handleUpdateObservation(observationRef.current?.value || '')
+                                    }
+                                    className="absolute bottom-3 right-2 z-2 bg-slate-100 px-1 py-1 text-sm hover:bg-slate-200 dark:bg-boxdark-2/50 dark:hover:bg-boxdark-2/70"
+                                >
+                                    {savingObservation ? (
+                                        <AiOutlineLoading className="animate-spin text-lg" />
+                                    ) : (
+                                        <BiSave className="text-lg" />
+                                    )}
+                                </Button>
+                            </div>
+                        </div>
+                        {/* ----> end observations field <----- */}
+                    </div>
+                </div>
+                {/* ----> end info <----- */}
+
+                {/* ----> edit info modal <---- */}
+                <EditOficioBrokerForm mainData={mainData} />
+                {/* ----> end edit info modal <----- */}
+            </div>
+            {showMultiLoader && (
+                <MultiStepLoader
+                    loadingStates={multiLoaderSteps.current}
+                    duration={1200}
+                    reqStatus={proposalReqStatus}
+                    reqType={proposalReqType}
+                    handleClose={handleCloseLoader}
+                    hasEffect={
+                        mainData?.properties['Status'].status?.name !== 'Proposta aceita' &&
+                        checks.are_docs_complete &&
+                        checks.is_cedente_complete &&
+                        checks.is_precatorio_complete
+                    }
+                />
+            )}
+        </>
     );
 };
 
