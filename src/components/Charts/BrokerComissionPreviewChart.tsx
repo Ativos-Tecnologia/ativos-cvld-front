@@ -195,6 +195,7 @@ export function BrokerComissionPreviewChart({ data }: BrokerComissionPreviewChar
                     {chartData &&
                         chartData.map((data) => (
                             <div
+                                key={data.label}
                                 className="flex cursor-pointer items-center gap-1.5 rounded-lg px-1.5 py-0.5 transition-all hover:bg-accent"
                                 onClick={() => setActiveItem(data.label)}
                             >
