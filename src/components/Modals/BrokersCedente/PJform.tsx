@@ -225,9 +225,6 @@ const PJform = ({
         (value) => value !== '' && value !== id,
     );
 
-    console.log(watch())
-    console.log(registeredCedentesList.listPf)
-
     const { theme } = useContext(GeneralUIContext);
     const [banco, setBanco] = useState<string[]>([]);
 
