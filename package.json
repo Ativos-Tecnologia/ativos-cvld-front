@@ -72,6 +72,7 @@
     "react-phone-number-input": "^3.4.10",
     "react-to-print": "^3.0.2",
     "recharts": "^2.15.0",
+    "sharp": "^0.33.5",
     "sonner": "^1.7.1",
     "sweetalert2": "^11.15.3",
     "sweetalert2-react-content": "^5.1.0",
