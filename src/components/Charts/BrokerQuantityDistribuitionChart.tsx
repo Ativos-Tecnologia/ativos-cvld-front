@@ -20,6 +20,7 @@ import {
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { NotionResponse } from '@/interfaces/INotion';
 import { BrokersContext } from '@/context/BrokersContext';
+import { generateColor } from '@/functions/charts/generateColor';
 
 interface StatusCount {
     [key: string]: number;
@@ -42,11 +43,6 @@ export function BrokerQuantityDistribuitionChart({ data }: BrokerQuantityDistrib
         [activeItem, chartData],
     );
 
-    function generateColor(index: number, total: number) {
-        const hue = (index * (360 / total)) % 360;
-        return `hsl(${hue}, 70%, 50%)`;
-    }
-
     function handleData(data: NotionResponse) {
         const statusCount: StatusCount = {};
 
@@ -54,12 +50,13 @@ export function BrokerQuantityDistribuitionChart({ data }: BrokerQuantityDistrib
             const status = page.properties.Status.status?.name;
             const statusDiligencia = page.properties['Status Diligência'].select?.name;
 
-            if (status) {
-                statusCount[status] = (statusCount[status] || 0) + 1;
-            }
-
             if (statusDiligencia) {
                 statusCount[statusDiligencia] = (statusCount[statusDiligencia] || 0) + 1;
+                return;
+            }
+
+            if (status) {
+                statusCount[status] = (statusCount[status] || 0) + 1;
             }
         });
 

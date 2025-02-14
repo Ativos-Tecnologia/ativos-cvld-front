@@ -21,6 +21,7 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import { NotionResponse } from '@/interfaces/INotion';
 import numberFormat from '@/functions/formaters/numberFormat';
 import { BrokersContext } from '@/context/BrokersContext';
+import { generateColor } from '@/functions/charts/generateColor';
 
 interface Result {
     [key: string]: number;
@@ -48,11 +49,6 @@ export function BrokerComissionPreviewChart({ data }: BrokerComissionPreviewChar
         () => chartData.reduce((sum, item) => sum + item.comission, 0),
         [chartData],
     );
-
-    function generateColor(index: number, total: number) {
-        const hue = (index * (360 / total)) % 360;
-        return `hsl(${hue}, 70%, 50%)`;
-    }
 
     function handleData(data: NotionResponse) {
         const result: Result = {};
@@ -114,13 +110,13 @@ export function BrokerComissionPreviewChart({ data }: BrokerComissionPreviewChar
                 </div>
                 <Select value={activeItem} onValueChange={setActiveItem}>
                     <SelectTrigger className="size-fit rounded-lg" aria-label="Selecione um status">
-                        <SelectValue placeholder="Total" />
+                        <SelectValue placeholder="Todos os credores" />
                     </SelectTrigger>
                     <SelectContent align="end" className="rounded-xl">
                         <SelectItem key="all" value="all" className="rounded-lg [&_span]:flex">
                             <div className="flex items-center gap-2 text-xs">
                                 <span className="flex h-3 w-3 shrink-0 rounded-sm bg-gray-400" />
-                                Total
+                                Todos os credores
                             </div>
                         </SelectItem>
                         {labels.map((key) => {
