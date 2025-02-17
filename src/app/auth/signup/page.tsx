@@ -8,7 +8,7 @@ import { Popover } from 'flowbite-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Controller, SubmitHandler, useForm, UseFormSetValue } from 'react-hook-form';
 import {
     BiCheck,
@@ -62,6 +62,7 @@ const SignUp: React.FC = () => {
     const passwordInput = watch('password');
     const confirmPasswordInput = watch('confirm_password');
     const [termsAccepted, setTermsAccepted] = useState<boolean>(false);
+    const formDivRef = useRef<HTMLDivElement>(null);
 
     const {
         loading,
@@ -175,6 +176,30 @@ const SignUp: React.FC = () => {
         }
     }, []);
 
+    useEffect(() => {
+        const div = formDivRef.current;
+
+        const handleScroll = () => {
+            if (div) {
+                const { scrollTop, clientHeight, scrollHeight } = div;
+
+                const isScrollAtBottom = scrollTop + clientHeight === scrollHeight;
+
+                if (!isScrollAtBottom) {
+                    div?.classList.add('form_shadow_bottom');
+                } else {
+                    div?.classList.remove('form_shadow_bottom');
+                }
+            }
+        };
+
+        handleScroll();
+
+        div?.addEventListener('scroll', handleScroll);
+
+        return () => div?.removeEventListener('scroll', handleScroll);
+    }, []);
+
     return (
         <UnloggedLayout>
             <div className="relative flex h-full 3xl:max-h-[610px]">
@@ -223,7 +248,10 @@ const SignUp: React.FC = () => {
                 </div>
 
                 {/* form */}
-                <div className="z-10 w-full border-stroke bg-snow 2xsm:p-8 sm:px-8 sm:py-12.5 md:absolute md:left-1/2 md:top-1/2 md:max-h-[850px] md:w-3/4 md:-translate-x-1/2 md:-translate-y-1/2 md:overflow-y-scroll md:rounded-br-md md:rounded-tr-md lg:h-fit lg:max-h-[850px] xl:static xl:h-full xl:w-[35%] xl:translate-x-0 xl:translate-y-0 xl:py-5.5 3xl:max-h-[610px] 3xl:overflow-y-scroll">
+                <div
+                    ref={formDivRef}
+                    className="z-10 w-full border-stroke bg-snow transition-all 2xsm:p-8 sm:px-8 sm:py-12.5 md:absolute md:left-1/2 md:top-1/2 md:max-h-[850px] md:w-3/4 md:-translate-x-1/2 md:-translate-y-1/2 md:overflow-y-scroll lg:h-fit lg:max-h-[850px] xl:static xl:h-full xl:w-[35%] xl:translate-x-0 xl:translate-y-0 xl:py-5.5 3xl:max-h-[610px] 3xl:overflow-y-scroll"
+                >
                     {/* Mobile visible logo */}
                     <div className="block w-full xl:hidden">
                         <Link className="mb-8 flex flex-col items-center justify-center" href="#">

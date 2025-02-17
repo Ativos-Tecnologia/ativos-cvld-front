@@ -31,6 +31,13 @@
     background-image: linear-gradient(to right, #003585 0%, transparent 100%);
 }
 
+.form_shadow_bottom {
+    --tw-shadow: inset 0 -4px 6px -4px rgba(0, 0, 0, 0.4);
+    --tw-shadow-colored: inset 0 -4px 6px -4px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000),
+        var(--tw-shadow);
+}
+
 .hero_signup_overlap {
     position: absolute;
     inset: 0;
