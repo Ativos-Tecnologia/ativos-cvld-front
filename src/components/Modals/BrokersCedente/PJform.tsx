@@ -268,15 +268,28 @@ const PJform = ({
     };
 
     // função de retorno do representante legal (caso haja)
-    const getRepresentanteLegal = (socioID: string | null): string => {
+    const getRepresentanteLegal = async (socioID: string | null): Promise<string> => {
         if (registeredCedentesList.listPf!.length > 0) {
-            const socioRepresentanteInfo = registeredCedentesList.listPf?.filter(
+
+            const socioRepresentanteInfo = registeredCedentesList.listPf!.filter(
                 (cedente) => cedente.id === socioID,
             );
-            return socioRepresentanteInfo ? socioRepresentanteInfo?.[0]?.name : 'Não Informado';
+
+            if (socioRepresentanteInfo?.length > 0) {
+                return socioRepresentanteInfo?.[0]?.name;
+            } else {
+                const req = await api.get(`/api/cedente/show/pf/${socioID}/`);
+
+                if (req.data === null) return "Não Informado";
+
+                const socioName: string = req.data.properties["Nome Completo"]?.title?.[0]?.text?.content;
+
+                return socioName;
+            }
+
         }
 
-        return 'Não Informado';
+        return 'Carregando...';
     };
 
     // função para desvicular o representante legal
@@ -545,11 +558,10 @@ const PJform = ({
             data.celular = data.celular.replace(/\D/g, ''); // remove tudo que não for dígito
         }
 
-        if (data.socio_representante.includes(" ")) {
+        if (data.socio_representante && data.socio_representante.includes(" ")) {
             data.socio_representante = registeredCedentesList.listPf?.find(
                 (cedente) => cedente.name === data.socio_representante)?.id
         }
-
 
         if (mode === 'edit') {
             await updateCedente.mutateAsync(data);
@@ -589,12 +601,17 @@ const PJform = ({
                 cedentePjData.data?.properties['Razão Social'].title[0].text.content,
             );
             setValue('cnpj', cedentePjData.data!.properties['CNPJ'].rich_text![0].text.content);
-            setValue(
-                'socio_representante',
-                getRepresentanteLegal(
-                    cedentePjData.data?.properties['Sócio Representante'].relation?.[0]?.id || null,
-                ),
-            );
+            // setValue(
+            //     'socio_representante',
+            //     getRepresentanteLegal(
+            //         cedentePjData.data?.properties['Sócio Representante'].relation?.[0]?.id || null,
+            //     ),
+            // );
+            getRepresentanteLegal(
+                cedentePjData.data?.properties['Sócio Representante'].relation?.[0]?.id || null
+            ).then((nome) => {
+                setValue('socio_representante', nome);
+            });
             setValue('cep', cedentePjData.data!.properties['CEP'].rich_text![0].text.content);
 
             //valores opcionais
@@ -1398,11 +1415,13 @@ const PJform = ({
                         </div>
 
                         <div className="col-span-2 my-4 flex items-center justify-center">
-                            {mode === 'edit' ? (
-                                <Button type="submit">
+                            {mode === 'edit' && (
+                                <Button onClick={() => console.log('disparou a função')} type="submit">
                                     {isUpdating ? 'Salvando Edição...' : 'Finalizar Edição'}
+
                                 </Button>
-                            ) : (
+                            )}
+                            {mode === 'create' && (
                                 <Button type="submit">
                                     {isUpdating ? 'Realizando cadastro...' : 'Finalizar Cadastro'}
                                 </Button>
