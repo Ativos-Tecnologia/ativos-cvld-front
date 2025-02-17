@@ -30,7 +30,7 @@ import Badge from '../CrmUi/ui/Badge/Badge';
 import EditOficioBrokerForm from '../Forms/EditOficioBrokerForm';
 import { IdentificationType } from '../Modals/BrokersCedente';
 import { PrintPDF } from '../PrintPDF';
-import { MultiStepLoader } from '../ui/multi-step-loader';
+import { MultiStepLoader } from '../ui/multi-step-loader-propose';
 import { sleep } from '@/functions/timer/sleep';
 
 export interface IChecksProps {
