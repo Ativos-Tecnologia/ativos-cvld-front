@@ -1,28 +1,24 @@
 'use client';
 import { DataTable } from '@/app/comercial/espaco/table/data-table';
 import { columns } from '@/app/comercial/espaco/table/columns';
-import { ITabelaGerencialResponse } from '@/interfaces/ITabelaGerencialResponse';
 import api from '@/utils/api';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import React, { use, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { GoalChartCard } from './GoalChartCard';
 import ComercialUserVsStatusChart from '@/components/Charts/ComercialUserVsStatusChart';
-import { SheetCelerComponent } from '@/components/CrmUi/Sheet';
 import { SheetViewComercial } from './SheetViewComercial';
 import CelerAppCombobox from '@/components/CrmUi/Combobox';
 import { BiUser } from 'react-icons/bi';
 import Show from '@/components/Show';
 import { UserInfoAPIContext } from '@/context/UserInfoContext';
 import { TotalLiquidAvailableChart } from '@/components/Charts/TotalAvailableLiquidChart';
-import { ComercialContext, ComercialProvider } from '@/context/ComercialContext';
+import { ComercialContext } from '@/context/ComercialContext';
 import {
     Sheet,
     SheetContent,
     SheetDescription,
-    SheetFooter,
     SheetHeader,
     SheetTitle,
-    SheetTrigger,
 } from '@/components/ui/sheet';
 import { Spotlight } from '@/components/ui/spotlight-new';
 import { PendingDocTable } from '@/app/comercial/espaco/pending-docs-table/pending-doc-table';
@@ -183,9 +179,9 @@ function EspacoGerencial() {
                 />
             </section>
 
-            <section className="mt-6 flex flex-col overflow-auto rounded-md bg-white dark:bg-boxdark 2xsm:max-w-screen-2xl md:max-w-[750px] lg:max-w-[1050px] xl:max-w-screen-2xl">
-                {/* <PendingDocTable  /> */}
-            </section>
+            {/* <section className="mt-6 flex flex-col overflow-auto rounded-md bg-white dark:bg-boxdark 2xsm:max-w-screen-2xl md:max-w-[750px] lg:max-w-[1050px] xl:max-w-screen-2xl">
+                <PendingDocTable  />
+            </section> */}
 
             {/* Seção do Gráfico de Metas de Valor Líquido */}
             <section className="mt-6 flex min-h-fit rounded-md bg-white dark:bg-boxdark">
