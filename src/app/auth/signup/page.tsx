@@ -1,4 +1,5 @@
 'use client';
+import './index.css';
 import { APP_ROUTES } from '@/constants/app-routes';
 import { ACCESS_TOKEN, REFRESH_TOKEN } from '@/constants/constants';
 import UseMySwal from '@/hooks/useMySwal';
@@ -7,7 +8,7 @@ import { Popover } from 'flowbite-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Controller, SubmitHandler, useForm, UseFormSetValue } from 'react-hook-form';
 import {
     BiCheck,
@@ -21,7 +22,6 @@ import {
     BiX,
 } from 'react-icons/bi';
 import InputMask from 'react-input-mask';
-
 import { Button } from '@/components/Button';
 import CustomCheckbox from '@/components/CrmUi/Checkbox';
 import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
@@ -61,9 +61,8 @@ const SignUp: React.FC = () => {
     } = useForm<SignUpInputs>();
     const passwordInput = watch('password');
     const confirmPasswordInput = watch('confirm_password');
-    const [openModal, setOpenModal] = useState<boolean>(false);
     const [termsAccepted, setTermsAccepted] = useState<boolean>(false);
-    const [CPFOrCNPJValue, setCPFOrCNPJValue] = useState<string>('');
+    const formDivRef = useRef<HTMLDivElement>(null);
 
     const {
         loading,
@@ -79,8 +78,6 @@ const SignUp: React.FC = () => {
 
     const MySwal = UseMySwal();
     const searchParams = useSearchParams();
-
-    console.log(searchParams.get('coordenador'))
 
     const onSubmit: SubmitHandler<SignUpInputs> = async (data) => {
         setLoading(true);
@@ -109,7 +106,6 @@ const SignUp: React.FC = () => {
             };
 
             try {
-
                 const coordenador = searchParams.get('coordenador');
 
                 const response = coordenador
@@ -134,14 +130,14 @@ const SignUp: React.FC = () => {
                 }
             } catch (error) {
                 if (error instanceof AxiosError) {
-                    if (error.response?.data.error === "Coordenador não encontrado") {
+                    if (error.response?.data.error === 'Coordenador não encontrado') {
                         MySwal.fire({
                             title: 'Ok, Houston...Temos um problema!',
                             text: 'O nome do coordenador inserido é inválido. Por favor, tente novamente.',
                             icon: 'error',
                             showConfirmButton: true,
                         });
-                    } else  {
+                    } else {
                         MySwal.fire({
                             title: 'Ok, Houston...Temos um problema!',
                             text: 'Email ou usuário já cadastrado. Por favor, tente novamente com outras credenciais.',
@@ -180,29 +176,54 @@ const SignUp: React.FC = () => {
         }
     }, []);
 
+    useEffect(() => {
+        const div = formDivRef.current;
+
+        const handleScroll = () => {
+            if (div) {
+                const { scrollTop, clientHeight, scrollHeight } = div;
+
+                const isScrollAtBottom = scrollTop + clientHeight === scrollHeight;
+
+                if (!isScrollAtBottom) {
+                    div?.classList.add('form_shadow_bottom');
+                } else {
+                    div?.classList.remove('form_shadow_bottom');
+                }
+            }
+        };
+
+        handleScroll();
+
+        div?.addEventListener('scroll', handleScroll);
+    }, []);
+
     return (
         <UnloggedLayout>
             <div className="relative flex h-full 3xl:max-h-[610px]">
-                <div className="hero_login hidden w-full flex-col justify-evenly px-20 py-8 text-center md:flex md:min-h-[900px] xl:min-h-full xl:w-[65%]">
-                    <div className="2xsm:hidden xl:block">
+                <div className="hero_signup hidden w-full flex-col justify-around px-20 md:flex md:min-h-[900px] xl:min-h-full xl:w-[65%]">
+                    <div className="z-9 flex-col gap-20 2xsm:hidden xl:flex">
+                        <div className="absolute inset-0 z-0 h-full w-full bg-cover bg-center">
+                            <Image
+                                src={'/images/ornaments/vector-1.svg'}
+                                alt="ornamento inferior direito de faixas azuis"
+                                width={900}
+                                height={200}
+                                className="absolute 2xsm:-right-5 2xsm:bottom-0 2xsm:opacity-30 md:-bottom-5 md:right-10 md:w-[700px] lg:-right-10 lg:bottom-0 lg:opacity-100 xl:w-[900px]"
+                            />
+                        </div>
+                        {/* end ornaments */}
+
+                        <div className="hero_signup_overlap z-20 h-full" />
+
                         {/* logo */}
-                        <div className="relative mb-10 flex flex-col items-center justify-center">
+                        <div className="relative mb-10">
                             <Fade triggerOnce>
-                                <div className="flex flex-col items-center gap-3">
-                                    <Image
-                                        src={'/images/logo/new-logo-dark.png'}
-                                        alt="Logo"
-                                        width={160}
-                                        height={32}
-                                        className="antialiased"
-                                        style={{
-                                            filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))',
-                                        }}
-                                    />
+                                <div className="new_hero_login flex flex-col gap-3">
                                     <Image
                                         src={'/images/logo/celer-app-text-dark.svg'}
                                         alt="Logo"
-                                        width={200}
+                                        width={300}
                                         height={32}
                                         style={{
                                             filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.40))',
@@ -214,7 +235,7 @@ const SignUp: React.FC = () => {
                         {/* end logo */}
 
                         <h1
-                            className="translate-x-25 animate-fade-right pt-8 text-left text-5xl font-bold text-snow opacity-0 2xsm:hidden md:block md:text-4xl lg:text-6xl"
+                            className="translate-x-25 animate-fade-right pt-8 text-left text-5xl font-bold text-snow opacity-0 2xsm:hidden md:block"
                             style={{
                                 filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.50))',
                             }}
@@ -225,18 +246,14 @@ const SignUp: React.FC = () => {
                 </div>
 
                 {/* form */}
-                <div className="w-full border-stroke bg-snow 2xsm:p-8 sm:px-8 sm:py-12.5 md:absolute md:left-1/2 md:top-1/2 md:max-h-[850px] md:w-3/4 md:-translate-x-1/2 md:-translate-y-1/2 md:overflow-y-scroll md:rounded-br-md md:rounded-tr-md lg:h-fit lg:max-h-[850px] xl:static xl:h-full xl:w-[35%] xl:translate-x-0 xl:translate-y-0 xl:py-5.5 3xl:max-h-[610px] 3xl:overflow-y-scroll">
+                <div
+                    ref={formDivRef}
+                    className="z-10 w-full border-stroke bg-snow transition-all 2xsm:p-8 sm:px-8 sm:py-12.5 md:absolute md:left-1/2 md:top-1/2 md:max-h-[850px] md:w-3/4 md:-translate-x-1/2 md:-translate-y-1/2 md:overflow-y-scroll lg:h-fit lg:max-h-[850px] xl:static xl:h-full xl:w-[35%] xl:translate-x-0 xl:translate-y-0 xl:py-5.5 3xl:max-h-[610px] 3xl:overflow-y-scroll"
+                >
                     {/* Mobile visible logo */}
                     <div className="block w-full xl:hidden">
                         <Link className="mb-8 flex flex-col items-center justify-center" href="#">
                             <div className="bg flex flex-col items-center gap-3">
-                                <Image
-                                    src={'/images/logo/ativos_logo_at_default.png'}
-                                    alt="Logo"
-                                    width={90}
-                                    height={50}
-                                    className="2xsm:w-20 md:w-28 lg:w-25"
-                                />
                                 <Image
                                     src={'/images/logo/celer-app-text.svg'}
                                     alt="Logo"
@@ -250,7 +267,7 @@ const SignUp: React.FC = () => {
                     {/* End Mobile visible logo */}
 
                     <Fade delay={1e2} damping={1e-1} cascade triggerOnce>
-                        <h2 className="mb-9 text-2xl font-bold text-black sm:text-title-xl2">
+                        <h2 className="mb-9 text-2xl font-bold text-[#083b88] sm:text-title-xl2">
                             Cadastre-se para começar
                         </h2>
                     </Fade>
@@ -259,7 +276,7 @@ const SignUp: React.FC = () => {
                         className="grid grid-cols-1 gap-5 sm:grid-cols-2"
                         onSubmit={handleSubmit(onSubmit)}
                     >
-                        <div className="mb-2">
+                        <div className="col-span-2 mb-2 sm:col-span-1">
                             <label
                                 className="mb-2.5 block font-medium text-black"
                                 htmlFor="username"
@@ -288,7 +305,6 @@ const SignUp: React.FC = () => {
                                         },
                                     })}
                                 />
-
                                 <ErrorMessage errors={errors} field="username" />
 
                                 <span className="absolute right-4 top-2.5">
@@ -299,7 +315,7 @@ const SignUp: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="mb-2">
+                        <div className="col-span-2 mb-2 sm:col-span-1">
                             <label className="mb-2.5 block font-medium text-black" htmlFor="email">
                                 Email
                             </label>
@@ -311,9 +327,12 @@ const SignUp: React.FC = () => {
                                     id="email"
                                     {...register('email', {
                                         required: 'Campo obrigatório',
+                                        pattern: {
+                                            value: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i, // regex para verificar se o e-mail é válido
+                                            message: 'Digite um email válido',
+                                        },
                                     })}
                                 />
-
                                 <ErrorMessage errors={errors} field="email" />
 
                                 <span className="absolute right-4 top-2.5">
@@ -325,7 +344,7 @@ const SignUp: React.FC = () => {
                         </div>
 
                         {/* Nome Completo */}
-                        <div className="mb-2 grid md:col-span-2">
+                        <div className="col-span-2 mb-2 grid">
                             <label
                                 className="mb-2.5 block font-medium text-black"
                                 htmlFor="nome_completo"
@@ -346,8 +365,7 @@ const SignUp: React.FC = () => {
                                         },
                                     })}
                                 />
-
-                                <ErrorMessage errors={errors} field="nome_completo" />
+                                <ErrorMessage errors={errors} field="complete_name" />
 
                                 <span className="absolute right-4 top-2.5">
                                     <BiUser
@@ -358,14 +376,18 @@ const SignUp: React.FC = () => {
                         </div>
 
                         {/* cpf/cnpj field */}
-                        <div className="mb-3 sm:col-span-2">
-                            <label className="mb-1 block font-medium text-black" htmlFor="select">
+                        <div className="col-span-2 mb-2">
+                            <label
+                                className="mb-1 block font-medium text-black"
+                                htmlFor="CPFAndCNPJ"
+                            >
                                 CPF ou CNPJ
                             </label>
 
                             <div className="flex flex-col gap-2 sm:flex-row">
                                 <div className="relative flex-1">
                                     <CPFAndCNPJInput
+                                        id="CPFAndCNPJ"
                                         value={watch('cpf_cnpj') || ''}
                                         setValue={
                                             setValue as UseFormSetValue<Partial<SignUpInputs>>
@@ -390,7 +412,7 @@ const SignUp: React.FC = () => {
                                         <h3 className="col-span-2 mt-5 block text-center font-semibold uppercase text-black">
                                             Dados do Representante Legal
                                         </h3>
-                                        <div className="col-span-2 mb-2">
+                                        <div className="col-span-2">
                                             <label
                                                 className="mb-2.5 block font-medium text-black"
                                                 htmlFor="repre_name"
@@ -423,7 +445,10 @@ const SignUp: React.FC = () => {
                                                     })}
                                                 />
 
-                                                <ErrorMessage errors={errors} field="repre_name" />
+                                                <ErrorMessage
+                                                    errors={errors}
+                                                    field="nome_representante"
+                                                />
 
                                                 <span className="absolute right-4 top-2.5">
                                                     <BiIdCard
@@ -437,7 +462,7 @@ const SignUp: React.FC = () => {
                                             </div>
                                         </div>
 
-                                        <div className="col-span-2 mb-2 ">
+                                        <div className="col-span-2">
                                             <label
                                                 className="mb-2.5 block font-medium text-black"
                                                 htmlFor="CPF_Repre"
@@ -466,7 +491,10 @@ const SignUp: React.FC = () => {
                                                     )}
                                                 />
 
-                                                <ErrorMessage errors={errors} field="repre_cpf" />
+                                                <ErrorMessage
+                                                    errors={errors}
+                                                    field="cpf_representante"
+                                                />
 
                                                 <span className="absolute right-4 top-2.5">
                                                     <BiIdCard
@@ -481,51 +509,49 @@ const SignUp: React.FC = () => {
                                         </div>
                                     </div>
                                 )}
-                            <div className="col-span-2 mb-2 ">
-                                <label
-                                    className="mb-2.5 block font-medium text-black"
-                                    htmlFor="phone"
-                                >
-                                    Whatsapp
-                                </label>
-                                <div className="relative">
-                                    <Controller
-                                        name="phone"
-                                        control={control}
-                                        defaultValue=""
-                                        rules={{
-                                            required: 'Campo obrigatório',
-                                            pattern: {
-                                                value: /^\d{2}\.\d{5}-\d{4}$/,
-                                                message: 'Número inválido',
-                                            },
-                                        }}
-                                        render={({ field }) => (
-                                            <InputMask
-                                                {...field}
-                                                mask="99.99999-9999"
-                                                placeholder="Whatsapp"
-                                                className={`${errors.phone && 'border-2 !border-rose-400 !ring-0'} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
-                                            />
-                                        )}
-                                    />
-
-                                    <ErrorMessage errors={errors} field="whatsapp" />
-
-                                    <span className="absolute right-4 top-2.5">
-                                        <BiLogoWhatsapp
-                                            style={{
-                                                width: '22px',
-                                                height: '22px',
-                                                fill: 'rgb(186, 193, 203)',
-                                            }}
+                        </div>
+                        <div className="col-span-2 mb-2">
+                            <label className="mb-2.5 block font-medium text-black" htmlFor="phone">
+                                Whatsapp
+                            </label>
+                            <div className="relative">
+                                <Controller
+                                    name="phone"
+                                    control={control}
+                                    defaultValue=""
+                                    rules={{
+                                        required: 'Campo obrigatório',
+                                        pattern: {
+                                            value: /^\d{2}\.\d{5}-\d{4}$/,
+                                            message: 'Número inválido',
+                                        },
+                                    }}
+                                    render={({ field }) => (
+                                        <InputMask
+                                            {...field}
+                                            id="phone"
+                                            mask="99.99999-9999"
+                                            placeholder="Whatsapp"
+                                            className={`${errors.phone && 'border-2 !border-rose-400 !ring-0'} md:text-base2xsm:text-sm w-full rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm text-black outline-none focus:border-primary focus-visible:shadow-none`}
                                         />
-                                    </span>
-                                </div>
+                                    )}
+                                />
+
+                                <ErrorMessage errors={errors} field="phone" />
+
+                                <span className="absolute right-4 top-2.5">
+                                    <BiLogoWhatsapp
+                                        style={{
+                                            width: '22px',
+                                            height: '22px',
+                                            fill: 'rgb(186, 193, 203)',
+                                        }}
+                                    />
+                                </span>
                             </div>
                         </div>
 
-                        <div className="mb-3">
+                        <div className="col-span-2 mb-2 sm:col-span-1">
                             <label className="mb-2.5 flex items-center gap-3 font-medium">
                                 <span className="text-black">Senha</span>
                                 {/* popover for password hint */}
@@ -649,7 +675,7 @@ const SignUp: React.FC = () => {
 
                                 {/* password strength message */}
                                 {passwordInput && (
-                                    <div className="absolute left-0 top-17 flex w-full flex-col gap-1 text-sm text-slate-400">
+                                    <div className="mt-2 flex w-full flex-col gap-1 text-sm text-slate-400">
                                         <div className="h-2 w-full rounded border-none">
                                             <div
                                                 style={{
@@ -657,7 +683,7 @@ const SignUp: React.FC = () => {
                                                     width: `${barWidth}`,
                                                 }}
                                                 className={`h-full rounded transition-all duration-300`}
-                                            ></div>
+                                            />
                                         </div>
                                         <div>
                                             Força da senha:{' '}
@@ -704,7 +730,7 @@ const SignUp: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="2xsm:mb-5 2xsm:mt-10 md:mb-3 md:mt-0">
+                        <div className="col-span-2 sm:col-span-1">
                             <label className="mb-2.5 block font-medium text-black">
                                 Confirmar senha
                             </label>
@@ -721,7 +747,7 @@ const SignUp: React.FC = () => {
                                 />
 
                                 {!passwordsMatch && (
-                                    <div className="absolute left-0 flex w-full flex-col gap-1 text-sm text-red 2xsm:top-12 md:top-17">
+                                    <div className="mt-2 flex w-full flex-col gap-1 text-sm text-red">
                                         As senhas não conferem.
                                     </div>
                                 )}
@@ -766,18 +792,11 @@ const SignUp: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-2 text-sm 2xsm:mt-4 sm:col-span-2 md:mt-15">
+                        <div className="col-span-2 flex items-center gap-2 text-sm">
                             <CustomCheckbox
                                 check={termsAccepted}
                                 callbackFunction={() => setTermsAccepted(!termsAccepted)}
                             />
-                            {/* <input
-                      type="checkbox"
-                      name="terms"
-                      id="terms"
-                      style={{ width: '14px', height: '14px' }}
-                      onChange={() => setTermsAccepted(!termsAccepted)}
-                    /> */}
                             <p className="text-body">
                                 Aceitar nossos{' '}
                                 <Link
@@ -791,7 +810,7 @@ const SignUp: React.FC = () => {
                             </p>
                         </div>
 
-                        <div className="mb-2 sm:col-span-2">
+                        <div className="col-span-2 mb-2">
                             <Button
                                 type="submit"
                                 disabled={!termsAccepted}
@@ -806,23 +825,7 @@ const SignUp: React.FC = () => {
                                     <AiOutlineLoading className="ml-2 mt-[0.2rem] size-4 animate-spin" />
                                 )}
                             </Button>
-                            {/* <button disabled={!termsAccepted} type='submit' className='flex items-center justify-center w-full cursor-pointer rounded-lg p-6 text-white bg-blue-700 hover:bg-blue-800 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-blue-700'>
-                      <span className="text-[16px] font-medium" aria-disabled={loading}>
-                        {loading ? "Cadastrando usuário..." : "Criar conta"}
-                      </span>
-                      {
-                        !loading ? (<HiOutlineArrowRight className="mt-[0.2rem] ml-2 h-4 w-4" />) : (<AiOutlineLoading className="mt-[0.2rem] ml-2 h-4 w-4 animate-spin" />)
-                      }
-                    </button> */}
                         </div>
-
-                        {/* <button disabled className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 sm:col-span-2 hover:bg-opacity-50 disabled:opacity-50 cursor-not-allowed">
-
-                    <span>
-                      <FcGoogle style={{ width: '22px', height: '22px' }} />
-                    </span>
-                    Entrar com o Google
-                  </button> */}
 
                         <div className=" text-center text-sm sm:col-span-2">
                             <p className="text-body">

@@ -91,6 +91,8 @@ const CardDocsPreview = ({ url, ...props }: { url: string } & HTMLAttributes<HTM
                     <Image
                         src={docType !== 'pdf' ? url : pdfImage}
                         alt="imagem do arquivo"
+                        width={165}
+                        height={200}
                         className="h-full w-full"
                     />
 

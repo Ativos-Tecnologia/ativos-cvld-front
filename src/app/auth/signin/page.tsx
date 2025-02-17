@@ -13,9 +13,9 @@ import { Fade } from "react-awesome-reveal";
 import { Button } from "@/components/Button";
 import usePassword from "@/hooks/usePassword";
 import { ValidateSignIn } from "@/validation/singin/singin.validation";
-import { useQueryClient } from "@tanstack/react-query";
 import { BiLockAlt, BiUser, BiX } from "react-icons/bi";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
+import { MultiStepLoginLoader } from "@/components/ui/multi-step-loader-login";
 import "./index.css";
 const ForgotPassword = lazy(() => import("@/components/Modals/ForgotPassword"));
 
@@ -23,6 +23,13 @@ export type SignInInputs = {
   username: string;
   password: string;
 };
+
+const loadingStates = [
+  "Iniciando",
+  "Enviando Dados",
+  "Verificando Credenciais",
+  "Finalizado",
+]
 
 const SignIn: React.FC = () => {
   const {
@@ -32,10 +39,10 @@ const SignIn: React.FC = () => {
     formState: { errors },
   } = useForm<SignInInputs>();
   const passwordInput = watch("password");
-  const queryClient = useQueryClient();
 
   const { loading, setLoading, hide, setHide } = usePassword(passwordInput);
-  const [second, setSecond] = useState<boolean>(false);
+  const [reqStatus, setReqStatus] = useState<"success" | "failure" | null>(null);
+  const [loginError, setLoginError] = useState<string | undefined>(undefined);
 
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [showLoginForm, setShowLoginForm] = useState<boolean>(false);
@@ -46,7 +53,7 @@ const SignIn: React.FC = () => {
   async function checkUserInfo(): Promise<{
     product: string;
     staff_approvation: boolean;
-    is_confirmed:boolean;
+    is_confirmed: boolean;
   }> {
     try {
       const response = await api.get("/api/profile/");
@@ -61,49 +68,42 @@ const SignIn: React.FC = () => {
     }
   }
 
-  // async function checkStaffApprovation(): Promise<boolean> {
-  //   try {
-  //     const response = await api.get("/api/profile/");
-  //     return response.data.staff_approvation;
-  //   } catch (e) {
-  //     throw new Error(
-  //       `Erro ao tentar verificar aprovação do usuário ${console.error(e)}`,
-  //     );
-  //   }
-  // }
+  async function handleRedirect() {
+
+    const userInfo = await checkUserInfo();
+    const userProduct = userInfo.product;
+    const userApprovation = userInfo.staff_approvation;
+    const userConfirmation = userInfo.is_confirmed;
+
+    setLoading(false);
+
+    ValidateSignIn({ userProduct, userApprovation, userConfirmation }, router);
+  }
 
   const onSubmit: SubmitHandler<SignInInputs> = async (data) => {
     setLoading(true);
     try {
       const res = await api.post("/api/token/", data);
-      
+
       if (res.status === 200) {
         localStorage.setItem(`ATIVOS_${ACCESS_TOKEN}`, res.data.access);
         localStorage.setItem(`ATIVOS_${REFRESH_TOKEN}`, res.data.refresh);
-      
-      const userInfo = await checkUserInfo();
-      const userProduct = userInfo.product;
-      const userApprovation = userInfo.staff_approvation;
-      const userConfirmation = userInfo.is_confirmed;
 
-      queryClient.removeQueries({ queryKey: ["notion_list"] });
-      queryClient.removeQueries({ queryKey: ["user"] });
-        
-      ValidateSignIn({ userProduct, userApprovation, userConfirmation }, router);
-     
+        setReqStatus("success");
+
       } else {
         throw new Error(
-        `Erro ao tentar efetuar login: ${res.status} - ${res.statusText}`,
+          `Erro ao tentar efetuar login: ${res.status} - ${res.statusText}`,
         );
       }
     } catch (error: any) {
-      MySwal.fire({
-      icon: "error",
-      title: "Erro ao Efetuar Login",
-      text: `${error.response.data.error}`,
-      });
-    } finally {
-      setLoading(false);
+      // MySwal.fire({
+      //   icon: "error",
+      //   title: "Erro ao Efetuar Login",
+      //   text: `${error.response.data.error}`,
+      // });
+      setReqStatus("failure");
+      setLoginError(error.response.data.error);
     }
   };
 
@@ -379,9 +379,16 @@ const SignIn: React.FC = () => {
             <LiteFooter />
           )} */}
         </main>
-        <Suspense>
           <ForgotPassword state={openModal} setState={setOpenModal} />
-        </Suspense>
+          {loading && (
+            <MultiStepLoginLoader
+              loadingStates={loadingStates}
+              reqStatus={reqStatus}
+              handleRedirect={handleRedirect}
+              handleClose={() => setLoading(false)}
+              loginError={loginError}
+            />
+          )}
       </div>
       {/* <!-- ===== Page Wrapper End ===== --> */}
     </>
