@@ -207,7 +207,7 @@ describe("Teste do componente MainFooter", () => {
 	describe("Teste de acesso ao link Contato", () => {
 
 	it("Teste de acesso ao link WhatsApp", async () => {
-		const whatsAppNumber = "5581996871762";
+		const whatsAppNumber = "5581998158585";
 		const message = "Olá! Estou entrando em contato através do CellerApp e preciso tirar uma dúvida.";
 		const whatsappLink = `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(message)}`;
 		

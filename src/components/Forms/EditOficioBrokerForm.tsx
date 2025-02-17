@@ -205,7 +205,6 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
                 </button>
                 {/* ----> end close button <---- */}
 
-                {/* TODO: possibilidade de implementar um componente para esse form */}
                 <CalcForm
                     data={mainData}
                     hasDropzone={false}

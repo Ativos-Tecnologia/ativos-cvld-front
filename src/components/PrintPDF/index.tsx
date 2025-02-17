@@ -11,7 +11,7 @@ interface IPrintPDFProps {
 
 export function PrintPDF({ nomeDoCredor, fotoDoBroker, valorDaProposta, nomeDoBroker, phone }: IPrintPDFProps) {
 	
-	 const whatsAppNumber = phone ? phone : "5581996871762";
+	 const whatsAppNumber = phone ? phone : "5581998158585";
 	 const message = "Olá! Estou entrando em contato e preciso tirar uma dúvida sobre a proposta.";
 	 const whatsappLink = `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(message)}`;
 	

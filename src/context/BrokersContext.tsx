@@ -23,6 +23,8 @@ export type BrokersContextProps = {
     setSelectedUser: React.Dispatch<React.SetStateAction<string | null>>;
     deleteModalLock: boolean;
     setDeleteModalLock: React.Dispatch<React.SetStateAction<boolean>>;
+    isEditingPfFromPj: boolean; 
+    setIsEditingPfFromPj: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const BrokersContext = createContext<BrokersContextProps>({
@@ -45,6 +47,8 @@ export const BrokersContext = createContext<BrokersContextProps>({
     loadingCardData: false,
     deleteModalLock: false,
     setDeleteModalLock: () => { },
+    isEditingPfFromPj: false,
+    setIsEditingPfFromPj: () => { }
 });
 
 
@@ -107,6 +111,11 @@ export const BrokersProvider = ({ children }: { children: React.ReactNode }): JS
      * estado que define uma trava para não abrir mais de um modal de delete
      */
     const [deleteModalLock, setDeleteModalLock] = useState<boolean>(false);
+
+    /**
+     * Define se o modal de edição do Cedente PF vem de um Cedente PJ
+     */
+    const [isEditingPfFromPj, setIsEditingPfFromPj] = useState<boolean>(false);
 
 
     /**
@@ -171,13 +180,13 @@ export const BrokersProvider = ({ children }: { children: React.ReactNode }): JS
 
     }, [selectedUser]);
 
-    
+
 
     return (
         <BrokersContext.Provider value={{
             editModalId, setEditModalId, cedenteModal, setCedenteModal, deleteModalLock, setDeleteModalLock,
             cardsData, setCardsData, fetchCardData, isFetchAllowed, setIsFetchAllowed,
-            docModalInfo, setDocModalInfo, fetchDetailCardData, specificCardData, setSpecificCardData, selectedUser, setSelectedUser, loadingCardData
+            docModalInfo, setDocModalInfo, fetchDetailCardData, specificCardData, setSpecificCardData, selectedUser, setSelectedUser, loadingCardData, isEditingPfFromPj, setIsEditingPfFromPj
         }}>
             {children}
         </BrokersContext.Provider>
