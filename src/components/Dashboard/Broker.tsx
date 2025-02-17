@@ -126,7 +126,7 @@ const Broker: React.FC = (): JSX.Element => {
             </div>
 
             <GridCardsWrapper className="col-span-12">
-                <GridCardsWrapper.List cardsSize="lg" className="my-0 mt-4 items-center gap-5">
+                <GridCardsWrapper.List cardsSize="lg" className="my-0 items-center gap-5">
                     {isFirstLoad.current ? (
                         <Fade cascade damping={0.1} triggerOnce>
                             {[...Array(4)].map((_, index: number) => (

@@ -64,11 +64,11 @@ const BrokerModal = () => {
     return (
         <div
             role="dialog"
-            className="animate-fade fixed left-0 top-0 z-999 flex h-screen w-screen items-center justify-center bg-black-2/50 bg-opacity-10 bg-clip-padding backdrop-blur-sm backdrop-filter transition-all duration-300"
+            className="animate-fade fixed left-0 top-0 z-999 flex h-screen w-screen items-center justify-center bg-[#00000040] bg-opacity-10 bg-clip-padding backdrop-blur-sm backdrop-filter transition-all duration-300"
         >
             <div
                 ref={modalRef}
-                className="relative rounded-lg border border-stroke bg-white 2xsm:p-5 2xsm:w-11/12 h-[85vh] md:w-4/5 lg:p-10 lg:w-1/2 dark:border-strokedark dark:bg-boxdark"
+                className="relative rounded-lg border border-stroke bg-white 2xsm:p-5 2xsm:w-11/12 h-[85vh] md:w-4/5 lg:p-10 lg:max-w-180 dark:border-strokedark dark:bg-boxdark"
             >
 
                 {(credorIdentificationType === "CPF" && cedenteModal) ? (

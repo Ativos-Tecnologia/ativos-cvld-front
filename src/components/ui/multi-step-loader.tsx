@@ -57,7 +57,7 @@ const LoaderCore = ({
 }) => {
 
     return (
-        <div className="flex relative justify-start max-w-xl mx-auto flex-col mt-40">
+        <div className="flex relative justify-start max-w-xl mx-auto flex-col mt-50 lg:mt-40">
             {loadingStates.map((state, index) => {
                 const distance = Math.abs(index - value);
                 const opacity = Math.max(1 - distance * 0.2, 0); // Minimum opacity is 0, keep it 0.2 if you're sane.
@@ -126,8 +126,8 @@ const LoaderCore = ({
                             className={`text-black dark:text-white 
                                 ${value > index && "text-green-400 dark:!text-lime-500 opacity-100"} 
                                 ${(value === index && value === loadingStates.length - 1 && reqStatus === "failure") && "text-red dark:!text-red opacity-100"} 
-                                ${(value === loadingStates.length - 1 || value === loadingStates.length - 2) && 
-                                    reqStatus === "success" && "text-green-400 dark:!text-lime-500 opacity-100"}`}
+                                ${(value === index && (value === loadingStates.length - 1 || value === loadingStates.length - 2) && 
+                                    reqStatus === "success") && "text-green-400 dark:!text-lime-500 opacity-100"}`}
                         >
                             {state}
                         </span>
@@ -158,10 +158,7 @@ export const MultiStepLoader = ({
     const [messageType, setMessageType] = useState<MessageTypes>("success_with_pendency");
 
     useEffect(() => {
-        // if (!loading) {
-        //     setCurrentState(0);
-        //     return;
-        // }
+        
 
         if (currentState >= loadingStates.length - 1 && reqStatus) {
             if (reqStatus === "success") {
@@ -221,20 +218,20 @@ export const MultiStepLoader = ({
                     }}
                     className="w-full h-full fixed inset-0 z-[100] flex items-center justify-center backdrop-blur-2xl"
                 >
-                    <div className="relative z-50 flex items-center justify-center">
-                        <div className="h-96  relative">
+                    <div className="relative z-50 flex flex-col items-center justify-center lg:flex-row">
+                        <div className="h-80 lg:h-96  relative">
                             <LoaderCore value={currentState} loadingStates={loadingStates} reqStatus={reqStatus} />
                         </div>
 
-                        <div className={`${isFinished && "py-2 px-20 max-w-fit"} min-h-80 max-w-0 transition-all duration-500 ease-in-out overflow-hidden`}>
-                            <h2 className="text-[clamp(1.5rem,5vw,3rem)] mb-5 text-black-2 dark:text-snow font-medium">
+                        <div className={`${isFinished && "py-2 px-10 md:px-20 max-w-fit"} min-h-80 max-w-0 transition-all duration-500 ease-in-out overflow-hidden text-center lg:text-left`}>
+                            <h2 className="text-[clamp(1.8rem,5vw,3rem)] mb-5 text-black-2 dark:text-snow font-medium">
                                 {returnMessages[messageType as keyof typeof returnMessages].title}
                             </h2>
                             <p className="text-black-2 dark:text-gray-300">
                             {returnMessages[messageType as keyof typeof returnMessages].text}
                             </p>
                             <Button
-                                className="mt-5"
+                                className="mt-10 lg:mt-5 mx-auto block"
                                 onClick={handleClose}>
                                 Fechar
                             </Button>

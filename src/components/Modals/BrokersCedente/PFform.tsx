@@ -14,7 +14,7 @@ import React, { use, useContext, useEffect, useState } from 'react';
 import { Fade } from 'react-awesome-reveal';
 import { Controller, useForm } from 'react-hook-form';
 import { AiOutlineLoading } from 'react-icons/ai';
-import { BiCheck, BiSolidBank, BiTrash, BiX } from 'react-icons/bi';
+import { BiArrowBack, BiCheck, BiSolidBank, BiTrash, BiX } from 'react-icons/bi';
 import { BsBank2, BsFillCalendar2WeekFill } from 'react-icons/bs';
 import { FaFemale, FaHome, FaMale, FaUniversity } from 'react-icons/fa';
 import { FaBriefcase, FaFlag, FaUserLarge } from 'react-icons/fa6';
@@ -155,7 +155,7 @@ const PFform = ({
     openModal,
 }: {
     id: string;
-    mode: 'edit' | 'create';
+    mode: 'edit' | 'create' | 'editFromPj';
     cedenteId: string | null;
     fromFormPJ?: boolean;
     openModal?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -196,7 +196,7 @@ const PFform = ({
         },
     });
 
-    const { setCedenteModal, fetchDetailCardData, setIsFetchAllowed } = useContext(BrokersContext);
+    const { setCedenteModal, fetchDetailCardData, setIsFetchAllowed, setIsEditingPfFromPj } = useContext(BrokersContext);
 
     const [isUpdating, setIsUpdating] = useState<boolean>(false);
     const [isUnlinking, setIsUnlinking] = useState<boolean>(false);
@@ -298,7 +298,7 @@ const PFform = ({
             if (fromFormPJ) {
                 openModal && openModal(false);
             } else {
-                setCedenteModal(null);
+                fetchCedente();
             }
         },
         onSettled: () => {
@@ -350,7 +350,13 @@ const PFform = ({
                     },
                 },
             });
-            setCedenteModal(null);
+
+            if (mode === 'editFromPj') {
+                setIsEditingPfFromPj(false);
+            } else {
+                fetchCedente()
+            }
+
         },
         onSettled: () => {
             setIsUpdating(false);
@@ -384,7 +390,7 @@ const PFform = ({
                     },
                 });
                 await fetchDetailCardData(id);
-                setCedenteModal(null);
+                fetchCedente();
             }
         } catch (error) {
             toast.error('Erro ao desvincular cedente', {
@@ -485,7 +491,7 @@ const PFform = ({
             data.numero = parseInt(data.numero);
         }
 
-        if (mode === 'edit') {
+        if (mode === 'edit' || mode === 'editFromPj') {
             await updateCedente.mutateAsync(data);
         } else {
             await createCedente.mutateAsync(data);
@@ -504,7 +510,7 @@ const PFform = ({
     }, [mode]);
 
     useEffect(() => {
-        if (mode === 'edit' && cedentePfData) {
+        if (mode === 'edit' || mode === 'editFromPj' && cedentePfData) {
             setPixOption(
                 validationSelectPix(
                     cedentePfData.data?.properties['Pix'].rich_text?.[0]?.text.content || '',
@@ -526,7 +532,7 @@ const PFform = ({
             setValue(
                 'orgao_exp',
                 cedentePfData.data?.properties['Órgão Expedidor'].rich_text?.[0]?.text.content ||
-                    '',
+                '',
             );
             setValue(
                 'bairro',
@@ -549,7 +555,7 @@ const PFform = ({
             setValue(
                 'logradouro',
                 cedentePfData.data?.properties['Rua/Av/Logradouro'].rich_text?.[0]?.text.content ||
-                    '',
+                '',
             );
             setValue('numero', cedentePfData.data?.properties['Número'].number || '');
             setValue(
@@ -626,14 +632,35 @@ const PFform = ({
                 </Button>
             )}
 
-            <button className="group absolute right-2 top-2 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 hover:bg-slate-700">
-                <BiX
-                    className="text-2xl transition-colors duration-300 group-hover:text-white"
-                    onClick={() => confirmClose()}
-                />
-            </button>
+            {mode === 'editFromPj' && (
+                <Button 
+                variant='ghost'
+                title="Voltar"
+                className="group absolute left-3 top-3flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 hover:bg-slate-700">
+                    <BiArrowBack
+                        className="text-2xl transition-colors duration-300 group-hover:text-white"
+                        onClick={() => setIsEditingPfFromPj(false)}
+                    />
+                </Button>
+            )}
 
-            <h2 className="mb-10 text-center text-2xl font-medium">Cadastro de Cedente</h2>
+            {mode !== "editFromPj" && (
+                <Button 
+                variant='ghost'
+                className="group absolute right-2 top-2 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 hover:bg-slate-700">
+                    <BiX
+                        className="text-2xl transition-colors duration-300 group-hover:text-white"
+                        onClick={() => confirmClose()}
+                    />
+                </Button>
+            )}
+
+            <h2 className="mb-10 text-center text-2xl font-medium">
+                {mode === 'create' && "Cadastro de Cedente"}
+                {mode === 'edit' && "Editar Cedente"}
+                {mode === 'editFromPj' && "Editar Representante Social"}
+            </h2>
+
             {mode === 'create' && !cedentePfData.data && !openRegisterForm && (
                 <>
                     <div className="mt-7">
@@ -642,7 +669,7 @@ const PFform = ({
                         ) : (
                             <>
                                 {registeredCedentesList.listPf &&
-                                registeredCedentesList.listPf.length > 0 ? (
+                                    registeredCedentesList.listPf.length > 0 ? (
                                     <>
                                         <div className="flex flex-col gap-1">
                                             <FormForCedentePfList
@@ -1449,7 +1476,7 @@ const PFform = ({
                     </div>
 
                     <div className="col-span-2 my-4 flex items-center justify-center">
-                        {mode === 'edit' ? (
+                        {mode === 'edit' || mode === 'editFromPj' ? (
                             <Button type="submit">
                                 {isUpdating ? 'Salvando Edição...' : 'Finalizar Edição'}
                             </Button>
