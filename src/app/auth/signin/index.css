@@ -1,105 +1,104 @@
 .new_hero_login {
-  position: relative;
-  background: url(../../../../public/images/hero_login_image.webp) no-repeat;
-  background-position: calc(50% + 60px) calc(50% + 70px);
-  background-size: cover;
-
-  @media screen and (min-width: 375px) and (max-width: 1023px) {
-    background-position: calc(50% + 100px) 50%;
-  }
-
-  @media screen and (min-width: 1024px) {
-    background-position: calc(50% + 130px) calc(50% + 30px);
-  }
-
-  @media screen and (min-width: 1280px) {
+    position: relative;
+    background: url(../../../../public/images/hero_login_image.webp) no-repeat;
     background-position: calc(50% + 60px) calc(50% + 70px);
-  }
+    background-size: cover;
+
+    @media screen and (min-width: 375px) and (max-width: 1023px) {
+        background-position: calc(50% + 100px) 50%;
+    }
+
+    @media screen and (min-width: 1024px) {
+        background-position: calc(50% + 130px) calc(50% + 30px);
+    }
+
+    @media screen and (min-width: 1280px) {
+        background-position: calc(50% + 60px) calc(50% + 70px);
+    }
 }
 
 .new_hero_login::before {
-  position: absolute;
-  content: "";
-  inset: 0;
-  background-image: linear-gradient(to right, #0058dd 0%, transparent 100%);
+    position: absolute;
+    content: '';
+    inset: 0;
+    background-image: linear-gradient(to right, #0058dd 0%, transparent 100%);
 }
 
 .new_hero_login::after {
-  position: absolute;
-  content: "";
-  inset: 0;
-  background-image: linear-gradient(to right, #003585 0%, transparent 100%);
+    position: absolute;
+    content: '';
+    inset: 0;
+    background-image: linear-gradient(to right, #003585 0%, transparent 100%);
 }
 
 .new_hero_login_overlap {
-  position: absolute;
-  inset: 0;
-  background: url(../../../../public/images/hero_login_man_smiling_full.webp) no-repeat;
-  background-position: calc(50% + 60px) calc(50% + 70px);
-  background-size: cover;
-
-  @media screen and (min-width: 375px) and (max-width: 1023px) {
-    background-position: calc(50% + 100px) 50%;
-  }
-
-  @media screen and (min-width: 1024px) {
-    background-position: calc(50% + 130px) calc(50% + 30px);
-  }
-
-  @media screen and (min-width: 1280px) {
+    position: absolute;
+    inset: 0;
+    background: url(../../../../public/images/hero_login_man_smiling_full.webp) no-repeat;
     background-position: calc(50% + 60px) calc(50% + 70px);
-  }
+    background-size: cover;
+
+    @media screen and (min-width: 375px) and (max-width: 1023px) {
+        background-position: calc(50% + 100px) 50%;
+    }
+
+    @media screen and (min-width: 1024px) {
+        background-position: calc(50% + 130px) calc(50% + 30px);
+    }
+
+    @media screen and (min-width: 1280px) {
+        background-position: calc(50% + 60px) calc(50% + 70px);
+    }
 }
 
 .container-grid {
-  display: grid;
+    display: grid;
 
-  @media screen and (min-width: 375px) {
-    grid-template-rows: 80px minmax(340px, 1fr) minmax(0px, 200px);
-  }
+    @media screen and (min-width: 375px) {
+        grid-template-rows: 80px minmax(340px, 1fr) minmax(0px, 200px);
+    }
 
-  @media screen and (min-width: 768px) {
-    grid-template-rows: 110px minmax(340px, 1fr) minmax(0px, 1fr);
-  }
+    @media screen and (min-width: 768px) {
+        grid-template-rows: 110px minmax(340px, 1fr) minmax(0px, 1fr);
+    }
 
-  @media screen and (min-width: 1024px) {
-    grid-template-rows: 150px 340px minmax(0px, 140px);
-  }
+    @media screen and (min-width: 1024px) {
+        grid-template-rows: 150px 340px minmax(0px, 140px);
+    }
 
-  @media screen and (min-width: 1280px) {
-    grid-template-rows: 200px 340px minmax(0px, 140px);
-  }
+    @media screen and (min-width: 1280px) {
+        grid-template-rows: 200px 340px minmax(0px, 140px);
+    }
 }
 
 .hero_login {
-  position: relative;
-  background: url(../../../../public/images/login_image_1.webp) no-repeat center;
-  background-size: cover;
+    position: relative;
+    background: url(../../../../public/images/login_image_1.webp) no-repeat center;
+    background-size: cover;
 }
 
 .hero_wallet {
-  position: relative;
-  background: url(../../../../public/images/hero_ativos_wallet.webp) no-repeat
-    center;
-  background-size: cover;
+    position: relative;
+    background: url(../../../../public/images/hero_ativos_wallet.webp) no-repeat center;
+    background-size: cover;
 }
 
 .hero_login::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(10, 10, 10, 0.4);
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 10, 10, 0.4);
 }
 
 .hero_wallet::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(10, 10, 10, 0.4);
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 10, 10, 0.4);
 }
