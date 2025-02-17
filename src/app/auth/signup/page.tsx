@@ -196,8 +196,6 @@ const SignUp: React.FC = () => {
         handleScroll();
 
         div?.addEventListener('scroll', handleScroll);
-
-        return () => div?.removeEventListener('scroll', handleScroll);
     }, []);
 
     return (
