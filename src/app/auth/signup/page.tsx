@@ -191,7 +191,7 @@ const SignUp: React.FC = () => {
                         </div>
                         {/* end ornaments */}
 
-                        <div className="hero_signup_overlap z-20" />
+                        <div className="hero_signup_overlap z-20 h-full" />
 
                         {/* logo */}
                         <div className="relative mb-10">
