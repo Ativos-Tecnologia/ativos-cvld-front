@@ -23,7 +23,7 @@ const Checkout = ({ data, setState }: {
 
     const whatsappRedirection = () => {
         if (data) {
-            const phoneNumber = '5581996871762';
+            const phoneNumber = '5581998158585';
             const message = `Olá 👋🏻 , fiz um pedido de um pacote e gostaria de realizar o pagamento.
             
 Nome completo: ${data.user_info.full_name}

@@ -8,7 +8,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import { IoLogoYoutube } from "react-icons/io";
 
 export function MainFooter() {
-  const whatsAppNumber = "5581996871762";
+  const whatsAppNumber = "5581998158585";
   const message =
     "Olá! Estou entrando em contato através do CellerApp e preciso tirar uma dúvida.";
 

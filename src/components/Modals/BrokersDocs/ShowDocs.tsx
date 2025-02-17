@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import React, { Suspense, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
@@ -12,7 +13,7 @@ interface ModalProps {
 
 const DocVisualizer: React.FC<ModalProps> = ({ isOpen, onClose, src }) => {
     const [mounted, setMounted] = useState<boolean>(false);
-    const [docName, setDocName] = useState<string>("")
+    const [docName, setDocName] = useState<string>('');
 
     useEffect(() => {
         setMounted(true);
@@ -34,25 +35,24 @@ const DocVisualizer: React.FC<ModalProps> = ({ isOpen, onClose, src }) => {
     useEffect(() => {
         const docNameSplitted = src.split('/');
         setDocName(docNameSplitted[docNameSplitted.length - 1]);
-    }, [src])
+    }, [src]);
 
     if (!isOpen || !mounted) return null;
 
     return ReactDOM.createPortal(
-        <div className="fixed inset-0 z-9999 bg-black-2/80 justify-center">
+        <div className="fixed inset-0 z-9999 justify-center bg-black-2/80">
             {/* header */}
-            <div className="flex items-center bg-black-2 justify-between py-2 px-5">
-
+            <div className="flex items-center justify-between bg-black-2 px-5 py-2">
                 <p
                     title={docName}
-                    className='text-white text-ellipsis overflow-hidden whitespace-nowrap 2xsm:max-w-75 md:max-w-100 xl:max-w-270'
+                    className="overflow-hidden text-ellipsis whitespace-nowrap text-white 2xsm:max-w-75 md:max-w-100 xl:max-w-270"
                 >
                     {docName}
                 </p>
 
-                <div className='flex items-center gap-4'>
+                <div className="flex items-center gap-4">
                     <Link
-                        title='Baixar documento'
+                        title="Baixar documento"
                         href={src}
                         target="_blank"
                         className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md transition-colors duration-300 hover:bg-slate-700"
@@ -61,9 +61,9 @@ const DocVisualizer: React.FC<ModalProps> = ({ isOpen, onClose, src }) => {
                     </Link>
 
                     <button
-                        title='fechar'
+                        title="fechar"
                         onClick={onClose}
-                        className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-slate-700 transition-colors duration-300"
+                        className="flex h-8 w-8 items-center justify-center rounded-full transition-colors duration-300 hover:bg-slate-700"
                     >
                         <BiX className="text-xl text-white" />
                     </button>
@@ -72,15 +72,15 @@ const DocVisualizer: React.FC<ModalProps> = ({ isOpen, onClose, src }) => {
 
             {/* doc container */}
             <div
-                className='py-10 overflow-y-auto 2xsm:px-5 md:px-20'
+                className="overflow-y-auto py-10 2xsm:px-5 md:px-20"
                 style={{ height: 'calc(100vh - 48px)' }}
             >
                 <Suspense fallback={<p>Carregando documento...</p>}>
-                    <img src={src} width={500} height={600} className='mx-auto' />
+                    <Image src={src} width={500} height={600} className="mx-auto" alt="" />
                 </Suspense>
             </div>
         </div>,
-        document.body
+        document.body,
     );
 };
 

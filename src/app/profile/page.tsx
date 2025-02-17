@@ -91,7 +91,6 @@ const Profile = () => {
         try {
             const formData = new FormData();
             formData.append('profile_picture', file);
-            console.log(data.id, formData.get('profile_picture'));
             await updateProfilePicture(`${data.id}`, formData);
         } catch (error) {
             console.error('Erro ao atualizar foto de perfil:', error);

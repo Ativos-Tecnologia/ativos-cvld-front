@@ -16,7 +16,7 @@ import { useContext, useEffect, useState } from 'react';
 import { Fade } from 'react-awesome-reveal';
 import { Controller, useForm } from 'react-hook-form';
 import { AiOutlineLoading } from 'react-icons/ai';
-import { BiCheck, BiPlus, BiSolidBank, BiTrash, BiX } from 'react-icons/bi';
+import { BiCheck, BiEditAlt, BiPlus, BiSolidBank, BiTrash, BiX } from 'react-icons/bi';
 import { BsBank2 } from 'react-icons/bs';
 import { FaHome } from 'react-icons/fa';
 import { FaUserLarge } from 'react-icons/fa6';
@@ -202,7 +202,10 @@ const PJform = ({
         },
     });
 
-    const { setCedenteModal, fetchDetailCardData, setIsFetchAllowed, specificCardData } =
+    const { setCedenteModal, fetchDetailCardData,
+        setIsFetchAllowed, specificCardData,
+        isEditingPfFromPj, setIsEditingPfFromPj
+    } =
         useContext(BrokersContext);
     const [isUpdating, setIsUpdating] = useState<boolean>(false);
     const [isUnlinking, setIsUnlinking] = useState<boolean>(false);
@@ -224,9 +227,6 @@ const PJform = ({
     const isFormModified: boolean = Object.values(formValues).some(
         (value) => value !== '' && value !== id,
     );
-
-    console.log(watch())
-    console.log(registeredCedentesList.listPf)
 
     const { theme } = useContext(GeneralUIContext);
     const [banco, setBanco] = useState<string[]>([]);
@@ -303,7 +303,7 @@ const PJform = ({
                         },
                     },
                 });
-                setCedenteModal(null);
+                fetchCedente()
             }
         } catch (error) {
             toast.error('Erro ao desvincular representante', {
@@ -370,7 +370,7 @@ const PJform = ({
                     },
                 },
             });
-            setCedenteModal(null);
+            fetchCedente();
         },
         onSettled: () => {
             setIsUpdating(false);
@@ -380,7 +380,7 @@ const PJform = ({
 
     const updateCedente = useMutation({
         mutationFn: async (data: FormValuesForPJ) => {
-            
+
             const req = await api.patch(`/api/cedente/update/pj/${cedenteId}/`, data);
             return req.data;
         },
@@ -430,7 +430,7 @@ const PJform = ({
                     },
                 },
             });
-            setCedenteModal(null);
+            fetchCedente();
         },
         onSettled: () => {
             setIsUpdating(false);
@@ -465,6 +465,7 @@ const PJform = ({
                 });
                 setIsFetchAllowed(true);
                 await fetchDetailCardData(id);
+                setCedenteModal(null)
             }
         } catch (error) {
             toast.error('Erro ao desvincular cedente', {
@@ -607,7 +608,7 @@ const PJform = ({
             setValue(
                 'logradouro',
                 cedentePjData.data?.properties['Rua/Av/Logradouro'].rich_text?.[0]?.text.content ||
-                    '',
+                '',
             );
             setValue(
                 'numero',
@@ -661,761 +662,788 @@ const PJform = ({
     }, []);
 
     return (
-        <div className="max-h-[480px] px-3">
-            {mode === 'edit' && (
+        <>
+            <div className="max-h-[480px] px-3">
+                {mode === 'edit' && (
+                    <Button
+                        variant="danger"
+                        className="group absolute left-3 top-3 flex h-[32px] w-[32px] items-center justify-center overflow-hidden rounded-full px-0 py-0 transition-all duration-300 ease-in-out hover:w-[159px]"
+                        onClick={() => setOpenUnlinkModal(true)}
+                    >
+                        <Fade className="group-hover:hidden">
+                            <BiTrash />
+                        </Fade>
+                        <Fade className="hidden whitespace-nowrap text-sm group-hover:block">
+                            <div>Desvincular Cedente</div>
+                        </Fade>
+                    </Button>
+                )}
+
                 <Button
-                    variant="danger"
-                    className="group absolute left-3 top-3 flex h-[32px] w-[32px] items-center justify-center overflow-hidden rounded-full px-0 py-0 transition-all duration-300 ease-in-out hover:w-[159px]"
-                    onClick={() => setOpenUnlinkModal(true)}
-                >
-                    <Fade className="group-hover:hidden">
-                        <BiTrash />
-                    </Fade>
-                    <Fade className="hidden whitespace-nowrap text-sm group-hover:block">
-                        <div>Desvincular Cedente</div>
-                    </Fade>
+                    variant="ghost"
+                    className="group absolute right-2 top-2 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 hover:bg-slate-700">
+                    <BiX
+                        className="text-2xl transition-colors duration-300 group-hover:text-white"
+                        onClick={() => confirmClose()}
+                    />
                 </Button>
-            )}
 
-            <button className="group absolute right-2 top-2 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 hover:bg-slate-700">
-                <BiX
-                    className="text-2xl transition-colors duration-300 group-hover:text-white"
-                    onClick={() => confirmClose()}
-                />
-            </button>
+                <h2 className="mb-10 text-center text-2xl font-medium">Cadastro de Cedente</h2>
 
-            <h2 className="mb-10 text-center text-2xl font-medium">Cadastro de Cedente</h2>
-            {mode === 'create' && !cedentePjData.data && !openRegisterForm && (
-                <>
-                    <div className="mt-7">
-                        {registeredCedentesList.isFetching ? (
-                            <CedenteModalSkeleton />
-                        ) : (
-                            <>
-                                {registeredCedentesList.listPj &&
-                                registeredCedentesList.listPj.length > 0 ? (
-                                    <>
-                                        <div className="flex flex-col gap-1">
-                                            <FormForCedentePjList
-                                                registeredCedentesList={registeredCedentesList}
-                                                idPrecatorio={id}
-                                            />
-                                        </div>
-
-                                        <div className="relative my-6 border-t border-stroke dark:border-form-strokedark">
-                                            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-white px-3 dark:bg-boxdark">
-                                                ou
+                {mode === 'create' && !cedentePjData.data && !openRegisterForm && (
+                    <>
+                        <div className="mt-7">
+                            {registeredCedentesList.isFetching ? (
+                                <CedenteModalSkeleton />
+                            ) : (
+                                <>
+                                    {registeredCedentesList.listPj &&
+                                        registeredCedentesList.listPj.length > 0 ? (
+                                        <>
+                                            <div className="flex flex-col gap-1">
+                                                <FormForCedentePjList
+                                                    registeredCedentesList={registeredCedentesList}
+                                                    idPrecatorio={id}
+                                                />
                                             </div>
-                                        </div>
-                                    </>
-                                ) : (
+
+                                            <div className="relative my-6 border-t border-stroke dark:border-form-strokedark">
+                                                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-white px-3 dark:bg-boxdark">
+                                                    ou
+                                                </div>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <p className="mb-20 text-center">
+                                                Nenhum cedente cadastrado.
+                                            </p>
+                                        </>
+                                    )}
+                                </>
+                            )}
+
+                            <Button onClick={() => setOpenRegisterForm(true)} className="mx-auto block">
+                                Cadastrar novo cedente
+                            </Button>
+                        </div>
+                    </>
+                )}
+
+                {(mode === 'edit' || cedentePjData.data !== null || openRegisterForm) && (
+                    <form
+                        onSubmit={handleSubmit(onSubmit)}
+                        className="grid h-[65vh] w-full grid-cols-2 overflow-y-auto pr-5 2xsm:gap-6 md:gap-2"
+                    >
+                        {/* relacionado ao oficio */}
+                        <input
+                            type="hidden"
+                            value={id ? id : ''}
+                            {...register('relacionado_a', {
+                                required: true,
+                            })}
+                        />
+
+                        {/* razão social */}
+                        <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
+                            <label
+                                htmlFor="razao_social"
+                                className="flex items-center justify-center gap-2"
+                            >
+                                <FaUserLarge />
+                                <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
+                                    Razão Social
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                placeholder={
+                                    cedentePjData.isFetching && mode === 'edit'
+                                        ? 'Carregando...'
+                                        : 'Campo Vazio'
+                                }
+                                {...register('razao_social', {
+                                    required: {
+                                        value: true,
+                                        message: 'Campo obrigatório',
+                                    },
+                                })}
+                                className={`${errors.razao_social ? 'border-2 !border-red ring-0' : 'border-stroke dark:border-strokedark'} w-full flex-1 border-b border-l-0 border-r-0 border-t-0 bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0`}
+                            />
+                            {errors.razao_social && (
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-red">
+                                    {errors.razao_social.message}
+                                </span>
+                            )}
+                        </div>
+
+                        {/* CNPJ */}
+                        <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
+                            <label htmlFor="cnpj" className="flex items-center justify-center gap-2">
+                                <HiMiniIdentification className="text-lg" />
+                                <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
+                                    CNPJ
+                                </span>
+                            </label>
+                            <Controller
+                                name="cnpj"
+                                control={control}
+                                rules={{
+                                    required: 'Campo obrigatório',
+                                }}
+                                render={({ field, fieldState: { error } }) => (
                                     <>
-                                        <p className="mb-20 text-center">
-                                            Nenhum cedente cadastrado.
-                                        </p>
+                                        <Cleave
+                                            {...field}
+                                            placeholder={
+                                                cedentePjData.isFetching && mode === 'edit'
+                                                    ? 'Carregando...'
+                                                    : 'Campo Vazio'
+                                            }
+                                            className={`${error ? 'border-2 !border-red ring-0' : 'border-stroke dark:border-strokedark'} w-full flex-1 border-b border-l-0 border-r-0 border-t-0 bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0`}
+                                            options={{
+                                                delimiters: ['.', '.', '/', '-'],
+                                                blocks: [2, 3, 3, 4, 2],
+                                            }}
+                                        />
+                                        {error && (
+                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-red">
+                                                {error.message}
+                                            </span>
+                                        )}
                                     </>
                                 )}
-                            </>
-                        )}
-
-                        <Button onClick={() => setOpenRegisterForm(true)} className="mx-auto block">
-                            Cadastrar novo cedente
-                        </Button>
-                    </div>
-                </>
-            )}
-
-            {(mode === 'edit' || cedentePjData.data !== null || openRegisterForm) && (
-                <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="grid h-[70vh] w-full grid-cols-2 overflow-y-auto pr-5 2xsm:gap-6 md:gap-2"
-                >
-                    {/* relacionado ao oficio */}
-                    <input
-                        type="hidden"
-                        value={id ? id : ''}
-                        {...register('relacionado_a', {
-                            required: true,
-                        })}
-                    />
-
-                    {/* razão social */}
-                    <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
-                        <label
-                            htmlFor="razao_social"
-                            className="flex items-center justify-center gap-2"
-                        >
-                            <FaUserLarge />
-                            <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
-                                Razão Social
-                            </span>
-                        </label>
-                        <input
-                            type="text"
-                            placeholder={
-                                cedentePjData.isFetching && mode === 'edit'
-                                    ? 'Carregando...'
-                                    : 'Campo Vazio'
-                            }
-                            {...register('razao_social', {
-                                required: {
-                                    value: true,
-                                    message: 'Campo obrigatório',
-                                },
-                            })}
-                            className={`${errors.razao_social ? 'border-2 !border-red ring-0' : 'border-stroke dark:border-strokedark'} w-full flex-1 border-b border-l-0 border-r-0 border-t-0 bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0`}
-                        />
-                        {errors.razao_social && (
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-red">
-                                {errors.razao_social.message}
-                            </span>
-                        )}
-                    </div>
-
-                    {/* CNPJ */}
-                    <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
-                        <label htmlFor="cnpj" className="flex items-center justify-center gap-2">
-                            <HiMiniIdentification className="text-lg" />
-                            <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
-                                CNPJ
-                            </span>
-                        </label>
-                        <Controller
-                            name="cnpj"
-                            control={control}
-                            rules={{
-                                required: 'Campo obrigatório',
-                            }}
-                            render={({ field, fieldState: { error } }) => (
-                                <>
-                                    <Cleave
-                                        {...field}
-                                        placeholder={
-                                            cedentePjData.isFetching && mode === 'edit'
-                                                ? 'Carregando...'
-                                                : 'Campo Vazio'
-                                        }
-                                        className={`${error ? 'border-2 !border-red ring-0' : 'border-stroke dark:border-strokedark'} w-full flex-1 border-b border-l-0 border-r-0 border-t-0 bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0`}
-                                        options={{
-                                            delimiters: ['.', '.', '/', '-'],
-                                            blocks: [2, 3, 3, 4, 2],
-                                        }}
-                                    />
-                                    {error && (
-                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-red">
-                                            {error.message}
-                                        </span>
-                                    )}
-                                </>
-                            )}
-                        />
-                    </div>
-
-                    {/* Representante Legal */}
-                    <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
-                        <label
-                            htmlFor="socio_representante"
-                            className="flex items-center justify-center gap-2"
-                        >
-                            <PiScalesFill className="text-lg" />
-                            <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
-                                Representante Legal
-                            </span>
-                        </label>
-                        <div className="flex w-full items-center gap-3">
-                            {cedentePjData.data?.properties['Sócio Representante'].relation?.[0]
-                                ?.id ? (
-                                <input
-                                    type="text"
-                                    placeholder={
-                                        cedentePjData.isFetching && mode === 'edit'
-                                            ? 'Carregando...'
-                                            : 'Campo Vazio'
-                                    }
-                                    {...register('socio_representante', {
-                                        required: {
-                                            value: true,
-                                            message: 'Campo obrigatório',
-                                        },
-                                    })}
-                                    className={`w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark`}
-                                />
-                            ) : (
-                                <select
-                                    {...register('socio_representante')}
-                                    className="w-full border-b border-l-0 border-r-0 border-t-0 border-stroke bg-white py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark dark:bg-boxdark"
-                                >
-                                    <option value="">Selecione</option>
-                                    {registeredCedentesList.listPf &&
-                                        registeredCedentesList.listPf.map((cedente) => (
-                                            <option key={cedente.id} value={cedente.id}>
-                                                {cedente.name}
-                                            </option>
-                                        ))}
-                                </select>
-                            )}
-
-                            {cedentePjData.data &&
-                            cedentePjData.data.properties['Sócio Representante'].relation!.length >
-                                0 ? (
-                                <button
-                                    type="button"
-                                    title="Desvincular representante"
-                                    onClick={handleUnlinkRepresentante}
-                                    className="flex items-center justify-center rounded-md bg-red-500 p-1 transition-colors duration-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-                                >
-                                    {isUnlinking ? (
-                                        <AiOutlineLoading className="animate-spin text-lg text-snow" />
-                                    ) : (
-                                        <BiTrash className="text-lg text-snow" />
-                                    )}
-                                </button>
-                            ) : (
-                                <button
-                                    type="button"
-                                    title="Cadastrar novo representante"
-                                    onClick={() => setOpenRegisterPfModal(true)}
-                                    className="flex items-center justify-center rounded-md p-1 transition-colors duration-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-                                >
-                                    <BiPlus className="text-lg" />
-                                </button>
-                            )}
+                            />
                         </div>
-                    </div>
 
-                    {/* CEP */}
-                    <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
-                        <label htmlFor="cep" className="flex items-center justify-center gap-2">
-                            <MdPinDrop />
-                            <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
-                                CEP
-                            </span>
-                        </label>
-                        <Controller
-                            name="cep"
-                            control={control}
-                            rules={{
-                                required: 'Campo obrigatório',
-                            }}
-                            render={({ field, fieldState: { error } }) => (
-                                <>
-                                    <Cleave
-                                        {...field}
-                                        onBlur={(e) => searchCep(e.target.value)}
-                                        placeholder={
-                                            cedentePjData.isFetching && mode === 'edit'
-                                                ? 'Carregando...'
-                                                : 'Campo Vazio'
-                                        }
-                                        className={`${error ? 'border-2 !border-red ring-0' : 'border-stroke dark:border-strokedark'} w-full flex-1 border-b border-l-0 border-r-0 border-t-0 bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0`}
-                                        options={{
-                                            delimiter: '-',
-                                            blocks: [5, 3],
-                                        }}
-                                    />
-                                    {error && (
-                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-red">
-                                            {error.message}
-                                        </span>
-                                    )}
-                                </>
-                            )}
-                        />
-                    </div>
-
-                    {/* bairro */}
-                    <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
-                        <label htmlFor="bairro" className="flex items-center justify-center gap-2">
-                            <PiCityFill />
-                            <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
-                                Bairro
-                            </span>
-                        </label>
-                        <input
-                            type="text"
-                            placeholder={
-                                cedentePjData.isFetching && mode === 'edit'
-                                    ? 'Carregando...'
-                                    : 'Campo Vazio'
-                            }
-                            {...register('bairro')}
-                            className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
-                        />
-                    </div>
-
-                    {/* Celular */}
-                    <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
-                        <label htmlFor="celular" className="flex items-center justify-center gap-2">
-                            <MdPhone />
-                            <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
-                                Celular
-                            </span>
-                        </label>
-                        <Controller
-                            name="celular"
-                            control={control}
-                            render={({ field }) => (
-                                <>
-                                    <Cleave
-                                        {...field}
-                                        placeholder={
-                                            cedentePjData.isFetching && mode === 'edit'
-                                                ? 'Carregando...'
-                                                : 'Campo Vazio'
-                                        }
-                                        className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
-                                        options={{
-                                            delimiters: [' ', ' ', '-'],
-                                            blocks: [2, 1, 4, 4],
-                                        }}
-                                    />
-                                </>
-                            )}
-                        />
-                    </div>
-
-                    {/* email */}
-                    <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
-                        <label htmlFor="email" className="flex items-center justify-center gap-2">
-                            <MdAlternateEmail />
-                            <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
-                                Email
-                            </span>
-                        </label>
-                        <input
-                            type="text"
-                            placeholder={
-                                cedentePjData.isFetching && mode === 'edit'
-                                    ? 'Carregando...'
-                                    : 'Campo Vazio'
-                            }
-                            {...register('email')}
-                            className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
-                        />
-                    </div>
-
-                    {/* estado */}
-                    <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
-                        <label htmlFor="estado" className="flex items-center justify-center gap-2">
-                            <MdPinDrop />
-                            <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
-                                Estado
-                            </span>
-                        </label>
-                        <input
-                            type="text"
-                            placeholder={
-                                cedentePjData.isFetching && mode === 'edit'
-                                    ? 'Carregando...'
-                                    : 'Campo Vazio'
-                            }
-                            {...register('estado')}
-                            className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
-                        />
-                    </div>
-
-                    {/* Logradouro */}
-                    <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
-                        <label
-                            htmlFor="logradouro"
-                            className="flex items-center justify-center gap-2"
-                        >
-                            <RiRoadMapLine />
-                            <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
-                                Logradouro
-                            </span>
-                        </label>
-                        <input
-                            type="text"
-                            placeholder={
-                                cedentePjData.isFetching && mode === 'edit'
-                                    ? 'Carregando...'
-                                    : 'Campo Vazio'
-                            }
-                            {...register('logradouro')}
-                            className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
-                        />
-                    </div>
-
-                    {/* numero */}
-                    <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
-                        <label htmlFor="numero" className="flex items-center justify-center gap-2">
-                            <FaHome />
-                            <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
-                                Número
-                            </span>
-                        </label>
-                        <input
-                            type="text"
-                            placeholder={
-                                cedentePjData.isFetching && mode === 'edit'
-                                    ? 'Carregando...'
-                                    : 'Campo Vazio'
-                            }
-                            {...register('numero')}
-                            className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
-                        />
-                    </div>
-
-                    {/* Complemento */}
-                    <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
-                        <label
-                            htmlFor="complemento"
-                            className="flex items-center justify-center gap-2"
-                        >
-                            <FaHome />
-                            <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
-                                Complemento
-                            </span>
-                        </label>
-                        <input
-                            type="text"
-                            placeholder={
-                                cedentePjData.isFetching && mode === 'edit'
-                                    ? 'Carregando...'
-                                    : 'Campo Vazio'
-                            }
-                            {...register('complemento')}
-                            className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
-                        />
-                    </div>
-
-                    {/* municipio */}
-                    <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
-                        <label
-                            htmlFor="municipio"
-                            className="flex items-center justify-center gap-2"
-                        >
-                            <TbBuildingEstate />
-                            <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
-                                Municipio
-                            </span>
-                        </label>
-                        <input
-                            type="text"
-                            placeholder={
-                                cedentePjData.isFetching && mode === 'edit'
-                                    ? 'Carregando...'
-                                    : 'Campo Vazio'
-                            }
-                            {...register('municipio')}
-                            className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
-                        />
-                    </div>
-
-                    {/* Dados Bancários */}
-
-                    {/* Banco */}
-                    <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
-                        <label htmlFor="banco" className="flex items-center justify-center gap-2">
-                            <BsBank2 />
-                            <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
-                                Banco
-                            </span>
-                        </label>
-                        <Controller
-                            name="banco"
-                            control={control}
-                            render={({ field }) => (
-                                <>
-                                    <CelerAppCombobox
-                                        list={banco}
-                                        placeholder="Selecione o Banco"
-                                        className="w-full"
-                                        value={field.value}
-                                        onChangeValue={(value) => {
-                                            if (!banco.includes(value)) {
-                                                setBanco([value, ...banco]);
-                                            }
-                                            setValue('banco', value);
-                                        }}
-                                    />
-                                </>
-                            )}
-                        />
-                    </div>
-
-                    {/* Agência */}
-                    <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
-                        <label htmlFor="agencia" className="flex items-center justify-center gap-2">
-                            <BiSolidBank />
-                            <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
-                                Agência
-                            </span>
-                        </label>
-                        <Controller
-                            name="agencia"
-                            control={control}
-                            render={({ field }) => (
-                                <>
-                                    <Cleave
-                                        {...field}
-                                        placeholder={
-                                            cedentePjData.isFetching && mode === 'edit'
-                                                ? 'Carregando...'
-                                                : 'Código do Agência'
-                                        }
-                                        className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
-                                        options={{
-                                            delimiters: [' '],
-                                            blocks: [5],
-                                        }}
-                                    />
-                                </>
-                            )}
-                        />
-                    </div>
-
-                    {/* Conta */}
-                    <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
-                        <label htmlFor="conta" className="flex items-center justify-center gap-2">
-                            <RiBankCardFill />
-                            <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
-                                Conta
-                            </span>
-                        </label>
-                        <Controller
-                            name="conta"
-                            control={control}
-                            render={({ field }) => (
-                                <>
-                                    <Cleave
-                                        {...field}
-                                        placeholder={
-                                            cedentePjData.isFetching && mode === 'edit'
-                                                ? 'Carregando...'
-                                                : 'Código da Conta'
-                                        }
-                                        className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
-                                        options={{
-                                            delimiters: [' ', '-'],
-                                            blocks: [8, 1],
-                                        }}
-                                    />
-                                </>
-                            )}
-                        />
-                    </div>
-
-                    {/* Pix */}
-                    <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
-                        <label htmlFor="pix" className="flex items-center justify-center gap-2">
-                            <HiMiniBanknotes />
-                            <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
-                                Pix
-                            </span>
-                        </label>
-
-                        <div className="grid items-center gap-4 2xsm:w-full 2xsm:grid-cols-1 md:grid-cols-2">
-                            <select
-                                id="pix"
-                                className={`rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm outline-none focus:border-primary focus-visible:shadow-none dark:bg-boxdark sm:w-1/4 md:w-full`}
-                                value={pixOption}
-                                onChange={(e) => setPixOption(e.target.value as PixOption)}
+                        {/* Representante Legal */}
+                        <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
+                            <label
+                                htmlFor="socio_representante"
+                                className="flex items-center justify-center gap-2"
                             >
-                                <option
-                                    className="rounded-lg border bg-white dark:bg-boxdark"
-                                    value="celular"
-                                >
-                                    Celular
-                                </option>
-                                <option
-                                    className="rounded-lg border bg-white dark:bg-boxdark"
-                                    value="cpf"
-                                >
-                                    CPF
-                                </option>
-                                <option
-                                    className="rounded-lg border bg-white dark:bg-boxdark"
-                                    value="cnpj"
-                                >
-                                    CNPJ
-                                </option>
-                                <option
-                                    className="rounded-lg border bg-white dark:bg-boxdark"
-                                    value="email"
-                                >
-                                    Email
-                                </option>
-                                <option
-                                    className="rounded-lg border bg-white dark:bg-boxdark"
-                                    value="chave"
-                                >
-                                    Chave Aleatória
-                                </option>
-                            </select>
+                                <PiScalesFill className="text-lg" />
+                                <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
+                                    Representante Legal
+                                </span>
+                            </label>
+                            <div className="relative flex w-full items-center gap-3">
+                                {cedentePjData.data?.properties['Sócio Representante'].relation?.[0]
+                                    ?.id ? (
+                                    <>
+                                        <input
+                                            type="text"
+                                            placeholder={
+                                                cedentePjData.isFetching && mode === 'edit'
+                                                    ? 'Carregando...'
+                                                    : 'Campo Vazio'
+                                            }
+                                            {...register('socio_representante', {
+                                                required: {
+                                                    value: true,
+                                                    message: 'Campo obrigatório',
+                                                },
+                                            })}
+                                            className={`w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark`}
+                                        />
 
-                            {pixOption === 'celular' ? (
-                                <Controller
-                                    name="pix"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <>
-                                            <Cleave
-                                                {...field}
-                                                placeholder={
-                                                    cedentePjData.isFetching && mode === 'edit'
-                                                        ? 'Carregando...'
-                                                        : '99 99999-9999'
-                                                }
-                                                className="col-span-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
-                                                options={{
-                                                    delimiters: [' ', ' ', '-'],
-                                                    blocks: [2, 5, 4],
-                                                }}
-                                            />
-                                        </>
-                                    )}
-                                />
-                            ) : null}
+                                        <Button
+                                            title="Editar Representante Social"
+                                            variant="ghost"
+                                            onClick={() => setIsEditingPfFromPj(true)}
+                                            className={"absolute right-10 top-1/2 -translate-y-1/2 flex items-center justify-center rounded-md p-1 hover:bg-slate-200 dark:hover:bg-slate-700"}
+                                        >
+                                            <BiEditAlt className="text-lg" />
+                                        </Button>
 
-                            {pixOption === 'cpf' ? (
-                                <Controller
-                                    name="pix"
-                                    control={control}
-                                    rules={{
-                                        required: 'Campo obrigatório',
-                                    }}
-                                    render={({ field, fieldState: { error } }) => (
-                                        <>
-                                            <Cleave
-                                                {...field}
-                                                placeholder={
-                                                    cedentePjData.isFetching && mode === 'edit'
-                                                        ? 'Carregando...'
-                                                        : '999.999.999-99'
-                                                }
-                                                className={`${error ? 'border-2 !border-red ring-0' : 'border-stroke dark:border-strokedark'} col-span-1 border-b border-l-0 border-r-0 border-t-0 bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0`}
-                                                options={{
-                                                    delimiters: ['.', '.', '-'],
-                                                    blocks: [3, 3, 3, 2],
-                                                }}
-                                            />
-                                            {error && (
-                                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-red">
-                                                    {error.message}
-                                                </span>
-                                            )}
-                                        </>
-                                    )}
-                                />
-                            ) : null}
+                                    </>
+                                ) : (
+                                    <select
+                                        {...register('socio_representante')}
+                                        className="w-full border-b border-l-0 border-r-0 border-t-0 border-stroke bg-white py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark dark:bg-boxdark"
+                                    >
+                                        <option value="">Selecione</option>
+                                        {registeredCedentesList.listPf &&
+                                            registeredCedentesList.listPf.map((cedente) => (
+                                                <option key={cedente.id} value={cedente.id}>
+                                                    {cedente.name}
+                                                </option>
+                                            ))}
+                                    </select>
+                                )}
 
-                            {pixOption === 'cnpj' ? (
-                                <Controller
-                                    name="pix"
-                                    control={control}
-                                    rules={{
-                                        required: 'Campo obrigatório',
-                                    }}
-                                    render={({ field, fieldState: { error } }) => (
-                                        <>
-                                            <Cleave
-                                                {...field}
-                                                placeholder={
-                                                    cedentePjData.isFetching && mode === 'edit'
-                                                        ? 'Carregando...'
-                                                        : '99.999.999/9999-99'
-                                                }
-                                                className={`${error ? 'border-2 !border-red ring-0' : 'border-stroke dark:border-strokedark'} col-span-1 border-b border-l-0 border-r-0 border-t-0 bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0`}
-                                                options={{
-                                                    delimiters: ['.', '.', '/', '-'],
-                                                    blocks: [2, 3, 3, 4, 2],
-                                                }}
-                                            />
-                                            {error && (
-                                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-red">
-                                                    {error.message}
-                                                </span>
-                                            )}
-                                        </>
-                                    )}
-                                />
-                            ) : null}
-
-                            {pixOption === 'email' ? (
-                                <input
-                                    type="email"
-                                    placeholder={
-                                        cedentePjData.isFetching && mode === 'edit'
-                                            ? 'Carregando...'
-                                            : 'nome@email.com'
-                                    }
-                                    {...register('pix')}
-                                    className="col-span-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
-                                />
-                            ) : null}
-
-                            {pixOption === 'chave' ? (
-                                <Controller
-                                    name="pix"
-                                    control={control}
-                                    rules={{
-                                        required: 'Campo obrigatório',
-                                    }}
-                                    render={({ field, fieldState: { error } }) => (
-                                        <>
-                                            <Cleave
-                                                {...field}
-                                                placeholder={
-                                                    cedentePjData.isFetching && mode === 'edit'
-                                                        ? 'Carregando...'
-                                                        : 'Chave Aleatória'
-                                                }
-                                                className={`${error ? 'border-2 !border-red ring-0' : 'border-stroke dark:border-strokedark'} col-span-1 border-b border-l-0 border-r-0 border-t-0 bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0`}
-                                                options={{
-                                                    delimiters: ['-'],
-                                                    blocks: [8, 4, 4, 4, 12],
-                                                }}
-                                            />
-                                            {error && (
-                                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-red">
-                                                    {error.message}
-                                                </span>
-                                            )}
-                                        </>
-                                    )}
-                                />
-                            ) : null}
+                                {cedentePjData.data &&
+                                    cedentePjData.data.properties['Sócio Representante'].relation!.length >
+                                    0 ? (
+                                    <Button
+                                        variant='danger'
+                                        title="Desvincular representante"
+                                        onClick={handleUnlinkRepresentante}
+                                        className="flex items-center justify-center rounded-md p-1"
+                                    >
+                                        {isUnlinking ? (
+                                            <AiOutlineLoading className="animate-spin text-lg text-snow" />
+                                        ) : (
+                                            <BiTrash className="text-lg text-snow" />
+                                        )}
+                                    </Button>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        title="Cadastrar novo representante"
+                                        onClick={() => setOpenRegisterPfModal(true)}
+                                        className="flex items-center justify-center rounded-md p-1 transition-colors duration-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                                    >
+                                        <BiPlus className="text-lg" />
+                                    </button>
+                                )}
+                            </div>
                         </div>
+
+                        {/* CEP */}
+                        <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
+                            <label htmlFor="cep" className="flex items-center justify-center gap-2">
+                                <MdPinDrop />
+                                <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
+                                    CEP
+                                </span>
+                            </label>
+                            <Controller
+                                name="cep"
+                                control={control}
+                                rules={{
+                                    required: 'Campo obrigatório',
+                                }}
+                                render={({ field, fieldState: { error } }) => (
+                                    <>
+                                        <Cleave
+                                            {...field}
+                                            onBlur={(e) => searchCep(e.target.value)}
+                                            placeholder={
+                                                cedentePjData.isFetching && mode === 'edit'
+                                                    ? 'Carregando...'
+                                                    : 'Campo Vazio'
+                                            }
+                                            className={`${error ? 'border-2 !border-red ring-0' : 'border-stroke dark:border-strokedark'} w-full flex-1 border-b border-l-0 border-r-0 border-t-0 bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0`}
+                                            options={{
+                                                delimiter: '-',
+                                                blocks: [5, 3],
+                                            }}
+                                        />
+                                        {error && (
+                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-red">
+                                                {error.message}
+                                            </span>
+                                        )}
+                                    </>
+                                )}
+                            />
+                        </div>
+
+                        {/* bairro */}
+                        <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
+                            <label htmlFor="bairro" className="flex items-center justify-center gap-2">
+                                <PiCityFill />
+                                <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
+                                    Bairro
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                placeholder={
+                                    cedentePjData.isFetching && mode === 'edit'
+                                        ? 'Carregando...'
+                                        : 'Campo Vazio'
+                                }
+                                {...register('bairro')}
+                                className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
+                            />
+                        </div>
+
+                        {/* Celular */}
+                        <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
+                            <label htmlFor="celular" className="flex items-center justify-center gap-2">
+                                <MdPhone />
+                                <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
+                                    Celular
+                                </span>
+                            </label>
+                            <Controller
+                                name="celular"
+                                control={control}
+                                render={({ field }) => (
+                                    <>
+                                        <Cleave
+                                            {...field}
+                                            placeholder={
+                                                cedentePjData.isFetching && mode === 'edit'
+                                                    ? 'Carregando...'
+                                                    : 'Campo Vazio'
+                                            }
+                                            className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
+                                            options={{
+                                                delimiters: [' ', ' ', '-'],
+                                                blocks: [2, 1, 4, 4],
+                                            }}
+                                        />
+                                    </>
+                                )}
+                            />
+                        </div>
+
+                        {/* email */}
+                        <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
+                            <label htmlFor="email" className="flex items-center justify-center gap-2">
+                                <MdAlternateEmail />
+                                <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
+                                    Email
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                placeholder={
+                                    cedentePjData.isFetching && mode === 'edit'
+                                        ? 'Carregando...'
+                                        : 'Campo Vazio'
+                                }
+                                {...register('email')}
+                                className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
+                            />
+                        </div>
+
+                        {/* estado */}
+                        <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
+                            <label htmlFor="estado" className="flex items-center justify-center gap-2">
+                                <MdPinDrop />
+                                <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
+                                    Estado
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                placeholder={
+                                    cedentePjData.isFetching && mode === 'edit'
+                                        ? 'Carregando...'
+                                        : 'Campo Vazio'
+                                }
+                                {...register('estado')}
+                                className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
+                            />
+                        </div>
+
+                        {/* Logradouro */}
+                        <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
+                            <label
+                                htmlFor="logradouro"
+                                className="flex items-center justify-center gap-2"
+                            >
+                                <RiRoadMapLine />
+                                <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
+                                    Logradouro
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                placeholder={
+                                    cedentePjData.isFetching && mode === 'edit'
+                                        ? 'Carregando...'
+                                        : 'Campo Vazio'
+                                }
+                                {...register('logradouro')}
+                                className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
+                            />
+                        </div>
+
+                        {/* numero */}
+                        <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
+                            <label htmlFor="numero" className="flex items-center justify-center gap-2">
+                                <FaHome />
+                                <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
+                                    Número
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                placeholder={
+                                    cedentePjData.isFetching && mode === 'edit'
+                                        ? 'Carregando...'
+                                        : 'Campo Vazio'
+                                }
+                                {...register('numero')}
+                                className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
+                            />
+                        </div>
+
+                        {/* Complemento */}
+                        <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
+                            <label
+                                htmlFor="complemento"
+                                className="flex items-center justify-center gap-2"
+                            >
+                                <FaHome />
+                                <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
+                                    Complemento
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                placeholder={
+                                    cedentePjData.isFetching && mode === 'edit'
+                                        ? 'Carregando...'
+                                        : 'Campo Vazio'
+                                }
+                                {...register('complemento')}
+                                className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
+                            />
+                        </div>
+
+                        {/* municipio */}
+                        <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
+                            <label
+                                htmlFor="municipio"
+                                className="flex items-center justify-center gap-2"
+                            >
+                                <TbBuildingEstate />
+                                <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
+                                    Municipio
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                placeholder={
+                                    cedentePjData.isFetching && mode === 'edit'
+                                        ? 'Carregando...'
+                                        : 'Campo Vazio'
+                                }
+                                {...register('municipio')}
+                                className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
+                            />
+                        </div>
+
+                        {/* Dados Bancários */}
+
+                        {/* Banco */}
+                        <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
+                            <label htmlFor="banco" className="flex items-center justify-center gap-2">
+                                <BsBank2 />
+                                <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
+                                    Banco
+                                </span>
+                            </label>
+                            <Controller
+                                name="banco"
+                                control={control}
+                                render={({ field }) => (
+                                    <>
+                                        <CelerAppCombobox
+                                            list={banco}
+                                            placeholder="Selecione o Banco"
+                                            className="w-full"
+                                            value={field.value}
+                                            onChangeValue={(value) => {
+                                                if (!banco.includes(value)) {
+                                                    setBanco([value, ...banco]);
+                                                }
+                                                setValue('banco', value);
+                                            }}
+                                        />
+                                    </>
+                                )}
+                            />
+                        </div>
+
+                        {/* Agência */}
+                        <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
+                            <label htmlFor="agencia" className="flex items-center justify-center gap-2">
+                                <BiSolidBank />
+                                <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
+                                    Agência
+                                </span>
+                            </label>
+                            <Controller
+                                name="agencia"
+                                control={control}
+                                render={({ field }) => (
+                                    <>
+                                        <Cleave
+                                            {...field}
+                                            placeholder={
+                                                cedentePjData.isFetching && mode === 'edit'
+                                                    ? 'Carregando...'
+                                                    : 'Código do Agência'
+                                            }
+                                            className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
+                                            options={{
+                                                delimiters: [' '],
+                                                blocks: [5],
+                                            }}
+                                        />
+                                    </>
+                                )}
+                            />
+                        </div>
+
+                        {/* Conta */}
+                        <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
+                            <label htmlFor="conta" className="flex items-center justify-center gap-2">
+                                <RiBankCardFill />
+                                <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
+                                    Conta
+                                </span>
+                            </label>
+                            <Controller
+                                name="conta"
+                                control={control}
+                                render={({ field }) => (
+                                    <>
+                                        <Cleave
+                                            {...field}
+                                            placeholder={
+                                                cedentePjData.isFetching && mode === 'edit'
+                                                    ? 'Carregando...'
+                                                    : 'Código da Conta'
+                                            }
+                                            className="w-full flex-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
+                                            options={{
+                                                delimiters: [' ', '-'],
+                                                blocks: [8, 1],
+                                            }}
+                                        />
+                                    </>
+                                )}
+                            />
+                        </div>
+
+                        {/* Pix */}
+                        <div className="relative col-span-2 flex 2xsm:flex-col 2xsm:items-start 2xsm:gap-2 md:max-h-12 md:flex-row md:items-center md:gap-4">
+                            <label htmlFor="pix" className="flex items-center justify-center gap-2">
+                                <HiMiniBanknotes />
+                                <span className="w-39 overflow-hidden text-ellipsis whitespace-nowrap">
+                                    Pix
+                                </span>
+                            </label>
+
+                            <div className="grid items-center gap-4 2xsm:w-full 2xsm:grid-cols-1 md:grid-cols-2">
+                                <select
+                                    id="pix"
+                                    className={`rounded-lg border border-stroke bg-transparent py-2 pl-4 pr-10 text-sm outline-none focus:border-primary focus-visible:shadow-none dark:bg-boxdark sm:w-1/4 md:w-full`}
+                                    value={pixOption}
+                                    onChange={(e) => setPixOption(e.target.value as PixOption)}
+                                >
+                                    <option
+                                        className="rounded-lg border bg-white dark:bg-boxdark"
+                                        value="celular"
+                                    >
+                                        Celular
+                                    </option>
+                                    <option
+                                        className="rounded-lg border bg-white dark:bg-boxdark"
+                                        value="cpf"
+                                    >
+                                        CPF
+                                    </option>
+                                    <option
+                                        className="rounded-lg border bg-white dark:bg-boxdark"
+                                        value="cnpj"
+                                    >
+                                        CNPJ
+                                    </option>
+                                    <option
+                                        className="rounded-lg border bg-white dark:bg-boxdark"
+                                        value="email"
+                                    >
+                                        Email
+                                    </option>
+                                    <option
+                                        className="rounded-lg border bg-white dark:bg-boxdark"
+                                        value="chave"
+                                    >
+                                        Chave Aleatória
+                                    </option>
+                                </select>
+
+                                {pixOption === 'celular' ? (
+                                    <Controller
+                                        name="pix"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <>
+                                                <Cleave
+                                                    {...field}
+                                                    placeholder={
+                                                        cedentePjData.isFetching && mode === 'edit'
+                                                            ? 'Carregando...'
+                                                            : '99 99999-9999'
+                                                    }
+                                                    className="col-span-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
+                                                    options={{
+                                                        delimiters: [' ', ' ', '-'],
+                                                        blocks: [2, 5, 4],
+                                                    }}
+                                                />
+                                            </>
+                                        )}
+                                    />
+                                ) : null}
+
+                                {pixOption === 'cpf' ? (
+                                    <Controller
+                                        name="pix"
+                                        control={control}
+                                        rules={{
+                                            required: 'Campo obrigatório',
+                                        }}
+                                        render={({ field, fieldState: { error } }) => (
+                                            <>
+                                                <Cleave
+                                                    {...field}
+                                                    placeholder={
+                                                        cedentePjData.isFetching && mode === 'edit'
+                                                            ? 'Carregando...'
+                                                            : '999.999.999-99'
+                                                    }
+                                                    className={`${error ? 'border-2 !border-red ring-0' : 'border-stroke dark:border-strokedark'} col-span-1 border-b border-l-0 border-r-0 border-t-0 bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0`}
+                                                    options={{
+                                                        delimiters: ['.', '.', '-'],
+                                                        blocks: [3, 3, 3, 2],
+                                                    }}
+                                                />
+                                                {error && (
+                                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-red">
+                                                        {error.message}
+                                                    </span>
+                                                )}
+                                            </>
+                                        )}
+                                    />
+                                ) : null}
+
+                                {pixOption === 'cnpj' ? (
+                                    <Controller
+                                        name="pix"
+                                        control={control}
+                                        rules={{
+                                            required: 'Campo obrigatório',
+                                        }}
+                                        render={({ field, fieldState: { error } }) => (
+                                            <>
+                                                <Cleave
+                                                    {...field}
+                                                    placeholder={
+                                                        cedentePjData.isFetching && mode === 'edit'
+                                                            ? 'Carregando...'
+                                                            : '99.999.999/9999-99'
+                                                    }
+                                                    className={`${error ? 'border-2 !border-red ring-0' : 'border-stroke dark:border-strokedark'} col-span-1 border-b border-l-0 border-r-0 border-t-0 bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0`}
+                                                    options={{
+                                                        delimiters: ['.', '.', '/', '-'],
+                                                        blocks: [2, 3, 3, 4, 2],
+                                                    }}
+                                                />
+                                                {error && (
+                                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-red">
+                                                        {error.message}
+                                                    </span>
+                                                )}
+                                            </>
+                                        )}
+                                    />
+                                ) : null}
+
+                                {pixOption === 'email' ? (
+                                    <input
+                                        type="email"
+                                        placeholder={
+                                            cedentePjData.isFetching && mode === 'edit'
+                                                ? 'Carregando...'
+                                                : 'nome@email.com'
+                                        }
+                                        {...register('pix')}
+                                        className="col-span-1 border-b border-l-0 border-r-0 border-t-0 border-stroke bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0 dark:border-strokedark"
+                                    />
+                                ) : null}
+
+                                {pixOption === 'chave' ? (
+                                    <Controller
+                                        name="pix"
+                                        control={control}
+                                        rules={{
+                                            required: 'Campo obrigatório',
+                                        }}
+                                        render={({ field, fieldState: { error } }) => (
+                                            <>
+                                                <Cleave
+                                                    {...field}
+                                                    placeholder={
+                                                        cedentePjData.isFetching && mode === 'edit'
+                                                            ? 'Carregando...'
+                                                            : 'Chave Aleatória'
+                                                    }
+                                                    className={`${error ? 'border-2 !border-red ring-0' : 'border-stroke dark:border-strokedark'} col-span-1 border-b border-l-0 border-r-0 border-t-0 bg-transparent py-1 outline-none placeholder:italic focus:border-primary focus-visible:shadow-none focus-visible:!ring-0`}
+                                                    options={{
+                                                        delimiters: ['-'],
+                                                        blocks: [8, 4, 4, 4, 12],
+                                                    }}
+                                                />
+                                                {error && (
+                                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-red">
+                                                        {error.message}
+                                                    </span>
+                                                )}
+                                            </>
+                                        )}
+                                    />
+                                ) : null}
+                            </div>
+                        </div>
+
+                        <div className="col-span-2 my-4 flex items-center justify-center">
+                            {mode === 'edit' ? (
+                                <Button type="submit">
+                                    {isUpdating ? 'Salvando Edição...' : 'Finalizar Edição'}
+                                </Button>
+                            ) : (
+                                <Button type="submit">
+                                    {isUpdating ? 'Realizando cadastro...' : 'Finalizar Cadastro'}
+                                </Button>
+                            )}
+                        </div>
+                    </form>
+                )}
+
+                {/* ====> link representante legal modal <==== */}
+                {openRegisterPfModal && (
+                    <div className="absolute left-0 top-0 flex h-full w-full flex-col items-center rounded-md bg-white p-10 dark:bg-boxdark">
+                        <PFform
+                            id={id}
+                            mode="create"
+                            cedenteId={cedenteId}
+                            fromFormPJ={true}
+                            openModal={setOpenRegisterPfModal}
+                        />
                     </div>
+                )}
 
-                    <div className="col-span-2 my-4 flex items-center justify-center">
-                        {mode === 'edit' ? (
-                            <Button type="submit">
-                                {isUpdating ? 'Salvando Edição...' : 'Finalizar Edição'}
-                            </Button>
-                        ) : (
-                            <Button type="submit">
-                                {isUpdating ? 'Realizando cadastro...' : 'Finalizar Cadastro'}
-                            </Button>
-                        )}
-                    </div>
-                </form>
-            )}
+                {/* ====> unlink modal <==== */}
+                <ConfirmModal
+                    size="md"
+                    isOpen={openUnlinkModal}
+                    onClose={() => setOpenUnlinkModal(false)}
+                    onConfirm={unlinkCedente}
+                    isLoading={isUnlinking}
+                />
+            </div>
 
-            {/* ====> link representante legal modal <==== */}
-            {openRegisterPfModal && (
-                <div className="absolute left-0 top-0 flex h-full w-full flex-col items-center rounded-md bg-white p-10 dark:bg-boxdark">
-                    <PFform
-                        id={id}
-                        mode="create"
-                        cedenteId={cedenteId}
-                        fromFormPJ={true}
-                        openModal={setOpenRegisterPfModal}
-                    />
-                </div>
-            )}
-
-            {/* ====> unlink modal <==== */}
-            <ConfirmModal
-                size="md"
-                isOpen={openUnlinkModal}
-                onClose={() => setOpenUnlinkModal(false)}
-                onConfirm={unlinkCedente}
-                isLoading={isUnlinking}
-            />
-        </div>
+            <div
+                className={`absolute left-0 top-0 z-3 w-full bg-white dark:bg-boxdark ${isEditingPfFromPj ? 'max-h-[85vh] h-[85vh] overflow-y-scroll rounded-md border border-snow p-5' : 'max-h-0 overflow-hidden p-0'} transition-all duration-300`}
+            >
+                <PFform
+                    id={id}
+                    mode="editFromPj"
+                    cedenteId={cedentePjData.data?.properties["Sócio Representante"].relation?.[0]?.id || null}
+                />
+            </div>
+        </>
     );
 };
 
