@@ -66,7 +66,7 @@ export function UpdatePersonalDataModal() {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button className="mt-6 w-full rounded-full p-3 text-sm font-medium md:mt-0 md:size-fit">
+                <Button className="mt-6 w-full min-w-fit rounded-full p-3 text-sm font-medium md:mt-0 md:size-fit">
                     <Pencil size={18} /> Editar
                 </Button>
             </DialogTrigger>
