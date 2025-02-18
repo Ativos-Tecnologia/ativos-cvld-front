@@ -23,7 +23,7 @@ import { GiResize } from 'react-icons/gi';
 import CalcForm from '../Forms/CalcForm';
 import { isCPFOrCNPJValid } from '@/functions/verifiers/isCPFOrCNPJValid';
 import UseMySwal from '@/hooks/useMySwal';
-import { entesComTaxaPrevidenciariaPredefinida } from '@/constants/excecoes-regime-especial';
+import { ENTES_RJ_EXCEPCIONADOS, entesComTaxaPrevidenciariaPredefinida } from '@/constants/excecoes-regime-especial';
 import { getCurrentFormattedDate } from '@/functions/getCurrentFormattedDate';
 
 const NewForm = () => {
@@ -452,7 +452,7 @@ const NewForm = () => {
                                             <div
                                                 className={`relative flex flex-col ${form.watch('regime') === 'ESPECIAL' && !entesComTaxaPrevidenciariaPredefinida.includes(form.watch("ente_devedor")!) ? 'pointer-events-none' : ''}`}
                                             >
-                                                {form.watch("regime") === "ESPECIAL" && !entesComTaxaPrevidenciariaPredefinida.includes(form.watch("ente_devedor")!) && (
+                                                {(form.watch("regime") === "ESPECIAL" && !entesComTaxaPrevidenciariaPredefinida.includes(form.watch("ente_devedor")!) && !ENTES_RJ_EXCEPCIONADOS.includes(form.watch("ente_devedor")!)) && (
                                                         <div className="absolute flex min-h-full w-full flex-col items-center justify-center bg-slate-700/90">
                                                             <h2 className="text-md w-full p-4 text-center font-satoshi font-medium uppercase">
                                                                 Para ativos de regime{' '}

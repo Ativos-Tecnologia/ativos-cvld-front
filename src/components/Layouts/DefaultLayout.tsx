@@ -108,11 +108,7 @@ export default function DefaultLayout({ children }: { children: React.ReactNode 
                                     {/* <!-- ===== Main Content End ===== --> */}
                                     <Show
                                         when={
-                                            (!window.location.href.includes(
-                                                'https://ativoscvld.vercel.app/',
-                                            ) || !window.location.href.includes(
-                                                'https://celer.ativos.com/',
-                                            )) && showAlert
+                                            (!window.location.href.includes('https://ativoscvld.vercel.app/') || !window.location.href.includes('https://celer.ativos.com/')) && showAlert
                                         }
                                     >
                                         <div className="sticky bottom-0 z-9 w-full px-5 py-3 text-center text-white">
