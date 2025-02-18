@@ -705,11 +705,7 @@ const CalcForm = ({
                         )
                     }
 
-                    {watch("estado_ente_devedor") === "PE" &&
-                    ((watch("data_base")! < "2021-12-01" && watch("data_requisicao")! >= "2022-04-01") || 
-                    (watch("data_base")! > "2021-12-31"))
-                    &&
-                    (
+                    {watch("estado_ente_devedor") === "PE" && (
                         <>
                             <div className={`col-span-2 flex max-h-6 items-center gap-2`}>
                                 <CustomCheckbox
