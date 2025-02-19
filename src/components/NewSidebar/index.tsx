@@ -32,6 +32,7 @@ import { DefaultLayoutContext, DefaultLayoutProvider } from '@/context/DefaultLa
 import { usePathname } from 'next/navigation';
 import { FeedbackDialog } from '../CrmUi/feedback-dialog';
 import api from '@/utils/api';
+import { getTenantFromUrl } from '@/utils/getHostFromUrl';
 
 const AtivosLogo = () => {
     return (
@@ -54,12 +55,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
     const highlightRef = React.useRef<HTMLButtonElement>(null);
 
+    const tenant = getTenantFromUrl();
+
     const data = {
         teams: [
             {
-                name: 'Ativos',
+                name: tenant.charAt(0).toUpperCase() + tenant.slice(1),
                 logo: AtivosLogo as React.ElementType,
-                plan: 'CelerApp',
+                plan: 'Celer',
             },
         ],
         navMain: [
