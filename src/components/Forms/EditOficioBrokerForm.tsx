@@ -142,8 +142,8 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
             data.percentual_de_contribuicao_previdenciaria = 0;
         } else {
             data.percentual_de_contribuicao_previdenciaria = typeof data.percentual_de_contribuicao_previdenciaria === 'string'
-            ? Number(data.percentual_de_contribuicao_previdenciaria.replace("%", "").replace(",", ".")) / 100
-            : data.percentual_de_contribuicao_previdenciaria / 100;
+                ? Number(data.percentual_de_contribuicao_previdenciaria.replace("%", "").replace(",", ".")) / 100
+                : data.percentual_de_contribuicao_previdenciaria / 100;
         }
 
         if (typeof data.valor_principal === 'string') {
@@ -164,6 +164,11 @@ const EditOficioBrokerForm = ({ mainData }: IFormBroker): React.JSX.Element => {
         if (typeof data.valor_pss) {
             data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
             data.valor_pss = parseFloat(data.valor_pss);
+        }
+
+        if (data.tipo_valor_contribuicao_previdenciaria === "absoluto" || data.incidencia_pss) {
+            data.incide_contribuicao_previdenciaria = false;
+            data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
         }
 
         if (!data.ir_incidente_rra) {

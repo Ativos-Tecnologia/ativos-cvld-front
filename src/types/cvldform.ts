@@ -10,6 +10,8 @@ export type CvldFormInputsProps = {
     data_base: string;
     data_requisicao: string;
     incide_contribuicao_previdenciaria: boolean;
+    percentual_de_contribuicao_previdenciaria: number | string;
+    tipo_valor_contribuicao_previdenciaria: string;
     parcela_preferencial_inclusa: boolean;
     parcela_preferencial_paga: boolean;
     parcela_preferencial_paga_em: string;
@@ -46,5 +48,4 @@ export type CvldFormInputsProps = {
     conta?: string;
     test_mode: boolean;
     upload_notion: boolean;
-    percentual_de_contribuicao_previdenciaria: number | string;
 };
