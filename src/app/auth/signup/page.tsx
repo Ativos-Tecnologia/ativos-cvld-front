@@ -328,7 +328,7 @@ const SignUp: React.FC = () => {
                                     {...register('email', {
                                         required: 'Campo obrigatório',
                                         pattern: {
-                                            value: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i, // regex para verificar se o e-mail é válido
+                                            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, // regex para verificar se o e-mail é válido
                                             message: 'Digite um email válido',
                                         },
                                     })}
