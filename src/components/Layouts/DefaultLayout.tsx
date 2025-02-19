@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert } from 'flowbite-react';
 import { HiInformationCircle } from 'react-icons/hi';
 import RouteGuard from '../RouteGuard';
@@ -23,6 +23,8 @@ import { usePathname, useRouter } from 'next/navigation';
 import ThemeSwitcher from '../CrmUi/ThemeSwitcher';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
+import { getTenantFromUrl } from '@/utils/getHostFromUrl';
+import useApplyTenantTheme from '@/hooks/useApplyTenantTheme';
 
 export default function DefaultLayout({ children }: { children: React.ReactNode }) {
     const [showAlert, setShowAlert] = useState(true);
@@ -30,6 +32,9 @@ export default function DefaultLayout({ children }: { children: React.ReactNode 
 
     const path = usePathname();
 
+    useApplyTenantTheme();
+
+    // useApplyTenantTheme(colorMode);
     return (
         <>
             {/* <!-- ===== Page Wrapper Start ===== --> */}
@@ -108,7 +113,11 @@ export default function DefaultLayout({ children }: { children: React.ReactNode 
                                     {/* <!-- ===== Main Content End ===== --> */}
                                     <Show
                                         when={
-                                            (!window.location.href.includes('https://ativoscvld.vercel.app/') || !window.location.href.includes('https://celer.ativos.com/')) && showAlert
+                                            (window.location.href.includes('dev-ativoscvld') ||
+                                                window.location.href.includes(
+                                                    'https://dev.ativos.com/',
+                                                )) &&
+                                            showAlert
                                         }
                                     >
                                         <div className="sticky bottom-0 z-9 w-full px-5 py-3 text-center text-white">

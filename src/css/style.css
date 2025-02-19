@@ -39,21 +39,13 @@
         --chart-3: 197 37% 24%;
         --chart-4: 43 74% 66%;
         --chart-5: 27 87% 67%;
-
         --sidebar-background: #ffffff;
-
         --sidebar-foreground: 240 5.3% 26.1%;
-
         --sidebar-primary: 240 5.9% 10%;
-
         --sidebar-primary-foreground: 0 0% 98%;
-
         --sidebar-accent: 240 4.8% 95.9%;
-
         --sidebar-accent-foreground: 240 5.9% 10%;
-
         --sidebar-border: 220 13% 91%;
-
         --sidebar-ring: 217.2 91.2% 59.8%;
     }
 
@@ -137,14 +129,6 @@
         --chart-3: 30 80% 55%;
         --chart-4: 280 65% 60%;
         --chart-5: 340 75% 55%;
-        --sidebar-background: #1e2834;
-        --sidebar-foreground: 240 4.8% 95.9%;
-        --sidebar-primary: 224.3 76.3% 48%;
-        --sidebar-primary-foreground: 0 0% 100%;
-        --sidebar-accent: 240 5% 10%;
-        --sidebar-accent-foreground: 240 4.8% 80%;
-        --sidebar-border: 240 5% 50%;
-        --sidebar-ring: 217.2 91.2% 59.8%;
     }
 }
 
@@ -497,29 +481,6 @@ input:-webkit-autofill:active,
     @apply dark:!border-meta-4 dark:!bg-meta-4 dark:!text-bodydark1;
 }
 
-.apexcharts-xaxistooltip-bottom:after {
-    @apply !border-b-gray dark:!border-b-meta-4;
-}
-
-.apexcharts-xaxistooltip-bottom:before {
-    @apply !border-b-gray dark:!border-b-meta-4;
-}
-
-.apexcharts-xaxistooltip-bottom {
-    @apply !rounded !border-none !bg-gray !text-xs !font-medium !text-black dark:!text-white;
-}
-
-.apexcharts-tooltip-series-group {
-    @apply !pl-1.5;
-}
-
-
-
-.flatpickr-day.selected.startRange + .endRange:not(:nth-child(7n + 1)),
-.flatpickr-day.startRange.startRange + .endRange:not(:nth-child(7n + 1)),
-.flatpickr-day.endRange.startRange + .endRange:not(:nth-child(7n + 1)) {
-    box-shadow: -10px 0 0 #3c50e0;
-}
 
 .map-btn .jvm-zoom-btn {
     @apply flex h-7.5 w-7.5 items-center justify-center rounded border border-stroke bg-white px-0 pb-0.5 pt-0 text-2xl leading-none text-body hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:bg-meta-4 dark:text-bodydark dark:hover:border-primary dark:hover:bg-primary dark:hover:text-white;
