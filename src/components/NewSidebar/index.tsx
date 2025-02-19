@@ -53,7 +53,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const comercialVisualization =
         sub_role === 'coodernador' || product === 'global' || sub_role === 'coordenador_externo';
 
-    const highlightRef = React.useRef<HTMLButtonElement>(null);
+    // const highlightRef = React.useRef<HTMLButtonElement>(null);
 
     const tenant = getTenantFromUrl();
 
@@ -148,41 +148,41 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         }
     };
 
-    React.useEffect(() => {
-        // retorna se não houver elemento
-        if (!highlightRef.current) return;
+    // React.useEffect(() => {
+    //     // retorna se não houver elemento
+    //     if (!highlightRef.current) return;
 
-        // verificando valor no localStorage
-        const hasSeenHighlight: boolean =
-            JSON.parse(localStorage.getItem('feedback_highlight') || 'false') || false;
+    //     // verificando valor no localStorage
+    //     const hasSeenHighlight: boolean =
+    //         JSON.parse(localStorage.getItem('feedback_highlight') || 'false') || false;
 
-        // retorna se ja foi visto
-        if (hasSeenHighlight) return;
+    //     // retorna se ja foi visto
+    //     if (hasSeenHighlight) return;
 
-        const driverObj = driver({
-            popoverClass: 'bg-blue-500',
-        });
-        const highlightFeature = setTimeout(() => {
-            driverObj.highlight({
-                element: highlightRef.current as HTMLElement,
-                popover: {
-                    title: 'Nova funcionalidade 🎉',
-                    description:
-                        'Clicando aqui você pode deixar seu feedback ou sugestão para nosso sistema.',
-                    side: 'top',
-                    showButtons: ['close'],
-                    onCloseClick: () => {
-                        driverObj.destroy();
-                    },
-                },
-            });
-            localStorage.setItem('feedback_highlight', JSON.stringify(true));
-        }, 1500);
+    //     const driverObj = driver({
+    //         popoverClass: 'bg-blue-500',
+    //     });
+    //     const highlightFeature = setTimeout(() => {
+    //         driverObj.highlight({
+    //             element: highlightRef.current as HTMLElement,
+    //             popover: {
+    //                 title: 'Nova funcionalidade 🎉',
+    //                 description:
+    //                     'Clicando aqui você pode deixar seu feedback ou sugestão para nosso sistema.',
+    //                 side: 'top',
+    //                 showButtons: ['close'],
+    //                 onCloseClick: () => {
+    //                     driverObj.destroy();
+    //                 },
+    //             },
+    //         });
+    //         localStorage.setItem('feedback_highlight', JSON.stringify(true));
+    //     }, 1500);
 
-        return () => {
-            clearTimeout(highlightFeature);
-        };
-    }, [highlightRef.current]);
+    //     return () => {
+    //         clearTimeout(highlightFeature);
+    //     };
+    // }, [highlightRef.current]);
 
     return (
         <DefaultLayoutProvider>
@@ -201,7 +201,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             <SidebarMenuItem>
                                 <FeedbackDialog
                                     trigger={
-                                        <SidebarMenuButton ref={highlightRef} tooltip="Feedback">
+                                        <SidebarMenuButton tooltip="Feedback">
                                             <MessageSquare className="h-4 w-4" />
                                             <span>Feedback</span>
                                         </SidebarMenuButton>
