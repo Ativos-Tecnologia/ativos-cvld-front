@@ -21,6 +21,7 @@ import {
     regimeEspecialExceptions,
 } from '@/constants/excecoes-regime-especial';
 import { Fade, Slide } from 'react-awesome-reveal';
+import CustomRadio from '../CrmUi/RadioInput';
 
 // interface
 interface ICalcFormProps {
@@ -669,20 +670,33 @@ const CalcForm = ({
                                         tipo do valor (Contribuição Previdenciária)
                                     </label>
                                     <div className='flex items-center gap-3'>
-                                        <input
+                                        {/* <input
                                             type="radio"
                                             id='tipo_valor_contribuicao_previdenciaria'
                                             value='absoluto'
                                             {...register('tipo_valor_contribuicao_previdenciaria')}
+                                        /> */}
+                                        <CustomRadio
+                                            check={watch('tipo_valor_contribuicao_previdenciaria') === 'absoluto'}
+                                            value='absoluto'
+                                            id='tipo_valor_contribuicao_previdenciaria'
+                                            register={register('tipo_valor_contribuicao_previdenciaria')}
                                         />
+                                        
                                         <span className='font-nexa text-xs font-semibold uppercase text-meta-5'>Valor Absoluto</span>
                                     </div>
                                     <div className='flex items-center gap-3 mt-2'>
-                                        <input
+                                        {/* <input
                                             type="radio"
                                             id='tipo_valor_contribuicao_previdenciaria'
                                             value='porcentagem'
                                             {...register('tipo_valor_contribuicao_previdenciaria')}
+                                        /> */}
+                                        <CustomRadio
+                                            check={watch('tipo_valor_contribuicao_previdenciaria') === 'porcentagem'}
+                                            value='porcentagem'
+                                            id='tipo_valor_contribuicao_previdenciaria'
+                                            register={register('tipo_valor_contribuicao_previdenciaria')}
                                         />
                                         <span className='font-nexa text-xs font-semibold uppercase text-meta-5'>Porcentagem</span>
                                     </div>
