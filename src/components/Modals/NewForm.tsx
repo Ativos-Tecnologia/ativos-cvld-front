@@ -226,7 +226,7 @@ const NewForm = () => {
         data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
         data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
         data.outros_descontos = backendNumberFormat(data.outros_descontos) || 0;
-        data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
+        // data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
 
         if (data.tipo_do_oficio === 'CREDITÓRIO') {
 
@@ -268,6 +268,11 @@ const NewForm = () => {
 
         if (data.data_base > '2021-12-01') {
             data.incidencia_juros_moratorios = false;
+        }
+
+        if  (data.tipo_valor_contribuicao_previdenciaria === "absoluto" || data.incidencia_pss) {
+            data.incide_contribuicao_previdenciaria = false;
+            data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
         }
 
         if (data.gerar_cvld) {

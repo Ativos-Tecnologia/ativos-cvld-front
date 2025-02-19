@@ -86,8 +86,8 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
         data.valor_principal = backendNumberFormat(data.valor_principal) || 0;
         data.valor_juros = backendNumberFormat(data.valor_juros) || 0;
         data.outros_descontos = backendNumberFormat(data.outros_descontos) || 0;
-        data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
-        
+        // data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
+
 
         if (data.tipo_do_oficio === 'CREDITÓRIO') {
 
@@ -121,6 +121,11 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
 
         if (!data.natureza) {
             data.natureza = 'NÃO TRIBUTÁRIA';
+        }
+
+        if (data.tipo_valor_contribuicao_previdenciaria === "absoluto" || data.incidencia_pss) {
+            data.incide_contribuicao_previdenciaria = false;
+            data.valor_pss = backendNumberFormat(data.valor_pss) || 0;
         }
 
         if (!data.esfera) {
@@ -179,8 +184,8 @@ const MainForm: React.FC<CVLDFormProps> = ({ dataCallback, setCalcStep, setDataT
             data.percentual_de_contribuicao_previdenciaria = 0;
         } else {
             data.percentual_de_contribuicao_previdenciaria = typeof data.percentual_de_contribuicao_previdenciaria === 'string'
-            ? Number(data.percentual_de_contribuicao_previdenciaria.replace("%", "").replace(",", ".")) / 100
-            : data.percentual_de_contribuicao_previdenciaria / 100;
+                ? Number(data.percentual_de_contribuicao_previdenciaria.replace("%", "").replace(",", ".")) / 100
+                : data.percentual_de_contribuicao_previdenciaria / 100;
         }
 
         if (!data.estado_ente_devedor || data.esfera === "FEDERAL") {
