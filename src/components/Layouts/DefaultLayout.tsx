@@ -60,7 +60,7 @@ export default function DefaultLayout({ children }: { children: React.ReactNode 
                                                         )
                                                             return;
                                                         return (
-                                                            <>
+                                                            <React.Fragment key={index}>
                                                                 <BreadcrumbItem key={index}>
                                                                     {
                                                                         index === 1 && (
@@ -90,7 +90,7 @@ export default function DefaultLayout({ children }: { children: React.ReactNode 
                                                                     path.split('/').length - 2 && (
                                                                     <BreadcrumbSeparator />
                                                                 )}
-                                                            </>
+                                                            </React.Fragment>
                                                         );
                                                     })}
                                                 </BreadcrumbList>
@@ -108,7 +108,9 @@ export default function DefaultLayout({ children }: { children: React.ReactNode 
                                     {/* <!-- ===== Main Content End ===== --> */}
                                     <Show
                                         when={
-                                            (!window.location.href.includes('https://ativoscvld.vercel.app/') || !window.location.href.includes('https://celer.ativos.com/')) && showAlert
+                                            window.location.href.includes('localhost') ||
+                                            window.location.href.includes('dev-ativoscvld') 
+                                            && showAlert
                                         }
                                     >
                                         <div className="sticky bottom-0 z-9 w-full px-5 py-3 text-center text-white">
