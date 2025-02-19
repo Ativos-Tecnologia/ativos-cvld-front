@@ -30,6 +30,8 @@ export default function DefaultLayout({ children }: { children: React.ReactNode 
 
     const path = usePathname();
 
+    console.log(window.location.href)
+
     return (
         <>
             {/* <!-- ===== Page Wrapper Start ===== --> */}
