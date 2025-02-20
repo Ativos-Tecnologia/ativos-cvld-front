@@ -20,6 +20,8 @@ import {
     entesComTaxaPrevidenciariaPredefinida,
     regimeEspecialExceptions,
 } from '@/constants/excecoes-regime-especial';
+import { Fade, Slide } from 'react-awesome-reveal';
+import CustomRadio from '../CrmUi/RadioInput';
 
 // interface
 interface ICalcFormProps {
@@ -244,6 +246,8 @@ const CalcForm = ({
             setValue('regime', oficioForm.data.court_info.regime);
         }
     }, [oficioForm]);
+
+    console.log(watch('tipo_valor_contribuicao_previdenciaria'))
 
     return (
         <React.Fragment>
@@ -638,7 +642,7 @@ const CalcForm = ({
                     )}
 
                     {watch('natureza') === 'NÃO TRIBUTÁRIA' && watch("ente_devedor") && (
-                        <div className={`col-span-2 flex max-h-6 items-center gap-2 md:col-span-1`}>
+                        <div className={`col-span-2 flex max-h-6 items-center gap-2`}>
                             <CustomCheckbox
                                 check={watch('incide_contribuicao_previdenciaria')}
                                 id={'incide_contribuicao_previdenciaria'}
@@ -654,56 +658,128 @@ const CalcForm = ({
                         </div>
                     )}
 
+
                     {((watch('natureza') === 'NÃO TRIBUTÁRIA' || watch('natureza') === undefined) &&
                         watch('incide_contribuicao_previdenciaria') && !entesComTaxaPrevidenciariaPredefinida.includes(watch("ente_devedor") || "")) && (
-                            <div className="flex w-full flex-col gap-2 col-span-2 sm:col-span-1">
-                                <label
-                                    title='Percentual de Contribuição Previdenciária (%)'
-                                    htmlFor="percentual_de_contribuicao_previdenciaria"
-                                    className="truncate font-nexa text-xs font-semibold uppercase text-meta-5"
-                                >
-                                    Percentual de Contribuição Previdenciária (%)
-                                </label>
-                                <Controller
-                                    name="percentual_de_contribuicao_previdenciaria"
-                                    control={control}
-                                    defaultValue={0}
-                                    rules={{
-                                        min: {
-                                            value: 1,
-                                            message: 'O valor deve ser maior que 0',
-                                        },
-                                    }}
-                                    render={({ field, fieldState: { error } }) => (
-                                        <>
-                                            <Cleave
-                                                {...field}
-                                                className={`w-full rounded-md border-stroke ${error ? 'border-red' : 'dark:border-strokedark'} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
-                                                options={{
-                                                    numeral: true,
-                                                    numeralThousandsGroupStyle: 'none',
-                                                    numeralDecimalMark: ',',
-                                                    prefix: '%',
-                                                    tailPrefix: true,
-                                                    rawValueTrimPrefix: true,
-                                                }}
-                                            />
-                                            {error && (
-                                                <span className="absolute right-2 top-8.5 text-xs font-medium text-red">
-                                                    {error.message}
-                                                </span>
-                                            )}
-                                        </>
+                            <div className="col-span-2 grid gap-5 p-2 pl-4 ml-2 rounded-md border border-l-6 border-stroke dark:border-form-strokedark !border-l-meta-5 sm:grid-cols-2">
+                                <div className='flex flex-col cols-span-2 sm:col-span-1'>
+                                    <label
+                                        htmlFor="tipo_valor_contribuicao_previdenciaria"
+                                        className="font-nexa text-xs font-semibold uppercase text-meta-5 mb-5"
+                                    >
+                                        tipo do valor (Contribuição Previdenciária)
+                                    </label>
+                                    <div className='flex items-center gap-3'>
+                                        {/* <input
+                                            type="radio"
+                                            id='tipo_valor_contribuicao_previdenciaria'
+                                            value='absoluto'
+                                            {...register('tipo_valor_contribuicao_previdenciaria')}
+                                        /> */}
+                                        <CustomRadio
+                                            check={watch('tipo_valor_contribuicao_previdenciaria') === 'absoluto'}
+                                            value='absoluto'
+                                            id='tipo_valor_contribuicao_previdenciaria'
+                                            register={register('tipo_valor_contribuicao_previdenciaria')}
+                                        />
+                                        
+                                        <span className='font-nexa text-xs font-semibold uppercase text-meta-5'>Valor Absoluto</span>
+                                    </div>
+                                    <div className='flex items-center gap-3 mt-2'>
+                                        {/* <input
+                                            type="radio"
+                                            id='tipo_valor_contribuicao_previdenciaria'
+                                            value='porcentagem'
+                                            {...register('tipo_valor_contribuicao_previdenciaria')}
+                                        /> */}
+                                        <CustomRadio
+                                            check={watch('tipo_valor_contribuicao_previdenciaria') === 'porcentagem'}
+                                            value='porcentagem'
+                                            id='tipo_valor_contribuicao_previdenciaria'
+                                            register={register('tipo_valor_contribuicao_previdenciaria')}
+                                        />
+                                        <span className='font-nexa text-xs font-semibold uppercase text-meta-5'>Porcentagem</span>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col gap-5 col-span-2 sm:col-span-1">
+
+                                    {watch("tipo_valor_contribuicao_previdenciaria") !== undefined && (
+                                        <label
+                                            title='Percentual de Contribuição Previdenciária (%)'
+                                            htmlFor="percentual_de_contribuicao_previdenciaria"
+                                            className="font-nexa text-xs font-semibold uppercase text-meta-5"
+                                        >
+                                            {watch('tipo_valor_contribuicao_previdenciaria') === 'absoluto' ? 'Valor de Contribuição Previdenciária (R$)' : 'Percentual de Contribuição Previdenciária (%)'}
+                                        </label>
                                     )}
-                                />
+
+                                    {watch('tipo_valor_contribuicao_previdenciaria') === 'porcentagem' && (
+                                        <Controller
+                                            name="percentual_de_contribuicao_previdenciaria"
+                                            control={control}
+                                            defaultValue={0}
+                                            rules={{
+                                                min: {
+                                                    value: 1,
+                                                    message: 'O valor deve ser maior que 0',
+                                                },
+                                            }}
+                                            render={({ field, fieldState: { error } }) => (
+                                                <>
+                                                    <Cleave
+                                                        {...field}
+                                                        className={`w-full rounded-md border-stroke ${error ? 'border-red' : 'dark:border-strokedark'} px-3 py-2 text-sm font-medium dark:bg-boxdark-2 dark:text-bodydark`}
+                                                        options={{
+                                                            numeral: true,
+                                                            numeralThousandsGroupStyle: 'none',
+                                                            numeralDecimalMark: ',',
+                                                            prefix: '%',
+                                                            tailPrefix: true,
+                                                            rawValueTrimPrefix: true,
+                                                        }}
+                                                    />
+                                                    {error && (
+                                                        <span className="absolute right-2 top-8.5 text-xs font-medium text-red">
+                                                            {error.message}
+                                                        </span>
+                                                    )}
+                                                </>
+                                            )}
+                                        />
+                                    )}
+
+                                    {watch('tipo_valor_contribuicao_previdenciaria') === 'absoluto' && (
+                                        <Controller
+                                            name="valor_pss"
+                                            control={control}
+                                            defaultValue={0}
+                                            render={({ field }) => (
+                                                <Cleave
+                                                    {...field}
+                                                    className="w-full rounded-md border border-stroke bg-white px-3 py-2 text-sm font-medium dark:border-strokedark dark:bg-boxdark-2"
+                                                    options={{
+                                                        numeral: true,
+                                                        numeralThousandsGroupStyle: 'thousand',
+                                                        numeralDecimalScale: 2,
+                                                        numeralDecimalMark: ',',
+                                                        delimiter: '.',
+                                                        prefix: 'R$ ',
+                                                        rawValueTrimPrefix: true,
+                                                    }}
+                                                />
+                                            )}
+                                        />
+                                    )}
+                                </div>
                             </div>
                         )}
 
-                    {watch("ente_devedor") && ((!watch("incide_contribuicao_previdenciaria") && watch("ente_devedor")) ||
+                    {/* {watch("ente_devedor") && ((!watch("incide_contribuicao_previdenciaria") && watch("ente_devedor")) ||
                         (!watch("incide_contribuicao_previdenciaria") && !entesComTaxaPrevidenciariaPredefinida.includes(watch("ente_devedor") || "")) || entesComTaxaPrevidenciariaPredefinida.includes(watch("ente_devedor") || "")) && watch('natureza') === "NÃO TRIBUTÁRIA" && (
                             <div className="col-span-1 hidden sm:block"></div>
                         )
-                    }
+                    } */}
 
                     {watch("estado_ente_devedor") === "PE" && (
                         <>
