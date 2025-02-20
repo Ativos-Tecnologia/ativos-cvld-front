@@ -7,8 +7,6 @@ const useApplyTenantTheme = () => {
         const applyTheme = () => {
             const tenant = getTenantFromUrl();
             const mode = document.body.classList.contains('dark') ? 'dark' : 'light';
-            console.log('Aplicando tema para', tenant, 'no modo', mode);
-
             const themeConfig =
                 tenantThemes[tenant as keyof typeof tenantThemes] || tenantThemes['dev'];
             const themeVars = themeConfig[mode];
