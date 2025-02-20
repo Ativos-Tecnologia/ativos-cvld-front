@@ -53,8 +53,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const comercialVisualization =
         sub_role === 'coodernador' || product === 'global' || sub_role === 'coordenador_externo';
 
-    // const highlightRef = React.useRef<HTMLButtonElement>(null);
-
     const tenant = getTenantFromUrl();
 
     const data = {
