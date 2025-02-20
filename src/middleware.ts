@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getTenantFromUrl } from './utils/getHostFromUrl';
 
 export function middleware(req: NextRequest) {
     const hostWithPort = req.headers.get('host') || '';
     const host = hostWithPort.split(':')[0];
 
-    let tenant: string = '';
+    let tenant: string = getTenantFromUrl();
 
     if (host === 'localhost') {
         tenant = 'celer';
@@ -22,7 +23,6 @@ export function middleware(req: NextRequest) {
         }
     }
 
-    req.headers.set('x-tenant', tenant);
     const url = req.nextUrl.clone();
     url.searchParams.set('host', tenant);
 
