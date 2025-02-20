@@ -53,7 +53,7 @@ export function PrintPDF({ nomeDoCredor, fotoDoBroker, valorDaProposta, nomeDoBr
 						<div className="flex absolute bottom-9 left-[525px] justify-center items-center h-screen">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 800 80</section>0"
+								viewBox="0 0 800 800"
 								fill="currentColor"
 								className="w-8 h-8 rotate-90 text-[#022062]"
 							>

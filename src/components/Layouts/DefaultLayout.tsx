@@ -34,7 +34,6 @@ export default function DefaultLayout({ children }: { children: React.ReactNode 
 
     useApplyTenantTheme();
 
-    // useApplyTenantTheme(colorMode);
     return (
         <>
             {/* <!-- ===== Page Wrapper Start ===== --> */}
@@ -65,7 +64,7 @@ export default function DefaultLayout({ children }: { children: React.ReactNode 
                                                         )
                                                             return;
                                                         return (
-                                                            <>
+                                                            <React.Fragment key={index}>
                                                                 <BreadcrumbItem key={index}>
                                                                     {
                                                                         index === 1 && (
@@ -95,7 +94,7 @@ export default function DefaultLayout({ children }: { children: React.ReactNode 
                                                                     path.split('/').length - 2 && (
                                                                     <BreadcrumbSeparator />
                                                                 )}
-                                                            </>
+                                                            </React.Fragment>
                                                         );
                                                     })}
                                                 </BreadcrumbList>
